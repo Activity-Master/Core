@@ -1,0 +1,11 @@
+package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders;
+
+import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
+import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyIdentificationType;
+import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyIdentificationTypeSecurityToken;
+
+public class InvolvedPartyIdentificationTypeQueryBuilder
+		extends QueryBuilderSCDNameDescription<InvolvedPartyIdentificationTypeQueryBuilder, InvolvedPartyIdentificationType, Long, InvolvedPartyIdentificationTypeSecurityToken>
+{
+
+}

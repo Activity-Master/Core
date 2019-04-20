@@ -1,0 +1,13 @@
+com.armineasy.activitymaster.activitymaster.systems.EnterpriseSystem
+com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem
+com.armineasy.activitymaster.activitymaster.systems.SystemsSystem
+com.armineasy.activitymaster.activitymaster.systems.ClassificationsDataConceptSystem
+com.armineasy.activitymaster.activitymaster.systems.ClassificationsSystem
+com.armineasy.activitymaster.activitymaster.systems.YesNoSystem
+com.armineasy.activitymaster.activitymaster.systems.AddressSystem
+com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem
+com.armineasy.activitymaster.activitymaster.systems.SecurityTokenSystem
+com.armineasy.activitymaster.activitymaster.systems.ArrangementsSystem
+com.armineasy.activitymaster.activitymaster.systems.EventsSystem
+com.armineasy.activitymaster.activitymaster.systems.ResourceItemSystem
+com.armineasy.activitymaster.activitymaster.systems.ProductsSystem

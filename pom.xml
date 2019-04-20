@@ -1,0 +1,180 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.jwebmp</groupId>
+        <artifactId>jwebmp-builder</artifactId>
+        <version>0.67.0.3</version>
+    </parent>
+
+    <artifactId>activity-master</artifactId>
+    <packaging>jar</packaging>
+    <name>Activity Master</name>
+
+    <properties>
+        <jwebmp.version>${project.version}</jwebmp.version>
+        <lombok-plugin.version>1.18.6</lombok-plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jwebmp</groupId>
+            <artifactId>jwebmp-bom</artifactId>
+            <type>pom</type>
+            <scope>import</scope>
+            <version>${project.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.jwebmp.guicedee.persistence</groupId>
+            <artifactId>guiced-persistence-btm</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jwebmp.guicedee.persistence</groupId>
+            <artifactId>guiced-hazelcast</artifactId>
+            
+        </dependency>
+        <dependency>
+            <groupId>com.jwebmp.guicedee.persistence</groupId>
+            <artifactId>entity-assist</artifactId>
+            
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>${maven.hibernate.version}</version>
+            <!--<optional>true</optional>-->
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>7.0.0.jre10</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok-plugin.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsr107.ri</groupId>
+            <artifactId>cache-annotations-ri-guice</artifactId>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jwebmp.guicedee.servlets</groupId>
+            <artifactId>guiced-servlets</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jwebmp.guicedee.servlets</groupId>
+            <artifactId>guiced-servlets</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <type>jar</type>
+        </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.hibernate.orm.tooling</groupId>
+                <artifactId>hibernate-enhance-maven-plugin</artifactId>
+                <version>${maven.hibernate.version}</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                            <enableLazyInitialization>true</enableLazyInitialization>
+                            <enableDirtyTracking>false</enableDirtyTracking>
+                            <enableAssociationManagement>false</enableAssociationManagement>
+                            <enableExtendedEnhancement>false</enableExtendedEnhancement>
+                        </configuration>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <enableLazyInitialization>true</enableLazyInitialization>
+                    <enableDirtyTracking>false</enableDirtyTracking>
+                    <enableAssociationManagement>false</enableAssociationManagement>
+                    <enableExtendedEnhancement>false</enableExtendedEnhancement>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <goals>
+                    <goal>compile</goal>
+                </goals>
+                <inherited>true</inherited>
+                <configuration>
+                    <release>11</release>
+                    <annotationProcessorPaths>
+                        <annotationProcessorPath>
+                            <groupId>org.hibernate</groupId>
+                            <artifactId>hibernate-jpamodelgen</artifactId>
+                            <version>${maven.hibernate.version}</version>
+                        </annotationProcessorPath>
+                        <annotationProcessorPath>
+                            <groupId>javax.xml.bind</groupId>
+                            <artifactId>jaxb-api</artifactId>
+                            <version>${jaxb.version}</version>
+                        </annotationProcessorPath>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok-plugin.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <annotationProcessors>
+                        <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
+                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+                    </annotationProcessors>
+                    <compilerArguments>
+                        <AaddGeneratedAnnotation>false</AaddGeneratedAnnotation>
+                        <Adebug>true</Adebug>
+                    </compilerArguments>
+                    <failOnError>true</failOnError>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>${lombok-plugin.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

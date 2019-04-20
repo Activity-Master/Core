@@ -1,0 +1,10 @@
+package com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders;
+
+import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConceptSecurityToken;
+
+public class ClassificationDataConceptQueryBuilder
+		extends QueryBuilderSCDNameDescription<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, Long, ClassificationDataConceptSecurityToken>
+{
+}

@@ -1,0 +1,121 @@
+package com.armineasy.activitymaster.activitymaster.implementations;
+
+import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.ActivityMasterService;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
+import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.EnterpriseXClassification;
+import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.EnterpriseXClassification_;
+import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise_;
+import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.builders.EnterpriseQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
+import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
+import com.armineasy.activitymaster.activitymaster.services.IProgressable;
+import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
+import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
+import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
+import com.armineasy.activitymaster.activitymaster.systems.EnterpriseSystem;
+import com.google.inject.Singleton;
+import com.jwebmp.guicedinjection.GuiceContext;
+import lombok.extern.java.Log;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.logging.Level;
+
+import static com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.EnterpriseClassifications.*;
+import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.jwebmp.guicedinjection.GuiceContext.*;
+
+@Singleton
+@Log
+public class EnterpriseService
+		implements IProgressable, IEnterpriseService
+{
+
+	public Enterprise create(@NotNull String name, @NotNull String description, IActivityMasterProgressMonitor progressMonitor)
+	{
+		Enterprise enterprise = new Enterprise();
+		Optional<Enterprise> exists = enterprise.builder()
+		                                        .findByName(name)
+		                                        .get();
+		if (exists.isEmpty())
+		{
+			enterprise.setName(name);
+			enterprise.setDescription(description);
+			enterprise.persist();
+		}
+		else
+		{
+			enterprise = exists.get();
+		}
+
+		return enterprise;
+	}
+
+	@Override
+	public List<Enterprise> findEnterprisesWithClassification(Classification classification)
+	{
+		List<Long> classy = new EnterpriseXClassification().builder()
+		                                                   .withClassification(classification)
+		                                                   .inActiveRange(classification.getEnterpriseID())
+		                                                   .inDateRange()
+		                                                   .selectColumn(EnterpriseXClassification_.enterpriseID)
+		                                                   .getAll(Long.class);
+
+		EnterpriseQueryBuilder builder = new Enterprise().builder();
+		builder = builder.where(Enterprise_.id, InList, classy);
+		return builder.getAll();
+	}
+
+	@Override
+	public Optional<Enterprise> findEnterprise(IEnterpriseName<?> name)
+	{
+		return new Enterprise().builder()
+		                       .findByName(name.classificationName())
+		                       .inDateRange()
+		                       .get();
+	}
+
+	public Enterprise checkRequiresUpdate(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
+	{
+		Optional<Enterprise> exists = findEnterprise(enterpriseName);
+		if (exists.isEmpty())
+		{
+			log.log(Level.INFO, "Enterprise with name [" + enterpriseName + "] does not exist. Create a new Enterprise.");
+			throw new ActivityMasterException("No Enterprise");
+		}
+		Enterprise enterprise = exists.get();
+
+		try
+		{
+			Systems activityMasterSystem = get(SystemsService.class)
+					                               .getActivityMaster(enterprise);
+			UUID identityToken = get(SystemsService.class).getSecurityIdentityToken(activityMasterSystem);
+
+			if (enterprise.hasClassification(Version, activityMasterSystem))
+			{
+				if (ActivityMasterConfiguration.version > enterprise.findClassification(Version, activityMasterSystem)
+				                                                    .get()
+				                                                    .getValueAsDouble())
+				{
+					log.config("New Version Released, Running System Updates");
+					GuiceContext.get(ActivityMasterService.class)
+					            .runUpdatesOnEnterprise(enterpriseName, progressMonitor);
+					ActivityMasterConfiguration.requiresUpdate = true;
+				}
+			}
+		}
+		catch (Throwable T)
+		{
+			log.config("Enterprise has not registered a version, running full update");
+			GuiceContext.get(ActivityMasterService.class)
+			            .runUpdatesOnEnterprise(enterpriseName, progressMonitor);
+		}
+		return enterprise;
+	}
+}

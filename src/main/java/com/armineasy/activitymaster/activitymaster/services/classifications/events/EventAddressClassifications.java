@@ -1,0 +1,49 @@
+package com.armineasy.activitymaster.activitymaster.services.classifications.events;
+
+import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
+import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+
+public enum EventAddressClassifications
+		implements IEventClassification<EventAddressClassifications>
+{
+	AddressEvents("Address Events",EventXAddress),
+	SignedAt("Signed At",EventXAddress),
+	OccurredAt("Occurred At",EventXAddress),
+	RemoteAddress("With Remote Address",EventXAddress),
+	LocalAddress("Local Address Was",EventXAddress),
+	PhonedNumber("Called The Number",EventXAddress),
+	SentAFax("Sent a Fax To",EventXAddress),
+	Emailed("Emailed To",EventXAddress),
+	SMSd("Sent a SMS To",EventXAddress),
+	MMSd("Sent a MMS To",EventXAddress),
+	Posted("Sent By Post To",EventXAddress),
+	RegisteredPost("Sent By Registered Post To",EventXAddress),
+
+	;
+	private String classificationValue;
+	private IDataConceptValue<?> dataConceptValue;
+
+	EventAddressClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	{
+		this.classificationValue = classificationValue;
+		this.dataConceptValue = dataConceptValue;
+	}
+
+	EventAddressClassifications(String classificationValue)
+	{
+		this.classificationValue = classificationValue;
+	}
+
+	@Override
+	public String classificationDescription()
+	{
+		return classificationValue;
+	}
+	@Override
+	public IDataConceptValue<?> concept()
+	{
+		return dataConceptValue;
+	}
+}

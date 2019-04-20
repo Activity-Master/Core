@@ -1,0 +1,68 @@
+package com.armineasy.activitymaster.activitymaster.systems;
+
+import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
+import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
+import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
+import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
+import com.jwebmp.guicedinjection.GuiceContext;
+import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import static com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.EnterpriseClassifications.*;
+
+public class EnterpriseSystem
+		implements IActivityMasterSystem<EnterpriseSystem>
+{
+	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	@Override
+	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+
+	}
+
+	@Override
+	public int totalTasks()
+	{
+		return 0;
+	}
+
+	@Override
+	public Integer sortOrder()
+	{
+		return Integer.MIN_VALUE;
+	}
+
+
+	@Override
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		Systems newSystem = GuiceContext.get(SystemsService.class)
+		                                .create(enterprise, "Enterprise System",
+		                                        "The system for handling enterprises", "");
+
+		UUID securityToken = GuiceContext.get(SystemsSystem.class)
+		                                 .registerNewSystem(enterprise, newSystem);
+		systemTokens.put(enterprise, securityToken);
+
+		if (!enterprise.hasClassification(Version, newSystem, securityToken))
+		{
+			enterprise.addClassification(Version, ActivityMasterConfiguration.version.toString(), newSystem,securityToken);
+			enterprise.addClassification(RequiresUpdate, Boolean.FALSE.toString(), newSystem,securityToken);
+			ActivityMasterConfiguration.requiresUpdate = enterprise.findClassification(RequiresUpdate, newSystem,securityToken)
+			                                                       .orElseThrow()
+			                                                       .getValueAsBoolean();
+		}
+	}
+
+	public static Map<Enterprise, UUID> getSystemTokens()
+	{
+		return systemTokens;
+	}
+}
