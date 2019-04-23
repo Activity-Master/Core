@@ -100,7 +100,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 			if (get(ActivityMasterConfiguration.class)
 					    .isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originatingSystem);
+				tableForClassification.createDefaultSecurity(originatingSystem,identityToken);
 			}
 		}
 		else

@@ -47,7 +47,7 @@ public class ClassificationsDataConceptService
 			newConcept.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				newConcept.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(newConcept.getEnterpriseID(), identityToken));
+				newConcept.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(newConcept.getEnterpriseID(), identityToken),identityToken);
 			}
 		}
 		else
@@ -73,7 +73,7 @@ public class ClassificationsDataConceptService
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
 		cdc = cdc.builder()
 		         .findByName(name.classificationValue())
-		         .inActiveRange(enterprise)
+		         .inActiveRange(enterprise,identityToken)
 		         .inDateRange()
 		         .canRead(enterprise, identityToken)
 		         .get()

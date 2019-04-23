@@ -374,6 +374,7 @@ public class SecurityTokenSystem
 	void applyDefaultsToNewEnterpriseAfterActivityMaster(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems system = get(SystemsService.class).getActivityMaster(enterprise);
+		UUID token = get(SystemsService.class).getSecurityIdentityToken(system);
 
 		logProgress("Security Token Service", "Starting Involved Party Relationship checks", 1, progressMonitor);
 		createDefaultSecurityForTable(new InvolvedParty(), system, progressMonitor);
@@ -395,7 +396,7 @@ public class SecurityTokenSystem
 		createDefaultSecurityForTable(new ResourceItemType(), system, progressMonitor);
 	}
 
-	void createDefaultSecurityForTable(WarehouseCoreTable<?, ?, ?, ?> table, Systems system, IActivityMasterProgressMonitor progressMonitor)
+	void createDefaultSecurityForTable(WarehouseCoreTable<?, ?, ?, ?> table, Systems system, IActivityMasterProgressMonitor progressMonitor,UUID...identityToken)
 	{
 		for (WarehouseCoreTable next : table.builder()
 		                                    .withEnterprise(system.getEnterpriseID())
@@ -406,7 +407,7 @@ public class SecurityTokenSystem
 			logProgress("Security Token Service", "Checking - " +
 			                                      next.getClass()
 			                                          .getSimpleName(), progressMonitor);
-			next.createDefaultSecurity(system);
+			next.createDefaultSecurity(system,identityToken);
 		}
 
 	}

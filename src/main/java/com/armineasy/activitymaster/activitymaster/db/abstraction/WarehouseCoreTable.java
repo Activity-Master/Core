@@ -1,10 +1,12 @@
 package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
+import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderSecurities;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
+import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityTokensSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.SecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
@@ -47,13 +49,48 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 
 	public void createDefaultSecurity(Systems system, UUID...identity)
 	{
-		createDefaultAdministratorSecurityAccess(system.getEnterpriseID(),identity);
-		createDefaultEveryoneSecurityAccess(system.getEnterpriseID(),identity);
-		createDefaultEverywhereSecurityAccess(system.getEnterpriseID(),identity);
-		createDefaultSystemsSecurityAccess(system.getEnterpriseID(),identity);
-		createDefaultApplicationsSecurityAccess(system.getEnterpriseID(),identity);
-		createDefaultPluginsSecurityAccess(system.getEnterpriseID(),identity);
-		createDefaultGuestReadSecurityAccess(system.getEnterpriseID(),identity);
+		boolean async = GuiceContext.get(ActivityMasterConfiguration.class).isAsyncEnabled();
+		if(async)
+			JobService.getInstance().addJob("SecurityTokenStore",
+			                                ()->createDefaultAdministratorSecurityAccess(system.getEnterpriseID(),identity));
+		else
+			createDefaultAdministratorSecurityAccess(system.getEnterpriseID(),identity);
+
+		if(async)
+			JobService.getInstance().addJob("SecurityTokenStore",
+			                                ()->createDefaultEveryoneSecurityAccess(system.getEnterpriseID(),identity));
+		else
+			createDefaultEveryoneSecurityAccess(system.getEnterpriseID(),identity);
+
+
+		if(async)
+			JobService.getInstance().addJob("SecurityTokenStore",
+			                                ()->createDefaultEverywhereSecurityAccess(system.getEnterpriseID(),identity));
+		else
+			createDefaultEverywhereSecurityAccess(system.getEnterpriseID(),identity);
+
+		if(async)
+			JobService.getInstance().addJob("SecurityTokenStore",
+			                                ()->createDefaultSystemsSecurityAccess(system.getEnterpriseID(),identity));
+		else
+			createDefaultSystemsSecurityAccess(system.getEnterpriseID(),identity);
+
+		if(async)
+			JobService.getInstance().addJob("SecurityTokenStore",
+			                                ()->createDefaultApplicationsSecurityAccess(system.getEnterpriseID(),identity));
+		else
+			createDefaultApplicationsSecurityAccess(system.getEnterpriseID(),identity);
+
+		if(async)
+			JobService.getInstance().addJob("SecurityTokenStore",
+			                                ()->createDefaultPluginsSecurityAccess(system.getEnterpriseID(),identity));
+		else
+			createDefaultPluginsSecurityAccess(system.getEnterpriseID(),identity);
+		if(async)
+			JobService.getInstance().addJob("SecurityTokenStore",
+			                                ()->createDefaultGuestReadSecurityAccess(system.getEnterpriseID(),identity));
+		else
+			createDefaultGuestReadSecurityAccess(system.getEnterpriseID(),identity);
 	}
 
 	public void updateSecurity(J newCoreTable, Systems system)

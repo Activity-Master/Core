@@ -2,7 +2,6 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction.builders;
 
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseBaseTable;
-import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSCDTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
@@ -17,6 +16,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.UUID;
 
 import static com.jwebmp.entityassist.enumerations.Operand.*;
 
@@ -53,10 +53,10 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J inActiveRange(Enterprise enterprise)
+	public J inActiveRange(Enterprise enterprise, UUID...identityToken)
 	{
 		Collection<ActiveFlag> flags = GuiceContext.get(IActiveFlagService.class)
-		                                           .getActiveRange(enterprise);
+		                                           .findActiveRange(enterprise, identityToken);
 
 		where((SingularAttribute<E, ActiveFlag>) getAttribute("activeFlagID"), InList, flags);
 		return (J) this;
@@ -64,10 +64,10 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J inVisibleRange(Enterprise enterprise)
+	public J inVisibleRange(Enterprise enterprise, UUID...identityToken)
 	{
 		Collection<ActiveFlag> flags = GuiceContext.get(IActiveFlagService.class)
-		                                           .getVisibleRange(enterprise);
+		                                           .getVisibleRange(enterprise,identityToken);
 		where((SingularAttribute<E, ActiveFlag>) getAttribute("activeFlagID"), InList, flags);
 		return (J) this;
 	}

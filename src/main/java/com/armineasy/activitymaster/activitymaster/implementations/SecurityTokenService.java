@@ -111,7 +111,7 @@ public class SecurityTokenService
 				                .isSecurityEnabled())
 				{
 					st.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-					                                     .getActivityMaster(st.getEnterpriseID(), identityToken));
+					                                     .getActivityMaster(st.getEnterpriseID(), identityToken),identityToken);
 				}
 			}
 			else
@@ -161,6 +161,19 @@ public class SecurityTokenService
 		return root;
 	}
 
+	public void updateSecurityHierarchy()
+	{
+		javax.sql.DataSource ds = GuiceContext.get(javax.sql.DataSource.class, com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB.class);
+		try(java.sql.Connection c = ds.getConnection(); java.sql.CallableStatement  st = c.prepareCall("{call MergeHierarchy}"))
+		{
+			st.execute();
+		}
+		catch (java.sql.SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
 	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	public SecurityToken getEveryoneGroup(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
 	{
@@ -168,7 +181,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup, enterprise,identityToken)
 		                                   .findByName(Everyone)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .inDateRange()
 		                                   .canRead(enterprise,identityToken)
 		                                   .get();
@@ -182,7 +195,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup,enterprise, identityToken)
 		                                   .findByName(Everywhere)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .inDateRange()
 		                                   .canRead(enterprise,identityToken)
 		                                   .get();
@@ -196,7 +209,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup,enterprise, identityToken)
 		                                   .findByName(Guests)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .inDateRange()
 		                              //     .canRead(enterprise,identityToken)
 		                                   .get();
@@ -210,7 +223,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup,enterprise, identityToken)
 		                                   .findByName(Registered)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .inDateRange()
 		                                   .canRead(enterprise,identityToken)
 		                                   .get();
@@ -224,7 +237,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup,enterprise, identityToken)
 		                                   .findByName(Visitors)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .inDateRange()
 		                                   .canRead(enterprise,identityToken)
 		                                   .get();
@@ -238,7 +251,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup,enterprise, identityToken)
 		                                   .findByName(Administrators)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .inDateRange()
 		                                   .canRead(enterprise,identityToken)
 		                                   .get();
@@ -252,7 +265,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroupSecurityTokenClassifications.System,enterprise, identityToken)
 		                                   .findByName(System)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .inDateRange()
 		                                   .canRead(enterprise,identityToken)
 		                                   .get();
@@ -266,7 +279,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(Plugin,enterprise, identityToken)
 		                                   .findByName(Plugins)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .canRead(enterprise,identityToken)
 		                                   .inDateRange()
 		                                   .get();
@@ -280,7 +293,7 @@ public class SecurityTokenService
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(Application,enterprise, identityToken)
 		                                   .findByName(Applications)
-		                                   .inActiveRange(enterprise)
+		                                   .inActiveRange(enterprise,identityToken)
 		                                   .canRead(enterprise,identityToken)
 		                                   .inDateRange()
 		                                   .get();
@@ -294,7 +307,7 @@ public class SecurityTokenService
 		SecurityToken view = new SecurityToken().builder()
 		                                        .findBySecurityToken(identifyingToken.toString())
 		                                        .withEnterprise(enterprise)
-		                                        .inActiveRange(enterprise)
+		                                        .inActiveRange(enterprise,identityToken)
 		                                        .inDateRange()
 		                                        .canRead(enterprise,identityToken)
 		                                        .get()
@@ -310,7 +323,7 @@ public class SecurityTokenService
 		                 .withEnterprise(enterprise)
 		                 .inDateRange();
 		if(overrideActiveFlag)
-		builder.inActiveRange(enterprise);
+		builder.inActiveRange(enterprise,identityToken);
 
 		SecurityToken view = builder
 				                     .get()

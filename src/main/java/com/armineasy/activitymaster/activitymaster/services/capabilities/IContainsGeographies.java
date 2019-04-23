@@ -89,7 +89,7 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 			tableForClassification.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem);
+				tableForClassification.createDefaultSecurity(activityMasterSystem,identifyingToken);
 			}
 		}
 		else

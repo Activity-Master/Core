@@ -103,7 +103,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			itemData.createDefaultSecurity(originatingSystem);
+			itemData.createDefaultSecurity(originatingSystem,identifyingToken);
 		}
 
 		tableForClassification.setEnterpriseID(originatingSystem.getEnterpriseID());
@@ -119,7 +119,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem);
+			tableForClassification.createDefaultSecurity(originatingSystem,identifyingToken);
 		}
 
 		return item;

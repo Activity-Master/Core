@@ -40,7 +40,7 @@ public class SystemsService
 		return search.builder()
 		             .findByName(systemName)
 		             .withEnterprise(enterprise)
-		             .inActiveRange(enterprise)
+		             .inActiveRange(enterprise,token)
 		             .inDateRange()
 		             .canRead(enterprise, token)
 		             .get()
@@ -57,7 +57,7 @@ public class SystemsService
 
 		Optional<SystemXClassification> exists = systemClassifications.builder()
 		                                                              .findChildLink(identifyClassification, token.toString())
-		                                                              .inActiveRange(enterprise)
+		                                                              .inActiveRange(enterprise,identityToken)
 		                                                              .inDateRange()
 		                                                              .canRead(enterprise, identityToken)
 		                                                              .get();
@@ -91,7 +91,8 @@ public class SystemsService
 			newSystem.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				newSystem.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(newSystem.getEnterpriseID(), identityToken));
+				newSystem.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(newSystem.getEnterpriseID(), identityToken)
+				                               ,identityToken);
 			}
 		}
 		else

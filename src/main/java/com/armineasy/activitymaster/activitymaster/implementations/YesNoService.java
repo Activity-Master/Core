@@ -43,7 +43,7 @@ public class YesNoService
 			                .isSecurityEnabled())
 			{
 				yn.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-				                                     .getActivityMaster(yn.getEnterpriseID(), identityToken));
+				                                     .getActivityMaster(yn.getEnterpriseID(), identityToken),identityToken);
 			}
 		}
 		else

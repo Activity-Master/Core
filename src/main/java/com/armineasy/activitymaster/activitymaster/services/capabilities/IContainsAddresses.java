@@ -97,7 +97,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			addy.persist();
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				addy.createDefaultSecurity(activityMasterSystem);
+				addy.createDefaultSecurity(activityMasterSystem,identifyingToken);
 			}
 		}
 		else
@@ -125,7 +125,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem);
+				tableForClassification.createDefaultSecurity(activityMasterSystem,identifyingToken);
 			}
 		}
 		else
@@ -159,7 +159,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originatingSystem);
+				tableForClassification.createDefaultSecurity(originatingSystem,identifyingToken);
 			}
 		}
 		else

@@ -23,6 +23,7 @@ import com.armineasy.activitymaster.activitymaster.services.types.Identification
 import com.armineasy.activitymaster.activitymaster.services.types.NameTypes;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
+import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedinjection.pairing.Pair;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 import lombok.extern.java.Log;
@@ -55,7 +56,7 @@ public class InvolvedPartyService
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
 		Optional<InvolvedPartyNameType> exists = xr.builder()
 		                                           .findByName(name)
-		                                           .inActiveRange(enterprise)
+		                                           .inActiveRange(enterprise, identityToken)
 		                                           .inDateRange()
 		                                           .get();
 		if (exists.isEmpty())
@@ -76,7 +77,7 @@ public class InvolvedPartyService
 		                .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken));
+			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
 	}
@@ -89,7 +90,7 @@ public class InvolvedPartyService
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
 		Optional<InvolvedPartyIdentificationType> exists = xr.builder()
 		                                                     .findByName(name.name())
-		                                                     .inActiveRange(enterprise)
+		                                                     .inActiveRange(enterprise, identityToken)
 		                                                     .inDateRange()
 		                                                     .get();
 		if (exists.isEmpty())
@@ -110,7 +111,7 @@ public class InvolvedPartyService
 		                .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken));
+			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 
 		return xr;
@@ -129,7 +130,7 @@ public class InvolvedPartyService
 		InvolvedPartyType xr = new InvolvedPartyType();
 		Optional<InvolvedPartyType> exists = xr.builder()
 		                                       .findByName(name)
-		                                       .inActiveRange(enterprise)
+		                                       .inActiveRange(enterprise, identityToken)
 		                                       .inDateRange()
 		                                       .get();
 		if (exists.isEmpty())
@@ -150,7 +151,7 @@ public class InvolvedPartyService
 		                .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken));
+			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
 	}
@@ -163,7 +164,7 @@ public class InvolvedPartyService
 		InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
 		Optional<InvolvedPartyOrganicType> exists = xr.builder()
 		                                              .findByName(name.classificationValue())
-		                                              .inActiveRange(enterprise)
+		                                              .inActiveRange(enterprise, identityToken)
 		                                              .inDateRange()
 		                                              .get();
 		if (exists.isEmpty())
@@ -184,7 +185,7 @@ public class InvolvedPartyService
 		                .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken));
+			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
 	}
@@ -195,7 +196,7 @@ public class InvolvedPartyService
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
 		return xr.builder()
 		         .findByName(idType.classificationValue())
-		         .inActiveRange(enterprise)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
 		         .canRead(enterprise, tokens)
 		         .get()
@@ -211,7 +212,7 @@ public class InvolvedPartyService
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> builder = new InvolvedPartyXInvolvedPartyIdentificationType()
 				                                                                  .builder()
 				                                                                  .canRead(enterprise, tokens)
-				                                                                  .inActiveRange(enterprise)
+				                                                                  .inActiveRange(enterprise, tokens)
 				                                                                  .inDateRange()
 				                                                                  .findChildLink(findIdentificationType(idType, enterprise, tokens), value)
 				                                                                  .get();
@@ -332,7 +333,7 @@ public class InvolvedPartyService
 
 		if (exists.isEmpty())
 		{
-			Systems system = GuiceContext.get(SystemsService.class)
+			Systems system = GuiceContext.get(ISystemsService.class)
 			                             .getActivityMaster(enterprise);
 
 			ip.setEnterpriseID(enterprise);
@@ -344,12 +345,25 @@ public class InvolvedPartyService
 			                .isSecurityEnabled())
 			{
 				ip.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-				                                     .getActivityMaster(ip.getEnterpriseID(), identityToken));
+				                                     .getActivityMaster(ip.getEnterpriseID(), identityToken)
+						, identityToken);
 			}
-
 			ip.addIdentificationType(idTypes.getKey(), originatingSystem, idTypes.getValue(), identityToken);
 
-			if (isOrganic)
+			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			                .isAsyncEnabled())
+			{
+				final InvolvedParty ipAsync = ip;
+				JobService.getInstance()
+				          .addJob("InvolvedPartyOrganicStorage",
+				                  () -> setupInvolvedPartyOrganicStatus(isOrganic, ipAsync, enterprise, system, identityToken));
+			}
+			else
+			{
+				setupInvolvedPartyOrganicStatus(isOrganic, ip, enterprise, system, identityToken);
+			}
+
+			/*if (isOrganic)
 			{
 				InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
 				ipo.setInvolvedParty(ip);
@@ -363,7 +377,8 @@ public class InvolvedPartyService
 				                .isSecurityEnabled())
 				{
 					ipo.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-					                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken));
+					                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
+							, identityToken);
 				}
 			}
 			else
@@ -380,9 +395,10 @@ public class InvolvedPartyService
 				                .isSecurityEnabled())
 				{
 					ipo.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-					                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken));
+					                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
+							, identityToken);
 				}
-			}
+			}*/
 		}
 		else
 		{
@@ -390,6 +406,46 @@ public class InvolvedPartyService
 		}
 
 		return ip;
+	}
+
+	private void setupInvolvedPartyOrganicStatus(boolean isOrganic, InvolvedParty ip, Enterprise enterprise, Systems system, UUID... identityToken)
+	{
+		if (isOrganic)
+		{
+			InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
+			ipo.setInvolvedParty(ip);
+			ipo.setId(ip.getId());
+			ipo.setEnterpriseID(enterprise);
+			ipo.setActiveFlagID(system.getActiveFlagID());
+			ipo.setSystemID(system);
+			ipo.setOriginalSourceSystemID(system);
+			ipo.persist();
+			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			                .isSecurityEnabled())
+			{
+				ipo.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+				                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
+						, identityToken);
+			}
+		}
+		else
+		{
+			InvolvedPartyNonOrganic ipo = new InvolvedPartyNonOrganic();
+			ipo.setInvolvedParty(ip);
+			ipo.setId(ip.getId());
+			ipo.setEnterpriseID(enterprise);
+			ipo.setActiveFlagID(system.getActiveFlagID());
+			ipo.setSystemID(system);
+			ipo.setOriginalSourceSystemID(system);
+			ipo.persist();
+			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			                .isSecurityEnabled())
+			{
+				ipo.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+				                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
+						, identityToken);
+			}
+		}
 	}
 
 	@CacheResult(cacheName = "InvolvedPartyGetNameType")
@@ -403,7 +459,7 @@ public class InvolvedPartyService
 		InvolvedPartyType xr = new InvolvedPartyType();
 		return xr.builder()
 		         .findByName(nameType)
-		         .inActiveRange(enterprise)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
 		         .canRead(enterprise, tokens)
 		         .get()
@@ -422,7 +478,7 @@ public class InvolvedPartyService
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
 		return xr.builder()
 		         .findByName(nameType)
-		         .inActiveRange(enterprise)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
 		         .canRead(enterprise, tokens)
 		         .get()
@@ -453,7 +509,7 @@ public class InvolvedPartyService
 
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> foundLink = idType.builder()
 		                                                                          .findChildLink(id, token.toString())
-		                                                                          .inActiveRange(enterprise)
+		                                                                          .inActiveRange(enterprise, tokens)
 		                                                                          .inDateRange()
 		                                                                          .canRead(enterprise, tokens)
 		                                                                          .get();

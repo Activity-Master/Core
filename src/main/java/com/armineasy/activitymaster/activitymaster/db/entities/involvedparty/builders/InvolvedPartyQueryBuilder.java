@@ -33,7 +33,7 @@ public class InvolvedPartyQueryBuilder
 			joinTableQueryBuilder.withValue(value);
 		}
 		joinTableQueryBuilder.inDateRange();
-		joinTableQueryBuilder.inActiveRange(enterprise);
+		joinTableQueryBuilder.inActiveRange(enterprise,identityTokens);
 
 		join(InvolvedParty_.identities, joinTableQueryBuilder, JoinType.INNER);
 

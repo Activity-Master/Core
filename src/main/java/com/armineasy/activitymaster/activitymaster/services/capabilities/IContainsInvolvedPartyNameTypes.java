@@ -91,7 +91,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 			tableForClassification.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originatingSystem);
+				tableForClassification.createDefaultSecurity(originatingSystem,identifyingToken);
 			}
 		}
 		else

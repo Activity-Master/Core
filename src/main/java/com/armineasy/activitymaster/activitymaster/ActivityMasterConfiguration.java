@@ -16,6 +16,7 @@ public class ActivityMasterConfiguration
 	public static boolean requiresUpdate = false;
 
 	private static final ThreadLocal<Boolean> securities = ThreadLocal.withInitial(() -> true);
+	private static final ThreadLocal<Boolean> async = ThreadLocal.withInitial(() -> false);
 
 	public IEnterpriseName<?> getEnterpriseName()
 	{
@@ -36,4 +37,15 @@ public class ActivityMasterConfiguration
 	{
 		securities.set(securityEnabled);
 	}
+
+	public boolean isAsyncEnabled()
+	{
+		return async.get();
+	}
+
+	public void setAsyncEnabled(boolean securityEnabled)
+	{
+		async.set(securityEnabled);
+	}
+
 }

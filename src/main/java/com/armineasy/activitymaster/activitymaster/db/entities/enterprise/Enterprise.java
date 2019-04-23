@@ -80,13 +80,6 @@ public class Enterprise
 	@Setter
 	private String description;
 
-
-
-
-
-
-
-
 	@OneToMany(
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)

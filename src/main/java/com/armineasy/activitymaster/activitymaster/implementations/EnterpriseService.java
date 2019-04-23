@@ -21,6 +21,8 @@ import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.extern.java.Log;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +60,8 @@ public class EnterpriseService
 	}
 
 	@Override
-	public List<Enterprise> findEnterprisesWithClassification(Classification classification)
+	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
+	public List<Enterprise> findEnterprisesWithClassification(@CacheKey Classification classification)
 	{
 		List<Long> classy = new EnterpriseXClassification().builder()
 		                                                   .withClassification(classification)
@@ -72,13 +75,23 @@ public class EnterpriseService
 		return builder.getAll();
 	}
 
-	@Override
 	public Optional<Enterprise> findEnterprise(IEnterpriseName<?> name)
 	{
 		return new Enterprise().builder()
 		                       .findByName(name.classificationName())
 		                       .inDateRange()
 		                       .get();
+	}
+
+	@Override
+	@CacheResult(cacheName = "GetEnterpriseByEnterpriseName")
+	public Enterprise getEnterprise(@CacheKey IEnterpriseName<?> name)
+	{
+		return new Enterprise().builder()
+		                       .findByName(name.classificationName())
+		                       .inDateRange()
+		                       .get()
+		                       .orElseThrow();
 	}
 
 	public Enterprise checkRequiresUpdate(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)

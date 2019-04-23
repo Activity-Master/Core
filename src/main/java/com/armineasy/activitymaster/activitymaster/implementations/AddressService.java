@@ -51,7 +51,7 @@ public class AddressService
 			address.setActiveFlagID(get(IActiveFlagService.class)
 			                                    .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
-			address.createDefaultSecurity(originatingSystem);
+			address.createDefaultSecurity(originatingSystem,identityToken);
 		}
 		else
 		{
@@ -84,7 +84,7 @@ public class AddressService
 			address.setActiveFlagID(get(IActiveFlagService.class)
 			                                    .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
-			address.createDefaultSecurity(originatingSystem);
+			address.createDefaultSecurity(originatingSystem,identityToken);
 		}
 		else
 		{
@@ -118,7 +118,7 @@ public class AddressService
 			address.setActiveFlagID(get(IActiveFlagService.class)
 			                                    .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
-			address.createDefaultSecurity(originatingSystem);
+			address.createDefaultSecurity(originatingSystem,identityToken);
 
 			try
 			{
@@ -169,27 +169,27 @@ public class AddressService
 				webDetails.setValue(url.getPort() + "");
 				webDetails.setClassification(webPortAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem);
+				webDetails.createDefaultSecurity(originatingSystem,identityToken);
 
 				webDetails.setValue(domain);
 				webDetails.setClassification(webDomainAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem);
+				webDetails.createDefaultSecurity(originatingSystem,identityToken);
 
 				webDetails.setValue(domain);
 				webDetails.setClassification(webDomainAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem);
+				webDetails.createDefaultSecurity(originatingSystem,identityToken);
 
 				webDetails.setValue(protocol);
 				webDetails.setClassification(webProtocolAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem);
+				webDetails.createDefaultSecurity(originatingSystem,identityToken);
 
 				webDetails.setValue(protocol);
 				webDetails.setClassification(webSiteAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem);
+				webDetails.createDefaultSecurity(originatingSystem,identityToken);
 			}
 			catch (MalformedURLException e)
 			{

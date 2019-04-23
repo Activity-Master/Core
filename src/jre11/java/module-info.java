@@ -55,6 +55,8 @@ module com.armineasy.activitymaster.activitymaster {
 	exports com.armineasy.activitymaster.activitymaster.services.types ;
 	exports com.armineasy.activitymaster.activitymaster.systems;
 
+	exports com.armineasy.activitymaster.activitymaster.threads;
+
 	requires io.github.classgraph;
 
 	requires com.jwebmp.guicedpersistence;
@@ -62,6 +64,8 @@ module com.armineasy.activitymaster.activitymaster {
 	requires com.jwebmp.entityassist;
 	requires com.jwebmp.guicedinjection;
 	requires com.google.common;
+
+	requires java.sql;
 
 	requires java.persistence;
 	requires java.xml.bind;
@@ -81,6 +85,7 @@ module com.armineasy.activitymaster.activitymaster {
 	requires lombok;
 
 	requires cache.api;
+	requires com.google.guice.extensions.servlet;
 
 	provides IGuiceModule with ActivityMasterDBModule;
 

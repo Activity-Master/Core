@@ -49,7 +49,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 
 		Optional<Q> exists = linkTable.builder()
 		                              .findLink(me, child, enterprise)
-		                              .inActiveRange(enterprise)
+		                              .inActiveRange(enterprise,identifyingToken)
 		                              .inDateRange()
 		                              .canCreate(enterprise, identifyingToken)
 		                              .withEnterprise(enterprise)
@@ -58,14 +58,14 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		{
 			if (linkTable.builder()
 			             .findChildLink(child)
-			             .inActiveRange(enterprise)
+			             .inActiveRange(enterprise,identifyingToken)
 			             .inDateRange()
 			             .getCount() > 0
 			)
 			{
 				Q existingLink = linkTable.builder()
 				                          .findChildLink(child)
-				                          .inActiveRange(enterprise)
+				                          .inActiveRange(enterprise,identifyingToken)
 				                          .inDateRange()
 				                          .get()
 				                          .orElseThrow();
@@ -90,7 +90,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				linkTable.createDefaultSecurity(activityMasterSystem);
+				linkTable.createDefaultSecurity(activityMasterSystem,identifyingToken);
 			}
 		}
 		return child;
@@ -105,7 +105,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		Q linkTable = GuiceContext.get(hierarchyTable);
 		Optional<Q> exists = linkTable.builder()
 		                              .findLink(me, child, enterprise)
-		                              .inActiveRange(enterprise)
+		                              .inActiveRange(enterprise,identifyingToken)
 		                              .inDateRange()
 		                              .canDelete(enterprise, identifyingToken)
 		                              .withEnterprise(enterprise)
@@ -200,7 +200,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		Q linkTable = GuiceContext.get(hierarchyView);
 		return linkTable.builder()
 		                .findLink((J) this, child, enterprise, value)
-		                .inActiveRange(enterprise)
+		                .inActiveRange(enterprise,identifyingToken)
 		                .canRead(enterprise, identifyingToken)
 		                .inDateRange()
 		                .get()

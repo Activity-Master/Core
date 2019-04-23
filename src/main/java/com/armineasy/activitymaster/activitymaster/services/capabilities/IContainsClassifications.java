@@ -132,10 +132,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			configureForClassification(tableForClassification, originatingSystem.getEnterpriseID());
 
 			tableForClassification.persist();
-			tableForClassification.builder().getEntityManager().flush();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originatingSystem);
+				tableForClassification.createDefaultSecurity(originatingSystem,identifyingToken);
 			}
 		}
 		else
@@ -175,7 +174,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			tableForClassification.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem);
+				tableForClassification.createDefaultSecurity(activityMasterSystem,identifyingToken);
 			}
 		}
 		else
@@ -229,7 +228,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			//TODO security from original
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originalSystem);
+				tableForClassification.createDefaultSecurity(originalSystem,identifyingToken);
 			}
 		}
 		return tableForClassification;

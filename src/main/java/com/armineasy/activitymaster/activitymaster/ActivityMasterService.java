@@ -76,8 +76,7 @@ public class ActivityMasterService
 		GuiceContext.get(ActivityMasterConfiguration.class)
 		            .setSecurityEnabled(false);
 		Enterprise enterprise = GuiceContext.get(IEnterpriseService.class)
-		                                    .findEnterprise(enterpriseName)
-		                                    .orElseThrow();
+		                                    .getEnterprise(enterpriseName);
 
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1, progressMonitor);
 
@@ -118,7 +117,7 @@ public class ActivityMasterService
 			adminUser.addIdentificationType(IdentificationTypeUUID,activityMasterSystem, myToken.getSecurityToken(), token);
 
 			service.addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, activityMasterSystem, token);
-			adminUser.createDefaultSecurity(activityMasterSystem);
+			adminUser.createDefaultSecurity(activityMasterSystem,token);
 			administratorUser = adminUser;
 		}
 		else
@@ -140,8 +139,7 @@ public class ActivityMasterService
 
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
 		Enterprise enterprise = GuiceContext.get(IEnterpriseService.class)
-		                                    .findEnterprise(enterpriseName)
-		                                    .orElseThrow();
+		                                    .getEnterprise(enterpriseName);
 		//Find all systems required for first time installation/updates
 		for (IActivityMasterSystem allSystem : allSystems)
 		{
@@ -168,8 +166,7 @@ public class ActivityMasterService
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
 		Enterprise enterprise = GuiceContext.get(IEnterpriseService.class)
-		                                    .findEnterprise(enterpriseName)
-		                                    .orElseThrow();
+		                                    .getEnterprise(enterpriseName);
 		for (IActivityMasterSystem allSystem : allSystems)
 		{
 			logProgress("System Loading", "Starting up system " + allSystem.getClass().getName(), progressMonitor);

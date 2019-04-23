@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDBModule;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
@@ -13,6 +14,8 @@ import com.armineasy.activitymaster.activitymaster.services.system.ISecurityToke
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
+import com.jwebmp.guicedhazelcast.HazelcastConfigHandler;
+import com.jwebmp.guicedhazelcast.implementations.HazelcastPreStartup;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
 import com.jwebmp.guicedservlets.BasicServlet;
@@ -51,6 +54,7 @@ public class DefaultTestConfig
 	{
 		BTMAutomatedTransactionHandler.setActive(true);
 		ActivityMasterDBModule.persistenceUnitName = "ActivityMasterUT";
+		HazelcastConfigHandler.startLocal = true;
 		LogFactory.configureConsoleColourOutput(Level.FINE);
 		LogColourFormatter.setRenderBlack(false);
 		GuiceContext.inject();
@@ -66,11 +70,8 @@ public class DefaultTestConfig
 
 		req.setHeader("User-Agent", FirefoxHeaderAgent);
 
-		System.out.println(obj);
-
-
 		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise);
-		IEnterpriseService service = get(IEnterpriseService.class);
+		EnterpriseService service = get(EnterpriseService.class);
 		Optional<Enterprise> enterpriseO = service.findEnterprise(TestEnterprise);
 		Enterprise enterprise = null;
 		if(enterpriseO.isEmpty())
@@ -102,14 +103,15 @@ public class DefaultTestConfig
 		SecurityToken inToken = securityConfiguration.getToken()
 		                                             .get();
 		config.setSecurityEnabled(true);
+		config.setAsyncEnabled(true);
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception
 	{
 		scoper.close();
+		GuiceContext.destroy();
 	}
-
 
 	private IActivityMasterProgressMonitor getSoutMonitor()
 	{

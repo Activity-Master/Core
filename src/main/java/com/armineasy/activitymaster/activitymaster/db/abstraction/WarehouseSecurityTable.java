@@ -28,7 +28,7 @@ import static javax.persistence.FetchType.*;
  */
 @MappedSuperclass
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
+@Getter
 @Setter
 public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
 		                                            Q extends QueryBuilderSecurities<Q, J, I>, I extends Serializable>
@@ -56,11 +56,13 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	@Column(nullable = false,
 			name = "ReadAllowed")
 	private boolean readAllowed;
+
 	@JoinColumn(name = "SecurityTokenID",
 			referencedColumnName = "SecurityTokenID",
 			nullable = false)
 	@ManyToOne(optional = false,
 			fetch = LAZY)
+	@JoinFormula(value = "SecurityTokenID")
 	private SecurityToken securityTokenID;
 
 	@JoinColumn(name = "ActiveFlagID",

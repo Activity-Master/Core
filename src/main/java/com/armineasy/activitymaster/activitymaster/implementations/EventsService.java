@@ -47,7 +47,7 @@ public class EventsService
 			type.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				type.createDefaultSecurity(originatingSystem);
+				type.createDefaultSecurity(originatingSystem,identityToken);
 			}
 			typeExists = Optional.of(type);
 		}
@@ -60,7 +60,7 @@ public class EventsService
 		return new EventType().builder()
 		                      .findByName(eventType.name())
 		                      .withEnterprise(enterprise)
-		                      .inActiveRange(enterprise)
+		                      .inActiveRange(enterprise,identityToken)
 		                      .inDateRange()
 		                      .canRead(enterprise, identityToken)
 		                      .get()

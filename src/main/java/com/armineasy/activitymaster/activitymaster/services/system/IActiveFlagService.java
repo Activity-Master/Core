@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface IActiveFlagService
 {
-	List<ActiveFlag> getActiveRange(Enterprise enterprise, UUID... identifyingToken);
+	List<ActiveFlag> findActiveRange(Enterprise enterprise, UUID... identifyingToken);
 
 	List<ActiveFlag> getVisibleRange(Enterprise enterprise, UUID... identifyingToken);
 

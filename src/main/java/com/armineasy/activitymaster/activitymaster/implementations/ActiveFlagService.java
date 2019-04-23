@@ -31,7 +31,7 @@ public class ActiveFlagService
 			  .persist(af);
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				af.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(af.getEnterpriseID(),identifyingToken));
+				af.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(af.getEnterpriseID(),identifyingToken),identifyingToken);
 			}
 		}
 		else
@@ -43,17 +43,22 @@ public class ActiveFlagService
 
 	private Optional<ActiveFlag> findFlagByName(String flag, Enterprise enterprise, @CacheKey UUID... identifyingToken)
 	{
-		return new ActiveFlag().builder()
+		Optional<ActiveFlag> op = new ActiveFlag().builder()
 		                       .findByName(flag)
 		                       .inDateRange()
 		                       .canRead(enterprise, identifyingToken)
 		                       .withEnterprise(enterprise)
 		                       .get();
+		if(op.isEmpty())
+		{
+			System.out.println("Empty Flag!");
+		}
+		return op;
 	}
 
 	@Override
-	@CacheResult(cacheName = "GetActiveFlagRange")
-	public List<ActiveFlag> getActiveRange(@CacheKey Enterprise enterprise, @CacheKey UUID... identifyingToken)
+	@CacheResult(cacheName = "FindActiveFlagRange")
+	public List<ActiveFlag> findActiveRange(@CacheKey Enterprise enterprise, @CacheKey UUID... identifyingToken)
 	{
 		return (List<ActiveFlag>) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
 	}
@@ -62,12 +67,21 @@ public class ActiveFlagService
 	private Collection<ActiveFlag> find(@CacheKey String[] name, @CacheKey Enterprise enterprise, @CacheKey UUID... identifyingToken)
 	{
 		ActiveFlag search = new ActiveFlag();
+
+
+
+
+
 		List<ActiveFlag> ac = search.builder()
 		                            .findByName(name)
 		                            .inDateRange()
-		                            .canRead(enterprise,true, identifyingToken)
+		                           // .canRead(enterprise,true, identifyingToken)
 		                            .withEnterprise(enterprise)
 		                            .getAll();
+		if(ac.isEmpty())
+		{
+			System.out.println("Empty List!");
+		}
 		return ac;
 	}
 

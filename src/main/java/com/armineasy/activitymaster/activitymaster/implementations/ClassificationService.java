@@ -73,7 +73,7 @@ public class ClassificationService
 			rootCl.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				rootCl.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(rootCl.getEnterpriseID(), identityToken));
+				rootCl.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(rootCl.getEnterpriseID(), identityToken),identityToken);
 			}
 		}
 		else
@@ -100,7 +100,7 @@ public class ClassificationService
 		ClassificationDataConcept concept = cb.findConcept(name.concept(), enterprise,identityToken);
 		search = search.builder()
 		               .findByNameAndConcept(name.classificationName(), concept, enterprise)
-		               .inActiveRange(enterprise)
+		               .inActiveRange(enterprise,identityToken)
 		               .inDateRange()
 		               .canRead(enterprise, identityToken)
 		               .get()

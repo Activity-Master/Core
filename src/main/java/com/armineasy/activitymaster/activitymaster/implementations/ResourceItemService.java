@@ -34,7 +34,7 @@ public class ResourceItemService implements IResourceItemService
 		ResourceItemType xr = new ResourceItemType();
 		Optional<ResourceItemType> exists = xr.builder()
 		                                      .findByName(value.classificationName())
-		                                      .inActiveRange(enterprise)
+		                                      .inActiveRange(enterprise,identityToken)
 		                                      .inDateRange()
 		                                      .get();
 		if (exists.isEmpty())
@@ -55,7 +55,7 @@ public class ResourceItemService implements IResourceItemService
 		                .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken));
+			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken),identityToken);
 		}
 		return xr;
 	}
@@ -79,7 +79,7 @@ public class ResourceItemService implements IResourceItemService
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			xr.createDefaultSecurity(system);
+			xr.createDefaultSecurity(system,identityToken);
 		}
 		return xr;
 	}
