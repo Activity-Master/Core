@@ -54,7 +54,7 @@ public class DefaultTestConfig
 	{
 		BTMAutomatedTransactionHandler.setActive(true);
 		ActivityMasterDBModule.persistenceUnitName = "ActivityMasterUT";
-		HazelcastConfigHandler.startLocal = true;
+		//HazelcastConfigHandler.startLocal = true;
 		LogFactory.configureConsoleColourOutput(Level.FINE);
 		LogColourFormatter.setRenderBlack(false);
 		GuiceContext.inject();
@@ -80,10 +80,7 @@ public class DefaultTestConfig
 					                                  .startNewEnterprise(TestEnterprise,
 					                                                      "admin", "admin", getSoutMonitor()));
 		}
-		else
-		{
-			enterprise = enterpriseO.get();
-		}
+		enterprise = enterpriseO.get();
 
 		ActivityMasterConfiguration securityConfiguration =GuiceContext.get(ActivityMasterConfiguration.class);
 

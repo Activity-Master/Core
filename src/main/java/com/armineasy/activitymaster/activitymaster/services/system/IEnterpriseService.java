@@ -12,6 +12,14 @@ import java.util.Optional;
 public interface IEnterpriseService
 {
 	List<Enterprise> findEnterprisesWithClassification(Classification classification);
-
+	/**
+	 * Gets an enterprise or throws an exception.
+	 *
+	 * Result is cached
+	 *
+	 * @param name the name of the enterprise
+	 *
+	 * @return The enterprise
+	 */
 	Enterprise getEnterprise(@CacheKey IEnterpriseName<?> name);
 }

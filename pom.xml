@@ -53,9 +53,9 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>7.0.0.jre10</version>
-            <type>jar</type>
+            <version>7.3.0.jre11-preview</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -87,7 +87,16 @@
             <artifactId>junit-jupiter-api</artifactId>
             <type>jar</type>
         </dependency>
-
+        <dependency>
+            <groupId>com.jwebmp.thirdparty</groupId>
+            <artifactId>uadetector-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jwebmp.thirdparty</groupId>
+            <artifactId>uadetector-resources</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -130,7 +139,7 @@
                 </goals>
                 <inherited>true</inherited>
                 <configuration>
-                    <release>11</release>
+                    <release>12</release>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
                             <groupId>org.hibernate</groupId>
@@ -146,6 +155,11 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>javax.xml.bind</groupId>
+                            <artifactId>jaxb-api</artifactId>
+                            <version>${jaxb.version}</version>
                         </path>
                     </annotationProcessorPaths>
                     <annotationProcessors>
@@ -163,6 +177,11 @@
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
                         <version>${lombok.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>${jaxb.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

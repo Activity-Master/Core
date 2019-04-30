@@ -103,11 +103,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I, S>,
 
 		Predicate pred = getCriteriaBuilder().equal(hierarchyCrossJoinRoot.get(SecurityHierarchyView_.id)
 				, myToken.getId());
-
-		//Predicate pred2 = getCriteriaBuilder().equal(shvRoot.get(SecurityHierarchyView_.parentID), securityTableJoinSecurityID);
-
 		getFilters().add(pred);
-		//getFilters().add(pred2);
 
 		return (J) this;
 	}

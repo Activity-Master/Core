@@ -135,7 +135,7 @@ module com.armineasy.activitymaster.activitymaster {
 	opens com.armineasy.activitymaster.activitymaster.injections to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist;
 	opens com.armineasy.activitymaster.activitymaster.services to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist;
 	opens com.armineasy.activitymaster.activitymaster.services.capabilities to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist;
-	opens com.armineasy.activitymaster.activitymaster.services.classifications to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist;
+	//opens com.armineasy.activitymaster.activitymaster.services.classifications to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist;
 	opens com.armineasy.activitymaster.activitymaster.services.classifications.address to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist;
 	opens com.armineasy.activitymaster.activitymaster.services.classifications.arrangement to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist;
 	opens com.armineasy.activitymaster.activitymaster.services.classifications.events to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist;

@@ -19,6 +19,7 @@ import com.armineasy.activitymaster.activitymaster.services.system.IResourceItem
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.armineasy.activitymaster.activitymaster.systems.ResourceItemSystem;
 import com.jwebmp.guicedinjection.GuiceContext;
+import com.jwebmp.guicedinjection.interfaces.JobService;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -86,24 +87,17 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		J tableForClassification = GuiceContext.get(findResourceItemQueryRelationshipTableType());
 
 		IResourceItemService service = GuiceContext.get(IResourceItemService.class);
-		Systems resourceItemSystem = ResourceItemSystem.getSystemEnterprises()
-		                                               .get(originatingSystem.getEnterpriseID());
-		UUID resourceItemToken = ResourceItemSystem.getSystemTokens()
-		                                           .get(originatingSystem.getEnterpriseID());
+
 		ResourceItem item = service.create(resourceTypeValue, originatingSystem, identifyingToken);
-		ResourceItemData itemData = new ResourceItemData();
-		itemData.setResource(item);
-		itemData.setResourceItemData(data);
-		itemData.setResourceItemDataType(mimeType);
-		itemData.setEnterpriseID(originatingSystem.getEnterpriseID());
-		itemData.setSystemID(originatingSystem);
-		itemData.setOriginalSourceSystemID(originatingSystem);
-		itemData.setActiveFlagID(originatingSystem.getActiveFlagID());
-		itemData.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
+
+		boolean async = GuiceContext.get(ActivityMasterConfiguration.class).isAsyncEnabled();
+		if(async)
 		{
-			itemData.createDefaultSecurity(originatingSystem,identifyingToken);
+			JobService.getInstance()
+			          .addJob("ResourceItemDataStore", () -> storeResourceItemData(item, data, mimeType, originatingSystem, identifyingToken));
+		}
+		else {
+			storeResourceItemData(item, data, mimeType, originatingSystem, identifyingToken);
 		}
 
 		tableForClassification.setEnterpriseID(originatingSystem.getEnterpriseID());
@@ -123,6 +117,25 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		}
 
 		return item;
+	}
+
+	default void storeResourceItemData(ResourceItem item, byte[] data, String mimeType, Systems originatingSystem, UUID... identifyingToken)
+	{
+		ResourceItemData itemData = new ResourceItemData();
+		itemData.setResource(item);
+		itemData.setResourceItemData(data);
+		itemData.setResourceItemDataType(mimeType);
+		itemData.setEnterpriseID(originatingSystem.getEnterpriseID());
+		itemData.setSystemID(originatingSystem);
+		itemData.setOriginalSourceSystemID(originatingSystem);
+		itemData.setActiveFlagID(originatingSystem.getActiveFlagID());
+		itemData.persist();
+		if (GuiceContext.get(ActivityMasterConfiguration.class)
+		                .isSecurityEnabled())
+		{
+			itemData.createDefaultSecurity(originatingSystem, identifyingToken);
+		}
+
 	}
 
 	void setMyResourceItemLinkValue(J classificationLink, S resourceItem, Enterprise enterprise);

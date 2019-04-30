@@ -1,7 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.threads;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
-import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
@@ -9,15 +8,11 @@ import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseSer
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
-import com.google.inject.servlet.RequestScoper;
-import com.google.inject.servlet.ServletScopes;
 import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.java.Log;
 
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -31,7 +26,6 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 public abstract class IdentifiedThread
 		implements Callable<Object>, Runnable
 {
-	RequestScoper.CloseableScope scoper;
 
 	@Override
 	public void run()
@@ -39,13 +33,12 @@ public abstract class IdentifiedThread
 		startup();
 		getIdentityToken();
 		perform();
-		scoper.close();
+		notify();
 	}
 
-	private void startup()
+	protected void startup()
 	{
-		scoper = ServletScopes.scopeRequest(new HashMap<>())
-		                      .open();
+
 	}
 
 	public abstract void perform();
@@ -74,7 +67,6 @@ public abstract class IdentifiedThread
 		config.setSecurityEnabled(true);
 		config.setAsyncEnabled(true);
 		return token;
-
 	}
 
 	@Override

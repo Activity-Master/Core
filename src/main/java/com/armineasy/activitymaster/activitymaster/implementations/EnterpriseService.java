@@ -83,6 +83,15 @@ public class EnterpriseService
 		                       .get();
 	}
 
+	/**
+	 * Gets an enterprise or throws an exception.
+	 *
+	 * Result is cached
+	 *
+	 * @param name the name of the enterprise
+	 *
+	 * @return The enterprise
+	 */
 	@Override
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseName")
 	public Enterprise getEnterprise(@CacheKey IEnterpriseName<?> name)
