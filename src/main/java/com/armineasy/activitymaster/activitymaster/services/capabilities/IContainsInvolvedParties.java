@@ -4,12 +4,12 @@ import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
-import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
-import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 
 import javax.cache.annotation.CacheKey;
@@ -21,32 +21,32 @@ import java.util.UUID;
 
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
-public interface IContainsAddresses<P extends WarehouseCoreTable,
-		                                   S extends WarehouseCoreTable,
-		                                   J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>>
+public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
+		                                         S extends WarehouseCoreTable,
+		                                         J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>>
 {
 	@SuppressWarnings("unchecked")
-	default Optional<J> findAddress(@CacheKey Address address, @CacheKey UUID... identityToken)
+	default Optional<J> findInvolvedParty(@CacheKey InvolvedParty InvolvedParty, @CacheKey UUID... identityToken)
 	{
-		J activityMasterIdentity = get(findAddressQueryRelationshipTableType());
+		J activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) address, address.getEnterpriseID())
-		                                                         .inActiveRange(address.getEnterpriseID())
+		                                                         .findLink((P) this, (S) InvolvedParty, InvolvedParty.getEnterpriseID())
+		                                                         .inActiveRange(InvolvedParty.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(address.getEnterpriseID(), identityToken)
+		                                                         .canRead(InvolvedParty.getEnterpriseID(), identityToken)
 		                                                         .get();
 		return exists;
 	}
 
 	@NotNull
 	@SuppressWarnings("unchecked")
-	default Class<J> findAddressQueryRelationshipTableType()
+	default Class<J> findInvolvedPartyQueryRelationshipTableType()
 	{
 		Type[] genericInterfaces = getClass().getGenericInterfaces();
 		for (Type genericInterface : genericInterfaces)
 		{
 			String clazz = genericInterface.getTypeName();
-			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsAddresses.class.getCanonicalName()))
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsInvolvedParties.class.getCanonicalName()))
 			{
 				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
 				return (Class<J>) genericTypes[2];
@@ -56,12 +56,12 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default boolean hasAddress(IAddressClassification<?> addressClassification, String value, Enterprise enterprise, UUID... identityToken)
+	default boolean hasInvolvedParty(IInvolvedPartyClassification<?> InvolvedPartyClassification, String value, Enterprise enterprise, UUID... identityToken)
 	{
-		J activityMasterIdentity = get(findAddressQueryRelationshipTableType());
+		J activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
 		Systems activityMasterSystem = get(ISystemsService.class)
 				                               .getActivityMaster(enterprise);
-		Classification classification = get(ClassificationService.class).find(addressClassification,
+		Classification classification = get(ClassificationService.class).find(InvolvedPartyClassification,
 		                                                                      activityMasterSystem.getEnterpriseID(), identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, classification.getEnterpriseID())
@@ -72,26 +72,23 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J addAddress(IAddressClassification<?> addressClassification, Systems originatingSystem, String value, UUID... identifyingToken)
+	default J addInvolvedParty(IInvolvedPartyClassification<?> involvedPartyClassification, Systems originatingSystem, String value, UUID... identifyingToken)
 	{
 		Systems activityMasterSystem = get(ISystemsService.class)
 				                               .getActivityMaster(originatingSystem.getEnterpriseID());
 
-		Classification classification = get(ClassificationService.class).find(addressClassification,
+		Classification classification = get(ClassificationService.class).find(involvedPartyClassification,
 		                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
 
-		Address addy = new Address();
-		Optional<Address> addressExists = addy.builder()
-		                                      .withClassification(classification)
-		                                      .withEnterprise(originatingSystem.getEnterpriseID())
-		                                      .withValue(value)
-		                                      .inDateRange()
-		                                      .get();
-		if (addressExists.isEmpty())
+		InvolvedParty addy = new InvolvedParty();
+		Optional<InvolvedParty> InvolvedPartyExists = addy.builder()
+		                                                  .withClassification(classification, value)
+		                                                  .withEnterprise(originatingSystem.getEnterpriseID())
+		                                                  .inDateRange()
+		                                                  .get();
+		if (InvolvedPartyExists.isEmpty())
 		{
 			addy.setEnterpriseID(classification.getEnterpriseID());
-			addy.setClassification(classification);
-			addy.setValue(value);
 			addy.setSystemID(activityMasterSystem);
 			addy.setOriginalSourceSystemID(activityMasterSystem);
 			addy.setActiveFlagID(classification.getActiveFlagID());
@@ -100,15 +97,16 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			{
 				addy.createDefaultSecurity(activityMasterSystem, identifyingToken);
 			}
+			addy.addClassification(involvedPartyClassification, value, originatingSystem, identifyingToken);
 		}
 		else
 		{
-			addy = addressExists.get();
+			addy = InvolvedPartyExists.get();
 		}
 
-		J tableForClassification = get(findAddressQueryRelationshipTableType());
+		J tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                                                         .findLink((P) this, (S) addy, classification.getEnterpriseID())
 		                                                         .inActiveRange(classification.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .get();
@@ -121,7 +119,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemID(activityMasterSystem);
 			tableForClassification.setActiveFlagID(classification.getActiveFlagID());
 
-			setMyAddressLinkValue(tableForClassification, (S) addy, classification.getEnterpriseID());
+			setMyInvolvedPartyLinkValue(tableForClassification, (S) addy, classification.getEnterpriseID());
 
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
@@ -138,28 +136,27 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 
 
 	@SuppressWarnings("unchecked")
-	default J add(Address addy, Systems originatingSystem, UUID... identifyingToken)
+	default J add(InvolvedParty addy, IInvolvedPartyClassification<?> iclassification, Systems originatingSystem, UUID... identifyingToken)
 	{
-		J tableForClassification = get(findAddressQueryRelationshipTableType());
+		J tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) addy, originatingSystem.getEnterpriseID())
-		                                                         .inActiveRange(addy.getClassification()
-		                                                                            .getEnterpriseID())
+		                                                         .inActiveRange(addy.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(originatingSystem.getEnterpriseID(), identifyingToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			tableForClassification.setEnterpriseID(addy.getClassification()
-			                                           .getEnterpriseID());
-			tableForClassification.setClassificationID(addy.getClassification());
+			Classification classification = get(ClassificationService.class).find(iclassification,
+			                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
+
+			tableForClassification.setEnterpriseID(addy.getEnterpriseID());
 			tableForClassification.setSystemID(originatingSystem);
+			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue("");
 			tableForClassification.setOriginalSourceSystemID(originatingSystem);
-			tableForClassification.setActiveFlagID(addy.getClassification()
-			                                           .getActiveFlagID());
-			setMyAddressLinkValue(tableForClassification, (S) addy, addy.getClassification()
-			                                                            .getEnterpriseID());
+			tableForClassification.setActiveFlagID(addy.getActiveFlagID());
+			setMyInvolvedPartyLinkValue(tableForClassification, (S) addy, addy.getEnterpriseID());
 			tableForClassification.persist();
 
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
@@ -175,5 +172,5 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 
 
-	void setMyAddressLinkValue(J classificationLink, S geography, Enterprise enterprise);
+	void setMyInvolvedPartyLinkValue(J classificationLink, S involvedParty, Enterprise enterprise);
 }

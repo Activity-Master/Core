@@ -1,15 +1,15 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.events;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
+import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
+import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsGeographies;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.events.IEventClassification;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -36,7 +36,9 @@ public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
 		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification>,
 				           IContainsGeographies<Event, Geography,EventXGeography>,
-				           IContainsResourceItems<Event, ResourceItem,EventXResourceItem>
+				           IContainsResourceItems<Event, ResourceItem,EventXResourceItem>,
+				           IContainsInvolvedParties<Event, InvolvedParty,EventXInvolvedParty>,
+				           IContainsAddresses<Event, Address,EventXAddress>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -123,5 +125,19 @@ public class Event
 	{
 		classificationLink.setEventID(this);
 		classificationLink.setResourceItemID(resourceItem);
+	}
+
+	@Override
+	public void setMyInvolvedPartyLinkValue(EventXInvolvedParty classificationLink, InvolvedParty involvedParty, Enterprise enterprise)
+	{
+		classificationLink.setEventID(this);
+		classificationLink.setInvolvedPartyID(involvedParty);
+	}
+
+	@Override
+	public void setMyAddressLinkValue(EventXAddress classificationLink, Address address, Enterprise enterprise)
+	{
+		classificationLink.setEventID(this);
+		classificationLink.setAddressID(address);
 	}
 }

@@ -14,6 +14,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.product.ProductXR
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItemTypes;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,7 +42,8 @@ import java.util.UUID;
 		callSuper = false)
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, Long, ResourceItemSecurityToken>
-		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification>
+		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification>,
+				           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -66,6 +68,11 @@ public class ResourceItem
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
 	private List<ResourceItemXClassification> classifications;
+
+	@OneToMany(
+			mappedBy = "resourceItemID",
+			fetch = FetchType.LAZY)
+	private List<ResourceItemXResourceItemType> types;
 
 	@OneToMany(
 			mappedBy = "resourceItemID",
@@ -126,5 +133,12 @@ public class ResourceItem
 	public void configureForClassification(ResourceItemXClassification classificationLink, Enterprise enterprise)
 	{
 		classificationLink.setResourceItemID(this);
+	}
+
+	@Override
+	public void setMyResourceItemTypeLinkValue(ResourceItemXResourceItemType classificationLink, ResourceItemType resourceItemType, Enterprise enterprise)
+	{
+		classificationLink.setResourceItemID(this);
+		classificationLink.setResourceItemTypeID(resourceItemType);
 	}
 }

@@ -8,4 +8,6 @@ public abstract class TransactionalIdentifiedThread extends IdentifiedThread
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public abstract void perform();
+
+
 }

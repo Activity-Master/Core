@@ -28,35 +28,6 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                                         Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>,
 		                                         J extends IClassificationValue>
 {
-	/*@SuppressWarnings("unchecked")
-	default Optional<Q> findClassification(@CacheKey Classification classification, @CacheKey UUID... identityToken)
-	{
-		Q activityMasterIdentity = GuiceContext.get(findClassificationQueryRelationshipTableType());
-		Optional<Q> exists = (Optional<Q>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) classification, classification.getEnterpriseID())
-		                                                         .inActiveRange(classification.getEnterpriseID())
-		                                                         .inDateRange()
-		                                                         .canRead(classification.getEnterpriseID(), identityToken)
-		                                                         .get();
-		return exists;
-	}
-
-	default Optional<Q> findClassification(@CacheKey Classification classificationValue, @CacheKey UUID... identityToken)
-	{
-		ClassificationService classificationsService = GuiceContext.get(ClassificationService.class);
-		Classification classification = classificationsService.find(classificationValue, originatingSystem, identifyingToken);
-
-		Q activityMasterIdentity = GuiceContext.get(findClassificationQueryRelationshipTableType());
-		Optional<Q> exists = (Optional<Q>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) classificationValue, classificationValue.getEnterpriseID())
-		                                                         .inActiveRange(classificationValue.getEnterpriseID())
-		                                                         .inDateRange()
-		                                                         .canRead(classificationValue.getEnterpriseID(), identityToken)
-		                                                         .get();
-		return exists;
-	}
-*/
-
 	@SuppressWarnings("unchecked")
 	default Optional<Q> findClassification(@CacheKey IClassificationValue classificationValue, @CacheKey Systems requestingSystem, @CacheKey UUID... identityToken)
 	{
@@ -105,6 +76,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                             .getCount() > 0;
 	}
 
+	@SuppressWarnings("unchecked")
 	default Q addClassification(J classificationValue, String value, Systems originatingSystem, UUID... identifyingToken)
 	{
 		Q tableForClassification = GuiceContext.get(findClassificationQueryRelationshipTableType());
@@ -143,47 +115,6 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		}
 		return tableForClassification;
 	}
-/*
-
-
-
-	@SuppressWarnings("unchecked")
-	default Q addClassification(Classification classification, String value, UUID... identifyingToken)
-	{
-		Q tableForClassification = GuiceContext.get(findClassificationQueryRelationshipTableType());
-		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classification, classification.getEnterpriseID())
-		                                                         .inActiveRange(classification.getEnterpriseID())
-		                                                         .inDateRange()
-		                                                         .canCreate(classification.getEnterpriseID(),identifyingToken)
-		                                                         .get();
-		Systems activityMasterSystem = GuiceContext.get(ISystemsService.class)
-		                                           .getActivityMaster(classification.getEnterpriseID());
-		if (exists.isEmpty())
-		{
-
-			tableForClassification.setEnterpriseID(classification.getEnterpriseID());
-			tableForClassification.setClassificationID(classification);
-			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(activityMasterSystem);
-			tableForClassification.setOriginalSourceSystemID(activityMasterSystem);
-			tableForClassification.setActiveFlagID(classification.getActiveFlagID());
-
-			configureForClassification(tableForClassification, classification.getEnterpriseID());
-
-			tableForClassification.persist();
-			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
-			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem,identifyingToken);
-			}
-		}
-		else
-		{
-			tableForClassification = exists.get();
-		}
-		return tableForClassification;
-	}
-*/
 
 	@SuppressWarnings("unchecked")
 	default Q addOrUpdateClassification(J classificationValue, String value,Systems originatingSystem,  UUID... identifyingToken)

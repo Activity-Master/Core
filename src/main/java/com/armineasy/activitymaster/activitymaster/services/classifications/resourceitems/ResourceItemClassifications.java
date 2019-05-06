@@ -9,6 +9,7 @@ public enum ResourceItemClassifications
 		implements IResourceItemClassification<ResourceItemClassifications>
 {
 	FileResourceItemClassifications("Resource items relating to a file",ResourceItemXClassification),
+	EventDefaultResourceItemClassifications("Default classifications relating to an event",ResourceItemXClassification),
 
 	AddedANewDevice("The Involved Party registered a new device", ResourceItemXClassification),
 	HadNewConnectionDetails("The Involved Party registered a set of details identifying their browser connection", ResourceItemXClassification),
@@ -18,6 +19,11 @@ public enum ResourceItemClassifications
 	Icon("Any custom icon for the file", ResourceItemXClassification),
 	FileLocation("A set location of somewhere for this file", ResourceItemXClassification),
 	UUID("A unique UUID for a resource item", ResourceItemXClassification),
+
+	Added("Added a new",ResourceItemXClassification),
+	Removed("Removed the ",ResourceItemXClassification),
+	Updated("Updated the ",ResourceItemXClassification),
+	MovedTo("Moved the item to",ResourceItemXClassification),
 
 	;
 	private String classificationValue;

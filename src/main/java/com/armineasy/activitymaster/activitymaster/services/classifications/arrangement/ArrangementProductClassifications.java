@@ -18,7 +18,7 @@ public enum ArrangementProductClassifications
 	PurchaseInvoiceDate("The date the purchase was invoiced",ArrangementXProduct),
 	PurchasePaidDate("The date the purchase was paid",ArrangementXProduct),
 	PurchasePromotionCode("The promotion code used on a purchase",ArrangementXProduct),
-	PurchaseStatus("The current status of a purchase",ArrangementXProduct),
+	PurchaseStatus("The current stage of a purchase",ArrangementXProduct),
 
 
 	;

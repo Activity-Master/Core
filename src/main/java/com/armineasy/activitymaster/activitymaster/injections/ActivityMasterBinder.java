@@ -35,5 +35,8 @@ public class ActivityMasterBinder
 
 		module.bind(IInvolvedPartyService.class)
 		      .to(InvolvedPartyService.class);
+
+		module.bind(IEventService.class)
+		      .to(EventsService.class);
 	}
 }

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +55,7 @@ public class DefaultTestConfig
 	{
 		BTMAutomatedTransactionHandler.setActive(true);
 		ActivityMasterDBModule.persistenceUnitName = "ActivityMasterUT";
+
 		//HazelcastConfigHandler.startLocal = true;
 		LogFactory.configureConsoleColourOutput(Level.FINE);
 		LogColourFormatter.setRenderBlack(false);
@@ -101,6 +103,8 @@ public class DefaultTestConfig
 		                                             .get();
 		config.setSecurityEnabled(true);
 		config.setAsyncEnabled(true);
+		defaultWaitUnit = TimeUnit.HOURS;
+		defaultWaitTime = 1;
 	}
 
 	@Override

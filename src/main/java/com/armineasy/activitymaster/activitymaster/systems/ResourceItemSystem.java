@@ -35,42 +35,48 @@ public class ResourceItemSystem
 		ResourceItemService service = GuiceContext.get(ResourceItemService.class);
 
 		service.createType(Documents, activityMasterSystem);
-		service.createType(PhysicalDocuments,  activityMasterSystem);
-		service.createType(Invoices,  activityMasterSystem);
-		service.createType(Statements,  activityMasterSystem);
-		service.createType(ElectronicDocuments,  activityMasterSystem);
+		service.createType(PhysicalDocuments, activityMasterSystem);
+		service.createType(Invoices, activityMasterSystem);
+		service.createType(Statements, activityMasterSystem);
+		service.createType(ElectronicDocuments, activityMasterSystem);
 
 		service.createType(Icon, activityMasterSystem);
-		service.createType(Logo,  activityMasterSystem);
-		service.createType(Flag,  activityMasterSystem);
-		service.createType(Banner,  activityMasterSystem);
-		service.createType(Gravatar,  activityMasterSystem);
-		service.createType(Screenshot,  activityMasterSystem);
+		service.createType(Logo, activityMasterSystem);
+		service.createType(Flag, activityMasterSystem);
+		service.createType(Banner, activityMasterSystem);
+		service.createType(Gravatar, activityMasterSystem);
+		service.createType(Screenshot, activityMasterSystem);
 
-		service.createType(Background,  activityMasterSystem);
-		service.createType(StyleSheets,  activityMasterSystem);
-		service.createType(JavaScriptTemplates,  activityMasterSystem);
-		service.createType(HtmlTemplate,  activityMasterSystem);
+		service.createType(Background, activityMasterSystem);
+		service.createType(StyleSheets, activityMasterSystem);
+		service.createType(JavaScriptTemplates, activityMasterSystem);
+		service.createType(HtmlTemplate, activityMasterSystem);
 
-		service.createType(MobileDevice,  activityMasterSystem);
-		service.createType(OperatingSystem,  activityMasterSystem);
-		service.createType(OperatingSystemFamily,  activityMasterSystem);
-		service.createType(BrowserInformation,  activityMasterSystem);
-		service.createType(BrowserDeviceCategory,  activityMasterSystem);
-		service.createType(BrowserDeviceIcon,  activityMasterSystem);
-		service.createType(BrowserDeviceName,  activityMasterSystem);
+		service.createType(MobileDevice, activityMasterSystem);
+		service.createType(OperatingSystem, activityMasterSystem);
+		service.createType(OperatingSystemFamily, activityMasterSystem);
+		service.createType(BrowserInformation, activityMasterSystem);
+		service.createType(BrowserDeviceCategory, activityMasterSystem);
+		service.createType(BrowserDeviceIcon, activityMasterSystem);
+		service.createType(BrowserDeviceName, activityMasterSystem);
 
 
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
 		classificationService.create(FileResourceItemClassifications, activityMasterSystem);
 		classificationService.create(AddedANewDevice, activityMasterSystem, FileResourceItemClassifications);
 		classificationService.create(HadNewConnectionDetails, activityMasterSystem, FileResourceItemClassifications);
-		classificationService.create(Description, activityMasterSystem,FileResourceItemClassifications);
-		classificationService.create(Extension, activityMasterSystem,FileResourceItemClassifications);
-		classificationService.create(Size, activityMasterSystem,FileResourceItemClassifications);
-		classificationService.create(UUID, activityMasterSystem,FileResourceItemClassifications);
-		classificationService.create(ResourceItemClassifications.Icon, activityMasterSystem,FileResourceItemClassifications);
+		classificationService.create(Description, activityMasterSystem, FileResourceItemClassifications);
+		classificationService.create(Extension, activityMasterSystem, FileResourceItemClassifications);
+		classificationService.create(Size, activityMasterSystem, FileResourceItemClassifications);
+		classificationService.create(UUID, activityMasterSystem, FileResourceItemClassifications);
+		classificationService.create(ResourceItemClassifications.Icon, activityMasterSystem, FileResourceItemClassifications);
 		classificationService.create(FileLocation, activityMasterSystem, FileResourceItemClassifications);
+
+		classificationService.create(EventDefaultResourceItemClassifications, activityMasterSystem);
+		classificationService.create(Added, activityMasterSystem, EventDefaultResourceItemClassifications);
+		classificationService.create(Removed, activityMasterSystem, EventDefaultResourceItemClassifications);
+		classificationService.create(Updated, activityMasterSystem, EventDefaultResourceItemClassifications);
+		classificationService.create(MovedTo, activityMasterSystem, EventDefaultResourceItemClassifications);
 
 	}
 

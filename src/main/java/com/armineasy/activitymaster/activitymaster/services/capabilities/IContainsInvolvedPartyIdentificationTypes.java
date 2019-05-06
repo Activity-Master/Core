@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.system.IInvolvedPartyService;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -28,9 +29,8 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	@CacheResult
 	default Optional<J> findIdentificationType(@CacheKey IIdentificationType typeName, @CacheKey Systems originatingSystem, @CacheKey UUID... identityToken)
 	{
-		InvolvedPartyIdentificationType type = (InvolvedPartyIdentificationType) get(IContainsInvolvedPartyIdentificationTypes.class)
-				                                                                         .findIdentificationType(typeName, originatingSystem, identityToken)
-				                                                                         .orElseThrow();
+		InvolvedPartyIdentificationType type = get(IInvolvedPartyService.class).findIdentificationType(typeName, originatingSystem.getEnterpriseID(),
+		                                                                                               identityToken);
 
 		J activityMasterIdentity = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
@@ -85,7 +85,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		                                                         .findLink((P) this, (S) type, type.getEnterpriseID())
 		                                                         .inActiveRange(type.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(),identityToken)
+		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -100,15 +100,16 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 			if (get(ActivityMasterConfiguration.class)
 					    .isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originatingSystem,identityToken);
+				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
 			}
 		}
 		else
 		{
 			tableForClassification = exists.get();
-			if(!tableForClassification.getValue().equals(value))
+			if (!tableForClassification.getValue()
+			                           .equals(value))
 			{
-				tableForClassification.update(value,identityToken);
+				tableForClassification.update(value, identityToken);
 			}
 		}
 		return tableForClassification;

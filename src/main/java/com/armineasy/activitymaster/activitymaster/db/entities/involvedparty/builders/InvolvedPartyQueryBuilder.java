@@ -1,11 +1,14 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
+import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
 import com.jwebmp.guicedinjection.GuiceContext;
+import com.google.common.base.Strings;
 
 import javax.persistence.criteria.JoinType;
 
@@ -22,10 +25,11 @@ public class InvolvedPartyQueryBuilder
 		return findByIdentificationType(enterprise, idType, null);
 	}
 
-	public InvolvedPartyQueryBuilder findByIdentificationType(Enterprise enterprise, IIdentificationType<?> idType, String value, UUID...identityTokens)
+	public InvolvedPartyQueryBuilder findByIdentificationType(Enterprise enterprise, IIdentificationType<?> idType, String value, UUID... identityTokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
-		InvolvedPartyIdentificationType type = GuiceContext.get(InvolvedPartyService.class).findIdentificationType(idType,enterprise,identityTokens);
+		InvolvedPartyIdentificationType type = GuiceContext.get(InvolvedPartyService.class)
+		                                                   .findIdentificationType(idType, enterprise, identityTokens);
 
 		joinTableQueryBuilder.where(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, Equals, type);
 		if (value != null)
@@ -33,13 +37,35 @@ public class InvolvedPartyQueryBuilder
 			joinTableQueryBuilder.withValue(value);
 		}
 		joinTableQueryBuilder.inDateRange();
-		joinTableQueryBuilder.inActiveRange(enterprise,identityTokens);
+		joinTableQueryBuilder.inActiveRange(enterprise, identityTokens);
 
 		join(InvolvedParty_.identities, joinTableQueryBuilder, JoinType.INNER);
 
 		inActiveRange(enterprise);
 		inDateRange();
 
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@javax.validation.constraints.NotNull
+	public InvolvedPartyQueryBuilder withClassification(Classification classification, String value)
+	{
+		JoinExpression joinExpression = new JoinExpression();
+		InvolvedPartyXClassificationQueryBuilder builder =
+				new InvolvedPartyXClassification()
+						.builder()
+						.inActiveRange(classification.getEnterpriseID())
+						.inDateRange()
+						.where(InvolvedPartyXClassification_.classificationID, Equals, classification);
+		if (!Strings.isNullOrEmpty(value))
+		{
+			builder.where(InvolvedPartyXClassification_.value, Equals, value);
+		}
+
+		join(InvolvedParty_.classifications,
+		     builder,
+		     JoinType.INNER, joinExpression);
 		return this;
 	}
 }

@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemXCl
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IEventTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
+import com.armineasy.activitymaster.activitymaster.services.system.IEventService;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 
@@ -17,14 +18,25 @@ import javax.cache.annotation.CacheResult;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.jwebmp.guicedinjection.GuiceContext.*;
+
 @Singleton
 public class EventsService
+		implements IEventService
 {
-	public Event createEvent(IEventTypeValue<?> eventType, InvolvedParty originatingParty, Systems originatingSystem)
+	@Override
+	public Event createEvent(IEventTypeValue<?> eventType, Systems originatingSystem, UUID... identityToken)
 	{
-		return null;
+		Event event = new Event();
+		event.setEnterpriseID(originatingSystem.getEnterpriseID());
+		event.setSystemID(originatingSystem);
+		event.setOriginalSourceSystemID(originatingSystem);
+		event.setActiveFlagID(get(IActiveFlagService.class)
+				                      .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+		event.persist();
+		event.createDefaultSecurity(originatingSystem, identityToken);
+		return event;
 	}
-
 
 	public EventType createEventType(IEventTypeValue<?> eventType, Systems originatingSystem, UUID... identityToken)
 	{
@@ -34,7 +46,7 @@ public class EventsService
 		                                                .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                .inDateRange()
 		                                                .get();
-		if(typeExists.isEmpty())
+		if (typeExists.isEmpty())
 		{
 			EventType type = new EventType();
 			type.setName(eventType.name());
@@ -45,26 +57,28 @@ public class EventsService
 			                                 .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			type.setOriginalSourceSystemID(originatingSystem);
 			type.persist();
-			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			                .isSecurityEnabled())
 			{
-				type.createDefaultSecurity(originatingSystem,identityToken);
+				type.createDefaultSecurity(originatingSystem, identityToken);
 			}
 			typeExists = Optional.of(type);
 		}
 		return typeExists.get();
 	}
 
+	@Override
 	@CacheResult(cacheName = "EventTypes")
-	public EventType findEventType(@CacheKey IEventTypeValue<?> eventType,@CacheKey Enterprise enterprise,@CacheKey UUID... identityToken)
+	public EventType findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		return new EventType().builder()
 		                      .findByName(eventType.name())
 		                      .withEnterprise(enterprise)
-		                      .inActiveRange(enterprise,identityToken)
+		                      .inActiveRange(enterprise, identityToken)
 		                      .inDateRange()
 		                      .canRead(enterprise, identityToken)
 		                      .get()
-				.get();
+		                      .get();
 	}
 
 
