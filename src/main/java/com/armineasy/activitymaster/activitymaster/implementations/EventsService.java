@@ -4,8 +4,6 @@ import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.Event;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
-import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemXClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IEventTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
@@ -18,6 +16,7 @@ import javax.cache.annotation.CacheResult;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.armineasy.activitymaster.activitymaster.services.classifications.classification.Classifications.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @Singleton
@@ -35,12 +34,16 @@ public class EventsService
 				                      .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 		event.persist();
 		event.createDefaultSecurity(originatingSystem, identityToken);
+		event.addEventType(eventType, originatingSystem, NoClassification, "", identityToken);
 		return event;
 	}
 
 	public EventType createEventType(IEventTypeValue<?> eventType, Systems originatingSystem, UUID... identityToken)
 	{
-		Optional<EventType> typeExists = new EventType().builder()
+		Optional<EventType> typeExists = ActivityMasterConfiguration
+				                                 .get()
+				                                 .isDoubleCheckDisabled() ? Optional.empty() :
+		                                 new EventType().builder()
 		                                                .findByName(eventType.name())
 		                                                .withEnterprise(originatingSystem.getEnterpriseID())
 		                                                .inActiveRange(originatingSystem.getEnterpriseID())
@@ -80,6 +83,4 @@ public class EventsService
 		                      .get()
 		                      .get();
 	}
-
-
 }

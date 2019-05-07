@@ -22,6 +22,8 @@ import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,7 +71,7 @@ public class ResourceItemService
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public ResourceItem create(IResourceTypeValue<?> identityResourceType,
+	public ResourceItem create(IResourceTypeValue<?> identityResourceType, String mimeType,
 	                           Systems system, UUID... identityToken)
 	{
 		ResourceItem xr = new ResourceItem();
@@ -79,6 +81,7 @@ public class ResourceItemService
 		xr.setSystemID(system);
 		xr.setEnterpriseID(system.getEnterpriseID());
 		xr.setActiveFlagID(system.getActiveFlagID());
+		xr.setResourceItemDataType(mimeType);
 		xr.persist();
 
 		if (get(ActivityMasterConfiguration.class)
@@ -92,7 +95,9 @@ public class ResourceItemService
 		return xr;
 	}
 
+	@SuppressWarnings("unchecked")
 	@CacheResult(cacheName = "ResourceItemFindByClassification")
+	@Override
 	public ResourceItem findByClassification(@CacheKey IResourceTypeValue<?> resourceType,
 	                                         @CacheKey IResourceItemClassification<?> classification,
 	                                         @CacheKey String value,
@@ -113,23 +118,16 @@ public class ResourceItemService
 
 		JoinExpression resourceJoin = new JoinExpression();
 		ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder();
-		itemQueryBuilder.inActiveRange(systems.getEnterpriseID());
-		itemQueryBuilder.inDateRange();
 		builder.join(ResourceItemXClassification_.resourceItemID, itemQueryBuilder, JoinType.INNER, resourceJoin);
 
-		JoinExpression typesJoinExpression = new JoinExpression();
-		ResourceItemXResourceItemTypeQueryBuilder types = new ResourceItemXResourceItemType().builder();
-		types.inActiveRange(systems.getEnterpriseID());
-		types.inDateRange();
-		itemQueryBuilder.join(ResourceItem_.types, types, INNER, typesJoinExpression);
+		Join resourceItemTypesJoin = resourceJoin.getGeneratedRoot()
+		                                         .join(ResourceItem_.types, INNER);
 
-		JoinExpression itemTypeExpression = new JoinExpression();
-		ResourceItemTypeQueryBuilder itemType = new ResourceItemType().builder();
-		itemType.inActiveRange(systems.getEnterpriseID());
-		itemType.inDateRange();
-		types.join(ResourceItemXResourceItemType_.resourceItemTypeID, itemType, INNER, itemTypeExpression);
+		Join resourceTypesJoin = resourceItemTypesJoin
+		                                         .join(ResourceItemXResourceItemType_.resourceItemTypeID, INNER);
 
-		itemType.where(ResourceItemType_.name, Equals, resourceType.classificationName());
+		resourceTypesJoin.on(builder.getCriteriaBuilder()
+		                            .equal(resourceTypesJoin.get(ResourceItemType_.name), resourceType.classificationName()));
 
 		Optional<ResourceItemXClassification> exists = builder.get();
 		return exists.map(ResourceItemXClassification::getResourceItemID)

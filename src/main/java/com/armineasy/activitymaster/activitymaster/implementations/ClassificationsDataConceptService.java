@@ -30,7 +30,10 @@ public class ClassificationsDataConceptService
 	                                                   Systems system, UUID... identityToken)
 	{
 		ClassificationDataConcept newConcept = new ClassificationDataConcept();
-		Optional<ClassificationDataConcept> exists = newConcept.builder()
+		Optional<ClassificationDataConcept> exists =ActivityMasterConfiguration
+				                                            .get()
+				                                            .isDoubleCheckDisabled() ? Optional.empty() :
+		                                            newConcept.builder()
 		                                                       .findByName(name.classificationValue())
 		                                                       .get();
 		ActiveFlag active = GuiceContext.get(IActiveFlagService.class)
@@ -80,25 +83,6 @@ public class ClassificationsDataConceptService
 		         .get();
 		return cdc;
 	}
-/*
-
-	@Override
-	@CacheResult(cacheName = "FindConceptWithNameAndSystem")
-	public ClassificationDataConcept findConcept(@CacheKey String name, @CacheKey Systems system, @CacheKey UUID... identityToken)
-	{
-		ClassificationDataConcept cdc = new ClassificationDataConcept();
-		ClassificationDataConceptQueryBuilder builder = cdc.builder()
-		                                               .findByName(name)
-		                                               .inDateRange();
-		if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
-		{
-			builder.withEnterprise(system.getEnterpriseID());
-			builder.inActiveRange(system.getEnterpriseID());
-			builder.canRead(system.getEnterpriseID(), identityToken);
-		}
-		return cdc;
-	}
-*/
 
 	@Override
 	@CacheResult(cacheName = "NoDataConcept")

@@ -9,6 +9,8 @@ import com.google.inject.Singleton;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 import lombok.extern.java.Log;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.UUID;
 
 
@@ -16,6 +18,13 @@ public interface IResourceItemService
 {
 
 	@Transactional(entityManagerAnnotation =  ActivityMasterDB.class)
-	ResourceItem create(IResourceTypeValue<?> identityResourceType,
+	ResourceItem create(IResourceTypeValue<?> identityResourceType, String mimeType,
 	                    Systems system, UUID... identityToken);
+
+	@CacheResult(cacheName = "ResourceItemFindByClassification")
+	ResourceItem findByClassification(@CacheKey IResourceTypeValue<?> resourceType,
+	                                  @CacheKey IResourceItemClassification<?> classification,
+	                                  @CacheKey String value,
+	                                  @CacheKey Systems systems,
+	                                  @CacheKey UUID... identityToken);
 }

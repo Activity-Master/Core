@@ -64,8 +64,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I, S>,
 		if (identityToken == null || identityToken.length == 0)
 		{
 			SecurityToken systemToken = GuiceContext.get(ActivityMasterConfiguration.class)
-			                                        .getToken()
-			                                        .get();
+			                                        .getToken();
 			ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
 			if (systemToken == null || systemToken.isFake())
 			{

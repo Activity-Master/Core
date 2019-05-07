@@ -35,10 +35,11 @@ import java.util.List;
 public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
 		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification>,
-				           IContainsGeographies<Event, Geography,EventXGeography>,
-				           IContainsResourceItems<Event, ResourceItem,EventXResourceItem>,
-				           IContainsInvolvedParties<Event, InvolvedParty,EventXInvolvedParty>,
-				           IContainsAddresses<Event, Address,EventXAddress>
+				           IContainsGeographies<Event, Geography, EventXGeography>,
+				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem>,
+				           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,
+				           IContainsAddresses<Event, Address, EventXAddress>,
+				           IContainsEventTypes<Event, EventType, EventXEventType>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -139,5 +140,12 @@ public class Event
 	{
 		classificationLink.setEventID(this);
 		classificationLink.setAddressID(address);
+	}
+
+	@Override
+	public void setMyEventTypeLinkValue(EventXEventType classificationLink, EventType identificationType, Enterprise enterprise)
+	{
+		classificationLink.setEventID(this);
+		classificationLink.setEventTypeID(identificationType);
 	}
 }

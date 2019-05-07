@@ -3,7 +3,6 @@ package com.armineasy.activitymaster.activitymaster;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
-import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyIdentificationType;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.*;
@@ -11,16 +10,11 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgr
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.IProgressable;
-import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.EnterpriseClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
 import com.armineasy.activitymaster.activitymaster.services.system.IActivityMasterService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
-import com.armineasy.activitymaster.activitymaster.services.types.IPTypes;
-import com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes;
-import com.armineasy.activitymaster.activitymaster.services.types.NameTypes;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.IDefaultService;
-import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedinjection.pairing.Pair;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -172,5 +166,6 @@ public class ActivityMasterService
 			logProgress("System Loading", "Starting up system " + allSystem.getClass().getName(), progressMonitor);
 			allSystem.postUpdate(enterprise, progressMonitor);
 		}
+		ActivityMasterConfiguration.get().setDoubleCheckDisabled(true);
 	}
 }

@@ -42,7 +42,11 @@ public class SecurityTokenService
 	                                                      Date effectiveFromDate, Date effectiveToDate)
 	{
 		SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
-		Optional<SecurityTokensSecurityToken> exists = sta.builder()
+		Optional<SecurityTokensSecurityToken> exists = ActivityMasterConfiguration
+				                                               .get()
+				                                               .isDoubleCheckDisabled() ? Optional.empty() :
+
+		                                               sta.builder()
 		                                                  .findBySecurityToken(fromToken, toToken)
 		                                                  .inActiveRange(system.getEnterpriseID())
 		                                                  .inDateRange()
@@ -81,7 +85,10 @@ public class SecurityTokenService
 		Classification classification = classificationService.find(classificationValue, system.getEnterpriseID(), identityToken);
 
 		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
+		Optional<SecurityToken> exists = ActivityMasterConfiguration
+				                                 .get()
+				                                 .isDoubleCheckDisabled() ? Optional.empty() :
+		                                 st.builder()
 		                                   .findBySecurityToken(name, classification.getEnterpriseID())
 		                                   .inActiveRange(classification.getEnterpriseID())
 		                                   .inDateRange()
@@ -111,7 +118,7 @@ public class SecurityTokenService
 				                .isSecurityEnabled())
 				{
 					st.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-					                                     .getActivityMaster(st.getEnterpriseID(), identityToken),identityToken);
+					                                     .getActivityMaster(st.getEnterpriseID(), identityToken), identityToken);
 				}
 			}
 			else
@@ -164,7 +171,7 @@ public class SecurityTokenService
 	public void updateSecurityHierarchy()
 	{
 		javax.sql.DataSource ds = GuiceContext.get(javax.sql.DataSource.class, com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB.class);
-		try(java.sql.Connection c = ds.getConnection(); java.sql.CallableStatement  st = c.prepareCall("{call MergeHierarchy}"))
+		try (java.sql.Connection c = ds.getConnection(); java.sql.CallableStatement st = c.prepareCall("{call MergeHierarchy}"))
 		{
 			st.execute();
 		}
@@ -175,126 +182,126 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
-	public SecurityToken getEveryoneGroup(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getEveryoneGroup(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, enterprise,identityToken)
+		                                   .findFolder(UserGroup, enterprise, identityToken)
 		                                   .findByName(Everyone)
-		                                   .inActiveRange(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise,identityToken)
+		                                   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
-	public SecurityToken getEverywhereGroup(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getEverywhereGroup(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup,enterprise, identityToken)
+		                                   .findFolder(UserGroup, enterprise, identityToken)
 		                                   .findByName(Everywhere)
-		                                   .inActiveRange(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise,identityToken)
+		                                   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
-	public SecurityToken getGuestsFolder(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getGuestsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup,enterprise, identityToken)
+		                                   .findFolder(UserGroup, enterprise, identityToken)
 		                                   .findByName(Guests)
-		                                   .inActiveRange(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                              //     .canRead(enterprise,identityToken)
+		                                   //     .canRead(enterprise,identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
-	public SecurityToken getRegisteredGuestsFolder(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getRegisteredGuestsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup,enterprise, identityToken)
+		                                   .findFolder(UserGroup, enterprise, identityToken)
 		                                   .findByName(Registered)
-		                                   .inActiveRange(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise,identityToken)
+		                                   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
-	public SecurityToken getVisitorsGuestsFolder(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getVisitorsGuestsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup,enterprise, identityToken)
+		                                   .findFolder(UserGroup, enterprise, identityToken)
 		                                   .findByName(Visitors)
-		                                   .inActiveRange(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise,identityToken)
+		                                   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
-	public SecurityToken getAdministratorsFolder(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getAdministratorsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup,enterprise, identityToken)
+		                                   .findFolder(UserGroup, enterprise, identityToken)
 		                                   .findByName(Administrators)
-		                                   .inActiveRange(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise,identityToken)
+		                                   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
-	public SecurityToken getSystemsFolder(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getSystemsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroupSecurityTokenClassifications.System,enterprise, identityToken)
+		                                   .findFolder(UserGroupSecurityTokenClassifications.System, enterprise, identityToken)
 		                                   .findByName(System)
-		                                   .inActiveRange(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise,identityToken)
+		                                   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
-	public SecurityToken getPluginsFolder(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getPluginsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(Plugin,enterprise, identityToken)
+		                                   .findFolder(Plugin, enterprise, identityToken)
 		                                   .findByName(Plugins)
-		                                   .inActiveRange(enterprise,identityToken)
-		                                   .canRead(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
+		                                   .canRead(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
-	public SecurityToken getApplicationsFolder(@CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getApplicationsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(Application,enterprise, identityToken)
+		                                   .findFolder(Application, enterprise, identityToken)
 		                                   .findByName(Applications)
-		                                   .inActiveRange(enterprise,identityToken)
-		                                   .canRead(enterprise,identityToken)
+		                                   .inActiveRange(enterprise, identityToken)
+		                                   .canRead(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .get();
 		return exists.orElseThrow();
@@ -302,28 +309,30 @@ public class SecurityTokenService
 
 	@CacheResult(cacheName = "SecurityGetSecurityToken")
 	@Override
-	public SecurityToken getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken view = new SecurityToken().builder()
 		                                        .findBySecurityToken(identifyingToken.toString())
 		                                        .withEnterprise(enterprise)
-		                                        .inActiveRange(enterprise,identityToken)
+		                                        .inActiveRange(enterprise, identityToken)
 		                                        .inDateRange()
-		                                        .canRead(enterprise,identityToken)
+		                                        .canRead(enterprise, identityToken)
 		                                        .get()
 		                                        .orElse(null);
 		return view;
 	}
 
 	@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
-	public SecurityToken getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey Enterprise enterprise,@CacheKey UUID...identityToken)
+	public SecurityToken getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityTokenQueryBuilder builder = new SecurityToken().builder();
 		builder = builder.findBySecurityToken(identifyingToken.toString())
 		                 .withEnterprise(enterprise)
 		                 .inDateRange();
-		if(overrideActiveFlag)
-		builder.inActiveRange(enterprise,identityToken);
+		if (overrideActiveFlag)
+		{
+			builder.inActiveRange(enterprise, identityToken);
+		}
 
 		SecurityToken view = builder
 				                     .get()
@@ -367,17 +376,17 @@ public class SecurityTokenService
 		return tokens;
 	}
 */
-//
-//	@CacheResult(cacheName = "SecurityTokenFindByID")
-//	SecurityToken findById(@CacheKey Long id, @CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
-//	{
-//		return new SecurityToken().builder()
-//		                          .where(SecurityToken_.id, Equals, id)
-//		                          .inActiveRange(enterprise)
-//		                          .inDateRange()
-//		                          //This is a find by ID (id is known, so don't apply security)
-//		                          // .canRead(enterprise,identityToken)
-//		                          .get()
-//		                          .get();
-//	}
+	//
+	//	@CacheResult(cacheName = "SecurityTokenFindByID")
+	//	SecurityToken findById(@CacheKey Long id, @CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
+	//	{
+	//		return new SecurityToken().builder()
+	//		                          .where(SecurityToken_.id, Equals, id)
+	//		                          .inActiveRange(enterprise)
+	//		                          .inDateRange()
+	//		                          //This is a find by ID (id is known, so don't apply security)
+	//		                          // .canRead(enterprise,identityToken)
+	//		                          .get()
+	//		                          .get();
+	//	}
 }

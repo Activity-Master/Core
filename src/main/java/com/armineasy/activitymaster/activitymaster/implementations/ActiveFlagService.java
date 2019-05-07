@@ -20,7 +20,10 @@ public class ActiveFlagService
 	public ActiveFlag create(Enterprise enterprise, String name, String description, @CacheKey UUID... identifyingToken)
 	{
 		ActiveFlag af = new ActiveFlag();
-		Optional<ActiveFlag> exists = findFlagByName(name, enterprise,identifyingToken);
+		Optional<ActiveFlag> exists = ActivityMasterConfiguration
+				                              .get()
+				                              .isDoubleCheckDisabled() ? Optional.empty() :
+		                              findFlagByName(name, enterprise, identifyingToken);
 		if (exists.isEmpty())
 		{
 			af.setName(name);
@@ -29,9 +32,11 @@ public class ActiveFlagService
 			af.setEnterpriseID(enterprise);
 			af.builder()
 			  .persist(af);
-			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			                .isSecurityEnabled())
 			{
-				af.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(af.getEnterpriseID(),identifyingToken),identifyingToken);
+				af.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+				                                     .getActivityMaster(af.getEnterpriseID(), identifyingToken), identifyingToken);
 			}
 		}
 		else
@@ -44,12 +49,12 @@ public class ActiveFlagService
 	private Optional<ActiveFlag> findFlagByName(String flag, Enterprise enterprise, @CacheKey UUID... identifyingToken)
 	{
 		Optional<ActiveFlag> op = new ActiveFlag().builder()
-		                       .findByName(flag)
-		                       .inDateRange()
-		                       .canRead(enterprise, identifyingToken)
-		                       .withEnterprise(enterprise)
-		                       .get();
-		if(op.isEmpty())
+		                                          .findByName(flag)
+		                                          .inDateRange()
+		                                          .canRead(enterprise, identifyingToken)
+		                                          .withEnterprise(enterprise)
+		                                          .get();
+		if (op.isEmpty())
 		{
 			System.out.println("Empty Flag!");
 		}
@@ -69,16 +74,13 @@ public class ActiveFlagService
 		ActiveFlag search = new ActiveFlag();
 
 
-
-
-
 		List<ActiveFlag> ac = search.builder()
 		                            .findByName(name)
 		                            .inDateRange()
-		                           // .canRead(enterprise,true, identifyingToken)
+		                            // .canRead(enterprise,true, identifyingToken)
 		                            .withEnterprise(enterprise)
 		                            .getAll();
-		if(ac.isEmpty())
+		if (ac.isEmpty())
 		{
 			System.out.println("Empty List!");
 		}

@@ -20,7 +20,10 @@ public class YesNoService
 	                    String inOutValue, Systems system, UUID... identityToken)
 	{
 		YesNo yn = new YesNo();
-		Optional<YesNo> exists = yn.builder()
+		Optional<YesNo> exists = ActivityMasterConfiguration
+				                         .get()
+				                         .isDoubleCheckDisabled() ? Optional.empty() :
+		                         yn.builder()
 		                           .findByName(defaultName)
 		                           .get();
 		if (exists.isEmpty())
@@ -43,7 +46,7 @@ public class YesNoService
 			                .isSecurityEnabled())
 			{
 				yn.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-				                                     .getActivityMaster(yn.getEnterpriseID(), identityToken),identityToken);
+				                                     .getActivityMaster(yn.getEnterpriseID(), identityToken), identityToken);
 			}
 		}
 		else

@@ -50,6 +50,7 @@ public class ClassificationsSystem
 		service.create(HierarchyTypeClassification, activityMasterSystem);
 		service.create(HierarchyTypeClassification, activityMasterSystem,enterpriseName);
 		service.create(NoClassification, activityMasterSystem,enterpriseName);
+		service.create(DefaultClassification, activityMasterSystem,enterpriseName);
 		service.create(Security, activityMasterSystem, enterpriseName);
 
 		service.create(SystemIdentity, activityMasterSystem, Security);

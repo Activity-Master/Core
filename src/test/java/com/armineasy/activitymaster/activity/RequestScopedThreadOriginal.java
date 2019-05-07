@@ -63,9 +63,9 @@ public abstract class RequestScopedThreadOriginal
 		                                 .getSecurityIdentityToken(systems);
 		SecurityToken token = GuiceContext.get(ISecurityTokenService.class)
 		                                  .getSecurityToken(identityToken, enterprise);
-		securityConfiguration.getToken().set(token);
-		SecurityToken inToken = securityConfiguration.getToken()
-		                                             .get();
+		securityConfiguration.setToken(token);
+		SecurityToken inToken = securityConfiguration.getToken();
+
 		config.setSecurityEnabled(true);
 
 		return token;

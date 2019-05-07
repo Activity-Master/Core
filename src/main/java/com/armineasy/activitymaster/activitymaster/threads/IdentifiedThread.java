@@ -23,11 +23,11 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 @Data
 @Accessors(chain=true)
 @Log
-public abstract class IdentifiedThread
-		implements Callable<Object>, Runnable
+public abstract class IdentifiedThread<J extends IdentifiedThread<J>>
+		implements Callable<Object>
 {
+	private ActivityMasterConfiguration.ActivityMasterConfigurationDTO activityMasterConfigurationDTO;
 
-	@Override
 	public void run()
 	{
 		startup();
@@ -41,17 +41,26 @@ public abstract class IdentifiedThread
 
 	}
 
+	@SuppressWarnings("unchecked")
+	public J fromCurrentThread()
+	{
+		activityMasterConfigurationDTO = new ActivityMasterConfiguration.ActivityMasterConfigurationDTO()
+				                                 .fromCurrentThread();
+		return (J)this;
+	}
+
 	public abstract void perform();
 
 	public SecurityToken getIdentityToken()
 	{
 		ActivityMasterConfiguration securityConfiguration = GuiceContext.get(ActivityMasterConfiguration.class);
-
 		ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
+
 		config.setSecurityEnabled(false);
 		config.setEnterpriseName(TestEnterprise);
 		EnterpriseService service = get(EnterpriseService.class);
 		Optional<Enterprise> enterpriseO = service.findEnterprise(TestEnterprise);
+
 		Enterprise enterprise = enterpriseO.get();
 
 		Systems systems = GuiceContext.get(ISystemsService.class)
@@ -60,12 +69,11 @@ public abstract class IdentifiedThread
 		                                 .getSecurityIdentityToken(systems);
 		SecurityToken token = GuiceContext.get(ISecurityTokenService.class)
 		                                  .getSecurityToken(identityToken, enterprise);
-		securityConfiguration.getToken()
-		                     .set(token);
-		SecurityToken inToken = securityConfiguration.getToken()
-		                                             .get();
+		securityConfiguration.setToken(token);
+		SecurityToken inToken = securityConfiguration.getToken();
 		config.setSecurityEnabled(true);
 		config.setAsyncEnabled(true);
+		config.setDoubleCheckDisabled(true);
 		return token;
 	}
 

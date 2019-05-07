@@ -10,6 +10,7 @@ public enum Classifications
 {
 	HierarchyTypeClassification("Denotes a hierarchy structure type",GlobalClassificationsDataConceptName),
 	NoClassification("No Classification",GlobalClassificationsDataConceptName),
+	DefaultClassification("Default Classification",GlobalClassificationsDataConceptName),
 	Security("No Classification", GlobalClassificationsDataConceptName),
 	;
 	private String classificationValue;

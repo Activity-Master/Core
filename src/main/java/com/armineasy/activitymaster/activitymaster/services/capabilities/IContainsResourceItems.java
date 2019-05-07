@@ -15,6 +15,7 @@ import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IResourceItemService;
+import com.armineasy.activitymaster.activitymaster.threads.PersistingThread;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
@@ -27,6 +28,7 @@ import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
@@ -87,16 +89,18 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 
 		IResourceItemService service = GuiceContext.get(IResourceItemService.class);
 
-		ResourceItem item = service.create(resourceTypeValue, originatingSystem, identifyingToken);
+		ResourceItem item = service.create(resourceTypeValue,mimeType, originatingSystem, identifyingToken);
 
-		boolean async = GuiceContext.get(ActivityMasterConfiguration.class).isAsyncEnabled();
-		if(async)
+		boolean async = GuiceContext.get(ActivityMasterConfiguration.class)
+		                            .isAsyncEnabled();
+		if (async)
 		{
 			JobService.getInstance()
-			          .addJob("ResourceItemDataStore", () -> storeResourceItemData(item, data, mimeType, originatingSystem, identifyingToken));
+			          .addJob("ResourceItemDataStore", () -> storeResourceItemData(item, data, originatingSystem, identifyingToken));
 		}
-		else {
-			storeResourceItemData(item, data, mimeType, originatingSystem, identifyingToken);
+		else
+		{
+			storeResourceItemData(item, data, originatingSystem, identifyingToken);
 		}
 
 		tableForClassification.setEnterpriseID(originatingSystem.getEnterpriseID());
@@ -112,7 +116,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem,identifyingToken);
+			tableForClassification.createDefaultSecurity(originatingSystem, identifyingToken);
 		}
 
 		return item;
@@ -120,24 +124,26 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 
 	@SuppressWarnings("unchecked")
 	default ResourceItem addOrUseResourceItem(IResourceTypeValue<?> resourceTypeValue, IResourceItemClassification classification,
-	                                     byte[] data,
-	                                     String mimeType,
-	                                     Systems originatingSystem, UUID... identifyingToken)
+	                                          byte[] data,
+	                                          String mimeType,
+	                                          Systems originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findResourceItemQueryRelationshipTableType());
 
 		IResourceItemService service = GuiceContext.get(IResourceItemService.class);
 
-		ResourceItem item = service.create(resourceTypeValue, originatingSystem, identifyingToken);
+		ResourceItem item = service.create(resourceTypeValue, mimeType, originatingSystem, identifyingToken);
 
-		boolean async = GuiceContext.get(ActivityMasterConfiguration.class).isAsyncEnabled();
-		if(async)
+		boolean async = GuiceContext.get(ActivityMasterConfiguration.class)
+		                            .isAsyncEnabled();
+		if (async)
 		{
 			JobService.getInstance()
-			          .addJob("ResourceItemDataStore", () -> storeResourceItemData(item, data, mimeType, originatingSystem, identifyingToken));
+			          .addJob("ResourceItemDataStore", () -> storeResourceItemData(item, data, originatingSystem, identifyingToken));
 		}
-		else {
-			storeResourceItemData(item, data, mimeType, originatingSystem, identifyingToken);
+		else
+		{
+			storeResourceItemData(item, data, originatingSystem, identifyingToken);
 		}
 
 		tableForClassification.setEnterpriseID(originatingSystem.getEnterpriseID());
@@ -153,24 +159,26 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem,identifyingToken);
+			tableForClassification.createDefaultSecurity(originatingSystem, identifyingToken);
 		}
 
 		return item;
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	default void storeResourceItemData(ResourceItem item, byte[] data, String mimeType, Systems originatingSystem, UUID... identifyingToken)
+	default void storeResourceItemData(ResourceItem item, byte[] data, Systems originatingSystem, UUID... identifyingToken)
 	{
 		ResourceItemData itemData = new ResourceItemData();
 		itemData.setResource(item);
 		itemData.setResourceItemData(data);
-		itemData.setResourceItemDataType(mimeType);
+
 		itemData.setEnterpriseID(originatingSystem.getEnterpriseID());
 		itemData.setSystemID(originatingSystem);
 		itemData.setOriginalSourceSystemID(originatingSystem);
+
 		itemData.setActiveFlagID(originatingSystem.getActiveFlagID());
 		itemData.persist();
+
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{

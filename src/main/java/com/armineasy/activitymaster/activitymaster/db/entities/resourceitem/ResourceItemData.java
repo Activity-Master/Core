@@ -48,14 +48,7 @@ public class ResourceItemData
 	@Getter
 	@Setter
 	private byte[] resourceItemData;
-	@Lob
-	@Column(nullable = false,
-			name = "ResourceItemDataType",
-			length = 150)
-	@Size(max = 150)
-	@Getter
-	@Setter
-	private String resourceItemDataType;
+
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)

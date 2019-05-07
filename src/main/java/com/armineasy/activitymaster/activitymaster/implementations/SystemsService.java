@@ -40,7 +40,7 @@ public class SystemsService
 		return search.builder()
 		             .findByName(systemName)
 		             .withEnterprise(enterprise)
-		             .inActiveRange(enterprise,token)
+		             .inActiveRange(enterprise, token)
 		             .inDateRange()
 		             .canRead(enterprise, token)
 		             .get()
@@ -53,11 +53,11 @@ public class SystemsService
 	{
 		SystemXClassification systemClassifications = new SystemXClassification();
 		Classification identifyClassification = GuiceContext.get(ClassificationService.class)
-		                                                    .getIdentityType(enterprise,identityToken);
+		                                                    .getIdentityType(enterprise, identityToken);
 
 		Optional<SystemXClassification> exists = systemClassifications.builder()
 		                                                              .findChildLink(identifyClassification, token.toString())
-		                                                              .inActiveRange(enterprise,identityToken)
+		                                                              .inActiveRange(enterprise, identityToken)
 		                                                              .inDateRange()
 		                                                              .canRead(enterprise, identityToken)
 		                                                              .get();
@@ -72,13 +72,17 @@ public class SystemsService
 		}
 	}
 
-	public Systems create(Enterprise enterprise, String systemName, String systemDesc, String historyName,UUID...identityToken)
+	public Systems create(Enterprise enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
 	{
 		ActiveFlag flag = GuiceContext.get(IActiveFlagService.class)
 		                              .getActiveFlag(enterprise);
 
 		Systems newSystem = new Systems();
-		Optional<Systems> exists = newSystem.builder()
+		Optional<Systems> exists = ActivityMasterConfiguration
+				                           .get()
+				                           .isDoubleCheckDisabled() ? Optional.empty() :
+
+		                           newSystem.builder()
 		                                    .findByName(systemName)
 		                                    .get();
 		if (exists.isEmpty())
@@ -89,10 +93,12 @@ public class SystemsService
 			newSystem.setEnterpriseID(enterprise);
 			newSystem.setActiveFlagID(flag);
 			newSystem.persist();
-			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			                .isSecurityEnabled())
 			{
-				newSystem.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(newSystem.getEnterpriseID(), identityToken)
-				                               ,identityToken);
+				newSystem.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+				                                            .getActivityMaster(newSystem.getEnterpriseID(), identityToken)
+						, identityToken);
 			}
 		}
 		else
@@ -123,7 +129,7 @@ public class SystemsService
 	}
 
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
-	public UUID getSecurityIdentityToken(@CacheKey Systems system,@CacheKey UUID...identityToken)
+	public UUID getSecurityIdentityToken(@CacheKey Systems system, @CacheKey UUID... identityToken)
 	{
 		Optional<SystemXClassification> systemToken = system.findClassification(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())

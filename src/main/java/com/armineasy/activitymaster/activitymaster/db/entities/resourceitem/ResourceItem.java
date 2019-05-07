@@ -64,6 +64,14 @@ public class ResourceItem
 	@Setter
 	private UUID resourceItemUUID;
 
+	@Column(nullable = false,
+			name = "ResourceItemDataType",
+			length = 150)
+	@Size(max = 150)
+	@Getter
+	@Setter
+	private String resourceItemDataType;
+
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
@@ -87,6 +95,7 @@ public class ResourceItem
 			mappedBy = "resource",
 			fetch = FetchType.LAZY)
 	private List<ResourceItemData> data;
+
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)

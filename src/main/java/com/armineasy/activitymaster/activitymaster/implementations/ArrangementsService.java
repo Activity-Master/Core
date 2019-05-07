@@ -1,5 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
+import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
@@ -27,11 +28,14 @@ public class ArrangementsService
 		WarehouseClassificationRelationshipTable resourceTable = GuiceContext.get(linkClass);
 		QueryBuilderRelationshipClassification builder = (QueryBuilderRelationshipClassification) resourceTable.builder();
 
-		Optional<WarehouseClassificationRelationshipTable> exists = builder
-				                                .findLink((WarehouseCoreTable) parent, item, originatingSystem.getEnterpriseID())
-				                                .inDateRange()
-				                                .inActiveRange(originatingSystem.getEnterpriseID())
-				                                .get();
+		Optional<WarehouseClassificationRelationshipTable> exists = ActivityMasterConfiguration
+				                                                            .get()
+				                                                            .isDoubleCheckDisabled() ? Optional.empty() :
+		                                                            builder
+				                                                            .findLink((WarehouseCoreTable) parent, item, originatingSystem.getEnterpriseID())
+				                                                            .inDateRange()
+				                                                            .inActiveRange(originatingSystem.getEnterpriseID())
+				                                                            .get();
 		if (exists.isEmpty() || append)
 		{
 
@@ -40,7 +44,6 @@ public class ArrangementsService
 		{
 			resourceTable = exists.get();
 		}
-
 
 
 		return null;

@@ -1,3 +1,11 @@
+DROP PROCEDURE [dbo].[UpdateSecurityHierarchy]
+GO
+DROP PROCEDURE [dbo].[UpdateHierarchyAll]
+GO
+DROP PROCEDURE [dbo].[MergeHierarchy]
+GO
+DROP PROCEDURE [dbo].[InsertHierarchyAll]
+GO
 DROP PROCEDURE [dbo].[GetDatabaseDictionaryForTable]
 GO
 DROP PROCEDURE [dbo].[GetDatabaseDictionaryForAllTables]
@@ -314,7 +322,7 @@ ALTER TABLE [dbo].[ProductXResourceItemSecurityToken] DROP CONSTRAINT [FK_Produc
 GO
 ALTER TABLE [dbo].[ProductXResourceItemSecurityToken] DROP CONSTRAINT [FK__ProductXResourceItemSecurity__ActiveFlag]
 GO
-ALTER TABLE [dbo].[ProductXResourceItemSecurityToken] DROP CONSTRAINT [FK__ProductXR__Enter__7BAD8E3E]
+ALTER TABLE [dbo].[ProductXResourceItemSecurityToken] DROP CONSTRAINT [FK__ProductXR__Enter__36A76436]
 GO
 ALTER TABLE [dbo].[ProductXResourceItem] DROP CONSTRAINT [FK_ProductXResourceItem_Systems]
 GO
@@ -766,9 +774,9 @@ ALTER TABLE [dbo].[InvolvedPartyIdentificationType] DROP CONSTRAINT [FK_Involved
 GO
 ALTER TABLE [dbo].[InvolvedPartyIdentificationType] DROP CONSTRAINT [FK_InvolvedPartyIdentificationType_ActiveFlags]
 GO
-ALTER TABLE [dbo].[InvolvedPartyIdentificationType] DROP CONSTRAINT [FK__InvolvedP__Syste__242593EC]
+ALTER TABLE [dbo].[InvolvedPartyIdentificationType] DROP CONSTRAINT [FK__InvolvedP__Syste__5F1F69E4]
 GO
-ALTER TABLE [dbo].[InvolvedPartyIdentificationType] DROP CONSTRAINT [FK__InvolvedP__Enter__23316FB3]
+ALTER TABLE [dbo].[InvolvedPartyIdentificationType] DROP CONSTRAINT [FK__InvolvedP__Enter__5E2B45AB]
 GO
 ALTER TABLE [dbo].[InvolvedParty] DROP CONSTRAINT [FK_InvolvedParty_Systems1]
 GO
@@ -858,13 +866,13 @@ ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK_GeographyXClass
 GO
 ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK_GeographyXClassifications_ActiveFlags]
 GO
-ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK__Geography__Syste__784711AE]
+ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK__Geography__Syste__3340E7A6]
 GO
-ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK__Geography__Syste__7752ED75]
+ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK__Geography__Syste__324CC36D]
 GO
-ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK__Geography__Enter__765EC93C]
+ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK__Geography__Enter__31589F34]
 GO
-ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK__Geography__Enter__756AA503]
+ALTER TABLE [dbo].[GeographyXClassification] DROP CONSTRAINT [FK__Geography__Enter__30647AFB]
 GO
 ALTER TABLE [dbo].[GeographySecurityToken] DROP CONSTRAINT [FK_GeographySecurityTokens_Systems]
 GO
@@ -876,9 +884,9 @@ ALTER TABLE [dbo].[GeographySecurityToken] DROP CONSTRAINT [FK_GeographySecurity
 GO
 ALTER TABLE [dbo].[GeographySecurityToken] DROP CONSTRAINT [FK_GeographySecurityToken__ActiveFlag]
 GO
-ALTER TABLE [dbo].[GeographySecurityToken] DROP CONSTRAINT [FK__Geography__Enter__6FB1CBAD]
+ALTER TABLE [dbo].[GeographySecurityToken] DROP CONSTRAINT [FK__Geography__Enter__2AABA1A5]
 GO
-ALTER TABLE [dbo].[GeographySecurityToken] DROP CONSTRAINT [FK__Geography__Enter__6EBDA774]
+ALTER TABLE [dbo].[GeographySecurityToken] DROP CONSTRAINT [FK__Geography__Enter__29B77D6C]
 GO
 ALTER TABLE [dbo].[Geography] DROP CONSTRAINT [FK_Geography_Systems]
 GO
@@ -1506,9 +1514,9 @@ ALTER TABLE [dbo].[ArrangementXArrangementSecurityToken] DROP CONSTRAINT [FK_Arr
 GO
 ALTER TABLE [dbo].[ArrangementXArrangementSecurityToken] DROP CONSTRAINT [FK_ArrangementXArrangementSecurityTokens_ActiveFlags]
 GO
-ALTER TABLE [dbo].[ArrangementXArrangementSecurityToken] DROP CONSTRAINT [FK__Arrangeme__Enter__4349398A]
+ALTER TABLE [dbo].[ArrangementXArrangementSecurityToken] DROP CONSTRAINT [FK__Arrangeme__Enter__7E430F82]
 GO
-ALTER TABLE [dbo].[ArrangementXArrangementSecurityToken] DROP CONSTRAINT [FK__Arrangeme__Enter__42551551]
+ALTER TABLE [dbo].[ArrangementXArrangementSecurityToken] DROP CONSTRAINT [FK__Arrangeme__Enter__7D4EEB49]
 GO
 ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK_ParentArrangement]
 GO
@@ -1524,13 +1532,13 @@ ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK_ArrangementXArra
 GO
 ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK_ArrangementXArrangement_ActiveFlags]
 GO
-ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK__Arrangeme__Syste__3AB3F389]
+ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK__Arrangeme__Syste__75ADC981]
 GO
-ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK__Arrangeme__Syste__39BFCF50]
+ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK__Arrangeme__Syste__74B9A548]
 GO
-ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK__Arrangeme__Enter__38CBAB17]
+ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK__Arrangeme__Enter__73C5810F]
 GO
-ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK__Arrangeme__Enter__37D786DE]
+ALTER TABLE [dbo].[ArrangementXArrangement] DROP CONSTRAINT [FK__Arrangeme__Enter__72D15CD6]
 GO
 ALTER TABLE [dbo].[ArrangementTypeSecurityToken] DROP CONSTRAINT [FK_ArrangementTypeSecurityTokens_Systems]
 GO
@@ -1542,9 +1550,9 @@ ALTER TABLE [dbo].[ArrangementTypeSecurityToken] DROP CONSTRAINT [FK_Arrangement
 GO
 ALTER TABLE [dbo].[ArrangementTypeSecurityToken] DROP CONSTRAINT [FK_ArrangementTypeSecurityTokens_ActiveFlags]
 GO
-ALTER TABLE [dbo].[ArrangementTypeSecurityToken] DROP CONSTRAINT [FK__Arrangeme__Enter__321EAD88]
+ALTER TABLE [dbo].[ArrangementTypeSecurityToken] DROP CONSTRAINT [FK__Arrangeme__Enter__6D188380]
 GO
-ALTER TABLE [dbo].[ArrangementTypeSecurityToken] DROP CONSTRAINT [FK__Arrangeme__Enter__312A894F]
+ALTER TABLE [dbo].[ArrangementTypeSecurityToken] DROP CONSTRAINT [FK__Arrangeme__Enter__6C245F47]
 GO
 ALTER TABLE [dbo].[ArrangementType] DROP CONSTRAINT [FK_ArrangementType_Systems]
 GO
@@ -1742,17 +1750,15 @@ DROP TABLE [dbo].[SecurityTokenXClassification]
 GO
 DROP TABLE [dbo].[SecurityTokensSecurityToken]
 GO
-DROP TABLE [dbo].[ResourceItemXResourceItemTypeSecurityToken]
+DROP TABLE [dbo].[SecurityHierarchyParents]
 GO
-DROP TABLE [dbo].[ResourceItemXResourceItemType]
+DROP TABLE [dbo].[SecurityHierarchy]
+GO
+DROP TABLE [dbo].[ResourceItemXResourceItemTypeSecurityToken]
 GO
 DROP TABLE [dbo].[ResourceItemXClassificationSecurityToken]
 GO
-DROP TABLE [dbo].[ResourceItemXClassification]
-GO
 DROP TABLE [dbo].[ResourceItemTypeSecurityToken]
-GO
-DROP TABLE [dbo].[ResourceItemType]
 GO
 DROP TABLE [dbo].[ResourceItemSecurityToken]
 GO
@@ -1761,10 +1767,6 @@ GO
 DROP TABLE [dbo].[ResourceItemDataXClassification]
 GO
 DROP TABLE [dbo].[ResourceItemDataSecurityToken]
-GO
-DROP TABLE [dbo].[ResourceItemData]
-GO
-DROP TABLE [dbo].[ResourceItem]
 GO
 DROP TABLE [dbo].[ProductXResourceItemSecurityToken]
 GO
@@ -2006,5 +2008,17 @@ DROP VIEW [dbo].[ClassificationHierarchyView]
 GO
 DROP TABLE [dbo].[ClassificationXClassification]
 GO
+DROP VIEW [dbo].[ResourceTypeClassificationsView]
+GO
+DROP TABLE [dbo].[ResourceItemData]
+GO
+DROP TABLE [dbo].[ResourceItem]
+GO
 DROP TABLE [dbo].[Classification]
+GO
+DROP TABLE [dbo].[ResourceItemXResourceItemType]
+GO
+DROP TABLE [dbo].[ResourceItemXClassification]
+GO
+DROP TABLE [dbo].[ResourceItemType]
 GO

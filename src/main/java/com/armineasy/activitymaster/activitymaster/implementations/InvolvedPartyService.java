@@ -328,7 +328,10 @@ public class InvolvedPartyService
 		Enterprise enterprise = originatingSystem.getEnterpriseID();
 
 		InvolvedParty ip = new InvolvedParty();
-		Optional<InvolvedParty> exists = ip.builder()
+		Optional<InvolvedParty> exists =ActivityMasterConfiguration
+				                                .get()
+				                                .isDoubleCheckDisabled() ? Optional.empty() :
+		                                ip.builder()
 		                                   .findByIdentificationType(enterprise, idTypes.getKey(), idTypes.getValue(), identityToken)
 		                                   .get();
 
@@ -349,6 +352,7 @@ public class InvolvedPartyService
 				                                     .getActivityMaster(ip.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
+
 			ip.addIdentificationType(idTypes.getKey(), originatingSystem, idTypes.getValue(), identityToken);
 
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
@@ -363,43 +367,6 @@ public class InvolvedPartyService
 			{
 				setupInvolvedPartyOrganicStatus(isOrganic, ip, enterprise, system, identityToken);
 			}
-
-			/*if (isOrganic)
-			{
-				InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
-				ipo.setInvolvedParty(ip);
-				ipo.setId(ip.getId());
-				ipo.setEnterpriseID(enterprise);
-				ipo.setActiveFlagID(system.getActiveFlagID());
-				ipo.setSystemID(system);
-				ipo.setOriginalSourceSystemID(system);
-				ipo.persist();
-				if (GuiceContext.get(ActivityMasterConfiguration.class)
-				                .isSecurityEnabled())
-				{
-					ipo.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-					                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
-							, identityToken);
-				}
-			}
-			else
-			{
-				InvolvedPartyNonOrganic ipo = new InvolvedPartyNonOrganic();
-				ipo.setInvolvedParty(ip);
-				ipo.setId(ip.getId());
-				ipo.setEnterpriseID(enterprise);
-				ipo.setActiveFlagID(system.getActiveFlagID());
-				ipo.setSystemID(system);
-				ipo.setOriginalSourceSystemID(system);
-				ipo.persist();
-				if (GuiceContext.get(ActivityMasterConfiguration.class)
-				                .isSecurityEnabled())
-				{
-					ipo.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-					                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
-							, identityToken);
-				}
-			}*/
 		}
 		else
 		{

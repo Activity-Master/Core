@@ -72,13 +72,13 @@ public class SecurityTokenSystem
 
 		logProgress("Security Management", "Setting Security Configurator to Activity Master", progressMonitor);
 		GuiceContext.get(ActivityMasterConfiguration.class)
-		            .getToken()
-		            .set(activityMasterToken);
+		            .setToken(activityMasterToken);
 
 		logProgress("Security Token Service", "Enabling Security System", progressMonitor);
 		GuiceContext.get(ActivityMasterConfiguration.class)
 		            .setSecurityEnabled(true);
-
+		GuiceContext.get(ActivityMasterConfiguration.class)
+		            .setDoubleCheckDisabled(true);
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)

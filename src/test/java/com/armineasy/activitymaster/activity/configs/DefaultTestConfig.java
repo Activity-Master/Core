@@ -98,11 +98,11 @@ public class DefaultTestConfig
 		                                  .getSecurityToken(identityToken, enterprise);
 
 		GuiceContext.get(ActivityMasterService.class).loadSystems(TestEnterprise,null);
-		securityConfiguration.getToken().set(token);
-		SecurityToken inToken = securityConfiguration.getToken()
-		                                             .get();
+		securityConfiguration.setToken(token);
+		SecurityToken inToken = securityConfiguration.getToken();
 		config.setSecurityEnabled(true);
 		config.setAsyncEnabled(true);
+		config.setDoubleCheckDisabled(true);
 		defaultWaitUnit = TimeUnit.HOURS;
 		defaultWaitTime = 1;
 	}
