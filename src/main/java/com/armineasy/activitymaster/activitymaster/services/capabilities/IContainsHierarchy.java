@@ -155,7 +155,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 
 		J me = (J) this;
 		List<W> hierarchies = (List<W>) hierarchy.builder()
-		                                         .findMyChildren(me.getId())
+		                                         .findMyChildren((Long) me.getId())
 		                                         .getAll();
 
 		Set<Long> search = new LinkedHashSet<>();

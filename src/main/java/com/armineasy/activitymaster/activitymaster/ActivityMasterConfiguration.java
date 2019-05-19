@@ -111,11 +111,11 @@ public class ActivityMasterConfiguration
 
 		public ActivityMasterConfigurationDTO fromCurrentThread()
 		{
-			enterpriseName = getEnterpriseName();
-			token = getToken();
-			securities = getSecurities();
-			async = getAsync();
-			doubleCheck = getDoubleCheck();
+			enterpriseName = ActivityMasterConfiguration.get().getEnterpriseName();
+			token = ActivityMasterConfiguration.get().getToken();
+			securities = ActivityMasterConfiguration.get().isSecurityEnabled();
+			async = ActivityMasterConfiguration.get().isAsyncEnabled();
+			doubleCheck = ActivityMasterConfiguration.get().isDoubleCheckDisabled();
 			return this;
 		}
 	}

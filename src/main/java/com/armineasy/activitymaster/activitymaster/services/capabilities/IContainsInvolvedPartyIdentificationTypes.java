@@ -62,9 +62,8 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	@SuppressWarnings("unchecked")
 	default boolean hasIdentificationType(IIdentificationType<?> typeName, Systems originatingSystem, UUID... identityToken)
 	{
-		InvolvedPartyIdentificationType type = (InvolvedPartyIdentificationType) get(IContainsInvolvedPartyIdentificationTypes.class)
-				                                                                         .findIdentificationType(typeName, originatingSystem, identityToken)
-				                                                                         .orElseThrow();
+		InvolvedPartyIdentificationType type = get(IInvolvedPartyService.class)
+				                                       .findIdentificationType(typeName, originatingSystem.getEnterpriseID(), identityToken);
 		J activityMasterIdentity = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) type, type.getEnterpriseID())

@@ -54,7 +54,6 @@ public class AddressSystem
 	{
 		Systems system = GuiceContext.get(SystemsService.class)
 		                             .getActivityMaster(enterprise);
-		logProgress("Address System", "Starting Address Checks", progressMonitor);
 
 		IEnterpriseName<?> enterpriseName = GuiceContext.get(ActivityMasterConfiguration.class)
 		                                                .getEnterpriseName();

@@ -16,29 +16,41 @@ import lombok.extern.java.Log;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
 import static com.armineasy.activitymaster.activitymaster.DefaultEnterprise.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @Data
-@Accessors(chain=true)
+@Accessors(chain = true)
 @Log
 public abstract class IdentifiedThread<J extends IdentifiedThread<J>>
-		implements Callable<Object>
+		implements Runnable
 {
 	private ActivityMasterConfiguration.ActivityMasterConfigurationDTO activityMasterConfigurationDTO;
 
+	public IdentifiedThread()
+	{
+		this.activityMasterConfigurationDTO = new ActivityMasterConfiguration.ActivityMasterConfigurationDTO()
+				                                      .fromCurrentThread();
+	}
+
 	public void run()
 	{
-		startup();
-		getIdentityToken();
-		perform();
-		notify();
+		try
+		{
+			startup();
+			perform();
+		}catch(Throwable T)
+		{
+			log.log(Level.SEVERE, "Unable to run thread", T);
+		}
 	}
 
 	protected void startup()
 	{
-
+		ActivityMasterConfiguration.get()
+		                           .configureThread(this.activityMasterConfigurationDTO);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,38 +58,11 @@ public abstract class IdentifiedThread<J extends IdentifiedThread<J>>
 	{
 		activityMasterConfigurationDTO = new ActivityMasterConfiguration.ActivityMasterConfigurationDTO()
 				                                 .fromCurrentThread();
-		return (J)this;
+		return (J) this;
 	}
 
 	public abstract void perform();
 
-	public SecurityToken getIdentityToken()
-	{
-		ActivityMasterConfiguration securityConfiguration = GuiceContext.get(ActivityMasterConfiguration.class);
-		ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
-
-		config.setSecurityEnabled(false);
-		config.setEnterpriseName(TestEnterprise);
-		EnterpriseService service = get(EnterpriseService.class);
-		Optional<Enterprise> enterpriseO = service.findEnterprise(TestEnterprise);
-
-		Enterprise enterprise = enterpriseO.get();
-
-		Systems systems = GuiceContext.get(ISystemsService.class)
-		                              .getActivityMaster(enterprise);
-		UUID identityToken = GuiceContext.get(SystemsService.class)
-		                                 .getSecurityIdentityToken(systems);
-		SecurityToken token = GuiceContext.get(ISecurityTokenService.class)
-		                                  .getSecurityToken(identityToken, enterprise);
-		securityConfiguration.setToken(token);
-		SecurityToken inToken = securityConfiguration.getToken();
-		config.setSecurityEnabled(true);
-		config.setAsyncEnabled(true);
-		config.setDoubleCheckDisabled(true);
-		return token;
-	}
-
-	@Override
 	public Object call() throws Exception
 	{
 		run();

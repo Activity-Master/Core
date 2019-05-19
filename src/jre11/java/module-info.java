@@ -69,6 +69,7 @@ module com.armineasy.activitymaster.activitymaster {
 
 	requires java.persistence;
 	requires java.xml.bind;
+	requires jakarta.activation;
 	requires java.validation;
 
 	//requires org.apache.commons.io;

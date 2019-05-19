@@ -1,6 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.*;
@@ -10,23 +11,28 @@ import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierar
 import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.ISecurityTokenClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
+import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
+import lombok.extern.java.Log;
 import org.hibernate.annotations.Cache;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.logging.Level;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.*;
 import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton
+@Log
 public class SecurityTokenService
 		implements ISecurityTokenService
 {
@@ -81,7 +87,7 @@ public class SecurityTokenService
 
 	public SecurityToken create(ISecurityTokenClassification<?> classificationValue, String name, String description, Systems system, SecurityToken parent, UUID... identityToken)
 	{
-		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
+		ClassificationService classificationService = get(ClassificationService.class);
 		Classification classification = classificationService.find(classificationValue, system.getEnterpriseID(), identityToken);
 
 		SecurityToken st = new SecurityToken();
@@ -114,10 +120,10 @@ public class SecurityTokenService
 				st.setOriginalSourceSystemID(classification.getSystemID());
 				st.setSecurityTokenClassificationID(classification);
 				st.persist();
-				if (GuiceContext.get(ActivityMasterConfiguration.class)
+				if (get(ActivityMasterConfiguration.class)
 				                .isSecurityEnabled())
 				{
-					st.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+					st.createDefaultSecurity(get(ISystemsService.class)
 					                                     .getActivityMaster(st.getEnterpriseID(), identityToken), identityToken);
 				}
 			}
@@ -140,7 +146,7 @@ public class SecurityTokenService
 		return st;
 	}
 
-	public SecurityTokenXSecurityToken link(SecurityToken parent, SecurityToken child, Classification classification)
+	public SecurityTokenXSecurityToken link(SecurityToken parent, SecurityToken child, Classification classification,UUID...identifyingToken )
 	{
 		SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
 		Optional<SecurityTokenXSecurityToken> exists = root.builder()
@@ -160,6 +166,7 @@ public class SecurityTokenService
 			root.setEnterpriseID(classification.getEnterpriseID());
 			root.setActiveFlagID(classification.getActiveFlagID());
 			root.persist();
+			updateSecurityHierarchy(child.getId());
 		}
 		else
 		{
@@ -168,20 +175,28 @@ public class SecurityTokenService
 		return root;
 	}
 
-	public void updateSecurityHierarchy()
+	private void updateSecurityHierarchy(Long securityTokenID)
 	{
-		javax.sql.DataSource ds = GuiceContext.get(javax.sql.DataSource.class, com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB.class);
-		try (java.sql.Connection c = ds.getConnection(); java.sql.CallableStatement st = c.prepareCall("{call MergeHierarchy}"))
+		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
+
+		try (java.sql.Connection c = ds.getConnection();
+		     java.sql.CallableStatement st = c.prepareCall("{call MergeHierarchy (?)}");
+		     java.sql.CallableStatement stPar = c.prepareCall("{call UpdateSecurityHierarchy (?)}")
+		)
 		{
+			st.setLong(1, securityTokenID);
 			st.execute();
+			stPar.setLong(1, securityTokenID);
+			stPar.execute();
 		}
 		catch (java.sql.SQLException e)
 		{
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
+	@Override
 	public SecurityToken getEveryoneGroup(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
@@ -196,6 +211,7 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
+	@Override
 	public SecurityToken getEverywhereGroup(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
@@ -210,6 +226,7 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
+	@Override
 	public SecurityToken getGuestsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
@@ -224,6 +241,7 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
+	@Override
 	public SecurityToken getRegisteredGuestsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
@@ -238,6 +256,7 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
+	@Override
 	public SecurityToken getVisitorsGuestsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
@@ -252,6 +271,7 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
+	@Override
 	public SecurityToken getAdministratorsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
@@ -266,6 +286,7 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
+	@Override
 	public SecurityToken getSystemsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
@@ -280,6 +301,7 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
+	@Override
 	public SecurityToken getPluginsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
@@ -294,6 +316,7 @@ public class SecurityTokenService
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
+	@Override
 	public SecurityToken getApplicationsFolder(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();

@@ -54,6 +54,7 @@ public class DefaultTestConfig
 	public void beforeEach(ExtensionContext extensionContext) throws Exception
 	{
 		BTMAutomatedTransactionHandler.setActive(true);
+		HazelcastConfigHandler.startLocal = true;
 		ActivityMasterDBModule.persistenceUnitName = "ActivityMasterUT";
 
 		//HazelcastConfigHandler.startLocal = true;
@@ -61,7 +62,6 @@ public class DefaultTestConfig
 		LogColourFormatter.setRenderBlack(false);
 		GuiceContext.inject();
 
-		GuiceContext.inject();
 		scoper = ServletScopes.scopeRequest(new HashMap<>())
 		                                                   .open();
 		RequestScopedObject obj = GuiceContext.get(RequestScopedObject.class);

@@ -33,13 +33,15 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 public class ActivityMasterService
 		implements IProgressable, IActivityMasterService
 {
-
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = 6000)
 	public Enterprise startNewEnterprise(IEnterpriseName<?> enterpriseName,
 	                                     @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
 
 		GuiceContext.get(ActivityMasterConfiguration.class)
 		            .setSecurityEnabled(false);
+		GuiceContext.get(ActivityMasterConfiguration.class)
+		            .setAsyncEnabled(false);
 		GuiceContext.get(ActivityMasterConfiguration.class)
 		            .setEnterpriseName(enterpriseName);
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
@@ -123,9 +125,7 @@ public class ActivityMasterService
 		return administratorUser;
 	}
 
-
-
-
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void runUpdatesOnEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		GuiceContext.get(ActivityMasterConfiguration.class)
@@ -156,6 +156,7 @@ public class ActivityMasterService
 	}
 
 	@Override
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));

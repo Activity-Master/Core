@@ -8,13 +8,16 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.jwebmp.guicedinjection.GuiceContext;
+import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.EnterpriseClassifications.*;
+import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 public class EnterpriseSystem
 		implements IActivityMasterSystem<EnterpriseSystem>
@@ -43,6 +46,9 @@ public class EnterpriseSystem
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
+		defaultWaitTime = 5L;
+		defaultWaitUnit = TimeUnit.MINUTES;
+		JobService.getInstance().destroy();
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Enterprise System",
 		                                        "The system for handling enterprises", "");

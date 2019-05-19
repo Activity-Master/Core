@@ -404,10 +404,10 @@ public class SecurityTokenSystem
 		                                    .inDateRange()
 		                                    .getAll())
 		{
-			logProgress("Security Token Service", "Checking - " +
+			/*logProgress("Security Token Service", "Checking - " +
 			                                      next.getClass()
 			                                          .getSimpleName(), progressMonitor);
-			next.createDefaultSecurity(system,identityToken);
+			*/next.createDefaultSecurity(system,identityToken);
 		}
 
 	}

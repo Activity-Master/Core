@@ -3,6 +3,7 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction.builders;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHierarchyView;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
+import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierarchyView_;
 import com.jwebmp.entityassist.querybuilder.QueryBuilder;
 import com.jwebmp.guicedinjection.GuiceContext;
 
@@ -34,10 +35,18 @@ public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchy
 	}
 
 	@SuppressWarnings("unchecked")
-	public J findMyChildren(Serializable token)
+	public J findMyChildrenRecursive(Serializable token)
 	{
 		where(getAttribute("path"), Like, "%" + token + "%");
 		where(getAttribute("path"), NotLike, "%" + token);
+		return (J) this;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public J findMyChildren(Long securityTokenID)
+	{
+		where(SecurityHierarchyView_.parentID, Equals, securityTokenID);
 		return (J) this;
 	}
 }

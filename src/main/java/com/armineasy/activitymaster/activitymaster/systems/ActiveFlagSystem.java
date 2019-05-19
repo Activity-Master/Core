@@ -26,10 +26,10 @@ public class ActiveFlagSystem
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
+		logProgress("Active Flag Service", "Loading Active Flags", progressMonitor);
 		for (ActiveFlag activeFlag : ActiveFlag.values())
 		{
 			get(ActiveFlagService.class).create(enterprise, activeFlag.name(), activeFlag.getDescription());
-			logProgress("Active Flag Service", "Created/Verified Active Flag [" + activeFlag.name() + "]", progressMonitor);
 		}
 	}
 
