@@ -11,6 +11,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import javax.cache.annotation.CacheKey;
@@ -18,6 +19,7 @@ import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,7 +31,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                                         J extends IClassificationValue>
 {
 	@SuppressWarnings("unchecked")
-	default Optional<Q> findClassification(@CacheKey IClassificationValue classificationValue, @CacheKey Systems requestingSystem, @CacheKey UUID... identityToken)
+	default Optional<Q> findClassification(@CacheKey IClassificationValue classificationValue, @CacheKey ISystems requestingSystem, @CacheKey UUID... identityToken)
 	{
 		Q activityMasterIdentity = GuiceContext.get(findClassificationQueryRelationshipTableType());
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
@@ -41,6 +43,22 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                                                         .inDateRange()
 		                                                         .canRead(requestingSystem.getEnterpriseID(), identityToken)
 		                                                         .get();
+		return exists;
+	}
+
+	@SuppressWarnings("unchecked")
+	default List<Q> findClassifications(@CacheKey IClassificationValue classificationValue, @CacheKey ISystems requestingSystem, @CacheKey UUID... identityToken)
+	{
+		Q activityMasterIdentity = GuiceContext.get(findClassificationQueryRelationshipTableType());
+		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
+		Classification classification = classificationService.find(classificationValue, requestingSystem.getEnterpriseID(), identityToken);
+
+		List<Q> exists = (List<Q>) activityMasterIdentity.builder()
+		                                                         .findLink((P) this, (S) classification, requestingSystem.getEnterpriseID())
+		                                                         .inActiveRange(requestingSystem.getEnterpriseID())
+		                                                         .inDateRange()
+		                                                         .canRead(requestingSystem.getEnterpriseID(), identityToken)
+		                                                         .getAll();
 		return exists;
 	}
 
@@ -62,7 +80,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default boolean hasClassification(J classificationValue, Systems originatingSystem, @CacheKey UUID... identityToken)
+	default boolean hasClassification(J classificationValue, ISystems<?> originatingSystem, @CacheKey UUID... identityToken)
 	{
 		Q activityMasterIdentity = GuiceContext.get(findClassificationQueryRelationshipTableType());
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
@@ -77,7 +95,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q addClassification(J classificationValue, String value, Systems originatingSystem, UUID... identifyingToken)
+	default Q addClassification(J classificationValue, String value, ISystems originatingSystem, UUID... identifyingToken)
 	{
 		Q tableForClassification = GuiceContext.get(findClassificationQueryRelationshipTableType());
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
@@ -97,10 +115,10 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			tableForClassification.setEnterpriseID(originatingSystem.getEnterpriseID());
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(originatingSystem);
-			tableForClassification.setOriginalSourceSystemID(originatingSystem);
+			tableForClassification.setSystemID((Systems) originatingSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID("");
-			tableForClassification.setActiveFlagID(originatingSystem.getActiveFlagID());
+			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 			configureForClassification(tableForClassification, originatingSystem.getEnterpriseID());
 
 			tableForClassification.persist();
@@ -117,7 +135,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q addOrUpdateClassification(J classificationValue, String value,Systems originatingSystem,  UUID... identifyingToken)
+	default Q addOrUpdateClassification(J classificationValue, String value,ISystems originatingSystem,  UUID... identifyingToken)
 	{
 		Q tableForClassification = GuiceContext.get(findClassificationQueryRelationshipTableType());
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
@@ -144,7 +162,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			tableForClassification.update();
 
 			tableForClassification.setId(null);
-			tableForClassification.setSystemID(originatingSystem);
+			tableForClassification.setSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemID(originalSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(Long.toString(originalSystem.getId()));
 			tableForClassification.setWarehouseCreatedTimestamp(LocalDateTime.now());

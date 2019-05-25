@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.ITypeValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IInvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -70,7 +71,7 @@ public interface IContainsInvolvedPartyTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J addType(ITypeValue<?> typeValue,Systems originatingSystems, String value, UUID... identifyingToken)
+	default J addType(ITypeValue<?> typeValue, ISystems originatingSystems, String value, UUID... identifyingToken)
 	{
 		InvolvedPartyType type = GuiceContext.get(InvolvedPartyService.class)
 		                                     .findType(typeValue, originatingSystems.getEnterpriseID(),identifyingToken);
@@ -85,8 +86,8 @@ public interface IContainsInvolvedPartyTypes<P extends WarehouseCoreTable,
 		{
 			tableForClassification.setEnterpriseID(type.getEnterpriseID());
 			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(originatingSystems);
-			tableForClassification.setOriginalSourceSystemID(originatingSystems);
+			tableForClassification.setSystemID((Systems) originatingSystems);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystems);
 			tableForClassification.setActiveFlagID(type.getActiveFlagID());
 			setMyInvolvedPartyTypeLinkValue(tableForClassification, (S) type, type.getEnterpriseID());
 

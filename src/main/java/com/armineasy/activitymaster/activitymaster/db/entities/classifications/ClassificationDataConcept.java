@@ -5,9 +5,12 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.b
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.classificationdataconcepts.IClassificationDataConcept;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +37,8 @@ import java.util.List;
 public class ClassificationDataConcept
 		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, Long, ClassificationDataConceptSecurityToken>
 		implements IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationDataConcept>,
-				           IContainsResourceItems<ClassificationDataConcept, ResourceItem,ClassificationDataConceptXResourceItem>
+				           IContainsResourceItems<ClassificationDataConcept, ResourceItem,ClassificationDataConceptXResourceItem>,
+				           IActivityMasterEntity<ClassificationDataConcept>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -112,7 +116,7 @@ public class ClassificationDataConcept
 	}
 
 	@Override
-	protected ClassificationDataConceptSecurityToken configureDefaultsForNewToken(ClassificationDataConceptSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected ClassificationDataConceptSecurityToken configureDefaultsForNewToken(ClassificationDataConceptSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		ClassificationDataConceptSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		token.setBase(this);

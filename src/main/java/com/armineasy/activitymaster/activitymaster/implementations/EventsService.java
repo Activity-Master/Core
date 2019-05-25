@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.events.Event;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IEventTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEventService;
 import com.google.inject.Singleton;
@@ -24,12 +25,12 @@ public class EventsService
 		implements IEventService
 {
 	@Override
-	public Event createEvent(IEventTypeValue<?> eventType, Systems originatingSystem, UUID... identityToken)
+	public Event createEvent(IEventTypeValue<?> eventType, ISystems originatingSystem, UUID... identityToken)
 	{
 		Event event = new Event();
 		event.setEnterpriseID(originatingSystem.getEnterpriseID());
-		event.setSystemID(originatingSystem);
-		event.setOriginalSourceSystemID(originatingSystem);
+		event.setSystemID((Systems) originatingSystem);
+		event.setOriginalSourceSystemID((Systems) originatingSystem);
 		event.setActiveFlagID(get(IActiveFlagService.class)
 				                      .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 		event.persist();
@@ -38,7 +39,7 @@ public class EventsService
 		return event;
 	}
 
-	public EventType createEventType(IEventTypeValue<?> eventType, Systems originatingSystem, UUID... identityToken)
+	public EventType createEventType(IEventTypeValue<?> eventType, ISystems originatingSystem, UUID... identityToken)
 	{
 		Optional<EventType> typeExists = ActivityMasterConfiguration
 				                                 .get()
@@ -54,11 +55,11 @@ public class EventsService
 			EventType type = new EventType();
 			type.setName(eventType.name());
 			type.setDescription(eventType.classificationValue());
-			type.setSystemID(originatingSystem);
+			type.setSystemID((Systems) originatingSystem);
 			type.setEnterpriseID(originatingSystem.getEnterpriseID());
 			type.setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 			                                 .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
-			type.setOriginalSourceSystemID(originatingSystem);
+			type.setOriginalSourceSystemID((Systems) originatingSystem);
 			type.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())

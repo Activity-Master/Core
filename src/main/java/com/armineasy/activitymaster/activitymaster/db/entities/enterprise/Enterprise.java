@@ -22,8 +22,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemsSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNoXClassification;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,7 +52,10 @@ import java.util.List;
 		callSuper = false)
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, Long, EnterpriseSecurityToken>
-		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification>
+		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification>,
+				           IActivityMasterEntity<Enterprise>,
+				           INameAndDescription<Enterprise>,
+				           IEnterprise<Enterprise>
 {
 	private static final long serialVersionUID = 1L;
 

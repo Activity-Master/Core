@@ -8,6 +8,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.security.Security
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.SecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedinjection.GuiceContext;
 
@@ -45,7 +47,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 
 	}
 
-	public void createDefaultSecurity(Systems system, UUID... identity)
+	public void createDefaultSecurity(ISystems system, UUID... identity)
 	{
 		boolean async = ActivityMasterConfiguration.get()
 		                                           .isAsyncEnabled();
@@ -154,7 +156,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 	}
 
 
-	private S createDefaultAdministratorSecurityAccess(Enterprise enterprise, UUID... identity)
+	private S createDefaultAdministratorSecurityAccess(IEnterprise enterprise, UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = get(SecurityTokenService.class)
@@ -187,7 +189,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		return stAdmin;
 	}
 
-	private S createDefaultEveryoneSecurityAccess(Enterprise enterprise, UUID... identity)
+	private S createDefaultEveryoneSecurityAccess(IEnterprise enterprise, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = get(SecurityTokenService.class)
@@ -221,7 +223,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		return stAdmin;
 	}
 
-	private S createDefaultEverywhereSecurityAccess(Enterprise enterprise, UUID... identity)
+	private S createDefaultEverywhereSecurityAccess(IEnterprise enterprise, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = get(SecurityTokenService.class)
@@ -256,7 +258,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		return stAdmin;
 	}
 
-	private S createDefaultSystemsSecurityAccess(Enterprise enterprise, UUID... identity)
+	private S createDefaultSystemsSecurityAccess(IEnterprise enterprise, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = get(SecurityTokenService.class)
@@ -292,7 +294,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		return stAdmin;
 	}
 
-	private S createDefaultApplicationsSecurityAccess(Enterprise enterprise, UUID... identity)
+	private S createDefaultApplicationsSecurityAccess(IEnterprise enterprise, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = get(SecurityTokenService.class)
@@ -328,7 +330,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		return stAdmin;
 	}
 
-	private S createDefaultPluginsSecurityAccess(Enterprise enterprise, UUID... identity)
+	private S createDefaultPluginsSecurityAccess(IEnterprise enterprise, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = get(SecurityTokenService.class)
@@ -363,7 +365,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		return stAdmin;
 	}
 
-	private S createDefaultGuestReadSecurityAccess(Enterprise enterprise, UUID... identity)
+	private S createDefaultGuestReadSecurityAccess(IEnterprise enterprise, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = get(SecurityTokenService.class)
@@ -406,13 +408,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
 	}
 
-	protected S configureDefaultsForNewToken(S stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected S configureDefaultsForNewToken(S stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
-		stAdmin.setSystemID(activityMasterSystem);
-		stAdmin.setActiveFlagID(activityMasterSystem.getActiveFlagID());
-		stAdmin.setOriginalSourceSystemID(activityMasterSystem);
+		stAdmin.setSystemID((Systems) activityMasterSystem);
+		stAdmin.setActiveFlagID(((Systems)activityMasterSystem).getActiveFlagID());
+		stAdmin.setOriginalSourceSystemID((Systems) activityMasterSystem);
 		stAdmin.setOriginalSourceSystemUniqueID("");
-		stAdmin.setEnterpriseID(enterprise);
+		stAdmin.setEnterpriseID((Enterprise) enterprise);
 
 		return stAdmin;
 	}

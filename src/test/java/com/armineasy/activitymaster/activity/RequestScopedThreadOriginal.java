@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.security.Security
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
@@ -57,8 +58,8 @@ public abstract class RequestScopedThreadOriginal
 		Optional<Enterprise> enterpriseO = service.findEnterprise(TestEnterprise);
 		Enterprise enterprise = enterpriseO.get();
 
-		Systems systems = GuiceContext.get(ISystemsService.class)
-		                              .getActivityMaster(enterprise);
+		ISystems systems = GuiceContext.get(ISystemsService.class)
+		                               .getActivityMaster(enterprise);
 		UUID identityToken = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
 		SecurityToken token = GuiceContext.get(ISecurityTokenService.class)

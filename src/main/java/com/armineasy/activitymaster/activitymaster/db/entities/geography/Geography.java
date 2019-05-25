@@ -8,13 +8,17 @@ package com.armineasy.activitymaster.activitymaster.db.entities.geography;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXGeography;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.builders.GeographyQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.geography.IGeographyClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +45,8 @@ import java.util.List;
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
 		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification>,
-				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem>
+				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem>,
+				           IActivityMasterEntity<Geography>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -128,7 +133,7 @@ public class Geography
 	}
 
 	@Override
-	protected GeographySecurityToken configureDefaultsForNewToken(GeographySecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected GeographySecurityToken configureDefaultsForNewToken(GeographySecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

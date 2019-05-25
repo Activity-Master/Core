@@ -5,6 +5,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventXInvolvedPartyQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,7 +70,7 @@ public class EventXInvolvedParty
 	}
 
 	@Override
-	protected EventXInvolvedPartySecurityToken configureDefaultsForNewToken(EventXInvolvedPartySecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected EventXInvolvedPartySecurityToken configureDefaultsForNewToken(EventXInvolvedPartySecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

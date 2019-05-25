@@ -12,6 +12,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.buil
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IResourceItemService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
@@ -72,15 +73,15 @@ public class ResourceItemService
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public ResourceItem create(IResourceTypeValue<?> identityResourceType, String mimeType,
-	                           Systems system, UUID... identityToken)
+	                           ISystems system, UUID... identityToken)
 	{
 		ResourceItem xr = new ResourceItem();
 		xr.setResourceItemUUID(UUID.randomUUID());
-		xr.setOriginalSourceSystemID(system);
+		xr.setOriginalSourceSystemID((Systems) system);
 		xr.setOriginalSourceSystemUniqueID("");
-		xr.setSystemID(system);
+		xr.setSystemID((Systems) system);
 		xr.setEnterpriseID(system.getEnterpriseID());
-		xr.setActiveFlagID(system.getActiveFlagID());
+		xr.setActiveFlagID(((Systems)system).getActiveFlagID());
 		xr.setResourceItemDataType(mimeType);
 		xr.persist();
 
@@ -101,7 +102,7 @@ public class ResourceItemService
 	public ResourceItem findByClassification(@CacheKey IResourceTypeValue<?> resourceType,
 	                                         @CacheKey IResourceItemClassification<?> classification,
 	                                         @CacheKey String value,
-	                                         @CacheKey Systems systems,
+	                                         @CacheKey ISystems systems,
 	                                         @CacheKey UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
@@ -135,7 +136,7 @@ public class ResourceItemService
 	}
 
 	@CacheResult(cacheName = "FindResourceItemType")
-	public ResourceItemType findResourceItemType(@CacheKey IResourceTypeValue<?> type, @CacheKey Systems systems, @CacheKey UUID... identityToken)
+	public ResourceItemType findResourceItemType(@CacheKey IResourceTypeValue<?> type, @CacheKey ISystems systems, @CacheKey UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
 		Optional<ResourceItemType> exists = xr.builder()

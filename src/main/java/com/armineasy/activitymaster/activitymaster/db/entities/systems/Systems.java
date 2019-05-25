@@ -21,8 +21,13 @@ import com.armineasy.activitymaster.activitymaster.db.entities.security.Security
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.builders.SystemsQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNoXClassification;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.ISystemsClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,11 +49,15 @@ import java.util.List;
 @Table(name = "Systems")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
+@EqualsAndHashCode(of = {"name","enterpriseID"},
 		callSuper = false)
 public class Systems
 		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, Long, SystemsSecurityToken>
-		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification>
+		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification>,
+				           IActivityMasterEntity<Systems>,
+				           INameAndDescription<Systems>,
+				           IContainsEnterprise<Systems>,
+				           ISystems<Systems>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -1015,7 +1024,7 @@ public class Systems
 	}
 
 	@Override
-	protected SystemsSecurityToken configureDefaultsForNewToken(SystemsSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected SystemsSecurityToken configureDefaultsForNewToken(SystemsSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		SystemsSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		stAdmin.setSystemID(this);

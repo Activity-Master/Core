@@ -1,7 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.services.system;
 
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -9,8 +9,8 @@ import java.util.UUID;
 
 public interface ISystemsService
 {
-	Systems getActivityMaster(Enterprise enterprise, UUID... token);
+	ISystems getActivityMaster(IEnterprise enterprise, UUID... token);
 
 	@CacheResult(cacheName = "FindSystemByIdentityClassification")
-	Systems findSystem(@CacheKey Enterprise enterprise, @CacheKey UUID token, UUID... identityToken);
+	ISystems findSystem(@CacheKey IEnterprise enterprise, @CacheKey UUID token, @CacheKey UUID... identityToken);
 }

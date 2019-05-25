@@ -13,6 +13,7 @@ import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.INameType;
 import com.armineasy.activitymaster.activitymaster.services.ITypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.SecurityAccessException;
 import com.armineasy.activitymaster.activitymaster.services.security.Passwords;
@@ -207,7 +208,7 @@ public class InvolvedPartyService
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
 	public InvolvedParty findByIdentificationType(
-			@CacheKey IIdentificationType<?> idType, @CacheKey String value, @CacheKey Systems system, @CacheKey UUID... tokens)
+			@CacheKey IIdentificationType<?> idType, @CacheKey String value, @CacheKey ISystems system, @CacheKey UUID... tokens)
 	{
 		Enterprise enterprise = system.getEnterpriseID();
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> builder = new InvolvedPartyXInvolvedPartyIdentificationType()
@@ -233,7 +234,7 @@ public class InvolvedPartyService
 	}
 
 	@Override
-	public InvolvedParty findByUsernameAndPassword(String username, String password, Systems originatingSystem, boolean throwForNoUser, UUID... token)
+	public InvolvedParty findByUsernameAndPassword(String username, String password, ISystems originatingSystem, boolean throwForNoUser, UUID... token)
 	{
 		Enterprise enterprise = originatingSystem.getEnterpriseID();
 		if (!doesUsernameExist(username, enterprise))
@@ -322,7 +323,7 @@ public class InvolvedPartyService
 		return involvedParty;
 	}
 
-	public InvolvedParty create(Systems originatingSystem, Pair<IIdentificationType, String> idTypes,
+	public InvolvedParty create(ISystems originatingSystem, Pair<IIdentificationType, String> idTypes,
 	                            boolean isOrganic, UUID... identityToken)
 	{
 		Enterprise enterprise = originatingSystem.getEnterpriseID();
@@ -337,8 +338,8 @@ public class InvolvedPartyService
 
 		if (exists.isEmpty())
 		{
-			Systems system = GuiceContext.get(ISystemsService.class)
-			                             .getActivityMaster(enterprise);
+			Systems system = (Systems) GuiceContext.get(ISystemsService.class)
+			                                       .getActivityMaster(enterprise);
 
 			ip.setEnterpriseID(enterprise);
 			ip.setActiveFlagID(system.getActiveFlagID());

@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
 import com.armineasy.activitymaster.activitymaster.services.IEventTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEventService;
 
@@ -71,7 +72,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J addEventType(IEventTypeValue<?> typeValue, Systems originatingSystems, IClassificationValue<?> classificationValue,
+	default J addEventType(IEventTypeValue<?> typeValue, ISystems originatingSystems, IClassificationValue<?> classificationValue,
 	                       String value, UUID... identifyingToken)
 	{
 		EventType type = get(IEventService.class)
@@ -90,8 +91,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			tableForClassification.setEnterpriseID(type.getEnterpriseID());
 			tableForClassification.setClassificationID(clazz);
 			tableForClassification.setValue(value != null ? value : "");
-			tableForClassification.setSystemID(originatingSystems);
-			tableForClassification.setOriginalSourceSystemID(originatingSystems);
+			tableForClassification.setSystemID((Systems) originatingSystems);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystems);
 			tableForClassification.setActiveFlagID(type.getActiveFlagID());
 			setMyEventTypeLinkValue(tableForClassification, (S) type, type.getEnterpriseID());
 

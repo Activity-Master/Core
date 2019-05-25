@@ -1,6 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.address;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.builders.AddressQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
@@ -9,10 +10,13 @@ import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geograp
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyXAddress;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsGeographies;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +43,8 @@ public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, Long, AddressSecurityToken>
 		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification>,
 				           IContainsGeographies<Address, Geography, AddressXGeography>,
-				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem>
+				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem>,
+				           IActivityMasterEntity<Address>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -121,7 +126,7 @@ public class Address
 
 
 	@Override
-	protected AddressSecurityToken configureDefaultsForNewToken(AddressSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected AddressSecurityToken configureDefaultsForNewToken(AddressSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

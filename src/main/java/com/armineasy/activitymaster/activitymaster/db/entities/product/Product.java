@@ -3,15 +3,19 @@ package com.armineasy.activitymaster.activitymaster.db.entities.product;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementXProduct;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventXProduct;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyXProduct;
 import com.armineasy.activitymaster.activitymaster.db.entities.product.builders.ProductQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.product.IProductClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +42,8 @@ import java.util.List;
 public class Product
 		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, Long, ProductSecurityToken>
 		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification>,
-				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem>
+				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem>,
+				           IActivityMasterEntity<Product>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -134,7 +139,7 @@ public class Product
 	}
 
 	@Override
-	protected ProductSecurityToken configureDefaultsForNewToken(ProductSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected ProductSecurityToken configureDefaultsForNewToken(ProductSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

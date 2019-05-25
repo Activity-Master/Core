@@ -4,6 +4,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable
 import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConceptXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
@@ -13,9 +14,12 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.product.ProductXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItemTypes;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,7 +47,8 @@ import java.util.UUID;
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, Long, ResourceItemSecurityToken>
 		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification>,
-				           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType>
+				           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType>,
+				           IActivityMasterEntity<ResourceItem>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -132,7 +137,7 @@ public class ResourceItem
 	}
 
 	@Override
-	protected ResourceItemSecurityToken configureDefaultsForNewToken(ResourceItemSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected ResourceItemSecurityToken configureDefaultsForNewToken(ResourceItemSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

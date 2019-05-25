@@ -4,6 +4,8 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyOrganicQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,7 +66,7 @@ public class InvolvedPartyOrganic
 	}
 
 	@Override
-	protected InvolvedPartyOrganicSecurityToken configureDefaultsForNewToken(InvolvedPartyOrganicSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected InvolvedPartyOrganicSecurityToken configureDefaultsForNewToken(InvolvedPartyOrganicSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

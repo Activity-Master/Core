@@ -16,6 +16,7 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSyste
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.SystemsClassifications;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.armineasy.activitymaster.activitymaster.services.types.IPTypes;
 import com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes;
@@ -63,7 +64,7 @@ public class SystemsSystem
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = transactionTimeout)
-	public UUID registerNewSystem(Enterprise enterprise, Systems newSystem)
+	public UUID registerNewSystem(Enterprise enterprise, ISystems<?> newSystem)
 	{
 		//Create Security Token for the created system row
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
@@ -110,7 +111,7 @@ public class SystemsSystem
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public InvolvedParty createInvolvedPartyForNewSystem(Systems newSystem,UUID...identityToken)
+	public InvolvedParty createInvolvedPartyForNewSystem(ISystems newSystem,UUID...identityToken)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(newSystem.getEnterpriseID());

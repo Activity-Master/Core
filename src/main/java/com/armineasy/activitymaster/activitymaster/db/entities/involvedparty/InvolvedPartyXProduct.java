@@ -11,6 +11,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyXProductQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.product.Product;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -97,7 +99,7 @@ public class InvolvedPartyXProduct
 	}
 
 	@Override
-	protected InvolvedPartyXProductSecurityToken configureDefaultsForNewToken(InvolvedPartyXProductSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected InvolvedPartyXProductSecurityToken configureDefaultsForNewToken(InvolvedPartyXProductSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

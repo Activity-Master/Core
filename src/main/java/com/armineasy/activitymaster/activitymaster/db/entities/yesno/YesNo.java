@@ -5,8 +5,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.builders.YesNoQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.yesno.IYesNoClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +35,8 @@ import java.util.List;
 		callSuper = false)
 public class YesNo
 		extends WarehouseTable<YesNo, YesNoQueryBuilder, Long, YesNoSecurityToken>
-		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification>
+		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification>,
+				           IActivityMasterEntity<YesNo>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -148,8 +152,9 @@ public class YesNo
 		return getYesNoDesc();
 	}
 
+
 	@Override
-	protected YesNoSecurityToken configureDefaultsForNewToken(YesNoSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected YesNoSecurityToken configureDefaultsForNewToken(YesNoSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
@@ -90,8 +91,8 @@ public class DefaultTestConfig
 		config.setSecurityEnabled(false);
 		config.setEnterpriseName(TestEnterprise);
 
-		Systems systems = GuiceContext.get(ISystemsService.class)
-		                              .getActivityMaster(enterprise);
+		ISystems systems = GuiceContext.get(ISystemsService.class)
+		                               .getActivityMaster(enterprise);
 		UUID identityToken = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
 		SecurityToken token = GuiceContext.get(ISecurityTokenService.class)

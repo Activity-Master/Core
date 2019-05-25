@@ -13,6 +13,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IResourceItemService;
 import com.armineasy.activitymaster.activitymaster.threads.PersistingThread;
@@ -83,7 +84,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	default ResourceItem addResourceItem(IResourceTypeValue<?> resourceTypeValue, IResourceItemClassification classification,
 	                                     byte[] data,
 	                                     String mimeType,
-	                                     Systems originatingSystem, UUID... identifyingToken)
+	                                     ISystems originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findResourceItemQueryRelationshipTableType());
 
@@ -105,9 +106,9 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 
 		tableForClassification.setEnterpriseID(originatingSystem.getEnterpriseID());
 		tableForClassification.setValue("");
-		tableForClassification.setSystemID(originatingSystem);
-		tableForClassification.setOriginalSourceSystemID(originatingSystem);
-		tableForClassification.setActiveFlagID(originatingSystem.getActiveFlagID());
+		tableForClassification.setSystemID((Systems) originatingSystem);
+		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setActiveFlagID(((Systems)originatingSystem).getActiveFlagID());
 		tableForClassification.setClassificationID(GuiceContext.get(IClassificationService.class)
 		                                                       .find(classification, originatingSystem.getEnterpriseID(), identifyingToken));
 		setMyResourceItemLinkValue(tableForClassification, (S) item, originatingSystem.getEnterpriseID());
@@ -126,7 +127,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	default ResourceItem addOrUseResourceItem(IResourceTypeValue<?> resourceTypeValue, IResourceItemClassification classification,
 	                                          byte[] data,
 	                                          String mimeType,
-	                                          Systems originatingSystem, UUID... identifyingToken)
+	                                          ISystems originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findResourceItemQueryRelationshipTableType());
 
@@ -150,9 +151,9 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 
 		tableForClassification.setEnterpriseID(originatingSystem.getEnterpriseID());
 		tableForClassification.setValue("");
-		tableForClassification.setSystemID(originatingSystem);
-		tableForClassification.setOriginalSourceSystemID(originatingSystem);
-		tableForClassification.setActiveFlagID(originatingSystem.getActiveFlagID());
+		tableForClassification.setSystemID((Systems) originatingSystem);
+		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setActiveFlagID(((Systems)originatingSystem).getActiveFlagID());
 		tableForClassification.setClassificationID(GuiceContext.get(IClassificationService.class)
 		                                                       .find(classification, originatingSystem.getEnterpriseID(), identifyingToken));
 		setMyResourceItemLinkValue(tableForClassification, (S) item, originatingSystem.getEnterpriseID());
@@ -168,17 +169,17 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	default void storeResourceItemData(ResourceItem item, byte[] data, Systems originatingSystem, UUID... identifyingToken)
+	default void storeResourceItemData(ResourceItem item, byte[] data, ISystems originatingSystem, UUID... identifyingToken)
 	{
 		ResourceItemData itemData = new ResourceItemData();
 		itemData.setResource(item);
 		itemData.setResourceItemData(data);
 
 		itemData.setEnterpriseID(originatingSystem.getEnterpriseID());
-		itemData.setSystemID(originatingSystem);
-		itemData.setOriginalSourceSystemID(originatingSystem);
+		itemData.setSystemID((Systems)originatingSystem);
+		itemData.setOriginalSourceSystemID((Systems) originatingSystem);
 
-		itemData.setActiveFlagID(originatingSystem.getActiveFlagID());
+		itemData.setActiveFlagID(((Systems)originatingSystem).getActiveFlagID());
 		itemData.persist();
 
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
@@ -190,7 +191,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 
 
 	@SuppressWarnings("unchecked")
-	default J add(ResourceItem resourceItem, IResourceItemClassification<?> iclassification, Systems originatingSystem, UUID... identifyingToken)
+	default J add(ResourceItem resourceItem, IResourceItemClassification<?> iclassification, ISystems originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = get(findResourceItemQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
@@ -205,10 +206,10 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
 
 			tableForClassification.setEnterpriseID(resourceItem.getEnterpriseID());
-			tableForClassification.setSystemID(originatingSystem);
+			tableForClassification.setSystemID((Systems) originatingSystem);
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue("");
-			tableForClassification.setOriginalSourceSystemID(originatingSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setActiveFlagID(resourceItem.getActiveFlagID());
 			setMyResourceItemLinkValue(tableForClassification, (S) resourceItem, resourceItem.getEnterpriseID());
 			tableForClassification.persist();

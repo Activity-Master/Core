@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IInvolvedPartyService;
 
 import javax.cache.annotation.CacheKey;
@@ -27,7 +28,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 {
 	@SuppressWarnings("unchecked")
 	@CacheResult
-	default Optional<J> findIdentificationType(@CacheKey IIdentificationType typeName, @CacheKey Systems originatingSystem, @CacheKey UUID... identityToken)
+	default Optional<J> findIdentificationType(@CacheKey IIdentificationType typeName, @CacheKey ISystems originatingSystem, @CacheKey UUID... identityToken)
 	{
 		InvolvedPartyIdentificationType type = get(IInvolvedPartyService.class).findIdentificationType(typeName, originatingSystem.getEnterpriseID(),
 		                                                                                               identityToken);
@@ -60,7 +61,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default boolean hasIdentificationType(IIdentificationType<?> typeName, Systems originatingSystem, UUID... identityToken)
+	default boolean hasIdentificationType(IIdentificationType<?> typeName, ISystems originatingSystem, UUID... identityToken)
 	{
 		InvolvedPartyIdentificationType type = get(IInvolvedPartyService.class)
 				                                       .findIdentificationType(typeName, originatingSystem.getEnterpriseID(), identityToken);
@@ -74,7 +75,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default J addIdentificationType(IIdentificationType<?> typeName, Systems originatingSystem, String value, UUID... identityToken)
+	default J addIdentificationType(IIdentificationType<?> typeName, ISystems originatingSystem, String value, UUID... identityToken)
 	{
 		InvolvedPartyIdentificationType type = get(InvolvedPartyService.class)
 				                                       .findIdentificationType(typeName, originatingSystem.getEnterpriseID(), identityToken);
@@ -90,8 +91,8 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		{
 			tableForClassification.setEnterpriseID(type.getEnterpriseID());
 			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(originatingSystem);
-			tableForClassification.setOriginalSourceSystemID(originatingSystem);
+			tableForClassification.setSystemID((Systems) originatingSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setActiveFlagID(type.getActiveFlagID());
 			setMyInvolvedPartyIdentificationTypeLinkValue(tableForClassification, (S) type, type.getEnterpriseID());
 

@@ -29,8 +29,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNoXClassification;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.ClassificationHierarchyView;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsHierarchy;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.google.common.base.Strings;
 import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.EqualsAndHashCode;
@@ -51,18 +54,7 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(uniqueConstraints =
-		       {
-				       @UniqueConstraint(columnNames =
-						                         {
-								                         "ClassificationID", "ClassificationDataConceptID"
-						                         },name="UXClassificationAndConcept")
-				       , @UniqueConstraint(columnNames =
-						                           {
-								                           "ClassificationDataConceptID", "ClassificationName", "OriginalSourceSystemID"
-						                           },name="UXClassificationConceptNameAndSource")
-		       },
-		name = "Classification")
+@Table(name = "Classification")
 @XmlRootElement
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
@@ -70,7 +62,8 @@ import java.util.List;
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>
 		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView>,
-				           IContainsResourceItems<Classification,ResourceItem,ClassificationXResourceItem>
+				           IContainsResourceItems<Classification,ResourceItem,ClassificationXResourceItem>,
+				           IActivityMasterEntity<Classification>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -315,7 +308,7 @@ public class Classification
 	}
 
 	@Override
-	protected ClassificationSecurityToken configureDefaultsForNewToken(ClassificationSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected ClassificationSecurityToken configureDefaultsForNewToken(ClassificationSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		ClassificationSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		token.setBase(this);

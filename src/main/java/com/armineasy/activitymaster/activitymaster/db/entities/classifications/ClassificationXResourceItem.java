@@ -5,6 +5,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.b
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,7 +73,7 @@ public class ClassificationXResourceItem
 	}
 
 	@Override
-	protected ClassificationXResourceItemSecurityToken configureDefaultsForNewToken(ClassificationXResourceItemSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected ClassificationXResourceItemSecurityToken configureDefaultsForNewToken(ClassificationXResourceItemSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

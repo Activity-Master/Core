@@ -5,6 +5,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.build
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -76,7 +78,7 @@ public class ArrangementXResourceItem
 	}
 
 	@Override
-	protected ArrangementXResourceItemSecurityToken configureDefaultsForNewToken(ArrangementXResourceItemSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected ArrangementXResourceItemSecurityToken configureDefaultsForNewToken(ArrangementXResourceItemSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

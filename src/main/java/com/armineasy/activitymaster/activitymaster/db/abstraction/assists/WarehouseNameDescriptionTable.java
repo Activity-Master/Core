@@ -3,6 +3,7 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction.assists;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.assists.QueryBuilderNameDescription;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ public abstract class WarehouseNameDescriptionTable<J extends WarehouseNameDescr
 		                                                   I extends Serializable,
 		                                                   S extends WarehouseSecurityTable>
 		extends WarehouseCoreTable<J, Q, I, S>
+		implements INameAndDescription<J>
 {
 	private static final long serialVersionUID = 1L;
 

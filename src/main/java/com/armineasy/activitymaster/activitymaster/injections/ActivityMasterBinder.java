@@ -1,6 +1,5 @@
 package com.armineasy.activitymaster.activitymaster.injections;
 
-import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.implementations.*;
 import com.armineasy.activitymaster.activitymaster.services.system.*;
 import com.jwebmp.guicedinjection.abstractions.GuiceInjectorModule;
@@ -38,5 +37,8 @@ public class ActivityMasterBinder
 
 		module.bind(IEventService.class)
 		      .to(EventsService.class);
+
+		module.bind(IAddressService.class)
+		      .to(AddressService.class);
 	}
 }

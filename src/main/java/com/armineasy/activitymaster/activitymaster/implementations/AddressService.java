@@ -1,12 +1,17 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
+import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
+import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.AddressException;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
+import com.armineasy.activitymaster.activitymaster.services.system.IAddressService;
+import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.Singleton;
-import com.jwebmp.guicedinjection.GuiceContext;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,21 +26,60 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton
-public class AddressService
+public class AddressService implements IAddressService
 {
 	private static final Pattern ipAddressPattern = Pattern.compile("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\\.|$)){4}");
 
-	public Address addOrFindIPAddress(String ipAddress, Systems originatingSystem, UUID...identityToken) throws AddressException
+	@Override
+	public Address create(IAddressClassification<?> addressClassification, ISystems originatingSystem, String value, UUID... identifyingToken)
 	{
-		if(!ipAddressPattern.matcher(ipAddress).matches())
+		Address addy = new Address();
+		ISystems activityMasterSystem = get(ISystemsService.class)
+				                                .getActivityMaster(originatingSystem.getEnterpriseID());
+
+		Classification classification = get(ClassificationService.class).find(addressClassification,
+		                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
+		Optional<Address> addressExists = addy.builder()
+		                                      .withClassification(classification)
+		                                      .withEnterprise((Enterprise) originatingSystem.getEnterpriseID())
+		                                      .withValue(value)
+		                                      .inDateRange()
+		                                      .get();
+		if (addressExists.isEmpty())
+		{
+			addy.setEnterpriseID(classification.getEnterpriseID());
+			addy.setClassification(classification);
+			addy.setValue(value);
+			addy.setSystemID((Systems) activityMasterSystem);
+			addy.setOriginalSourceSystemID((Systems) activityMasterSystem);
+			addy.setActiveFlagID(classification.getActiveFlagID());
+			addy.persist();
+			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			{
+				addy.createDefaultSecurity(activityMasterSystem, identifyingToken);
+			}
+		}
+		else
+		{
+			addy = addressExists.get();
+		}
+
+		addy.addClassification(addressClassification, value, originatingSystem, identifyingToken);
+		return addy;
+	}
+
+	public Address addOrFindIPAddress(String ipAddress, ISystems originatingSystem, UUID... identityToken) throws AddressException
+	{
+		if (!ipAddressPattern.matcher(ipAddress)
+		                     .matches())
 		{
 			throw new AddressException("Invalid IP Address");
 		}
 
 		Address address = new Address();
 		Classification ipAddressClassification = get(ClassificationService.class).find(RemoteAddressIPAddress,
-		                                                                                            originatingSystem.getEnterpriseID(),
-		                                                                                            identityToken);
+		                                                                               originatingSystem.getEnterpriseID(),
+		                                                                               identityToken);
 
 		Optional<Address> exists = address.builder()
 		                                  .withClassification(ipAddressClassification)
@@ -46,12 +90,12 @@ public class AddressService
 			address.setValue(ipAddress);
 			address.setClassification(ipAddressClassification);
 			address.setEnterpriseID(originatingSystem.getEnterpriseID());
-			address.setSystemID(originatingSystem);
-			address.setOriginalSourceSystemID(originatingSystem);
+			address.setSystemID((Systems) originatingSystem);
+			address.setOriginalSourceSystemID((Systems) originatingSystem);
 			address.setActiveFlagID(get(IActiveFlagService.class)
-			                                    .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
-			address.createDefaultSecurity(originatingSystem,identityToken);
+			address.createDefaultSecurity(originatingSystem, identityToken);
 		}
 		else
 		{
@@ -61,7 +105,7 @@ public class AddressService
 		return address;
 	}
 
-	public Address addOrFindHostName(String hostName, Systems originatingSystem, UUID...identityToken) throws AddressException
+	public Address addOrFindHostName(String hostName, ISystems originatingSystem, UUID... identityToken) throws AddressException
 	{
 
 		Address address = new Address();
@@ -79,12 +123,12 @@ public class AddressService
 			address.setValue(hostName);
 			address.setClassification(ipAddressClassification);
 			address.setEnterpriseID(originatingSystem.getEnterpriseID());
-			address.setSystemID(originatingSystem);
-			address.setOriginalSourceSystemID(originatingSystem);
+			address.setSystemID((Systems) originatingSystem);
+			address.setOriginalSourceSystemID((Systems) originatingSystem);
 			address.setActiveFlagID(get(IActiveFlagService.class)
-			                                    .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
-			address.createDefaultSecurity(originatingSystem,identityToken);
+			address.createDefaultSecurity(originatingSystem, identityToken);
 		}
 		else
 		{
@@ -95,7 +139,7 @@ public class AddressService
 	}
 
 
-	public Address addOrFindWebAddress(String webAddress, Systems originatingSystem, UUID...identityToken) throws AddressException
+	public Address addOrFindWebAddress(String webAddress, ISystems originatingSystem, UUID... identityToken) throws AddressException
 	{
 
 		Address address = new Address();
@@ -113,12 +157,12 @@ public class AddressService
 			address.setValue(webAddress);
 			address.setClassification(ipAddressClassification);
 			address.setEnterpriseID(originatingSystem.getEnterpriseID());
-			address.setSystemID(originatingSystem);
-			address.setOriginalSourceSystemID(originatingSystem);
+			address.setSystemID((Systems) originatingSystem);
+			address.setOriginalSourceSystemID((Systems) originatingSystem);
 			address.setActiveFlagID(get(IActiveFlagService.class)
-			                                    .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
-			address.createDefaultSecurity(originatingSystem,identityToken);
+			address.createDefaultSecurity(originatingSystem, identityToken);
 
 			try
 			{
@@ -161,35 +205,35 @@ public class AddressService
 				String uri = matcher.group(4);
 				Address webDetails = new Address();
 				webDetails.setEnterpriseID(originatingSystem.getEnterpriseID());
-				webDetails.setSystemID(originatingSystem);
-				webDetails.setOriginalSourceSystemID(originatingSystem);
+				webDetails.setSystemID((Systems) originatingSystem);
+				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
 				webDetails.setActiveFlagID(get(IActiveFlagService.class)
 						                           .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 				//
 				webDetails.setValue(url.getPort() + "");
 				webDetails.setClassification(webPortAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem,identityToken);
+				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
 				webDetails.setValue(domain);
 				webDetails.setClassification(webDomainAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem,identityToken);
+				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
 				webDetails.setValue(domain);
 				webDetails.setClassification(webDomainAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem,identityToken);
+				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
 				webDetails.setValue(protocol);
 				webDetails.setClassification(webProtocolAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem,identityToken);
+				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
 				webDetails.setValue(protocol);
 				webDetails.setClassification(webSiteAddressClassification);
 				webDetails.persist();
-				webDetails.createDefaultSecurity(originatingSystem,identityToken);
+				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 			}
 			catch (MalformedURLException e)
 			{

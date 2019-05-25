@@ -24,8 +24,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.db.entities.security.builders.SecurityTokenQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemsSecurityToken;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.logger.LogFactory;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -53,7 +56,8 @@ import java.util.logging.Logger;
 		callSuper = false)
 public class SecurityToken
 		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, Long, SecurityTokensSecurityToken>
-		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification>
+		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification>,
+				           IActivityMasterEntity<SecurityToken>
 {
 	private static final Logger log = LogFactory.getLog("SecurityToken");
 
@@ -371,7 +375,7 @@ public class SecurityToken
 	}
 
 	@Override
-	protected SecurityTokensSecurityToken configureDefaultsForNewToken(SecurityTokensSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected SecurityTokensSecurityToken configureDefaultsForNewToken(SecurityTokensSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		stAdmin.setBase(this);

@@ -17,6 +17,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.ISecurityTokenClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import javax.persistence.criteria.JoinType;
@@ -32,7 +33,7 @@ import static com.jwebmp.entityassist.enumerations.Operand.*;
 public class SecurityTokenQueryBuilder
 		extends QueryBuilderSCDNameDescription<SecurityTokenQueryBuilder, SecurityToken, Long, SecurityTokensSecurityToken>
 {
-	public SecurityTokenQueryBuilder findFolder(ISecurityTokenClassification<?> securityTokenClassification, Enterprise enterprise,UUID...identityToken)
+	public SecurityTokenQueryBuilder findFolder(ISecurityTokenClassification<?> securityTokenClassification, IEnterprise enterprise, UUID...identityToken)
 	{
 		SecurityTokenXSecurityToken hierarchySystem = new SecurityTokenXSecurityToken();
 		SecurityTokenXSecurityTokenQueryBuilder hierarchyBuilder = hierarchySystem.builder();

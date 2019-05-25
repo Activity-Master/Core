@@ -5,6 +5,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.builders.YesNoXClassificationQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,7 +60,7 @@ public class YesNoXClassification
 	}
 
 	@Override
-	protected YesNoXClassificationSecurityToken configureDefaultsForNewToken(YesNoXClassificationSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected YesNoXClassificationSecurityToken configureDefaultsForNewToken(YesNoXClassificationSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

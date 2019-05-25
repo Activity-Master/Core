@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItemType;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
 
@@ -77,12 +78,12 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			Systems activityMasterSystem = GuiceContext.get(ISystemsService.class)
-			                                           .getActivityMaster(resourceItemType.getEnterpriseID());
+			ISystems activityMasterSystem = GuiceContext.get(ISystemsService.class)
+			                                            .getActivityMaster(resourceItemType.getEnterpriseID());
 			tableForClassification.setEnterpriseID(resourceItemType.getEnterpriseID());
 			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(activityMasterSystem);
-			tableForClassification.setOriginalSourceSystemID(activityMasterSystem);
+			tableForClassification.setSystemID((Systems) activityMasterSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) activityMasterSystem);
 			tableForClassification.setActiveFlagID(resourceItemType.getActiveFlagID());
 			setMyResourceItemTypeLinkValue(tableForClassification, (S) resourceItemType, resourceItemType.getEnterpriseID());
 

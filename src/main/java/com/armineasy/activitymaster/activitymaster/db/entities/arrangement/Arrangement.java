@@ -1,15 +1,19 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.arrangement;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
+import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventXArrangement;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.arrangement.IArrangementClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +38,8 @@ import java.util.List;
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, Long, ArrangementSecurityToken>
 		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification>,
-				           IContainsResourceItems<Arrangement, ResourceItem,ArrangementXResourceItem>
+				           IContainsResourceItems<Arrangement, ResourceItem,ArrangementXResourceItem>,
+				           IActivityMasterEntity<Arrangement>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -96,7 +101,7 @@ public class Arrangement
 	}
 
 	@Override
-	protected ArrangementSecurityToken configureDefaultsForNewToken(ArrangementSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected ArrangementSecurityToken configureDefaultsForNewToken(ArrangementSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
 
@@ -76,8 +77,8 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			Systems activityMasterSystem = GuiceContext.get(ISystemsService.class)
-			                                           .getActivityMaster(classification.getEnterpriseID());
+			Systems activityMasterSystem = (Systems) GuiceContext.get(ISystemsService.class)
+			                                                     .getActivityMaster(classification.getEnterpriseID());
 			tableForClassification.setEnterpriseID(classification.getEnterpriseID());
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue(value);

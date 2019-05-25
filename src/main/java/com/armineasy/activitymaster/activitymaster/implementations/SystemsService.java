@@ -7,6 +7,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemXClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.Singleton;
@@ -28,28 +30,28 @@ public class SystemsService
 
 	@Override
 	@CacheResult(cacheName = "GetActivityMaster")
-	public Systems getActivityMaster(@CacheKey Enterprise enterprise, @CacheKey UUID... token)
+	public Systems getActivityMaster(@CacheKey IEnterprise enterprise, @CacheKey UUID... token)
 	{
 		return findSystem(enterprise, ActivityMasterSystemName, token);
 	}
 
 	@CacheResult(cacheName = "FindSystem")
-	public Systems findSystem(@CacheKey Enterprise enterprise, @CacheKey String systemName, @CacheKey UUID... token)
+	public Systems findSystem(@CacheKey IEnterprise enterprise, @CacheKey String systemName, @CacheKey UUID... token)
 	{
 		Systems search = new Systems();
 		return search.builder()
 		             .findByName(systemName)
-		             .withEnterprise(enterprise)
-		             .inActiveRange(enterprise, token)
+		             .withEnterprise((Enterprise) enterprise)
+		             .inActiveRange((Enterprise) enterprise, token)
 		             .inDateRange()
-		             .canRead(enterprise, token)
+		             .canRead((Enterprise) enterprise, token)
 		             .get()
 		             .get();
 	}
 
 	@CacheResult(cacheName = "FindSystemByIdentityClassification")
 	@Override
-	public Systems findSystem(@CacheKey Enterprise enterprise, @CacheKey UUID token, UUID... identityToken)
+	public Systems findSystem(@CacheKey IEnterprise enterprise, @CacheKey UUID token, UUID... identityToken)
 	{
 		SystemXClassification systemClassifications = new SystemXClassification();
 		Classification identifyClassification = GuiceContext.get(ClassificationService.class)
@@ -57,9 +59,9 @@ public class SystemsService
 
 		Optional<SystemXClassification> exists = systemClassifications.builder()
 		                                                              .findChildLink(identifyClassification, token.toString())
-		                                                              .inActiveRange(enterprise, identityToken)
+		                                                              .inActiveRange((Enterprise) enterprise, identityToken)
 		                                                              .inDateRange()
-		                                                              .canRead(enterprise, identityToken)
+		                                                              .canRead((Enterprise) enterprise, identityToken)
 		                                                              .get();
 		if (exists.isEmpty())
 		{
@@ -72,11 +74,10 @@ public class SystemsService
 		}
 	}
 
-	public Systems create(Enterprise enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
+	public Systems create(IEnterprise enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
 	{
 		ActiveFlag flag = GuiceContext.get(IActiveFlagService.class)
-		                              .getActiveFlag(enterprise);
-
+		                              .getActiveFlag((Enterprise) enterprise);
 		Systems newSystem = new Systems();
 		Optional<Systems> exists = ActivityMasterConfiguration
 				                           .get()
@@ -90,7 +91,7 @@ public class SystemsService
 			newSystem.setName(systemName);
 			newSystem.setDescription(systemDesc);
 			newSystem.setSystemHistoryName(historyName);
-			newSystem.setEnterpriseID(enterprise);
+			newSystem.setEnterpriseID((Enterprise) enterprise);
 			newSystem.setActiveFlagID(flag);
 			newSystem.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
@@ -129,7 +130,7 @@ public class SystemsService
 	}
 
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
-	public UUID getSecurityIdentityToken(@CacheKey Systems system, @CacheKey UUID... identityToken)
+	public UUID getSecurityIdentityToken(@CacheKey ISystems system, @CacheKey UUID... identityToken)
 	{
 		Optional<SystemXClassification> systemToken = system.findClassification(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())

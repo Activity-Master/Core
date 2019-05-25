@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.INameType;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -19,9 +20,9 @@ public interface IInvolvedPartyService
 
 	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
 	InvolvedParty findByIdentificationType(
-			@CacheKey IIdentificationType<?> idType, @CacheKey String value, @CacheKey Systems system, @CacheKey UUID... tokens);
+			@CacheKey IIdentificationType<?> idType, @CacheKey String value, @CacheKey ISystems system, @CacheKey UUID... tokens);
 
-	InvolvedParty findByUsernameAndPassword(String username, String password, Systems originatingSystem, boolean throwForNoUser, UUID... token);
+	InvolvedParty findByUsernameAndPassword(String username, String password, ISystems originatingSystem, boolean throwForNoUser, UUID... token);
 
 	@CacheResult(cacheName = "InvolvedPartyGetNameType")
 	InvolvedPartyNameType findNameType(INameType<?> idType, Enterprise enterprise, UUID... tokens);

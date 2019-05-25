@@ -5,6 +5,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.address.builders.
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,7 +73,7 @@ public class AddressXGeography
 	}
 
 	@Override
-	protected AddressXGeographySecurityToken configureDefaultsForNewToken(AddressXGeographySecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected AddressXGeographySecurityToken configureDefaultsForNewToken(AddressXGeographySecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

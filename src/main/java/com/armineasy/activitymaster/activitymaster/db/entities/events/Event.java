@@ -3,6 +3,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.events;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
@@ -11,6 +12,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.events.IEventClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +42,8 @@ public class Event
 				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem>,
 				           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,
 				           IContainsAddresses<Event, Address, EventXAddress>,
-				           IContainsEventTypes<Event, EventType, EventXEventType>
+				           IContainsEventTypes<Event, EventType, EventXEventType>,
+				           IActivityMasterEntity<Event>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -102,7 +106,7 @@ public class Event
 	}
 
 	@Override
-	protected EventSecurityToken configureDefaultsForNewToken(EventSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected EventSecurityToken configureDefaultsForNewToken(EventSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

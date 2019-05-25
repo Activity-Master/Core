@@ -5,6 +5,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.Arran
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventXArrangementQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -69,7 +71,7 @@ public class EventXArrangement
 	}
 
 	@Override
-	protected EventXArrangementsSecurityToken configureDefaultsForNewToken(EventXArrangementsSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected EventXArrangementsSecurityToken configureDefaultsForNewToken(EventXArrangementsSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

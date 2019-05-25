@@ -53,6 +53,12 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jakarta.activation-api</artifactId>
+                    <groupId>jakarta.activation</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
@@ -139,9 +145,9 @@
                         <configuration>
                             <failOnError>false</failOnError>
                             <enableLazyInitialization>true</enableLazyInitialization>
-                            <enableDirtyTracking>false</enableDirtyTracking>
-                            <enableAssociationManagement>false</enableAssociationManagement>
-                            <enableExtendedEnhancement>false</enableExtendedEnhancement>
+                            <enableDirtyTracking>true</enableDirtyTracking>
+                            <enableAssociationManagement>true</enableAssociationManagement>
+                            <enableExtendedEnhancement>true</enableExtendedEnhancement>
                         </configuration>
                         <phase>generate-sources</phase>
                         <goals>
@@ -152,9 +158,9 @@
                 <configuration>
                     <failOnError>false</failOnError>
                     <enableLazyInitialization>true</enableLazyInitialization>
-                    <enableDirtyTracking>false</enableDirtyTracking>
-                    <enableAssociationManagement>false</enableAssociationManagement>
-                    <enableExtendedEnhancement>false</enableExtendedEnhancement>
+                    <enableDirtyTracking>true</enableDirtyTracking>
+                    <enableAssociationManagement>true</enableAssociationManagement>
+                    <enableExtendedEnhancement>true</enableExtendedEnhancement>
                 </configuration>
             </plugin>
 

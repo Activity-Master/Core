@@ -10,6 +10,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.system.IAddressService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 
 import javax.cache.annotation.CacheKey;
@@ -59,8 +61,8 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	default boolean hasAddress(IAddressClassification<?> addressClassification, String value, Enterprise enterprise, UUID... identityToken)
 	{
 		J activityMasterIdentity = get(findAddressQueryRelationshipTableType());
-		Systems activityMasterSystem = get(ISystemsService.class)
-				                               .getActivityMaster(enterprise);
+		ISystems activityMasterSystem = get(ISystemsService.class)
+				                                .getActivityMaster(enterprise);
 		Classification classification = get(ClassificationService.class).find(addressClassification,
 		                                                                      activityMasterSystem.getEnterpriseID(), identityToken);
 		return activityMasterIdentity.builder()
@@ -74,71 +76,21 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	@SuppressWarnings("unchecked")
 	default J addAddress(IAddressClassification<?> addressClassification, Systems originatingSystem, String value, UUID... identifyingToken)
 	{
-		Systems activityMasterSystem = get(ISystemsService.class)
-				                               .getActivityMaster(originatingSystem.getEnterpriseID());
+		ISystems activityMasterSystem = get(ISystemsService.class)
+				                                .getActivityMaster(originatingSystem.getEnterpriseID());
 
 		Classification classification = get(ClassificationService.class).find(addressClassification,
 		                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
-
-		Address addy = new Address();
-		Optional<Address> addressExists = addy.builder()
-		                                      .withClassification(classification)
-		                                      .withEnterprise(originatingSystem.getEnterpriseID())
-		                                      .withValue(value)
-		                                      .inDateRange()
-		                                      .get();
-		if (addressExists.isEmpty())
-		{
-			addy.setEnterpriseID(classification.getEnterpriseID());
-			addy.setClassification(classification);
-			addy.setValue(value);
-			addy.setSystemID(activityMasterSystem);
-			addy.setOriginalSourceSystemID(activityMasterSystem);
-			addy.setActiveFlagID(classification.getActiveFlagID());
-			addy.persist();
-			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
-			{
-				addy.createDefaultSecurity(activityMasterSystem, identifyingToken);
-			}
-		}
-		else
-		{
-			addy = addressExists.get();
-		}
-
-		J tableForClassification = get(findAddressQueryRelationshipTableType());
-		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classification, classification.getEnterpriseID())
-		                                                         .inActiveRange(classification.getEnterpriseID())
-		                                                         .inDateRange()
-		                                                         .get();
-		if (exists.isEmpty())
-		{
-			tableForClassification.setEnterpriseID(classification.getEnterpriseID());
-			tableForClassification.setClassificationID(classification);
-			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(activityMasterSystem);
-			tableForClassification.setOriginalSourceSystemID(activityMasterSystem);
-			tableForClassification.setActiveFlagID(classification.getActiveFlagID());
-
-			setMyAddressLinkValue(tableForClassification, (S) addy, classification.getEnterpriseID());
-
-			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
-			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem, identifyingToken);
-			}
-		}
-		else
-		{
-			tableForClassification = exists.get();
-		}
+		
+		IAddressService addressService = get(IAddressService.class);
+		Address address = addressService.create(addressClassification, originatingSystem, value, identifyingToken);
+		J tableForClassification = (J) address.addClassification(addressClassification, value, originatingSystem, identifyingToken);
 		return tableForClassification;
 	}
 
 
 	@SuppressWarnings("unchecked")
-	default J add(Address addy, Systems originatingSystem, UUID... identifyingToken)
+	default J add(Address addy, ISystems originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = get(findAddressQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
@@ -153,9 +105,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			tableForClassification.setEnterpriseID(addy.getClassification()
 			                                           .getEnterpriseID());
 			tableForClassification.setClassificationID(addy.getClassification());
-			tableForClassification.setSystemID(originatingSystem);
+			tableForClassification.setSystemID((Systems) originatingSystem);
 			tableForClassification.setValue("");
-			tableForClassification.setOriginalSourceSystemID(originatingSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setActiveFlagID(addy.getClassification()
 			                                           .getActiveFlagID());
 			setMyAddressLinkValue(tableForClassification, (S) addy, addy.getClassification()

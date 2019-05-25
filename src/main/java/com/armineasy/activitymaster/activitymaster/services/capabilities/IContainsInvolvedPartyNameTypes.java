@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.INameType;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
 
@@ -56,7 +57,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default boolean hasNameType(@CacheKey INameType<?> type, @CacheKey Systems originatingSystem, @CacheKey UUID... identityToken)
+	default boolean hasNameType(@CacheKey INameType<?> type, @CacheKey ISystems originatingSystem, @CacheKey UUID... identityToken)
 	{
 		J activityMasterIdentity = GuiceContext.get(findInvolvedPartyNameTypeQueryRelationshipTableType());
 		return activityMasterIdentity.builder()
@@ -68,7 +69,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J addNameType(INameType<?> typeName, Systems originatingSystem, String value, UUID... identifyingToken)
+	default J addNameType(INameType<?> typeName, ISystems originatingSystem, String value, UUID... identifyingToken)
 	{
 		InvolvedPartyNameType type = GuiceContext.get(InvolvedPartyService.class)
 		                                         .findNameType(typeName, originatingSystem.getEnterpriseID(), identifyingToken);
@@ -83,8 +84,8 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		{
 			tableForClassification.setEnterpriseID(type.getEnterpriseID());
 			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(originatingSystem);
-			tableForClassification.setOriginalSourceSystemID(originatingSystem);
+			tableForClassification.setSystemID((Systems) originatingSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setActiveFlagID(type.getActiveFlagID());
 			setMyInvolvedPartyNameTypeLinkValue(tableForClassification, (S) type, type.getEnterpriseID());
 

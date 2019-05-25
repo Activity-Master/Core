@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 
 import javax.cache.annotation.CacheKey;
@@ -59,7 +60,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	default boolean hasInvolvedParty(IInvolvedPartyClassification<?> InvolvedPartyClassification, String value, Enterprise enterprise, UUID... identityToken)
 	{
 		J activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
-		Systems activityMasterSystem = get(ISystemsService.class)
+		ISystems activityMasterSystem = get(ISystemsService.class)
 				                               .getActivityMaster(enterprise);
 		Classification classification = get(ClassificationService.class).find(InvolvedPartyClassification,
 		                                                                      activityMasterSystem.getEnterpriseID(), identityToken);
@@ -74,7 +75,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	@SuppressWarnings("unchecked")
 	default J addInvolvedParty(IInvolvedPartyClassification<?> involvedPartyClassification, Systems originatingSystem, String value, UUID... identifyingToken)
 	{
-		Systems activityMasterSystem = get(ISystemsService.class)
+		ISystems activityMasterSystem = get(ISystemsService.class)
 				                               .getActivityMaster(originatingSystem.getEnterpriseID());
 
 		Classification classification = get(ClassificationService.class).find(involvedPartyClassification,
@@ -89,8 +90,8 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		if (InvolvedPartyExists.isEmpty())
 		{
 			addy.setEnterpriseID(classification.getEnterpriseID());
-			addy.setSystemID(activityMasterSystem);
-			addy.setOriginalSourceSystemID(activityMasterSystem);
+			addy.setSystemID((Systems) activityMasterSystem);
+			addy.setOriginalSourceSystemID((Systems) activityMasterSystem);
 			addy.setActiveFlagID(classification.getActiveFlagID());
 			addy.persist();
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
@@ -115,8 +116,8 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 			tableForClassification.setEnterpriseID(classification.getEnterpriseID());
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(activityMasterSystem);
-			tableForClassification.setOriginalSourceSystemID(activityMasterSystem);
+			tableForClassification.setSystemID((Systems) activityMasterSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) activityMasterSystem);
 			tableForClassification.setActiveFlagID(classification.getActiveFlagID());
 
 			setMyInvolvedPartyLinkValue(tableForClassification, (S) addy, classification.getEnterpriseID());
@@ -136,7 +137,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 
 
 	@SuppressWarnings("unchecked")
-	default J add(InvolvedParty addy, IInvolvedPartyClassification<?> iclassification, Systems originatingSystem, UUID... identifyingToken)
+	default J add(InvolvedParty addy, IInvolvedPartyClassification<?> iclassification, ISystems originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
@@ -151,10 +152,10 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 			                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
 
 			tableForClassification.setEnterpriseID(addy.getEnterpriseID());
-			tableForClassification.setSystemID(originatingSystem);
+			tableForClassification.setSystemID((Systems) originatingSystem);
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue("");
-			tableForClassification.setOriginalSourceSystemID(originatingSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setActiveFlagID(addy.getActiveFlagID());
 			setMyInvolvedPartyLinkValue(tableForClassification, (S) addy, addy.getEnterpriseID());
 			tableForClassification.persist();

@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.*;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.*;
 import com.armineasy.activitymaster.activitymaster.implementations.*;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.*;
 import com.jwebmp.entityassist.enumerations.*;
 import com.jwebmp.entityassist.querybuilder.builders.*;
@@ -32,28 +33,28 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I, S>,
 
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public J canRead(Enterprise enterprise, UUID... identityToken) throws SecurityAccessException
+	public J canRead(IEnterprise enterprise, UUID... identityToken) throws SecurityAccessException
 	{
 		return getSecurityBuilderConfig(enterprise, "readAllowed", identityToken);
 	}
 
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public J canRead(Enterprise enterprise, boolean overrideActiveFlag, UUID... identityToken) throws SecurityAccessException
+	public J canRead(IEnterprise enterprise, boolean overrideActiveFlag, UUID... identityToken) throws SecurityAccessException
 	{
 		return getSecurityBuilderConfig(enterprise, "readAllowed", identityToken);
 	}
 
 	@SuppressWarnings("unchecked")
 	@NotNull
-	private J getSecurityBuilderConfig(Enterprise enterprise, String readAllowed, UUID[] identityToken)
+	private J getSecurityBuilderConfig(IEnterprise enterprise, String readAllowed, UUID[] identityToken)
 	{
 		return getSecurityBuilderConfig(enterprise, readAllowed, false, identityToken);
 	}
 
 	@SuppressWarnings("unchecked")
 	@NotNull
-	private J getSecurityBuilderConfig(Enterprise enterprise, String readAllowed, boolean overrideActiveFlag, UUID[] identityToken)
+	private J getSecurityBuilderConfig(IEnterprise enterprise, String readAllowed, boolean overrideActiveFlag, UUID[] identityToken)
 	{
 		if (!GuiceContext.get(ActivityMasterConfiguration.class)
 		                 .isSecurityEnabled())

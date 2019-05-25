@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSCDTa
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.entityassist.querybuilder.QueryBuilderSCD;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -45,7 +46,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J withEnterprise(Enterprise enterprise)
+	public J withEnterprise(IEnterprise enterprise)
 	{
 		where(getAttribute("enterpriseID"), Equals, enterprise);
 		return (J) this;
@@ -53,7 +54,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J inActiveRange(Enterprise enterprise, UUID...identityToken)
+	public J inActiveRange(IEnterprise enterprise, UUID...identityToken)
 	{
 		Collection<ActiveFlag> flags = GuiceContext.get(IActiveFlagService.class)
 		                                           .findActiveRange(enterprise, identityToken);
@@ -64,7 +65,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J inVisibleRange(Enterprise enterprise, UUID...identityToken)
+	public J inVisibleRange(IEnterprise enterprise, UUID...identityToken)
 	{
 		Collection<ActiveFlag> flags = GuiceContext.get(IActiveFlagService.class)
 		                                           .getVisibleRange(enterprise,identityToken);

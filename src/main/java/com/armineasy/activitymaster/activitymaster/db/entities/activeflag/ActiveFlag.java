@@ -21,8 +21,14 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemsSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNoXClassification;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.classifications.activeflag.IActiveFlagClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,12 +55,15 @@ import java.util.List;
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
 @Cacheable
-@org.hibernate.annotations.Cache(usage= CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class ActiveFlag
 		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, Long, ActiveFlagSecurityToken>
-		implements IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification>
+		implements  INameAndDescription<ActiveFlag>,
+				            IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification>,
+				            IActivityMasterEntity<ActiveFlag>,
+				            IContainsEnterprise<ActiveFlag>,
+				            IActiveFlag<ActiveFlag>
 {
-
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -615,14 +624,14 @@ public class ActiveFlag
 	}
 
 	@Override
-	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, Enterprise enterprise, Systems activityMasterSystem)
+	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
 	{
-		stAdmin.setSystemID(activityMasterSystem);
-		stAdmin.setActiveFlagID(activityMasterSystem.getActiveFlagID());
+		stAdmin.setSystemID((Systems) activityMasterSystem);
+		stAdmin.setActiveFlagID(((Systems)activityMasterSystem).getActiveFlagID());
 		stAdmin.setBase(this);
-		stAdmin.setOriginalSourceSystemID(activityMasterSystem);
+		stAdmin.setOriginalSourceSystemID((Systems) activityMasterSystem);
 		stAdmin.setOriginalSourceSystemUniqueID("");
-		stAdmin.setEnterpriseID(enterprise);
+		stAdmin.setEnterpriseID((Enterprise) enterprise);
 		return stAdmin;
 	}
 
