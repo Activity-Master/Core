@@ -1,9 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.yesno;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.product.IProductClassification;
-
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
 
 public enum YesNoClassifications
 		implements IProductClassification<YesNoClassifications>
@@ -11,9 +9,9 @@ public enum YesNoClassifications
 
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	YesNoClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	YesNoClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -30,7 +28,7 @@ public enum YesNoClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

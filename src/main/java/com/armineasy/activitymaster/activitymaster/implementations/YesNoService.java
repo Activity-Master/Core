@@ -5,6 +5,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.Active
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.Singleton;
@@ -56,7 +57,7 @@ public class YesNoService
 		return yn;
 	}
 
-	public YesNo getYes(Enterprise enterprise)
+	public YesNo getYes(IEnterprise<?> enterprise)
 	{
 		return new YesNo().builder()
 		                  .findYes()
@@ -65,7 +66,7 @@ public class YesNoService
 		                  .get();
 	}
 
-	public YesNo getNo(Enterprise enterprise)
+	public YesNo getNo(IEnterprise<?> enterprise)
 	{
 		return new YesNo().builder()
 		                  .findNo()

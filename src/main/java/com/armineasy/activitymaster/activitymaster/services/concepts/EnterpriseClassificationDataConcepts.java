@@ -1,9 +1,9 @@
 package com.armineasy.activitymaster.activitymaster.services.concepts;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-public enum EnterpriseDataConcepts
-		implements IDataConceptValue<EnterpriseDataConcepts>
+public enum EnterpriseClassificationDataConcepts
+		implements IClassificationDataConceptValue<EnterpriseClassificationDataConcepts>
 {
 	NoClassificationDataConceptName("No Classification"),
 	GlobalClassificationsDataConceptName("GlobalClassifications"),
@@ -86,19 +86,19 @@ public enum EnterpriseDataConcepts
 
 	private String classificationValue;
 
-	EnterpriseDataConcepts()
+	EnterpriseClassificationDataConcepts()
 	{
 		this.classificationValue = name();
 	}
 
-	EnterpriseDataConcepts(String classificationValue)
+	EnterpriseClassificationDataConcepts(String classificationValue)
 	{
 		this.classificationValue = classificationValue;
 	}
 
-	public static EnterpriseDataConcepts fromClassName(Class clazz)
+	public static EnterpriseClassificationDataConcepts fromClassName(Class clazz)
 	{
-		return EnterpriseDataConcepts.valueOf(clazz.getSimpleName());
+		return EnterpriseClassificationDataConcepts.valueOf(clazz.getSimpleName());
 	}
 
 	@Override

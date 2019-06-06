@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierar
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken_;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.logger.LogFactory;
@@ -41,9 +42,9 @@ public class TestDBConnection
 		                   .where(SecurityToken_.id, Equals, -9223372036854775808L)
 		                   .get();
 
-		Enterprise enterprise = new Enterprise().builder()
-		                                        .get(true)
-		                                        .get();
+		IEnterprise<?> enterprise = new Enterprise().builder()
+		                                            .get(true)
+		                                            .get();
 		new InvolvedParty().builder()
 		                   .findByIdentificationType(new Enterprise(1L), IdentificationTypes.IdentificationTypeUUID)
 		                   .get();

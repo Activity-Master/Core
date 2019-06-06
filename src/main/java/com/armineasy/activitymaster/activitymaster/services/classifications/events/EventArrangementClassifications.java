@@ -1,9 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.events;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum EventArrangementClassifications
 		implements IEventClassification<EventArrangementClassifications>
@@ -17,9 +16,9 @@ public enum EventArrangementClassifications
 	AlteredRiskValue("Changed the Risk Value of the Arrangement", EventXArrangement),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	EventArrangementClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	EventArrangementClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -36,7 +35,7 @@ public enum EventArrangementClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

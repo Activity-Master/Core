@@ -13,6 +13,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.SecurityAccessException;
 import com.google.common.base.Strings;
 import com.jwebmp.entityassist.querybuilder.QueryBuilderSCD;
@@ -34,14 +35,14 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		                                   Q extends WarehouseClassificationRelationshipTable<J, J, Q, ? extends QueryBuilderRelationshipClassification, ?, ?>,
 		                                   W extends WarehouseHierarchyView<?, ? extends QueryBuilderHierarchyView, ?>>
 {
-	default J addChild(J child, Enterprise enterprise, UUID... identifyingToken)
+	default J addChild(J child, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		return addChild(child, "", enterprise, identifyingToken);
 	}
 
 	@SuppressWarnings({"unchecked", "Duplicates"})
 	@NotNull
-	default J addChild(J child, String value, Enterprise enterprise, UUID... identifyingToken)
+	default J addChild(J child, String value, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
@@ -82,7 +83,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 			linkTable.setActiveFlagID(activityMasterSystem.getActiveFlagID());
 			linkTable.setOriginalSourceSystemID(activityMasterSystem);
 			linkTable.setOriginalSourceSystemUniqueID("");
-			linkTable.setEnterpriseID(enterprise);
+			linkTable.setEnterpriseID((Enterprise) enterprise);
 			linkTable.setClassificationID(hierarchyType);
 			linkTable.setValue(Strings.nullToEmpty(value));
 			configureNewHierarchyItem(linkTable, me, child, value);
@@ -98,7 +99,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 
 	@SuppressWarnings({"unchecked", "Duplicates"})
 	@NotNull
-	default J removeChild(J child, Enterprise enterprise, UUID... identifyingToken)
+	default J removeChild(J child, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
@@ -188,13 +189,13 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 
 	}
 
-	default Q findLink(J child, Enterprise enterprise, UUID... identifyingToken)
+	default Q findLink(J child, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		return findLink(child, enterprise, null, identifyingToken);
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q findLink(J child, Enterprise enterprise, String value, UUID... identifyingToken)
+	default Q findLink(J child, IEnterprise<?> enterprise, String value, UUID... identifyingToken)
 	{
 		Class<Q> hierarchyView = findHierarchyTableType();
 		Q linkTable = GuiceContext.get(hierarchyView);
@@ -207,7 +208,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		                .orElse(null);
 	}
 
-	default J setParent(J parent, Enterprise enterprise, UUID... identifyingToken)
+	default J setParent(J parent, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		return null;
 	}

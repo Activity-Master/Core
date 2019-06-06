@@ -1,9 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.address;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum AddressBuildingClassifications
 		implements IAddressClassification<AddressBuildingClassifications>
@@ -20,9 +19,9 @@ public enum AddressBuildingClassifications
 
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	AddressBuildingClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	AddressBuildingClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -39,7 +38,7 @@ public enum AddressBuildingClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

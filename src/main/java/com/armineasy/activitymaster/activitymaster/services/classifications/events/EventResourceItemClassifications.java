@@ -1,8 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.events;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum EventResourceItemClassifications
 		implements IEventClassification<EventResourceItemClassifications>
@@ -33,9 +33,9 @@ public enum EventResourceItemClassifications
 
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	EventResourceItemClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	EventResourceItemClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -53,7 +53,7 @@ public enum EventResourceItemClassifications
 	}
 
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

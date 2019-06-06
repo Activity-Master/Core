@@ -1,10 +1,9 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.events;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum EventInvolvedPartiesClassifications
 		implements IEventClassification<EventInvolvedPartiesClassifications>,
@@ -24,9 +23,9 @@ public enum EventInvolvedPartiesClassifications
 
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	EventInvolvedPartiesClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	EventInvolvedPartiesClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -44,7 +43,7 @@ public enum EventInvolvedPartiesClassifications
 	}
 
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

@@ -4,9 +4,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyIdentificationType;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyNameType;
+import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.INameType;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 
 import javax.cache.annotation.CacheKey;
@@ -16,7 +18,7 @@ import java.util.UUID;
 public interface IInvolvedPartyService
 {
 	@CacheResult(cacheName = "InvolvedPartyGetIdentificationType")
-	InvolvedPartyIdentificationType findIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey Enterprise enterprise, @CacheKey UUID... tokens);
+	InvolvedPartyIdentificationType findIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens);
 
 	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
 	InvolvedParty findByIdentificationType(
@@ -25,5 +27,7 @@ public interface IInvolvedPartyService
 	InvolvedParty findByUsernameAndPassword(String username, String password, ISystems originatingSystem, boolean throwForNoUser, UUID... token);
 
 	@CacheResult(cacheName = "InvolvedPartyGetNameType")
-	InvolvedPartyNameType findNameType(INameType<?> idType, Enterprise enterprise, UUID... tokens);
+	InvolvedPartyNameType findNameType(INameType<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+
+	InvolvedParty findByToken(@CacheKey SecurityToken token, @CacheKey UUID... tokens);
 }

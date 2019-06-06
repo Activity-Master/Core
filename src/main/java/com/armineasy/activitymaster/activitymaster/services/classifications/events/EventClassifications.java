@@ -1,19 +1,23 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.events;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
+
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum EventClassifications
 		implements IEventClassification<EventClassifications>
 {
-	NotifiesInvolvedParty("Notifies Involved Party"),
+	NotifiesInvolvedParty("Notifies Involved Party", EventXInvolvedParty),
+	UpdatedPassword(" updated the password ", EventXInvolvedParty),
+	UpdatedUsername(" Created a new User Name", EventXInvolvedParty),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	EventClassifications(String classificationValue)
+	EventClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
+		this.dataConceptValue = dataConceptValue;
 	}
 
 	@Override
@@ -23,7 +27,7 @@ public enum EventClassifications
 	}
 
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

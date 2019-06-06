@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IInvolvedPartyService;
 
@@ -47,15 +48,21 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	@SuppressWarnings("unchecked")
 	default Class<J> findInvolvedPartyIdentificationTypeQueryRelationshipTableType()
 	{
-		Type[] genericInterfaces = getClass().getGenericInterfaces();
-		for (Type genericInterface : genericInterfaces)
+		Type[] genericInterfaces;
+		Class currentClass = getClass();
+		while (currentClass != Object.class)
 		{
-			String clazz = genericInterface.getTypeName();
-			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsInvolvedPartyIdentificationTypes.class.getCanonicalName()))
+			genericInterfaces = currentClass.getGenericInterfaces();
+			for (Type genericInterface : genericInterfaces)
 			{
-				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
-				return (Class<J>) genericTypes[2];
+				String clazz = genericInterface.getTypeName();
+				if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsInvolvedPartyIdentificationTypes.class.getCanonicalName()))
+				{
+					Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+					return (Class<J>) genericTypes[2];
+				}
 			}
+			currentClass = currentClass.getSuperclass();
 		}
 		return null;
 	}
@@ -106,15 +113,10 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		else
 		{
 			tableForClassification = exists.get();
-			if (!tableForClassification.getValue()
-			                           .equals(value))
-			{
-				tableForClassification.update(value, identityToken);
-			}
 		}
 		return tableForClassification;
 	}
 
-	void setMyInvolvedPartyIdentificationTypeLinkValue(J classificationLink, S identificationType, Enterprise enterprise);
+	void setMyInvolvedPartyIdentificationTypeLinkValue(J classificationLink, S identificationType, IEnterprise<?> enterprise);
 
 }

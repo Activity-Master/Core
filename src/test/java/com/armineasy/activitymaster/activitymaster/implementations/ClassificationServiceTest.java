@@ -4,6 +4,7 @@ import com.armineasy.activitymaster.activity.configs.DefaultTestConfig;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
@@ -21,9 +22,9 @@ class ClassificationServiceTest
 	void getHierarchyType()
 	{
 		GuiceContext.get(ActivityMasterConfiguration.class).setSecurityEnabled(false);
-		Enterprise enterprise = new Enterprise().builder()
-		                                        .getAll()
-		                                        .get(0);
+		IEnterprise<?> enterprise = new Enterprise().builder()
+		                                            .getAll()
+		                                            .get(0);
 
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
 		Classification hierarchyType = service.find(HierarchyTypeClassification,

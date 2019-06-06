@@ -41,7 +41,7 @@ import java.util.List;
 		callSuper = false)
 public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, Long, AddressSecurityToken>
-		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification>,
+		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>>,
 				           IContainsGeographies<Address, Geography, AddressXGeography>,
 				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem>,
 				           IActivityMasterEntity<Address>
@@ -133,20 +133,20 @@ public class Address
 	}
 
 	@Override
-	public void configureForClassification(AddressXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(AddressXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setAddressID(this);
 	}
 
 	@Override
-	public void setMyGeographyLinkValue(AddressXGeography classificationLink, Geography geography, Enterprise enterprise)
+	public void setMyGeographyLinkValue(AddressXGeography classificationLink, Geography geography, IEnterprise<?> enterprise)
 	{
 		classificationLink.setAddressID(this);
 		classificationLink.setGeographyID(geography);
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(AddressXResourceItem classificationLink, ResourceItem resourceItem, Enterprise enterprise)
+	public void setMyResourceItemLinkValue(AddressXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
 	{
 		classificationLink.setAddressID(this);
 		classificationLink.setResourceItemID(resourceItem);

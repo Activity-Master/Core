@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreT
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 
 import javax.persistence.metamodel.Attribute;
 import java.io.Serializable;
@@ -42,7 +43,7 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 {
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J findLink(P parent, S child, Enterprise enterprise)
+	public J findLink(P parent, S child, IEnterprise<?> enterprise)
 	{
 		where(getPrimaryAttribute(), Equals, parent);
 		where(getSecondaryAttribute(), Equals, child);
@@ -55,7 +56,7 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J findLink(P parent, S child, Enterprise enterprise, String value)
+	public J findLink(P parent, S child, IEnterprise<?> enterprise, String value)
 	{
 		where(getPrimaryAttribute(), Equals, parent);
 		where(getSecondaryAttribute(), Equals, child);

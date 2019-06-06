@@ -5,12 +5,16 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.implementations.*;
+import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
+import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
+import com.armineasy.activitymaster.activitymaster.implementations.SecurityTokenService;
+import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.IProgressable;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActivityMasterService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -19,10 +23,7 @@ import com.jwebmp.guicedinjection.pairing.Pair;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
-import java.util.ServiceLoader;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.types.IPTypes.*;
@@ -33,7 +34,8 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 public class ActivityMasterService
 		implements IProgressable, IActivityMasterService
 {
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = 6000)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
+			timeout = 6000)
 	public Enterprise startNewEnterprise(IEnterpriseName<?> enterpriseName,
 	                                     @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
@@ -59,7 +61,7 @@ public class ActivityMasterService
 		runUpdatesOnEnterprise(enterpriseName, progressMonitor);
 
 		//Create Involved Party for Enterprise
-		createAdminAndCreatorUserForEnterprise(enterpriseName, adminUserName, adminPassword,progressMonitor);
+		createAdminAndCreatorUserForEnterprise(enterpriseName, adminUserName, adminPassword, progressMonitor);
 
 		GuiceContext.get(ActivityMasterConfiguration.class)
 		            .setSecurityEnabled(true);
@@ -71,7 +73,7 @@ public class ActivityMasterService
 	{
 		GuiceContext.get(ActivityMasterConfiguration.class)
 		            .setSecurityEnabled(false);
-		Enterprise enterprise = GuiceContext.get(IEnterpriseService.class)
+		IEnterprise<?> enterprise = GuiceContext.get(IEnterpriseService.class)
 		                                    .getEnterprise(enterpriseName);
 
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1, progressMonitor);
@@ -81,14 +83,10 @@ public class ActivityMasterService
 		SecurityToken administratorsGroup = get(SecurityTokenService.class).getAdministratorsFolder(enterprise);
 
 		InvolvedPartyService service = get(InvolvedPartyService.class);
-		//TODO Create the root admin user (if doesn't exist...)
+
 		Pair<IIdentificationType, String> pair = new Pair<>(
 				IdentificationTypeEnterpriseCreatorRole,
 				adminUserName);
-
-
-
-
 		Optional<InvolvedParty> exists = new InvolvedParty().builder()
 		                                                    .findByIdentificationType(enterprise,
 		                                                                              IdentificationTypeEnterpriseCreatorRole,
@@ -98,22 +96,22 @@ public class ActivityMasterService
 		InvolvedParty administratorUser;
 		if (exists.isEmpty())
 		{
-			InvolvedParty adminUser = service.create(activityMasterSystem,pair, true);
+			InvolvedParty adminUser = service.create(activityMasterSystem, pair, true);
 
 			adminUser.addIdentificationType(IdentificationTypeUserName, activityMasterSystem, adminUserName, token);
-			adminUser.addType(TypeIndividual,activityMasterSystem, "Artificial Individual", token);
-			adminUser.addNameType(PreferredNameType,activityMasterSystem, "Enterprise Creator", token);
-			adminUser.addNameType(FirstNameType,activityMasterSystem, "Administrator", token);
+			adminUser.addType(TypeIndividual, activityMasterSystem, "Artificial Individual", token);
+			adminUser.addNameType(PreferredNameType, activityMasterSystem, "Enterprise Creator", token);
+			adminUser.addNameType(FirstNameType, activityMasterSystem, "Administrator", token);
 
 			SecurityToken myToken = get(SecurityTokenService.class).create(Identity,
 			                                                               adminUserName,
 			                                                               "The creator of the enterprise", activityMasterSystem, administratorsGroup, token);
 
-			adminUser.addIdentificationType(IdentificationTypeEnterpriseCreatorRole,activityMasterSystem, adminUserName, token);
-			adminUser.addIdentificationType(IdentificationTypeUUID,activityMasterSystem, myToken.getSecurityToken(), token);
+			adminUser.addIdentificationType(IdentificationTypeEnterpriseCreatorRole, activityMasterSystem, adminUserName, token);
+			adminUser.addIdentificationType(IdentificationTypeUUID, activityMasterSystem, myToken.getSecurityToken(), token);
 
-			service.addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, activityMasterSystem, token);
-			adminUser.createDefaultSecurity(activityMasterSystem,token);
+			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, activityMasterSystem, token);
+			adminUser.createDefaultSecurity(activityMasterSystem, token);
 			administratorUser = adminUser;
 		}
 		else
@@ -132,21 +130,22 @@ public class ActivityMasterService
 		            .setSecurityEnabled(false);
 
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-		Enterprise enterprise = GuiceContext.get(IEnterpriseService.class)
+		IEnterprise<?> enterprise = GuiceContext.get(IEnterpriseService.class)
 		                                    .getEnterprise(enterpriseName);
 		//Find all systems required for first time installation/updates
-		for (IActivityMasterSystem allSystem : allSystems)
+		int total = allSystems.size();
+		int current = 0;
+		//progressMonitor.setCurrentTask(0);
+		//progressMonitor.setTotalTasks(total);
+		for (Iterator<IActivityMasterSystem> iterator = allSystems.iterator(); iterator.hasNext(); )
 		{
+			IActivityMasterSystem allSystem = iterator.next();
 			logProgress("Running System", allSystem.getClass()
-			                                        .getSimpleName(), progressMonitor);
-			String nameC = allSystem.getClass()
-			                        .getSimpleName();
-			if (nameC.indexOf("$$EnhancerByGuice$$") > 0)
-			{
-				nameC = nameC.substring(0, nameC.indexOf("$$EnhancerByGuice$$"));
-			}
+			                                       .getSimpleName(),progressMonitor);
+			String nameC = cleanName(allSystem.getClass()
+			                                  .getSimpleName());
 			allSystem.createDefaults(enterprise, progressMonitor);
-			logProgress("Completed with System", nameC, progressMonitor);
+			logProgress("Completed with System", nameC,1, progressMonitor);
 		}
 
 		loadSystems(enterpriseName, progressMonitor);
@@ -155,18 +154,22 @@ public class ActivityMasterService
 		            .setSecurityEnabled(true);
 	}
 
+
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-		Enterprise enterprise = GuiceContext.get(IEnterpriseService.class)
+
+		IEnterprise<?> enterprise = GuiceContext.get(IEnterpriseService.class)
 		                                    .getEnterprise(enterpriseName);
 		for (IActivityMasterSystem allSystem : allSystems)
 		{
-			logProgress("System Loading", "Starting up system " + allSystem.getClass().getName(), progressMonitor);
+			logProgress("System Loading", "Starting up system " + allSystem.getClass()
+			                                                                         .getName(), progressMonitor);
 			allSystem.postUpdate(enterprise, progressMonitor);
 		}
-		ActivityMasterConfiguration.get().setDoubleCheckDisabled(true);
+		ActivityMasterConfiguration.get()
+		                           .setDoubleCheckDisabled(true);
 	}
 }

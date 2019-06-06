@@ -24,7 +24,6 @@ public class ActivityMasterDBModule
 	@Override
 	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit persistenceUnit, Properties properties)
 	{
-		setAutoStart(true);
 		//BTMAutomatedTransactionHandler.setActive(true);
 		return new BTMConnectionBaseInfo()
 				       .setEnableJdbc4ConnectionTest(true)

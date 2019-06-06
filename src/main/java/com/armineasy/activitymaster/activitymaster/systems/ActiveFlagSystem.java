@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.ActiveFlagSer
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.entityassist.enumerations.ActiveFlag;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
@@ -20,11 +21,11 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 public class ActiveFlagSystem
 		implements IActivityMasterSystem<ActiveFlagSystem>
 {
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Active Flag Service", "Loading Active Flags", progressMonitor);
 		for (ActiveFlag activeFlag : ActiveFlag.values())
@@ -46,7 +47,7 @@ public class ActiveFlagSystem
 	}
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Active Flag System", "The system for the active flag management", "Active Flag System");
@@ -56,7 +57,7 @@ public class ActiveFlagSystem
 		systemTokens.put(enterprise, securityToken);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}

@@ -52,7 +52,7 @@ import java.util.List;
 		callSuper = false)
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, Long, EnterpriseSecurityToken>
-		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification>,
+		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>>,
 				           IActivityMasterEntity<Enterprise>,
 				           INameAndDescription<Enterprise>,
 				           IEnterprise<Enterprise>
@@ -581,7 +581,7 @@ public class Enterprise
 	}
 
 	@Override
-	public void configureForClassification(EnterpriseXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(EnterpriseXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setEnterpriseID(this);
 	}

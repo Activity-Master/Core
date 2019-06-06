@@ -1,8 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.address;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum AddressRemoteSystemClassifications
 		implements IAddressClassification<AddressRemoteSystemClassifications>
@@ -12,9 +12,9 @@ public enum AddressRemoteSystemClassifications
 	RemoteAddressHostName("The remote address hostname", Address),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	AddressRemoteSystemClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	AddressRemoteSystemClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -31,7 +31,7 @@ public enum AddressRemoteSystemClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

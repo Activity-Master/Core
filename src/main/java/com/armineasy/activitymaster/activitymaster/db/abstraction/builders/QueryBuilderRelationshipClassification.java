@@ -11,6 +11,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecur
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import java.io.Serializable;
@@ -34,7 +35,7 @@ public abstract class QueryBuilderRelationshipClassification<P extends Warehouse
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J findHierarchyLink(P parent, S child, Enterprise enterprise)
+	public J findHierarchyLink(P parent, S child, IEnterprise<?> enterprise)
 	{
 		findLink(parent, child, enterprise);
 		ClassificationService service = GuiceContext.get(ClassificationService.class);

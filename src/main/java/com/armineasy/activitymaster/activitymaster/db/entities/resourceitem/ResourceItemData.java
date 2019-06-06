@@ -33,7 +33,7 @@ import java.util.List;
 		callSuper = false)
 public class ResourceItemData
 		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, Long, ResourceItemDataSecurityToken>
-		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IResourceItemClassification>
+		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IResourceItemClassification<?>>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -88,7 +88,7 @@ public class ResourceItemData
 	}
 
 	@Override
-	public void configureForClassification(ResourceItemDataXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(ResourceItemDataXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setResourceItemDataID(this);
 	}

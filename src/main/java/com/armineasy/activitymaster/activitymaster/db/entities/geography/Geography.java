@@ -44,7 +44,7 @@ import java.util.List;
 		callSuper = false)
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
-		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification>,
+		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>>,
 				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem>,
 				           IActivityMasterEntity<Geography>
 {
@@ -140,7 +140,7 @@ public class Geography
 	}
 
 	@Override
-	public void configureForClassification(GeographyXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(GeographyXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setGeographyID(this);
 	}
@@ -156,7 +156,7 @@ public class Geography
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(GeographyXResourceItem classificationLink, ResourceItem resourceItem, Enterprise enterprise)
+	public void setMyResourceItemLinkValue(GeographyXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
 	{
 		classificationLink.setGeographyID(this);
 		classificationLink.setResourceItemID(resourceItem);

@@ -6,8 +6,7 @@ package com.armineasy.activitymaster.activitymaster.services;
  * @param <J>
  * 		This enum type
  */
-@SuppressWarnings("unused")
-public interface IDataConceptValue<J extends Enum & IDataConceptValue<J>>
+public interface IArrangementType<J extends Enum & IArrangementType<J>> extends ITypeValue<J>
 {
 	/**
 	 * Overrides the enum and string
@@ -16,10 +15,18 @@ public interface IDataConceptValue<J extends Enum & IDataConceptValue<J>>
 	 */
 	String name();
 
+
 	/**
 	 * The physical classification value
 	 *
 	 * @return
 	 */
 	String classificationValue();
+
+	/**
+	 * The physical classification value
+	 *
+	 * @return
+	 */
+	String classificationDescription();
 }

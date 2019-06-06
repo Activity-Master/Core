@@ -1,8 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.arrangement;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum ArrangementTypeClassifications
 		implements IArrangementClassification<ArrangementTypeClassifications>
@@ -13,9 +13,9 @@ public enum ArrangementTypeClassifications
 	ProductLead("This arrangement is a product lead", Arrangement),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	ArrangementTypeClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	ArrangementTypeClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -32,7 +32,7 @@ public enum ArrangementTypeClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

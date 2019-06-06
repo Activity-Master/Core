@@ -1,27 +1,27 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.classification;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.classifications.classificationdataconcepts.IClassificationDataConcept;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassificationClassificationDataConceptType;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum Classifications
-		implements IClassificationDataConcept<Classifications>
+		implements IClassificationClassificationDataConceptType<Classifications>
 {
-	HierarchyTypeClassification("Denotes a hierarchy structure type",GlobalClassificationsDataConceptName),
-	NoClassification("No Classification",GlobalClassificationsDataConceptName),
-	DefaultClassification("Default Classification",GlobalClassificationsDataConceptName),
+	HierarchyTypeClassification("Denotes a hierarchy structure type", GlobalClassificationsDataConceptName),
+	NoClassification("No Classification", GlobalClassificationsDataConceptName),
+	DefaultClassification("Default Classification", GlobalClassificationsDataConceptName),
 	Security("No Classification", GlobalClassificationsDataConceptName),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
 	Classifications(String classificationValue)
 	{
 		this.classificationValue = classificationValue;
 	}
 
-	Classifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	Classifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -32,9 +32,16 @@ public enum Classifications
 	{
 		return classificationValue;
 	}
+
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
+	}
+
+	@Override
+	public String classificationValue()
+	{
+		return classificationValue;
 	}
 }

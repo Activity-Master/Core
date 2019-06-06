@@ -1,9 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.address;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum AddressInternalSystemClassifications
 		implements IAddressClassification<AddressInternalSystemClassifications>
@@ -16,9 +15,9 @@ public enum AddressInternalSystemClassifications
 	InternalAddressGateway("The internal address gateway", Address),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	AddressInternalSystemClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	AddressInternalSystemClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -35,7 +34,7 @@ public enum AddressInternalSystemClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.ResourceItemClassifications;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import java.util.HashMap;
@@ -22,12 +23,12 @@ public class ResourceItemSystem
 		implements IActivityMasterSystem<ResourceItemSystem>
 {
 
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
-	private static final Map<Enterprise, Systems> systemEnterprises = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, Systems> systemEnterprises = new HashMap<>();
 
 	@SuppressWarnings("Duplicates")
 	@Override
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -93,7 +94,7 @@ public class ResourceItemSystem
 	}
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Resource Items System",
@@ -105,12 +106,12 @@ public class ResourceItemSystem
 		systemEnterprises.put(enterprise, newSystem);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}
 
-	public static Map<Enterprise, Systems> getSystemEnterprises()
+	public static Map<IEnterprise<?>, Systems> getSystemEnterprises()
 	{
 		return systemEnterprises;
 	}

@@ -4,6 +4,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.Query
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.Getter;
@@ -57,9 +58,9 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 			fetch = FetchType.LAZY)
 	private Systems systemID;
 
-	public WarehouseSCDTable(Enterprise enterprise)
+	public WarehouseSCDTable(IEnterprise<?> enterprise)
 	{
-		setEnterpriseID(enterprise);
+		setEnterpriseID((Enterprise) enterprise);
 	}
 
 	public WarehouseSCDTable()

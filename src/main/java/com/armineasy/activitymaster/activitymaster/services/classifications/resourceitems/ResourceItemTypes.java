@@ -1,9 +1,9 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum ResourceItemTypes
 		implements IResourceTypeValue<ResourceItemTypes>
@@ -32,9 +32,9 @@ public enum ResourceItemTypes
 	BrowserInformation("Browser Identifying Information", ResourceItem),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	ResourceItemTypes(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	ResourceItemTypes(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -64,7 +64,7 @@ public enum ResourceItemTypes
 	}
 
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

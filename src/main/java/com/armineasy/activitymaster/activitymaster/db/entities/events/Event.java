@@ -37,7 +37,7 @@ import java.util.List;
 		callSuper = false)
 public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
-		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification>,
+		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>>,
 				           IContainsGeographies<Event, Geography, EventXGeography>,
 				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem>,
 				           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,
@@ -113,41 +113,41 @@ public class Event
 	}
 
 	@Override
-	public void configureForClassification(EventXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(EventXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setEventID(this);
 	}
 
 	@Override
-	public void setMyGeographyLinkValue(EventXGeography classificationLink, Geography geography, Enterprise enterprise)
+	public void setMyGeographyLinkValue(EventXGeography classificationLink, Geography geography, IEnterprise<?> enterprise)
 	{
 		classificationLink.setEventID(this);
 		classificationLink.setGeographyID(geography);
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(EventXResourceItem classificationLink, ResourceItem resourceItem, Enterprise enterprise)
+	public void setMyResourceItemLinkValue(EventXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
 	{
 		classificationLink.setEventID(this);
 		classificationLink.setResourceItemID(resourceItem);
 	}
 
 	@Override
-	public void setMyInvolvedPartyLinkValue(EventXInvolvedParty classificationLink, InvolvedParty involvedParty, Enterprise enterprise)
+	public void setMyInvolvedPartyLinkValue(EventXInvolvedParty classificationLink, InvolvedParty involvedParty, IEnterprise<?> enterprise)
 	{
 		classificationLink.setEventID(this);
 		classificationLink.setInvolvedPartyID(involvedParty);
 	}
 
 	@Override
-	public void setMyAddressLinkValue(EventXAddress classificationLink, Address address, Enterprise enterprise)
+	public void setMyAddressLinkValue(EventXAddress classificationLink, Address address, IEnterprise<?> enterprise)
 	{
 		classificationLink.setEventID(this);
 		classificationLink.setAddressID(address);
 	}
 
 	@Override
-	public void setMyEventTypeLinkValue(EventXEventType classificationLink, EventType identificationType, Enterprise enterprise)
+	public void setMyEventTypeLinkValue(EventXEventType classificationLink, EventType identificationType, IEnterprise<?> enterprise)
 	{
 		classificationLink.setEventID(this);
 		classificationLink.setEventTypeID(identificationType);

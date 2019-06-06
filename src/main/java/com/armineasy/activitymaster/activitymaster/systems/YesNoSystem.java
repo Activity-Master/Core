@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.implementations.YesNoService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import java.util.HashMap;
@@ -16,10 +17,10 @@ public class YesNoSystem
 		implements IActivityMasterSystem<YesNoSystem>
 {
 
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 
 	@Override
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -44,7 +45,7 @@ public class YesNoSystem
 
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "YesNo System",
@@ -55,7 +56,7 @@ public class YesNoSystem
 		systemTokens.put(enterprise, securityToken);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}

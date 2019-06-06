@@ -1,16 +1,13 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.arrangement;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventXArrangement;
+import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.arrangement.IArrangementClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
@@ -37,9 +34,11 @@ import java.util.List;
 		callSuper = false)
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, Long, ArrangementSecurityToken>
-		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification>,
-				           IContainsResourceItems<Arrangement, ResourceItem,ArrangementXResourceItem>,
-				           IActivityMasterEntity<Arrangement>
+		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>>,
+				           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem>,
+				           IActivityMasterEntity<Arrangement>,
+				           IContainsArrangementTypes<Arrangement,ArrangementType,ArrangementXArrangementType>,
+				           IContainsInvolvedParties<Arrangement, InvolvedParty,ArrangementXInvolvedParty>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -108,15 +107,29 @@ public class Arrangement
 	}
 
 	@Override
-	public void configureForClassification(ArrangementXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(ArrangementXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setArrangementID(this);
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(ArrangementXResourceItem classificationLink, ResourceItem resourceItem, Enterprise enterprise)
+	public void setMyResourceItemLinkValue(ArrangementXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
 	{
 		classificationLink.setArrangementID(this);
 		classificationLink.setResourceItemID(resourceItem);
+	}
+
+	@Override
+	public void setMyInvolvedPartyTypeLinkValue(ArrangementXArrangementType classificationLink, ArrangementType identificationType, IEnterprise<?> enterprise)
+	{
+		classificationLink.setArrangement(this);
+		classificationLink.setType(identificationType);
+	}
+
+	@Override
+	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, InvolvedParty involvedParty, IEnterprise<?> enterprise)
+	{
+		classificationLink.setArrangementID(this);
+		classificationLink.setInvolvedPartyID(involvedParty);
 	}
 }

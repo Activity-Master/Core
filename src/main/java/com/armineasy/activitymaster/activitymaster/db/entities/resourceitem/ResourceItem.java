@@ -46,7 +46,7 @@ import java.util.UUID;
 		callSuper = false)
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, Long, ResourceItemSecurityToken>
-		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification>,
+		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification<?>>,
 				           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType>,
 				           IActivityMasterEntity<ResourceItem>
 {
@@ -144,13 +144,13 @@ public class ResourceItem
 	}
 
 	@Override
-	public void configureForClassification(ResourceItemXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(ResourceItemXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setResourceItemID(this);
 	}
 
 	@Override
-	public void setMyResourceItemTypeLinkValue(ResourceItemXResourceItemType classificationLink, ResourceItemType resourceItemType, Enterprise enterprise)
+	public void setMyResourceItemTypeLinkValue(ResourceItemXResourceItemType classificationLink, ResourceItemType resourceItemType, IEnterprise<?> enterprise)
 	{
 		classificationLink.setResourceItemID(this);
 		classificationLink.setResourceItemTypeID(resourceItemType);

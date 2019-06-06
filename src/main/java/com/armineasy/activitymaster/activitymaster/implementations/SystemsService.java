@@ -132,7 +132,7 @@ public class SystemsService
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
 	public UUID getSecurityIdentityToken(@CacheKey ISystems system, @CacheKey UUID... identityToken)
 	{
-		Optional<SystemXClassification> systemToken = system.findClassification(SystemIdentity, system, identityToken);
+		Optional<SystemXClassification> systemToken = system.find(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())
 		{
 			return null;

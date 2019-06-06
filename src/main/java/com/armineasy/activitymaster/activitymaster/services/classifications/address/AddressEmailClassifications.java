@@ -1,9 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.address;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum AddressEmailClassifications
 		implements IAddressClassification<AddressEmailClassifications>
@@ -14,9 +13,9 @@ public enum AddressEmailClassifications
 	EmailAddressUser("The user section of the email address", Address),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	AddressEmailClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	AddressEmailClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -33,7 +32,7 @@ public enum AddressEmailClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

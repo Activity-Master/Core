@@ -2,11 +2,11 @@ package com.armineasy.activitymaster.activitymaster.systems;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
@@ -22,9 +22,9 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 public class EnterpriseSystem
 		implements IActivityMasterSystem<EnterpriseSystem>
 {
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 	@Override
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 
 	}
@@ -44,7 +44,7 @@ public class EnterpriseSystem
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		defaultWaitTime = 5L;
 		defaultWaitUnit = TimeUnit.MINUTES;
@@ -57,17 +57,17 @@ public class EnterpriseSystem
 		                                 .registerNewSystem(enterprise, newSystem);
 		systemTokens.put(enterprise, securityToken);
 
-		if (!enterprise.hasClassification(Version, newSystem, securityToken))
+		if (!enterprise.has(Version, newSystem, securityToken))
 		{
-			enterprise.addClassification(Version, ActivityMasterConfiguration.version.toString(), newSystem,securityToken);
-			enterprise.addClassification(RequiresUpdate, Boolean.FALSE.toString(), newSystem,securityToken);
-			ActivityMasterConfiguration.requiresUpdate = enterprise.findClassification(RequiresUpdate, newSystem,securityToken)
+			enterprise.addOrUpdate(Version, ActivityMasterConfiguration.version.toString(), newSystem, securityToken);
+			enterprise.addOrUpdate(RequiresUpdate, Boolean.FALSE.toString(), newSystem, securityToken);
+			ActivityMasterConfiguration.requiresUpdate = enterprise.find(RequiresUpdate, newSystem, securityToken)
 			                                                       .orElseThrow()
 			                                                       .getValueAsBoolean();
 		}
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}

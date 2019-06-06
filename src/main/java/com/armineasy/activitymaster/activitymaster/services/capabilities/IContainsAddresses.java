@@ -6,10 +6,10 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreT
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IAddressService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
@@ -58,7 +58,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default boolean hasAddress(IAddressClassification<?> addressClassification, String value, Enterprise enterprise, UUID... identityToken)
+	default boolean hasAddress(IAddressClassification<?> addressClassification, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		J activityMasterIdentity = get(findAddressQueryRelationshipTableType());
 		ISystems activityMasterSystem = get(ISystemsService.class)
@@ -74,7 +74,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J addAddress(IAddressClassification<?> addressClassification, Systems originatingSystem, String value, UUID... identifyingToken)
+	default J add(IAddressClassification<?> addressClassification, Systems originatingSystem, String value, UUID... identifyingToken)
 	{
 		ISystems activityMasterSystem = get(ISystemsService.class)
 				                                .getActivityMaster(originatingSystem.getEnterpriseID());
@@ -84,7 +84,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		
 		IAddressService addressService = get(IAddressService.class);
 		Address address = addressService.create(addressClassification, originatingSystem, value, identifyingToken);
-		J tableForClassification = (J) address.addClassification(addressClassification, value, originatingSystem, identifyingToken);
+		J tableForClassification = (J) address.addOrReuse(addressClassification, value, originatingSystem, identifyingToken);
 		return tableForClassification;
 	}
 
@@ -127,5 +127,6 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 
 
-	void setMyAddressLinkValue(J classificationLink, S geography, Enterprise enterprise);
+
+	void setMyAddressLinkValue(J classificationLink, S geography, IEnterprise<?> enterprise);
 }

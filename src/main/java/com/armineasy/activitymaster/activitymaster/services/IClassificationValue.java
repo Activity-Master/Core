@@ -37,5 +37,5 @@ public interface IClassificationValue<J extends Enum & IClassificationValue<J>>
 	 *
 	 * @return
 	 */
-	IDataConceptValue<?> concept();
+	IClassificationDataConceptValue<?> concept();
 }

@@ -1,8 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.address;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum AddressHomeTelephoneClassifications
 		implements IAddressClassification<AddressHomeTelephoneClassifications>
@@ -14,9 +14,9 @@ public enum AddressHomeTelephoneClassifications
 
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	AddressHomeTelephoneClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	AddressHomeTelephoneClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -33,7 +33,7 @@ public enum AddressHomeTelephoneClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

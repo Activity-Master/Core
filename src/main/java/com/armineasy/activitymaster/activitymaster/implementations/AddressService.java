@@ -64,7 +64,7 @@ public class AddressService implements IAddressService
 			addy = addressExists.get();
 		}
 
-		addy.addClassification(addressClassification, value, originatingSystem, identifyingToken);
+		addy.addOrReuse(addressClassification, value, originatingSystem, identifyingToken);
 		return addy;
 	}
 
@@ -89,7 +89,7 @@ public class AddressService implements IAddressService
 		{
 			address.setValue(ipAddress);
 			address.setClassification(ipAddressClassification);
-			address.setEnterpriseID(originatingSystem.getEnterpriseID());
+			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
 			address.setActiveFlagID(get(IActiveFlagService.class)
@@ -122,7 +122,7 @@ public class AddressService implements IAddressService
 		{
 			address.setValue(hostName);
 			address.setClassification(ipAddressClassification);
-			address.setEnterpriseID(originatingSystem.getEnterpriseID());
+			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
 			address.setActiveFlagID(get(IActiveFlagService.class)
@@ -156,7 +156,7 @@ public class AddressService implements IAddressService
 		{
 			address.setValue(webAddress);
 			address.setClassification(ipAddressClassification);
-			address.setEnterpriseID(originatingSystem.getEnterpriseID());
+			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
 			address.setActiveFlagID(get(IActiveFlagService.class)
@@ -204,7 +204,7 @@ public class AddressService implements IAddressService
 				String port = matcher.group(3);
 				String uri = matcher.group(4);
 				Address webDetails = new Address();
-				webDetails.setEnterpriseID(originatingSystem.getEnterpriseID());
+				webDetails.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 				webDetails.setSystemID((Systems) originatingSystem);
 				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
 				webDetails.setActiveFlagID(get(IActiveFlagService.class)

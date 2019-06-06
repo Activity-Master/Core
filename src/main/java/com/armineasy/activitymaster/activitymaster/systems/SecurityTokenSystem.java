@@ -22,6 +22,8 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSyste
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.SystemsClassifications;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
@@ -42,10 +44,10 @@ public class SecurityTokenSystem
 		implements IActivityMasterSystem<SecurityTokenSystem>
 {
 
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 
 	@Override
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Security Token Service", "Starting Security Structure Checks/Install", progressMonitor);
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
@@ -104,7 +106,7 @@ public class SecurityTokenSystem
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	SecurityToken createSecurityTokens(IEnterpriseName<?> enterpriseName,Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	SecurityToken createSecurityTokens(IEnterpriseName<?> enterpriseName,IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -119,7 +121,7 @@ public class SecurityTokenSystem
 
 		system.grantAccessToToken(rootToken, rootToken, false, false, false, false, activityMasterSystem);
 
-		enterprise.addClassification(EnterpriseIdentity, rootToken.getSecurityToken(), activityMasterSystem, uuid);
+		enterprise.add(EnterpriseIdentity, rootToken.getSecurityToken(), activityMasterSystem, uuid);
 
 		logProgress("Security Token Service", "Enterprise Security Validated", 3, progressMonitor);
 
@@ -128,7 +130,7 @@ public class SecurityTokenSystem
 
 	@SuppressWarnings("Duplicates")
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void createGroupsAndFolders(Enterprise enterprise, SecurityToken rootToken, IActivityMasterProgressMonitor progressMonitor)
+	void createGroupsAndFolders(IEnterprise<?> enterprise, SecurityToken rootToken, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
 
@@ -192,9 +194,9 @@ public class SecurityTokenSystem
 
 		logProgress("Security Token Service", "Base Security Tokens", 11, progressMonitor);
 
-		activityMasterSystem.addClassification(SystemsClassifications.SystemIdentity,
-		                                       activityMasterToken.getSecurityToken(),
-		                                       activityMasterSystem);
+		activityMasterSystem.addOrReuse(SystemsClassifications.SystemIdentity,
+		                         activityMasterToken.getSecurityToken(),
+		                         activityMasterSystem);
 
 		system.link(rootToken, everyoneToken,
 		            classificationService.find(UserGroup, enterprise));
@@ -324,7 +326,7 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Default Security Confirmed", 37, progressMonitor);
 	}
 
-	void applyDefaultsToNewEnterprise(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void applyDefaultsToNewEnterprise(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems system = get(SystemsService.class).getActivityMaster(enterprise);
 
@@ -358,12 +360,12 @@ public class SecurityTokenSystem
 		createDefaultSecurityForTable(new EnterpriseXClassification(), system, progressMonitor);
 
 
-		createDefaultSecurityForTable(enterprise, system, progressMonitor);
+		createDefaultSecurityForTable((WarehouseCoreTable<?, ?, ?, ?>) enterprise, system, progressMonitor);
 		logProgress("Security Token Service", "Completed Checks", 1, progressMonitor);
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void createActivityMasterInvolvedParty(Enterprise enterprise)
+	void createActivityMasterInvolvedParty(IEnterprise<?> enterprise)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -371,7 +373,7 @@ public class SecurityTokenSystem
 		            .createInvolvedPartyForNewSystem(activityMasterSystem);
 	}
 
-	void applyDefaultsToNewEnterpriseAfterActivityMaster(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void applyDefaultsToNewEnterpriseAfterActivityMaster(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems system = get(SystemsService.class).getActivityMaster(enterprise);
 		UUID token = get(SystemsService.class).getSecurityIdentityToken(system);
@@ -396,7 +398,7 @@ public class SecurityTokenSystem
 		createDefaultSecurityForTable(new ResourceItemType(), system, progressMonitor);
 	}
 
-	void createDefaultSecurityForTable(WarehouseCoreTable<?, ?, ?, ?> table, Systems system, IActivityMasterProgressMonitor progressMonitor,UUID...identityToken)
+	void createDefaultSecurityForTable(WarehouseCoreTable<?, ?, ?, ?> table, ISystems<?> system, IActivityMasterProgressMonitor progressMonitor, UUID...identityToken)
 	{
 		for (WarehouseCoreTable next : table.builder()
 		                                    .withEnterprise(system.getEnterpriseID())
@@ -426,7 +428,7 @@ public class SecurityTokenSystem
 
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Security Tokens System",
@@ -437,7 +439,7 @@ public class SecurityTokenSystem
 		systemTokens.put(enterprise, securityToken);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}

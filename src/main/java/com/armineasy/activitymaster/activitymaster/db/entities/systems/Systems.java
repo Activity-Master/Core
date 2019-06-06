@@ -53,7 +53,7 @@ import java.util.List;
 		callSuper = false)
 public class Systems
 		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, Long, SystemsSecurityToken>
-		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification>,
+		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>>,
 				           IActivityMasterEntity<Systems>,
 				           INameAndDescription<Systems>,
 				           IContainsEnterprise<Systems>,
@@ -1038,7 +1038,7 @@ public class Systems
 	}
 
 	@Override
-	public void configureForClassification(SystemXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(SystemXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setSystemID(this);
 	}

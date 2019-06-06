@@ -35,7 +35,7 @@ import java.util.List;
 		callSuper = false)
 public class YesNo
 		extends WarehouseTable<YesNo, YesNoQueryBuilder, Long, YesNoSecurityToken>
-		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification>,
+		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification<?>>,
 				           IActivityMasterEntity<YesNo>
 {
 
@@ -124,9 +124,9 @@ public class YesNo
 
 	}
 
-	public YesNo(Enterprise enterprise, Systems system)
+	public YesNo(IEnterprise<?> enterprise, Systems system)
 	{
-		setEnterpriseID(enterprise);
+		setEnterpriseID((Enterprise) enterprise);
 		setSystemID(system);
 	}
 
@@ -161,7 +161,7 @@ public class YesNo
 	}
 
 	@Override
-	public void configureForClassification(YesNoXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(YesNoXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setYesNoID(this);
 	}

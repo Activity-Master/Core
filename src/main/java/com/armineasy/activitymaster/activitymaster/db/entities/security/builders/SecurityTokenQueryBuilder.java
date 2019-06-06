@@ -75,13 +75,13 @@ public class SecurityTokenQueryBuilder
 		                                  .get();
 	}
 
-	public SecurityTokenQueryBuilder findBySecurityToken(String token, Enterprise enterprise)
+	public SecurityTokenQueryBuilder findBySecurityToken(String token, IEnterprise<?> enterprise)
 	{
 		where(getAttribute("securityToken"), Equals, token);
 		return this;
 	}
 
-	public SecurityTokenQueryBuilder findBySecurityTokenActive(String token, Enterprise enterprise)
+	public SecurityTokenQueryBuilder findBySecurityTokenActive(String token, IEnterprise<?> enterprise)
 	{
 		where(getAttribute("securityToken"), Equals, token);
 		inActiveRange(enterprise);
@@ -89,7 +89,7 @@ public class SecurityTokenQueryBuilder
 		return this;
 	}
 
-	public SecurityTokenQueryBuilder findBySecurityTokenVisibleRange(String token, Enterprise enterprise)
+	public SecurityTokenQueryBuilder findBySecurityTokenVisibleRange(String token, IEnterprise<?> enterprise)
 	{
 		where(getAttribute("securityToken"), Equals, token);
 		inVisibleRange(enterprise);

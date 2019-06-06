@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.events.Event;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IEventTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEventService;
@@ -28,7 +29,7 @@ public class EventsService
 	public Event createEvent(IEventTypeValue<?> eventType, ISystems originatingSystem, UUID... identityToken)
 	{
 		Event event = new Event();
-		event.setEnterpriseID(originatingSystem.getEnterpriseID());
+		event.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		event.setSystemID((Systems) originatingSystem);
 		event.setOriginalSourceSystemID((Systems) originatingSystem);
 		event.setActiveFlagID(get(IActiveFlagService.class)
@@ -56,7 +57,7 @@ public class EventsService
 			type.setName(eventType.name());
 			type.setDescription(eventType.classificationValue());
 			type.setSystemID((Systems) originatingSystem);
-			type.setEnterpriseID(originatingSystem.getEnterpriseID());
+			type.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			type.setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 			                                 .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			type.setOriginalSourceSystemID((Systems) originatingSystem);
@@ -73,7 +74,7 @@ public class EventsService
 
 	@Override
 	@CacheResult(cacheName = "EventTypes")
-	public EventType findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
+	public EventType findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		return new EventType().builder()
 		                      .findByName(eventType.name())

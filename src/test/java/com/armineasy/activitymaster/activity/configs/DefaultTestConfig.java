@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
@@ -76,7 +77,7 @@ public class DefaultTestConfig
 		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise);
 		EnterpriseService service = get(EnterpriseService.class);
 		Optional<Enterprise> enterpriseO = service.findEnterprise(TestEnterprise);
-		Enterprise enterprise = null;
+		IEnterprise<?> enterprise = null;
 		if(enterpriseO.isEmpty())
 		{
 			enterpriseO = Optional.ofNullable(get(ActivityMasterService.class)

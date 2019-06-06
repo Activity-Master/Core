@@ -3,11 +3,10 @@ package com.armineasy.activitymaster.activitymaster.implementations;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
-import com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders.ClassificationDataConceptQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationDataConceptService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
@@ -19,13 +18,13 @@ import javax.cache.annotation.CacheResult;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 @Singleton
 public class ClassificationsDataConceptService
 		implements IClassificationDataConceptService
 {
-	public ClassificationDataConcept createDataConcept(IDataConceptValue<?> name,
+	public ClassificationDataConcept createDataConcept(IClassificationDataConceptValue<?> name,
 	                                                   String description,
 	                                                   Systems system, UUID... identityToken)
 	{
@@ -63,15 +62,15 @@ public class ClassificationsDataConceptService
 
 	@Override
 	@CacheResult(cacheName = "GetGlobalConcept")
-	public ClassificationDataConcept getGlobalConcept(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getGlobalConcept(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
-		ClassificationDataConcept globalClassifications = findConcept(GlobalClassificationsDataConceptName, enterprise,identityToken);
+		ClassificationDataConcept globalClassifications = find(GlobalClassificationsDataConceptName, enterprise, identityToken);
 		return globalClassifications;
 	}
 
 	@Override
 	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystem")
-	public ClassificationDataConcept findConcept(@CacheKey IDataConceptValue<?> name, @CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept find(@CacheKey IClassificationDataConceptValue<?> name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
 		cdc = cdc.builder()
@@ -86,17 +85,17 @@ public class ClassificationsDataConceptService
 
 	@Override
 	@CacheResult(cacheName = "NoDataConcept")
-	public ClassificationDataConcept getNoConcept(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getNoConcept(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
-		ClassificationDataConcept globalClassifications = findConcept(NoClassificationDataConceptName, enterprise,identityToken);
+		ClassificationDataConcept globalClassifications = find(NoClassificationDataConceptName, enterprise, identityToken);
 		return globalClassifications;
 	}
 
 	@Override
 	@CacheResult(cacheName = "SecurityHierarchyConcept")
-	public ClassificationDataConcept getSecurityHierarchyConcept(@CacheKey Enterprise enterprise, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getSecurityHierarchyConcept(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
-		return findConcept(EnterpriseDataConcepts.SecurityTokenXSecurityToken,enterprise,identityToken);
+		return find(EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken, enterprise, identityToken);
 	}
 
 }

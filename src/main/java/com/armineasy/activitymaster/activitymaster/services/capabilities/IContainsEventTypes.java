@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
 import com.armineasy.activitymaster.activitymaster.services.IEventTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEventService;
@@ -109,6 +110,6 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 
-	void setMyEventTypeLinkValue(J classificationLink, S identificationType, Enterprise enterprise);
+	void setMyEventTypeLinkValue(J classificationLink, S identificationType, IEnterprise<?> enterprise);
 
 }

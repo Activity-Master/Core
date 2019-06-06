@@ -1,9 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.systems;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.classifications.product.IProductClassification;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum SystemsClassifications
 		implements ISystemsClassification<SystemsClassifications>
@@ -11,9 +10,9 @@ public enum SystemsClassifications
 	SystemIdentity("Defines an identity classification relationship", SystemXClassification)
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	SystemsClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	SystemsClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -30,7 +29,7 @@ public enum SystemsClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

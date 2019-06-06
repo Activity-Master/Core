@@ -1,10 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum SecurityTokenClassifications
 		implements ISecurityTokenClassification<SecurityTokenClassifications>
@@ -23,9 +21,9 @@ public enum SecurityTokenClassifications
 
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	SecurityTokenClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	SecurityTokenClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -42,7 +40,7 @@ public enum SecurityTokenClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

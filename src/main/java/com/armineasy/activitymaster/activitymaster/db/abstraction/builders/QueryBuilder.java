@@ -112,7 +112,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I, S>,
 
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public J whereNoSecurityIsApplied(Enterprise enterprise)
+	public J whereNoSecurityIsApplied(IEnterprise<?> enterprise)
 	{
 
 		Class<S> securityBuilderClass = findSecurityClass();
@@ -140,19 +140,19 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I, S>,
 
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public J canCreate(Enterprise enterprise, UUID... identityToken)
+	public J canCreate(IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		return (J) this;
 	}
 
 	@NotNull
-	public J canUpdate(Enterprise enterprise, UUID... identityToken)
+	public J canUpdate(IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		return getSecurityBuilderConfig(enterprise, "updateAllowed", identityToken);
 	}
 
 	@NotNull
-	public J canDelete(Enterprise enterprise, UUID... identityToken)
+	public J canDelete(IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		return getSecurityBuilderConfig(enterprise, "deleteAllowed", identityToken);
 	}

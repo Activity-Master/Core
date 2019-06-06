@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.INameType;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -102,6 +103,6 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 
-	void setMyInvolvedPartyNameTypeLinkValue(J classificationLink, S identificationType, Enterprise enterprise);
+	void setMyInvolvedPartyNameTypeLinkValue(J classificationLink, S identificationType, IEnterprise<?> enterprise);
 
 }

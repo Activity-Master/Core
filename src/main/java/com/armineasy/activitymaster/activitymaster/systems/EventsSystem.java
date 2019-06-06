@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.Classificatio
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.events.EventAddressClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.events.EventArrangementClassifications.*;
+import static com.armineasy.activitymaster.activitymaster.services.classifications.events.EventClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.events.EventInvolvedPartiesClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.events.EventProductClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.events.EventResourceItemClassifications.*;
@@ -26,11 +28,11 @@ public class EventsSystem
 		implements IActivityMasterSystem<EventsSystem>
 {
 
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		createEventInvolvedPartyDefaultClassifications(enterprise, progressMonitor);
 		createEventAddressDefaultClassifications(enterprise, progressMonitor);
@@ -48,7 +50,7 @@ public class EventsSystem
 
 	@SuppressWarnings("WeakerAccess")
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void createEventInvolvedPartyDefaultClassifications(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventInvolvedPartyDefaultClassifications(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -66,13 +68,16 @@ public class EventsSystem
 		service.create(SecurityCredentialsOf, activityMasterSystem,InvolvedPartyEvents);
 		service.create(Notifies, activityMasterSystem,InvolvedPartyEvents);
 		service.create(MeantFor, activityMasterSystem,InvolvedPartyEvents);
+		service.create(NotifiesInvolvedParty, activityMasterSystem,InvolvedPartyEvents);
+		service.create(UpdatedPassword, activityMasterSystem,InvolvedPartyEvents);
+		service.create(UpdatedUsername, activityMasterSystem,InvolvedPartyEvents);
 		logProgress("Events System", "Loaded Event InvolvedParty Classifications...", 1, progressMonitor);
 
 	}
 
 	@SuppressWarnings("WeakerAccess")
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void createEventAddressDefaultClassifications(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventAddressDefaultClassifications(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -96,7 +101,7 @@ public class EventsSystem
 
 	@SuppressWarnings("WeakerAccess")
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void createEventArrangementDefaultClassifications(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventArrangementDefaultClassifications(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -114,7 +119,7 @@ public class EventsSystem
 
 	@SuppressWarnings("WeakerAccess")
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void createEventEventTypesClassifications(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventEventTypesClassifications(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -131,7 +136,7 @@ public class EventsSystem
 
 	@SuppressWarnings("WeakerAccess")
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void createEventProductsDefaultClassifications(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventProductsDefaultClassifications(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -158,7 +163,7 @@ public class EventsSystem
 
 	@SuppressWarnings("WeakerAccess")
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void createEventResourceItemDefaultClassifications(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventResourceItemDefaultClassifications(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -198,7 +203,7 @@ public class EventsSystem
 
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Events System",
@@ -209,7 +214,7 @@ public class EventsSystem
 		systemTokens.put(enterprise, securityToken);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}

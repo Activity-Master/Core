@@ -1,8 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.address;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum AddressBoxClassifications
 		implements IAddressClassification<AddressBoxClassifications>
@@ -15,14 +15,14 @@ public enum AddressBoxClassifications
 	BoxPostalCode("The postal code of the post box", Address),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
 	AddressBoxClassifications(String classificationValue)
 	{
 		this.classificationValue = classificationValue;
 	}
 
-	AddressBoxClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	AddressBoxClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -34,7 +34,7 @@ public enum AddressBoxClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

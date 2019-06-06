@@ -8,7 +8,6 @@ import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXG
 import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders.ClassificationQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.EnterpriseXClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
@@ -25,16 +24,15 @@ import com.armineasy.activitymaster.activitymaster.db.entities.security.Security
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityTokenXClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityTokenXSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemXClassification;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNoXClassification;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.ClassificationHierarchyView;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsHierarchy;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import com.google.common.base.Strings;
 import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -62,8 +60,9 @@ import java.util.List;
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>
 		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView>,
-				           IContainsResourceItems<Classification,ResourceItem,ClassificationXResourceItem>,
-				           IActivityMasterEntity<Classification>
+				           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem>,
+				           IActivityMasterEntity<Classification>,
+				           IClassification<Classification>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -315,7 +314,7 @@ public class Classification
 		return token;
 	}
 
-	public void configureForClassification(ClassificationXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(ClassificationXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		Classification hierarchyClassification = GuiceContext.get(ClassificationService.class)
 		                                                     .getHierarchyType(classificationLink.getEnterpriseID());
@@ -327,7 +326,7 @@ public class Classification
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(ClassificationXResourceItem classificationLink, ResourceItem resourceItem, Enterprise enterprise)
+	public void setMyResourceItemLinkValue(ClassificationXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
 	{
 		classificationLink.setClassificationID(this);
 		classificationLink.setResourceItemID(resourceItem);

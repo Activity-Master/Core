@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItemType;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -101,6 +102,6 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 
-	void setMyResourceItemTypeLinkValue(J classificationLink, S ResourceItemType, Enterprise enterprise);
+	void setMyResourceItemTypeLinkValue(J classificationLink, S ResourceItemType, IEnterprise<?> enterprise);
 
 }

@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.InvolvedParty
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -23,11 +24,11 @@ public class InvolvedPartySystem
 		implements IActivityMasterSystem<InvolvedPartySystem>
 {
 
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Involved Party System", "Starting Checks for Required Values", progressMonitor);
 		createIdentificationTypes(enterprise, progressMonitor);
@@ -37,7 +38,7 @@ public class InvolvedPartySystem
 		createOrganicTypes(enterprise, progressMonitor);
 	}
 
-	private void createIdentificationTypes(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createIdentificationTypes(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 
@@ -60,7 +61,7 @@ public class InvolvedPartySystem
 		logProgress("Involved Party System", "Loaded Identification Types", 16, progressMonitor);
 	}
 
-	private void createNameTypes(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createNameTypes(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 
@@ -83,7 +84,7 @@ public class InvolvedPartySystem
 		logProgress("Involved Party System", "Loaded Name Types", 12, progressMonitor);
 	}
 
-	private void createTypes(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createTypes(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 
@@ -96,12 +97,12 @@ public class InvolvedPartySystem
 		logProgress("Involved Party System", "Loaded Types", 6, progressMonitor);
 	}
 
-	private void createDefaultUsers(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createDefaultUsers(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 	}
 
-	private void createOrganicTypes(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createOrganicTypes(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 
@@ -128,7 +129,7 @@ public class InvolvedPartySystem
 
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Involved Party System",
@@ -139,7 +140,7 @@ public class InvolvedPartySystem
 		systemTokens.put(enterprise, securityToken);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}

@@ -56,7 +56,7 @@ import java.util.logging.Logger;
 		callSuper = false)
 public class SecurityToken
 		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, Long, SecurityTokensSecurityToken>
-		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification>,
+		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>>,
 				           IActivityMasterEntity<SecurityToken>
 {
 	private static final Logger log = LogFactory.getLog("SecurityToken");
@@ -369,7 +369,7 @@ public class SecurityToken
 	}
 
 	@Override
-	public void configureForClassification(SecurityTokenXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(SecurityTokenXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setSecurityTokenID(this);
 	}

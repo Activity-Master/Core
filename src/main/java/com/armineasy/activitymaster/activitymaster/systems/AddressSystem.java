@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -37,11 +38,11 @@ import static com.armineasy.activitymaster.activitymaster.services.classificatio
 public class AddressSystem
 		implements IActivityMasterSystem<AddressSystem>
 {
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Address System", "Starting Address Checks", progressMonitor);
 		createDefaultTelephones(enterprise, progressMonitor);
@@ -50,7 +51,7 @@ public class AddressSystem
 	}
 
 	@SuppressWarnings("Duplicates")
-	private void createDefaultTelephones(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createDefaultTelephones(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems system = GuiceContext.get(SystemsService.class)
 		                             .getActivityMaster(enterprise);
@@ -125,7 +126,7 @@ public class AddressSystem
 	}
 
 	@SuppressWarnings("Duplicates")
-	private void createDefaultInternetAddresses(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createDefaultInternetAddresses(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Address System", "Starting Internet Address Checks", progressMonitor);
 
@@ -176,7 +177,7 @@ public class AddressSystem
 	}
 
 	@SuppressWarnings("Duplicates")
-	private void createDefaultPhysicalAddresses(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createDefaultPhysicalAddresses(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Address System", "Starting Physical Address Checks", progressMonitor);
 		Systems system = GuiceContext.get(SystemsService.class)
@@ -225,7 +226,7 @@ public class AddressSystem
 	}
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Address System", "The system for the address management", "");
@@ -235,7 +236,7 @@ public class AddressSystem
 		systemTokens.put(enterprise, securityToken);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}

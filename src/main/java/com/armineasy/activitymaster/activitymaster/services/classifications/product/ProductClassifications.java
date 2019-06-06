@@ -1,8 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.product;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum ProductClassifications
 		implements IProductClassification<ProductClassifications>
@@ -14,9 +14,9 @@ public enum ProductClassifications
 	ProductBaseCost("The base cost of this product excluding VAT",ProductXClassification),
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	ProductClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	ProductClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -33,7 +33,7 @@ public enum ProductClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

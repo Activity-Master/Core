@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification_;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.entityassist.enumerations.Operand;
 
 import javax.persistence.metamodel.SingularAttribute;
@@ -18,7 +19,7 @@ import static com.jwebmp.entityassist.enumerations.Operand.*;
 public class ClassificationQueryBuilder
 		extends QueryBuilder<ClassificationQueryBuilder, Classification, Long, ClassificationSecurityToken>
 {
-	public ClassificationQueryBuilder findByNameAndConcept(String name, ClassificationDataConcept concept, Enterprise enterprise)
+	public ClassificationQueryBuilder findByNameAndConcept(String name, ClassificationDataConcept concept, IEnterprise<?> enterprise)
 	{
 		findByName(name);
 		where(Classification_.concept, Operand.Equals, concept);

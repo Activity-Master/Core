@@ -3,7 +3,6 @@ package com.armineasy.activitymaster.activitymaster.implementations;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
-import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationXClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
@@ -52,7 +51,7 @@ public class ClassificationService
 	                             Short sequenceNumber, IClassificationValue<?> parent, UUID... identityToken)
 	{
 		ClassificationsDataConceptService dataConceptService = GuiceContext.get(ClassificationsDataConceptService.class);
-		ClassificationDataConcept dataConcept = dataConceptService.findConcept(concept.concept(), system.getEnterpriseID(), identityToken);
+		ClassificationDataConcept dataConcept = dataConceptService.find(concept.concept(), system.getEnterpriseID(), identityToken);
 		Classification rootCl = new Classification();
 
 		Optional<Classification> exists = ActivityMasterConfiguration
@@ -72,7 +71,7 @@ public class ClassificationService
 			rootCl.setSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemUniqueID("");
-			rootCl.setEnterpriseID(system.getEnterpriseID());
+			rootCl.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			rootCl.setActiveFlagID(((Systems)system).getActiveFlagID());
 			rootCl.setConcept(dataConcept);
 			rootCl.persist();
@@ -104,7 +103,7 @@ public class ClassificationService
 	{
 		Classification search = new Classification();
 		ClassificationsDataConceptService cb = GuiceContext.get(ClassificationsDataConceptService.class);
-		ClassificationDataConcept concept = cb.findConcept(name.concept(), (Enterprise) enterprise, identityToken);
+		ClassificationDataConcept concept = cb.find(name.concept(), (Enterprise) enterprise, identityToken);
 		search = search.builder()
 		               .findByNameAndConcept(name.classificationName(), concept, (Enterprise) enterprise)
 		               .inActiveRange((Enterprise) enterprise, identityToken)

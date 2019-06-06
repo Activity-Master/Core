@@ -11,6 +11,8 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgr
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.EnterpriseClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
@@ -30,12 +32,12 @@ public class ClassificationsSystem
 		implements IActivityMasterSystem<ClassificationsSystem>
 {
 	//public static final String ClassificationHierarchyType = "Hierarchy";
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
-	private static final Map<Enterprise, Systems> systemsMap = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, ISystems<?>> systemsMap = new HashMap<>();
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = 300)
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
@@ -89,7 +91,7 @@ public class ClassificationsSystem
 	}
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Classifications System", "The system for handling classifications", "");
@@ -107,12 +109,12 @@ public class ClassificationsSystem
 		systemTokens.put(enterprise, securityToken);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}
 
-	public static Map<Enterprise, Systems> getSystemsMap()
+	public static Map<IEnterprise<?>, ISystems<?>> getSystemsMap()
 	{
 		return systemsMap;
 	}

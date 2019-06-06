@@ -3,6 +3,7 @@ package com.armineasy.activitymaster.activitymaster.services.system;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 public interface IEnterpriseService
 {
-	List<Enterprise> findEnterprisesWithClassification(Classification classification);
+	List<IEnterprise<?>> findEnterprisesWithClassification(Classification classification);
 	/**
 	 * Gets an enterprise or throws an exception.
 	 *
@@ -21,5 +22,5 @@ public interface IEnterpriseService
 	 *
 	 * @return The enterprise
 	 */
-	Enterprise getEnterprise(@CacheKey IEnterpriseName<?> name);
+	IEnterprise<?> getEnterprise(@CacheKey IEnterpriseName<?> name);
 }

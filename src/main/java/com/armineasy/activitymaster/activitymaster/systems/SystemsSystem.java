@@ -4,7 +4,6 @@ import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
-import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyIdentificationType;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
@@ -13,14 +12,11 @@ import com.armineasy.activitymaster.activitymaster.implementations.SecurityToken
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
-import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.SystemsClassifications;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
-import com.armineasy.activitymaster.activitymaster.services.types.IPTypes;
-import com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes;
-import com.armineasy.activitymaster.activitymaster.services.types.NameTypes;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.pairing.Pair;
@@ -44,11 +40,11 @@ public class SystemsSystem
 		implements IActivityMasterSystem<SystemsSystem>
 {
 
-	private static final Map<Enterprise, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		GuiceContext.get(SystemsService.class)
 		            .create(enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master");
@@ -64,7 +60,7 @@ public class SystemsSystem
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = transactionTimeout)
-	public UUID registerNewSystem(Enterprise enterprise, ISystems<?> newSystem)
+	public UUID registerNewSystem(IEnterprise enterprise, ISystems<?> newSystem)
 	{
 		//Create Security Token for the created system row
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
@@ -86,8 +82,8 @@ public class SystemsSystem
 		                          classificationService.find(UserGroupSecurityTokenClassifications.System, activityMasterSystem.getEnterpriseID(),
 		                                                     activityMasterSystemUUID));
 		//Add the systems classifications so the UUID can be fetched
-		newSystem.addClassification(SystemsClassifications.SystemIdentity, newSystemsSecurityToken.getSecurityToken(), newSystem,
-		                            activityMasterSystemUUID);
+		newSystem.addOrReuse(SystemsClassifications.SystemIdentity, newSystemsSecurityToken.getSecurityToken(), newSystem,
+		              activityMasterSystemUUID);
 
 		UUID newSystemUUID = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(newSystem, activityMasterSystemUUID);
@@ -149,7 +145,7 @@ public class SystemsSystem
 
 
 	@Override
-	public void postUpdate(Enterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Systems System",
@@ -160,7 +156,7 @@ public class SystemsSystem
 		systemTokens.put(enterprise, securityToken);
 	}
 
-	public static Map<Enterprise, UUID> getSystemTokens()
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
 	}

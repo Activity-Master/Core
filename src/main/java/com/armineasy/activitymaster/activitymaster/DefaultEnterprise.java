@@ -2,6 +2,7 @@ package com.armineasy.activitymaster.activitymaster;
 
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 
 public enum DefaultEnterprise implements IEnterpriseName<DefaultEnterprise>
 {
@@ -9,7 +10,7 @@ public enum DefaultEnterprise implements IEnterpriseName<DefaultEnterprise>
 	;
 
 	private String description;
-	private Enterprise enterprise;
+	private IEnterprise<?> enterprise;
 
 	DefaultEnterprise(String description)
 	{
@@ -23,12 +24,12 @@ public enum DefaultEnterprise implements IEnterpriseName<DefaultEnterprise>
 	}
 
 	@Override
-	public Enterprise getEnterprise()
+	public IEnterprise<?> getEnterprise()
 	{
 		return enterprise;
 	}
 
-	public void setEnterprise(Enterprise enterprise)
+	public void setEnterprise(IEnterprise<?> enterprise)
 	{
 		this.enterprise = enterprise;
 	}

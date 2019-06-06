@@ -41,7 +41,7 @@ import java.util.List;
 		callSuper = false)
 public class Product
 		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, Long, ProductSecurityToken>
-		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification>,
+		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>>,
 				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem>,
 				           IActivityMasterEntity<Product>
 {
@@ -146,13 +146,13 @@ public class Product
 	}
 
 	@Override
-	public void configureForClassification(ProductXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(ProductXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setProductID(this);
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(ProductXResourceItem classificationLink, ResourceItem resourceItem, Enterprise enterprise)
+	public void setMyResourceItemLinkValue(ProductXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
 	{
 		classificationLink.setResourceItemID(resourceItem);
 		classificationLink.setProductID(this);

@@ -12,6 +12,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.buil
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IResourceItemService;
@@ -39,7 +40,7 @@ public class ResourceItemService
 {
 	public ResourceItemType createType(IResourceTypeValue<?> value, Systems system, UUID... identityToken)
 	{
-		Enterprise enterprise = system.getEnterpriseID();
+		IEnterprise<?> enterprise = system.getEnterpriseID();
 
 		ResourceItemType xr = new ResourceItemType();
 		Optional<ResourceItemType> exists = xr.builder()
@@ -80,7 +81,7 @@ public class ResourceItemService
 		xr.setOriginalSourceSystemID((Systems) system);
 		xr.setOriginalSourceSystemUniqueID("");
 		xr.setSystemID((Systems) system);
-		xr.setEnterpriseID(system.getEnterpriseID());
+		xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		xr.setActiveFlagID(((Systems)system).getActiveFlagID());
 		xr.setResourceItemDataType(mimeType);
 		xr.persist();

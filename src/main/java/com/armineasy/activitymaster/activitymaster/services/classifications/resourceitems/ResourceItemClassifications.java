@@ -1,9 +1,8 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems;
 
-import com.armineasy.activitymaster.activitymaster.services.IDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts;
+import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
 
-import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts.*;
+import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum ResourceItemClassifications
 		implements IResourceItemClassification<ResourceItemClassifications>
@@ -27,9 +26,9 @@ public enum ResourceItemClassifications
 
 	;
 	private String classificationValue;
-	private IDataConceptValue<?> dataConceptValue;
+	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	ResourceItemClassifications(String classificationValue, IDataConceptValue<?> dataConceptValue)
+	ResourceItemClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
@@ -46,7 +45,7 @@ public enum ResourceItemClassifications
 		return classificationValue;
 	}
 	@Override
-	public IDataConceptValue<?> concept()
+	public IClassificationDataConceptValue<?> concept()
 	{
 		return dataConceptValue;
 	}

@@ -1,6 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.services;
 
-import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseDataConcepts;
+import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts;
 
 /**
  * Service restricted to enumerations
@@ -42,8 +42,8 @@ public interface IResourceTypeValue<J extends Enum & IResourceTypeValue<J>>
 	 *
 	 * @return
 	 */
-	default IDataConceptValue<?> concept()
+	default IClassificationDataConceptValue<?> concept()
 	{
-		return EnterpriseDataConcepts.ResourceItem;
+		return EnterpriseClassificationDataConcepts.ResourceItem;
 	}
 }

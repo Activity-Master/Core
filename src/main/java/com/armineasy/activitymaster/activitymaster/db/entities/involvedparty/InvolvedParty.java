@@ -2,6 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
+import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.Arrangement;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementXInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
@@ -38,7 +39,7 @@ import java.util.List;
 		callSuper = false)
 public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, Long, InvolvedPartySecurityToken>
-		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification>,
+		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>>,
 				           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem>,
 				           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType>,
 				           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType>,
@@ -130,41 +131,41 @@ public class InvolvedParty
 	}
 
 	@Override
-	public void configureForClassification(InvolvedPartyXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(InvolvedPartyXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setInvolvedPartyID(this);
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(InvolvedPartyXResourceItem classificationLink, ResourceItem resourceItem, Enterprise enterprise)
+	public void setMyResourceItemLinkValue(InvolvedPartyXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
 	{
 		classificationLink.setResourceItemID(resourceItem);
 		classificationLink.setInvolvedPartyID(this);
 	}
 
 	@Override
-	public void setMyInvolvedPartyIdentificationTypeLinkValue(InvolvedPartyXInvolvedPartyIdentificationType classificationLink, InvolvedPartyIdentificationType identificationType, Enterprise enterprise)
+	public void setMyInvolvedPartyIdentificationTypeLinkValue(InvolvedPartyXInvolvedPartyIdentificationType classificationLink, InvolvedPartyIdentificationType identificationType, IEnterprise<?> enterprise)
 	{
 		classificationLink.setInvolvedPartyID(this);
 		classificationLink.setInvolvedPartyIdentificationTypeID(identificationType);
 	}
 
 	@Override
-	public void setMyInvolvedPartyNameTypeLinkValue(InvolvedPartyXInvolvedPartyNameType classificationLink, InvolvedPartyNameType identificationType, Enterprise enterprise)
+	public void setMyInvolvedPartyNameTypeLinkValue(InvolvedPartyXInvolvedPartyNameType classificationLink, InvolvedPartyNameType identificationType, IEnterprise<?> enterprise)
 	{
 		classificationLink.setInvolvedPartyID(this);
 		classificationLink.setInvolvedPartyNameTypeID(identificationType);
 	}
 
 	@Override
-	public void setMyInvolvedPartyTypeLinkValue(InvolvedPartyXInvolvedPartyType classificationLink, InvolvedPartyType identificationType, Enterprise enterprise)
+	public void setMyInvolvedPartyTypeLinkValue(InvolvedPartyXInvolvedPartyType classificationLink, InvolvedPartyType identificationType, IEnterprise<?> enterprise)
 	{
 		classificationLink.setInvolvedPartyID(this);
 		classificationLink.setInvolvedPartyTypeID(identificationType);
 	}
 
 	@Override
-	public void setMyAddressLinkValue(InvolvedPartyXAddress classificationLink, Address geography, Enterprise enterprise)
+	public void setMyAddressLinkValue(InvolvedPartyXAddress classificationLink, Address geography, IEnterprise<?> enterprise)
 	{
 		classificationLink.setInvolvedPartyID(this);
 		classificationLink.setAddressID(geography);

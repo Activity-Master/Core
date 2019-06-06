@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -67,7 +68,7 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J addGeography(Geography geography, Classification classification, String value, UUID... identifyingToken)
+	default J add(Geography geography, Classification classification, String value, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
@@ -100,6 +101,8 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 
-	void setMyGeographyLinkValue(J classificationLink, S geography, Enterprise enterprise);
+
+
+	void setMyGeographyLinkValue(J classificationLink, S geography, IEnterprise<?> enterprise);
 
 }

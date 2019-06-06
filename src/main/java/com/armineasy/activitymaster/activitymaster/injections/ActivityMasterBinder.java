@@ -40,5 +40,8 @@ public class ActivityMasterBinder
 
 		module.bind(IAddressService.class)
 		      .to(AddressService.class);
+
+		module.bind(IArrangementsService.class)
+		      .to(ArrangementsService.class);
 	}
 }

@@ -5,6 +5,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.Active
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlagSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag_;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.guicedinjection.GuiceContext;
 
@@ -23,14 +24,14 @@ public class ActiveFlagQueryBuilder
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public ActiveFlagQueryBuilder inActiveRange(Enterprise enterprise)
+	public ActiveFlagQueryBuilder inActiveRange(IEnterprise<?> enterprise)
 	{
 		return this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public ActiveFlagQueryBuilder inVisibleRange(Enterprise enterprise)
+	public ActiveFlagQueryBuilder inVisibleRange(IEnterprise<?> enterprise)
 	{
 		return this;
 	}

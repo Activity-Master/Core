@@ -207,7 +207,7 @@ public class SecurityTokenService
 		                                   .findByName(Everyone)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise, identityToken)
+		                                //   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
@@ -222,7 +222,7 @@ public class SecurityTokenService
 		                                   .findByName(Everywhere)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise, identityToken)
+		                             //      .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
@@ -252,7 +252,7 @@ public class SecurityTokenService
 		                                   .findByName(Registered)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise, identityToken)
+		                               //    .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
@@ -267,7 +267,7 @@ public class SecurityTokenService
 		                                   .findByName(Visitors)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise, identityToken)
+		                              //     .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
@@ -282,7 +282,7 @@ public class SecurityTokenService
 		                                   .findByName(Administrators)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise, identityToken)
+		                                 //  .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
@@ -297,7 +297,7 @@ public class SecurityTokenService
 		                                   .findByName(System)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .canRead(enterprise, identityToken)
+		                                   //.canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
@@ -311,7 +311,7 @@ public class SecurityTokenService
 		                                   .findFolder(Plugin, enterprise, identityToken)
 		                                   .findByName(Plugins)
 		                                   .inActiveRange(enterprise, identityToken)
-		                                   .canRead(enterprise, identityToken)
+		                                 //  .canRead(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .get();
 		return exists.orElseThrow();
@@ -326,7 +326,7 @@ public class SecurityTokenService
 		                                   .findFolder(Application, enterprise, identityToken)
 		                                   .findByName(Applications)
 		                                   .inActiveRange(enterprise, identityToken)
-		                                   .canRead(enterprise, identityToken)
+		                                //   .canRead(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .get();
 		return exists.orElseThrow();
@@ -341,7 +341,7 @@ public class SecurityTokenService
 		                                        .withEnterprise(enterprise)
 		                                        .inActiveRange(enterprise, identityToken)
 		                                        .inDateRange()
-		                                        .canRead(enterprise, identityToken)
+		                                       // .canRead(enterprise, identityToken)
 		                                        .get()
 		                                        .orElse(null);
 		return view;

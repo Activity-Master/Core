@@ -10,13 +10,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
-import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.IProgressable;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
-import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
-import com.armineasy.activitymaster.activitymaster.systems.EnterpriseSystem;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.extern.java.Log;
@@ -24,6 +22,7 @@ import lombok.extern.java.Log;
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,7 +60,7 @@ public class EnterpriseService
 
 	@Override
 	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
-	public List<Enterprise> findEnterprisesWithClassification(@CacheKey Classification classification)
+	public List<IEnterprise<?>> findEnterprisesWithClassification(@CacheKey Classification classification)
 	{
 		List<Long> classy = new EnterpriseXClassification().builder()
 		                                                   .withClassification(classification)
@@ -72,7 +71,7 @@ public class EnterpriseService
 
 		EnterpriseQueryBuilder builder = new Enterprise().builder();
 		builder = builder.where(Enterprise_.id, InList, classy);
-		return builder.getAll();
+		return new ArrayList<>(builder.getAll());
 	}
 
 	public Optional<Enterprise> findEnterprise(IEnterpriseName<?> name)
@@ -85,10 +84,11 @@ public class EnterpriseService
 
 	/**
 	 * Gets an enterprise or throws an exception.
-	 *
+	 * <p>
 	 * Result is cached
 	 *
-	 * @param name the name of the enterprise
+	 * @param name
+	 * 		the name of the enterprise
 	 *
 	 * @return The enterprise
 	 */
@@ -119,9 +119,9 @@ public class EnterpriseService
 					                               .getActivityMaster(enterprise);
 			UUID identityToken = get(SystemsService.class).getSecurityIdentityToken(activityMasterSystem);
 
-			if (enterprise.hasClassification(Version, activityMasterSystem))
+			if (enterprise.has(Version, activityMasterSystem))
 			{
-				if (ActivityMasterConfiguration.version > enterprise.findClassification(Version, activityMasterSystem)
+				if (ActivityMasterConfiguration.version > enterprise.find(Version, activityMasterSystem)
 				                                                    .get()
 				                                                    .getValueAsDouble())
 				{

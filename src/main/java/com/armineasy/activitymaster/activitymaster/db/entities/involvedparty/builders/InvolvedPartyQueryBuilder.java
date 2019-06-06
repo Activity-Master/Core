@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.google.common.base.Strings;
@@ -20,12 +21,12 @@ public class InvolvedPartyQueryBuilder
 		extends QueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty, Long, InvolvedPartySecurityToken>
 {
 
-	public InvolvedPartyQueryBuilder findByIdentificationType(Enterprise enterprise, IIdentificationType<?> idType)
+	public InvolvedPartyQueryBuilder findByIdentificationType(IEnterprise enterprise, IIdentificationType<?> idType)
 	{
 		return findByIdentificationType(enterprise, idType, null);
 	}
 
-	public InvolvedPartyQueryBuilder findByIdentificationType(Enterprise enterprise, IIdentificationType<?> idType, String value, UUID... identityTokens)
+	public InvolvedPartyQueryBuilder findByIdentificationType(IEnterprise enterprise, IIdentificationType<?> idType, String value, UUID... identityTokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
 		InvolvedPartyIdentificationType type = GuiceContext.get(InvolvedPartyService.class)

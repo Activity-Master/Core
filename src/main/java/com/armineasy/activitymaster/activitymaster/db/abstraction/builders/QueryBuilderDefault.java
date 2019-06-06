@@ -84,40 +84,18 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	}
 
 	@Override
-	public E delete(E entity)
-	{
-		if(entity instanceof WarehouseSCDTable)
-		{
-			WarehouseSCDTable w = (WarehouseSCDTable) entity;
-			w.setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-			                              .getDeletedFlag(w.getEnterpriseID()));
-		}
-		return super.delete(entity);
-	}
-
-	@Override
-	public boolean onDeleteUpdate(E originalEntity, E newEntity)
-	{
-		if(originalEntity instanceof WarehouseTable)
-		{
-			WarehouseTable orig = (WarehouseTable) originalEntity;
-			WarehouseTable news = (WarehouseTable) originalEntity;
-
-			news.setOriginalSourceSystemUniqueID(orig.getId()
-			                                         .toString());
-		}
-		return super.onDeleteUpdate(originalEntity, newEntity);
-	}
-
-	@Override
 	public E update(E entity)
 	{
 		if(entity instanceof WarehouseSCDTable)
 		{
 			WarehouseSCDTable w = (WarehouseSCDTable) entity;
-			w.setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-			                              .getArchivedFlag(w.getEnterpriseID()));
+			w.setEffectiveToDate(LocalDateTime.now());
+			w.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 		}
-		return super.update(entity);
+		E ent =  super.update(entity);
+		ent.builder()
+		   .getEntityManager()
+		   .flush();
+		return ent;
 	}
 }

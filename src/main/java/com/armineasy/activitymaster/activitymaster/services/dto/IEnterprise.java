@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 public interface IEnterprise<J extends IEnterprise<J>>
 		extends Serializable, INameAndDescription<J>,
-				        IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification>,
+				        IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>>,
 				        IActivityMasterEntity<J>
 {
 }

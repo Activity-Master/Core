@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 
@@ -57,7 +58,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default boolean hasInvolvedParty(IInvolvedPartyClassification<?> InvolvedPartyClassification, String value, Enterprise enterprise, UUID... identityToken)
+	default boolean hasInvolvedParty(IInvolvedPartyClassification<?> InvolvedPartyClassification, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		J activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
 		ISystems activityMasterSystem = get(ISystemsService.class)
@@ -73,10 +74,10 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J addInvolvedParty(IInvolvedPartyClassification<?> involvedPartyClassification, Systems originatingSystem, String value, UUID... identifyingToken)
+	default J add(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems originatingSystem, String value, UUID... identifyingToken)
 	{
 		ISystems activityMasterSystem = get(ISystemsService.class)
-				                               .getActivityMaster(originatingSystem.getEnterpriseID());
+				                               .getActivityMaster(originatingSystem.getEnterpriseID(),identifyingToken);
 
 		Classification classification = get(ClassificationService.class).find(involvedPartyClassification,
 		                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
@@ -98,7 +99,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 			{
 				addy.createDefaultSecurity(activityMasterSystem, identifyingToken);
 			}
-			addy.addClassification(involvedPartyClassification, value, originatingSystem, identifyingToken);
+			addy.add(involvedPartyClassification, value, originatingSystem, identifyingToken);
 		}
 		else
 		{
@@ -173,5 +174,5 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	}
 
 
-	void setMyInvolvedPartyLinkValue(J classificationLink, S involvedParty, Enterprise enterprise);
+	void setMyInvolvedPartyLinkValue(J classificationLink, S involvedParty, IEnterprise<?> enterprise);
 }

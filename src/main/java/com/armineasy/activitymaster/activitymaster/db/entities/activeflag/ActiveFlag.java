@@ -59,7 +59,7 @@ import java.util.List;
 public class ActiveFlag
 		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, Long, ActiveFlagSecurityToken>
 		implements  INameAndDescription<ActiveFlag>,
-				            IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification>,
+				            IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>>,
 				            IActivityMasterEntity<ActiveFlag>,
 				            IContainsEnterprise<ActiveFlag>,
 				            IActiveFlag<ActiveFlag>
@@ -636,7 +636,7 @@ public class ActiveFlag
 	}
 
 	@Override
-	public void configureForClassification(ActiveFlagXClassification classificationLink, Enterprise enterprise)
+	public void configureForClassification(ActiveFlagXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setActiveFlagID(this);
 	}
