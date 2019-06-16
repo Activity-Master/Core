@@ -5,7 +5,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
@@ -23,32 +24,32 @@ import static com.armineasy.activitymaster.activitymaster.services.classificatio
 
 @Singleton
 public class ClassificationService
-		implements IClassificationService
+		implements IClassificationService<ClassificationService>
 {
-	public Classification create(IClassificationValue<?> concept,
-	                             ISystems system, IClassificationValue<?> parent,
-	                             UUID... identityToken)
+	public IClassification<?> create(IClassificationValue<?> concept,
+	                                 ISystems system, IClassificationValue<?> parent,
+	                                 UUID... identityToken)
 	{
 		return create(concept, system, (short) 0, parent, identityToken);
 	}
 
-	public Classification create(IClassificationValue<?> concept,
-	                             ISystems system,
-	                             UUID... identityToken)
+	public IClassification<?> create(IClassificationValue<?> concept,
+	                                 ISystems system,
+	                                 UUID... identityToken)
 	{
 		return create(concept, system, (short) 0, null, identityToken);
 	}
 
-	public Classification create(IClassificationValue<?> concept,
-	                             ISystems system,
-	                             Short sequenceNumber, UUID... identityToken)
+	public IClassification<?> create(IClassificationValue<?> concept,
+	                                 ISystems system,
+	                                 Short sequenceNumber, UUID... identityToken)
 	{
 		return create(concept, system, sequenceNumber, null, identityToken);
 	}
 
-	public Classification create(IClassificationValue<?> concept,
-	                             ISystems system,
-	                             Short sequenceNumber, IClassificationValue<?> parent, UUID... identityToken)
+	public IClassification<?> create(IClassificationValue<?> concept,
+	                                 ISystems system,
+	                                 Short sequenceNumber, IClassificationValue<?> parent, UUID... identityToken)
 	{
 		ClassificationsDataConceptService dataConceptService = GuiceContext.get(ClassificationsDataConceptService.class);
 		ClassificationDataConcept dataConcept = dataConceptService.find(concept.concept(), system.getEnterpriseID(), identityToken);
@@ -72,7 +73,7 @@ public class ClassificationService
 			rootCl.setOriginalSourceSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemUniqueID("");
 			rootCl.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			rootCl.setActiveFlagID(((Systems)system).getActiveFlagID());
+			rootCl.setActiveFlagID(((Systems) system).getActiveFlagID());
 			rootCl.setConcept(dataConcept);
 			rootCl.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
@@ -89,7 +90,7 @@ public class ClassificationService
 
 		if (parent != null)
 		{
-			Classification parentClassification = find(parent, system.getEnterpriseID(), identityToken);
+			Classification parentClassification = (Classification) find(parent, system.getEnterpriseID(), identityToken);
 			parentClassification.addChild(rootCl, system.getEnterpriseID(), identityToken);
 		}
 
@@ -99,7 +100,7 @@ public class ClassificationService
 	@SuppressWarnings("Duplicates")
 	@CacheResult(cacheName = "ClassificationFindWithIClassificationStringConceptValue")
 	@Override
-	public Classification find(@CacheKey IClassificationValue<?> name, @CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> find(@CacheKey IClassificationValue<?> name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		Classification search = new Classification();
 		ClassificationsDataConceptService cb = GuiceContext.get(ClassificationsDataConceptService.class);
@@ -116,23 +117,23 @@ public class ClassificationService
 
 	@CacheResult(cacheName = "GetHierarchyTypeClassification")
 	@Override
-	public Classification getHierarchyType(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> getHierarchyType(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
-		Classification hierarchyType = service.find(HierarchyTypeClassification,
-		                                            enterprise,
-		                                            identityToken);
+		Classification hierarchyType = (Classification) service.find(HierarchyTypeClassification,
+		                                                             enterprise,
+		                                                             identityToken);
 		return hierarchyType;
 	}
 
 	@CacheResult(cacheName = "IdentityTypeClassification")
 	@Override
-	public Classification getIdentityType(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> getIdentityType(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
-		Classification identityType = service.find(Identity,
-		                                           enterprise,
-		                                           identityToken);
+		Classification identityType = (Classification) service.find(Identity,
+		                                                            enterprise,
+		                                                            identityToken);
 		return identityType;
 	}
 }

@@ -1,4 +1,4 @@
-package com.armineasy.activitymaster.activitymaster.services;
+package com.armineasy.activitymaster.activitymaster.services.enumtypes;
 
 /**
  * Service restricted to enumerations
@@ -6,7 +6,7 @@ package com.armineasy.activitymaster.activitymaster.services;
  * @param <J>
  * 		This enum type
  */
-public interface IArrangementType<J extends Enum & IArrangementType<J>> extends ITypeValue<J>
+public interface IClassificationValue<J extends Enum & IClassificationValue<J>>
 {
 	/**
 	 * Overrides the enum and string
@@ -21,7 +21,9 @@ public interface IArrangementType<J extends Enum & IArrangementType<J>> extends 
 	 *
 	 * @return
 	 */
-	String classificationValue();
+	default String classificationName() {
+		return name();
+	}
 
 	/**
 	 * The physical classification value
@@ -29,4 +31,11 @@ public interface IArrangementType<J extends Enum & IArrangementType<J>> extends 
 	 * @return
 	 */
 	String classificationDescription();
+
+	/**
+	 * Return the concept that this classification value is applied to
+	 *
+	 * @return
+	 */
+	IClassificationDataConceptValue<?> concept();
 }

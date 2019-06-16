@@ -1,6 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.enterprise;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
 
 import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 

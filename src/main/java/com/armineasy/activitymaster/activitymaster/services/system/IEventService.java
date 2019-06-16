@@ -1,10 +1,10 @@
 package com.armineasy.activitymaster.activitymaster.services.system;
 
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.Event;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IEventTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEvent;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEventType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IEventTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 
@@ -14,8 +14,6 @@ import java.util.UUID;
 
 public interface IEventService
 {
-	Event createEvent(IEventTypeValue<?> eventType, ISystems originatingSystem, UUID...identityToken);
-
-	@CacheResult(cacheName = "EventTypes")
-	EventType findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken);
+	IEvent<?> createEvent(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID...identityToken);
+	IEventType<?> findEventType(IEventTypeValue<?> eventType, IEnterprise<?> enterprise, UUID... identityToken);
 }

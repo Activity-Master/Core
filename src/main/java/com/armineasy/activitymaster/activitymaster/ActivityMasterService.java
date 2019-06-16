@@ -4,17 +4,18 @@ import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.implementations.SecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
-import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.IProgressable;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.system.IActivityMasterService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -36,8 +37,8 @@ public class ActivityMasterService
 {
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
 			timeout = 6000)
-	public Enterprise startNewEnterprise(IEnterpriseName<?> enterpriseName,
-	                                     @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
+	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
+	                                                  @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
 
 		GuiceContext.get(ActivityMasterConfiguration.class)
@@ -69,7 +70,8 @@ public class ActivityMasterService
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	protected InvolvedParty createAdminAndCreatorUserForEnterprise(IEnterpriseName<?> enterpriseName, String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
+	protected IInvolvedParty<?> createAdminAndCreatorUserForEnterprise(IEnterpriseName<?> enterpriseName, String adminUserName,
+	                                                               @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
 		GuiceContext.get(ActivityMasterConfiguration.class)
 		            .setSecurityEnabled(false);
@@ -78,13 +80,13 @@ public class ActivityMasterService
 
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1, progressMonitor);
 
-		Systems activityMasterSystem = get(SystemsService.class).getActivityMaster(enterprise);
+		ISystems<?> activityMasterSystem = get(SystemsService.class).getActivityMaster(enterprise);
 		UUID token = get(SystemsService.class).getSecurityIdentityToken(activityMasterSystem);
-		SecurityToken administratorsGroup = get(SecurityTokenService.class).getAdministratorsFolder(enterprise);
+		SecurityToken administratorsGroup = (SecurityToken) get(SecurityTokenService.class).getAdministratorsFolder(enterprise);
 
 		InvolvedPartyService service = get(InvolvedPartyService.class);
 
-		Pair<IIdentificationType, String> pair = new Pair<>(
+		Pair<IIdentificationType<?>, String> pair = new Pair<>(
 				IdentificationTypeEnterpriseCreatorRole,
 				adminUserName);
 		Optional<InvolvedParty> exists = new InvolvedParty().builder()
@@ -93,22 +95,22 @@ public class ActivityMasterService
 		                                                                              adminUserName)
 		                                                    .get();
 
-		InvolvedParty administratorUser;
+		IInvolvedParty<?> administratorUser;
 		if (exists.isEmpty())
 		{
-			InvolvedParty adminUser = service.create(activityMasterSystem, pair, true);
+			IInvolvedParty<?> adminUser = service.create(activityMasterSystem, pair, true);
 
-			adminUser.addIdentificationType(IdentificationTypeUserName, activityMasterSystem, adminUserName, token);
-			adminUser.addType(TypeIndividual, activityMasterSystem, "Artificial Individual", token);
-			adminUser.addNameType(PreferredNameType, activityMasterSystem, "Enterprise Creator", token);
-			adminUser.addNameType(FirstNameType, activityMasterSystem, "Administrator", token);
+			adminUser.addOrReuse(IdentificationTypeUserName, adminUserName,activityMasterSystem, token);
+			adminUser.addOrReuse(TypeIndividual, "Artificial Individual",activityMasterSystem, token);
+			adminUser.addOrReuse(PreferredNameType,  "Enterprise Creator",activityMasterSystem, token);
+			adminUser.addOrReuse(FirstNameType, "Administrator",activityMasterSystem, token);
 
-			SecurityToken myToken = get(SecurityTokenService.class).create(Identity,
-			                                                               adminUserName,
-			                                                               "The creator of the enterprise", activityMasterSystem, administratorsGroup, token);
+			SecurityToken myToken = (SecurityToken) get(SecurityTokenService.class).create(Identity,
+			                                                                               adminUserName,
+			                                                                               "The creator of the enterprise", activityMasterSystem, administratorsGroup, token);
 
-			adminUser.addIdentificationType(IdentificationTypeEnterpriseCreatorRole, activityMasterSystem, adminUserName, token);
-			adminUser.addIdentificationType(IdentificationTypeUUID, activityMasterSystem, myToken.getSecurityToken(), token);
+			adminUser.addOrReuse(IdentificationTypeEnterpriseCreatorRole,adminUserName, activityMasterSystem,  token);
+			adminUser.addOrReuse(IdentificationTypeUUID, myToken.getSecurityToken(),activityMasterSystem, token);
 
 			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, activityMasterSystem, token);
 			adminUser.createDefaultSecurity(activityMasterSystem, token);
@@ -166,7 +168,7 @@ public class ActivityMasterService
 		for (IActivityMasterSystem allSystem : allSystems)
 		{
 			logProgress("System Loading", "Starting up system " + allSystem.getClass()
-			                                                                         .getName(), progressMonitor);
+			                                                                         .getName(),1, progressMonitor);
 			allSystem.postUpdate(enterprise, progressMonitor);
 		}
 		ActivityMasterConfiguration.get()

@@ -11,13 +11,12 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItemData;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
-import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IResourceItemService;
-import com.armineasy.activitymaster.activitymaster.threads.PersistingThread;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
@@ -30,7 +29,6 @@ import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
@@ -44,7 +42,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	{
 		J activityMasterIdentity = GuiceContext.get(findResourceItemQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(classification.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(classification.getEnterpriseID(), identityToken)
@@ -74,7 +72,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	{
 		J activityMasterIdentity = GuiceContext.get(findResourceItemQueryRelationshipTableType());
 		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(classification.getEnterpriseID())
 		                             .inDateRange()
 		                             .canRead(classification.getEnterpriseID(), identityToken)
@@ -85,7 +83,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	default ResourceItem add(IResourceTypeValue<?> resourceTypeValue, IResourceItemClassification classification,
 	                         byte[] data,
 	                         String mimeType,
-	                         ISystems originatingSystem, UUID... identifyingToken)
+	                         ISystems<?> originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findResourceItemQueryRelationshipTableType());
 
@@ -110,8 +108,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		tableForClassification.setSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 		tableForClassification.setActiveFlagID(((Systems)originatingSystem).getActiveFlagID());
-		tableForClassification.setClassificationID(GuiceContext.get(IClassificationService.class)
-		                                                       .find(classification, originatingSystem.getEnterpriseID(), identifyingToken));
+		tableForClassification.setClassificationID((Classification) GuiceContext.get(IClassificationService.class)
+		                                                                        .find(classification, originatingSystem.getEnterpriseID(), identifyingToken));
 		setMyResourceItemLinkValue(tableForClassification, (S) item, originatingSystem.getEnterpriseID());
 
 		tableForClassification.persist();
@@ -128,7 +126,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	default ResourceItem addOrUseResourceItem(IResourceTypeValue<?> resourceTypeValue, IResourceItemClassification classification,
 	                                          byte[] data,
 	                                          String mimeType,
-	                                          ISystems originatingSystem, UUID... identifyingToken)
+	                                          ISystems<?> originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findResourceItemQueryRelationshipTableType());
 
@@ -156,8 +154,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		tableForClassification.setSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 		tableForClassification.setActiveFlagID(((Systems)originatingSystem).getActiveFlagID());
-		tableForClassification.setClassificationID(GuiceContext.get(IClassificationService.class)
-		                                                       .find(classification, originatingSystem.getEnterpriseID(), identifyingToken));
+		tableForClassification.setClassificationID((Classification) GuiceContext.get(IClassificationService.class)
+		                                                                        .find(classification, originatingSystem.getEnterpriseID(), identifyingToken));
 		setMyResourceItemLinkValue(tableForClassification, (S) item, originatingSystem.getEnterpriseID());
 
 		tableForClassification.persist();
@@ -171,7 +169,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	default void storeResourceItemData(ResourceItem item, byte[] data, ISystems originatingSystem, UUID... identifyingToken)
+	default void storeResourceItemData(ResourceItem item, byte[] data, ISystems<?> originatingSystem, UUID... identifyingToken)
 	{
 		ResourceItemData itemData = new ResourceItemData();
 		itemData.setResource(item);
@@ -193,19 +191,19 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 
 
 	@SuppressWarnings("unchecked")
-	default J add(ResourceItem resourceItem, IResourceItemClassification<?> iclassification, ISystems originatingSystem, UUID... identifyingToken)
+	default J add(ResourceItem resourceItem, IResourceItemClassification<?> iclassification, ISystems<?> originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = get(findResourceItemQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) resourceItem, originatingSystem.getEnterpriseID())
+		                                                         .findLink((P) this, (S) resourceItem, null)
 		                                                         .inActiveRange(resourceItem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(originatingSystem.getEnterpriseID(), identifyingToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			Classification classification = get(ClassificationService.class).find(iclassification,
-			                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
+			Classification classification = (Classification) get(ClassificationService.class).find(iclassification,
+			                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
 
 			tableForClassification.setEnterpriseID(resourceItem.getEnterpriseID());
 			tableForClassification.setSystemID((Systems) originatingSystem);

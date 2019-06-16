@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -30,6 +32,7 @@ import java.io.Serializable;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class GeographyXClassificationSecurityToken
 		extends WarehouseSecurityTable<GeographyXClassificationSecurityToken, GeographyXClassificationSecurityTokenQueryBuilder, Long>
 		implements Serializable

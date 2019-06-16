@@ -33,39 +33,39 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I, S>,
 
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public J canRead(IEnterprise enterprise, UUID... identityToken) throws SecurityAccessException
+	public J canRead(IEnterprise<?> enterprise, UUID... identityToken) throws SecurityAccessException
 	{
 		return getSecurityBuilderConfig(enterprise, "readAllowed", identityToken);
 	}
 
 	@NotNull
 	@SuppressWarnings("unchecked")
-	public J canRead(IEnterprise enterprise, boolean overrideActiveFlag, UUID... identityToken) throws SecurityAccessException
+	public J canRead(IEnterprise<?> enterprise, boolean overrideActiveFlag, UUID... identityToken) throws SecurityAccessException
 	{
 		return getSecurityBuilderConfig(enterprise, "readAllowed", identityToken);
 	}
 
 	@SuppressWarnings("unchecked")
 	@NotNull
-	private J getSecurityBuilderConfig(IEnterprise enterprise, String readAllowed, UUID[] identityToken)
+	private J getSecurityBuilderConfig(IEnterprise<?> enterprise, String readAllowed, UUID[] identityToken)
 	{
 		return getSecurityBuilderConfig(enterprise, readAllowed, false, identityToken);
 	}
 
 	@SuppressWarnings("unchecked")
 	@NotNull
-	private J getSecurityBuilderConfig(IEnterprise enterprise, String readAllowed, boolean overrideActiveFlag, UUID[] identityToken)
+	private J getSecurityBuilderConfig(IEnterprise<?> enterprise, String readAllowed, boolean overrideActiveFlag, UUID[] identityToken)
 	{
 		if (!GuiceContext.get(ActivityMasterConfiguration.class)
-		                 .isSecurityEnabled())
+		                 .isSecurityEnabled() || true)
 		{
 			return (J) this;
 		}
 
 		if (identityToken == null || identityToken.length == 0)
 		{
-			SecurityToken systemToken = GuiceContext.get(ActivityMasterConfiguration.class)
-			                                        .getToken();
+			SecurityToken systemToken = (SecurityToken) GuiceContext.get(ActivityMasterConfiguration.class)
+			                                                        .getToken();
 			ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
 			if (systemToken == null || systemToken.isFake())
 			{
@@ -74,8 +74,8 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I, S>,
 			identityToken = new UUID[]{UUID.fromString(systemToken.getSecurityToken())};
 		}
 
-		SecurityToken myToken = GuiceContext.get(SecurityTokenService.class)
-		                                    .getSecurityToken(identityToken[0], overrideActiveFlag, enterprise);
+		SecurityToken myToken = (SecurityToken) GuiceContext.get(SecurityTokenService.class)
+		                                                    .getSecurityToken(identityToken[0], overrideActiveFlag, enterprise);
 
 		if (myToken == null)
 		{

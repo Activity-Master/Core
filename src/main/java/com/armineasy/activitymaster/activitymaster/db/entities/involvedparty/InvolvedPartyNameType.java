@@ -1,10 +1,13 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyNameTypeQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsActiveFlags;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedPartyNameType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,6 +20,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -24,22 +29,21 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(uniqueConstraints =
-		       {
-				       @UniqueConstraint(columnNames =
-						                         {
-								                         "InvolvedPartyNameTypeName"
-						                         })
-		       },
-		name = "InvolvedPartyNameType")
+@Table
 @XmlRootElement
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class InvolvedPartyNameType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, Long, InvolvedPartyNameTypeSecurityToken>
-{
+		implements INameAndDescription<InvolvedPartyNameType>,
+				           IContainsEnterprise<InvolvedPartyNameType>,
+				           IActivityMasterEntity<InvolvedPartyNameType>,
+				           IContainsActiveFlags<InvolvedPartyNameType>,
+				           IInvolvedPartyNameType<InvolvedPartyNameType>
 
+{
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -103,7 +107,7 @@ public class InvolvedPartyNameType
 	}
 
 	@Override
-	protected InvolvedPartyNameTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyNameTypeSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected InvolvedPartyNameTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyNameTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

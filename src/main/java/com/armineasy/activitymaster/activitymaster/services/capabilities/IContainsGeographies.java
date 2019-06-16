@@ -5,16 +5,13 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClass
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -30,7 +27,7 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 	{
 		J activityMasterIdentity = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(classification.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(classification.getEnterpriseID(), identityToken)
@@ -60,7 +57,7 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 	{
 		J activityMasterIdentity = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(classification.getEnterpriseID())
 		                             .inDateRange()
 		                             .canRead(classification.getEnterpriseID(), identityToken)
@@ -72,7 +69,7 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 	{
 		J tableForClassification = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) geography, classification.getEnterpriseID())
+		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(classification.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .get();
@@ -89,9 +86,10 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 			setMyGeographyLinkValue(tableForClassification, (S) geography, classification.getEnterpriseID());
 
 			tableForClassification.persist();
-			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			                .isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem,identifyingToken);
+				tableForClassification.createDefaultSecurity(activityMasterSystem, identifyingToken);
 			}
 		}
 		else
@@ -100,7 +98,6 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 		}
 		return tableForClassification;
 	}
-
 
 
 	void setMyGeographyLinkValue(J classificationLink, S geography, IEnterprise<?> enterprise);

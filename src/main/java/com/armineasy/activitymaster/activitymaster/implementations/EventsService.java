@@ -5,7 +5,9 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.events.Event;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IEventTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEvent;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEventType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IEventTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
@@ -26,7 +28,7 @@ public class EventsService
 		implements IEventService
 {
 	@Override
-	public Event createEvent(IEventTypeValue<?> eventType, ISystems originatingSystem, UUID... identityToken)
+	public IEvent<?> createEvent(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Event event = new Event();
 		event.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
@@ -36,11 +38,11 @@ public class EventsService
 				                      .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 		event.persist();
 		event.createDefaultSecurity(originatingSystem, identityToken);
-		event.addEventType(eventType, originatingSystem, NoClassification, "", identityToken);
+		event.add(NoClassification,eventType, "", originatingSystem, identityToken);
 		return event;
 	}
 
-	public EventType createEventType(IEventTypeValue<?> eventType, ISystems originatingSystem, UUID... identityToken)
+	public IEventType<?> createEventType(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Optional<EventType> typeExists = ActivityMasterConfiguration
 				                                 .get()
@@ -74,7 +76,7 @@ public class EventsService
 
 	@Override
 	@CacheResult(cacheName = "EventTypes")
-	public EventType findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IEventType<?> findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		return new EventType().builder()
 		                      .findByName(eventType.name())

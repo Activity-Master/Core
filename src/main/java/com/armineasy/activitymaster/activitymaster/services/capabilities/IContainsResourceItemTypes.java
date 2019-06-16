@@ -1,13 +1,9 @@
 package com.armineasy.activitymaster.activitymaster.services.capabilities;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
-import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationship;
-import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
-import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItemType;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
@@ -31,7 +27,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	{
 		J activityMasterIdentity = GuiceContext.get(findResourceItemTypeQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(classification.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(classification.getEnterpriseID(), identityToken)
@@ -61,7 +57,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	{
 		J activityMasterIdentity = GuiceContext.get(findResourceItemTypeQueryRelationshipTableType());
 		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(classification.getEnterpriseID())
 		                             .inDateRange()
 		                             .canRead(classification.getEnterpriseID(), identityToken)
@@ -73,7 +69,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	{
 		J tableForClassification = GuiceContext.get(findResourceItemTypeQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) resourceItemType, resourceItemType.getEnterpriseID())
+		                                                         .findLink((P) this, (S) resourceItemType, null)
 		                                                         .inActiveRange(resourceItemType.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .get();

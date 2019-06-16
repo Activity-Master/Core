@@ -1,4 +1,4 @@
-package com.armineasy.activitymaster.activitymaster.services;
+package com.armineasy.activitymaster.activitymaster.services.enumtypes;
 
 /**
  * Service restricted to enumerations
@@ -6,7 +6,7 @@ package com.armineasy.activitymaster.activitymaster.services;
  * @param <J>
  * 		This enum type
  */
-public interface IEventTypeValue<J extends Enum & IEventTypeValue<J>>
+public interface INameType<J extends Enum & INameType<J>> extends ITypeValue<J>
 {
 	/**
 	 * Overrides the enum and string
@@ -15,10 +15,18 @@ public interface IEventTypeValue<J extends Enum & IEventTypeValue<J>>
 	 */
 	String name();
 
+
 	/**
 	 * The physical classification value
 	 *
 	 * @return
 	 */
 	String classificationValue();
+
+	/**
+	 * The physical classification value
+	 *
+	 * @return
+	 */
+	String classificationDescription();
 }

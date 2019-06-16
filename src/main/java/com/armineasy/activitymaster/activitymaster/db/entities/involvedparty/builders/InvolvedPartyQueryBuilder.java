@@ -2,10 +2,9 @@ package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.bu
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
-import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -21,16 +20,16 @@ public class InvolvedPartyQueryBuilder
 		extends QueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty, Long, InvolvedPartySecurityToken>
 {
 
-	public InvolvedPartyQueryBuilder findByIdentificationType(IEnterprise enterprise, IIdentificationType<?> idType)
+	public InvolvedPartyQueryBuilder findByIdentificationType(IEnterprise<?> enterprise, IIdentificationType<?> idType)
 	{
 		return findByIdentificationType(enterprise, idType, null);
 	}
 
-	public InvolvedPartyQueryBuilder findByIdentificationType(IEnterprise enterprise, IIdentificationType<?> idType, String value, UUID... identityTokens)
+	public InvolvedPartyQueryBuilder findByIdentificationType(IEnterprise<?> enterprise, IIdentificationType<?> idType, String value, UUID... identityTokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
-		InvolvedPartyIdentificationType type = GuiceContext.get(InvolvedPartyService.class)
-		                                                   .findIdentificationType(idType, enterprise, identityTokens);
+		InvolvedPartyIdentificationType type = (InvolvedPartyIdentificationType) GuiceContext.get(InvolvedPartyService.class)
+		                                                                                     .findIdentificationType(idType, enterprise, identityTokens);
 
 		joinTableQueryBuilder.where(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, Equals, type);
 		if (value != null)

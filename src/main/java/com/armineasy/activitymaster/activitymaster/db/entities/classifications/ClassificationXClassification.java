@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -26,10 +28,11 @@ import java.util.List;
 @Table(name = "ClassificationXClassification")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
+@Getter
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ClassificationXClassification
 		extends WarehouseClassificationRelationshipTable<Classification, Classification, ClassificationXClassification, ClassificationXClassificationQueryBuilder, Long, ClassificationXClassificationSecurityToken>
 		implements Serializable
@@ -72,7 +75,7 @@ public class ClassificationXClassification
 	}
 
 	@Override
-	protected ClassificationXClassificationSecurityToken configureDefaultsForNewToken(ClassificationXClassificationSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ClassificationXClassificationSecurityToken configureDefaultsForNewToken(ClassificationXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

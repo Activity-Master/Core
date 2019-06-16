@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public interface IAddressService
 {
-	Address create(IAddressClassification<?> addressClassification, ISystems originatingSystem, String value, UUID... identifyingToken);
+	Address create(IAddressClassification<?> addressClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken);
 }

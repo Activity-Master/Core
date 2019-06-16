@@ -1,7 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceTypeValue;
 
 import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 

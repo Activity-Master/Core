@@ -2,6 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationship;
+import com.armineasy.activitymaster.activitymaster.services.dto.IRelationshipValue;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.entityassist.SCDEntity;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -13,10 +14,8 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -33,8 +32,6 @@ import java.util.UUID;
  */
 @MappedSuperclass
 @Accessors(chain = true)
-@Getter
-@Setter
 public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 		                                                S extends WarehouseCoreTable,
 		                                                J extends WarehouseRelationshipTable<P, S, J, Q, I, ST>,
@@ -42,6 +39,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 		                                                I extends Serializable,
 		                                                ST extends WarehouseSecurityTable>
 		extends WarehouseTable<J, Q, I, ST>
+		implements IRelationshipValue<J>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -57,24 +55,43 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 		//No configuration needed
 	}
 
+	@Override
 	public Integer getValueAsNumber()
 	{
 		return Integer.parseInt(value);
 	}
+	@Override
+	public Long getValueAsLong()
+	{
+		return Long.parseLong(value);
+	}
 
+	@Override
 	public Boolean getValueAsBoolean()
 	{
 		return Boolean.parseBoolean(value);
 	}
-
+@Override
 	public BigDecimal getValueAsBigDecimal()
 	{
 		return BigDecimal.valueOf(getValueAsDouble());
 	}
-
+@Override
 	public Double getValueAsDouble()
 	{
 		return Double.parseDouble(value);
+	}
+
+	public String getValue()
+	{
+		return value;
+	}
+
+	@Override
+	public J setValue(String value)
+	{
+		this.value = value;
+		return (J)this;
 	}
 
 	@Override
@@ -107,10 +124,10 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 
 
 	@SuppressWarnings("unchecked")
-	public @NotNull J update(String newValue, UUID...identifyingToken)
+	public @NotNull J update(String newValue, UUID... identifyingToken)
 	{
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-		                                                   .getDeletedFlag(getEnterpriseID(), identifyingToken));
+		                            .getDeletedFlag(getEnterpriseID(), identifyingToken));
 		setEffectiveToDate(LocalDateTime.now());
 		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 		update();
@@ -122,12 +139,13 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 		setWarehouseCreatedTimestamp(LocalDateTime.now());
 		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-		                                                   .getActiveFlag(getEnterpriseID(), identifyingToken));
+		                            .getActiveFlag(getEnterpriseID(), identifyingToken));
 		persist();
-		if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
+		if (GuiceContext.get(ActivityMasterConfiguration.class)
+		                .isSecurityEnabled())
 		{
 			createDefaultSecurity(getSystemID());
 		}
-		return (J)this;
+		return (J) this;
 	}
 }

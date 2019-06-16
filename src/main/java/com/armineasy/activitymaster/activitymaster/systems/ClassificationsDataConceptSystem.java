@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -26,8 +27,8 @@ public class ClassificationsDataConceptSystem
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems activityMaster = GuiceContext.get(SystemsService.class)
-		                                     .getActivityMaster(enterprise);
+		ISystems<?> activityMaster = GuiceContext.get(SystemsService.class)
+		                                         .getActivityMaster(enterprise);
 
 		logProgress("Classification Data Concept System", "Checking/Creating Base Concepts", progressMonitor);
 
@@ -134,7 +135,7 @@ public class ClassificationsDataConceptSystem
 	@Override
 	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Classification Data Concept System", "The system for handling classification data concepts", "");
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)
 		                                 .registerNewSystem(enterprise, newSystem);

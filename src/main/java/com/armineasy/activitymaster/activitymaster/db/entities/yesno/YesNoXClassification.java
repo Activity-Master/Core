@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -30,6 +32,7 @@ import java.io.Serializable;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class YesNoXClassification
 		extends WarehouseClassificationRelationshipTable<YesNo, Classification, YesNoXClassification, YesNoXClassificationQueryBuilder, Long, YesNoXClassificationSecurityToken>
 		implements Serializable
@@ -60,7 +63,7 @@ public class YesNoXClassification
 	}
 
 	@Override
-	protected YesNoXClassificationSecurityToken configureDefaultsForNewToken(YesNoXClassificationSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected YesNoXClassificationSecurityToken configureDefaultsForNewToken(YesNoXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

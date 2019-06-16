@@ -2,20 +2,20 @@ package com.armineasy.activitymaster.activitymaster;
 
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
+import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.armineasy.activitymaster.activitymaster.threads.TransactionalIdentifiedThread;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 import lombok.Data;
-import lombok.Getter;
-
-import java.util.concurrent.Callable;
 
 @Singleton
 public class ActivityMasterConfiguration
 {
 	private static final ThreadLocal<IEnterpriseName<?>> enterpriseName = ThreadLocal.withInitial(() -> DefaultEnterprise.TestEnterprise);
-	private static final ThreadLocal<SecurityToken> token = ThreadLocal.withInitial(SecurityToken::new);
+	private static final ThreadLocal<ISecurityToken<?>> token = ThreadLocal.withInitial(SecurityToken::new);
 	private static final ThreadLocal<Boolean> securities = ThreadLocal.withInitial(() -> true);
 	private static final ThreadLocal<Boolean> async = ThreadLocal.withInitial(() -> false);
 
@@ -24,7 +24,14 @@ public class ActivityMasterConfiguration
 
 	public ActivityMasterConfiguration()
 	{
-		JobService.getInstance().setMaxQueueCount("SecurityTokenStore",200);
+		JobService.getInstance()
+		          .setMaxQueueCount("SecurityTokenStore", 200);
+	}
+
+	public IEnterprise<?> getEnterprise()
+	{
+		return GuiceContext.get(IEnterpriseService.class)
+		                   .getEnterprise(getEnterpriseName());
 	}
 
 	public IEnterpriseName<?> getEnterpriseName()
@@ -67,12 +74,12 @@ public class ActivityMasterConfiguration
 
 	}
 
-	public SecurityToken getToken()
+	public ISecurityToken<?> getToken()
 	{
 		return token.get();
 	}
 
-	public SecurityToken setToken(SecurityToken token)
+	public ISecurityToken<?> setToken(ISecurityToken<?> token)
 	{
 		ActivityMasterConfiguration.token.set(token);
 		return ActivityMasterConfiguration.token.get();
@@ -104,18 +111,23 @@ public class ActivityMasterConfiguration
 	public static class ActivityMasterConfigurationDTO
 	{
 		private IEnterpriseName<?> enterpriseName;
-		private SecurityToken token;
+		private ISecurityToken<?> token;
 		private Boolean securities;
 		private Boolean async;
 		private Boolean doubleCheck;
 
 		public ActivityMasterConfigurationDTO fromCurrentThread()
 		{
-			enterpriseName = ActivityMasterConfiguration.get().getEnterpriseName();
-			token = ActivityMasterConfiguration.get().getToken();
-			securities = ActivityMasterConfiguration.get().isSecurityEnabled();
-			async = ActivityMasterConfiguration.get().isAsyncEnabled();
-			doubleCheck = ActivityMasterConfiguration.get().isDoubleCheckDisabled();
+			enterpriseName = ActivityMasterConfiguration.get()
+			                                            .getEnterpriseName();
+			token = ActivityMasterConfiguration.get()
+			                                   .getToken();
+			securities = ActivityMasterConfiguration.get()
+			                                        .isSecurityEnabled();
+			async = ActivityMasterConfiguration.get()
+			                                   .isAsyncEnabled();
+			doubleCheck = ActivityMasterConfiguration.get()
+			                                         .isDoubleCheckDisabled();
 			return this;
 		}
 	}

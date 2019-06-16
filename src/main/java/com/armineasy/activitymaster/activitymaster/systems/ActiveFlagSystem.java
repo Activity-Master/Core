@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.entityassist.enumerations.ActiveFlag;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
@@ -25,7 +26,7 @@ public class ActiveFlagSystem
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Active Flag Service", "Loading Active Flags", progressMonitor);
 		for (ActiveFlag activeFlag : ActiveFlag.values())
@@ -47,10 +48,10 @@ public class ActiveFlagSystem
 	}
 
 	@Override
-	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Active Flag System", "The system for the active flag management", "Active Flag System");
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
+		                                    .create(enterprise, "Active Flag System", "The system for the active flag management", "Active Flag System");
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)
 		                                 .registerNewSystem(enterprise, newSystem);
 

@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.YesNoService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import java.util.HashMap;
@@ -20,10 +21,10 @@ public class YesNoSystem
 	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 
 	@Override
-	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                           .getActivityMaster(enterprise);
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                               .getActivityMaster(enterprise);
 		YesNoService service = GuiceContext.get(YesNoService.class);
 		service.create("No", "N", "false", "Off", "Inactive", "Out", activityMasterSystem);
 		service.create("Yes", "Y", "true", "On", "Active", "In", activityMasterSystem);
@@ -45,9 +46,9 @@ public class YesNoSystem
 
 
 	@Override
-	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "YesNo System",
 		                                        "The system for managing Yes No Displays", "");
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)

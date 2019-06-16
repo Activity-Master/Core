@@ -17,24 +17,20 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
  * @since 07 Dec 2016
  */
 @Entity
-@Table(uniqueConstraints =
-		       {
-				       @UniqueConstraint(columnNames =
-						                         {
-								                         "ResourceItemTypeName"
-						                         })
-		       },
-		name = "ResourceItemType")
+@Table
 @XmlRootElement
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ResourceItemType
 		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, Long, ResourceItemTypeSecurityToken>
 {
@@ -94,7 +90,7 @@ public class ResourceItemType
 	}
 
 	@Override
-	protected ResourceItemTypeSecurityToken configureDefaultsForNewToken(ResourceItemTypeSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ResourceItemTypeSecurityToken configureDefaultsForNewToken(ResourceItemTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

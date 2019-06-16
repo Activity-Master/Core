@@ -16,6 +16,8 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -29,6 +31,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class EventXGeography
 		extends WarehouseClassificationRelationshipTable<Event, Geography, EventXGeography, EventXGeographyQueryBuilder, Long, EventXGeographySecurityToken>
 {
@@ -69,7 +72,7 @@ public class EventXGeography
 	}
 
 	@Override
-	protected EventXGeographySecurityToken configureDefaultsForNewToken(EventXGeographySecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected EventXGeographySecurityToken configureDefaultsForNewToken(EventXGeographySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -1,34 +1,36 @@
 package com.armineasy.activitymaster.activitymaster.services.system;
 
-import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.Arrangement;
-import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementType;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
-import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyIdentificationType;
-import com.armineasy.activitymaster.activitymaster.services.IArrangementType;
-import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.classifications.arrangement.IArrangementClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.IArrangement;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IArrangementTypes;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface IArrangementsService<J extends IArrangementsService<J>>
 {
+	IArrangement<?> create(IArrangementTypes<?> type, String arrangementTypeValue,
+	                       ISystems system,
+	                       UUID... identityToken);
 
-	@SuppressWarnings("unchecked")
-	Arrangement create(IArrangementType<?> type, String arrangementTypeValue,
-	                   ISystems system,
-	                   UUID... identityToken);
+	com.armineasy.activitymaster.activitymaster.services.dto.IArrangementType<?> createArrangementType(IArrangementTypes<?> type, ISystems<?> system, UUID... identityToken);
 
-	ArrangementType createArrangementType(IArrangementType<?> type, ISystems<?> system, UUID... identityToken);
+	List<IArrangement<?>> findInvolvedPartyArrangements(IInvolvedParty<?> ip, IArrangementTypes<?> arrType, ISystems<?> systems, UUID... identityToken);
 
-	List<Arrangement> findInvolvedPartyArrangements(InvolvedParty ip, IArrangementType<?> arrType, ISystems<?> systems, UUID... identityToken);
+	List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, String value, ISystems<?> systems, UUID... identityToken);
 
-	@CacheResult(cacheName = "ArrangementIdentificationType")
-	ArrangementType findArrangementType(@CacheKey IArrangementType<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens);
+	com.armineasy.activitymaster.activitymaster.services.dto.IArrangementType<?> find(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+
+	IArrangement<?> find(long id, IEnterprise<?> enterprise, UUID... tokens);
+
+	List<IArrangement<?>> findAll(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+
+	Double sumAll(IArrangementTypes<?> idType, IArrangementClassification<?> classificationValue,
+	              IEnterpriseName<?> enterpriseName, UUID... identityToken);
 }

@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -31,9 +33,10 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ResourceItemData
 		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, Long, ResourceItemDataSecurityToken>
-		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IResourceItemClassification<?>>
+		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IResourceItemClassification<?>,ResourceItemData>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -81,7 +84,7 @@ public class ResourceItemData
 	}
 
 	@Override
-	protected ResourceItemDataSecurityToken configureDefaultsForNewToken(ResourceItemDataSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ResourceItemDataSecurityToken configureDefaultsForNewToken(ResourceItemDataSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

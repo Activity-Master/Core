@@ -13,6 +13,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -26,6 +28,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ClassificationDataConceptXClassification
 		extends WarehouseClassificationRelationshipTable<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification,
 				                                                ClassificationDataConceptXClassificationQueryBuilder, Long

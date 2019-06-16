@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -25,10 +26,11 @@ public class InvolvedPartySystem
 {
 
 	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
+	private static final Map<IEnterprise<?>, ISystems> newSystem = new HashMap<>();
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Involved Party System", "Starting Checks for Required Values", progressMonitor);
 		createIdentificationTypes(enterprise, progressMonitor);
@@ -38,7 +40,7 @@ public class InvolvedPartySystem
 		createOrganicTypes(enterprise, progressMonitor);
 	}
 
-	private void createIdentificationTypes(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createIdentificationTypes(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 
@@ -61,7 +63,7 @@ public class InvolvedPartySystem
 		logProgress("Involved Party System", "Loaded Identification Types", 16, progressMonitor);
 	}
 
-	private void createNameTypes(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createNameTypes(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 
@@ -84,7 +86,7 @@ public class InvolvedPartySystem
 		logProgress("Involved Party System", "Loaded Name Types", 12, progressMonitor);
 	}
 
-	private void createTypes(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createTypes(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 
@@ -97,12 +99,12 @@ public class InvolvedPartySystem
 		logProgress("Involved Party System", "Loaded Types", 6, progressMonitor);
 	}
 
-	private void createDefaultUsers(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createDefaultUsers(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 	}
 
-	private void createOrganicTypes(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createOrganicTypes(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
 
@@ -129,13 +131,13 @@ public class InvolvedPartySystem
 
 
 	@Override
-	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
+		newSystem.put(enterprise, GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Involved Party System",
-		                                        "The system for managing Involved Parties", "");
+		                                        "The system for managing Involved Parties", ""));
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)
-		                                 .registerNewSystem(enterprise, newSystem);
+		                                 .registerNewSystem(enterprise,  newSystem.get(enterprise));
 
 		systemTokens.put(enterprise, securityToken);
 	}
@@ -143,5 +145,10 @@ public class InvolvedPartySystem
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;
+	}
+
+	public static Map<IEnterprise<?>, ISystems> getNewSystem()
+	{
+		return newSystem;
 	}
 }

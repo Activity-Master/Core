@@ -1,6 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.services.types;
 
-import com.armineasy.activitymaster.activitymaster.services.ITypeValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.ITypeValue;
 
 public enum OrganicPartyTypes
 		implements ITypeValue<OrganicPartyTypes>

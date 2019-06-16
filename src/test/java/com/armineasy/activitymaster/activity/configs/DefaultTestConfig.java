@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseSer
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
@@ -76,7 +77,7 @@ public class DefaultTestConfig
 
 		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise);
 		EnterpriseService service = get(EnterpriseService.class);
-		Optional<Enterprise> enterpriseO = service.findEnterprise(TestEnterprise);
+		Optional<IEnterprise<?>> enterpriseO = service.findEnterprise(TestEnterprise);
 		IEnterprise<?> enterprise = null;
 		if(enterpriseO.isEmpty())
 		{
@@ -96,12 +97,12 @@ public class DefaultTestConfig
 		                               .getActivityMaster(enterprise);
 		UUID identityToken = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
-		SecurityToken token = GuiceContext.get(ISecurityTokenService.class)
-		                                  .getSecurityToken(identityToken, enterprise);
+		ISecurityToken<?> token = (SecurityToken) GuiceContext.get(ISecurityTokenService.class)
+		                                                      .getSecurityToken(identityToken, enterprise);
 
 		GuiceContext.get(ActivityMasterService.class).loadSystems(TestEnterprise,null);
 		securityConfiguration.setToken(token);
-		SecurityToken inToken = securityConfiguration.getToken();
+		ISecurityToken<?> inToken = securityConfiguration.getToken();
 		config.setSecurityEnabled(true);
 		config.setAsyncEnabled(true);
 		config.setDoubleCheckDisabled(true);

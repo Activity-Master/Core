@@ -9,8 +9,8 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClass
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
 
@@ -37,9 +37,9 @@ public abstract class QueryBuilderRelationshipClassification<P extends Warehouse
 	@javax.validation.constraints.NotNull
 	public J findHierarchyLink(P parent, S child, IEnterprise<?> enterprise)
 	{
-		findLink(parent, child, enterprise);
+		findLink(parent, child);
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
-		Classification hierarchyType = service.getHierarchyType(enterprise);
+		Classification hierarchyType = (Classification) service.getHierarchyType(enterprise);
 
 		withClassification(hierarchyType);
 		return (J) this;
@@ -47,9 +47,12 @@ public abstract class QueryBuilderRelationshipClassification<P extends Warehouse
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J withClassification(Classification classification)
+	public J withClassification(IClassification<?> classification)
 	{
-		where(getAttribute("classificationID"), Equals, classification);
+		if (classification != null)
+		{
+			where(getAttribute("classificationID"), Equals, classification);
+		}
 		return (J) this;
 	}
 }

@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.Singleton;
@@ -18,7 +19,7 @@ import java.util.UUID;
 public class YesNoService
 {
 	public YesNo create(String defaultName, String singleChar, String booleanValue, String onOffValue, String activeValue,
-	                    String inOutValue, Systems system, UUID... identityToken)
+	                    String inOutValue, ISystems<?> system, UUID... identityToken)
 	{
 		YesNo yn = new YesNo();
 		Optional<YesNo> exists = ActivityMasterConfiguration
@@ -38,9 +39,9 @@ public class YesNoService
 			yn.setOnOffDesc(onOffValue);
 			yn.setActiveDesc(activeValue);
 			yn.setInOutDesc(inOutValue);
-			yn.setEnterpriseID(system.getEnterpriseID());
-			yn.setSystemID(system);
-			yn.setOriginalSourceSystemID(system);
+			yn.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			yn.setSystemID((Systems) system);
+			yn.setOriginalSourceSystemID((Systems) system);
 			yn.setActiveFlagID(activeFlag);
 			yn.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)

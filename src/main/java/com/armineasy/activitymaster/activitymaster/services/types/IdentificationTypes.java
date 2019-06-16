@@ -1,7 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.services.types;
 
-import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
-import com.armineasy.activitymaster.activitymaster.services.ITypeValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 
 public enum IdentificationTypes
 		implements IIdentificationType<IdentificationTypes>

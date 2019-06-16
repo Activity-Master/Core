@@ -39,7 +39,7 @@ public class ClassificationsSystem
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = 300)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
 
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
@@ -48,7 +48,7 @@ public class ClassificationsSystem
 		IEnterpriseName<?> enterpriseName = GuiceContext.get(ActivityMasterConfiguration.class)
 		                                                .getEnterpriseName();
 
-		Classification rootClassification = service.create(enterpriseName, activityMasterSystem);
+		Classification rootClassification = (Classification) service.create(enterpriseName, activityMasterSystem);
 		service.create(HierarchyTypeClassification, activityMasterSystem);
 		service.create(HierarchyTypeClassification, activityMasterSystem,enterpriseName);
 		service.create(NoClassification, activityMasterSystem,enterpriseName);
@@ -81,7 +81,7 @@ public class ClassificationsSystem
 	@Override
 	public int totalTasks()
 	{
-		return 23;
+		return 50;
 	}
 
 	@Override
@@ -93,14 +93,14 @@ public class ClassificationsSystem
 	@Override
 	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Classifications System", "The system for handling classifications", "");
 
 		systemsMap.put(enterprise, newSystem);
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)
 		                                 .registerNewSystem(enterprise, newSystem);
 
-		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
 
 		GuiceContext.get(ClassificationService.class)

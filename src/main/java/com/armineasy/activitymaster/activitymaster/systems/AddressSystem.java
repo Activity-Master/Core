@@ -11,6 +11,7 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgr
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -53,8 +54,8 @@ public class AddressSystem
 	@SuppressWarnings("Duplicates")
 	private void createDefaultTelephones(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems system = GuiceContext.get(SystemsService.class)
-		                             .getActivityMaster(enterprise);
+		ISystems<?> system = GuiceContext.get(SystemsService.class)
+		                                 .getActivityMaster(enterprise);
 
 		IEnterpriseName<?> enterpriseName = GuiceContext.get(ActivityMasterConfiguration.class)
 		                                                .getEnterpriseName();
@@ -130,7 +131,7 @@ public class AddressSystem
 	{
 		logProgress("Address System", "Starting Internet Address Checks", progressMonitor);
 
-		Systems system = GuiceContext.get(SystemsService.class)
+		ISystems<?> system = GuiceContext.get(SystemsService.class)
 		                             .getActivityMaster(enterprise);
 
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
@@ -180,7 +181,7 @@ public class AddressSystem
 	private void createDefaultPhysicalAddresses(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Address System", "Starting Physical Address Checks", progressMonitor);
-		Systems system = GuiceContext.get(SystemsService.class)
+		ISystems<?> system = GuiceContext.get(SystemsService.class)
 		                             .getActivityMaster(enterprise);
 
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
@@ -228,7 +229,7 @@ public class AddressSystem
 	@Override
 	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Address System", "The system for the address management", "");
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)
 		                                 .registerNewSystem(enterprise, newSystem);

@@ -27,6 +27,8 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -39,9 +41,10 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, Long, AddressSecurityToken>
-		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>>,
+		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>,Address>,
 				           IContainsGeographies<Address, Geography, AddressXGeography>,
 				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem>,
 				           IActivityMasterEntity<Address>
@@ -126,7 +129,7 @@ public class Address
 
 
 	@Override
-	protected AddressSecurityToken configureDefaultsForNewToken(AddressSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected AddressSecurityToken configureDefaultsForNewToken(AddressSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

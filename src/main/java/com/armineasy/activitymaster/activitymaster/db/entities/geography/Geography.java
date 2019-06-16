@@ -30,6 +30,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -42,9 +44,10 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
-		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>>,
+		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>,Geography>,
 				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem>,
 				           IActivityMasterEntity<Geography>
 {
@@ -133,7 +136,7 @@ public class Geography
 	}
 
 	@Override
-	protected GeographySecurityToken configureDefaultsForNewToken(GeographySecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected GeographySecurityToken configureDefaultsForNewToken(GeographySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

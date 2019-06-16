@@ -1,12 +1,13 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationship;
+import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.*;
 
 import javax.persistence.metamodel.Attribute;
 
 public class ArrangementXArrangementTypeQueryBuilder
-		extends QueryBuilderRelationship<Arrangement, ArrangementType, ArrangementXArrangementTypeQueryBuilder,
+		extends QueryBuilderRelationshipClassification<Arrangement, ArrangementType, ArrangementXArrangementTypeQueryBuilder,
 				                                ArrangementXArrangementType, Long, ArrangementXArrangementTypeSecurityToken>
 {
 	@Override

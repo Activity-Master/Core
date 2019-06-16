@@ -1,4 +1,4 @@
-package com.armineasy.activitymaster.activitymaster.services;
+package com.armineasy.activitymaster.activitymaster.services.enumtypes;
 
 import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts;
 

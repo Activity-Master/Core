@@ -2,10 +2,9 @@ package com.armineasy.activitymaster.activitymaster.systems;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.implementations.SecurityTokenService;
@@ -15,6 +14,7 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSyste
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.SystemsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.google.inject.Singleton;
@@ -44,7 +44,7 @@ public class SystemsSystem
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		GuiceContext.get(SystemsService.class)
 		            .create(enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master");
@@ -60,27 +60,27 @@ public class SystemsSystem
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = transactionTimeout)
-	public UUID registerNewSystem(IEnterprise enterprise, ISystems<?> newSystem)
+	public UUID registerNewSystem(IEnterprise<?> enterprise, ISystems<?> newSystem)
 	{
 		//Create Security Token for the created system row
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
 		SecurityTokenService securityTokenService = GuiceContext.get(SecurityTokenService.class);
 
-		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(enterprise);
 		UUID activityMasterSystemUUID = GuiceContext.get(SystemsService.class)
 		                                            .getSecurityIdentityToken(activityMasterSystem);
 
-		SecurityToken newSystemsSecurityToken = securityTokenService.create(UserGroupSecurityTokenClassifications.System,
-		                                                                    newSystem.getName(), newSystem.getDescription(), newSystem);
+		SecurityToken newSystemsSecurityToken = (SecurityToken) securityTokenService.create(UserGroupSecurityTokenClassifications.System,
+		                                                                                    newSystem.getName(), newSystem.getDescription(), newSystem);
 
-		SecurityToken systemsToken = securityTokenService.create(UserGroupSecurityTokenClassifications.System,
-		                                                         UserGroupSecurityTokenClassifications.System.classificationName(),
-		                                                         UserGroupSecurityTokenClassifications.System.classificationDescription(), activityMasterSystem);
+		SecurityToken systemsToken = (SecurityToken) securityTokenService.create(UserGroupSecurityTokenClassifications.System,
+		                                                                         UserGroupSecurityTokenClassifications.System.classificationName(),
+		                                                                         UserGroupSecurityTokenClassifications.System.classificationDescription(), activityMasterSystem);
 
 		securityTokenService.link(systemsToken, newSystemsSecurityToken,
-		                          classificationService.find(UserGroupSecurityTokenClassifications.System, activityMasterSystem.getEnterpriseID(),
-		                                                     activityMasterSystemUUID));
+		                          (Classification) classificationService.find(UserGroupSecurityTokenClassifications.System, activityMasterSystem.getEnterpriseID(),
+		                                                                      activityMasterSystemUUID));
 		//Add the systems classifications so the UUID can be fetched
 		newSystem.addOrReuse(SystemsClassifications.SystemIdentity, newSystemsSecurityToken.getSecurityToken(), newSystem,
 		              activityMasterSystemUUID);
@@ -107,9 +107,9 @@ public class SystemsSystem
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public InvolvedParty createInvolvedPartyForNewSystem(ISystems newSystem,UUID...identityToken)
+	public IInvolvedParty<?> createInvolvedPartyForNewSystem(ISystems newSystem,UUID...identityToken)
 	{
-		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                           .getActivityMaster(newSystem.getEnterpriseID());
 		UUID activityMasterSystemUUID = GuiceContext.get(SystemsService.class)
 		                                            .getSecurityIdentityToken(activityMasterSystem);
@@ -123,10 +123,10 @@ public class SystemsSystem
 		InvolvedPartyService ipService = GuiceContext.get(InvolvedPartyService.class);
 		try
 		{
-			InvolvedParty ip = ipService.create(newSystem, Pair.of(IdentificationTypeUUID,newSystemUUID.toString()), false,activityMasterSystemUUID);
-			ip.addIdentificationType(IdentificationTypeSystemID, newSystem,newSystem.getId().toString(), activityMasterSystemUUID);
-			ip.addType(TypeSystem,newSystem, newSystemUUID.toString(),activityMasterSystemUUID);
-			ip.addNameType(PreferredNameType,newSystem, newSystem.getName(),activityMasterSystemUUID);
+			IInvolvedParty<?> ip = ipService.create(newSystem, Pair.of(IdentificationTypeUUID, newSystemUUID.toString()), false, activityMasterSystemUUID);
+			ip.addOrReuse(IdentificationTypeSystemID, newSystem.getId().toString(),newSystem, activityMasterSystemUUID);
+			ip.addOrReuse(TypeSystem, newSystemUUID.toString(),newSystem,  activityMasterSystemUUID);
+			ip.addOrReuse(PreferredNameType, newSystem.getName(),newSystem,  activityMasterSystemUUID);
 			return ip;
 		}
 		catch (Exception e)
@@ -145,9 +145,9 @@ public class SystemsSystem
 
 
 	@Override
-	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Systems System",
 		                                        "The system for managing Systems", "");
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)

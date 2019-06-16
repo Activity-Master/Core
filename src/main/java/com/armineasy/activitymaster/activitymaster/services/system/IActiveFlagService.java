@@ -10,21 +10,21 @@ import java.util.UUID;
 
 public interface IActiveFlagService
 {
-	List<ActiveFlag> findActiveRange(IEnterprise enterprise, UUID... identifyingToken);
+	List<ActiveFlag> findActiveRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	List<ActiveFlag> getVisibleRange(IEnterprise enterprise, UUID... identifyingToken);
+	List<ActiveFlag> getVisibleRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	List<ActiveFlag> getRemovedRange(IEnterprise enterprise, UUID... identifyingToken);
+	List<ActiveFlag> getRemovedRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	List<ActiveFlag> getArchiveRange(IEnterprise enterprise, UUID... identifyingToken);
+	List<ActiveFlag> getArchiveRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	List<ActiveFlag> getHighlightedRange(IEnterprise enterprise, UUID... identifyingToken);
+	List<ActiveFlag> getHighlightedRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	ActiveFlag getActiveFlag(IEnterprise enterprise, UUID... identifyingToken);
+	ActiveFlag getActiveFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	ActiveFlag getArchivedFlag(IEnterprise enterprise, UUID... identifyingToken);
+	ActiveFlag getArchivedFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	ActiveFlag getDeletedFlag(IEnterprise enterprise, UUID... identifyingToken);
+	ActiveFlag getDeletedFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	Optional<ActiveFlag> findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag flag, IEnterprise enterprise, UUID... identifyingToken);
+	Optional<ActiveFlag> findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag flag, IEnterprise<?> enterprise, UUID... identifyingToken);
 }

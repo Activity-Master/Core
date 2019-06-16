@@ -12,6 +12,8 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -25,6 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class SystemsSecurityToken
 		extends WarehouseSecurityTable<SystemsSecurityToken, SystemsSecurityTokenQueryBuilder, Long>
 {

@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -31,6 +33,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ClassificationDataConceptXResourceItem
 		extends WarehouseClassificationRelationshipTable<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, ClassificationDataConceptXResourceItemQueryBuilder
 						                                  , Long, ClassificationDataConceptXResourceItemSecurityToken>
@@ -76,7 +79,7 @@ public class ClassificationDataConceptXResourceItem
 	}
 
 	@Override
-	protected ClassificationDataConceptXResourceItemSecurityToken configureDefaultsForNewToken(ClassificationDataConceptXResourceItemSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ClassificationDataConceptXResourceItemSecurityToken configureDefaultsForNewToken(ClassificationDataConceptXResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

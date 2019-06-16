@@ -4,16 +4,13 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable
 import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConceptXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationXResourceItem;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.GeographyXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.product.ProductXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItemTypes;
@@ -32,6 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.UUID;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -44,9 +43,10 @@ import java.util.UUID;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, Long, ResourceItemSecurityToken>
-		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification<?>>,
+		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification<?>, ResourceItem>,
 				           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType>,
 				           IActivityMasterEntity<ResourceItem>
 {
@@ -137,7 +137,7 @@ public class ResourceItem
 	}
 
 	@Override
-	protected ResourceItemSecurityToken configureDefaultsForNewToken(ResourceItemSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ResourceItemSecurityToken configureDefaultsForNewToken(ResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

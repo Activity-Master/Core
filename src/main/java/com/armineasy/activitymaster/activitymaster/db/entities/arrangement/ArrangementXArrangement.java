@@ -21,6 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -34,6 +36,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ArrangementXArrangement
 		extends WarehouseClassificationRelationshipTable<Arrangement, Arrangement, ArrangementXArrangement, ArrangementXArrangementQueryBuilder, Long, ArrangementXArrangementSecurityToken>
 
@@ -75,7 +78,7 @@ public class ArrangementXArrangement
 	}
 
 	@Override
-	protected ArrangementXArrangementSecurityToken configureDefaultsForNewToken(ArrangementXArrangementSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ArrangementXArrangementSecurityToken configureDefaultsForNewToken(ArrangementXArrangementSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

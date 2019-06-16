@@ -21,6 +21,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -33,9 +35,10 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class YesNo
 		extends WarehouseTable<YesNo, YesNoQueryBuilder, Long, YesNoSecurityToken>
-		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification<?>>,
+		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification<?>,YesNo>,
 				           IActivityMasterEntity<YesNo>
 {
 
@@ -154,7 +157,7 @@ public class YesNo
 
 
 	@Override
-	protected YesNoSecurityToken configureDefaultsForNewToken(YesNoSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected YesNoSecurityToken configureDefaultsForNewToken(YesNoSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -1,4 +1,4 @@
-package com.armineasy.activitymaster.activitymaster.services;
+package com.armineasy.activitymaster.activitymaster.services.enumtypes;
 
 /**
  * Service restricted to enumerations
@@ -6,7 +6,7 @@ package com.armineasy.activitymaster.activitymaster.services;
  * @param <J>
  * 		This enum type
  */
-public interface INameType<J extends Enum & INameType<J>> extends ITypeValue<J>
+public interface IArrangementTypes<J extends Enum & IArrangementTypes<J>> extends ITypeValue<J>
 {
 	/**
 	 * Overrides the enum and string

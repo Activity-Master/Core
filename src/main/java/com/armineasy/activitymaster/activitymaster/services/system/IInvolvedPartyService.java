@@ -1,15 +1,14 @@
 package com.armineasy.activitymaster.activitymaster.services.system;
 
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyIdentificationType;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyNameType;
-import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
-import com.armineasy.activitymaster.activitymaster.services.INameType;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyType;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.ITypeValue;
+import com.jwebmp.guicedinjection.pairing.Pair;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -17,17 +16,37 @@ import java.util.UUID;
 
 public interface IInvolvedPartyService
 {
-	@CacheResult(cacheName = "InvolvedPartyGetIdentificationType")
-	InvolvedPartyIdentificationType findIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens);
 
-	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
-	InvolvedParty findByIdentificationType(
-			@CacheKey IIdentificationType<?> idType, @CacheKey String value, @CacheKey ISystems system, @CacheKey UUID... tokens);
+	IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, IEnterprise<?> enterprise);
 
-	InvolvedParty findByUsernameAndPassword(String username, String password, ISystems originatingSystem, boolean throwForNoUser, UUID... token);
+	IInvolvedPartyNameType<?> createNameType(String name, String description, IEnterprise<?> enterprise, UUID... identityToken);
 
-	@CacheResult(cacheName = "InvolvedPartyGetNameType")
-	InvolvedPartyNameType findNameType(INameType<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+	IInvolvedPartyIdentificationType<?> createIdentificationType(IEnterprise<?> enterprise, ITypeValue name, String description, UUID... identityToken);
 
-	InvolvedParty findByToken(@CacheKey SecurityToken token, @CacheKey UUID... tokens);
+	IInvolvedPartyType<?> createType(IEnterprise<?> enterprise, ITypeValue<?> name, String description);
+
+	IInvolvedPartyType<?> createType(IEnterprise<?> enterprise, String name, String description, UUID... identityToken);
+
+	IInvolvedPartyOrganicType<?> createOrganicType(IEnterprise<?> enterprise, ITypeValue<?> name, String description, UUID... identityToken);
+
+	IInvolvedPartyIdentificationType<?> findIdentificationType(IIdentificationType<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+
+
+	IInvolvedParty<?> findByIdentificationType(IIdentificationType<?> idType, String value, ISystems<?> system, UUID... tokens);
+
+	IInvolvedParty<?> findByUsernameAndPassword(String username, String password, ISystems<?> originatingSystem, boolean throwForNoUser, UUID... token);
+
+
+	boolean doesUsernameExist(String username, IEnterprise<?> enterprise, UUID... token);
+
+	IInvolvedParty<?> create(ISystems<?> originatingSystem, Pair<IIdentificationType<?>, String> idTypes,
+	                         boolean isOrganic, UUID... identityToken);
+
+	IInvolvedPartyType<?> findType(ITypeValue<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+
+	IInvolvedPartyNameType<?> findNameType(INameType<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+
+	IInvolvedParty<?> findByToken(@CacheKey ISecurityToken<?> token, @CacheKey UUID... tokens);
+
+	IInvolvedParty<?> findByUUID(@CacheKey UUID token, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens);
 }

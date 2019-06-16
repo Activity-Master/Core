@@ -1,5 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.arrangement;
 
+import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementXArrangementTypeQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
@@ -16,6 +17,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -29,8 +32,9 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ArrangementXArrangementType
-		extends WarehouseRelationshipTable<Arrangement, ArrangementType,
+		extends WarehouseClassificationRelationshipTable<Arrangement, ArrangementType,
 				                                  ArrangementXArrangementType,
 				                                  ArrangementXArrangementTypeQueryBuilder, Long,
 				                                  ArrangementXArrangementTypeSecurityToken>
@@ -65,7 +69,7 @@ public class ArrangementXArrangementType
 	}
 
 	@Override
-	protected ArrangementXArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementXArrangementTypeSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ArrangementXArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementXArrangementTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

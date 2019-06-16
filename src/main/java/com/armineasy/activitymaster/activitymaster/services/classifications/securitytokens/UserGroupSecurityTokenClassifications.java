@@ -1,6 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
 import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts;
 
 public enum UserGroupSecurityTokenClassifications

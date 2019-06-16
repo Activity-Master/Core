@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -31,6 +33,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ActiveFlagXClassification
 		extends WarehouseClassificationRelationshipTable<ActiveFlag, Classification, ActiveFlagXClassification, ActiveFlagXClassificationQueryBuilder, Long, ActiveFlagXClassificationSecurityToken>
 		implements Serializable
@@ -65,7 +68,7 @@ public class ActiveFlagXClassification
 	}
 
 	@Override
-	protected ActiveFlagXClassificationSecurityToken configureDefaultsForNewToken(ActiveFlagXClassificationSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ActiveFlagXClassificationSecurityToken configureDefaultsForNewToken(ActiveFlagXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

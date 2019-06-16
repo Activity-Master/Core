@@ -6,6 +6,9 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierarchyView;
+import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
+import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
+import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -18,6 +21,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static javax.persistence.FetchType.*;
@@ -103,4 +107,17 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	{
 
 	}
+
+	@SuppressWarnings("unchecked")
+	public J remove()
+	{
+		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		                            .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		                                                                               .get(getEnterpriseID())));
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return (J)this;
+	}
+
+
 }

@@ -1,6 +1,5 @@
 package com.armineasy.activitymaster.activitymaster.systems;
 
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.implementations.ResourceItemService;
@@ -9,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgr
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.ResourceItemClassifications;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import java.util.HashMap;
@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.ResourceItemClassifications.*;
-import static com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.ResourceItemTypes.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.ResourceItemTypes.Icon;
+import static com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.ResourceItemTypes.*;
 
 public class ResourceItemSystem
 		implements IActivityMasterSystem<ResourceItemSystem>
@@ -28,10 +28,10 @@ public class ResourceItemSystem
 
 	@SuppressWarnings("Duplicates")
 	@Override
-	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                           .getActivityMaster(enterprise);
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                               .getActivityMaster(enterprise);
 
 		ResourceItemService service = GuiceContext.get(ResourceItemService.class);
 
@@ -94,16 +94,16 @@ public class ResourceItemSystem
 	}
 
 	@Override
-	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Resource Items System",
 		                                        "The system for managing Resource Items", "");
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)
 		                                 .registerNewSystem(enterprise, newSystem);
 
 		systemTokens.put(enterprise, securityToken);
-		systemEnterprises.put(enterprise, newSystem);
+		systemEnterprises.put(enterprise, (Systems) newSystem);
 	}
 
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()

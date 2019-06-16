@@ -8,11 +8,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterp
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.EnterpriseXClassification_;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise_;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.builders.EnterpriseQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IProgressable;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.google.inject.Singleton;
@@ -74,12 +74,13 @@ public class EnterpriseService
 		return new ArrayList<>(builder.getAll());
 	}
 
-	public Optional<Enterprise> findEnterprise(IEnterpriseName<?> name)
+	public Optional<IEnterprise<?>> findEnterprise(IEnterpriseName<?> name)
 	{
-		return new Enterprise().builder()
-		                       .findByName(name.classificationName())
-		                       .inDateRange()
-		                       .get();
+		return Optional.of(new Enterprise().builder()
+		                                       .findByName(name.classificationName())
+		                                       .inDateRange()
+		                                       .get()
+		                                       .get());
 	}
 
 	/**
@@ -94,7 +95,7 @@ public class EnterpriseService
 	 */
 	@Override
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseName")
-	public Enterprise getEnterprise(@CacheKey IEnterpriseName<?> name)
+	public IEnterprise<?> getEnterprise(@CacheKey IEnterpriseName<?> name)
 	{
 		return new Enterprise().builder()
 		                       .findByName(name.classificationName())
@@ -103,20 +104,20 @@ public class EnterpriseService
 		                       .orElseThrow();
 	}
 
-	public Enterprise checkRequiresUpdate(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
+	public IEnterprise<?> checkRequiresUpdate(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Optional<Enterprise> exists = findEnterprise(enterpriseName);
+		Optional<IEnterprise<?>> exists = findEnterprise(enterpriseName);
 		if (exists.isEmpty())
 		{
 			log.log(Level.INFO, "Enterprise with name [" + enterpriseName + "] does not exist. Create a new Enterprise.");
 			throw new ActivityMasterException("No Enterprise");
 		}
-		Enterprise enterprise = exists.get();
+		Enterprise enterprise = (Enterprise) exists.get();
 
 		try
 		{
-			Systems activityMasterSystem = get(SystemsService.class)
-					                               .getActivityMaster(enterprise);
+			ISystems<?> activityMasterSystem = get(SystemsService.class)
+					                                   .getActivityMaster(enterprise);
 			UUID identityToken = get(SystemsService.class).getSecurityIdentityToken(activityMasterSystem);
 
 			if (enterprise.has(Version, activityMasterSystem))

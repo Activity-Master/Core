@@ -31,14 +31,14 @@ public class AddressService implements IAddressService
 	private static final Pattern ipAddressPattern = Pattern.compile("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\\.|$)){4}");
 
 	@Override
-	public Address create(IAddressClassification<?> addressClassification, ISystems originatingSystem, String value, UUID... identifyingToken)
+	public Address create(IAddressClassification<?> addressClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
 	{
 		Address addy = new Address();
 		ISystems activityMasterSystem = get(ISystemsService.class)
 				                                .getActivityMaster(originatingSystem.getEnterpriseID());
 
-		Classification classification = get(ClassificationService.class).find(addressClassification,
-		                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
+		Classification classification = (Classification) get(ClassificationService.class).find(addressClassification,
+		                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
 		Optional<Address> addressExists = addy.builder()
 		                                      .withClassification(classification)
 		                                      .withEnterprise((Enterprise) originatingSystem.getEnterpriseID())
@@ -68,7 +68,7 @@ public class AddressService implements IAddressService
 		return addy;
 	}
 
-	public Address addOrFindIPAddress(String ipAddress, ISystems originatingSystem, UUID... identityToken) throws AddressException
+	public Address addOrFindIPAddress(String ipAddress, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
 		                     .matches())
@@ -77,9 +77,9 @@ public class AddressService implements IAddressService
 		}
 
 		Address address = new Address();
-		Classification ipAddressClassification = get(ClassificationService.class).find(RemoteAddressIPAddress,
-		                                                                               originatingSystem.getEnterpriseID(),
-		                                                                               identityToken);
+		Classification ipAddressClassification = (Classification) get(ClassificationService.class).find(RemoteAddressIPAddress,
+		                                                                                                originatingSystem.getEnterpriseID(),
+		                                                                                                identityToken);
 
 		Optional<Address> exists = address.builder()
 		                                  .withClassification(ipAddressClassification)
@@ -105,11 +105,11 @@ public class AddressService implements IAddressService
 		return address;
 	}
 
-	public Address addOrFindHostName(String hostName, ISystems originatingSystem, UUID... identityToken) throws AddressException
+	public Address addOrFindHostName(String hostName, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
 	{
 
 		Address address = new Address();
-		Classification ipAddressClassification = get(ClassificationService.class).find(
+		Classification ipAddressClassification = (Classification) get(ClassificationService.class).find(
 				RemoteAddressHostName,
 				originatingSystem.getEnterpriseID(),
 				identityToken);
@@ -139,11 +139,11 @@ public class AddressService implements IAddressService
 	}
 
 
-	public Address addOrFindWebAddress(String webAddress, ISystems originatingSystem, UUID... identityToken) throws AddressException
+	public Address addOrFindWebAddress(String webAddress, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
 	{
 
 		Address address = new Address();
-		Classification ipAddressClassification = get(ClassificationService.class).find(
+		Classification ipAddressClassification = (Classification) get(ClassificationService.class).find(
 				WebAddress,
 				originatingSystem.getEnterpriseID(),
 				identityToken);
@@ -166,31 +166,31 @@ public class AddressService implements IAddressService
 
 			try
 			{
-				Classification webPortAddressClassification = get(ClassificationService.class).find(
+				Classification webPortAddressClassification = (Classification) get(ClassificationService.class).find(
 						WebAddressPort,
 						originatingSystem.getEnterpriseID(),
 						identityToken);
-				Classification webDomainAddressClassification = get(ClassificationService.class).find(
+				Classification webDomainAddressClassification = (Classification) get(ClassificationService.class).find(
 						WebAddressDomain,
 						originatingSystem.getEnterpriseID(),
 						identityToken);
-				Classification webSubDomainAddressClassification = get(ClassificationService.class).find(
+				Classification webSubDomainAddressClassification = (Classification) get(ClassificationService.class).find(
 						WebAddressSubDomain,
 						originatingSystem.getEnterpriseID(),
 						identityToken);
-				Classification webProtocolAddressClassification = get(ClassificationService.class).find(
+				Classification webProtocolAddressClassification = (Classification) get(ClassificationService.class).find(
 						WebAddressProtocol,
 						originatingSystem.getEnterpriseID(),
 						identityToken);
-				Classification webQueryParametersAddressClassification = get(ClassificationService.class).find(
+				Classification webQueryParametersAddressClassification = (Classification) get(ClassificationService.class).find(
 						WebAddressQueryParameters,
 						originatingSystem.getEnterpriseID(),
 						identityToken);
-				Classification webSiteAddressClassification = get(ClassificationService.class).find(
+				Classification webSiteAddressClassification = (Classification) get(ClassificationService.class).find(
 						WebAddressSite,
 						originatingSystem.getEnterpriseID(),
 						identityToken);
-				Classification webUrlAddressClassification = get(ClassificationService.class).find(
+				Classification webUrlAddressClassification = (Classification) get(ClassificationService.class).find(
 						WebAddressUrl,
 						originatingSystem.getEnterpriseID(),
 						identityToken);

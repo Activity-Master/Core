@@ -45,6 +45,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -57,6 +59,7 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>
 		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView>,
@@ -307,7 +310,7 @@ public class Classification
 	}
 
 	@Override
-	protected ClassificationSecurityToken configureDefaultsForNewToken(ClassificationSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ClassificationSecurityToken configureDefaultsForNewToken(ClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		ClassificationSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		token.setBase(this);
@@ -316,8 +319,8 @@ public class Classification
 
 	public void configureForClassification(ClassificationXClassification classificationLink, IEnterprise<?> enterprise)
 	{
-		Classification hierarchyClassification = GuiceContext.get(ClassificationService.class)
-		                                                     .getHierarchyType(classificationLink.getEnterpriseID());
+		Classification hierarchyClassification = (Classification) GuiceContext.get(ClassificationService.class)
+		                                                                      .getHierarchyType(classificationLink.getEnterpriseID());
 		Classification incomingClassification = classificationLink.getClassificationID();
 
 		classificationLink.setChildClassificationID(incomingClassification);

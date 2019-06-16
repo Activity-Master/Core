@@ -1,6 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.systems;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationValue;
 
 public interface ISystemsClassification<J extends Enum & ISystemsClassification<J>> extends IClassificationValue<J>
 {

@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -30,6 +32,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class SystemXClassification
 		extends WarehouseClassificationRelationshipTable<Systems, Classification, SystemXClassification, SystemsXClassificationQueryBuilder,
 				                                                Long, SystemXClassificationSecurityToken>
@@ -59,7 +62,7 @@ public class SystemXClassification
 	}
 
 	@Override
-	protected SystemXClassificationSecurityToken configureDefaultsForNewToken(SystemXClassificationSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected SystemXClassificationSecurityToken configureDefaultsForNewToken(SystemXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

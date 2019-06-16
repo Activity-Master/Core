@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -36,6 +38,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class GeographyXResourceItem
 		extends WarehouseClassificationRelationshipTable<Geography, ResourceItem, GeographyXResourceItem, GeographyXResourceItemQueryBuilder, Long, GeographyXResourceItemSecurityToken>
 		implements Serializable
@@ -77,7 +80,7 @@ public class GeographyXResourceItem
 	}
 
 	@Override
-	protected GeographyXResourceItemSecurityToken configureDefaultsForNewToken(GeographyXResourceItemSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected GeographyXResourceItemSecurityToken configureDefaultsForNewToken(GeographyXResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

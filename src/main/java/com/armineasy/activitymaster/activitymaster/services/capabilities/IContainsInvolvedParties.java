@@ -4,6 +4,7 @@ import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
@@ -11,6 +12,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 
@@ -28,14 +30,14 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		                                         J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>>
 {
 	@SuppressWarnings("unchecked")
-	default Optional<J> findInvolvedParty(@CacheKey InvolvedParty InvolvedParty, @CacheKey UUID... identityToken)
+	default Optional<J> findInvolvedParty(@CacheKey IInvolvedParty<?> involvedParty, @CacheKey UUID... identityToken)
 	{
 		J activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) InvolvedParty, InvolvedParty.getEnterpriseID())
-		                                                         .inActiveRange(InvolvedParty.getEnterpriseID())
+		                                                         .findLink((P) this, (S) involvedParty, null)
+		                                                         .inActiveRange(involvedParty.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(InvolvedParty.getEnterpriseID(), identityToken)
+		                                                         .canRead(involvedParty.getEnterpriseID(), identityToken)
 		                                                         .get();
 		return exists;
 	}
@@ -63,10 +65,10 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		J activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
 		ISystems activityMasterSystem = get(ISystemsService.class)
 				                               .getActivityMaster(enterprise);
-		Classification classification = get(ClassificationService.class).find(InvolvedPartyClassification,
-		                                                                      activityMasterSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) get(ClassificationService.class).find(InvolvedPartyClassification,
+		                                                                                       activityMasterSystem.getEnterpriseID(), identityToken);
 		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(classification.getEnterpriseID())
 		                             .inDateRange()
 		                             .canRead(classification.getEnterpriseID(), identityToken)
@@ -74,13 +76,13 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J add(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems originatingSystem, String value, UUID... identifyingToken)
+	default J add(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
 	{
 		ISystems activityMasterSystem = get(ISystemsService.class)
 				                               .getActivityMaster(originatingSystem.getEnterpriseID(),identifyingToken);
 
-		Classification classification = get(ClassificationService.class).find(involvedPartyClassification,
-		                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
+		Classification classification = (Classification) get(ClassificationService.class).find(involvedPartyClassification,
+		                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
 
 		InvolvedParty addy = new InvolvedParty();
 		Optional<InvolvedParty> InvolvedPartyExists = addy.builder()
@@ -108,7 +110,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 
 		J tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) addy, classification.getEnterpriseID())
+		                                                         .findLink((P) this, (S) addy, null)
 		                                                         .inActiveRange(classification.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .get();
@@ -138,26 +140,26 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 
 
 	@SuppressWarnings("unchecked")
-	default J add(InvolvedParty addy, IInvolvedPartyClassification<?> iclassification, ISystems originatingSystem, UUID... identifyingToken)
+	default J add(IInvolvedParty<?> addy, IInvolvedPartyClassification<?> iclassification,String value, ISystems<?> originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) addy, originatingSystem.getEnterpriseID())
+		                                                         .findLink((P) this, (S) addy, null)
 		                                                         .inActiveRange(addy.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(originatingSystem.getEnterpriseID(), identifyingToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			Classification classification = get(ClassificationService.class).find(iclassification,
-			                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
+			Classification classification = (Classification) get(ClassificationService.class).find(iclassification,
+			                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
 
-			tableForClassification.setEnterpriseID(addy.getEnterpriseID());
+			tableForClassification.setEnterpriseID((Enterprise) addy.getEnterpriseID());
 			tableForClassification.setSystemID((Systems) originatingSystem);
 			tableForClassification.setClassificationID(classification);
-			tableForClassification.setValue("");
+			tableForClassification.setValue(value);
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
-			tableForClassification.setActiveFlagID(addy.getActiveFlagID());
+			tableForClassification.setActiveFlagID((ActiveFlag) addy.getActiveFlagID());
 			setMyInvolvedPartyLinkValue(tableForClassification, (S) addy, addy.getEnterpriseID());
 			tableForClassification.persist();
 

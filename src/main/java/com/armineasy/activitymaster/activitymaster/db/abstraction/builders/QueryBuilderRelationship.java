@@ -8,8 +8,6 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction.builders;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 
 import javax.persistence.metamodel.Attribute;
 import java.io.Serializable;
@@ -43,7 +41,7 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 {
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J findLink(P parent, S child, IEnterprise<?> enterprise)
+	public J findLink(P parent, S child)
 	{
 		where(getPrimaryAttribute(), Equals, parent);
 		where(getSecondaryAttribute(), Equals, child);
@@ -56,14 +54,11 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J findLink(P parent, S child, IEnterprise<?> enterprise, String value)
+	public J findLink(P parent, S child, String value)
 	{
 		where(getPrimaryAttribute(), Equals, parent);
 		where(getSecondaryAttribute(), Equals, child);
-		if (value != null)
-		{
-			withValue(value);
-		}
+		withValue(value);
 		return (J) this;
 	}
 
@@ -71,7 +66,10 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 	@javax.validation.constraints.NotNull
 	public J withValue(String value)
 	{
-		where(getAttribute("value"), Equals, value);
+		if (value != null)
+		{
+			where(getAttribute("value"), Equals, value);
+		}
 		return (J) this;
 	}
 

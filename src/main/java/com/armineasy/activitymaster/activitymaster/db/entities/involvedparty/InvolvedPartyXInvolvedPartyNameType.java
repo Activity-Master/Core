@@ -21,6 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -34,6 +36,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class InvolvedPartyXInvolvedPartyNameType
 		extends WarehouseRelationshipTable<InvolvedParty, InvolvedPartyNameType,
 				                                  InvolvedPartyXInvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameTypeQueryBuilder, Long, InvolvedPartyXInvolvedPartyNameTypeSecurityToken>
@@ -81,7 +84,7 @@ public class InvolvedPartyXInvolvedPartyNameType
 	}
 
 	@Override
-	protected InvolvedPartyXInvolvedPartyNameTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXInvolvedPartyNameTypeSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected InvolvedPartyXInvolvedPartyNameTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXInvolvedPartyNameTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

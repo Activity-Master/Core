@@ -6,16 +6,16 @@ import com.armineasy.activitymaster.activitymaster.db.entities.events.Event;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IIdentificationType;
-import com.armineasy.activitymaster.activitymaster.services.INameType;
-import com.armineasy.activitymaster.activitymaster.services.ITypeValue;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.ITypeValue;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.SecurityAccessException;
 import com.armineasy.activitymaster.activitymaster.services.security.Passwords;
 import com.armineasy.activitymaster.activitymaster.services.system.IInvolvedPartyService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
+import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
@@ -31,6 +31,7 @@ import static com.armineasy.activitymaster.activitymaster.services.classificatio
 import static com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.InvolvedPartyClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes.*;
 import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
+import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton
@@ -38,14 +39,16 @@ import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
 public class InvolvedPartyService
 		implements IInvolvedPartyService
 {
-	public InvolvedPartyNameType createNameType(ITypeValue<?> name, String description, IEnterprise enterprise)
+	@Override
+	public IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, IEnterprise<?> enterprise)
 	{
 		return createNameType(name.classificationValue(), description, enterprise);
 	}
 
-	public InvolvedPartyNameType createNameType(String name, String description, IEnterprise enterprise, UUID... identityToken)
+	@Override
+	public IInvolvedPartyNameType<?> createNameType(String name, String description, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		Systems system = GuiceContext.get(SystemsService.class)
+		ISystems<?> system = get(SystemsService.class)
 		                             .getActivityMaster(enterprise);
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
 		Optional<InvolvedPartyNameType> exists = xr.builder()
@@ -57,28 +60,29 @@ public class InvolvedPartyService
 		{
 			xr.setName(name);
 			xr.setDescription(description);
-			xr.setOriginalSourceSystemID(system);
-			xr.setSystemID(system);
-			xr.setEnterpriseID(system.getEnterpriseID());
-			xr.setActiveFlagID(system.getActiveFlagID());
+			xr.setSystemID((Systems) system);
+			xr.setOriginalSourceSystemID((Systems) system);
+			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			xr.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
 		{
 			xr = exists.get();
 		}
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
+		if (get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+			xr.createDefaultSecurity(get(ISystemsService.class)
 			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
 	}
 
-	public InvolvedPartyIdentificationType createIdentificationType(IEnterprise enterprise, ITypeValue name, String description, UUID... identityToken)
+	@Override
+	public IInvolvedPartyIdentificationType<?> createIdentificationType(IEnterprise<?> enterprise, ITypeValue name, String description, UUID... identityToken)
 	{
-		Systems system = GuiceContext.get(SystemsService.class)
+		ISystems<?> system = get(SystemsService.class)
 		                             .getActivityMaster(enterprise);
 
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
@@ -91,34 +95,36 @@ public class InvolvedPartyService
 		{
 			xr.setName(name.name());
 			xr.setDescription(description);
-			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
-			xr.setEnterpriseID(system.getEnterpriseID());
-			xr.setActiveFlagID(system.getActiveFlagID());
+			xr.setSystemID((Systems) system);
+			xr.setOriginalSourceSystemID((Systems) system);
+			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			xr.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
 		{
 			xr = exists.get();
 		}
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
+		if (get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+			xr.createDefaultSecurity(get(ISystemsService.class)
 			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 
 		return xr;
 	}
 
-	public InvolvedPartyType createType(IEnterprise enterprise, ITypeValue<?> name, String description)
+	@Override
+	public IInvolvedPartyType<?> createType(IEnterprise<?> enterprise, ITypeValue<?> name, String description)
 	{
 		return createType(enterprise, name.classificationValue(), description);
 	}
 
-	public InvolvedPartyType createType(IEnterprise enterprise, String name, String description, UUID... identityToken)
+	@Override
+	public IInvolvedPartyType<?> createType(IEnterprise<?> enterprise, String name, String description, UUID... identityToken)
 	{
-		Systems system = GuiceContext.get(SystemsService.class)
+		ISystems<?> system = get(SystemsService.class)
 		                             .getActivityMaster(enterprise);
 
 		InvolvedPartyType xr = new InvolvedPartyType();
@@ -131,28 +137,29 @@ public class InvolvedPartyService
 		{
 			xr.setName(name);
 			xr.setDescription(description);
-			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
-			xr.setEnterpriseID(system.getEnterpriseID());
-			xr.setActiveFlagID(system.getActiveFlagID());
+			xr.setSystemID((Systems) system);
+			xr.setOriginalSourceSystemID((Systems) system);
+			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			xr.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
 		{
 			xr = exists.get();
 		}
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
+		if (get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+			xr.createDefaultSecurity(get(ISystemsService.class)
 			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
 	}
 
-	public InvolvedPartyOrganicType createOrganicType(IEnterprise enterprise, ITypeValue<?> name, String description, UUID... identityToken)
+	@Override
+	public IInvolvedPartyOrganicType<?> createOrganicType(IEnterprise<?> enterprise, ITypeValue<?> name, String description, UUID... identityToken)
 	{
-		Systems system = GuiceContext.get(SystemsService.class)
+		ISystems<?> system = get(SystemsService.class)
 		                             .getActivityMaster(enterprise);
 
 		InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
@@ -165,20 +172,20 @@ public class InvolvedPartyService
 		{
 			xr.setName(name.classificationValue());
 			xr.setDescription(description);
-			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
-			xr.setEnterpriseID(system.getEnterpriseID());
-			xr.setActiveFlagID(system.getActiveFlagID());
+			xr.setSystemID((Systems) system);
+			xr.setOriginalSourceSystemID((Systems) system);
+			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			xr.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
 		{
 			xr = exists.get();
 		}
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
+		if (get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			xr.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+			xr.createDefaultSecurity(get(ISystemsService.class)
 			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
@@ -186,7 +193,7 @@ public class InvolvedPartyService
 
 	@CacheResult(cacheName = "InvolvedPartyGetIdentificationType")
 	@Override
-	public InvolvedPartyIdentificationType findIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
+	public IInvolvedPartyIdentificationType<?> findIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
 		return xr.builder()
@@ -199,16 +206,16 @@ public class InvolvedPartyService
 	}
 
 	@Override
-	public InvolvedParty findByIdentificationType(
-			@CacheKey IIdentificationType<?> idType, @CacheKey String value, @CacheKey ISystems system, @CacheKey UUID... tokens)
+	public IInvolvedParty<?> findByIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey String value, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
 	{
-		IEnterprise enterprise = system.getEnterpriseID();
+		IEnterprise<?> enterprise = system.getEnterpriseID();
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> builder = new InvolvedPartyXInvolvedPartyIdentificationType()
 				                                                                  .builder()
 				                                                                  .canRead(enterprise, tokens)
 				                                                                  .inActiveRange(enterprise, tokens)
 				                                                                  .inDateRange()
-				                                                                  .findChildLink(findIdentificationType(idType, enterprise, tokens), value)
+				                                                                  .findChildLink(
+						                                                                  (InvolvedPartyIdentificationType) findIdentificationType(idType, enterprise, tokens), value)
 				                                                                  .get();
 		return builder.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
 		              .orElse(null);
@@ -226,10 +233,10 @@ public class InvolvedPartyService
 	}
 
 	@Override
-	public InvolvedParty findByUsernameAndPassword(String username, String password, ISystems originatingSystem, boolean throwForNoUser, UUID... token)
+	public IInvolvedParty<?> findByUsernameAndPassword(String username, String password, ISystems<?> originatingSystem, boolean throwForNoUser, UUID... token)
 	{
-		IEnterprise enterprise = originatingSystem.getEnterpriseID();
-		if (!doesUsernameExist(username, enterprise))
+		IEnterprise<?> enterprise = originatingSystem.getEnterpriseID();
+		if (!doesUsernameExist(username, enterprise,token))
 		{
 			if (throwForNoUser)
 			{
@@ -240,14 +247,19 @@ public class InvolvedPartyService
 				return null;
 			}
 		}
-		InvolvedParty foundPart = findByIdentificationType(IdentificationTypeUserName, username, originatingSystem, token);
+
+		UUID identityToken = InvolvedPartySystem.getSystemTokens()
+		                                        .get(originatingSystem.getEnterpriseID());
+		InvolvedParty foundPart = new InvolvedParty().builder()
+		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, username,identityToken)
+		                                             .get().orElse(null);
 		if (foundPart == null)
 		{
 			throw new SecurityAccessException("Unable to find any Involved Party with that username");
 		}
 
-		Optional<InvolvedPartyXClassification> saltEntity = foundPart.find(SecurityPasswordSalt, originatingSystem, token);
-		Optional<InvolvedPartyXClassification> passEntity = foundPart.find(SecurityPassword, originatingSystem, token);
+		Optional<IRelationshipValue<?>> saltEntity = foundPart.find(SecurityPasswordSalt, originatingSystem, identityToken);
+		Optional<IRelationshipValue<?>> passEntity = foundPart.find(SecurityPassword, originatingSystem, identityToken);
 		if (saltEntity.isEmpty() || passEntity.isEmpty())
 		{
 			if (throwForNoUser)
@@ -258,6 +270,7 @@ public class InvolvedPartyService
 
 		String saltString = saltEntity.get()
 		                              .getValue();
+		saltString = new String(Passwords.integerDecrypt(saltString));
 		String passMatch = passEntity.get()
 		                             .getValue();
 		String passEncrypted = encrypt(password, saltString);
@@ -266,29 +279,18 @@ public class InvolvedPartyService
 		{
 			throw new SecurityAccessException("Password Incorrect");
 		}
-		return passEntity.get()
-		                 .getInvolvedPartyID();
+		return foundPart;
 	}
 
-	public boolean doesUsernameExist(String username, IEnterprise enterprise)
+	@Override
+	public boolean doesUsernameExist(String username, IEnterprise<?> enterprise, UUID... token)
 	{
 		return new InvolvedParty().builder()
-		                          .findByIdentificationType(enterprise, IdentificationTypeUserName, username)
+		                          .findByIdentificationType(enterprise, IdentificationTypeUserName, username,token)
 		                          .getCount() > 0;
 	}
 
-	/**
-	 * This method assumes that you have done all the necessary checks
-	 *
-	 * @param username
-	 * @param password
-	 * @param involvedParty
-	 * @param originatingSystem
-	 * @param token
-	 *
-	 * @return
-	 */
-	public InvolvedPartyXInvolvedPartyIdentificationType addUpdateUsernamePassword(Event event, String username, String password, InvolvedParty involvedParty, ISystems originatingSystem, UUID... token)
+	public IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> originatingSystem, UUID... token)
 	{
 		byte[] salt;
 		if (involvedParty.has(SecurityPasswordSalt, originatingSystem, token))
@@ -309,20 +311,21 @@ public class InvolvedPartyService
 
 		involvedParty.addOrUpdate(SecurityPassword, passEncrypted, originatingSystem, token);
 		involvedParty.addOrUpdate(SecurityPasswordSalt, saltEncrypted, originatingSystem, token);
-		InvolvedPartyXInvolvedPartyIdentificationType sec =involvedParty.addIdentificationType(IdentificationTypeUserName, originatingSystem, username,token);
+		InvolvedPartyXInvolvedPartyIdentificationType sec =involvedParty.addOrUpdate(IdentificationTypeUserName, username, originatingSystem, token);
 
 		if(event != null)
 		{
-			event.addOrReuse(UpdatedPassword,STRING_EMPTY, originatingSystem,token);
-			event.addOrReuse(UpdatedUsername,username, originatingSystem,token);
+			event.addOrUpdate(UpdatedPassword,STRING_EMPTY, originatingSystem,token);
+			event.addOrUpdate(UpdatedUsername,username, originatingSystem,token);
 		}
-		return sec;
+		return involvedParty;
 	}
 
-	public InvolvedParty create(ISystems originatingSystem, Pair<IIdentificationType, String> idTypes,
-	                            boolean isOrganic, UUID... identityToken)
+	@Override
+	public IInvolvedParty<?> create(ISystems<?> originatingSystem, Pair<IIdentificationType<?>, String> idTypes,
+	                                boolean isOrganic, UUID... identityToken)
 	{
-		IEnterprise enterprise = originatingSystem.getEnterpriseID();
+		IEnterprise<?> enterprise = originatingSystem.getEnterpriseID();
 
 		InvolvedParty ip = new InvolvedParty();
 		Optional<InvolvedParty> exists =ActivityMasterConfiguration
@@ -334,7 +337,7 @@ public class InvolvedPartyService
 
 		if (exists.isEmpty())
 		{
-			Systems system = (Systems) GuiceContext.get(ISystemsService.class)
+			Systems system = (Systems) get(ISystemsService.class)
 			                                       .getActivityMaster(enterprise,identityToken);
 
 			ip.setEnterpriseID((Enterprise) enterprise);
@@ -342,17 +345,17 @@ public class InvolvedPartyService
 			ip.setSystemID(system);
 			ip.setOriginalSourceSystemID(system);
 			ip.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			if (get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				ip.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+				ip.createDefaultSecurity(get(ISystemsService.class)
 				                                     .getActivityMaster(ip.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
 
-			ip.addIdentificationType(idTypes.getKey(), originatingSystem, idTypes.getValue(), identityToken);
+			ip.addOrUpdate(idTypes.getKey(), idTypes.getValue(),originatingSystem, identityToken);
 
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			if (get(ActivityMasterConfiguration.class)
 			                .isAsyncEnabled())
 			{
 				final InvolvedParty ipAsync = ip;
@@ -373,22 +376,22 @@ public class InvolvedPartyService
 		return ip;
 	}
 
-	private void setupInvolvedPartyOrganicStatus(boolean isOrganic, InvolvedParty ip, IEnterprise<?> enterprise, Systems system, UUID... identityToken)
+	private void setupInvolvedPartyOrganicStatus(boolean isOrganic, IInvolvedParty<?> ip, IEnterprise<?> enterprise, Systems system, UUID... identityToken)
 	{
 		if (isOrganic)
 		{
 			InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
-			ipo.setInvolvedParty(ip);
+			ipo.setInvolvedParty((InvolvedParty) ip);
 			ipo.setId(ip.getId());
 			ipo.setEnterpriseID((Enterprise) enterprise);
 			ipo.setActiveFlagID(system.getActiveFlagID());
 			ipo.setSystemID(system);
 			ipo.setOriginalSourceSystemID(system);
 			ipo.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			if (get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				ipo.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+				ipo.createDefaultSecurity(get(ISystemsService.class)
 				                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
@@ -396,17 +399,17 @@ public class InvolvedPartyService
 		else
 		{
 			InvolvedPartyNonOrganic ipo = new InvolvedPartyNonOrganic();
-			ipo.setInvolvedParty(ip);
+			ipo.setInvolvedParty((InvolvedParty) ip);
 			ipo.setId(ip.getId());
 			ipo.setEnterpriseID((Enterprise) enterprise);
 			ipo.setActiveFlagID(system.getActiveFlagID());
 			ipo.setSystemID(system);
 			ipo.setOriginalSourceSystemID(system);
 			ipo.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			if (get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				ipo.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+				ipo.createDefaultSecurity(get(ISystemsService.class)
 				                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
@@ -414,12 +417,13 @@ public class InvolvedPartyService
 	}
 
 	@CacheResult(cacheName = "InvolvedPartyGetNameType")
-	public InvolvedPartyType findType(@CacheKey ITypeValue<?> idType, @CacheKey IEnterprise enterprise, @CacheKey UUID... tokens)
+	@Override
+	public IInvolvedPartyType<?> findType(@CacheKey ITypeValue<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
 	{
 		return findType(idType.classificationValue(), enterprise, tokens);
 	}
 
-	private InvolvedPartyType findType(@CacheKey String nameType, @CacheKey IEnterprise enterprise, @CacheKey UUID... tokens)
+	private IInvolvedPartyType<?> findType(@CacheKey String nameType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyType xr = new InvolvedPartyType();
 		return xr.builder()
@@ -433,12 +437,12 @@ public class InvolvedPartyService
 
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyGetNameType")
-	public InvolvedPartyNameType findNameType(@CacheKey INameType<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
+	public IInvolvedPartyNameType<?> findNameType(@CacheKey INameType<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
 	{
 		return findNameType(idType.classificationValue(), enterprise, tokens);
 	}
 
-	private InvolvedPartyNameType findNameType(@CacheKey String nameType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
+	private IInvolvedPartyNameType<?> findNameType(@CacheKey String nameType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
 		return xr.builder()
@@ -451,25 +455,26 @@ public class InvolvedPartyService
 	}
 
 	@Override
-	public InvolvedParty findByToken(@CacheKey SecurityToken token, @CacheKey UUID... tokens)
+	public IInvolvedParty<?> findByToken(@CacheKey ISecurityToken<?> token, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
-		InvolvedPartyIdentificationType id = findIdentificationType(IdentificationTypeUUID, token.getEnterpriseID(),tokens);
+		InvolvedPartyIdentificationType id = (InvolvedPartyIdentificationType) findIdentificationType(IdentificationTypeUUID, ((SecurityToken) token).getEnterpriseID(), tokens);
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> foundLink = idType.builder()
 		                                                                          .findChildLink(id, token.getSecurityToken())
-		                                                                          .inActiveRange(token.getEnterpriseID())
+		                                                                          .inActiveRange(((SecurityToken) token).getEnterpriseID())
 		                                                                          .inDateRange()
-		                                                                          .canRead(token.getEnterpriseID(), tokens)
+		                                                                          .canRead(((SecurityToken) token).getEnterpriseID(), tokens)
 		                                                                          .get();
 		return foundLink.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
 		                .orElse(null);
 
 	}
 
-	public InvolvedParty findByUUID(@CacheKey UUID token, @CacheKey IEnterprise enterprise, @CacheKey UUID... tokens)
+	@Override
+	public IInvolvedParty<?> findByUUID(@CacheKey UUID token, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
-		InvolvedPartyIdentificationType id = findIdentificationType(IdentificationTypeUUID, enterprise, tokens);
+		InvolvedPartyIdentificationType id = (InvolvedPartyIdentificationType) findIdentificationType(IdentificationTypeUUID, enterprise, tokens);
 
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> foundLink = idType.builder()
 		                                                                          .findChildLink(id, token.toString())

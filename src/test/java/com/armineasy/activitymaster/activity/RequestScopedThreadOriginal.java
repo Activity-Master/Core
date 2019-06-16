@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
@@ -56,17 +57,17 @@ public abstract class RequestScopedThreadOriginal
 		config.setSecurityEnabled(false);
 		config.setEnterpriseName(TestEnterprise);
 		EnterpriseService service = get(EnterpriseService.class);
-		Optional<Enterprise> enterpriseO = service.findEnterprise(TestEnterprise);
+		Optional<IEnterprise<?>> enterpriseO = service.findEnterprise(TestEnterprise);
 		IEnterprise<?> enterprise = enterpriseO.get();
 
 		ISystems systems = GuiceContext.get(ISystemsService.class)
 		                               .getActivityMaster(enterprise);
 		UUID identityToken = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
-		SecurityToken token = GuiceContext.get(ISecurityTokenService.class)
-		                                  .getSecurityToken(identityToken, enterprise);
+		SecurityToken token = (SecurityToken) GuiceContext.get(ISecurityTokenService.class)
+		                                                  .getSecurityToken(identityToken, enterprise);
 		securityConfiguration.setToken(token);
-		SecurityToken inToken = securityConfiguration.getToken();
+		ISecurityToken<?> inToken = securityConfiguration.getToken();
 
 		config.setSecurityEnabled(true);
 

@@ -1,6 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.services.types;
 
-import com.armineasy.activitymaster.activitymaster.services.INameType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
 
 public enum NameTypes
 		implements INameType<NameTypes>

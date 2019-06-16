@@ -5,14 +5,14 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationXResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.ClassificationHierarchyView;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsHierarchy;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 
 public interface IClassification<J extends IClassification<J>>
 		extends IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView>,
 				        IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem>,
-				        IActivityMasterEntity<Classification>
+				        IActivityMasterEntity<Classification>,
+				        IContainsEnterprise<J>,
+				        INameAndDescription<Classification>
 {
 
 }

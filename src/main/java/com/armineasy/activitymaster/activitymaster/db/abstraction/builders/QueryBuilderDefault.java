@@ -54,7 +54,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J inActiveRange(IEnterprise enterprise, UUID...identityToken)
+	public J inActiveRange(IEnterprise<?> enterprise, UUID...identityToken)
 	{
 		Collection<ActiveFlag> flags = GuiceContext.get(IActiveFlagService.class)
 		                                           .findActiveRange(enterprise, identityToken);
@@ -65,7 +65,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J inVisibleRange(IEnterprise enterprise, UUID...identityToken)
+	public J inVisibleRange(IEnterprise<?> enterprise, UUID...identityToken)
 	{
 		Collection<ActiveFlag> flags = GuiceContext.get(IActiveFlagService.class)
 		                                           .getVisibleRange(enterprise,identityToken);

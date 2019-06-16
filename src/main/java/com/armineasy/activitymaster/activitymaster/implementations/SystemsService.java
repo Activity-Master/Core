@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.security.Security
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemXClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IRelationshipValue;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
@@ -30,13 +31,13 @@ public class SystemsService
 
 	@Override
 	@CacheResult(cacheName = "GetActivityMaster")
-	public Systems getActivityMaster(@CacheKey IEnterprise enterprise, @CacheKey UUID... token)
+	public ISystems<?> getActivityMaster(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... token)
 	{
 		return findSystem(enterprise, ActivityMasterSystemName, token);
 	}
 
 	@CacheResult(cacheName = "FindSystem")
-	public Systems findSystem(@CacheKey IEnterprise enterprise, @CacheKey String systemName, @CacheKey UUID... token)
+	public ISystems<?> findSystem(@CacheKey IEnterprise<?> enterprise, @CacheKey String systemName, @CacheKey UUID... token)
 	{
 		Systems search = new Systems();
 		return search.builder()
@@ -51,11 +52,11 @@ public class SystemsService
 
 	@CacheResult(cacheName = "FindSystemByIdentityClassification")
 	@Override
-	public Systems findSystem(@CacheKey IEnterprise enterprise, @CacheKey UUID token, UUID... identityToken)
+	public ISystems<?> findSystem(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID token, UUID... identityToken)
 	{
 		SystemXClassification systemClassifications = new SystemXClassification();
-		Classification identifyClassification = GuiceContext.get(ClassificationService.class)
-		                                                    .getIdentityType(enterprise, identityToken);
+		Classification identifyClassification = (Classification) GuiceContext.get(ClassificationService.class)
+		                                                                     .getIdentityType(enterprise, identityToken);
 
 		Optional<SystemXClassification> exists = systemClassifications.builder()
 		                                                              .findChildLink(identifyClassification, token.toString())
@@ -74,7 +75,7 @@ public class SystemsService
 		}
 	}
 
-	public Systems create(IEnterprise enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
+	public ISystems<?> create(IEnterprise<?> enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
 	{
 		ActiveFlag flag = GuiceContext.get(IActiveFlagService.class)
 		                              .getActiveFlag((Enterprise) enterprise);
@@ -111,7 +112,7 @@ public class SystemsService
 	}
 
 	@CacheResult(cacheName = "SystemGetSecurityToken")
-	public SecurityToken getSecurityToken(@CacheKey UUID uuidIdentity, @CacheKey Systems system, @CacheKey UUID... identityToken)
+	public SecurityToken getSecurityToken(@CacheKey UUID uuidIdentity, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		Optional<SecurityToken> token = new SecurityToken().builder()
 		                                                   .findBySecurityToken(uuidIdentity.toString(), system.getEnterpriseID())
@@ -130,18 +131,17 @@ public class SystemsService
 	}
 
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
-	public UUID getSecurityIdentityToken(@CacheKey ISystems system, @CacheKey UUID... identityToken)
+	public UUID getSecurityIdentityToken(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		Optional<SystemXClassification> systemToken = system.find(SystemIdentity, system, identityToken);
+		Optional<IRelationshipValue<?>> systemToken = system.find(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())
 		{
 			return null;
 		}
 		else
 		{
-			UUID id = UUID.fromString(systemToken.get()
-			                                     .getValue());
-			return id;
+			return systemToken.get()
+			                  .getValueAsUUID();
 		}
 	}
 

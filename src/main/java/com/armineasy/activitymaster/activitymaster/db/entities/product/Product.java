@@ -27,6 +27,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -39,9 +41,10 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class Product
 		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, Long, ProductSecurityToken>
-		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>>,
+		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>,Product>,
 				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem>,
 				           IActivityMasterEntity<Product>
 {
@@ -139,7 +142,7 @@ public class Product
 	}
 
 	@Override
-	protected ProductSecurityToken configureDefaultsForNewToken(ProductSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ProductSecurityToken configureDefaultsForNewToken(ProductSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

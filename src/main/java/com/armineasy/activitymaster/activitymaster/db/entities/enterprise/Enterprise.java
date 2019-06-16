@@ -27,6 +27,9 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
+import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
+import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +39,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static javax.persistence.AccessType.*;
 
 /**
  * @author GedMarc
@@ -50,9 +56,10 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "name",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, Long, EnterpriseSecurityToken>
-		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>>,
+		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise<Enterprise>>,
 				           IActivityMasterEntity<Enterprise>,
 				           INameAndDescription<Enterprise>,
 				           IEnterprise<Enterprise>
@@ -63,7 +70,7 @@ public class Enterprise
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "EnterpriseID")
-	@Getter(onMethod = @__(@XmlTransient))
+	@Getter
 	@Setter
 	private Long id;
 
@@ -73,7 +80,7 @@ public class Enterprise
 	@Lob
 	@Column(nullable = false,
 			name = "EnterpriseName")
-	@Getter(onMethod = @__(@XmlTransient))
+	@Getter
 	@Setter
 	private String name;
 	@Basic(optional = false,
@@ -82,7 +89,7 @@ public class Enterprise
 	@Lob
 	@Column(nullable = false,
 			name = "EnterpriseDesc")
-	@Getter(onMethod = @__(@XmlTransient))
+	@Getter
 	@Setter
 	private String description;
 
@@ -90,8 +97,6 @@ public class Enterprise
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
 	private List<EnterpriseSecurityToken> securities;
-
-
 	@OneToMany(
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
@@ -583,6 +588,23 @@ public class Enterprise
 	@Override
 	public void configureForClassification(EnterpriseXClassification classificationLink, IEnterprise<?> enterprise)
 	{
-		classificationLink.setEnterpriseID(this);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public Enterprise remove()
+	{
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return this;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public Enterprise archive()
+	{
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return this;
 	}
 }

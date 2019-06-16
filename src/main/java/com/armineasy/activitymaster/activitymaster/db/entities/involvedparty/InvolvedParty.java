@@ -2,18 +2,21 @@ package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
-import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.Arrangement;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementXInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventXInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.ITypeValue;
+import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +26,10 @@ import lombok.extern.java.Log;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.UUID;
+
+import static com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes.*;
+import static javax.persistence.AccessType.*;
 
 /**
  * @author GedMarc
@@ -37,15 +44,18 @@ import java.util.List;
 @Log
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, Long, InvolvedPartySecurityToken>
-		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>>,
+		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, InvolvedParty>,
 				           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem>,
-				           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType>,
-				           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType>,
-				           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType>,
+				           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IIdentificationType<?>, InvolvedParty>,
+				           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, INameType<?>, InvolvedParty>,
+				           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, ITypeValue<?>, InvolvedParty>,
 				           IContainsAddresses<InvolvedParty, Address, InvolvedPartyXAddress>,
-				           IActivityMasterEntity<InvolvedParty>
+				           IActivityMasterEntity<InvolvedParty>,
+				           IContainsEnterprise<InvolvedParty>,
+				           IInvolvedParty<InvolvedParty>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -124,7 +134,17 @@ public class InvolvedParty
 	}
 
 	@Override
-	protected InvolvedPartySecurityToken configureDefaultsForNewToken(InvolvedPartySecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	public UUID getSecurityIdentity()
+	{
+		String value = find(IdentificationTypeUUID, InvolvedPartySystem.getNewSystem()
+		                                                               .get(getEnterpriseID()), InvolvedPartySystem.getSystemTokens()
+		                                                                                                           .get(getEnterpriseID())).orElseThrow()
+		                                                                                                                                   .getValue();
+		return UUID.fromString(value);
+	}
+
+	@Override
+	protected InvolvedPartySecurityToken configureDefaultsForNewToken(InvolvedPartySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
@@ -144,30 +164,30 @@ public class InvolvedParty
 	}
 
 	@Override
-	public void setMyInvolvedPartyIdentificationTypeLinkValue(InvolvedPartyXInvolvedPartyIdentificationType classificationLink, InvolvedPartyIdentificationType identificationType, IEnterprise<?> enterprise)
-	{
-		classificationLink.setInvolvedPartyID(this);
-		classificationLink.setInvolvedPartyIdentificationTypeID(identificationType);
-	}
-
-	@Override
-	public void setMyInvolvedPartyNameTypeLinkValue(InvolvedPartyXInvolvedPartyNameType classificationLink, InvolvedPartyNameType identificationType, IEnterprise<?> enterprise)
-	{
-		classificationLink.setInvolvedPartyID(this);
-		classificationLink.setInvolvedPartyNameTypeID(identificationType);
-	}
-
-	@Override
-	public void setMyInvolvedPartyTypeLinkValue(InvolvedPartyXInvolvedPartyType classificationLink, InvolvedPartyType identificationType, IEnterprise<?> enterprise)
-	{
-		classificationLink.setInvolvedPartyID(this);
-		classificationLink.setInvolvedPartyTypeID(identificationType);
-	}
-
-	@Override
 	public void setMyAddressLinkValue(InvolvedPartyXAddress classificationLink, Address geography, IEnterprise<?> enterprise)
 	{
 		classificationLink.setInvolvedPartyID(this);
 		classificationLink.setAddressID(geography);
+	}
+
+	@Override
+	public void configureInvolvedPartyIdentificationType(InvolvedPartyXInvolvedPartyIdentificationType linkTable, InvolvedParty primary, InvolvedPartyIdentificationType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setInvolvedPartyID(this);
+		linkTable.setInvolvedPartyIdentificationTypeID(secondary);
+	}
+
+	@Override
+	public void configureInvolvedPartyNameTypeLinkValue(InvolvedPartyXInvolvedPartyNameType linkTable, InvolvedParty primary, InvolvedPartyNameType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setInvolvedPartyID(this);
+		linkTable.setInvolvedPartyNameTypeID(secondary);
+	}
+
+	@Override
+	public void configureInvolvedPartyTypeLinkValue(InvolvedPartyXInvolvedPartyType linkTable, InvolvedParty primary, InvolvedPartyType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setInvolvedPartyID(this);
+		linkTable.setInvolvedPartyTypeID(secondary);
 	}
 }

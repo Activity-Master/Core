@@ -22,5 +22,5 @@ public interface IEnterpriseService
 	 *
 	 * @return The enterprise
 	 */
-	IEnterprise<?> getEnterprise(@CacheKey IEnterpriseName<?> name);
+	IEnterprise<?> getEnterprise(IEnterpriseName<?> name);
 }

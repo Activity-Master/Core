@@ -9,8 +9,7 @@ import java.util.UUID;
 
 public interface ISystemsService
 {
-	ISystems getActivityMaster(IEnterprise enterprise, UUID... token);
+	ISystems<?> getActivityMaster(IEnterprise<?> enterprise, UUID... token);
 
-	@CacheResult(cacheName = "FindSystemByIdentityClassification")
-	ISystems findSystem(@CacheKey IEnterprise enterprise, @CacheKey UUID token, @CacheKey UUID... identityToken);
+	ISystems<?> findSystem(IEnterprise<?> enterprise,UUID token, UUID... identityToken);
 }

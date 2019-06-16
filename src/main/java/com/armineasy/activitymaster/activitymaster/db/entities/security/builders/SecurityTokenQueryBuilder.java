@@ -5,17 +5,14 @@
  */
 package com.armineasy.activitymaster.activitymaster.db.entities.security.builders;
 
-import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityTokenXSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken_;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityTokensSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.ISecurityTokenClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -33,13 +30,13 @@ import static com.jwebmp.entityassist.enumerations.Operand.*;
 public class SecurityTokenQueryBuilder
 		extends QueryBuilderSCDNameDescription<SecurityTokenQueryBuilder, SecurityToken, Long, SecurityTokensSecurityToken>
 {
-	public SecurityTokenQueryBuilder findFolder(ISecurityTokenClassification<?> securityTokenClassification, IEnterprise enterprise, UUID...identityToken)
+	public SecurityTokenQueryBuilder findFolder(ISecurityTokenClassification<?> securityTokenClassification, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		SecurityTokenXSecurityToken hierarchySystem = new SecurityTokenXSecurityToken();
 		SecurityTokenXSecurityTokenQueryBuilder hierarchyBuilder = hierarchySystem.builder();
 
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
-		Classification classification = classificationService.find(securityTokenClassification, enterprise,identityToken);
+		Classification classification = (Classification) classificationService.find(securityTokenClassification, enterprise, identityToken);
 
 		hierarchyBuilder.withClassification(classification);
 		hierarchyBuilder.inActiveRange(classification.getEnterpriseID());

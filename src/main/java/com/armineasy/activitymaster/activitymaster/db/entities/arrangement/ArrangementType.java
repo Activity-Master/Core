@@ -2,8 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.arrangement;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementTypeQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IArrangementType;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
@@ -17,6 +16,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -29,8 +30,10 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ArrangementType
 		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, Long, ArrangementTypeSecurityToken>
+		implements IArrangementType<ArrangementType>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -91,9 +94,14 @@ public class ArrangementType
 	}
 
 	@Override
-	protected ArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementTypeSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return getName() + " - " + getDescription();
 	}
 }

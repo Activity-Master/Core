@@ -1,10 +1,13 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyOrganicTypeQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsActiveFlags;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedPartyOrganicType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,6 +19,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+
+import static javax.persistence.AccessType.*;
 
 /**
  * @author GedMarc
@@ -29,8 +34,14 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class InvolvedPartyOrganicType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, Long, InvolvedPartyOrganicTypeSecurityToken>
+		implements IInvolvedPartyOrganicType<InvolvedPartyOrganicType>,
+				           INameAndDescription<InvolvedPartyOrganicType>,
+				           IContainsEnterprise<InvolvedPartyOrganicType>,
+				           IActivityMasterEntity<InvolvedPartyOrganicType>,
+				           IContainsActiveFlags<InvolvedPartyOrganicType>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -84,7 +95,7 @@ public class InvolvedPartyOrganicType
 	}
 
 	@Override
-	protected InvolvedPartyOrganicTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyOrganicTypeSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected InvolvedPartyOrganicTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyOrganicTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

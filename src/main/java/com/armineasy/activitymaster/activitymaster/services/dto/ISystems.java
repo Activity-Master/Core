@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 public interface ISystems<J extends ISystems<J>>
 		extends Serializable,
-				        IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>>,
+				        IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>,ISystems<J>>,
 				        IActivityMasterEntity<J>,
 				        INameAndDescription<J>,
 				        IContainsEnterprise<J>

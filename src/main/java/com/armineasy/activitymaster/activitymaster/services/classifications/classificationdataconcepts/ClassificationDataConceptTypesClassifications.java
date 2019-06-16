@@ -1,22 +1,22 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.classificationdataconcepts;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassificationClassificationDataConceptType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationClassificationDataConceptTypes;
 
-public enum ClassificationDataConceptTypeClassifications
-		implements IClassificationClassificationDataConceptType<ClassificationDataConceptTypeClassifications>
+public enum ClassificationDataConceptTypesClassifications
+		implements IClassificationClassificationDataConceptTypes<ClassificationDataConceptTypesClassifications>
 {
 
 	;
 	private String classificationValue;
 	private IClassificationDataConceptValue<?> dataConceptValue;
 
-	ClassificationDataConceptTypeClassifications(String classificationValue)
+	ClassificationDataConceptTypesClassifications(String classificationValue)
 	{
 		this.classificationValue = classificationValue;
 	}
 
-	ClassificationDataConceptTypeClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
+	ClassificationDataConceptTypesClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;

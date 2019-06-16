@@ -28,6 +28,9 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAn
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.ISystemsClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
+import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
+import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +40,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static javax.persistence.AccessType.*;
 
 /**
  * @author GedMarc
@@ -49,11 +55,12 @@ import java.util.List;
 @Table(name = "Systems")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = {"name","enterpriseID"},
+@EqualsAndHashCode(of = {"name", "enterpriseID"},
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class Systems
 		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, Long, SystemsSecurityToken>
-		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>>,
+		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>, ISystems<Systems>>,
 				           IActivityMasterEntity<Systems>,
 				           INameAndDescription<Systems>,
 				           IContainsEnterprise<Systems>,
@@ -1024,7 +1031,7 @@ public class Systems
 	}
 
 	@Override
-	protected SystemsSecurityToken configureDefaultsForNewToken(SystemsSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected SystemsSecurityToken configureDefaultsForNewToken(SystemsSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		SystemsSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		stAdmin.setSystemID(this);
@@ -1041,5 +1048,29 @@ public class Systems
 	public void configureForClassification(SystemXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setSystemID(this);
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public Systems remove()
+	{
+		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		                            .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		                                                                               .get(getEnterpriseID())));
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return this;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public Systems archive()
+	{
+		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		                            .getArchivedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		                                                                                .get(getEnterpriseID())));
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return this;
 	}
 }

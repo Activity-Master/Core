@@ -2,14 +2,18 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsActiveFlags;
+import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
+import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
+import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
 
@@ -31,6 +35,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		                                    I extends Serializable,
 		                                    S extends WarehouseSecurityTable>
 		extends WarehouseSCDTable<J, Q, I, S>
+	implements IContainsActiveFlags<J>
 {
 	private static final long serialVersionUID = 1L;
 
@@ -61,5 +66,28 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		setOriginalSourceSystemID(requestingSystem);
 		setOriginalSourceSystemUniqueID("");
 		return (J) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public J remove()
+	{
+		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		                            .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		                                                                                .get(getEnterpriseID())));
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return (J)this;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public J archive()
+	{
+		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		                            .getArchivedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		                                                                               .get(getEnterpriseID())));
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return (J)this;
 	}
 }

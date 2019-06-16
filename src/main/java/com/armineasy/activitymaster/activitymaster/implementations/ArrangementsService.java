@@ -1,40 +1,38 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
-import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.Arrangement;
-import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementType;
-import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementXArrangementType;
-import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.ArrangementXInvolvedParty;
+import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.*;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IArrangementType;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.classifications.arrangement.IArrangementClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IArrangementTypes;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
-import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
-import com.armineasy.activitymaster.activitymaster.services.system.IArrangementsService;
-import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
+import com.armineasy.activitymaster.activitymaster.services.system.*;
+import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import com.google.inject.Singleton;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.armineasy.activitymaster.activitymaster.services.classifications.classification.Classifications.*;
+import static com.jwebmp.entityassist.enumerations.Operand.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @Singleton
 public class ArrangementsService
 		implements IArrangementsService<ArrangementsService>
 {
-	@SuppressWarnings("unchecked")
 	@Override
-	public Arrangement create(IArrangementType<?> type, String arrangementTypeValue,
-	                          ISystems system,
-	                          UUID... identityToken)
+	public IArrangement<?> create(IArrangementTypes<?> type, String arrangementTypeValue,
+	                              ISystems system,
+	                              UUID... identityToken)
 	{
 		Arrangement xr = new Arrangement();
 		xr.setSystemID((Systems) system);
@@ -49,7 +47,8 @@ public class ArrangementsService
 			xr.createDefaultSecurity(system, identityToken);
 		}
 
-		ArrangementXArrangementType xarxr = xr.addArrangementType(type, system, arrangementTypeValue, identityToken);
+		ArrangementXArrangementType xarxr = xr.addOrUpdate(NoClassification, (IArrangementTypes<?>) type,
+		                                                   arrangementTypeValue, system, identityToken);
 
 		if (ActivityMasterConfiguration.get()
 		                               .isSecurityEnabled())
@@ -61,7 +60,7 @@ public class ArrangementsService
 	}
 
 	@Override
-	public ArrangementType createArrangementType(IArrangementType<?> type, ISystems<?> system, UUID... identityToken)
+	public IArrangementType<?> createArrangementType(IArrangementTypes<?> type, ISystems<?> system, UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
 		Optional<ArrangementType> exists = xr.builder()
@@ -90,26 +89,48 @@ public class ArrangementsService
 	}
 
 	@Override
-	public List<Arrangement> findInvolvedPartyArrangements(InvolvedParty ip, IArrangementType<?> arrType, ISystems<?> systems, UUID... identityToken)
+	public List<IArrangement<?>> findInvolvedPartyArrangements(IInvolvedParty<?> ip, IArrangementTypes<?> arrType, ISystems<?> systems, UUID... identityToken)
 	{
 		List<ArrangementXInvolvedParty> xips =
 				new ArrangementXInvolvedParty()
 						.builder()
 						.withEnterprise(systems.getEnterprise())
-						.findChildLink(ip)
+						.findChildLink((InvolvedParty) ip)
 						.withValue(arrType.classificationValue())
 						.inActiveRange(systems.getEnterpriseID(), identityToken)
 						.inDateRange()
 						.getAll();
 		return xips.stream()
 		           .map(ArrangementXInvolvedParty::getArrangementID)
+		           .filter(a -> LocalDateTime.now()
+		                                     .isBefore(a.getEffectiveToDate()))
 		           .collect(Collectors.toList());
 	}
 
+	@Override
+	public List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, String value, ISystems<?> systems, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(arrType, systems.getEnterpriseID(), identityToken);
+		List<ArrangementXClassification> xips =
+				new ArrangementXClassification()
+						.builder()
+						.withEnterprise(systems.getEnterprise())
+						.findChildLink((Classification) classification)
+						.withValue(value)
+						.inActiveRange(systems.getEnterpriseID(), identityToken)
+						.inDateRange()
+						.getAll();
+		return xips.stream()
+		           .map(ArrangementXClassification::getArrangementID)
+		           .filter(a -> LocalDateTime.now()
+		                                     .isBefore(a.getEffectiveToDate()))
+		           .collect(Collectors.toList());
+	}
 
 	@CacheResult(cacheName = "ArrangementArrangementType")
 	@Override
-	public ArrangementType findArrangementType(@CacheKey IArrangementType<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
+	public IArrangementType<?> find(@CacheKey IArrangementTypes<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
 	{
 		ArrangementType xr = new ArrangementType();
 		return xr.builder()
@@ -119,5 +140,76 @@ public class ArrangementsService
 		         .canRead(enterprise, tokens)
 		         .get()
 		         .orElseThrow(() -> new ActivityMasterException("No Read Access or No Item Found"));
+	}
+
+	@Override
+	public IArrangement<?> find(long id, IEnterprise<?> enterprise, UUID... tokens)
+	{
+		Arrangement xr = new Arrangement();
+		return xr.builder()
+		         .where(Arrangement_.id, Equals, id)
+		         .inActiveRange(enterprise, tokens)
+		         .inDateRange()
+		         .canRead(enterprise, tokens)
+		         .get()
+		         .orElseThrow(() -> new ActivityMasterException("No Read Access or No Item Found"));
+	}
+
+	@Override
+	public List<IArrangement<?>> findAll(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		IArrangementType<?> type = find(idType, enterprise, identityToken);
+		List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder()
+		                                                                          .inActiveRange(enterprise)
+		                                                                          .inDateRange()
+		                                                                          .canRead(enterprise, identityToken)
+		                                                                          .findChildLink((ArrangementType) type)
+		                                                                          .getAll();
+		List<IArrangement<?>> arrOut = new ArrayList<>();
+		for (ArrangementXArrangementType arr : arrs)
+		{
+			arrOut.add(arr.getArrangement());
+		}
+
+		return arrOut;
+	}
+
+	@Override
+	public Double sumAll(IArrangementTypes<?> idType, IArrangementClassification<?> classificationValue,
+	                     IEnterpriseName<?> enterpriseName, UUID... identityToken)
+	{
+		IEnterprise<?> enterprise = get(IEnterpriseService.class).getEnterprise(enterpriseName);
+		IArrangementType<?> type = find(idType, enterprise, identityToken);
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationValue, enterprise, identityToken);
+		ISystems<?> systems = InvolvedPartySystem.getNewSystem()
+		                                         .get(enterprise);
+
+		List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder()
+		                                                                          .inActiveRange(enterprise)
+		                                                                        //  .withClassification(classification)
+		                                                                          .inDateRange()
+		                                                                          .canRead(enterprise, identityToken)
+		                                                                          .findChildLink((ArrangementType) type)
+		                                                                          .getAll();
+		Set<IArrangement<?>> arrOut = new LinkedHashSet<>();
+		double d = 0.0d;
+		for (ArrangementXArrangementType arr : arrs)
+		{
+			arrOut.add(arr.getArrangement());
+		}
+		for (IArrangement<?> arrangement : arrOut)
+		{
+			for (ArrangementXClassification arrangementXClassification : arrangement.findAll(classificationValue, systems, identityToken))
+			{
+				if (LocalDateTime.now()
+				                 .isAfter(arrangementXClassification.getEffectiveToDate()))
+				{
+					continue;
+				}
+				d += arrangementXClassification.getValueAsDouble();
+			}
+		}
+		return d;
 	}
 }

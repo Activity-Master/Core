@@ -4,7 +4,8 @@ import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
 import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
@@ -26,7 +27,7 @@ public class ClassificationsDataConceptService
 {
 	public ClassificationDataConcept createDataConcept(IClassificationDataConceptValue<?> name,
 	                                                   String description,
-	                                                   Systems system, UUID... identityToken)
+	                                                   ISystems<?> system, UUID... identityToken)
 	{
 		ClassificationDataConcept newConcept = new ClassificationDataConcept();
 		Optional<ClassificationDataConcept> exists =ActivityMasterConfiguration
@@ -42,10 +43,10 @@ public class ClassificationsDataConceptService
 		{
 			newConcept.setDescription(description);
 			newConcept.setName(name.classificationValue());
-			newConcept.setSystemID(system);
-			newConcept.setOriginalSourceSystemID(system);
+			newConcept.setSystemID((com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems) system);
+			newConcept.setOriginalSourceSystemID((com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems) system);
 			newConcept.setActiveFlagID(active);
-			newConcept.setEnterpriseID(system.getEnterpriseID());
+			newConcept.setEnterpriseID((com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise) system.getEnterpriseID());
 			newConcept.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{

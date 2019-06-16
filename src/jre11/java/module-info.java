@@ -18,12 +18,12 @@ module com.armineasy.activitymaster.activitymaster {
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.activeflag.builders ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.address ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.address.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.arrangement ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.classifications ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.events ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.events.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.arrangement ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.classifications ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.events ;
+//	exports com.armineasy.activitymaster.activitymaster.db.entities.events.builders ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.geography ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.geography.builders ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.involvedparty ;
@@ -32,8 +32,8 @@ module com.armineasy.activitymaster.activitymaster {
 	exports com.armineasy.activitymaster.activitymaster.db.entities.product.builders ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.resourceitem ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.security ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.security.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.security ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.security.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.systems ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.systems.builders ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.yesno ;
@@ -44,6 +44,7 @@ module com.armineasy.activitymaster.activitymaster {
 
 	exports com.armineasy.activitymaster.activitymaster.services ;
 	exports com.armineasy.activitymaster.activitymaster.services.dto;
+	exports com.armineasy.activitymaster.activitymaster.services.enumtypes;
 	exports com.armineasy.activitymaster.activitymaster.services.capabilities ;
 	exports com.armineasy.activitymaster.activitymaster.services.classifications.enterprise;
 
@@ -68,9 +69,14 @@ module com.armineasy.activitymaster.activitymaster {
 	requires com.google.common;
 
 	requires java.sql;
+	requires com.microsoft.sqlserver.jdbc;
+
+	requires java.activation;
 
 	requires java.persistence;
+
 	requires java.xml.bind;
+
 	requires jakarta.activation;
 	requires java.validation;
 
@@ -148,6 +154,7 @@ module com.armineasy.activitymaster.activitymaster {
 	opens com.armineasy.activitymaster.activitymaster.services.system to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist,com.fasterxml.jackson.databind;
 	opens com.armineasy.activitymaster.activitymaster.services.types to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist,com.fasterxml.jackson.databind;
 	opens com.armineasy.activitymaster.activitymaster.systems to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist,com.fasterxml.jackson.databind;
+	opens com.armineasy.activitymaster.activitymaster.services.enumtypes to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist,com.fasterxml.jackson.databind;
 
 	exports com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems;
 	exports com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty;

@@ -12,7 +12,8 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import java.io.Serializable;
 
 public interface IClassificationDataConcept<J extends IClassificationDataConcept<J>>
-		extends Serializable, IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptType<?>>,
+		extends Serializable,
+				        //IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
 				        IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem>,
 				        IActivityMasterEntity<ClassificationDataConcept>
 

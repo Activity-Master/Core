@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
@@ -24,7 +25,7 @@ public class EnterpriseSystem
 {
 	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
 	@Override
-	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 
 	}
@@ -49,8 +50,8 @@ public class EnterpriseSystem
 		defaultWaitTime = 5L;
 		defaultWaitUnit = TimeUnit.MINUTES;
 		JobService.getInstance().destroy();
-		Systems newSystem = GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Enterprise System",
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
+		                                    .create(enterprise, "Enterprise System",
 		                                        "The system for handling enterprises", "");
 
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)

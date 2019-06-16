@@ -1,12 +1,12 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.classification;
 
-import com.armineasy.activitymaster.activitymaster.services.IClassificationDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassificationClassificationDataConceptType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationClassificationDataConceptTypes;
 
 import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum Classifications
-		implements IClassificationClassificationDataConceptType<Classifications>
+		implements IClassificationClassificationDataConceptTypes<Classifications>
 {
 	HierarchyTypeClassification("Denotes a hierarchy structure type", GlobalClassificationsDataConceptName),
 	NoClassification("No Classification", GlobalClassificationsDataConceptName),

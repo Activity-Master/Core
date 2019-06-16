@@ -15,6 +15,8 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -27,6 +29,7 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class InvolvedPartyNonOrganic
 		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, Long, InvolvedPartyNonOrganicSecurityToken>
 {
@@ -66,7 +69,7 @@ public class InvolvedPartyNonOrganic
 	}
 
 	@Override
-	protected InvolvedPartyNonOrganicSecurityToken configureDefaultsForNewToken(InvolvedPartyNonOrganicSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected InvolvedPartyNonOrganicSecurityToken configureDefaultsForNewToken(InvolvedPartyNonOrganicSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

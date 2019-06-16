@@ -1,10 +1,10 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.events;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventTypeQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEventType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,6 +16,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+
+import static javax.persistence.AccessType.*;
 
 /**
  * @author GedMarc
@@ -29,8 +31,11 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class EventType
 		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, Long, EventTypesSecurityToken>
+		implements IEventType<EventType>,
+				           IActivityMasterEntity<EventType>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -88,7 +93,7 @@ public class EventType
 	}
 
 	@Override
-	protected EventTypesSecurityToken configureDefaultsForNewToken(EventTypesSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected EventTypesSecurityToken configureDefaultsForNewToken(EventTypesSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

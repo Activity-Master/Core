@@ -3,7 +3,7 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction.builders.assi
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationValue;
 
 import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;

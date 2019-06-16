@@ -12,8 +12,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.events.IEventClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEvent;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IEventTypeValue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +25,8 @@ import lombok.experimental.Accessors;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+
+import static javax.persistence.AccessType.*;
 
 /**
  * @author GedMarc
@@ -35,15 +40,17 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
-		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>>,
+		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>,Event>,
 				           IContainsGeographies<Event, Geography, EventXGeography>,
 				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem>,
 				           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,
 				           IContainsAddresses<Event, Address, EventXAddress>,
-				           IContainsEventTypes<Event, EventType, EventXEventType>,
-				           IActivityMasterEntity<Event>
+				           IContainsEventTypes<Event, EventType, EventXEventType, IEventTypeValue<?>,Event>,
+				           IActivityMasterEntity<Event>,
+				           IEvent<Event>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -106,7 +113,7 @@ public class Event
 	}
 
 	@Override
-	protected EventSecurityToken configureDefaultsForNewToken(EventSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected EventSecurityToken configureDefaultsForNewToken(EventSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
@@ -147,9 +154,9 @@ public class Event
 	}
 
 	@Override
-	public void setMyEventTypeLinkValue(EventXEventType classificationLink, EventType identificationType, IEnterprise<?> enterprise)
+	public void configureEventTypeLinkValue(EventXEventType linkTable, Event primary, EventType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
-		classificationLink.setEventID(this);
-		classificationLink.setEventTypeID(identificationType);
+		linkTable.setEventID(primary);
+		linkTable.setEventTypeID(secondary);
 	}
 }

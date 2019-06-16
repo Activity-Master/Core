@@ -4,9 +4,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.Wareho
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders.ClassificationDataConceptQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassificationClassificationDataConceptType;
 import com.armineasy.activitymaster.activitymaster.services.dto.IClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
@@ -21,6 +19,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -33,12 +33,13 @@ import java.util.List;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class ClassificationDataConcept
 		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, Long, ClassificationDataConceptSecurityToken>
-		implements IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptType<?>>,
-				           IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem>,
-				           IActivityMasterEntity<ClassificationDataConcept>,
-				           IClassificationDataConcept<ClassificationDataConcept>
+		implements// IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
+				          IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem>,
+				          IActivityMasterEntity<ClassificationDataConcept>,
+				          IClassificationDataConcept<ClassificationDataConcept>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -116,14 +117,13 @@ public class ClassificationDataConcept
 	}
 
 	@Override
-	protected ClassificationDataConceptSecurityToken configureDefaultsForNewToken(ClassificationDataConceptSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ClassificationDataConceptSecurityToken configureDefaultsForNewToken(ClassificationDataConceptSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		ClassificationDataConceptSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		token.setBase(this);
 		return token;
 	}
 
-	@Override
 	public void configureForClassification(ClassificationDataConceptXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setClassificationDataConceptID(this);

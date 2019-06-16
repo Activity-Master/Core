@@ -5,25 +5,26 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClass
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHierarchyView;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderDefault;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderHierarchyView;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.implementations.ActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.SecurityAccessException;
 import com.google.common.base.Strings;
-import com.jwebmp.entityassist.querybuilder.QueryBuilderSCD;
-import com.jwebmp.guicedinjection.GuiceContext;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+
+import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
+import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 /**
  * If this entity has hierarchy capabilities
@@ -46,11 +47,11 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
-		Q linkTable = GuiceContext.get(hierarchyTable);
+		Q linkTable = get(hierarchyTable);
 
 		Optional<Q> exists = linkTable.builder()
-		                              .findLink(me, child, enterprise)
-		                              .inActiveRange(enterprise,identifyingToken)
+		                              .findLink(me, child, null)
+		                              .inActiveRange(enterprise, identifyingToken)
 		                              .inDateRange()
 		                              .canCreate(enterprise, identifyingToken)
 		                              .withEnterprise(enterprise)
@@ -59,14 +60,14 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		{
 			if (linkTable.builder()
 			             .findChildLink(child)
-			             .inActiveRange(enterprise,identifyingToken)
+			             .inActiveRange(enterprise, identifyingToken)
 			             .inDateRange()
 			             .getCount() > 0
 			)
 			{
 				Q existingLink = linkTable.builder()
 				                          .findChildLink(child)
-				                          .inActiveRange(enterprise,identifyingToken)
+				                          .inActiveRange(enterprise, identifyingToken)
 				                          .inDateRange()
 				                          .get()
 				                          .orElseThrow();
@@ -75,23 +76,23 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 				return me;
 			}
 
-			ClassificationService service = GuiceContext.get(ClassificationService.class);
-			Classification hierarchyType = service.getHierarchyType(enterprise);
-			Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
-			                                           .getActivityMaster(enterprise, identifyingToken);
-			linkTable.setSystemID(activityMasterSystem);
-			linkTable.setActiveFlagID(activityMasterSystem.getActiveFlagID());
-			linkTable.setOriginalSourceSystemID(activityMasterSystem);
-			linkTable.setOriginalSourceSystemUniqueID("");
+			ClassificationService service = get(ClassificationService.class);
+			Classification hierarchyType = (Classification) service.getHierarchyType(enterprise);
+			ISystems<?> activityMasterSystem = get(SystemsService.class)
+			                                               .getActivityMaster(enterprise, identifyingToken);
+			linkTable.setSystemID((Systems) activityMasterSystem);
+			linkTable.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(enterprise));
+			linkTable.setOriginalSourceSystemID((Systems) activityMasterSystem);
+			linkTable.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			linkTable.setEnterpriseID((Enterprise) enterprise);
 			linkTable.setClassificationID(hierarchyType);
 			linkTable.setValue(Strings.nullToEmpty(value));
 			configureNewHierarchyItem(linkTable, me, child, value);
 			linkTable.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			if (get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				linkTable.createDefaultSecurity(activityMasterSystem,identifyingToken);
+				linkTable.createDefaultSecurity(activityMasterSystem, identifyingToken);
 			}
 		}
 		return child;
@@ -103,10 +104,10 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
-		Q linkTable = GuiceContext.get(hierarchyTable);
+		Q linkTable = get(hierarchyTable);
 		Optional<Q> exists = linkTable.builder()
-		                              .findLink(me, child, enterprise)
-		                              .inActiveRange(enterprise,identifyingToken)
+		                              .findLink(me, child, null)
+		                              .inActiveRange(enterprise, identifyingToken)
 		                              .inDateRange()
 		                              .canDelete(enterprise, identifyingToken)
 		                              .withEnterprise(enterprise)
@@ -127,7 +128,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 	default J findParent(UUID... identifyingToken)
 	{
 		Class<W> hierarchyView = findHierarchyViewType();
-		W hierarchy = GuiceContext.get(hierarchyView);
+		W hierarchy = get(hierarchyView);
 		J me = (J) this;
 		hierarchy = (W) hierarchy.builder()
 		                         .findMyHierarchy(me.getId())
@@ -152,7 +153,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 	default List<J> findChildren(UUID... identifyingToken)
 	{
 		Class<W> hierarchyView = findHierarchyViewType();
-		W hierarchy = GuiceContext.get(hierarchyView);
+		W hierarchy = get(hierarchyView);
 
 		J me = (J) this;
 		List<W> hierarchies = (List<W>) hierarchy.builder()
@@ -198,10 +199,10 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 	default Q findLink(J child, IEnterprise<?> enterprise, String value, UUID... identifyingToken)
 	{
 		Class<Q> hierarchyView = findHierarchyTableType();
-		Q linkTable = GuiceContext.get(hierarchyView);
+		Q linkTable = get(hierarchyView);
 		return linkTable.builder()
-		                .findLink((J) this, child, enterprise, value)
-		                .inActiveRange(enterprise,identifyingToken)
+		                .findLink((J) this, child, value)
+		                .inActiveRange(enterprise, identifyingToken)
 		                .canRead(enterprise, identifyingToken)
 		                .inDateRange()
 		                .get()

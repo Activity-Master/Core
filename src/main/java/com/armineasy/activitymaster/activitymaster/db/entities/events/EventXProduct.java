@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -30,6 +32,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class EventXProduct
 		extends WarehouseClassificationRelationshipTable<Event, Product, EventXProduct, EventXProductQueryBuilder, Long, EventXProductSecurityToken>
 {
@@ -70,7 +73,7 @@ public class EventXProduct
 	}
 
 	@Override
-	protected EventXProductSecurityToken configureDefaultsForNewToken(EventXProductSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected EventXProductSecurityToken configureDefaultsForNewToken(EventXProductSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -32,7 +32,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	{
 		J activityMasterIdentity = get(findAddressQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) address, address.getEnterpriseID())
+		                                                         .findLink((P) this, (S) address, null)
 		                                                         .inActiveRange(address.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(address.getEnterpriseID(), identityToken)
@@ -63,10 +63,10 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		J activityMasterIdentity = get(findAddressQueryRelationshipTableType());
 		ISystems activityMasterSystem = get(ISystemsService.class)
 				                                .getActivityMaster(enterprise);
-		Classification classification = get(ClassificationService.class).find(addressClassification,
-		                                                                      activityMasterSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) get(ClassificationService.class).find(addressClassification,
+		                                                                                       activityMasterSystem.getEnterpriseID(), identityToken);
 		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) classification, classification.getEnterpriseID())
+		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(classification.getEnterpriseID())
 		                             .inDateRange()
 		                             .canRead(classification.getEnterpriseID(), identityToken)
@@ -79,8 +79,8 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		ISystems activityMasterSystem = get(ISystemsService.class)
 				                                .getActivityMaster(originatingSystem.getEnterpriseID());
 
-		Classification classification = get(ClassificationService.class).find(addressClassification,
-		                                                                      originatingSystem.getEnterpriseID(), identifyingToken);
+		Classification classification = (Classification) get(ClassificationService.class).find(addressClassification,
+		                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
 		
 		IAddressService addressService = get(IAddressService.class);
 		Address address = addressService.create(addressClassification, originatingSystem, value, identifyingToken);
@@ -90,11 +90,11 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 
 
 	@SuppressWarnings("unchecked")
-	default J add(Address addy, ISystems originatingSystem, UUID... identifyingToken)
+	default J add(Address addy, ISystems<?> originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = get(findAddressQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) addy, originatingSystem.getEnterpriseID())
+		                                                         .findLink((P) this, (S) addy,null)
 		                                                         .inActiveRange(addy.getClassification()
 		                                                                            .getEnterpriseID())
 		                                                         .inDateRange()

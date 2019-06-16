@@ -7,7 +7,6 @@ import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXG
 import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXResourceItemSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.*;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.GeographySecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.GeographyXClassificationSecurityToken;
@@ -22,12 +21,12 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItemSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItemXClassificationSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.builders.SecurityTokenQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemsSecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.logger.LogFactory;
 import lombok.EqualsAndHashCode;
@@ -42,6 +41,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -54,10 +55,12 @@ import java.util.logging.Logger;
 @Accessors(chain = true)
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
+@Access(FIELD)@lombok.Data
 public class SecurityToken
 		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, Long, SecurityTokensSecurityToken>
-		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>>,
-				           IActivityMasterEntity<SecurityToken>
+		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>, SecurityToken>,
+				           IActivityMasterEntity<SecurityToken>,
+				           ISecurityToken<SecurityToken>
 {
 	private static final Logger log = LogFactory.getLog("SecurityToken");
 
@@ -375,7 +378,7 @@ public class SecurityToken
 	}
 
 	@Override
-	protected SecurityTokensSecurityToken configureDefaultsForNewToken(SecurityTokensSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected SecurityTokensSecurityToken configureDefaultsForNewToken(SecurityTokensSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		stAdmin.setBase(this);

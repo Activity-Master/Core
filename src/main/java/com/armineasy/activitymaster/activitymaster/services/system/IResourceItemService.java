@@ -2,7 +2,7 @@ package com.armineasy.activitymaster.activitymaster.services.system;
 
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
-import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;

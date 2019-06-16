@@ -4,14 +4,16 @@ import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.security.*;
+import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
+import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityTokenXSecurityToken;
+import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityTokensSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.builders.SecurityTokenQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierarchyView;
-import com.armineasy.activitymaster.activitymaster.services.IClassificationValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.ISecurityTokenClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
@@ -19,34 +21,35 @@ import com.armineasy.activitymaster.activitymaster.services.system.ISystemsServi
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.extern.java.Log;
-import org.hibernate.annotations.Cache;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications.*;
+import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.System;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.*;
-import static com.jwebmp.entityassist.enumerations.Operand.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton
 @Log
 public class SecurityTokenService
-		implements ISecurityTokenService
+		implements ISecurityTokenService<SecurityTokenService>
 {
 	public SecurityTokensSecurityToken grantAccessToToken(SecurityToken fromToken, SecurityToken toToken,
-	                                                      boolean create, boolean update, boolean delete, boolean read, Systems system)
+	                                                      boolean create, boolean update, boolean delete, boolean read, ISystems<?> system)
 	{
 		return grantAccessToToken(fromToken, toToken, create, update, delete, read, system, null, null, null);
 	}
 
 	public SecurityTokensSecurityToken grantAccessToToken(@NotNull SecurityToken fromToken, @NotNull SecurityToken toToken,
 	                                                      boolean create, boolean update, boolean delete, boolean read,
-	                                                      Systems system, String originalId,
+	                                                      ISystems<?> system, String originalId,
 	                                                      Date effectiveFromDate, Date effectiveToDate)
 	{
 		SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
@@ -61,10 +64,10 @@ public class SecurityTokenService
 		                                                  .get();
 		if (exists.isEmpty())
 		{
-			sta.setSystemID(system);
-			sta.setOriginalSourceSystemID(system);
-			sta.setEnterpriseID(system.getEnterpriseID());
-			sta.setActiveFlagID(system.getActiveFlagID());
+			sta.setSystemID((Systems) system);
+			sta.setOriginalSourceSystemID((Systems) system);
+			sta.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			sta.setActiveFlagID(GuiceContext.get(IActiveFlagService.class).getActiveFlag(sta.getEnterpriseID()));
 			sta.setSecurityTokenID(fromToken);
 			sta.setBase(toToken);
 			sta.setCreateAllowed(create);
@@ -82,15 +85,15 @@ public class SecurityTokenService
 		return sta;
 	}
 
-	public SecurityToken create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems system)
+	public ISecurityToken<?> create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems<?> system)
 	{
 		return create(classificationValue, name, description, system, null);
 	}
 
-	public SecurityToken create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems system, SecurityToken parent, UUID... identityToken)
+	public ISecurityToken<?> create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems<?> system, ISecurityToken<?> parent, UUID... identityToken)
 	{
 		ClassificationService classificationService = get(ClassificationService.class);
-		Classification classification = classificationService.find(classificationValue, system.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterpriseID(), identityToken);
 
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = ActivityMasterConfiguration
@@ -123,10 +126,10 @@ public class SecurityTokenService
 				st.setSecurityTokenClassificationID(classification);
 				st.persist();
 				if (get(ActivityMasterConfiguration.class)
-				                .isSecurityEnabled())
+						    .isSecurityEnabled())
 				{
 					st.createDefaultSecurity(get(ISystemsService.class)
-					                                     .getActivityMaster(st.getEnterpriseID(), identityToken), identityToken);
+							                         .getActivityMaster(st.getEnterpriseID(), identityToken), identityToken);
 				}
 			}
 			else
@@ -143,30 +146,30 @@ public class SecurityTokenService
 			return st;
 		}
 
-		link(parent, st, classification);
+		link((SecurityToken) parent, st, classification);
 
 		return st;
 	}
 
-	public SecurityTokenXSecurityToken link(SecurityToken parent, SecurityToken child, Classification classification,UUID...identifyingToken )
+	public SecurityTokenXSecurityToken link(SecurityToken parent, SecurityToken child, IClassification<?> classification, UUID... identifyingToken)
 	{
 		SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
 		Optional<SecurityTokenXSecurityToken> exists = root.builder()
-		                                                   .findLink(parent, child, classification.getEnterpriseID())
+		                                                   .findLink(parent, child)
 		                                                   .withClassification(classification)
 		                                                   .inActiveRange(classification.getEnterpriseID())
 		                                                   .inDateRange()
 		                                                   .get();
 		if (exists.isEmpty())
 		{
-			root.setParentSecurityTokenID(parent);
-			root.setChildSecurityTokenID(child);
-			root.setClassificationID(classification);
-			root.setSystemID(classification.getSystemID());
-			root.setOriginalSourceSystemID(classification.getSystemID());
+			root.setParentSecurityTokenID((SecurityToken) parent);
+			root.setChildSecurityTokenID((SecurityToken) child);
+			root.setClassificationID((Classification) classification);
+			root.setSystemID(parent.getSystemID());
+			root.setOriginalSourceSystemID(parent.getSystemID());
 			root.setValue(child.getSecurityToken());
-			root.setEnterpriseID(classification.getEnterpriseID());
-			root.setActiveFlagID(classification.getActiveFlagID());
+			root.setEnterpriseID(parent.getEnterpriseID());
+			root.setActiveFlagID(parent.getActiveFlagID());
 			root.persist();
 			updateSecurityHierarchy(child.getId());
 		}
@@ -199,7 +202,7 @@ public class SecurityTokenService
 
 	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	@Override
-	public SecurityToken getEveryoneGroup(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getEveryoneGroup(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
@@ -207,14 +210,14 @@ public class SecurityTokenService
 		                                   .findByName(Everyone)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                //   .canRead(enterprise, identityToken)
+		                                   //   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
 	@Override
-	public SecurityToken getEverywhereGroup(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getEverywhereGroup(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
@@ -222,14 +225,14 @@ public class SecurityTokenService
 		                                   .findByName(Everywhere)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                             //      .canRead(enterprise, identityToken)
+		                                   //      .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
 	@Override
-	public SecurityToken getGuestsFolder(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getGuestsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
@@ -244,7 +247,7 @@ public class SecurityTokenService
 
 	@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
 	@Override
-	public SecurityToken getRegisteredGuestsFolder(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getRegisteredGuestsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
@@ -252,14 +255,14 @@ public class SecurityTokenService
 		                                   .findByName(Registered)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                               //    .canRead(enterprise, identityToken)
+		                                   //    .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
 	@Override
-	public SecurityToken getVisitorsGuestsFolder(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getVisitorsGuestsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
@@ -267,14 +270,14 @@ public class SecurityTokenService
 		                                   .findByName(Visitors)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                              //     .canRead(enterprise, identityToken)
+		                                   //     .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
 	@Override
-	public SecurityToken getAdministratorsFolder(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getAdministratorsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
@@ -282,14 +285,14 @@ public class SecurityTokenService
 		                                   .findByName(Administrators)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
-		                                 //  .canRead(enterprise, identityToken)
+		                                   //  .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
 	@Override
-	public SecurityToken getSystemsFolder(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getSystemsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
@@ -304,14 +307,14 @@ public class SecurityTokenService
 
 	@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
 	@Override
-	public SecurityToken getPluginsFolder(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getPluginsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(Plugin, enterprise, identityToken)
 		                                   .findByName(Plugins)
 		                                   .inActiveRange(enterprise, identityToken)
-		                                 //  .canRead(enterprise, identityToken)
+		                                   //  .canRead(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .get();
 		return exists.orElseThrow();
@@ -319,14 +322,14 @@ public class SecurityTokenService
 
 	@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
 	@Override
-	public SecurityToken getApplicationsFolder(@CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getApplicationsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(Application, enterprise, identityToken)
 		                                   .findByName(Applications)
 		                                   .inActiveRange(enterprise, identityToken)
-		                                //   .canRead(enterprise, identityToken)
+		                                   //   .canRead(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .get();
 		return exists.orElseThrow();
@@ -334,21 +337,21 @@ public class SecurityTokenService
 
 	@CacheResult(cacheName = "SecurityGetSecurityToken")
 	@Override
-	public SecurityToken getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityToken view = new SecurityToken().builder()
 		                                        .findBySecurityToken(identifyingToken.toString())
 		                                        .withEnterprise(enterprise)
 		                                        .inActiveRange(enterprise, identityToken)
 		                                        .inDateRange()
-		                                       // .canRead(enterprise, identityToken)
+		                                        // .canRead(enterprise, identityToken)
 		                                        .get()
 		                                        .orElse(null);
 		return view;
 	}
 
 	@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
-	public SecurityToken getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey IEnterprise enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		SecurityTokenQueryBuilder builder = new SecurityToken().builder();
 		builder = builder.findBySecurityToken(identifyingToken.toString())

@@ -21,14 +21,15 @@ class ClassificationServiceTest
 	@Test
 	void getHierarchyType()
 	{
-		GuiceContext.get(ActivityMasterConfiguration.class).setSecurityEnabled(false);
+		GuiceContext.get(ActivityMasterConfiguration.class)
+		            .setSecurityEnabled(false);
 		IEnterprise<?> enterprise = new Enterprise().builder()
 		                                            .getAll()
 		                                            .get(0);
 
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
-		Classification hierarchyType = service.find(HierarchyTypeClassification,
-		                                            enterprise);
+		Classification hierarchyType = (Classification) service.find(HierarchyTypeClassification,
+		                                                             enterprise);
 		assertNotNull(hierarchyType);
 
 	}

@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.implementations.SystemsServic
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -26,10 +27,10 @@ public class ArrangementsSystem
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void createDefaults(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                           .getActivityMaster(enterprise);
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                               .getActivityMaster(enterprise);
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
 		logProgress("Classifications System", "Checking/Creating Defaults...", progressMonitor);
 
@@ -77,9 +78,9 @@ public class ArrangementsSystem
 		return Integer.MIN_VALUE + 8;
 	}
 	@Override
-	public void postUpdate(IEnterprise enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Systems newSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Arrangements System", "The system for the arrangements management", "");
 		UUID securityToken = GuiceContext.get(SystemsSystem.class)
 		                                 .registerNewSystem(enterprise, newSystem);

@@ -1,9 +1,9 @@
 package com.armineasy.activitymaster.activitymaster.services.types;
 
-import com.armineasy.activitymaster.activitymaster.services.IArrangementType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IArrangementTypes;
 
 public enum ArrangementTypes
-		implements IArrangementType<ArrangementTypes>
+		implements IArrangementTypes<ArrangementTypes>
 {
 
 	;

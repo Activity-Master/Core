@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
+import static javax.persistence.AccessType.*;
+
 /**
  * @author GedMarc
  * @version 1.0
@@ -32,11 +34,11 @@ import java.util.List;
 @Table(name = "ArrangementXClassification")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
+@Getter
 @Setter
 @EqualsAndHashCode(of = "id",
 		callSuper = false)
-
+@Access(FIELD)
 public class ArrangementXClassification
 		extends WarehouseClassificationRelationshipTable<Arrangement, Classification, ArrangementXClassification, ArrangementXClassificationQueryBuilder, Long, ArrangementXClassificationSecurityToken>
 		implements Serializable
@@ -72,7 +74,7 @@ public class ArrangementXClassification
 	}
 
 	@Override
-	protected ArrangementXClassificationSecurityToken configureDefaultsForNewToken(ArrangementXClassificationSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ArrangementXClassificationSecurityToken configureDefaultsForNewToken(ArrangementXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

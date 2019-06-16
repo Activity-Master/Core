@@ -6,14 +6,13 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemTypeQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.IResourceTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IResourceItemService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
@@ -24,7 +23,6 @@ import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import java.util.Optional;
@@ -38,7 +36,7 @@ import static javax.persistence.criteria.JoinType.*;
 public class ResourceItemService
 		implements IResourceItemService
 {
-	public ResourceItemType createType(IResourceTypeValue<?> value, Systems system, UUID... identityToken)
+	public ResourceItemType createType(IResourceTypeValue<?> value, ISystems<?> system, UUID... identityToken)
 	{
 		IEnterprise<?> enterprise = system.getEnterpriseID();
 
@@ -52,10 +50,10 @@ public class ResourceItemService
 		{
 			xr.setName(value.classificationName());
 			xr.setDescription(value.classificationDescription());
-			xr.setOriginalSourceSystemID(system);
-			xr.setSystemID(system);
-			xr.setEnterpriseID(system.getEnterpriseID());
-			xr.setActiveFlagID(system.getActiveFlagID());
+			xr.setOriginalSourceSystemID((Systems) system);
+			xr.setSystemID((Systems) system);
+			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			xr.setActiveFlagID(get(IActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -110,7 +108,7 @@ public class ResourceItemService
 		ResourceItemXClassificationQueryBuilder builder = res.builder();
 
 		IClassificationService classificationService = get(IClassificationService.class);
-		Classification clazz = classificationService.find(classification, systems.getEnterpriseID(), identityToken);
+		Classification clazz = (Classification) classificationService.find(classification, systems.getEnterpriseID(), identityToken);
 
 		builder.where(ResourceItemXClassification_.classificationID, Equals, clazz);
 		if (!Strings.isNullOrEmpty(value))

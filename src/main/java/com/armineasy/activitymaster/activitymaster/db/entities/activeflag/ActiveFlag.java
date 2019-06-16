@@ -29,6 +29,10 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.acti
 import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
+import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
+import com.jwebmp.guicedinjection.GuiceContext;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +44,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.ParameterizedType;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static javax.persistence.AccessType.*;
 
 /**
  * @author GedMarc
@@ -56,13 +63,14 @@ import java.util.List;
 		callSuper = false)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Access(FIELD)@lombok.Data
 public class ActiveFlag
 		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, Long, ActiveFlagSecurityToken>
-		implements  INameAndDescription<ActiveFlag>,
-				            IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>>,
-				            IActivityMasterEntity<ActiveFlag>,
-				            IContainsEnterprise<ActiveFlag>,
-				            IActiveFlag<ActiveFlag>
+		implements INameAndDescription<ActiveFlag>,
+				           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>, IActiveFlag<ActiveFlag>>,
+				           IActivityMasterEntity<ActiveFlag>,
+				           IContainsEnterprise<ActiveFlag>,
+				           IActiveFlag<ActiveFlag>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -609,6 +617,24 @@ public class ActiveFlag
 		this.allowAccess = allowAccess;
 	}
 
+
+	@SuppressWarnings("unchecked")
+	public ActiveFlag remove()
+	{
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return this;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public ActiveFlag archive()
+	{
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return this;
+	}
+
 	@Override
 	public String toString()
 	{
@@ -624,10 +650,10 @@ public class ActiveFlag
 	}
 
 	@Override
-	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, IEnterprise enterprise, ISystems activityMasterSystem)
+	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems activityMasterSystem)
 	{
 		stAdmin.setSystemID((Systems) activityMasterSystem);
-		stAdmin.setActiveFlagID(((Systems)activityMasterSystem).getActiveFlagID());
+		stAdmin.setActiveFlagID(((Systems) activityMasterSystem).getActiveFlagID());
 		stAdmin.setBase(this);
 		stAdmin.setOriginalSourceSystemID((Systems) activityMasterSystem);
 		stAdmin.setOriginalSourceSystemUniqueID("");
