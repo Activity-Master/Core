@@ -7,20 +7,14 @@ package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyXProductQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.product.Product;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 import static javax.persistence.AccessType.*;
@@ -34,11 +28,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "InvolvedPartyXProduct")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedPartyXProduct
 		extends WarehouseClassificationRelationshipTable<InvolvedParty, Product, InvolvedPartyXProduct, InvolvedPartyXProductQueryBuilder, Long, InvolvedPartyXProductSecurityToken>
 {
@@ -106,5 +96,127 @@ public class InvolvedPartyXProduct
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "InvolvedPartyXProduct(id=" + this.getId() + ", securities=" + this.getSecurities() + ", valueTypeClassificationID=" + this.getValueTypeClassificationID() +
+		       ", involvedPartyID=" + this.getInvolvedPartyID() + ", involvedPartyXProduct=" + this.getInvolvedPartyXProduct() + ", involvedPartyXProduct1=" +
+		       this.getInvolvedPartyXProduct1() + ", productID=" + this.getProductID() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public List<InvolvedPartyXProductSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public Classification getValueTypeClassificationID()
+	{
+		return this.valueTypeClassificationID;
+	}
+
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+
+	public InvolvedPartyXProduct getInvolvedPartyXProduct()
+	{
+		return this.involvedPartyXProduct;
+	}
+
+	public InvolvedPartyXProduct getInvolvedPartyXProduct1()
+	{
+		return this.involvedPartyXProduct1;
+	}
+
+	public Product getProductID()
+	{
+		return this.productID;
+	}
+
+	public InvolvedPartyXProduct setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public InvolvedPartyXProduct setSecurities(List<InvolvedPartyXProductSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public InvolvedPartyXProduct setValueTypeClassificationID(Classification valueTypeClassificationID)
+	{
+		this.valueTypeClassificationID = valueTypeClassificationID;
+		return this;
+	}
+
+	public InvolvedPartyXProduct setInvolvedPartyID(InvolvedParty involvedPartyID)
+	{
+		this.involvedPartyID = involvedPartyID;
+		return this;
+	}
+
+	public InvolvedPartyXProduct setInvolvedPartyXProduct(InvolvedPartyXProduct involvedPartyXProduct)
+	{
+		this.involvedPartyXProduct = involvedPartyXProduct;
+		return this;
+	}
+
+	public InvolvedPartyXProduct setInvolvedPartyXProduct1(InvolvedPartyXProduct involvedPartyXProduct1)
+	{
+		this.involvedPartyXProduct1 = involvedPartyXProduct1;
+		return this;
+	}
+
+	public InvolvedPartyXProduct setProductID(Product productID)
+	{
+		this.productID = productID;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof InvolvedPartyXProduct))
+		{
+			return false;
+		}
+		final InvolvedPartyXProduct other = (InvolvedPartyXProduct) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof InvolvedPartyXProduct;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

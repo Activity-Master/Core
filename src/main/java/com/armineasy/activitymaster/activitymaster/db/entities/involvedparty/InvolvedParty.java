@@ -9,24 +9,24 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.bui
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.ITypeValue;
 import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
-import lombok.extern.java.Log;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes.*;
 import static javax.persistence.AccessType.*;
@@ -41,14 +41,11 @@ import static javax.persistence.AccessType.*;
 @Table(name = "InvolvedParty")
 @XmlRootElement
 @Accessors(chain = true)
-@Log
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, Long, InvolvedPartySecurityToken>
 		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, InvolvedParty>,
-				           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem>,
+				           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IResourceType<?>, IResourceItemClassification<?>,InvolvedParty>,
 				           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IIdentificationType<?>, InvolvedParty>,
 				           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, INameType<?>, InvolvedParty>,
 				           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, ITypeValue<?>, InvolvedParty>,
@@ -58,12 +55,11 @@ public class InvolvedParty
 				           IInvolvedParty<InvolvedParty>
 {
 	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "InvolvedPartyID")
-	@Getter
-	@Setter
 	private Long id;
 
 	@OneToMany(
@@ -157,10 +153,10 @@ public class InvolvedParty
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(InvolvedPartyXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
 	{
-		classificationLink.setResourceItemID(resourceItem);
-		classificationLink.setInvolvedPartyID(this);
+		linkTable.setResourceItemID(secondary);
+		linkTable.setInvolvedPartyID(this);
 	}
 
 	@Override
@@ -190,4 +186,197 @@ public class InvolvedParty
 		linkTable.setInvolvedPartyID(this);
 		linkTable.setInvolvedPartyTypeID(secondary);
 	}
+
+	public List<InvolvedPartyXClassification> getClassifications()
+	{
+		return this.classifications;
+	}
+
+	public List<InvolvedPartyXInvolvedPartyNameType> getNames()
+	{
+		return this.names;
+	}
+
+	public List<InvolvedPartyXResourceItem> getResources()
+	{
+		return this.resources;
+	}
+
+	public List<ArrangementXInvolvedParty> getArrangements()
+	{
+		return this.arrangements;
+	}
+
+	public List<EventXInvolvedParty> getEvents()
+	{
+		return this.events;
+	}
+
+	public List<InvolvedPartySecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public InvolvedPartyOrganic getInvolvedPartyOrganic()
+	{
+		return this.involvedPartyOrganic;
+	}
+
+	public InvolvedPartyNonOrganic getInvolvedPartyNonOrganic()
+	{
+		return this.involvedPartyNonOrganic;
+	}
+
+	public List<InvolvedPartyXInvolvedParty> getInvolvedPartyXInvolvedPartyList()
+	{
+		return this.involvedPartyXInvolvedPartyList;
+	}
+
+	public List<InvolvedPartyXInvolvedParty> getInvolvedPartyXInvolvedPartyList1()
+	{
+		return this.involvedPartyXInvolvedPartyList1;
+	}
+
+	public List<InvolvedPartyXInvolvedPartyType> getTypes()
+	{
+		return this.types;
+	}
+
+	public List<InvolvedPartyXProduct> getProducts()
+	{
+		return this.products;
+	}
+
+	public List<InvolvedPartyXAddress> getAddresses()
+	{
+		return this.addresses;
+	}
+
+	public List<InvolvedPartyXInvolvedPartyIdentificationType> getIdentities()
+	{
+		return this.identities;
+	}
+
+	public InvolvedParty setClassifications(List<InvolvedPartyXClassification> classifications)
+	{
+		this.classifications = classifications;
+		return this;
+	}
+
+	public InvolvedParty setNames(List<InvolvedPartyXInvolvedPartyNameType> names)
+	{
+		this.names = names;
+		return this;
+	}
+
+	public InvolvedParty setResources(List<InvolvedPartyXResourceItem> resources)
+	{
+		this.resources = resources;
+		return this;
+	}
+
+	public InvolvedParty setArrangements(List<ArrangementXInvolvedParty> arrangements)
+	{
+		this.arrangements = arrangements;
+		return this;
+	}
+
+	public InvolvedParty setEvents(List<EventXInvolvedParty> events)
+	{
+		this.events = events;
+		return this;
+	}
+
+	public InvolvedParty setSecurities(List<InvolvedPartySecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public InvolvedParty setInvolvedPartyOrganic(InvolvedPartyOrganic involvedPartyOrganic)
+	{
+		this.involvedPartyOrganic = involvedPartyOrganic;
+		return this;
+	}
+
+	public InvolvedParty setInvolvedPartyNonOrganic(InvolvedPartyNonOrganic involvedPartyNonOrganic)
+	{
+		this.involvedPartyNonOrganic = involvedPartyNonOrganic;
+		return this;
+	}
+
+	public InvolvedParty setInvolvedPartyXInvolvedPartyList(List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList)
+	{
+		this.involvedPartyXInvolvedPartyList = involvedPartyXInvolvedPartyList;
+		return this;
+	}
+
+	public InvolvedParty setInvolvedPartyXInvolvedPartyList1(List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList1)
+	{
+		this.involvedPartyXInvolvedPartyList1 = involvedPartyXInvolvedPartyList1;
+		return this;
+	}
+
+	public InvolvedParty setTypes(List<InvolvedPartyXInvolvedPartyType> types)
+	{
+		this.types = types;
+		return this;
+	}
+
+	public InvolvedParty setProducts(List<InvolvedPartyXProduct> products)
+	{
+		this.products = products;
+		return this;
+	}
+
+	public InvolvedParty setAddresses(List<InvolvedPartyXAddress> addresses)
+	{
+		this.addresses = addresses;
+		return this;
+	}
+
+	public InvolvedParty setIdentities(List<InvolvedPartyXInvolvedPartyIdentificationType> identities)
+	{
+		this.identities = identities;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		InvolvedParty that = (InvolvedParty) o;
+		return Objects.equals(getId(), that.getId());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "InvolvedParty - " + getId();
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public InvolvedParty setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
 }

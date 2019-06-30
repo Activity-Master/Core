@@ -7,19 +7,13 @@ package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyXAddressQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 import static javax.persistence.AccessType.*;
@@ -33,11 +27,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "InvolvedPartyXAddress")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedPartyXAddress
 		extends WarehouseClassificationRelationshipTable<InvolvedParty, Address, InvolvedPartyXAddress, InvolvedPartyXAddressQueryBuilder, Long, InvolvedPartyXAddressSecurityToken>
 {
@@ -82,5 +72,93 @@ public class InvolvedPartyXAddress
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "InvolvedPartyXAddress(id=" + this.getId() + ", addressID=" + this.getAddressID() + ", involvedPartyID=" + this.getInvolvedPartyID() + ", securities=" +
+		       this.getSecurities() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public Address getAddressID()
+	{
+		return this.addressID;
+	}
+
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+
+	public List<InvolvedPartyXAddressSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public InvolvedPartyXAddress setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public InvolvedPartyXAddress setAddressID(Address addressID)
+	{
+		this.addressID = addressID;
+		return this;
+	}
+
+	public InvolvedPartyXAddress setInvolvedPartyID(InvolvedParty involvedPartyID)
+	{
+		this.involvedPartyID = involvedPartyID;
+		return this;
+	}
+
+	public InvolvedPartyXAddress setSecurities(List<InvolvedPartyXAddressSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof InvolvedPartyXAddress))
+		{
+			return false;
+		}
+		final InvolvedPartyXAddress other = (InvolvedPartyXAddress) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof InvolvedPartyXAddress;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

@@ -3,28 +3,25 @@ package com.armineasy.activitymaster.activitymaster.db.entities.events;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.events.IEventClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEvent;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IEventTypeValue;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -38,14 +35,12 @@ import static javax.persistence.AccessType.*;
 @Table(name = "Event")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
 		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>,Event>,
 				           IContainsGeographies<Event, Geography, EventXGeography>,
-				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem>,
+				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Event>,
 				           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,
 				           IContainsAddresses<Event, Address, EventXAddress>,
 				           IContainsEventTypes<Event, EventType, EventXEventType, IEventTypeValue<?>,Event>,
@@ -58,8 +53,6 @@ public class Event
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "EventID")
-	@Getter
-	@Setter
 	private Long id;
 
 	@OneToMany(
@@ -133,10 +126,10 @@ public class Event
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(EventXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(EventXResourceItem linkTable, Event primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
 	{
-		classificationLink.setEventID(this);
-		classificationLink.setResourceItemID(resourceItem);
+		linkTable.setEventID(this);
+		linkTable.setResourceItemID(secondary);
 	}
 
 	@Override
@@ -159,4 +152,143 @@ public class Event
 		linkTable.setEventID(primary);
 		linkTable.setEventTypeID(secondary);
 	}
+
+	public List<EventXClassification> getClassifications()
+	{
+		return this.classifications;
+	}
+
+	public List<EventXInvolvedParty> getParties()
+	{
+		return this.parties;
+	}
+
+	public List<EventXArrangement> getArrangements()
+	{
+		return this.arrangements;
+	}
+
+	public List<EventXResourceItem> getResources()
+	{
+		return this.resources;
+	}
+
+	public List<EventXAddress> getAddresses()
+	{
+		return this.addresses;
+	}
+
+	public List<EventSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public List<EventXProduct> getProducts()
+	{
+		return this.products;
+	}
+
+	public List<EventXGeography> getGeographies()
+	{
+		return this.geographies;
+	}
+
+	public List<EventXEventType> getEventTypes()
+	{
+		return this.eventTypes;
+	}
+
+	public Event setClassifications(List<EventXClassification> classifications)
+	{
+		this.classifications = classifications;
+		return this;
+	}
+
+	public Event setParties(List<EventXInvolvedParty> parties)
+	{
+		this.parties = parties;
+		return this;
+	}
+
+	public Event setArrangements(List<EventXArrangement> arrangements)
+	{
+		this.arrangements = arrangements;
+		return this;
+	}
+
+	public Event setResources(List<EventXResourceItem> resources)
+	{
+		this.resources = resources;
+		return this;
+	}
+
+	public Event setAddresses(List<EventXAddress> addresses)
+	{
+		this.addresses = addresses;
+		return this;
+	}
+
+	public Event setSecurities(List<EventSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public Event setProducts(List<EventXProduct> products)
+	{
+		this.products = products;
+		return this;
+	}
+
+	public Event setGeographies(List<EventXGeography> geographies)
+	{
+		this.geographies = geographies;
+		return this;
+	}
+
+	public Event setEventTypes(List<EventXEventType> eventTypes)
+	{
+		this.eventTypes = eventTypes;
+		return this;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Event - " + getId();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Event event = (Event) o;
+		return Objects.equals(getId(), event.getId());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public Event setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+
 }

@@ -5,9 +5,6 @@ import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.build
 import com.armineasy.activitymaster.activitymaster.services.dto.IArrangementType;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -15,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -28,9 +26,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "ArrangementType")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class ArrangementType
 		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, Long, ArrangementTypeSecurityToken>
 		implements IArrangementType<ArrangementType>
@@ -41,30 +37,24 @@ public class ArrangementType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ArrangementTypeID")
-	@Getter
-	@Setter
 	private Long id;
 	@Basic(optional = false,
-			fetch = FetchType.LAZY)
+			fetch = FetchType.EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 150)
 	@Column(nullable = false,
 			length = 150,
 			name = "ArrangementTypeName")
-	@Getter
-	@Setter
 	private String name;
 	@Basic(optional = false,
-			fetch = FetchType.LAZY)
+			fetch = FetchType.EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
 			name = "ArrangementTypeDescription")
-	@Getter
-	@Setter
 	private String description;
 	@OneToMany(
 			mappedBy = "base",
@@ -100,8 +90,88 @@ public class ArrangementType
 		            .setBase(this);
 	}
 
+	public List<ArrangementTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public List<ArrangementXArrangementType> getArrangementsList()
+	{
+		return this.arrangementsList;
+	}
+
+	public ArrangementType setSecurities(List<ArrangementTypeSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public ArrangementType setArrangementsList(List<ArrangementXArrangementType> arrangementsList)
+	{
+		this.arrangementsList = arrangementsList;
+		return this;
+	}
+
 	public String toString()
 	{
-		return getName() + " - " + getDescription();
+		return "ArrangementType - " + getName();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ArrangementType that = (ArrangementType) o;
+		return Objects.equals(getName(), that.getName());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 150) String getName()
+	{
+		return this.name;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 500) String getDescription()
+	{
+		return this.description;
+	}
+
+	public ArrangementType setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public ArrangementType setName(@NotNull @Size(min = 1,
+			max = 150) String name)
+	{
+		this.name = name;
+		return this;
+	}
+
+	public ArrangementType setDescription(@NotNull @Size(min = 1,
+			max = 500) String description)
+	{
+		this.description = description;
+		return this;
 	}
 }

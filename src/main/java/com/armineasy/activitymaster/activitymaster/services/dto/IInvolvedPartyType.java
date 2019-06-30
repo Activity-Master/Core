@@ -1,6 +1,5 @@
 package com.armineasy.activitymaster.activitymaster.services.dto;
 
-import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyNameType;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyType;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsActiveFlags;

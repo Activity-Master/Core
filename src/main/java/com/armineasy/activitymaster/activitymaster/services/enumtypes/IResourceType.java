@@ -8,7 +8,7 @@ import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseC
  * @param <J>
  * 		This enum type
  */
-public interface IResourceTypeValue<J extends Enum & IResourceTypeValue<J>>
+public interface IResourceType<J extends Enum & IResourceType<J>>
 {
 	/**
 	 * Overrides the enum and string

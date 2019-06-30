@@ -8,19 +8,19 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.arrangement.IArrangementClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IArrangement;
 import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IArrangementTypes;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -34,14 +34,11 @@ import static javax.persistence.AccessType.*;
 @Table(name = "Arrangement")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
 @Access(FIELD)
-@lombok.Data
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, Long, ArrangementSecurityToken>
 		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, Arrangement>,
-				           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem>,
+				           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Arrangement>,
 				           IActivityMasterEntity<Arrangement>,
 				           IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, Arrangement>,
 				           IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty>,
@@ -54,8 +51,6 @@ public class Arrangement
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ArrangementID")
-	@Getter
-	@Setter
 	private Long id;
 
 	@OneToMany(
@@ -122,10 +117,10 @@ public class Arrangement
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(ArrangementXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
 	{
-		classificationLink.setArrangementID(this);
-		classificationLink.setResourceItemID(resourceItem);
+		linkTable.setArrangementID(this);
+		linkTable.setResourceItemID(secondary);
 	}
 
 	@Override
@@ -189,4 +184,143 @@ public class Arrangement
 		}
 		return super.remove();
 	}
+
+	public List<ArrangementXClassification> getClassifications()
+	{
+		return this.classifications;
+	}
+
+	public List<ArrangementXInvolvedParty> getParties()
+	{
+		return this.parties;
+	}
+
+	public List<ArrangementXResourceItem> getResources()
+	{
+		return this.resources;
+	}
+
+	public List<EventXArrangement> getEvents()
+	{
+		return this.events;
+	}
+
+	public List<ArrangementXArrangement> getArrangementXArrangementList()
+	{
+		return this.arrangementXArrangementList;
+	}
+
+	public List<ArrangementXArrangement> getArrangementXArrangementList1()
+	{
+		return this.arrangementXArrangementList1;
+	}
+
+	public List<ArrangementXProduct> getProducts()
+	{
+		return this.products;
+	}
+
+	public List<ArrangementSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public List<ArrangementXArrangementType> getTypes()
+	{
+		return this.types;
+	}
+
+	public Arrangement setClassifications(List<ArrangementXClassification> classifications)
+	{
+		this.classifications = classifications;
+		return this;
+	}
+
+	public Arrangement setParties(List<ArrangementXInvolvedParty> parties)
+	{
+		this.parties = parties;
+		return this;
+	}
+
+	public Arrangement setResources(List<ArrangementXResourceItem> resources)
+	{
+		this.resources = resources;
+		return this;
+	}
+
+	public Arrangement setEvents(List<EventXArrangement> events)
+	{
+		this.events = events;
+		return this;
+	}
+
+	public Arrangement setArrangementXArrangementList(List<ArrangementXArrangement> arrangementXArrangementList)
+	{
+		this.arrangementXArrangementList = arrangementXArrangementList;
+		return this;
+	}
+
+	public Arrangement setArrangementXArrangementList1(List<ArrangementXArrangement> arrangementXArrangementList1)
+	{
+		this.arrangementXArrangementList1 = arrangementXArrangementList1;
+		return this;
+	}
+
+	public Arrangement setProducts(List<ArrangementXProduct> products)
+	{
+		this.products = products;
+		return this;
+	}
+
+	public Arrangement setSecurities(List<ArrangementSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public Arrangement setTypes(List<ArrangementXArrangementType> types)
+	{
+		this.types = types;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Arrangement that = (Arrangement) o;
+		return Objects.equals(getId(), that.getId());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Arrangement - " + getId();
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public Arrangement setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+
 }

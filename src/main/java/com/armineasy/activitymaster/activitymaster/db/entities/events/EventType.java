@@ -6,9 +6,6 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivi
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEventType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -16,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -29,9 +27,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "EventType")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class EventType
 		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, Long, EventTypesSecurityToken>
 		implements IEventType<EventType>,
@@ -42,8 +38,6 @@ public class EventType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "EventTypeID")
-	@Getter
-	@Setter
 	private Long id;
 	@Basic(optional = false)
 	@NotNull
@@ -52,8 +46,6 @@ public class EventType
 	@Column(nullable = false,
 			length = 200,
 			name = "EventTypeName")
-	@Getter
-	@Setter
 	private String name;
 	@Basic(optional = false)
 	@NotNull
@@ -62,8 +54,6 @@ public class EventType
 	@Column(nullable = false,
 			length = 200,
 			name = "EventTypeDesc")
-	@Getter
-	@Setter
 	private String description;
 
 	@OneToMany(
@@ -97,5 +87,91 @@ public class EventType
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public List<EventXEventType> getEventXEventTypeList()
+	{
+		return this.eventXEventTypeList;
+	}
+
+	public List<EventTypesSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public EventType setEventXEventTypeList(List<EventXEventType> eventXEventTypeList)
+	{
+		this.eventXEventTypeList = eventXEventTypeList;
+		return this;
+	}
+
+	public EventType setSecurities(List<EventTypesSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		EventType eventType = (EventType) o;
+		return Objects.equals(getName(), eventType.getName());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "EventType - " + getName();
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 200) String getName()
+	{
+		return this.name;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 200) String getDescription()
+	{
+		return this.description;
+	}
+
+	public EventType setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public EventType setName(@NotNull @Size(min = 1,
+			max = 200) String name)
+	{
+		this.name = name;
+		return this;
+	}
+
+	public EventType setDescription(@NotNull @Size(min = 1,
+			max = 200) String description)
+	{
+		this.description = description;
+		return this;
 	}
 }

@@ -1,16 +1,11 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.systems;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityTokenXSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.builders.SystemsSecurityTokenQueryBuilder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import static javax.persistence.AccessType.*;
 
@@ -23,11 +18,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "SystemsSecurityToken")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class SystemsSecurityToken
 		extends WarehouseSecurityTable<SystemsSecurityToken, SystemsSecurityTokenQueryBuilder, Long>
 {
@@ -56,5 +47,70 @@ public class SystemsSecurityToken
 	public SystemsSecurityToken(Long systemsSecurityTokenID)
 	{
 		this.id = systemsSecurityTokenID;
+	}
+
+	public String toString()
+	{
+		return "SystemsSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public Systems getBase()
+	{
+		return this.base;
+	}
+
+	public SystemsSecurityToken setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public SystemsSecurityToken setBase(Systems base)
+	{
+		this.base = base;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof SystemsSecurityToken))
+		{
+			return false;
+		}
+		final SystemsSecurityToken other = (SystemsSecurityToken) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof SystemsSecurityToken;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

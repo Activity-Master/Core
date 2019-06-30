@@ -6,15 +6,17 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.ITypeValue;
 
 import java.util.UUID;
 
 public interface IInvolvedParty<J extends IInvolvedParty<J>>
 		extends IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, InvolvedParty>,
-				        IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem>,
+				        IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IResourceType<?>, IResourceItemClassification<?>,InvolvedParty>,
 				        IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IIdentificationType<?>, InvolvedParty>,
 				        IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, INameType<?>, InvolvedParty>,
 				        IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, ITypeValue<?>, InvolvedParty>,

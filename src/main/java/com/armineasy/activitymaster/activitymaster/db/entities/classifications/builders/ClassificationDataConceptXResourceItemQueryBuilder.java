@@ -1,6 +1,5 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders;
 
-import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationship;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConceptXResourceItem;

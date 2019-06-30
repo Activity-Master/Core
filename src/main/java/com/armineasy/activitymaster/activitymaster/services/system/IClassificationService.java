@@ -10,14 +10,10 @@ import java.util.UUID;
 
 public interface IClassificationService<J extends IClassificationService<J>>
 {
-
 	@SuppressWarnings("Duplicates")
-	@CacheResult(cacheName = "ClassificationFindWithIClassificationStringConceptValue")
-	IClassification<?> find(@CacheKey IClassificationValue<?> name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken);
+	IClassification<?> find(IClassificationValue<?> name, IEnterprise<?> enterprise, UUID... identityToken);
 
-	@CacheResult(cacheName = "GetHierarchyTypeClassification")
-	IClassification<?> getHierarchyType(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken);
+	IClassification<?> getHierarchyType( IEnterprise<?> enterprise, UUID... identityToken);
 
-	@CacheResult(cacheName = "IdentityTypeClassification")
-	IClassification<?> getIdentityType(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken);
+	IClassification<?> getIdentityType( IEnterprise<?> enterprise,UUID... identityToken);
 }

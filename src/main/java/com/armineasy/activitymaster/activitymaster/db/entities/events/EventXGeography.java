@@ -1,15 +1,10 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.events;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventXGeographyQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -27,11 +22,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "EventXGeography")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class EventXGeography
 		extends WarehouseClassificationRelationshipTable<Event, Geography, EventXGeography, EventXGeographyQueryBuilder, Long, EventXGeographySecurityToken>
 {
@@ -76,5 +67,92 @@ public class EventXGeography
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "EventXGeography(id=" + this.getId() + ", securities=" + this.getSecurities() + ", eventID=" + this.getEventID() + ", geographyID=" + this.getGeographyID() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public List<EventXGeographySecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+
+	public Geography getGeographyID()
+	{
+		return this.geographyID;
+	}
+
+	public EventXGeography setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public EventXGeography setSecurities(List<EventXGeographySecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public EventXGeography setEventID(Event eventID)
+	{
+		this.eventID = eventID;
+		return this;
+	}
+
+	public EventXGeography setGeographyID(Geography geographyID)
+	{
+		this.geographyID = geographyID;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof EventXGeography))
+		{
+			return false;
+		}
+		final EventXGeography other = (EventXGeography) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof EventXGeography;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

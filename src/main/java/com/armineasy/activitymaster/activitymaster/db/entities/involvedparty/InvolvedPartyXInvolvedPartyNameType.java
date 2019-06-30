@@ -6,19 +6,13 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseRelationshipTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyNameTypeQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 import static javax.persistence.AccessType.*;
@@ -32,11 +26,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "InvolvedPartyXInvolvedPartyNameType")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedPartyXInvolvedPartyNameType
 		extends WarehouseRelationshipTable<InvolvedParty, InvolvedPartyNameType,
 				                                  InvolvedPartyXInvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameTypeQueryBuilder, Long, InvolvedPartyXInvolvedPartyNameTypeSecurityToken>
@@ -88,5 +78,93 @@ public class InvolvedPartyXInvolvedPartyNameType
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "InvolvedPartyXInvolvedPartyNameType(id=" + this.getId() + ", involvedPartyID=" + this.getInvolvedPartyID() + ", involvedPartyNameTypeID=" +
+		       this.getInvolvedPartyNameTypeID() + ", securities=" + this.getSecurities() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+
+	public InvolvedPartyNameType getInvolvedPartyNameTypeID()
+	{
+		return this.involvedPartyNameTypeID;
+	}
+
+	public List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public InvolvedPartyXInvolvedPartyNameType setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public InvolvedPartyXInvolvedPartyNameType setInvolvedPartyID(InvolvedParty involvedPartyID)
+	{
+		this.involvedPartyID = involvedPartyID;
+		return this;
+	}
+
+	public InvolvedPartyXInvolvedPartyNameType setInvolvedPartyNameTypeID(InvolvedPartyNameType involvedPartyNameTypeID)
+	{
+		this.involvedPartyNameTypeID = involvedPartyNameTypeID;
+		return this;
+	}
+
+	public InvolvedPartyXInvolvedPartyNameType setSecurities(List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof InvolvedPartyXInvolvedPartyNameType))
+		{
+			return false;
+		}
+		final InvolvedPartyXInvolvedPartyNameType other = (InvolvedPartyXInvolvedPartyNameType) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof InvolvedPartyXInvolvedPartyNameType;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

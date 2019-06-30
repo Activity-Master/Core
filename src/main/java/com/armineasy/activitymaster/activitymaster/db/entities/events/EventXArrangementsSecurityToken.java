@@ -2,14 +2,10 @@ package com.armineasy.activitymaster.activitymaster.db.entities.events;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventXArrangementSecurityTokenQueryBuilder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import static javax.persistence.AccessType.*;
 
@@ -22,11 +18,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "EventXArrangementsSecurityToken")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class EventXArrangementsSecurityToken
 		extends WarehouseSecurityTable<EventXArrangementsSecurityToken, EventXArrangementSecurityTokenQueryBuilder, Long>
 {
@@ -54,5 +46,70 @@ public class EventXArrangementsSecurityToken
 	public EventXArrangementsSecurityToken(Long eventXArrangementsSecurityTokenID)
 	{
 		this.id = eventXArrangementsSecurityTokenID;
+	}
+
+	public String toString()
+	{
+		return "EventXArrangementsSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public EventXArrangement getBase()
+	{
+		return this.base;
+	}
+
+	public EventXArrangementsSecurityToken setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public EventXArrangementsSecurityToken setBase(EventXArrangement base)
+	{
+		this.base = base;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof EventXArrangementsSecurityToken))
+		{
+			return false;
+		}
+		final EventXArrangementsSecurityToken other = (EventXArrangementsSecurityToken) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof EventXArrangementsSecurityToken;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

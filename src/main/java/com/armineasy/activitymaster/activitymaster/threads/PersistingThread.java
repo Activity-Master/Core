@@ -4,17 +4,17 @@ import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.jwebmp.entityassist.BaseEntity;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
-import lombok.extern.java.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@Log
 public class PersistingThread
 		implements Callable<Object>
 {
+	private static final Logger log = Logger.getLogger(PersistingThread.class.getName());
 	private final List<BaseEntity> entities = new ArrayList<>();
 
 	@Override

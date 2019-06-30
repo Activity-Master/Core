@@ -9,9 +9,6 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAn
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedPartyType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -19,8 +16,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
+import static javax.persistence.FetchType.*;
 
 /**
  * @author GedMarc
@@ -32,9 +31,7 @@ import static javax.persistence.AccessType.*;
 @Table
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedPartyType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, Long, InvolvedPartyTypeSecurityToken>
 				implements IInvolvedPartyType<InvolvedPartyType>,
@@ -49,26 +46,20 @@ public class InvolvedPartyType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "InvolvedPartyTypeID")
-	@Getter
-	@Setter
 	private Long id;
-	@Basic(optional = false)
+	@Basic(optional = false,fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 100)
 	@Column(nullable = false,
 			length = 100,
 			name = "InvolvedPartyTypeName")
-	@Getter
-	@Setter
 	private String name;
-	@Basic(optional = false)
+	@Basic(optional = false,fetch = EAGER)
 	@NotNull
 	@Lob
 	@Column(nullable = false,
 			name = "InvolvedPartyTypeDesc")
-	@Getter
-	@Setter
 	private String description;
 
 	@OneToMany(
@@ -103,5 +94,89 @@ public class InvolvedPartyType
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public List<InvolvedPartyTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public List<InvolvedPartyXInvolvedPartyType> getInvolvedPartyXInvolvedPartyTypeList()
+	{
+		return this.involvedPartyXInvolvedPartyTypeList;
+	}
+
+	public InvolvedPartyType setSecurities(List<InvolvedPartyTypeSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public InvolvedPartyType setInvolvedPartyXInvolvedPartyTypeList(List<InvolvedPartyXInvolvedPartyType> involvedPartyXInvolvedPartyTypeList)
+	{
+		this.involvedPartyXInvolvedPartyTypeList = involvedPartyXInvolvedPartyTypeList;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		InvolvedPartyType that = (InvolvedPartyType) o;
+		return Objects.equals(getName(), that.getName());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Party Type - " + getName();
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 100) String getName()
+	{
+		return this.name;
+	}
+
+	public @NotNull String getDescription()
+	{
+		return this.description;
+	}
+
+	public InvolvedPartyType setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public InvolvedPartyType setName(@NotNull @Size(min = 1,
+			max = 100) String name)
+	{
+		this.name = name;
+		return this;
+	}
+
+	public InvolvedPartyType setDescription(@NotNull String description)
+	{
+		this.description = description;
+		return this;
 	}
 }

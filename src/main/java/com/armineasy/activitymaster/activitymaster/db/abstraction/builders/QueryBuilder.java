@@ -1,26 +1,29 @@
 package com.armineasy.activitymaster.activitymaster.db.abstraction.builders;
 
-import com.armineasy.activitymaster.activitymaster.*;
-import com.armineasy.activitymaster.activitymaster.db.abstraction.*;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.*;
-import com.armineasy.activitymaster.activitymaster.db.entities.security.*;
-import com.armineasy.activitymaster.activitymaster.db.hierarchies.*;
-import com.armineasy.activitymaster.activitymaster.implementations.*;
+import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
+import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
+import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
+import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierarchyView;
+import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierarchyView_;
+import com.armineasy.activitymaster.activitymaster.implementations.SecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.exceptions.*;
-import com.jwebmp.entityassist.enumerations.*;
-import com.jwebmp.entityassist.querybuilder.builders.*;
-import com.jwebmp.guicedinjection.*;
-import lombok.Singular;
-import org.hibernate.query.criteria.internal.path.PluralAttributePath;
+import com.armineasy.activitymaster.activitymaster.services.exceptions.SecurityAccessException;
+import com.jwebmp.entityassist.enumerations.Operand;
+import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
+import com.jwebmp.guicedinjection.GuiceContext;
 import org.hibernate.query.criteria.internal.path.SingularAttributePath;
 
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.*;
-import javax.validation.constraints.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.UUID;
 
 import static javax.persistence.criteria.JoinType.*;
 

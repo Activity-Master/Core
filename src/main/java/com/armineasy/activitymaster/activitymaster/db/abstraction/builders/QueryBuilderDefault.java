@@ -3,14 +3,11 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction.builders;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseBaseTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSCDTable;
-import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.entityassist.querybuilder.QueryBuilderSCD;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.extern.java.Log;
 
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.SingularAttribute;
@@ -18,18 +15,21 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static com.jwebmp.entityassist.enumerations.Operand.*;
 
-@Log
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
 		                                         E extends WarehouseBaseTable<E, J, I>,
 		                                         I extends Serializable>
 		extends QueryBuilderSCD<J, E, I>
 {
+	private static final Logger log = Logger.getLogger(QueryBuilderDefault.class.getName());
+
 	public QueryBuilderDefault()
 	{
 		setRunDetached(true);
+		setReturnFirst(true);
 	}
 
 	@Override

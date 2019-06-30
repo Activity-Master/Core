@@ -1,13 +1,11 @@
 package com.armineasy.activitymaster.activity;
 
+import com.armineasy.activitymaster.activity.configs.DefaultTestConfig;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterService;
 import com.armineasy.activitymaster.activitymaster.DefaultEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
-import com.armineasy.activitymaster.activity.configs.DefaultTestConfig;
 import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.logger.LogFactory;
 import com.jwebmp.logger.logging.LogColourFormatter;
-import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -18,9 +16,10 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 @ExtendWith(DefaultTestConfig.class)
-@Log
 public class TestEnterpriseCreation
 {
+	private static final Logger log = Logger.getLogger(TestEnterpriseCreation.class.getName());
+
 	@Test
 	public void testEnterpriseCreation()
 	{

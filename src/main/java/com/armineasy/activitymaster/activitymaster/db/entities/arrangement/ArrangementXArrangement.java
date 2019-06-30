@@ -7,18 +7,12 @@ package com.armineasy.activitymaster.activitymaster.db.entities.arrangement;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementXArrangementQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 import static javax.persistence.AccessType.*;
@@ -32,11 +26,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "ArrangementXArrangement")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class ArrangementXArrangement
 		extends WarehouseClassificationRelationshipTable<Arrangement, Arrangement, ArrangementXArrangement, ArrangementXArrangementQueryBuilder, Long, ArrangementXArrangementSecurityToken>
 
@@ -82,5 +72,93 @@ public class ArrangementXArrangement
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "ArrangementXArrangement(id=" + this.getId() + ", childArrangementID=" + this.getChildArrangementID() + ", parentArrangementID=" + this.getParentArrangementID() +
+		       ", securities=" + this.getSecurities() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public Arrangement getChildArrangementID()
+	{
+		return this.childArrangementID;
+	}
+
+	public Arrangement getParentArrangementID()
+	{
+		return this.parentArrangementID;
+	}
+
+	public List<ArrangementXArrangementSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public ArrangementXArrangement setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public ArrangementXArrangement setChildArrangementID(Arrangement childArrangementID)
+	{
+		this.childArrangementID = childArrangementID;
+		return this;
+	}
+
+	public ArrangementXArrangement setParentArrangementID(Arrangement parentArrangementID)
+	{
+		this.parentArrangementID = parentArrangementID;
+		return this;
+	}
+
+	public ArrangementXArrangement setSecurities(List<ArrangementXArrangementSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof ArrangementXArrangement))
+		{
+			return false;
+		}
+		final ArrangementXArrangement other = (ArrangementXArrangement) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof ArrangementXArrangement;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

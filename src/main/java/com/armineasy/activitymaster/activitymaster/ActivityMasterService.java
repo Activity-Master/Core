@@ -16,15 +16,19 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
+import com.armineasy.activitymaster.activitymaster.services.security.Passwords;
 import com.armineasy.activitymaster.activitymaster.services.system.IActivityMasterService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
+import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.IDefaultService;
 import com.jwebmp.guicedinjection.pairing.Pair;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.jwebmp.logger.LogFactory;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.logging.Level;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.types.IPTypes.*;
@@ -32,6 +36,7 @@ import static com.armineasy.activitymaster.activitymaster.services.types.Identif
 import static com.armineasy.activitymaster.activitymaster.services.types.NameTypes.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
+@Singleton
 public class ActivityMasterService
 		implements IProgressable, IActivityMasterService
 {
@@ -88,11 +93,11 @@ public class ActivityMasterService
 
 		Pair<IIdentificationType<?>, String> pair = new Pair<>(
 				IdentificationTypeEnterpriseCreatorRole,
-				adminUserName);
+				Passwords.integerEncrypt(adminUserName.getBytes()));
 		Optional<InvolvedParty> exists = new InvolvedParty().builder()
 		                                                    .findByIdentificationType(enterprise,
 		                                                                              IdentificationTypeEnterpriseCreatorRole,
-		                                                                              adminUserName)
+		                                                                              Passwords.integerEncrypt(adminUserName.getBytes()))
 		                                                    .get();
 
 		IInvolvedParty<?> administratorUser;
@@ -100,7 +105,8 @@ public class ActivityMasterService
 		{
 			IInvolvedParty<?> adminUser = service.create(activityMasterSystem, pair, true);
 
-			adminUser.addOrReuse(IdentificationTypeUserName, adminUserName,activityMasterSystem, token);
+			adminUser.addOrReuse(IdentificationTypeUserName, Passwords.integerEncrypt(adminUserName.getBytes()),activityMasterSystem, token);
+
 			adminUser.addOrReuse(TypeIndividual, "Artificial Individual",activityMasterSystem, token);
 			adminUser.addOrReuse(PreferredNameType,  "Enterprise Creator",activityMasterSystem, token);
 			adminUser.addOrReuse(FirstNameType, "Administrator",activityMasterSystem, token);
@@ -109,7 +115,7 @@ public class ActivityMasterService
 			                                                                               adminUserName,
 			                                                                               "The creator of the enterprise", activityMasterSystem, administratorsGroup, token);
 
-			adminUser.addOrReuse(IdentificationTypeEnterpriseCreatorRole,adminUserName, activityMasterSystem,  token);
+			adminUser.addOrReuse(IdentificationTypeEnterpriseCreatorRole,Passwords.integerEncrypt(adminUserName.getBytes()), activityMasterSystem,  token);
 			adminUser.addOrReuse(IdentificationTypeUUID, myToken.getSecurityToken(),activityMasterSystem, token);
 
 			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, activityMasterSystem, token);
@@ -156,9 +162,22 @@ public class ActivityMasterService
 		            .setSecurityEnabled(true);
 	}
 
+	public void runScript(String script)
+	{
+		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
+		try (java.sql.Connection c = ds.getConnection();
+		     java.sql.Statement st = c.createStatement())
+		{
+			st.executeUpdate(script);
+		}
+		catch (java.sql.SQLException e)
+		{
+			LogFactory.getLog("ActivityMasterService").log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
+		}
+	}
 
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = 5000)
 	public void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));

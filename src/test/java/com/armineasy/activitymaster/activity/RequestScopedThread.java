@@ -4,14 +4,14 @@ import com.armineasy.activitymaster.activitymaster.threads.TransactionalIdentifi
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ScopingException;
 import com.google.inject.servlet.ServletScopes;
-import lombok.extern.java.Log;
 
 import java.util.HashMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@Log
 public abstract class RequestScopedThread extends TransactionalIdentifiedThread
 {
+	private static final Logger log = Logger.getLogger(RequestScopedThread.class.getName());
 	private RequestScoper.CloseableScope scoper;
 	@Override
 	public final void perform()

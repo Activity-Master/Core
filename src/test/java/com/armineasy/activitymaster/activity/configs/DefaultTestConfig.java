@@ -3,22 +3,18 @@ package com.armineasy.activitymaster.activity.configs;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterService;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDBModule;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import com.jwebmp.guicedhazelcast.HazelcastConfigHandler;
-import com.jwebmp.guicedhazelcast.implementations.HazelcastPreStartup;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
 import com.jwebmp.guicedservlets.BasicServlet;
@@ -28,7 +24,6 @@ import com.jwebmp.guicedservlets.mocks.MockRequest;
 import com.jwebmp.guicedservlets.mocks.MockResponse;
 import com.jwebmp.logger.LogFactory;
 import com.jwebmp.logger.logging.LogColourFormatter;
-import lombok.extern.java.Log;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -46,11 +41,11 @@ import java.util.logging.SimpleFormatter;
 import static com.armineasy.activitymaster.activitymaster.DefaultEnterprise.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
-@Log
 public class DefaultTestConfig
 		implements BeforeEachCallback, AfterEachCallback
 {
 	private static final String FirefoxHeaderAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; ServiceUI 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18356";
+	private static final Logger log = Logger.getLogger(DefaultTestConfig.class.getName());
 
 	private RequestScoper.CloseableScope scoper;
 	@Override

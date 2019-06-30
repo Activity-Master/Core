@@ -7,7 +7,6 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivi
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
-import com.armineasy.activitymaster.activitymaster.services.classifications.classification.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.ISystemsClassification;
 
 import java.io.Serializable;

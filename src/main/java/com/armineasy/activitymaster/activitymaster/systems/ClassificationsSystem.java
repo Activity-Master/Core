@@ -3,8 +3,6 @@ package com.armineasy.activitymaster.activitymaster.systems;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
@@ -23,7 +21,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.classification.Classifications.*;
-import static com.armineasy.activitymaster.activitymaster.services.classifications.classification.Classifications.NoClassification;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.EnterpriseClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.InvolvedPartyClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.systems.SystemsClassifications.*;

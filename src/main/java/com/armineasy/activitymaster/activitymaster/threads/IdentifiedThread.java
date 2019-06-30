@@ -1,32 +1,16 @@
 package com.armineasy.activitymaster.activitymaster.threads;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.implementations.EnterpriseService;
-import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
-import com.armineasy.activitymaster.activitymaster.services.system.ISecurityTokenService;
-import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
-import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.Data;
 import lombok.experimental.Accessors;
-import lombok.extern.java.Log;
 
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static com.armineasy.activitymaster.activitymaster.DefaultEnterprise.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
-
-@Data
 @Accessors(chain = true)
-@Log
 public abstract class IdentifiedThread<J extends IdentifiedThread<J>>
 		implements Runnable
 {
+	private static final Logger log = Logger.getLogger(IdentifiedThread.class.getName());
 	private ActivityMasterConfiguration.ActivityMasterConfigurationDTO activityMasterConfigurationDTO;
 
 	public IdentifiedThread()
@@ -67,5 +51,61 @@ public abstract class IdentifiedThread<J extends IdentifiedThread<J>>
 	{
 		run();
 		return null;
+	}
+
+	public ActivityMasterConfiguration.ActivityMasterConfigurationDTO getActivityMasterConfigurationDTO()
+	{
+		return this.activityMasterConfigurationDTO;
+	}
+
+	public IdentifiedThread<J> setActivityMasterConfigurationDTO(ActivityMasterConfiguration.ActivityMasterConfigurationDTO activityMasterConfigurationDTO)
+	{
+		this.activityMasterConfigurationDTO = activityMasterConfigurationDTO;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof IdentifiedThread))
+		{
+			return false;
+		}
+		final IdentifiedThread<?> other = (IdentifiedThread<?>) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$activityMasterConfigurationDTO = this.getActivityMasterConfigurationDTO();
+		final Object other$activityMasterConfigurationDTO = other.getActivityMasterConfigurationDTO();
+		if (this$activityMasterConfigurationDTO == null
+		    ? other$activityMasterConfigurationDTO != null
+		    : !this$activityMasterConfigurationDTO.equals(other$activityMasterConfigurationDTO))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof IdentifiedThread;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $activityMasterConfigurationDTO = this.getActivityMasterConfigurationDTO();
+		result = result * PRIME + ($activityMasterConfigurationDTO == null ? 43 : $activityMasterConfigurationDTO.hashCode());
+		return result;
+	}
+
+	public String toString()
+	{
+		return "IdentifiedThread(activityMasterConfigurationDTO=" + this.getActivityMasterConfigurationDTO() + ")";
 	}
 }

@@ -9,7 +9,6 @@ import com.armineasy.activitymaster.activitymaster.threads.TransactionalIdentifi
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
-import lombok.Data;
 
 @Singleton
 public class ActivityMasterConfiguration
@@ -107,7 +106,6 @@ public class ActivityMasterConfiguration
 		setDoubleCheckDisabled(dto.getDoubleCheck());
 	}
 
-	@Data
 	public static class ActivityMasterConfigurationDTO
 	{
 		private IEnterpriseName<?> enterpriseName;
@@ -115,6 +113,10 @@ public class ActivityMasterConfiguration
 		private Boolean securities;
 		private Boolean async;
 		private Boolean doubleCheck;
+
+		public ActivityMasterConfigurationDTO()
+		{
+		}
 
 		public ActivityMasterConfigurationDTO fromCurrentThread()
 		{
@@ -129,6 +131,132 @@ public class ActivityMasterConfiguration
 			doubleCheck = ActivityMasterConfiguration.get()
 			                                         .isDoubleCheckDisabled();
 			return this;
+		}
+
+		public IEnterpriseName<?> getEnterpriseName()
+		{
+			return this.enterpriseName;
+		}
+
+		public ISecurityToken<?> getToken()
+		{
+			return this.token;
+		}
+
+		public Boolean getSecurities()
+		{
+			return this.securities;
+		}
+
+		public Boolean getAsync()
+		{
+			return this.async;
+		}
+
+		public Boolean getDoubleCheck()
+		{
+			return this.doubleCheck;
+		}
+
+		public void setEnterpriseName(IEnterpriseName<?> enterpriseName)
+		{
+			this.enterpriseName = enterpriseName;
+		}
+
+		public void setToken(ISecurityToken<?> token)
+		{
+			this.token = token;
+		}
+
+		public void setSecurities(Boolean securities)
+		{
+			this.securities = securities;
+		}
+
+		public void setAsync(Boolean async)
+		{
+			this.async = async;
+		}
+
+		public void setDoubleCheck(Boolean doubleCheck)
+		{
+			this.doubleCheck = doubleCheck;
+		}
+
+		public boolean equals(final Object o)
+		{
+			if (o == this)
+			{
+				return true;
+			}
+			if (!(o instanceof ActivityMasterConfigurationDTO))
+			{
+				return false;
+			}
+			final ActivityMasterConfigurationDTO other = (ActivityMasterConfigurationDTO) o;
+			if (!other.canEqual((Object) this))
+			{
+				return false;
+			}
+			final Object this$enterpriseName = this.getEnterpriseName();
+			final Object other$enterpriseName = other.getEnterpriseName();
+			if (this$enterpriseName == null ? other$enterpriseName != null : !this$enterpriseName.equals(other$enterpriseName))
+			{
+				return false;
+			}
+			final Object this$token = this.getToken();
+			final Object other$token = other.getToken();
+			if (this$token == null ? other$token != null : !this$token.equals(other$token))
+			{
+				return false;
+			}
+			final Object this$securities = this.getSecurities();
+			final Object other$securities = other.getSecurities();
+			if (this$securities == null ? other$securities != null : !this$securities.equals(other$securities))
+			{
+				return false;
+			}
+			final Object this$async = this.getAsync();
+			final Object other$async = other.getAsync();
+			if (this$async == null ? other$async != null : !this$async.equals(other$async))
+			{
+				return false;
+			}
+			final Object this$doubleCheck = this.getDoubleCheck();
+			final Object other$doubleCheck = other.getDoubleCheck();
+			if (this$doubleCheck == null ? other$doubleCheck != null : !this$doubleCheck.equals(other$doubleCheck))
+			{
+				return false;
+			}
+			return true;
+		}
+
+		protected boolean canEqual(final Object other)
+		{
+			return other instanceof ActivityMasterConfigurationDTO;
+		}
+
+		public int hashCode()
+		{
+			final int PRIME = 59;
+			int result = 1;
+			final Object $enterpriseName = this.getEnterpriseName();
+			result = result * PRIME + ($enterpriseName == null ? 43 : $enterpriseName.hashCode());
+			final Object $token = this.getToken();
+			result = result * PRIME + ($token == null ? 43 : $token.hashCode());
+			final Object $securities = this.getSecurities();
+			result = result * PRIME + ($securities == null ? 43 : $securities.hashCode());
+			final Object $async = this.getAsync();
+			result = result * PRIME + ($async == null ? 43 : $async.hashCode());
+			final Object $doubleCheck = this.getDoubleCheck();
+			result = result * PRIME + ($doubleCheck == null ? 43 : $doubleCheck.hashCode());
+			return result;
+		}
+
+		public String toString()
+		{
+			return "ActivityMasterConfiguration.ActivityMasterConfigurationDTO(enterpriseName=" + this.getEnterpriseName() + ", token=" + this.getToken() + ", securities=" +
+			       this.getSecurities() + ", async=" + this.getAsync() + ", doubleCheck=" + this.getDoubleCheck() + ")";
 		}
 	}
 }

@@ -8,20 +8,16 @@ package com.armineasy.activitymaster.activitymaster.db.entities.geography;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXGeography;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.builders.GeographyQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.geography.IGeographyClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -29,8 +25,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
+import static javax.persistence.FetchType.*;
 
 /**
  * @author GedMarc
@@ -42,13 +40,11 @@ import static javax.persistence.AccessType.*;
 @Table(name = "Geography")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
 		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>,Geography>,
-				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem>,
+				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Geography>,
 				           IActivityMasterEntity<Geography>
 {
 
@@ -57,29 +53,23 @@ public class Geography
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "GeographyID")
-	@Getter
-	@Setter
 	private Long id;
 
-	@Basic(optional = false)
+	@Basic(optional = false,fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
 			name = "GeographyName")
-	@Getter
-	@Setter
 	private String name;
-	@Basic(optional = false)
+	@Basic(optional = false,fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
 			name = "GeographyDesc")
-	@Getter
-	@Setter
 	private String description;
 
 	@OneToMany(
@@ -159,9 +149,152 @@ public class Geography
 	}
 
 	@Override
-	public void setMyResourceItemLinkValue(GeographyXResourceItem classificationLink, ResourceItem resourceItem, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
 	{
-		classificationLink.setGeographyID(this);
-		classificationLink.setResourceItemID(resourceItem);
+		linkTable.setGeographyID(this);
+		linkTable.setResourceItemID(secondary);
 	}
+
+
+	public List<GeographyXClassification> getClassifications()
+	{
+		return this.classifications;
+	}
+
+	public List<AddressXGeography> getAddresses()
+	{
+		return this.addresses;
+	}
+
+	public Classification getClassificationID()
+	{
+		return this.classificationID;
+	}
+
+	public List<GeographySecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public List<GeographyXResourceItem> getResources()
+	{
+		return this.resources;
+	}
+
+	public List<GeographyXGeography> getGeographyXGeographyList()
+	{
+		return this.geographyXGeographyList;
+	}
+
+	public List<GeographyXGeography> getGeographyXGeographyList1()
+	{
+		return this.geographyXGeographyList1;
+	}
+
+	public Geography setClassifications(List<GeographyXClassification> classifications)
+	{
+		this.classifications = classifications;
+		return this;
+	}
+
+	public Geography setAddresses(List<AddressXGeography> addresses)
+	{
+		this.addresses = addresses;
+		return this;
+	}
+
+	public Geography setClassificationID(Classification classificationID)
+	{
+		this.classificationID = classificationID;
+		return this;
+	}
+
+	public Geography setSecurities(List<GeographySecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public Geography setResources(List<GeographyXResourceItem> resources)
+	{
+		this.resources = resources;
+		return this;
+	}
+
+	public Geography setGeographyXGeographyList(List<GeographyXGeography> geographyXGeographyList)
+	{
+		this.geographyXGeographyList = geographyXGeographyList;
+		return this;
+	}
+
+	public Geography setGeographyXGeographyList1(List<GeographyXGeography> geographyXGeographyList1)
+	{
+		this.geographyXGeographyList1 = geographyXGeographyList1;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Geography geography = (Geography) o;
+		return Objects.equals(getId(), geography.getId());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Geography - " + getName();
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 500) String getName()
+	{
+		return this.name;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 500) String getDescription()
+	{
+		return this.description;
+	}
+
+	public Geography setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public Geography setName(@NotNull @Size(min = 1,
+			max = 500) String name)
+	{
+		this.name = name;
+		return this;
+	}
+
+	public Geography setDescription(@NotNull @Size(min = 1,
+			max = 500) String description)
+	{
+		this.description = description;
+		return this;
+	}
+
 }

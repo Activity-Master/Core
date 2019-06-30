@@ -20,7 +20,6 @@ import com.armineasy.activitymaster.activitymaster.services.system.ISecurityToke
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.extern.java.Log;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -29,6 +28,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.System;
@@ -37,10 +37,11 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton
-@Log
 public class SecurityTokenService
 		implements ISecurityTokenService<SecurityTokenService>
 {
+	private static final Logger log = Logger.getLogger(SecurityTokenService.class.getName());
+
 	public SecurityTokensSecurityToken grantAccessToToken(SecurityToken fromToken, SecurityToken toToken,
 	                                                      boolean create, boolean update, boolean delete, boolean read, ISystems<?> system)
 	{

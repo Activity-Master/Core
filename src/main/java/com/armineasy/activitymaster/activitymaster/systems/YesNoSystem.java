@@ -1,7 +1,5 @@
 package com.armineasy.activitymaster.activitymaster.systems;
 
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.implementations.YesNoService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;

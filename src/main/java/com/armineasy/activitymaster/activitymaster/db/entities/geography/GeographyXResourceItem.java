@@ -6,20 +6,14 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.geography;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.builders.GeographyXResourceItemQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
@@ -34,11 +28,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "GeographyXResourceItem")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class GeographyXResourceItem
 		extends WarehouseClassificationRelationshipTable<Geography, ResourceItem, GeographyXResourceItem, GeographyXResourceItemQueryBuilder, Long, GeographyXResourceItemSecurityToken>
 		implements Serializable
@@ -84,5 +74,93 @@ public class GeographyXResourceItem
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "GeographyXResourceItem(id=" + this.getId() + ", securities=" + this.getSecurities() + ", geographyID=" + this.getGeographyID() + ", resourceItemID=" +
+		       this.getResourceItemID() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public List<GeographyXResourceItemSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public Geography getGeographyID()
+	{
+		return this.geographyID;
+	}
+
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
+	}
+
+	public GeographyXResourceItem setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public GeographyXResourceItem setSecurities(List<GeographyXResourceItemSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public GeographyXResourceItem setGeographyID(Geography geographyID)
+	{
+		this.geographyID = geographyID;
+		return this;
+	}
+
+	public GeographyXResourceItem setResourceItemID(ResourceItem resourceItemID)
+	{
+		this.resourceItemID = resourceItemID;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof GeographyXResourceItem))
+		{
+			return false;
+		}
+		final GeographyXResourceItem other = (GeographyXResourceItem) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof GeographyXResourceItem;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

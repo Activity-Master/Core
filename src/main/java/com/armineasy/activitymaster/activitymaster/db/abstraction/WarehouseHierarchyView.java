@@ -2,9 +2,6 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderHierarchyView;
 import com.jwebmp.entityassist.BaseEntity;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Immutable;
 
@@ -15,9 +12,6 @@ import java.io.Serializable;
 
 @XmlRootElement
 @Accessors(chain = true)
-@Getter
-@Setter
-@ToString(of = "name")
 @Immutable
 @MappedSuperclass
 public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends Serializable>
@@ -33,4 +27,64 @@ public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J
 	private String path;
 	@Column
 	private Integer one;
+
+	public String getName()
+	{
+		return this.name;
+	}
+
+	public Long getParentID()
+	{
+		return this.parentID;
+	}
+
+	public String getPather()
+	{
+		return this.pather;
+	}
+
+	public String getPath()
+	{
+		return this.path;
+	}
+
+	public Integer getOne()
+	{
+		return this.one;
+	}
+
+	public WarehouseHierarchyView<J, Q, I> setName(String name)
+	{
+		this.name = name;
+		return this;
+	}
+
+	public WarehouseHierarchyView<J, Q, I> setParentID(Long parentID)
+	{
+		this.parentID = parentID;
+		return this;
+	}
+
+	public WarehouseHierarchyView<J, Q, I> setPather(String pather)
+	{
+		this.pather = pather;
+		return this;
+	}
+
+	public WarehouseHierarchyView<J, Q, I> setPath(String path)
+	{
+		this.path = path;
+		return this;
+	}
+
+	public WarehouseHierarchyView<J, Q, I> setOne(Integer one)
+	{
+		this.one = one;
+		return this;
+	}
+
+	public String toString()
+	{
+		return "WarehouseHierarchyView(name=" + this.getName() + ")";
+	}
 }

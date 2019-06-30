@@ -17,3 +17,5 @@ Thumbs.db
 **/*.factorypath
 **/*.classpath
 persistence.xml
+persistence_prod.xml
+persistence_bak.xml

@@ -3,7 +3,6 @@ package com.armineasy.activitymaster.activitymaster.systems;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
@@ -21,12 +20,12 @@ import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.pairing.Pair;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
-import lombok.extern.java.Log;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.armineasy.activitymaster.activitymaster.ActivityMasterStatics.*;
 import static com.armineasy.activitymaster.activitymaster.implementations.SystemsService.*;
@@ -34,13 +33,13 @@ import static com.armineasy.activitymaster.activitymaster.services.types.IPTypes
 import static com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes.*;
 import static com.armineasy.activitymaster.activitymaster.services.types.NameTypes.*;
 
-@Log
 @Singleton
 public class SystemsSystem
 		implements IActivityMasterSystem<SystemsSystem>
 {
 
 	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
+	private static final Logger log = Logger.getLogger(SystemsSystem.class.getName());
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)

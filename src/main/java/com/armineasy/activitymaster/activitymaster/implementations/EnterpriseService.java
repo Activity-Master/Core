@@ -17,7 +17,6 @@ import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityM
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.extern.java.Log;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -27,16 +26,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.EnterpriseClassifications.*;
 import static com.jwebmp.entityassist.enumerations.Operand.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @Singleton
-@Log
 public class EnterpriseService
 		implements IProgressable, IEnterpriseService
 {
+
+	private static final Logger log = Logger.getLogger(EnterpriseService.class.getName());
 
 	public Enterprise create(@NotNull String name, @NotNull String description, IActivityMasterProgressMonitor progressMonitor)
 	{

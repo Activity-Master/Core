@@ -2,7 +2,6 @@ package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.events.Event;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
@@ -17,7 +16,6 @@ import com.armineasy.activitymaster.activitymaster.services.system.IInvolvedPart
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import com.google.inject.Singleton;
-import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedinjection.pairing.Pair;
 import lombok.extern.java.Log;
@@ -49,7 +47,7 @@ public class InvolvedPartyService
 	public IInvolvedPartyNameType<?> createNameType(String name, String description, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		ISystems<?> system = get(SystemsService.class)
-		                             .getActivityMaster(enterprise);
+				                     .getActivityMaster(enterprise);
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
 		Optional<InvolvedPartyNameType> exists = xr.builder()
 		                                           .findByName(name)
@@ -71,10 +69,10 @@ public class InvolvedPartyService
 			xr = exists.get();
 		}
 		if (get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
+				    .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+					                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
 	}
@@ -83,7 +81,7 @@ public class InvolvedPartyService
 	public IInvolvedPartyIdentificationType<?> createIdentificationType(IEnterprise<?> enterprise, ITypeValue name, String description, UUID... identityToken)
 	{
 		ISystems<?> system = get(SystemsService.class)
-		                             .getActivityMaster(enterprise);
+				                     .getActivityMaster(enterprise);
 
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
 		Optional<InvolvedPartyIdentificationType> exists = xr.builder()
@@ -106,10 +104,10 @@ public class InvolvedPartyService
 			xr = exists.get();
 		}
 		if (get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
+				    .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+					                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 
 		return xr;
@@ -125,7 +123,7 @@ public class InvolvedPartyService
 	public IInvolvedPartyType<?> createType(IEnterprise<?> enterprise, String name, String description, UUID... identityToken)
 	{
 		ISystems<?> system = get(SystemsService.class)
-		                             .getActivityMaster(enterprise);
+				                     .getActivityMaster(enterprise);
 
 		InvolvedPartyType xr = new InvolvedPartyType();
 		Optional<InvolvedPartyType> exists = xr.builder()
@@ -148,10 +146,10 @@ public class InvolvedPartyService
 			xr = exists.get();
 		}
 		if (get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
+				    .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+					                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
 	}
@@ -160,7 +158,7 @@ public class InvolvedPartyService
 	public IInvolvedPartyOrganicType<?> createOrganicType(IEnterprise<?> enterprise, ITypeValue<?> name, String description, UUID... identityToken)
 	{
 		ISystems<?> system = get(SystemsService.class)
-		                             .getActivityMaster(enterprise);
+				                     .getActivityMaster(enterprise);
 
 		InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
 		Optional<InvolvedPartyOrganicType> exists = xr.builder()
@@ -183,10 +181,10 @@ public class InvolvedPartyService
 			xr = exists.get();
 		}
 		if (get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
+				    .isSecurityEnabled())
 		{
 			xr.createDefaultSecurity(get(ISystemsService.class)
-			                                     .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+					                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 		}
 		return xr;
 	}
@@ -215,7 +213,9 @@ public class InvolvedPartyService
 				                                                                  .inActiveRange(enterprise, tokens)
 				                                                                  .inDateRange()
 				                                                                  .findChildLink(
-						                                                                  (InvolvedPartyIdentificationType) findIdentificationType(idType, enterprise, tokens), value)
+						                                                                  (InvolvedPartyIdentificationType) findIdentificationType(idType, enterprise, tokens),
+						                                                                  value)
+				                                                                  .setReturnFirst(true)
 				                                                                  .get();
 		return builder.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
 		              .orElse(null);
@@ -236,7 +236,7 @@ public class InvolvedPartyService
 	public IInvolvedParty<?> findByUsernameAndPassword(String username, String password, ISystems<?> originatingSystem, boolean throwForNoUser, UUID... token)
 	{
 		IEnterprise<?> enterprise = originatingSystem.getEnterpriseID();
-		if (!doesUsernameExist(username, enterprise,token))
+		if (!doesUsernameExist(username, enterprise, token))
 		{
 			if (throwForNoUser)
 			{
@@ -251,8 +251,9 @@ public class InvolvedPartyService
 		UUID identityToken = InvolvedPartySystem.getSystemTokens()
 		                                        .get(originatingSystem.getEnterpriseID());
 		InvolvedParty foundPart = new InvolvedParty().builder()
-		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, username,identityToken)
-		                                             .get().orElse(null);
+		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes()), identityToken)
+		                                             .get()
+		                                             .orElse(null);
 		if (foundPart == null)
 		{
 			throw new SecurityAccessException("Unable to find any Involved Party with that username");
@@ -286,9 +287,21 @@ public class InvolvedPartyService
 	public boolean doesUsernameExist(String username, IEnterprise<?> enterprise, UUID... token)
 	{
 		return new InvolvedParty().builder()
-		                          .findByIdentificationType(enterprise, IdentificationTypeUserName, username,token)
+		                          .findByIdentificationType(enterprise, IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes()), token)
 		                          .getCount() > 0;
 	}
+
+	@Override
+	public IInvolvedParty<?> findByUsername(String username, IEnterprise<?> enterprise, UUID... token)
+	{
+		IInvolvedParty<?> party = new InvolvedParty().builder()
+		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes()),
+		                                                                       token)
+		                                             .get()
+		                                             .orElseThrow(() -> new SecurityAccessException("Involved Party Does Not Exist"));
+		return party;
+	}
+
 
 	public IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> originatingSystem, UUID... token)
 	{
@@ -311,12 +324,13 @@ public class InvolvedPartyService
 
 		involvedParty.addOrUpdate(SecurityPassword, passEncrypted, originatingSystem, token);
 		involvedParty.addOrUpdate(SecurityPasswordSalt, saltEncrypted, originatingSystem, token);
-		InvolvedPartyXInvolvedPartyIdentificationType sec =involvedParty.addOrUpdate(IdentificationTypeUserName, username, originatingSystem, token);
+		InvolvedPartyXInvolvedPartyIdentificationType sec = involvedParty.addOrUpdate(IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes())
+				, originatingSystem, token);
 
-		if(event != null)
+		if (event != null)
 		{
-			event.addOrUpdate(UpdatedPassword,STRING_EMPTY, originatingSystem,token);
-			event.addOrUpdate(UpdatedUsername,username, originatingSystem,token);
+			event.addOrUpdate(UpdatedPassword, STRING_EMPTY, originatingSystem, token);
+			event.addOrUpdate(UpdatedUsername, username, originatingSystem, token);
 		}
 		return involvedParty;
 	}
@@ -328,17 +342,17 @@ public class InvolvedPartyService
 		IEnterprise<?> enterprise = originatingSystem.getEnterpriseID();
 
 		InvolvedParty ip = new InvolvedParty();
-		Optional<InvolvedParty> exists =ActivityMasterConfiguration
-				                                .get()
-				                                .isDoubleCheckDisabled() ? Optional.empty() :
-		                                ip.builder()
+		Optional<InvolvedParty> exists = ActivityMasterConfiguration
+				                                 .get()
+				                                 .isDoubleCheckDisabled() ? Optional.empty() :
+		                                 ip.builder()
 		                                   .findByIdentificationType(enterprise, idTypes.getKey(), idTypes.getValue(), identityToken)
 		                                   .get();
 
 		if (exists.isEmpty())
 		{
 			Systems system = (Systems) get(ISystemsService.class)
-			                                       .getActivityMaster(enterprise,identityToken);
+					                           .getActivityMaster(enterprise, identityToken);
 
 			ip.setEnterpriseID((Enterprise) enterprise);
 			ip.setActiveFlagID(system.getActiveFlagID());
@@ -346,17 +360,17 @@ public class InvolvedPartyService
 			ip.setOriginalSourceSystemID(system);
 			ip.persist();
 			if (get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
+					    .isSecurityEnabled())
 			{
 				ip.createDefaultSecurity(get(ISystemsService.class)
-				                                     .getActivityMaster(ip.getEnterpriseID(), identityToken)
+						                         .getActivityMaster(ip.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
 
-			ip.addOrUpdate(idTypes.getKey(), idTypes.getValue(),originatingSystem, identityToken);
+			ip.addOrUpdate(idTypes.getKey(), idTypes.getValue(), originatingSystem, identityToken);
 
 			if (get(ActivityMasterConfiguration.class)
-			                .isAsyncEnabled())
+					    .isAsyncEnabled())
 			{
 				final InvolvedParty ipAsync = ip;
 				JobService.getInstance()
@@ -389,10 +403,10 @@ public class InvolvedPartyService
 			ipo.setOriginalSourceSystemID(system);
 			ipo.persist();
 			if (get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
+					    .isSecurityEnabled())
 			{
 				ipo.createDefaultSecurity(get(ISystemsService.class)
-				                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
+						                          .getActivityMaster(ipo.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
 		}
@@ -407,10 +421,10 @@ public class InvolvedPartyService
 			ipo.setOriginalSourceSystemID(system);
 			ipo.persist();
 			if (get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
+					    .isSecurityEnabled())
 			{
 				ipo.createDefaultSecurity(get(ISystemsService.class)
-				                                      .getActivityMaster(ipo.getEnterpriseID(), identityToken)
+						                          .getActivityMaster(ipo.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
 		}

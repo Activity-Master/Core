@@ -2,18 +2,12 @@ package com.armineasy.activitymaster.activitymaster.db.entities.classifications;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders.ClassificationXClassificationQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
@@ -28,11 +22,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "ClassificationXClassification")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class ClassificationXClassification
 		extends WarehouseClassificationRelationshipTable<Classification, Classification, ClassificationXClassification, ClassificationXClassificationQueryBuilder, Long, ClassificationXClassificationSecurityToken>
 		implements Serializable
@@ -79,5 +69,93 @@ public class ClassificationXClassification
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "ClassificationXClassification(id=" + this.getId() + ", childClassificationID=" + this.getChildClassificationID() + ", parentClassificationID=" +
+		       this.getParentClassificationID() + ", securities=" + this.getSecurities() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public Classification getChildClassificationID()
+	{
+		return this.childClassificationID;
+	}
+
+	public Classification getParentClassificationID()
+	{
+		return this.parentClassificationID;
+	}
+
+	public List<ClassificationXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public ClassificationXClassification setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public ClassificationXClassification setChildClassificationID(Classification childClassificationID)
+	{
+		this.childClassificationID = childClassificationID;
+		return this;
+	}
+
+	public ClassificationXClassification setParentClassificationID(Classification parentClassificationID)
+	{
+		this.parentClassificationID = parentClassificationID;
+		return this;
+	}
+
+	public ClassificationXClassification setSecurities(List<ClassificationXClassificationSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof ClassificationXClassification))
+		{
+			return false;
+		}
+		final ClassificationXClassification other = (ClassificationXClassification) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof ClassificationXClassification;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

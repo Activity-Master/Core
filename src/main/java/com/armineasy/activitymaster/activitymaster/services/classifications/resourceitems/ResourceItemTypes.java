@@ -1,13 +1,14 @@
 package com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems;
 
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 
 import static com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts.*;
 
 public enum ResourceItemTypes
-		implements IResourceTypeValue<ResourceItemTypes>
+		implements IResourceType<ResourceItemTypes>
 {
+
 	PhysicalDocuments("This is a reference to a physical document", ResourceItem),
 	Documents("An electronic document", ResourceItem),
 	Invoices("An invoice", ResourceItem),
@@ -30,6 +31,9 @@ public enum ResourceItemTypes
 	OperatingSystem("The operating system that was used", ResourceItem),
 	OperatingSystemFamily("The operating system that was used", ResourceItem),
 	BrowserInformation("Browser Identifying Information", ResourceItem),
+
+
+
 	;
 	private String classificationValue;
 	private IClassificationDataConceptValue<?> dataConceptValue;

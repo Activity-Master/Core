@@ -1,20 +1,14 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.events;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventXProductQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.product.Product;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 import static javax.persistence.AccessType.*;
@@ -28,11 +22,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "EventXProduct")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class EventXProduct
 		extends WarehouseClassificationRelationshipTable<Event, Product, EventXProduct, EventXProductQueryBuilder, Long, EventXProductSecurityToken>
 {
@@ -77,5 +67,92 @@ public class EventXProduct
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "EventXProduct(id=" + this.getId() + ", securities=" + this.getSecurities() + ", eventID=" + this.getEventID() + ", productID=" + this.getProductID() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public List<EventXProductSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+
+	public Product getProductID()
+	{
+		return this.productID;
+	}
+
+	public EventXProduct setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public EventXProduct setSecurities(List<EventXProductSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public EventXProduct setEventID(Event eventID)
+	{
+		this.eventID = eventID;
+		return this;
+	}
+
+	public EventXProduct setProductID(Product productID)
+	{
+		this.productID = productID;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof EventXProduct))
+		{
+			return false;
+		}
+		final EventXProduct other = (EventXProduct) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof EventXProduct;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

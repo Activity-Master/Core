@@ -2,6 +2,9 @@ package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.*;
+import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementXArrangementTypeQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementXClassificationQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedParty;
@@ -14,9 +17,11 @@ import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityM
 import com.armineasy.activitymaster.activitymaster.services.system.*;
 import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import com.google.inject.Singleton;
+import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
+import javax.persistence.criteria.JoinType;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -112,20 +117,24 @@ public class ArrangementsService
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(arrType, systems.getEnterpriseID(), identityToken);
-		List<ArrangementXClassification> xips =
-				new ArrangementXClassification()
-						.builder()
-						.withEnterprise(systems.getEnterprise())
-						.findChildLink((Classification) classification)
-						.withValue(value)
-						.inActiveRange(systems.getEnterpriseID(), identityToken)
-						.inDateRange()
-						.getAll();
-		return xips.stream()
-		           .map(ArrangementXClassification::getArrangementID)
-		           .filter(a -> LocalDateTime.now()
-		                                     .isBefore(a.getEffectiveToDate()))
-		           .collect(Collectors.toList());
+
+		ArrangementQueryBuilder aqb = new Arrangement().builder();
+		aqb.withEnterprise(systems.getEnterprise())
+		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		   .inDateRange();
+		JoinExpression aje = new JoinExpression();
+
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
+		qb.withEnterprise(systems.getEnterprise())
+		  .findChildLink((Classification) classification)
+		  .withValue(value)
+		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inDateRange();
+
+		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
+
+		List<Arrangement> arrangementList = aqb.getAll();
+		return (List)arrangementList;
 	}
 
 	@CacheResult(cacheName = "ArrangementArrangementType")
@@ -185,30 +194,44 @@ public class ArrangementsService
 		ISystems<?> systems = InvolvedPartySystem.getNewSystem()
 		                                         .get(enterprise);
 
-		List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder()
-		                                                                          .inActiveRange(enterprise)
-		                                                                        //  .withClassification(classification)
-		                                                                          .inDateRange()
-		                                                                          .canRead(enterprise, identityToken)
-		                                                                          .findChildLink((ArrangementType) type)
-		                                                                          .getAll();
-		Set<IArrangement<?>> arrOut = new LinkedHashSet<>();
+		ArrangementQueryBuilder aqb = new Arrangement().builder();
+		aqb.withEnterprise(systems.getEnterprise())
+		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		   .inDateRange();
+
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
+		qb.withEnterprise(systems.getEnterprise())
+		  .findChildLink((Classification) classification)
+		  //.withValue(value)
+		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inDateRange();
+
+		ArrangementXArrangementTypeQueryBuilder tqb = new ArrangementXArrangementType().builder();
+		tqb.withEnterprise(systems.getEnterprise())
+		  .findChildLink((ArrangementType) type)
+		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inDateRange();
+
+		JoinExpression aje = new JoinExpression();
+		JoinExpression ate = new JoinExpression();
+
+		qb.join(ArrangementXClassification_.arrangementID, aqb, JoinType.INNER, aje);
+		ate.setGeneratedRoot(aje.getGeneratedRoot());
+		aqb.join(Arrangement_.types, tqb, JoinType.INNER, ate);
+
+		/*Long sumOfAllThings = qb.selectSum(ArrangementXClassification_.value)
+		                        .get(Long.class).get();*/
+		List<ArrangementXClassification> results = qb.getAll();
+		Set<ArrangementXClassification> resultsDistinct = new LinkedHashSet<>(results);
 		double d = 0.0d;
-		for (ArrangementXArrangementType arr : arrs)
+		for (ArrangementXClassification arrangementXClassification : resultsDistinct)
 		{
-			arrOut.add(arr.getArrangement());
-		}
-		for (IArrangement<?> arrangement : arrOut)
-		{
-			for (ArrangementXClassification arrangementXClassification : arrangement.findAll(classificationValue, systems, identityToken))
+			if (LocalDateTime.now()
+			                 .isAfter(arrangementXClassification.getEffectiveToDate()))
 			{
-				if (LocalDateTime.now()
-				                 .isAfter(arrangementXClassification.getEffectiveToDate()))
-				{
-					continue;
-				}
-				d += arrangementXClassification.getValueAsDouble();
+				continue;
 			}
+			d += arrangementXClassification.getValueAsDouble();
 		}
 		return d;
 	}

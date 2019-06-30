@@ -1,7 +1,6 @@
 package com.armineasy.activitymaster.activitymaster.db;
 
 import com.jwebmp.guicedpersistence.btm.BTMConnectionBaseInfo;
-import com.jwebmp.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
 import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
 import com.jwebmp.guicedpersistence.db.DatabaseModule;
 import com.oracle.jaxb21.PersistenceUnit;
@@ -27,10 +26,10 @@ public class ActivityMasterDBModule
 		//BTMAutomatedTransactionHandler.setActive(true);
 		return new BTMConnectionBaseInfo()
 				       .setEnableJdbc4ConnectionTest(true)
-				       .setMaxPoolSize(20)
+				       .setMaxPoolSize(5)
 				       .setMinPoolSize(5)
 				       .setPrefill(true)
-				       //.setShareTransactionConnections(true)
+				       .setShareTransactionConnections(true)
 				       .setTransactionIsolation("READ_UNCOMMITTED")
 				       .setAllowLocalTransactions(true);
 	}

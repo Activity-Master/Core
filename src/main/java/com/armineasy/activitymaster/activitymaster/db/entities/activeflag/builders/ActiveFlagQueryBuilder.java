@@ -3,19 +3,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.activeflag.build
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.assists.QueryBuilderNameDescription;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlagSecurityToken;
-import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag_;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
-import com.jwebmp.guicedinjection.GuiceContext;
-
-import javax.persistence.metamodel.SingularAttribute;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.jwebmp.entityassist.enumerations.Operand.*;
 
 @SuppressWarnings("Duplicates")
 public class ActiveFlagQueryBuilder

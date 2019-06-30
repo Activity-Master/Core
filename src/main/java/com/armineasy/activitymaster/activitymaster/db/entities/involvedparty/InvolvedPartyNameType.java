@@ -9,9 +9,6 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAn
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedPartyNameType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -21,6 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 import static javax.persistence.AccessType.*;
+import static javax.persistence.FetchType.*;
 
 /**
  * @author GedMarc
@@ -32,9 +30,7 @@ import static javax.persistence.AccessType.*;
 @Table
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedPartyNameType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, Long, InvolvedPartyNameTypeSecurityToken>
 		implements INameAndDescription<InvolvedPartyNameType>,
@@ -49,28 +45,22 @@ public class InvolvedPartyNameType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "InvolvedPartyNameTypeID")
-	@Getter
-	@Setter
 	private Long id;
-	@Basic(optional = false)
+	@Basic(optional = false,fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
 			name = "InvolvedPartyNameTypeName")
-	@Getter
-	@Setter
 	private String name;
-	@Basic(optional = false)
+	@Basic(optional = false,fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
 			name = "InvolvedPartyNameTypeDescr")
-	@Getter
-	@Setter
 	private String description;
 
 	@OneToMany(
@@ -103,7 +93,7 @@ public class InvolvedPartyNameType
 	@Override
 	public String toString()
 	{
-		return getName();
+		return "IdentificationNameType - " + getName();
 	}
 
 	@Override
@@ -111,5 +101,102 @@ public class InvolvedPartyNameType
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public List<InvolvedPartyXInvolvedPartyNameType> getInvolvedPartyXInvolvedPartyNameTypeList()
+	{
+		return this.involvedPartyXInvolvedPartyNameTypeList;
+	}
+
+	public List<InvolvedPartyNameTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public InvolvedPartyNameType setInvolvedPartyXInvolvedPartyNameTypeList(List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList)
+	{
+		this.involvedPartyXInvolvedPartyNameTypeList = involvedPartyXInvolvedPartyNameTypeList;
+		return this;
+	}
+
+	public InvolvedPartyNameType setSecurities(List<InvolvedPartyNameTypeSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof InvolvedPartyNameType))
+		{
+			return false;
+		}
+		final InvolvedPartyNameType other = (InvolvedPartyNameType) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof InvolvedPartyNameType;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 500) String getName()
+	{
+		return this.name;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 500) String getDescription()
+	{
+		return this.description;
+	}
+
+	public InvolvedPartyNameType setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public InvolvedPartyNameType setName(@NotNull @Size(min = 1,
+			max = 500) String name)
+	{
+		this.name = name;
+		return this;
+	}
+
+	public InvolvedPartyNameType setDescription(@NotNull @Size(min = 1,
+			max = 500) String description)
+	{
+		this.description = description;
+		return this;
 	}
 }

@@ -2,14 +2,10 @@ package com.armineasy.activitymaster.activitymaster.db.entities.arrangement;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementXProductSecurityTokenQueryBuilder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 import static javax.persistence.AccessType.*;
@@ -23,11 +19,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "ArrangementXProductSecurityToken")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class ArrangementXProductSecurityToken
 		extends WarehouseSecurityTable<ArrangementXProductSecurityToken, ArrangementXProductSecurityTokenQueryBuilder, Long>
 		implements Serializable
@@ -55,5 +47,70 @@ public class ArrangementXProductSecurityToken
 	public ArrangementXProductSecurityToken(Long arrangementXProductSecurityTokenID)
 	{
 		this.id = arrangementXProductSecurityTokenID;
+	}
+
+	public String toString()
+	{
+		return "ArrangementXProductSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public ArrangementXProduct getBase()
+	{
+		return this.base;
+	}
+
+	public ArrangementXProductSecurityToken setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public ArrangementXProductSecurityToken setBase(ArrangementXProduct base)
+	{
+		this.base = base;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof ArrangementXProductSecurityToken))
+		{
+			return false;
+		}
+		final ArrangementXProductSecurityToken other = (ArrangementXProductSecurityToken) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof ArrangementXProductSecurityToken;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

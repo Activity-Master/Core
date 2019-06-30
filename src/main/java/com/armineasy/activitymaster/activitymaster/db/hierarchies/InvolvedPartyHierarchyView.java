@@ -6,17 +6,10 @@
 package com.armineasy.activitymaster.activitymaster.db.hierarchies;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHierarchyView;
-import com.armineasy.activitymaster.activitymaster.db.hierarchies.builders.GeographyHierarchyViewQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.builders.InvolvedPartyHierarchyViewQueryBuilder;
-import com.jwebmp.entityassist.BaseEntity;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -30,10 +23,6 @@ import java.io.Serializable;
 @Table(name = "GeographyHierarchyView")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
 @Immutable
 public class InvolvedPartyHierarchyView
 		extends WarehouseHierarchyView<InvolvedPartyHierarchyView, InvolvedPartyHierarchyViewQueryBuilder, Long>
@@ -46,5 +35,54 @@ public class InvolvedPartyHierarchyView
 
 	public InvolvedPartyHierarchyView()
 	{
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public InvolvedPartyHierarchyView setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof InvolvedPartyHierarchyView))
+		{
+			return false;
+		}
+		final InvolvedPartyHierarchyView other = (InvolvedPartyHierarchyView) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof InvolvedPartyHierarchyView;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

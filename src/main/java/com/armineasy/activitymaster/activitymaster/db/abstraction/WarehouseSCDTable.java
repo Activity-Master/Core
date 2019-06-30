@@ -7,15 +7,12 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 /**
@@ -29,8 +26,6 @@ import java.io.Serializable;
  */
 @MappedSuperclass
 @Accessors(chain = true)
-@Getter
-@Setter
 public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>, Q extends QueryBuilder<Q, J, I, S>,
 		                                       I extends Serializable, S extends WarehouseSecurityTable>
 		extends WarehouseCoreTable<J, Q, I, S>
@@ -76,4 +71,36 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 		return (J) this;
 	}
 
+	public ActiveFlag getActiveFlagID()
+	{
+		return this.activeFlagID;
+	}
+
+	public Enterprise getEnterpriseID()
+	{
+		return this.enterpriseID;
+	}
+
+	public Systems getSystemID()
+	{
+		return this.systemID;
+	}
+
+	public WarehouseSCDTable<J, Q, I, S> setActiveFlagID(ActiveFlag activeFlagID)
+	{
+		this.activeFlagID = activeFlagID;
+		return this;
+	}
+
+	public WarehouseSCDTable<J, Q, I, S> setEnterpriseID(Enterprise enterpriseID)
+	{
+		this.enterpriseID = enterpriseID;
+		return this;
+	}
+
+	public WarehouseSCDTable<J, Q, I, S> setSystemID(Systems systemID)
+	{
+		this.systemID = systemID;
+		return this;
+	}
 }

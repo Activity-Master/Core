@@ -39,6 +39,8 @@ public interface IInvolvedPartyService
 
 	boolean doesUsernameExist(String username, IEnterprise<?> enterprise, UUID... token);
 
+	IInvolvedParty<?> findByUsername(String username, IEnterprise<?> enterprise, UUID... token);
+
 	IInvolvedParty<?> create(ISystems<?> originatingSystem, Pair<IIdentificationType<?>, String> idTypes,
 	                         boolean isOrganic, UUID... identityToken);
 

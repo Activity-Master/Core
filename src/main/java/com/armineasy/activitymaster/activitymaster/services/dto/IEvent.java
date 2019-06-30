@@ -8,12 +8,14 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.events.IEventClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IEventTypeValue;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 
 public interface IEvent<J extends IEvent<J>>
 		extends IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>,Event>,
 		                                IContainsGeographies<Event, Geography, EventXGeography>,
-		                                IContainsResourceItems<Event, ResourceItem, EventXResourceItem>,
+		                                IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Event>,
 		                                IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,
 		                                IContainsAddresses<Event, Address, EventXAddress>,
 		                                IContainsEventTypes<Event, EventType, EventXEventType, IEventTypeValue<?>,Event>,

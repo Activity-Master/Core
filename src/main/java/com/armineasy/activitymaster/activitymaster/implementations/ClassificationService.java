@@ -104,12 +104,12 @@ public class ClassificationService
 	{
 		Classification search = new Classification();
 		ClassificationsDataConceptService cb = GuiceContext.get(ClassificationsDataConceptService.class);
-		ClassificationDataConcept concept = cb.find(name.concept(), (Enterprise) enterprise, identityToken);
+		ClassificationDataConcept concept = cb.find(name.concept(), enterprise, identityToken);
 		search = search.builder()
-		               .findByNameAndConcept(name.classificationName(), concept, (Enterprise) enterprise)
-		               .inActiveRange((Enterprise) enterprise, identityToken)
+		               .findByNameAndConcept(name.classificationName(), concept, enterprise)
+		               .inActiveRange(enterprise, identityToken)
 		               .inDateRange()
-		               .canRead((Enterprise) enterprise, identityToken)
+		               .canRead(enterprise, identityToken)
 		               .get()
 		               .get();
 		return search;

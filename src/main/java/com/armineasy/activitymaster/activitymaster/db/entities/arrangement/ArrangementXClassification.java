@@ -8,18 +8,12 @@ package com.armineasy.activitymaster.activitymaster.db.entities.arrangement;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementXClassificationQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.List;
 
@@ -34,10 +28,6 @@ import static javax.persistence.AccessType.*;
 @Table(name = "ArrangementXClassification")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
 @Access(FIELD)
 public class ArrangementXClassification
 		extends WarehouseClassificationRelationshipTable<Arrangement, Classification, ArrangementXClassification, ArrangementXClassificationQueryBuilder, Long, ArrangementXClassificationSecurityToken>
@@ -78,5 +68,76 @@ public class ArrangementXClassification
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public Arrangement getArrangementID()
+	{
+		return this.arrangementID;
+	}
+
+	public List<ArrangementXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public ArrangementXClassification setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public ArrangementXClassification setArrangementID(Arrangement arrangementID)
+	{
+		this.arrangementID = arrangementID;
+		return this;
+	}
+
+	public ArrangementXClassification setSecurities(List<ArrangementXClassificationSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof ArrangementXClassification))
+		{
+			return false;
+		}
+		final ArrangementXClassification other = (ArrangementXClassification) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof ArrangementXClassification;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

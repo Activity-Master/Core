@@ -4,14 +4,13 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.Query
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.implementations.InvolvedPartyService;
-import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
+import com.google.common.base.Strings;
 import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
 import com.jwebmp.guicedinjection.GuiceContext;
-import com.google.common.base.Strings;
 
 import javax.persistence.criteria.JoinType;
-
 import java.util.UUID;
 
 import static com.jwebmp.entityassist.enumerations.Operand.*;

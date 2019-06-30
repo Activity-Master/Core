@@ -5,21 +5,14 @@
  */
 package com.armineasy.activitymaster.activitymaster.db.hierarchies;
 
-import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseBaseTable;
-import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHierarchyView;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.builders.SecurityHierarchyParentsQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.hierarchies.builders.SecurityHierarchyViewQueryBuilder;
 import com.jwebmp.entityassist.BaseEntity;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author GedMarc
@@ -28,10 +21,6 @@ import java.util.List;
 @Table(name = "SecurityHierarchyParents")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
 
 @Immutable
 public class SecurityHierarchyParents
@@ -55,4 +44,74 @@ public class SecurityHierarchyParents
 	}
 
 
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public SecurityHierarchyView getChild()
+	{
+		return this.child;
+	}
+
+	public Long getValue()
+	{
+		return this.value;
+	}
+
+	public SecurityHierarchyParents setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public SecurityHierarchyParents setChild(SecurityHierarchyView child)
+	{
+		this.child = child;
+		return this;
+	}
+
+	public SecurityHierarchyParents setValue(Long value)
+	{
+		this.value = value;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof SecurityHierarchyParents))
+		{
+			return false;
+		}
+		final SecurityHierarchyParents other = (SecurityHierarchyParents) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof SecurityHierarchyParents;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
+	}
 }

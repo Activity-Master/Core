@@ -2,13 +2,13 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
@@ -22,8 +22,6 @@ import java.lang.reflect.ParameterizedType;
  */
 @MappedSuperclass
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
 public abstract class WarehouseClassificationRelationshipTable<P extends WarehouseCoreTable, S extends WarehouseCoreTable,
 		                                                              J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST>,
 		                                                              Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I, ST>,
@@ -57,5 +55,16 @@ public abstract class WarehouseClassificationRelationshipTable<P extends Warehou
 	protected @NotNull Class<ST> findPersistentSecurityClass()
 	{
 		return (Class<ST>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[5];
+	}
+
+	public Classification getClassificationID()
+	{
+		return this.classificationID;
+	}
+
+	public WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST> setClassificationID(Classification classificationID)
+	{
+		this.classificationID = classificationID;
+		return this;
 	}
 }

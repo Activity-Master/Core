@@ -15,26 +15,13 @@
         <validation-mode>NONE</validation-mode>
         <properties>
             <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.format_sql" value="false"/>
             <property name="hibernate.connection.useUnicode" value="yes"/>
             <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;DatabaseName=ActivityMasterAuto"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value="menamoo0#"/>
             <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
-            <!--
-                        <property name="hibernate.hbm2ddl.auto" value="update"/>
-            -->
-
-            <!--
-
-                        <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.BTMTransactionManagerLookup"/>
-                        <property name="hibernate.jndi.class" value="bitronix.tm.jndi.BitronixInitialContextFactory"/>
-            -->
-
-            <!--
-                        <property name="javax.persistence.schema-generation.scripts.create-target" value="./META-INF/CreateDB.sql"/>
-                        <property name="javax.persistence.schema-generation.scripts.drop-target" value="./META-INF/DropTables.sql"/>-->
-
-
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.max_fetch_depth" value="1"/>
 
@@ -54,23 +41,18 @@
         <validation-mode>NONE</validation-mode>
 
         <properties>
-            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.show_sql" value="false"/>
             <property name="hibernate.format_sql" value="false"/>
             <property name="hibernate.connection.useUnicode" value="yes"/>
             <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;DatabaseName=ActivityMasterUT"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value="menamoo0#"/>
             <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
 
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.max_fetch_depth" value="1"/>
             <property name="hibernate.hbm2ddl.auto" value="none"/>
-
-
-            <!--          <property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>
-                      <property name="javax.persistence.schema-generation.scripts.create-target" value="./CreateDB.sql"/>
-                      <property name="javax.persistence.schema-generation.scripts.drop-target" value="./DropTables.sql"/>
-
-                      <property name="hibernate.hbm2ddl.auto" value="update"/>-->
-
         </properties>
     </persistence-unit>
 

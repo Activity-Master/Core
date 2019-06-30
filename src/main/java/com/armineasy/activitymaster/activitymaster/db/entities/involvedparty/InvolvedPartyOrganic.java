@@ -1,19 +1,15 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyOrganicQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -27,9 +23,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "InvolvedPartyOrganic")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedPartyOrganic
 		extends WarehouseTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, Long, InvolvedPartyOrganicSecurityToken>
 
@@ -38,8 +32,6 @@ public class InvolvedPartyOrganic
 	@Id
 	@Column(nullable = false,
 			name = "InvolvedPartyOrganicID")
-	@Getter
-	@Setter
 	private Long id;
 
 	@JoinColumn(name = "InvolvedPartyOrganicID",
@@ -49,8 +41,6 @@ public class InvolvedPartyOrganic
 			updatable = false)
 	@OneToOne(optional = false,
 			fetch = FetchType.LAZY)
-	@Getter
-	@Setter
 	private InvolvedParty involvedParty;
 
 	@OneToMany(
@@ -73,5 +63,65 @@ public class InvolvedPartyOrganic
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public List<InvolvedPartyOrganicSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public InvolvedPartyOrganic setSecurities(List<InvolvedPartyOrganicSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		InvolvedPartyOrganic that = (InvolvedPartyOrganic) o;
+		return Objects.equals(getId(), that.getId());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "OrganicParty - " + getId();
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public InvolvedParty getInvolvedParty()
+	{
+		return this.involvedParty;
+	}
+
+	public InvolvedPartyOrganic setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public InvolvedPartyOrganic setInvolvedParty(InvolvedParty involvedParty)
+	{
+		this.involvedParty = involvedParty;
+		return this;
 	}
 }

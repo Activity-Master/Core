@@ -8,10 +8,12 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItem;
+import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItemType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IResourceItemService;
@@ -36,7 +38,8 @@ import static javax.persistence.criteria.JoinType.*;
 public class ResourceItemService
 		implements IResourceItemService
 {
-	public ResourceItemType createType(IResourceTypeValue<?> value, ISystems<?> system, UUID... identityToken)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	public IResourceItemType<?> createType(IResourceType<?> value, ISystems<?> system, UUID... identityToken)
 	{
 		IEnterprise<?> enterprise = system.getEnterpriseID();
 
@@ -71,7 +74,7 @@ public class ResourceItemService
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public ResourceItem create(IResourceTypeValue<?> identityResourceType, String mimeType,
+	public IResourceItem<?> create(IResourceType<?> identityResourceType, String mimeType,
 	                           ISystems system, UUID... identityToken)
 	{
 		ResourceItem xr = new ResourceItem();
@@ -90,7 +93,7 @@ public class ResourceItemService
 			xr.createDefaultSecurity(system, identityToken);
 		}
 
-		xr.addResourceItemType(findResourceItemType(identityResourceType, system, identityToken), "", identityToken);
+		xr.add(identityResourceType,"Created With", system, identityToken);
 
 		return xr;
 	}
@@ -98,11 +101,11 @@ public class ResourceItemService
 	@SuppressWarnings("unchecked")
 	@CacheResult(cacheName = "ResourceItemFindByClassification")
 	@Override
-	public ResourceItem findByClassification(@CacheKey IResourceTypeValue<?> resourceType,
-	                                         @CacheKey IResourceItemClassification<?> classification,
-	                                         @CacheKey String value,
-	                                         @CacheKey ISystems systems,
-	                                         @CacheKey UUID... identityToken)
+	public IResourceItem<?> findByClassification(@CacheKey IResourceType<?> resourceType,
+	                                          @CacheKey IResourceItemClassification<?> classification,
+	                                          @CacheKey String value,
+	                                          @CacheKey ISystems systems,
+	                                          @CacheKey UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
 		ResourceItemXClassificationQueryBuilder builder = res.builder();
@@ -134,8 +137,9 @@ public class ResourceItemService
 		             .orElse(null);
 	}
 
+	@Override
 	@CacheResult(cacheName = "FindResourceItemType")
-	public ResourceItemType findResourceItemType(@CacheKey IResourceTypeValue<?> type, @CacheKey ISystems systems, @CacheKey UUID... identityToken)
+	public IResourceItemType<?> findResourceItemType(@CacheKey IResourceType<?> type, @CacheKey ISystems systems, @CacheKey UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
 		Optional<ResourceItemType> exists = xr.builder()
@@ -146,5 +150,6 @@ public class ResourceItemService
 		                                      .get();
 		return exists.orElse(null);
 	}
+
 
 }

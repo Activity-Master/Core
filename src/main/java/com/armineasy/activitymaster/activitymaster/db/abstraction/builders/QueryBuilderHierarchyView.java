@@ -2,7 +2,6 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction.builders;
 
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHierarchyView;
-import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierarchyView_;
 import com.jwebmp.entityassist.querybuilder.QueryBuilder;
 import com.jwebmp.guicedinjection.GuiceContext;

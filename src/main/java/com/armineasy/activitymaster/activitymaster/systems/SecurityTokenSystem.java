@@ -8,7 +8,6 @@ import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationXClassification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.EnterpriseXClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
@@ -17,7 +16,9 @@ import com.armineasy.activitymaster.activitymaster.db.entities.security.Security
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemXClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo;
-import com.armineasy.activitymaster.activitymaster.implementations.*;
+import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
+import com.armineasy.activitymaster.activitymaster.implementations.SecurityTokenService;
+import com.armineasy.activitymaster.activitymaster.implementations.SystemsService;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
@@ -28,24 +29,25 @@ import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
-import lombok.extern.java.Log;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.classification.Classifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.EnterpriseClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.SecurityTokenClassifications.*;
+import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.System;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.*;
 import static com.jwebmp.guicedinjection.GuiceContext.*;
 
-@Log
 public class SecurityTokenSystem
 		implements IActivityMasterSystem<SecurityTokenSystem>
 {
 
 	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
+	private static final Logger log = Logger.getLogger(SecurityTokenSystem.class.getName());
 
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)

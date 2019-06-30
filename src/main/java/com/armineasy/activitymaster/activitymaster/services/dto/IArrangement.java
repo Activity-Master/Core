@@ -6,16 +6,13 @@ import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.Inv
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.arrangement.IArrangementClassification;
+import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IArrangementTypes;
-import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
-import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
-import com.jwebmp.guicedinjection.GuiceContext;
-
-import java.time.LocalDateTime;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 
 public interface IArrangement<J extends IArrangement<J>>
 		extends IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, Arrangement>,
-				        IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem>,
+				        IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Arrangement>,
 				        IActivityMasterEntity<Arrangement>,
 				        IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, Arrangement>,
 				        IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty>,

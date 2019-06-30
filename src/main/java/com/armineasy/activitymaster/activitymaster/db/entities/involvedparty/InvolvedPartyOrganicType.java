@@ -9,9 +9,6 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAn
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedPartyOrganicType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -19,8 +16,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
+import static javax.persistence.FetchType.*;
 
 /**
  * @author GedMarc
@@ -32,9 +31,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "InvolvedPartyOrganicType")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedPartyOrganicType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, Long, InvolvedPartyOrganicTypeSecurityToken>
 		implements IInvolvedPartyOrganicType<InvolvedPartyOrganicType>,
@@ -49,28 +46,22 @@ public class InvolvedPartyOrganicType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "InvolvedPartyOrganicTypeID")
-	@Getter
-	@Setter
 	private Long id;
-	@Basic(optional = false)
+	@Basic(optional = false,fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 200)
 	@Column(nullable = false,
 			length = 200,
 			name = "InvolvedPartyTypeName")
-	@Getter
-	@Setter
 	private String name;
-	@Basic(optional = false)
+	@Basic(optional = false,fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
 			name = "InvolvedPartyTypeDesc")
-	@Getter
-	@Setter
 	private String description;
 
 	@OneToMany(
@@ -91,7 +82,7 @@ public class InvolvedPartyOrganicType
 	@Override
 	public String toString()
 	{
-		return getName();
+		return "OrganicPartyType - " + getName();
 	}
 
 	@Override
@@ -99,5 +90,74 @@ public class InvolvedPartyOrganicType
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public List<InvolvedPartyOrganicTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public InvolvedPartyOrganicType setSecurities(List<InvolvedPartyOrganicTypeSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		InvolvedPartyOrganicType that = (InvolvedPartyOrganicType) o;
+		return Objects.equals(getName(), that.getName());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 200) String getName()
+	{
+		return this.name;
+	}
+
+	public @NotNull @Size(min = 1,
+			max = 500) String getDescription()
+	{
+		return this.description;
+	}
+
+	public InvolvedPartyOrganicType setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public InvolvedPartyOrganicType setName(@NotNull @Size(min = 1,
+			max = 200) String name)
+	{
+		this.name = name;
+		return this;
+	}
+
+	public InvolvedPartyOrganicType setDescription(@NotNull @Size(min = 1,
+			max = 500) String description)
+	{
+		this.description = description;
+		return this;
 	}
 }

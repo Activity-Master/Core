@@ -6,19 +6,13 @@
 package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 import static javax.persistence.AccessType.*;
@@ -32,11 +26,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "InvolvedPartyXInvolvedParty")
 @XmlRootElement
 @Accessors(chain = true)
-@Getter(onMethod = @__(@XmlTransient))
-@Setter
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class InvolvedPartyXInvolvedParty
 		extends WarehouseClassificationRelationshipTable<InvolvedParty, InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyXInvolvedPartyQueryBuilder, Long, InvolvedPartyXInvolvedPartySecurityToken>
 {
@@ -81,5 +71,93 @@ public class InvolvedPartyXInvolvedParty
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
+	}
+
+	public String toString()
+	{
+		return "InvolvedPartyXInvolvedParty(id=" + this.getId() + ", childInvolvedPartyID=" + this.getChildInvolvedPartyID() + ", parentInvolvedPartyID=" +
+		       this.getParentInvolvedPartyID() + ", securities=" + this.getSecurities() + ")";
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public InvolvedParty getChildInvolvedPartyID()
+	{
+		return this.childInvolvedPartyID;
+	}
+
+	public InvolvedParty getParentInvolvedPartyID()
+	{
+		return this.parentInvolvedPartyID;
+	}
+
+	public List<InvolvedPartyXInvolvedPartySecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public InvolvedPartyXInvolvedParty setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public InvolvedPartyXInvolvedParty setChildInvolvedPartyID(InvolvedParty childInvolvedPartyID)
+	{
+		this.childInvolvedPartyID = childInvolvedPartyID;
+		return this;
+	}
+
+	public InvolvedPartyXInvolvedParty setParentInvolvedPartyID(InvolvedParty parentInvolvedPartyID)
+	{
+		this.parentInvolvedPartyID = parentInvolvedPartyID;
+		return this;
+	}
+
+	public InvolvedPartyXInvolvedParty setSecurities(List<InvolvedPartyXInvolvedPartySecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		if (!(o instanceof InvolvedPartyXInvolvedParty))
+		{
+			return false;
+		}
+		final InvolvedPartyXInvolvedParty other = (InvolvedPartyXInvolvedParty) o;
+		if (!other.canEqual((Object) this))
+		{
+			return false;
+		}
+		final Object this$id = this.getId();
+		final Object other$id = other.getId();
+		if (this$id == null ? other$id != null : !this$id.equals(other$id))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean canEqual(final Object other)
+	{
+		return other instanceof InvolvedPartyXInvolvedParty;
+	}
+
+	public int hashCode()
+	{
+		final int PRIME = 59;
+		int result = 1;
+		final Object $id = this.getId();
+		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+		return result;
 	}
 }

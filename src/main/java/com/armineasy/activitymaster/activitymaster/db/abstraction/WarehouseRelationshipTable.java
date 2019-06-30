@@ -6,8 +6,6 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IRelationshipVal
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.entityassist.SCDEntity;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.Basic;

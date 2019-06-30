@@ -6,8 +6,6 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -28,8 +26,6 @@ import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
  */
 @MappedSuperclass
 @Accessors(chain = true)
-@Getter
-@Setter
 public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		                                    Q extends QueryBuilder<Q, J, I, S>,
 		                                    I extends Serializable,
@@ -89,5 +85,27 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return (J)this;
+	}
+
+	public @NotNull String getOriginalSourceSystemUniqueID()
+	{
+		return this.originalSourceSystemUniqueID;
+	}
+
+	public Systems getOriginalSourceSystemID()
+	{
+		return this.originalSourceSystemID;
+	}
+
+	public WarehouseTable<J, Q, I, S> setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
+	{
+		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
+		return this;
+	}
+
+	public WarehouseTable<J, Q, I, S> setOriginalSourceSystemID(Systems originalSourceSystemID)
+	{
+		this.originalSourceSystemID = originalSourceSystemID;
+		return this;
 	}
 }

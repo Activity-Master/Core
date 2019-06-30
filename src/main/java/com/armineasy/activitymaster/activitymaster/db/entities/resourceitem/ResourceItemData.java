@@ -2,23 +2,17 @@ package com.armineasy.activitymaster.activitymaster.db.entities.resourceitem;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemDataQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -31,9 +25,7 @@ import static javax.persistence.AccessType.*;
 @Table(name = "ResourceItemData")
 @XmlRootElement
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "id",
-		callSuper = false)
-@Access(FIELD)@lombok.Data
+@Access(FIELD)
 public class ResourceItemData
 		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, Long, ResourceItemDataSecurityToken>
 		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IResourceItemClassification<?>,ResourceItemData>
@@ -44,14 +36,10 @@ public class ResourceItemData
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ResourceItemDataID")
-	@Getter
-	@Setter
 	private Long id;
 	@Lob()
 	@Column(nullable = false,
 			name = "ResourceItemData")
-	@Getter
-	@Setter
 	private byte[] resourceItemData;
 
 	@OneToMany(
@@ -64,8 +52,6 @@ public class ResourceItemData
 			nullable = false)
 	@ManyToOne(optional = false,
 			fetch = FetchType.LAZY)
-	@Getter
-	@Setter
 	private ResourceItem resource;
 
 	@OneToMany(
@@ -94,5 +80,87 @@ public class ResourceItemData
 	public void configureForClassification(ResourceItemDataXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setResourceItemDataID(this);
+	}
+
+	public List<ResourceItemDataSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+
+	public List<ResourceItemDataXClassification> getClassifications()
+	{
+		return this.classifications;
+	}
+
+	public ResourceItemData setSecurities(List<ResourceItemDataSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+
+	public ResourceItemData setClassifications(List<ResourceItemDataXClassification> classifications)
+	{
+		this.classifications = classifications;
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ResourceItemData itemData = (ResourceItemData) o;
+		return Objects.equals(getId(), itemData.getId());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Data - " + getId();
+	}
+
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	public byte[] getResourceItemData()
+	{
+		return this.resourceItemData;
+	}
+
+	public ResourceItem getResource()
+	{
+		return this.resource;
+	}
+
+	public ResourceItemData setId(Long id)
+	{
+		this.id = id;
+		return this;
+	}
+
+	public ResourceItemData setResourceItemData(byte[] resourceItemData)
+	{
+		this.resourceItemData = resourceItemData;
+		return this;
+	}
+
+	public ResourceItemData setResource(ResourceItem resource)
+	{
+		this.resource = resource;
+		return this;
 	}
 }
