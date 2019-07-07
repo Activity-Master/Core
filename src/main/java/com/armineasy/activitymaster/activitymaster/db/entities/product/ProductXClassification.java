@@ -3,7 +3,9 @@ package com.armineasy.activitymaster.activitymaster.db.entities.product;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.product.builders.ProductXClassificationQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IProduct;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
@@ -11,6 +13,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -25,7 +28,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class ProductXClassification
-		extends WarehouseClassificationRelationshipTable<Product, Classification, ProductXClassification, ProductXClassificationQueryBuilder, Long, ProductXClassificationSecurityToken>
+		extends WarehouseClassificationRelationshipTable<Product,
+				                                                Classification,
+				                                                ProductXClassification,
+				                                                ProductXClassificationQueryBuilder,
+				                                                Long,
+				                                                ProductXClassificationSecurityToken,
+				                                                IProduct<?>, IClassification<?>>
 		implements Serializable
 {
 
@@ -65,11 +74,6 @@ public class ProductXClassification
 		            .setBase(this);
 	}
 
-	public String toString()
-	{
-		return "ProductXClassification(id=" + this.getId() + ", productID=" + this.getProductID() + ", securities=" + this.getSecurities() + ")";
-	}
-
 	public Long getId()
 	{
 		return this.id;
@@ -103,41 +107,37 @@ public class ProductXClassification
 		return this;
 	}
 
-	public boolean equals(final Object o)
+
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof ProductXClassification))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final ProductXClassification other = (ProductXClassification) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		ProductXClassification that = (ProductXClassification) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof ProductXClassification;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IProduct<?> getPrimary()
+	{
+		return getProductID();
+	}
+
+	@Override
+	public IClassification<?> getSecondary()
+	{
+		return getSecondary();
 	}
 }

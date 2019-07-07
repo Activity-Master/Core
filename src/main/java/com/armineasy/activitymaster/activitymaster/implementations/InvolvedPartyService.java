@@ -1,10 +1,12 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.InvolvedPartyClassifications;
 import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
@@ -259,8 +261,8 @@ public class InvolvedPartyService
 			throw new SecurityAccessException("Unable to find any Involved Party with that username");
 		}
 
-		Optional<IRelationshipValue<?>> saltEntity = foundPart.find(SecurityPasswordSalt, originatingSystem, identityToken);
-		Optional<IRelationshipValue<?>> passEntity = foundPart.find(SecurityPassword, originatingSystem, identityToken);
+		Optional<IRelationshipValue<InvolvedParty, Classification,?>> saltEntity = foundPart.find(SecurityPasswordSalt, originatingSystem, identityToken);
+		Optional<IRelationshipValue<InvolvedParty,Classification,?>> passEntity = foundPart.find(SecurityPassword, originatingSystem, identityToken);
 		if (saltEntity.isEmpty() || passEntity.isEmpty())
 		{
 			if (throwForNoUser)
@@ -324,8 +326,7 @@ public class InvolvedPartyService
 
 		involvedParty.addOrUpdate(SecurityPassword, passEncrypted, originatingSystem, token);
 		involvedParty.addOrUpdate(SecurityPasswordSalt, saltEncrypted, originatingSystem, token);
-		InvolvedPartyXInvolvedPartyIdentificationType sec = involvedParty.addOrUpdate(IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes())
-				, originatingSystem, token);
+		involvedParty.addOrUpdate(IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes()), originatingSystem, token);
 
 		if (event != null)
 		{

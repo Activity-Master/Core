@@ -8,6 +8,8 @@ package com.armineasy.activitymaster.activitymaster.db.entities.address;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.builders.AddressXClassificationQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IAddress;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
@@ -16,6 +18,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -30,7 +33,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class AddressXClassification
-		extends WarehouseClassificationRelationshipTable<Address, Classification, AddressXClassification, AddressXClassificationQueryBuilder, Long, AddressXClassificationSecurityToken>
+		extends WarehouseClassificationRelationshipTable<Address,
+				                                                Classification,
+				                                                AddressXClassification,
+				                                                AddressXClassificationQueryBuilder,
+				                                                Long,
+				                                                AddressXClassificationSecurityToken,
+				                                                IAddress<?>, IClassification<?>>
 		implements Serializable
 {
 
@@ -70,11 +79,6 @@ public class AddressXClassification
 		            .setBase(this);
 	}
 
-	public String toString()
-	{
-		return "AddressXClassification(id=" + this.getId() + ", addressID=" + this.getAddressID() + ", securities=" + this.getSecurities() + ")";
-	}
-
 	public Long getId()
 	{
 		return this.id;
@@ -108,41 +112,36 @@ public class AddressXClassification
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof AddressXClassification))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final AddressXClassification other = (AddressXClassification) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		AddressXClassification that = (AddressXClassification) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof AddressXClassification;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IAddress<?> getPrimary()
+	{
+		return getAddressID();
+	}
+
+	@Override
+	public IClassification<?> getSecondary()
+	{
+		return getClassificationID();
 	}
 }

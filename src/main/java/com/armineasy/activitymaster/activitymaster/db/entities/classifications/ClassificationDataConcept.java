@@ -6,9 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassificationDataConcept;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
 
@@ -36,7 +34,7 @@ import static javax.persistence.FetchType.*;
 public class ClassificationDataConcept
 		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, Long, ClassificationDataConceptSecurityToken>
 		implements// IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
-				          IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, IResourceType<?>, IResourceItemClassification<?>,ClassificationDataConcept>,
+				          IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem,IResourceItemClassification<?>,IClassificationDataConcept<?>, IResourceItem<?>, ClassificationDataConcept>,
 				          IActivityMasterEntity<ClassificationDataConcept>,
 				          IClassificationDataConcept<ClassificationDataConcept>
 {
@@ -123,7 +121,7 @@ public class ClassificationDataConcept
 	}
 
 	@Override
-	public void configureResourceItemLinkValue(ClassificationDataConceptXResourceItem linkTable, ClassificationDataConcept primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(ClassificationDataConceptXResourceItem linkTable, ClassificationDataConcept primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setClassificationDataConceptID(this);
 		linkTable.setResourceItemID(secondary);

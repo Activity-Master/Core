@@ -13,8 +13,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
 
@@ -22,6 +21,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -40,8 +40,9 @@ public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, Long, AddressSecurityToken>
 		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>,Address>,
 				           IContainsGeographies<Address, Geography, AddressXGeography>,
-				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Address>,
-				           IActivityMasterEntity<Address>
+				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IResourceItemClassification<?>,IAddress<?>, IResourceItem<?>, Address>,
+				           IActivityMasterEntity<Address>,
+				           IAddress<Address>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -139,7 +140,7 @@ public class Address
 	}
 
 	@Override
-	public void configureResourceItemLinkValue(AddressXResourceItem linkTable, Address primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(AddressXResourceItem linkTable, Address primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setAddressID(this);
 		linkTable.setResourceItemID(secondary);
@@ -211,49 +212,25 @@ public class Address
 		return this;
 	}
 
-	public String toString()
+	@Override
+	public boolean equals(Object o)
 	{
-		return "Address(id=" + this.getId() + ", classifications=" + this.getClassifications() + ", value=" + this.getValue() + ", classification=" + this.getClassification() +
-		       ", securities=" + this.getSecurities() + ", geographies=" + this.getGeographies() + ", resources=" + this.getResources() + ", events=" + this.getEvents() +
-		       ", addresses=" + this.getAddresses() + ")";
-	}
-
-	public boolean equals(final Object o)
-	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof Address))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final Address other = (Address) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		Address address = (Address) o;
+		return Objects.equals(getId(), address.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof Address;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
 	}
 
 	public @NotNull String getValue()

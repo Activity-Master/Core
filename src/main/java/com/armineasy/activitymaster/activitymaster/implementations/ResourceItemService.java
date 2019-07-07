@@ -36,9 +36,10 @@ import static javax.persistence.criteria.JoinType.*;
 
 @Singleton
 public class ResourceItemService
-		implements IResourceItemService
+		implements IResourceItemService<ResourceItemService>
 {
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
 	public IResourceItemType<?> createType(IResourceType<?> value, ISystems<?> system, UUID... identityToken)
 	{
 		IEnterprise<?> enterprise = system.getEnterpriseID();

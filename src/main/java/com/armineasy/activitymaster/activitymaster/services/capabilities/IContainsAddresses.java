@@ -25,7 +25,7 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 public interface IContainsAddresses<P extends WarehouseCoreTable,
 		                                   S extends WarehouseCoreTable,
-		                                   J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>>
+		                                   J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>>
 {
 	@SuppressWarnings("unchecked")
 	default Optional<J> findAddress(@CacheKey Address address, @CacheKey UUID... identityToken)

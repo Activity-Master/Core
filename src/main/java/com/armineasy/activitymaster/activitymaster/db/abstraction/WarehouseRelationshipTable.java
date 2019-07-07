@@ -32,12 +32,13 @@ import java.util.UUID;
 @Accessors(chain = true)
 public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 		                                                S extends WarehouseCoreTable,
-		                                                J extends WarehouseRelationshipTable<P, S, J, Q, I, ST>,
+		                                                J extends WarehouseRelationshipTable<P, S, J, Q, I, ST,L,R>,
 		                                                Q extends QueryBuilderRelationship<P, S, Q, J, I, ST>,
 		                                                I extends Serializable,
-		                                                ST extends WarehouseSecurityTable>
+		                                                ST extends WarehouseSecurityTable,
+		                                                L,R>
 		extends WarehouseTable<J, Q, I, ST>
-		implements IRelationshipValue<J>
+		implements IRelationshipValue<L,R,J>
 {
 
 	private static final long serialVersionUID = 1L;

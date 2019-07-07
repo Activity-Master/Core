@@ -3,7 +3,9 @@ package com.armineasy.activitymaster.activitymaster.db.entities.security;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.builders.SecurityTokenXClassificationQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
@@ -11,6 +13,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -25,7 +28,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class SecurityTokenXClassification
-		extends WarehouseClassificationRelationshipTable<SecurityToken, Classification, SecurityTokenXClassification, SecurityTokenXClassificationQueryBuilder, Long, SecurityTokenXClassificationSecurityToken>
+		extends WarehouseClassificationRelationshipTable<SecurityToken,
+				                                                Classification,
+				                                                SecurityTokenXClassification,
+				                                                SecurityTokenXClassificationQueryBuilder,
+				                                                Long,
+				                                                SecurityTokenXClassificationSecurityToken,
+				                                                ISecurityToken<?>, IClassification<?>>
 		implements Serializable
 {
 
@@ -65,11 +74,6 @@ public class SecurityTokenXClassification
 		            .setBase(this);
 	}
 
-	public String toString()
-	{
-		return "SecurityTokenXClassification(id=" + this.getId() + ", securityTokenID=" + this.getSecurityTokenID() + ", securities=" + this.getSecurities() + ")";
-	}
-
 	public Long getId()
 	{
 		return this.id;
@@ -103,41 +107,36 @@ public class SecurityTokenXClassification
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof SecurityTokenXClassification))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final SecurityTokenXClassification other = (SecurityTokenXClassification) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		SecurityTokenXClassification that = (SecurityTokenXClassification) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof SecurityTokenXClassification;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public ISecurityToken<?> getPrimary()
+	{
+		return getSecurityTokenID();
+	}
+
+	@Override
+	public IClassification<?> getSecondary()
+	{
+		return getClassificationID();
 	}
 }

@@ -12,8 +12,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.product.IProductClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
 
@@ -41,8 +40,9 @@ import static javax.persistence.FetchType.*;
 public class Product
 		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, Long, ProductSecurityToken>
 		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>,Product>,
-				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem,IResourceType<?>, IResourceItemClassification<?>,Product>,
-				           IActivityMasterEntity<Product>
+				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem, IResourceItemClassification<?>,IProduct<?>, IResourceItem<?>, Product>,
+				           IActivityMasterEntity<Product>,
+				           IProduct<Product>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -142,9 +142,8 @@ public class Product
 		classificationLink.setProductID(this);
 	}
 
-
 	@Override
-	public void configureResourceItemLinkValue(ProductXResourceItem linkTable, Product primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(ProductXResourceItem linkTable, Product primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setResourceItemID(secondary);
 		linkTable.setProductID(this);

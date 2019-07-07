@@ -15,8 +15,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.geography.IGeographyClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
 
@@ -44,8 +43,9 @@ import static javax.persistence.FetchType.*;
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
 		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>,Geography>,
-				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Geography>,
-				           IActivityMasterEntity<Geography>
+				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceItemClassification<?>,IGeography<?>, IResourceItem<?>,Geography>,
+				           IActivityMasterEntity<Geography>,
+				           IGeography<Geography>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -149,12 +149,11 @@ public class Geography
 	}
 
 	@Override
-	public void configureResourceItemLinkValue(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setGeographyID(this);
 		linkTable.setResourceItemID(secondary);
 	}
-
 
 	public List<GeographyXClassification> getClassifications()
 	{

@@ -23,11 +23,12 @@ import java.lang.reflect.ParameterizedType;
 @MappedSuperclass
 @Accessors(chain = true)
 public abstract class WarehouseClassificationRelationshipTable<P extends WarehouseCoreTable, S extends WarehouseCoreTable,
-		                                                              J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST>,
+		                                                              J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST,L,R>,
 		                                                              Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I, ST>,
 		                                                              I extends Serializable,
-		                                                              ST extends WarehouseSecurityTable>
-		extends WarehouseRelationshipTable<P, S, J, Q, I, ST>
+		                                                              ST extends WarehouseSecurityTable
+		                                                              ,L,R>
+		extends WarehouseRelationshipTable<P, S, J, Q, I, ST,L,R>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -62,9 +63,9 @@ public abstract class WarehouseClassificationRelationshipTable<P extends Warehou
 		return this.classificationID;
 	}
 
-	public WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST> setClassificationID(Classification classificationID)
+	public J setClassificationID(Classification classificationID)
 	{
 		this.classificationID = classificationID;
-		return this;
+		return (J) this;
 	}
 }

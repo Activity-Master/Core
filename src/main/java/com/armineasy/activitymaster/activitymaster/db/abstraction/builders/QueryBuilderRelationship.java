@@ -34,7 +34,7 @@ import static com.jwebmp.entityassist.enumerations.Operand.*;
 public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 		                                              S extends WarehouseCoreTable,
 		                                              J extends QueryBuilderRelationship<P, S, J, E, I, ST>,
-		                                              E extends WarehouseRelationshipTable<P, S, E, J, I, ST>,
+		                                              E extends WarehouseRelationshipTable<P, S, E, J, I, ST,?,?>,
 		                                              I extends Serializable,
 		                                              ST extends WarehouseSecurityTable>
 		extends QueryBuilder<J, E, I, ST>
@@ -91,6 +91,27 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 		}
 		return (J) this;
 	}
+
+
+	@SuppressWarnings("unchecked")
+	@javax.validation.constraints.NotNull
+	public J findParentLink(P child)
+	{
+		return findParentLink(child, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	@javax.validation.constraints.NotNull
+	public J findParentLink(P parent, String value)
+	{
+		where(getPrimaryAttribute(), Equals, parent);
+		if (value != null)
+		{
+			withValue(value);
+		}
+		return (J) this;
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override

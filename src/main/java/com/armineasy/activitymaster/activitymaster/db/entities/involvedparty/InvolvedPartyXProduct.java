@@ -10,12 +10,15 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyXProductQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.product.Product;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
+import com.armineasy.activitymaster.activitymaster.services.dto.IProduct;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -30,7 +33,14 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class InvolvedPartyXProduct
-		extends WarehouseClassificationRelationshipTable<InvolvedParty, Product, InvolvedPartyXProduct, InvolvedPartyXProductQueryBuilder, Long, InvolvedPartyXProductSecurityToken>
+		extends WarehouseClassificationRelationshipTable<InvolvedParty,
+				                                                Product,
+				                                                InvolvedPartyXProduct,
+				                                                InvolvedPartyXProductQueryBuilder,
+				                                                Long,
+				                                                InvolvedPartyXProductSecurityToken,
+				                                                IInvolvedParty<?>, IProduct<?>
+				                                                >
 {
 
 	private static final long serialVersionUID = 1L;
@@ -59,11 +69,7 @@ public class InvolvedPartyXProduct
 			fetch = FetchType.LAZY)
 	private InvolvedParty involvedPartyID;
 
-	@OneToOne(cascade =
-			          {
-					          CascadeType.DETACH
-			          },
-			mappedBy = "involvedPartyXProduct1",
+	@OneToOne(mappedBy = "involvedPartyXProduct1",
 			fetch = FetchType.LAZY)
 	private InvolvedPartyXProduct involvedPartyXProduct;
 	@JoinColumn(name = "InvolvedPartyXProductID",
@@ -96,13 +102,6 @@ public class InvolvedPartyXProduct
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
-	}
-
-	public String toString()
-	{
-		return "InvolvedPartyXProduct(id=" + this.getId() + ", securities=" + this.getSecurities() + ", valueTypeClassificationID=" + this.getValueTypeClassificationID() +
-		       ", involvedPartyID=" + this.getInvolvedPartyID() + ", involvedPartyXProduct=" + this.getInvolvedPartyXProduct() + ", involvedPartyXProduct1=" +
-		       this.getInvolvedPartyXProduct1() + ", productID=" + this.getProductID() + ")";
 	}
 
 	public Long getId()
@@ -182,41 +181,36 @@ public class InvolvedPartyXProduct
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof InvolvedPartyXProduct))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final InvolvedPartyXProduct other = (InvolvedPartyXProduct) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		InvolvedPartyXProduct that = (InvolvedPartyXProduct) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof InvolvedPartyXProduct;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IInvolvedParty<?> getPrimary()
+	{
+		return getInvolvedPartyID();
+	}
+
+	@Override
+	public IProduct<?> getSecondary()
+	{
+		return getProductID();
 	}
 }

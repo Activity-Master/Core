@@ -20,7 +20,6 @@ import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagSe
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -37,7 +36,7 @@ import static javax.persistence.criteria.JoinType.*;
 @SuppressWarnings("Duplicates")
 public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                                         S extends WarehouseCoreTable<?, ? extends QueryBuilderDefault, ?, ?>,
-		                                         Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>,
+		                                         Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>,
 		                                         T extends IClassificationValue<?>,
 		                                         J extends IContainsClassifications<P, S, Q, T, J>>
 {
@@ -359,29 +358,36 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	void configureForClassification(Q classificationLink, IEnterprise<?> enterprise);
 
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<?>> find(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<P, S, ?>> find(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationService classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<?>>) activityMasterIdentity.builder()
-		                                                               .findLink((P) this, (S) classification, null)
-		                                                               .inActiveRange(originatingSystem.getEnterpriseID())
-		                                                               .inDateRange()
-		                                                               .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                                               .get();
+		return (Optional<IRelationshipValue<P, S, ?>>) activityMasterIdentity.builder()
+		                                                                     .findLink((P) this, (S) classification, null)
+		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                     .inDateRange()
+		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                     .get();
 	}
 
 	/**
 	 * Returns either a List with Strings, or a List with Object[] for each row and values returned
-	 * @param value The value to apply
-	 * @param originatingSystem The system coming from
-	 * @param identityToken The identity token to use
-	 * @param values Any additional values to select
+	 *
+	 * @param value
+	 * 		The classification value to use
+	 * @param searchValue
+	 * 		The search Value to use
+	 * @param originatingSystem
+	 * 		The system coming from
+	 * @param identityToken
+	 * 		The identity token to use
+	 * @param values
+	 * 		Any additional values to select
 	 *
 	 * @return The result of List&gt;String&lt; or List&gt;Object[]&lt;
 	 */
-	default List getValues(T value, ISystems<?> originatingSystem, UUID identityToken, T... values)
+	default List getValues(T value, String searchValue, ISystems<?> originatingSystem, UUID identityToken, T... values)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationService classificationService = get(IClassificationService.class);
@@ -408,7 +414,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			                                     .get("classificationID")), Equals, classification);
 
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get("activeFlagID")), InList, get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterpriseID(),identityToken));
+			                                     .get("activeFlagID")), InList, get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterpriseID(), identityToken));
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
 			                                     .get("enterpriseID")), Equals, originatingSystem.getEnterpriseID());
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
@@ -417,19 +423,27 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			                                     .get("effectiveToDate")), GreaterThanEqualTo, LocalDateTime.now());
 
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get(builder.getPrimaryAttribute().getName())), Equals, base.getId());
+			                                     .get(builder.getPrimaryAttribute()
+			                                                 .getName())), Equals, base.getId());
 
 			baseTableBuilder.selectColumn(newExpression.getGeneratedRoot()
 			                                           .get("value"));
 			joins.add(newExpression);
 		}
+
+		if (searchValue != null && !searchValue.isEmpty())
+		{
+			baseTableBuilder.where(baseTableBuilder.getRoot()
+			                                       .get("value"), Equals, searchValue);
+		}
+
 		List list = baseTableBuilder.getAll();
 		return list;
 	}
 
 	default double sumAll(T value, ISystems<?> originatingSystem, UUID identityToken)
 	{
-		List<String> results = getValues(value, originatingSystem, identityToken);
+		List<String> results = getValues(value, null,originatingSystem, identityToken);
 		double d = 0.0d;
 		for (String result : results)
 		{

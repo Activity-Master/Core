@@ -11,6 +11,7 @@ public abstract class IdentifiedThread<J extends IdentifiedThread<J>>
 		implements Runnable
 {
 	private static final Logger log = Logger.getLogger(IdentifiedThread.class.getName());
+
 	private ActivityMasterConfiguration.ActivityMasterConfigurationDTO activityMasterConfigurationDTO;
 
 	public IdentifiedThread()

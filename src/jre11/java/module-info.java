@@ -30,8 +30,8 @@ module com.armineasy.activitymaster.activitymaster {
 	exports com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.product ;
 	exports com.armineasy.activitymaster.activitymaster.db.entities.product.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.resourceitem ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders ;
+//	exports com.armineasy.activitymaster.activitymaster.db.entities.resourceitem ;
+//	exports com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.security ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.security.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.systems ;
@@ -155,6 +155,8 @@ module com.armineasy.activitymaster.activitymaster {
 	opens com.armineasy.activitymaster.activitymaster.services.types to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist,com.fasterxml.jackson.databind;
 	opens com.armineasy.activitymaster.activitymaster.systems to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist,com.fasterxml.jackson.databind;
 	opens com.armineasy.activitymaster.activitymaster.services.enumtypes to com.google.guice, org.hibernate.orm.core,com.jwebmp.entityassist,com.fasterxml.jackson.databind;
+
+	opens com.armineasy.activitymaster.activitymaster.services.threads to com.google.guice, com.jwebmp.entityassist,com.fasterxml.jackson.databind;
 
 	exports com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems;
 	exports com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty;

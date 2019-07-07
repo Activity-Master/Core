@@ -2,12 +2,15 @@ package com.armineasy.activitymaster.activitymaster.db.entities.classifications;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders.ClassificationDataConceptXClassificationQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassificationDataConcept;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -22,9 +25,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class ClassificationDataConceptXClassification
-		extends WarehouseClassificationRelationshipTable<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification,
-				                                                ClassificationDataConceptXClassificationQueryBuilder, Long
-				                                                , ClassificationDataConceptXClassificationSecurityToken>
+		extends WarehouseClassificationRelationshipTable<ClassificationDataConcept,
+				                                                Classification,
+				                                                ClassificationDataConceptXClassification,
+				                                                ClassificationDataConceptXClassificationQueryBuilder,
+				                                                Long,
+				                                                ClassificationDataConceptXClassificationSecurityToken,
+				                                                IClassificationDataConcept<?>, IClassification<?>>
 		implements Serializable
 {
 
@@ -54,12 +61,6 @@ public class ClassificationDataConceptXClassification
 	public ClassificationDataConceptXClassification(Long classificationDataConceptXClassificationID)
 	{
 		this.id = classificationDataConceptXClassificationID;
-	}
-
-	public String toString()
-	{
-		return "ClassificationDataConceptXClassification(id=" + this.getId() + ", securities=" + this.getSecurities() + ", classificationDataConceptID=" +
-		       this.getClassificationDataConceptID() + ")";
 	}
 
 	public Long getId()
@@ -95,41 +96,37 @@ public class ClassificationDataConceptXClassification
 		return this;
 	}
 
-	public boolean equals(final Object o)
+
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof ClassificationDataConceptXClassification))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final ClassificationDataConceptXClassification other = (ClassificationDataConceptXClassification) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		ClassificationDataConceptXClassification that = (ClassificationDataConceptXClassification) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof ClassificationDataConceptXClassification;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IClassificationDataConcept<?> getPrimary()
+	{
+		return getClassificationDataConceptID();
+	}
+
+	@Override
+	public IClassification<?> getSecondary()
+	{
+		return getClassificationID();
 	}
 }

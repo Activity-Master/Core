@@ -33,7 +33,7 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
  * 		The type containing the hierarchy
  */
 public interface IContainsHierarchy<J extends WarehouseCoreTable,
-		                                   Q extends WarehouseClassificationRelationshipTable<J, J, Q, ? extends QueryBuilderRelationshipClassification, ?, ?>,
+		                                   Q extends WarehouseClassificationRelationshipTable<J, J, Q, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>,
 		                                   W extends WarehouseHierarchyView<?, ? extends QueryBuilderHierarchyView, ?>>
 {
 	default J addChild(J child, IEnterprise<?> enterprise, UUID... identifyingToken)

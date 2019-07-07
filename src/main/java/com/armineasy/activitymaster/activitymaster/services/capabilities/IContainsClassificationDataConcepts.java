@@ -34,7 +34,7 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 @SuppressWarnings({"Duplicates", "unused", "StatementWithEmptyBody"})
 public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTable,
 		                                                    S extends WarehouseCoreTable<?, ? extends QueryBuilderDefault, ?, ?>,
-		                                                    Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>,
+		                                                    Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>,
 		                                                    T extends IClassificationDataConceptValue<?>,
 		                                                    J extends IContainsClassificationDataConcepts<P, S, Q, T, J>>
 		extends IActivityMasterEntity<ClassificationDataConcept>
@@ -60,12 +60,12 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 	}
 
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<?>> find(T classificationDataConceptType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<P,S,?>> find(T classificationDataConceptType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService classificationService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<?>>) activityMasterIdentity.builder()
+		return (Optional<IRelationshipValue<P,S,?>>) activityMasterIdentity.builder()
 		                                                               .findLink((P) this, (S) classification, null)
 		                                                               .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                               .inDateRange()

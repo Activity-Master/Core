@@ -9,12 +9,15 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClass
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyXResourceItemQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
+import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -29,7 +32,14 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class InvolvedPartyXResourceItem
-		extends WarehouseClassificationRelationshipTable<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, InvolvedPartyXResourceItemQueryBuilder, Long, InvolvedPartyXResourceItemSecurityToken>
+		extends WarehouseClassificationRelationshipTable<InvolvedParty,
+				                                                ResourceItem,
+				                                                InvolvedPartyXResourceItem,
+				                                                InvolvedPartyXResourceItemQueryBuilder,
+				                                                Long,
+				                                                InvolvedPartyXResourceItemSecurityToken,
+				                                                IInvolvedParty<?>, IResourceItem<?>>
+
 {
 
 	private static final long serialVersionUID = 1L;
@@ -72,12 +82,6 @@ public class InvolvedPartyXResourceItem
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
-	}
-
-	public String toString()
-	{
-		return "InvolvedPartyXResourceItem(id=" + this.getId() + ", involvedPartyID=" + this.getInvolvedPartyID() + ", resourceItemID=" + this.getResourceItemID() +
-		       ", securities=" + this.getSecurities() + ")";
 	}
 
 	public Long getId()
@@ -124,41 +128,37 @@ public class InvolvedPartyXResourceItem
 		return this;
 	}
 
-	public boolean equals(final Object o)
+
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof InvolvedPartyXResourceItem))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final InvolvedPartyXResourceItem other = (InvolvedPartyXResourceItem) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		InvolvedPartyXResourceItem that = (InvolvedPartyXResourceItem) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof InvolvedPartyXResourceItem;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IInvolvedParty<?> getPrimary()
+	{
+		return getInvolvedPartyID();
+	}
+
+	@Override
+	public IResourceItem<?> getSecondary()
+	{
+		return getResourceItemID();
 	}
 }

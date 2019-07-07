@@ -13,7 +13,7 @@ import java.io.Serializable;
 public interface IClassificationDataConcept<J extends IClassificationDataConcept<J>>
 		extends Serializable,
 				        //IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
-				        IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, IResourceType<?>, IResourceItemClassification<?>,ClassificationDataConcept>,
+				        IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem,IResourceItemClassification<?>,IClassificationDataConcept<?>, IResourceItem<?>, ClassificationDataConcept>,
 				        IActivityMasterEntity<ClassificationDataConcept>
 
 {

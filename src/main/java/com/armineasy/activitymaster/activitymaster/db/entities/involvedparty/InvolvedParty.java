@@ -10,14 +10,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.IInvolvedPartyClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
-import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
-import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
-import com.armineasy.activitymaster.activitymaster.services.enumtypes.ITypeValue;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
+import com.armineasy.activitymaster.activitymaster.services.enumtypes.*;
 import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import lombok.experimental.Accessors;
 
@@ -45,10 +39,10 @@ import static javax.persistence.AccessType.*;
 public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, Long, InvolvedPartySecurityToken>
 		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, InvolvedParty>,
-				           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IResourceType<?>, IResourceItemClassification<?>,InvolvedParty>,
-				           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IIdentificationType<?>, InvolvedParty>,
-				           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, INameType<?>, InvolvedParty>,
-				           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, ITypeValue<?>, InvolvedParty>,
+				           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IResourceItemClassification<?>,IInvolvedParty<?>,IResourceItem<?>, InvolvedParty>,
+				           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IIdentificationType<?>,IInvolvedParty<?>,IInvolvedPartyIdentificationType<?>, InvolvedParty>,
+				           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, INameType<?>,IInvolvedParty<?>,IInvolvedPartyNameType<?>, InvolvedParty>,
+				           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, ITypeValue<?>,IInvolvedParty<?>,IInvolvedPartyType<?>, InvolvedParty>,
 				           IContainsAddresses<InvolvedParty, Address, InvolvedPartyXAddress>,
 				           IActivityMasterEntity<InvolvedParty>,
 				           IContainsEnterprise<InvolvedParty>,
@@ -153,7 +147,7 @@ public class InvolvedParty
 	}
 
 	@Override
-	public void configureResourceItemLinkValue(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setResourceItemID(secondary);
 		linkTable.setInvolvedPartyID(this);

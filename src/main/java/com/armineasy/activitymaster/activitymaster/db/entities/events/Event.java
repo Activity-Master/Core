@@ -10,10 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.events.IEventClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEvent;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IEventTypeValue;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
@@ -40,7 +37,7 @@ public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
 		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>,Event>,
 				           IContainsGeographies<Event, Geography, EventXGeography>,
-				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Event>,
+				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IResourceItemClassification<?>,IEvent<?>, IResourceItem<?>, Event>,
 				           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,
 				           IContainsAddresses<Event, Address, EventXAddress>,
 				           IContainsEventTypes<Event, EventType, EventXEventType, IEventTypeValue<?>,Event>,
@@ -125,8 +122,9 @@ public class Event
 		classificationLink.setGeographyID(geography);
 	}
 
+
 	@Override
-	public void configureResourceItemLinkValue(EventXResourceItem linkTable, Event primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(EventXResourceItem linkTable, Event primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setEventID(this);
 		linkTable.setResourceItemID(secondary);

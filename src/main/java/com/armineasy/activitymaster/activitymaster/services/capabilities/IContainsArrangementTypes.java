@@ -29,7 +29,7 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 @SuppressWarnings("Duplicates")
 public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 		                                     S extends WarehouseCoreTable,
-		                                          Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>,
+		                                          Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>,
 		                                          T extends IArrangementTypes<?>,
 		                                          J extends IContainsArrangementTypes<P, S, Q, T, J>>
 {
@@ -53,12 +53,12 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<?>> find(T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<P,S,?>> find(T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findArrangementPartyTypeQueryRelationshipTableType());
 		IArrangementsService arrangementTypeService = get(IArrangementsService.class);
 		IArrangementType classification = arrangementTypeService.find((IArrangementTypes<?>) arrangementType, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<?>>) activityMasterIdentity.builder()
+		return (Optional<IRelationshipValue<P,S,?>>) activityMasterIdentity.builder()
 		                                                               .findLink((P) this, (S) classification, null)
 		                                                               .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                               .inDateRange()

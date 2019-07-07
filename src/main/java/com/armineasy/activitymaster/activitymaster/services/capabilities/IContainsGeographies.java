@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public interface IContainsGeographies<P extends WarehouseCoreTable,
 		                                     S extends WarehouseCoreTable,
-		                                     J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>>
+		                                     J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>>
 {
 	@SuppressWarnings("unchecked")
 	default Optional<J> findGeography(@CacheKey Geography classification, @CacheKey UUID... identityToken)

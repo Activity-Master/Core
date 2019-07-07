@@ -42,10 +42,10 @@ public class SystemsService
 		Systems search = new Systems();
 		return search.builder()
 		             .findByName(systemName)
-		             .withEnterprise((Enterprise) enterprise)
-		             .inActiveRange((Enterprise) enterprise, token)
+		             .withEnterprise(enterprise)
+		             .inActiveRange(enterprise, token)
 		             .inDateRange()
-		             .canRead((Enterprise) enterprise, token)
+		             .canRead(enterprise, token)
 		             .get()
 		             .get();
 	}
@@ -60,9 +60,9 @@ public class SystemsService
 
 		Optional<SystemXClassification> exists = systemClassifications.builder()
 		                                                              .findChildLink(identifyClassification, token.toString())
-		                                                              .inActiveRange((Enterprise) enterprise, identityToken)
+		                                                              .inActiveRange(enterprise, identityToken)
 		                                                              .inDateRange()
-		                                                              .canRead((Enterprise) enterprise, identityToken)
+		                                                              .canRead(enterprise, identityToken)
 		                                                              .get();
 		if (exists.isEmpty())
 		{
@@ -78,7 +78,7 @@ public class SystemsService
 	public ISystems<?> create(IEnterprise<?> enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
 	{
 		ActiveFlag flag = GuiceContext.get(IActiveFlagService.class)
-		                              .getActiveFlag((Enterprise) enterprise);
+		                              .getActiveFlag(enterprise);
 		Systems newSystem = new Systems();
 		Optional<Systems> exists = ActivityMasterConfiguration
 				                           .get()
@@ -133,7 +133,7 @@ public class SystemsService
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
 	public UUID getSecurityIdentityToken(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		Optional<IRelationshipValue<?>> systemToken = system.find(SystemIdentity, system, identityToken);
+		Optional<IRelationshipValue<Systems,Classification,?>> systemToken = system.find(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())
 		{
 			return null;

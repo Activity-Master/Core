@@ -33,8 +33,8 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import com.jwebmp.guicedinjection.GuiceContext;
 import lombok.experimental.Accessors;
 
@@ -62,7 +62,7 @@ import static javax.persistence.FetchType.*;
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>
 		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView>,
-				           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Classification>,
+				           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IResourceItemClassification<?>, IClassification<?>, IResourceItem<?>,						                                 Classification>,
 				           IActivityMasterEntity<Classification>,
 				           IClassification<Classification>
 {
@@ -73,7 +73,8 @@ public class Classification
 			name = "ClassificationID")
 	private Long id;
 
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 100)
@@ -81,7 +82,8 @@ public class Classification
 			length = 100,
 			name = "ClassificationName")
 	private String name;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
@@ -295,7 +297,7 @@ public class Classification
 	@Override
 	public String toString()
 	{
-		return "Classification - " +  getName() + " - " + getDescription();
+		return "Classification - " + getName() + " - " + getDescription();
 	}
 
 	@Override
@@ -317,12 +319,6 @@ public class Classification
 		classificationLink.setClassificationID(hierarchyClassification);
 	}
 
-	@Override
-	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
-	{
-		linkTable.setClassificationID(this);
-		linkTable.setResourceItemID(secondary);
-	}
 
 	@Override
 	public void configureNewHierarchyItem(ClassificationXClassification newLink, Classification parent, Classification child, String value)
@@ -872,5 +868,12 @@ public class Classification
 	{
 		this.concept = concept;
 		return this;
+	}
+
+	@Override
+	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setClassificationID(this);
+		linkTable.setResourceItemID(secondary);
 	}
 }

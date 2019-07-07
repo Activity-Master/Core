@@ -4,12 +4,15 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClass
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventXGeographyQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEvent;
+import com.armineasy.activitymaster.activitymaster.services.dto.IGeography;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -24,7 +27,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class EventXGeography
-		extends WarehouseClassificationRelationshipTable<Event, Geography, EventXGeography, EventXGeographyQueryBuilder, Long, EventXGeographySecurityToken>
+		extends WarehouseClassificationRelationshipTable<Event,
+				                                                Geography,
+				                                                EventXGeography,
+				                                                EventXGeographyQueryBuilder,
+				                                                Long,
+				                                                EventXGeographySecurityToken,
+				                                                IEvent<?>, IGeography<?>>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -67,11 +76,6 @@ public class EventXGeography
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
-	}
-
-	public String toString()
-	{
-		return "EventXGeography(id=" + this.getId() + ", securities=" + this.getSecurities() + ", eventID=" + this.getEventID() + ", geographyID=" + this.getGeographyID() + ")";
 	}
 
 	public Long getId()
@@ -118,41 +122,36 @@ public class EventXGeography
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof EventXGeography))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final EventXGeography other = (EventXGeography) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		EventXGeography that = (EventXGeography) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof EventXGeography;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IEvent<?> getPrimary()
+	{
+		return getEventID();
+	}
+
+	@Override
+	public IGeography<?> getSecondary()
+	{
+		return getGeographyID();
 	}
 }

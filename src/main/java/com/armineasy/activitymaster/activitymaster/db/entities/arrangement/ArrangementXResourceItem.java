@@ -3,7 +3,9 @@ package com.armineasy.activitymaster.activitymaster.db.entities.arrangement;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementXResourceItemQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
+import com.armineasy.activitymaster.activitymaster.services.dto.IArrangement;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
@@ -11,6 +13,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -25,7 +28,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class ArrangementXResourceItem
-		extends WarehouseClassificationRelationshipTable<Arrangement, ResourceItem, ArrangementXResourceItem, ArrangementXResourceItemQueryBuilder, Long, ArrangementXResourceItemSecurityToken>
+		extends WarehouseClassificationRelationshipTable<Arrangement,
+				                                                ResourceItem,
+				                                                ArrangementXResourceItem,
+				                                                ArrangementXResourceItemQueryBuilder,
+				                                                Long,
+				                                                ArrangementXResourceItemSecurityToken,
+				                                                IArrangement<?>, IResourceItem<?>>
 		implements Serializable
 {
 
@@ -75,12 +84,6 @@ public class ArrangementXResourceItem
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
-	}
-
-	public String toString()
-	{
-		return "ArrangementXResourceItem(id=" + this.getId() + ", arrangementXResourceItemSecurityTokenList=" + this.getArrangementXResourceItemSecurityTokenList() +
-		       ", arrangementID=" + this.getArrangementID() + ", resourceItemID=" + this.getResourceItemID() + ", securities=" + this.getSecurities() + ")";
 	}
 
 	public Long getId()
@@ -138,41 +141,36 @@ public class ArrangementXResourceItem
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof ArrangementXResourceItem))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final ArrangementXResourceItem other = (ArrangementXResourceItem) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		ArrangementXResourceItem that = (ArrangementXResourceItem) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof ArrangementXResourceItem;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IArrangement<?> getPrimary()
+	{
+		return getArrangementID();
+	}
+
+	@Override
+	public IResourceItem<?> getSecondary()
+	{
+		return getResourceItemID();
 	}
 }

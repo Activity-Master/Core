@@ -11,7 +11,7 @@ import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceT
 
 public interface IClassification<J extends IClassification<J>>
 		extends IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView>,
-				        IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Classification>,
+				        IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IResourceItemClassification<?>, IClassification<?>, IResourceItem<?>,Classification>,
 				        IActivityMasterEntity<Classification>,
 				        IContainsEnterprise<J>,
 				        INameAndDescription<Classification>

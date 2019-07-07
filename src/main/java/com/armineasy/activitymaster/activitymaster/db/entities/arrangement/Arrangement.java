@@ -9,10 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.Reso
 import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.arrangement.IArrangementClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IArrangement;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IArrangementTypes;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import lombok.experimental.Accessors;
@@ -38,7 +35,7 @@ import static javax.persistence.AccessType.*;
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, Long, ArrangementSecurityToken>
 		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, Arrangement>,
-				           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Arrangement>,
+				           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceItemClassification<?>,IArrangement<?>, IResourceItem<?>, Arrangement>,
 				           IActivityMasterEntity<Arrangement>,
 				           IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, Arrangement>,
 				           IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty>,
@@ -116,8 +113,9 @@ public class Arrangement
 		classificationLink.setArrangementID(this);
 	}
 
+
 	@Override
-	public void configureResourceItemLinkValue(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, Classification classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setArrangementID(this);
 		linkTable.setResourceItemID(secondary);

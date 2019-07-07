@@ -12,7 +12,7 @@ import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceT
 
 public interface IArrangement<J extends IArrangement<J>>
 		extends IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, Arrangement>,
-				        IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceType<?>, IResourceItemClassification<?>,Arrangement>,
+				        IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceItemClassification<?>,IArrangement<?>, IResourceItem<?>, Arrangement>,
 				        IActivityMasterEntity<Arrangement>,
 				        IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, Arrangement>,
 				        IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty>,

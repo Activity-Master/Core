@@ -16,10 +16,10 @@ import java.util.UUID;
 
 public interface IInvolvedParty<J extends IInvolvedParty<J>>
 		extends IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, InvolvedParty>,
-				        IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IResourceType<?>, IResourceItemClassification<?>,InvolvedParty>,
-				        IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IIdentificationType<?>, InvolvedParty>,
-				        IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, INameType<?>, InvolvedParty>,
-				        IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, ITypeValue<?>, InvolvedParty>,
+				        IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IResourceItemClassification<?>,IInvolvedParty<?>,IResourceItem<?>, InvolvedParty>,
+				        IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IIdentificationType<?>,IInvolvedParty<?>,IInvolvedPartyIdentificationType<?>, InvolvedParty>,
+				        IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, INameType<?>,IInvolvedParty<?>,IInvolvedPartyNameType<?>, InvolvedParty>,
+				        IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, ITypeValue<?>,IInvolvedParty<?>,IInvolvedPartyType<?>, InvolvedParty>,
 				        IContainsAddresses<InvolvedParty, Address, InvolvedPartyXAddress>,
 				        IContainsEnterprise<InvolvedParty>,
 				        IContainsActiveFlags<InvolvedParty>,

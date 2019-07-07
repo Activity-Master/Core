@@ -15,11 +15,12 @@ import javax.cache.annotation.CacheResult;
 import java.util.UUID;
 
 
-public interface IResourceItemService
+public interface IResourceItemService<J extends IResourceItemService<J>>
 {
+	IResourceItemType<?> createType(IResourceType<?> value, ISystems<?> system, UUID... identityToken);
 
 	IResourceItem<?> create(IResourceType<?> identityResourceType, String mimeType,
-	                     ISystems system, UUID... identityToken);
+	                        ISystems system, UUID... identityToken);
 
 	IResourceItem<?> findByClassification( IResourceType<?> resourceType,
 	                                   IResourceItemClassification<?> classification,

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
-public interface IRelationshipValue<J extends IRelationshipValue<J>>
+public interface IRelationshipValue<P,S,J extends IRelationshipValue<P,S,J>>
 {
 	J setValue(String value);
 
@@ -38,4 +38,9 @@ public interface IRelationshipValue<J extends IRelationshipValue<J>>
 	{
 		return UUID.fromString(getValue());
 	}
+
+	P getPrimary();
+
+	S getSecondary();
+
 }

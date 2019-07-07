@@ -37,7 +37,7 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 @SuppressWarnings("Duplicates")
 public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		                                    S extends WarehouseCoreTable,
-		                                    Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?>,
+		                                    Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>,
 		                                    T extends IEventTypeValue<?>,
 		                                    J extends IContainsEventTypes<P, S, Q, T, J>>
 {
@@ -130,12 +130,12 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	void configureEventTypeLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
 	
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<?>> find(T classificationDataConceptType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<P,S,?>> find(T classificationDataConceptType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findEventTypeQueryRelationshipTableType());
 		IEventService classificationService = get(IEventService.class);
 		EventType classification = (EventType) classificationService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<?>>) activityMasterIdentity.builder()
+		return (Optional<IRelationshipValue<P,S,?>>) activityMasterIdentity.builder()
 		                                                               .findLink((P) this, (S) classification, null)
 		                                                               .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                               .inDateRange()

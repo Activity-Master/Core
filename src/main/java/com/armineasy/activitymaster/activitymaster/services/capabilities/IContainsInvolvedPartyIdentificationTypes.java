@@ -29,9 +29,10 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 @SuppressWarnings("Duplicates")
 public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCoreTable,
 		                                                          S extends WarehouseCoreTable<?, ? extends QueryBuilderDefault, ?, ?>,
-		                                                          Q extends WarehouseRelationshipTable<P, S, ?, ? extends QueryBuilderRelationship, ?, ?>,
+		                                                          Q extends WarehouseRelationshipTable<P, S, ?, ? extends QueryBuilderRelationship, ?, ?,L,R>,
 		                                                          T extends IIdentificationType<?>,
-		                                                          J extends IContainsInvolvedPartyIdentificationTypes<P, S, Q, T, J>>
+																  L,R,
+		                                                          J extends IContainsInvolvedPartyIdentificationTypes<P, S, Q, T,L,R, J>>
 {
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -59,12 +60,14 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	void configureInvolvedPartyIdentificationType(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
 
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<?>> find(T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L,R,?>> find(T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService involvedPartyIdentificationTypeService = get(IInvolvedPartyService.class);
 		IInvolvedPartyIdentificationType<?> classification = involvedPartyIdentificationTypeService.findIdentificationType(identificationType, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<?>>) activityMasterIdentity.builder()
+
+
+		return (Optional<IRelationshipValue<L,R,?>>) activityMasterIdentity.builder()
 		                                                               .findLink((P) this, (S) classification, null)
 		                                                               .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                               .inDateRange()
@@ -73,13 +76,13 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default Optional<Q> findFirst(T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L,R,?>> findFirst(T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService involvedPartyIdentificationTypeService = get(IInvolvedPartyService.class);
 		IInvolvedPartyIdentificationType<?> classification = involvedPartyIdentificationTypeService.findIdentificationType(identificationType, originatingSystem.getEnterpriseID(), identityToken);
 
-		return (Optional<Q>) activityMasterIdentity.builder()
+		return (Optional<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
 		                                           .findLink((P) this, (S) classification, null)
 		                                           .inActiveRange(originatingSystem.getEnterpriseID())
 		                                           .inDateRange()
@@ -89,12 +92,12 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default List<Q> findAll(T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L,R,?>> findAll(T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService involvedPartyIdentificationTypeService = get(IInvolvedPartyService.class);
 		IInvolvedPartyIdentificationType<?> classification = involvedPartyIdentificationTypeService.findIdentificationType(identificationType, originatingSystem.getEnterpriseID(), identityToken);
-		return (List<Q>) activityMasterIdentity.builder()
+		return (List<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
 		                                       .findLink((P) this, (S) classification, null)
 		                                       .inActiveRange(originatingSystem.getEnterpriseID())
 		                                       .inDateRange()
@@ -123,7 +126,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q add( T identificationType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L,R,?> add( T identificationType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 
@@ -149,7 +152,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q addOrReuse(T identificationType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L,R,?> addOrReuse(T identificationType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService classificationDataConceptService = get(IInvolvedPartyService.class);
@@ -186,7 +189,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q addOrUpdate( T identificationType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L,R,?> addOrUpdate( T identificationType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService classificationDataConceptService = get(IInvolvedPartyService.class);
@@ -250,7 +253,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q update( T identificationType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L,R,?> update( T identificationType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService classificationDataConceptService = get(IInvolvedPartyService.class);
@@ -301,7 +304,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q expire(T identificationType, Duration duration,ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L,R,?> expire(T identificationType, Duration duration,ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService classificationDataConceptService = get(IInvolvedPartyService.class);
@@ -328,7 +331,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q archive( T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L,R,?> archive( T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService classificationDataConceptService = get(IInvolvedPartyService.class);
@@ -355,7 +358,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q remove( T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L,R,?> remove( T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IInvolvedPartyService classificationDataConceptService = get(IInvolvedPartyService.class);

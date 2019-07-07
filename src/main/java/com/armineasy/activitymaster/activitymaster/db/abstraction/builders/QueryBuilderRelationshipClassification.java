@@ -28,7 +28,7 @@ import static com.jwebmp.entityassist.enumerations.Operand.*;
  */
 public abstract class QueryBuilderRelationshipClassification<P extends WarehouseCoreTable, S extends WarehouseCoreTable,
 		                                                            J extends QueryBuilderRelationshipClassification<P, S, J, E, I, ST>,
-		                                                            E extends WarehouseClassificationRelationshipTable<P, S, E, J, I, ST>,
+		                                                            E extends WarehouseClassificationRelationshipTable<P, S, E, J, I, ST,?,?>,
 		                                                            I extends Serializable, ST extends WarehouseSecurityTable>
 		extends QueryBuilderRelationship<P, S, J, E, I, ST>
 {

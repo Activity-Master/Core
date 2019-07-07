@@ -3,7 +3,9 @@ package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyXClassificationQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
@@ -11,6 +13,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -25,7 +28,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class InvolvedPartyXClassification
-		extends WarehouseClassificationRelationshipTable<InvolvedParty, Classification, InvolvedPartyXClassification, InvolvedPartyXClassificationQueryBuilder, Long, InvolvedPartyXClassificationSecurityToken>
+		extends WarehouseClassificationRelationshipTable<InvolvedParty,
+				                                                Classification,
+				                                                InvolvedPartyXClassification,
+				                                                InvolvedPartyXClassificationQueryBuilder,
+				                                                Long,
+				                                                InvolvedPartyXClassificationSecurityToken,
+				                                                IInvolvedParty<?>, IClassification<?>>
 		implements Serializable
 {
 
@@ -64,11 +73,6 @@ public class InvolvedPartyXClassification
 		            .setBase(this);
 	}
 
-	public String toString()
-	{
-		return "InvolvedPartyXClassification(id=" + this.getId() + ", involvedPartyID=" + this.getInvolvedPartyID() + ", securities=" + this.getSecurities() + ")";
-	}
-
 	public Long getId()
 	{
 		return this.id;
@@ -102,41 +106,36 @@ public class InvolvedPartyXClassification
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof InvolvedPartyXClassification))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final InvolvedPartyXClassification other = (InvolvedPartyXClassification) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		InvolvedPartyXClassification that = (InvolvedPartyXClassification) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof InvolvedPartyXClassification;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IInvolvedParty<?> getPrimary()
+	{
+		return getInvolvedPartyID();
+	}
+
+	@Override
+	public IClassification<?> getSecondary()
+	{
+		return getClassificationID();
 	}
 }

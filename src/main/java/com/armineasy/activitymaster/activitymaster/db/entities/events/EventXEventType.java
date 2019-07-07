@@ -3,12 +3,15 @@ package com.armineasy.activitymaster.activitymaster.db.entities.events;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.builders.EventXEventTypeQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEvent;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEventType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -23,7 +26,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class EventXEventType
-		extends WarehouseClassificationRelationshipTable<Event, EventType, EventXEventType, EventXEventTypeQueryBuilder, Long, EventXEventTypeSecurityToken>
+		extends WarehouseClassificationRelationshipTable<Event,
+				                                                EventType,
+				                                                EventXEventType,
+				                                                EventXEventTypeQueryBuilder,
+				                                                Long,
+				                                                EventXEventTypeSecurityToken,
+				                                                IEvent<?>, IEventType<?>>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -66,11 +75,6 @@ public class EventXEventType
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
-	}
-
-	public String toString()
-	{
-		return "EventXEventType(id=" + this.getId() + ", securities=" + this.getSecurities() + ", eventID=" + this.getEventID() + ", eventTypeID=" + this.getEventTypeID() + ")";
 	}
 
 	public Long getId()
@@ -117,41 +121,36 @@ public class EventXEventType
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof EventXEventType))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final EventXEventType other = (EventXEventType) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		EventXEventType that = (EventXEventType) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof EventXEventType;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IEvent<?> getPrimary()
+	{
+		return getEventID();
+	}
+
+	@Override
+	public IEventType<?> getSecondary()
+	{
+		return getEventTypeID();
 	}
 }

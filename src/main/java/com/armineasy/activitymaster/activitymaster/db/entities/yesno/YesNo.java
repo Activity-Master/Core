@@ -10,6 +10,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.classifications.yesno.IYesNoClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IYesNo;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -36,7 +37,8 @@ import static javax.persistence.FetchType.*;
 public class YesNo
 		extends WarehouseTable<YesNo, YesNoQueryBuilder, Long, YesNoSecurityToken>
 		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification<?>,YesNo>,
-				           IActivityMasterEntity<YesNo>
+				           IActivityMasterEntity<YesNo>,
+				           IYesNo<YesNo>
 {
 
 	private static final long serialVersionUID = 1L;

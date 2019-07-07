@@ -27,24 +27,10 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 @SuppressWarnings("Duplicates")
 public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		                                           S extends WarehouseCoreTable,
-		                                           Q extends WarehouseRelationshipTable<P, S, ?, ? extends QueryBuilderRelationship, ?, ?>,
+		                                           Q extends WarehouseRelationshipTable<P, S, ?, ? extends QueryBuilderRelationship, ?, ?,?,?>,
 		                                           T extends IResourceType<?>,
 		                                           J extends IContainsResourceItemTypes<P, S, Q, T, J>>
 {
-/*
-	@SuppressWarnings("unchecked")
-	default Optional<Q> findResourceItemType(@CacheKey ResourceItemType classification, @CacheKey UUID... identityToken)
-	{
-		Q activityMasterIdentity = GuiceContext.get(findResourceItemTypeQueryRelationshipTableType());
-		Optional<Q> exists = (Optional<Q>) activityMasterIdentity.builder()
-		                                                         .findLink((P) this, (S) classification, null)
-		                                                         .inActiveRange(classification.getEnterpriseID())
-		                                                         .inDateRange()
-		                                                         .canRead(classification.getEnterpriseID(), identityToken)
-		                                                         .get();
-		return exists;
-	}
-*/
 
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -62,65 +48,17 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		}
 		return null;
 	}
-/*
-
-	@SuppressWarnings("unchecked")
-	default boolean hasResourceItemType(ResourceItemType classification, @CacheKey UUID... identityToken)
-	{
-		Q activityMasterIdentity = GuiceContext.get(findResourceItemTypeQueryRelationshipTableType());
-		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) classification, null)
-		                             .inActiveRange(classification.getEnterpriseID())
-		                             .inDateRange()
-		                             .canRead(classification.getEnterpriseID(), identityToken)
-		                             .getCount() > 0;
-	}
-
-	@SuppressWarnings("unchecked")
-	default Q addResourceItemType(ResourceItemType resourceItemType, String value, UUID... identifyingToken)
-	{
-		Q tableForClassification = GuiceContext.get(findResourceItemTypeQueryRelationshipTableType());
-		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) resourceItemType, null)
-		                                                         .inActiveRange(resourceItemType.getEnterpriseID())
-		                                                         .inDateRange()
-		                                                         .get();
-		if (exists.isEmpty())
-		{
-			ISystems activityMasterSystem = GuiceContext.get(ISystemsService.class)
-			                                            .getActivityMaster(resourceItemType.getEnterpriseID());
-			tableForClassification.setEnterpriseID(resourceItemType.getEnterpriseID());
-			tableForClassification.setValue(value);
-			tableForClassification.setSystemID((Systems) activityMasterSystem);
-			tableForClassification.setOriginalSourceSystemID((Systems) activityMasterSystem);
-			tableForClassification.setActiveFlagID(resourceItemType.getActiveFlagID());
-			configureResourceItemTypeLinkValue(tableForClassification, (S) resourceItemType, resourceItemType.getEnterpriseID());
-
-			tableForClassification.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem, identifyingToken);
-			}
-		}
-		else
-		{
-			tableForClassification = exists.get();
-		}
-		return tableForClassification;
-	}
-*/
 
 	void configureResourceItemTypeLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
 
 
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<?>> find(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<P,S,?>> find(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService involvedPartyIdentificationTypeService = get(IResourceItemService.class);
 		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(resourceType, originatingSystem, identityToken);
-		return (Optional<IRelationshipValue<?>>) activityMasterIdentity.builder()
+		return (Optional<IRelationshipValue<P,S,?>>) activityMasterIdentity.builder()
 		                                                               .findLink((P) this, (S) classification, null)
 		                                                               .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                               .inDateRange()

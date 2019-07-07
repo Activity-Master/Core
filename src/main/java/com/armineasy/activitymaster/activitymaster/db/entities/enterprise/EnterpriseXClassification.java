@@ -3,6 +3,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.enterprise;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.builders.EnterpriseXClassificationQueryBuilder;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
@@ -10,6 +11,7 @@ import lombok.experimental.Accessors;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
@@ -24,8 +26,13 @@ import static javax.persistence.AccessType.*;
 @Accessors(chain = true)
 @Access(FIELD)
 public class EnterpriseXClassification
-		extends WarehouseClassificationRelationshipTable<Enterprise, Classification, EnterpriseXClassification,
-				                                                EnterpriseXClassificationQueryBuilder, Long, EnterpriseXClassificationSecurityToken>
+		extends WarehouseClassificationRelationshipTable<Enterprise,
+				                                                Classification,
+				                                                EnterpriseXClassification,
+				                                                EnterpriseXClassificationQueryBuilder,
+				                                                Long,
+				                                                EnterpriseXClassificationSecurityToken,
+				                                                IEnterprise<?>, IClassification<?>>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -59,11 +66,6 @@ public class EnterpriseXClassification
 		            .setBase(this);
 	}
 
-	public String toString()
-	{
-		return "EnterpriseXClassification(id=" + this.getId() + ", securities=" + this.getSecurities() + ")";
-	}
-
 	public Long getId()
 	{
 		return this.id;
@@ -86,41 +88,36 @@ public class EnterpriseXClassification
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof EnterpriseXClassification))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final EnterpriseXClassification other = (EnterpriseXClassification) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		EnterpriseXClassification that = (EnterpriseXClassification) o;
+		return Objects.equals(getId(), that.getId());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof EnterpriseXClassification;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public IEnterprise<?> getPrimary()
+	{
+		return getEnterpriseID();
+	}
+
+	@Override
+	public IClassification<?> getSecondary()
+	{
+		return getClassificationID();
 	}
 }
