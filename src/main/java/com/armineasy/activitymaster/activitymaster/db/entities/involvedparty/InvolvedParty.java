@@ -80,6 +80,8 @@ public class InvolvedParty
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<InvolvedPartySecurityToken> securities;
+
+
 	@OneToOne(
 			mappedBy = "involvedParty",
 			fetch = FetchType.LAZY)
@@ -88,6 +90,8 @@ public class InvolvedParty
 			mappedBy = "involvedParty",
 			fetch = FetchType.LAZY)
 	private InvolvedPartyNonOrganic involvedPartyNonOrganic;
+
+
 	@OneToMany(
 			mappedBy = "childInvolvedPartyID",
 			fetch = FetchType.LAZY)
