@@ -12,7 +12,7 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.prod
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 
 public interface IProduct<J extends IProduct<J>>
-		extends IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>, Product>,
+		extends IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>,IProduct<?>,IClassification<?>, Product>,
 				        IContainsResourceItems<Product, ResourceItem, ProductXResourceItem, IResourceItemClassification<?>,IProduct<?>, IResourceItem<?>, Product>,
 				        IActivityMasterEntity<Product>
 {

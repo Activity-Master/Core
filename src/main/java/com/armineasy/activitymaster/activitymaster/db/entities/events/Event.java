@@ -35,7 +35,7 @@ import static javax.persistence.AccessType.*;
 @Access(FIELD)
 public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
-		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>,Event>,
+		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>,IEvent<?>,IClassification<?>, Event>,
 				           IContainsGeographies<Event, Geography, EventXGeography>,
 				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IResourceItemClassification<?>,IEvent<?>, IResourceItem<?>, Event>,
 				           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,

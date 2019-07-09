@@ -7,10 +7,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.events.EventXAddr
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.InvolvedPartyXAddress;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsGeographies;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.*;
@@ -38,10 +35,12 @@ import static javax.persistence.AccessType.*;
 @Access(FIELD)
 public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, Long, AddressSecurityToken>
-		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>,Address>,
+		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>,IAddress<?>,IClassification<?>, Address>,
 				           IContainsGeographies<Address, Geography, AddressXGeography>,
 				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IResourceItemClassification<?>,IAddress<?>, IResourceItem<?>, Address>,
 				           IActivityMasterEntity<Address>,
+				           IContainsEnterprise<Address>,
+				           IContainsActiveFlags<Address>,
 				           IAddress<Address>
 {
 

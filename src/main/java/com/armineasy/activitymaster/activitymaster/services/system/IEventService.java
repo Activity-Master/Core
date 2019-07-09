@@ -12,8 +12,11 @@ import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import java.util.UUID;
 
-public interface IEventService
+public interface IEventService<J extends IEventService<J>>
 {
 	IEvent<?> createEvent(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID...identityToken);
+
+	IEventType<?> createEventType(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken);
+
 	IEventType<?> findEventType(IEventTypeValue<?> eventType, IEnterprise<?> enterprise, UUID... identityToken);
 }

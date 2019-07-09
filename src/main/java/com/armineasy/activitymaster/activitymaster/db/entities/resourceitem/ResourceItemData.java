@@ -5,7 +5,9 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemDataQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IResourceData;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
 
@@ -28,7 +30,8 @@ import static javax.persistence.AccessType.*;
 @Access(FIELD)
 public class ResourceItemData
 		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, Long, ResourceItemDataSecurityToken>
-		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IResourceItemClassification<?>,ResourceItemData>
+		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IResourceItemClassification<?>, IResourceData<?>, IClassification<?>, ResourceItemData>
+				           , IResourceData<ResourceItemData>
 {
 
 	private static final long serialVersionUID = 1L;

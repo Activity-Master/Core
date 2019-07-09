@@ -8,7 +8,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 
 public interface ISecurityToken<J extends ISecurityToken<J>>
-		extends IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>, SecurityToken>,
+		extends IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>,ISecurityToken<?>, IClassification<?>,SecurityToken>,
 				        IActivityMasterEntity<SecurityToken>
 
 {

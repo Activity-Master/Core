@@ -25,6 +25,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemsSe
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
@@ -55,7 +56,7 @@ import static javax.persistence.FetchType.*;
 @Access(FIELD)
 public class SecurityToken
 		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, Long, SecurityTokensSecurityToken>
-		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>, SecurityToken>,
+		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>,ISecurityToken<?>, IClassification<?>,SecurityToken>,
 				           IActivityMasterEntity<SecurityToken>,
 				           ISecurityToken<SecurityToken>
 {

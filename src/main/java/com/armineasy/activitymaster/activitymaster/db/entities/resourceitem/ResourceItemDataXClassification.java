@@ -3,10 +3,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.resourceitem;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemDataXClassificationQueryBuilder;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItem;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
@@ -34,7 +31,7 @@ public class ResourceItemDataXClassification
 				                                                ResourceItemDataXClassificationQueryBuilder,
 				                                                Long,
 				                                                ResourceItemDataXClassificationSecurityToken,
-				                                                IResourceItem<?>, IClassification<?>>
+				                                                IResourceData<?>, IClassification<?>>
 		implements Serializable
 {
 
@@ -130,9 +127,9 @@ public class ResourceItemDataXClassification
 	}
 
 	@Override
-	public IResourceItem<?> getPrimary()
+	public IResourceData<?> getPrimary()
 	{
-		return getResourceItemDataID().getResource();
+		return getResourceItemDataID();
 	}
 
 	@Override

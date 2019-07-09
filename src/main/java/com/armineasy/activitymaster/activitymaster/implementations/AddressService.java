@@ -6,6 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IAddress;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.AddressException;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
@@ -26,12 +27,12 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton
-public class AddressService implements IAddressService
+public class AddressService implements IAddressService<AddressService>
 {
 	private static final Pattern ipAddressPattern = Pattern.compile("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\\.|$)){4}");
 
 	@Override
-	public Address create(IAddressClassification<?> addressClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
+	public IAddress<?> create(IAddressClassification<?> addressClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
 	{
 		Address addy = new Address();
 		ISystems activityMasterSystem = get(ISystemsService.class)
@@ -68,7 +69,8 @@ public class AddressService implements IAddressService
 		return addy;
 	}
 
-	public Address addOrFindIPAddress(String ipAddress, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
+	@Override
+	public IAddress<?> addOrFindIPAddress(String ipAddress, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
 		                     .matches())
@@ -105,7 +107,8 @@ public class AddressService implements IAddressService
 		return address;
 	}
 
-	public Address addOrFindHostName(String hostName, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
+	@Override
+	public IAddress<?> addOrFindHostName(String hostName, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
 	{
 
 		Address address = new Address();
@@ -138,8 +141,8 @@ public class AddressService implements IAddressService
 		return address;
 	}
 
-
-	public Address addOrFindWebAddress(String webAddress, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
+	@Override
+	public IAddress<?> addOrFindWebAddress(String webAddress, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
 	{
 
 		Address address = new Address();
@@ -210,26 +213,31 @@ public class AddressService implements IAddressService
 				webDetails.setActiveFlagID(get(IActiveFlagService.class)
 						                           .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 				//
+				webDetails = new Address();
 				webDetails.setValue(url.getPort() + "");
 				webDetails.setClassification(webPortAddressClassification);
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
+				webDetails = new Address();
 				webDetails.setValue(domain);
 				webDetails.setClassification(webDomainAddressClassification);
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
+				webDetails = new Address();
 				webDetails.setValue(domain);
 				webDetails.setClassification(webDomainAddressClassification);
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
+				webDetails = new Address();
 				webDetails.setValue(protocol);
 				webDetails.setClassification(webProtocolAddressClassification);
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
+				webDetails = new Address();
 				webDetails.setValue(protocol);
 				webDetails.setClassification(webSiteAddressClassification);
 				webDetails.persist();

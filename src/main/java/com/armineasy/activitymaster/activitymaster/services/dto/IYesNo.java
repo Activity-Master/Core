@@ -8,7 +8,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.classifications.yesno.IYesNoClassification;
 
 public interface IYesNo<J extends IYesNo<J>>
-		extends IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification<?>, YesNo>,
+		extends IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification<?>,IYesNo<?>, IClassification<?>, YesNo>,
 				        IActivityMasterEntity<YesNo>
 {
 }

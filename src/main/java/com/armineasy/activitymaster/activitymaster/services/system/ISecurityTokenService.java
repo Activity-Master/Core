@@ -2,8 +2,10 @@ package com.armineasy.activitymaster.activitymaster.services.system;
 
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
+import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.ISecurityTokenClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
+import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -11,6 +13,10 @@ import java.util.UUID;
 
 public interface ISecurityTokenService<J extends ISecurityTokenService<J>>
 {
+
+	ISecurityToken<?> create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems<?> system);
+
+	ISecurityToken<?> create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems<?> system, ISecurityToken<?> parent, UUID... identityToken);
 
 	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	ISecurityToken<?> getEveryoneGroup(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken);

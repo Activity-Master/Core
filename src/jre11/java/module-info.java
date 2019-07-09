@@ -6,41 +6,42 @@ import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
 
 module com.armineasy.activitymaster.activitymaster {
 	exports com.armineasy.activitymaster.activitymaster ;
-	exports com.armineasy.activitymaster.activitymaster.implementations ;
-	exports com.armineasy.activitymaster.activitymaster.db ;
-	exports com.armineasy.activitymaster.activitymaster.db.abstraction ;
-	exports com.armineasy.activitymaster.activitymaster.db.abstraction.assists ;
-	exports com.armineasy.activitymaster.activitymaster.db.abstraction.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.abstraction.builders.assists ;
+	//exports com.armineasy.activitymaster.activitymaster.implementations ;
+	//exports com.armineasy.activitymaster.activitymaster.db ;
+	//exports com.armineasy.activitymaster.activitymaster.db.abstraction ;
+	//exports com.armineasy.activitymaster.activitymaster.db.abstraction.assists ;
+	//exports com.armineasy.activitymaster.activitymaster.db.abstraction.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.abstraction.builders.assists ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.enterprise ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.enterprise.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.activeflag ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.activeflag.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.address ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.address.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.address ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.address.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.arrangement ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.classifications ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.classifications.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.events ;
 //	exports com.armineasy.activitymaster.activitymaster.db.entities.events.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.geography ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.geography.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.involvedparty ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.product ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.product.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.geography ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.geography.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.involvedparty ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.product ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.product.builders ;
 //	exports com.armineasy.activitymaster.activitymaster.db.entities.resourceitem ;
 //	exports com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.security ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.security.builders ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.systems ;
 	//exports com.armineasy.activitymaster.activitymaster.db.entities.systems.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.yesno ;
-	exports com.armineasy.activitymaster.activitymaster.db.entities.yesno.builders ;
-	exports com.armineasy.activitymaster.activitymaster.db.hierarchies ;
-	exports com.armineasy.activitymaster.activitymaster.db.hierarchies.builders ;
-	exports com.armineasy.activitymaster.activitymaster.injections ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.yesno ;
+	//exports com.armineasy.activitymaster.activitymaster.db.entities.yesno.builders ;
+	//exports com.armineasy.activitymaster.activitymaster.db.hierarchies ;
+	//exports com.armineasy.activitymaster.activitymaster.db.hierarchies.builders ;
+
+	//exports com.armineasy.activitymaster.activitymaster.injections ;
 
 	exports com.armineasy.activitymaster.activitymaster.services ;
 	exports com.armineasy.activitymaster.activitymaster.services.dto;
@@ -56,7 +57,9 @@ module com.armineasy.activitymaster.activitymaster {
 	exports com.armineasy.activitymaster.activitymaster.services.security ;
 	exports com.armineasy.activitymaster.activitymaster.services.system ;
 	exports com.armineasy.activitymaster.activitymaster.services.types ;
-	exports com.armineasy.activitymaster.activitymaster.systems;
+
+
+	//exports com.armineasy.activitymaster.activitymaster.systems;
 
 	exports com.armineasy.activitymaster.activitymaster.threads;
 

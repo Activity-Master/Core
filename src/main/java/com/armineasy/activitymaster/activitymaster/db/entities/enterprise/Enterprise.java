@@ -26,6 +26,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivi
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import lombok.experimental.Accessors;
 
@@ -51,7 +52,7 @@ import static javax.persistence.AccessType.*;
 @Access(FIELD)
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, Long, EnterpriseSecurityToken>
-		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise<Enterprise>>,
+		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>,IEnterprise<?>, IClassification<?>, Enterprise>,
 				           IActivityMasterEntity<Enterprise>,
 				           INameAndDescription<Enterprise>,
 				           IEnterprise<Enterprise>

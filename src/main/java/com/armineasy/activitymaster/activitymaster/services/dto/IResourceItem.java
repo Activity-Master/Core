@@ -10,10 +10,11 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.reso
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 
 public interface IResourceItem<J extends IResourceItem<J>>
-	extends IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification<?>, ResourceItem>,
-			        IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType, IResourceType<?>,ResourceItem>,
-			        IActivityMasterEntity<ResourceItem>,
-			        IContainsActiveFlags<ResourceItem>,
-			        IContainsEnterprise<ResourceItem>
+		extends IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification<?>, IResourceItem<?>, IClassification<?>, ResourceItem>,
+				        IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType, IResourceType<?>, ResourceItem>,
+				        IActivityMasterEntity<ResourceItem>,
+				        IContainsActiveFlags<ResourceItem>,
+				        IContainsData<ResourceItem>,
+				        IContainsEnterprise<ResourceItem>
 {
 }

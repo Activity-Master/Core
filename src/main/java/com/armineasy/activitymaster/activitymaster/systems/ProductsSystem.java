@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgr
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSystem;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -58,7 +59,7 @@ public class ProductsSystem
 		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Products System",
 		                                        "The system for managing Products", "");
-		UUID securityToken = GuiceContext.get(SystemsSystem.class)
+		UUID securityToken = GuiceContext.get(ISystemsService.class)
 		                                 .registerNewSystem(enterprise, newSystem);
 
 		systemTokens.put(enterprise, securityToken);

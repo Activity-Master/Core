@@ -27,6 +27,7 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.syst
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
+import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -450,7 +451,7 @@ public class SecurityTokenSystem
 		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Security Tokens System",
 		                                        "The system for managing Security Tokens", "");
-		UUID securityToken = GuiceContext.get(SystemsSystem.class)
+		UUID securityToken = GuiceContext.get(ISystemsService.class)
 		                                 .registerNewSystem(enterprise, newSystem);
 
 		systemTokens.put(enterprise, securityToken);

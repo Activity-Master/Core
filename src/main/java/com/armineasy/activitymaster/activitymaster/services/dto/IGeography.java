@@ -12,7 +12,7 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.geog
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 
 public interface IGeography<J extends IGeography<J>>
-		extends IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, Geography>,
+		extends IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>,IGeography<?>,IClassification<?>, Geography>,
 				        IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceItemClassification<?>,IGeography<?>, IResourceItem<?>,Geography>,
 				        IActivityMasterEntity<Geography>
 {

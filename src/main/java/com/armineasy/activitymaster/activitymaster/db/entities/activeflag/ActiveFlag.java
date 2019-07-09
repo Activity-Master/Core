@@ -27,6 +27,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.classifications.activeflag.IActiveFlagClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import lombok.experimental.Accessors;
@@ -58,7 +59,7 @@ import static javax.persistence.AccessType.*;
 public class ActiveFlag
 		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, Long, ActiveFlagSecurityToken>
 		implements INameAndDescription<ActiveFlag>,
-				           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>, IActiveFlag<ActiveFlag>>,
+				           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>,IActiveFlag<?>, IClassification<?>,  IActiveFlag<ActiveFlag>>,
 				           IActivityMasterEntity<ActiveFlag>,
 				           IContainsEnterprise<ActiveFlag>,
 				           IActiveFlag<ActiveFlag>

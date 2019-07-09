@@ -12,7 +12,7 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.reso
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IEventTypeValue;
 
 public interface IEvent<J extends IEvent<J>>
-		extends IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>, Event>,
+		extends IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>,IEvent<?>,IClassification<?>, Event>,
 				        IContainsGeographies<Event, Geography, EventXGeography>,
 				        IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IResourceItemClassification<?>, IEvent<?>, IResourceItem<?>, Event>,
 				        IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,

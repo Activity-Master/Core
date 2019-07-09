@@ -7,17 +7,16 @@ import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressXR
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geography;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsGeographies;
-import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsResourceItems;
+import com.armineasy.activitymaster.activitymaster.services.capabilities.*;
 import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 
 public interface IAddress<J extends IAddress<?>>
-		extends IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>, Address>,
+		extends IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>, IAddress<?>, IClassification<?>, Address>,
 				        IContainsGeographies<Address, Geography, AddressXGeography>,
-				        IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IResourceItemClassification<?>,IAddress<?>, IResourceItem<?>, Address>,
+				        IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IResourceItemClassification<?>, IAddress<?>, IResourceItem<?>, Address>,
+				        IContainsEnterprise<Address>,
+				        IContainsActiveFlags<Address>,
 				        IActivityMasterEntity<Address>
 {
 }

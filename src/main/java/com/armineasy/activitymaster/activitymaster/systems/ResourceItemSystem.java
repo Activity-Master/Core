@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSyste
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.ResourceItemClassifications;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
 
 import java.util.HashMap;
@@ -99,7 +100,7 @@ public class ResourceItemSystem
 		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Resource Items System",
 		                                        "The system for managing Resource Items", "");
-		UUID securityToken = GuiceContext.get(SystemsSystem.class)
+		UUID securityToken = GuiceContext.get(ISystemsService.class)
 		                                 .registerNewSystem(enterprise, newSystem);
 
 		systemTokens.put(enterprise, securityToken);

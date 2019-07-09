@@ -37,7 +37,7 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 @Singleton
 @Log
 public class InvolvedPartyService
-		implements IInvolvedPartyService
+		implements IInvolvedPartyService<InvolvedPartyService>
 {
 	@Override
 	public IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, IEnterprise<?> enterprise)
@@ -261,8 +261,8 @@ public class InvolvedPartyService
 			throw new SecurityAccessException("Unable to find any Involved Party with that username");
 		}
 
-		Optional<IRelationshipValue<InvolvedParty, Classification,?>> saltEntity = foundPart.find(SecurityPasswordSalt, originatingSystem, identityToken);
-		Optional<IRelationshipValue<InvolvedParty,Classification,?>> passEntity = foundPart.find(SecurityPassword, originatingSystem, identityToken);
+		Optional<IRelationshipValue<IInvolvedParty<?>, IClassification<?>,?>> saltEntity = foundPart.find(SecurityPasswordSalt, originatingSystem, identityToken);
+		Optional<IRelationshipValue<IInvolvedParty<?>,IClassification<?>,?>> passEntity = foundPart.find(SecurityPassword, originatingSystem, identityToken);
 		if (saltEntity.isEmpty() || passEntity.isEmpty())
 		{
 			if (throwForNoUser)
@@ -304,7 +304,7 @@ public class InvolvedPartyService
 		return party;
 	}
 
-
+	@Override
 	public IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> originatingSystem, UUID... token)
 	{
 		byte[] salt;

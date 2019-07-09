@@ -9,6 +9,7 @@ import com.armineasy.activitymaster.activitymaster.services.IActivityMasterSyste
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseName;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 
@@ -228,7 +229,7 @@ public class AddressSystem
 	{
 		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Address System", "The system for the address management", "");
-		UUID securityToken = GuiceContext.get(SystemsSystem.class)
+		UUID securityToken = GuiceContext.get(ISystemsService.class)
 		                                 .registerNewSystem(enterprise, newSystem);
 
 		systemTokens.put(enterprise, securityToken);

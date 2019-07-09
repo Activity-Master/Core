@@ -25,7 +25,7 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @Singleton
 public class EventsService
-		implements IEventService
+		implements IEventService<EventsService>
 {
 	@Override
 	public IEvent<?> createEvent(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
@@ -42,6 +42,7 @@ public class EventsService
 		return event;
 	}
 
+	@Override
 	public IEventType<?> createEventType(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Optional<EventType> typeExists = ActivityMasterConfiguration

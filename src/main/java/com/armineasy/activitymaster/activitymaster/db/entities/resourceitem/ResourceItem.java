@@ -44,11 +44,12 @@ import static javax.persistence.FetchType.*;
 @Access(FIELD)
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, Long, ResourceItemSecurityToken>
-		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification<?>, ResourceItem>,
+		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IResourceItemClassification<?>, IResourceItem<?>, IClassification<?>, ResourceItem>,
 				           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType, IResourceType<?>, ResourceItem>,
 				           IActivityMasterEntity<ResourceItem>,
 				           IContainsActiveFlags<ResourceItem>,
 				           IContainsEnterprise<ResourceItem>,
+				           IContainsData<ResourceItem>,
 				           IResourceItem<ResourceItem>
 {
 	private static final long serialVersionUID = 1L;
@@ -146,137 +147,17 @@ public class ResourceItem
 		classificationLink.setResourceItemID(this);
 	}
 
-	public List<ResourceItemXClassification> getClassifications()
+
+	public byte[] getData()
 	{
-		return this.classifications;
+		if (data == null || data.isEmpty())
+		{
+			return new byte[]{};
+		}
+		return this.data.get(0)
+		                .getResourceItemData();
 	}
 
-	public List<ResourceItemXResourceItemType> getTypes()
-	{
-		return this.types;
-	}
-
-	public List<InvolvedPartyXResourceItem> getParties()
-	{
-		return this.parties;
-	}
-
-	public List<ArrangementXResourceItem> getArrangements()
-	{
-		return this.arrangements;
-	}
-
-	public List<ResourceItemData> getData()
-	{
-		return this.data;
-	}
-
-	public List<AddressXResourceItem> getAddresses()
-	{
-		return this.addresses;
-	}
-
-	public List<EventXResourceItem> getEvents()
-	{
-		return this.events;
-	}
-
-	public List<ProductXResourceItem> getProducts()
-	{
-		return this.products;
-	}
-
-	public List<ClassificationDataConceptXResourceItem> getConcept()
-	{
-		return this.concept;
-	}
-
-	public List<ClassificationXResourceItem> getClassificationXResourceItemList()
-	{
-		return this.classificationXResourceItemList;
-	}
-
-	public List<ResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
-	public List<GeographyXResourceItem> getGeographies()
-	{
-		return this.geographies;
-	}
-
-	public ResourceItem setClassifications(List<ResourceItemXClassification> classifications)
-	{
-		this.classifications = classifications;
-		return this;
-	}
-
-	public ResourceItem setTypes(List<ResourceItemXResourceItemType> types)
-	{
-		this.types = types;
-		return this;
-	}
-
-	public ResourceItem setParties(List<InvolvedPartyXResourceItem> parties)
-	{
-		this.parties = parties;
-		return this;
-	}
-
-	public ResourceItem setArrangements(List<ArrangementXResourceItem> arrangements)
-	{
-		this.arrangements = arrangements;
-		return this;
-	}
-
-	public ResourceItem setData(List<ResourceItemData> data)
-	{
-		this.data = data;
-		return this;
-	}
-
-	public ResourceItem setAddresses(List<AddressXResourceItem> addresses)
-	{
-		this.addresses = addresses;
-		return this;
-	}
-
-	public ResourceItem setEvents(List<EventXResourceItem> events)
-	{
-		this.events = events;
-		return this;
-	}
-
-	public ResourceItem setProducts(List<ProductXResourceItem> products)
-	{
-		this.products = products;
-		return this;
-	}
-
-	public ResourceItem setConcept(List<ClassificationDataConceptXResourceItem> concept)
-	{
-		this.concept = concept;
-		return this;
-	}
-
-	public ResourceItem setClassificationXResourceItemList(List<ClassificationXResourceItem> classificationXResourceItemList)
-	{
-		this.classificationXResourceItemList = classificationXResourceItemList;
-		return this;
-	}
-
-	public ResourceItem setSecurities(List<ResourceItemSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-
-	public ResourceItem setGeographies(List<GeographyXResourceItem> geographies)
-	{
-		this.geographies = geographies;
-		return this;
-	}
 
 	@Override
 	public boolean equals(Object o)

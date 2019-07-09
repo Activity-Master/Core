@@ -34,7 +34,7 @@ import static javax.persistence.AccessType.*;
 @Access(FIELD)
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, Long, ArrangementSecurityToken>
-		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, Arrangement>,
+		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, IArrangement<?>,IClassification<?>, Arrangement>,
 				           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceItemClassification<?>,IArrangement<?>, IResourceItem<?>, Arrangement>,
 				           IActivityMasterEntity<Arrangement>,
 				           IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, Arrangement>,

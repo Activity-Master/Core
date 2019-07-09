@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 public interface ISystems<J extends ISystems<J>>
 		extends Serializable,
-				        IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>,ISystems<J>>,
+				        IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>,ISystems<?>, IClassification<?>, Systems>,
 				        IActivityMasterEntity<J>,
 				        INameAndDescription<J>,
 				        IContainsEnterprise<J>

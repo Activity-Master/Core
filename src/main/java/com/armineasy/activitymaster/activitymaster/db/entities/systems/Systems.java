@@ -26,6 +26,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAndDescription;
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.ISystemsClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
@@ -56,7 +57,7 @@ import static javax.persistence.AccessType.*;
 @Access(FIELD)
 public class Systems
 		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, Long, SystemsSecurityToken>
-		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>, ISystems<Systems>>,
+		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>,ISystems<?>, IClassification<?>, Systems>,
 				           IActivityMasterEntity<Systems>,
 				           INameAndDescription<Systems>,
 				           IContainsEnterprise<Systems>,

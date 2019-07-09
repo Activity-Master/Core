@@ -42,7 +42,7 @@ import static javax.persistence.FetchType.*;
 @Access(FIELD)
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
-		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>,Geography>,
+		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>,IGeography<?>,IClassification<?>, Geography>,
 				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceItemClassification<?>,IGeography<?>, IResourceItem<?>,Geography>,
 				           IActivityMasterEntity<Geography>,
 				           IGeography<Geography>

@@ -4,11 +4,14 @@ import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
+import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.classifications.address.IAddressClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IAddress;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IAddressService;
@@ -28,7 +31,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		                                   J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>>
 {
 	@SuppressWarnings("unchecked")
-	default Optional<J> findAddress(@CacheKey Address address, @CacheKey UUID... identityToken)
+	default Optional<J> findAddress(@CacheKey IAddress<?> address, @CacheKey UUID... identityToken)
 	{
 		J activityMasterIdentity = get(findAddressQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
@@ -74,7 +77,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default J add(IAddressClassification<?> addressClassification, Systems originatingSystem, String value, UUID... identifyingToken)
+	default J add(IAddressClassification<?> addressClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
 	{
 		ISystems activityMasterSystem = get(ISystemsService.class)
 				                                .getActivityMaster(originatingSystem.getEnterpriseID());
@@ -83,35 +86,31 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
 		
 		IAddressService addressService = get(IAddressService.class);
-		Address address = addressService.create(addressClassification, originatingSystem, value, identifyingToken);
+		IAddress<?> address = addressService.create(addressClassification, originatingSystem, value, identifyingToken);
 		J tableForClassification = (J) address.addOrReuse(addressClassification, value, originatingSystem, identifyingToken);
 		return tableForClassification;
 	}
 
 
 	@SuppressWarnings("unchecked")
-	default J add(Address addy, ISystems<?> originatingSystem, UUID... identifyingToken)
+	default J add(IAddress<?> addy, ISystems<?> originatingSystem, UUID... identifyingToken)
 	{
 		J tableForClassification = get(findAddressQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) addy,null)
-		                                                         .inActiveRange(addy.getClassification()
-		                                                                            .getEnterpriseID())
+		                                                         .inActiveRange(addy.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(originatingSystem.getEnterpriseID(), identifyingToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			tableForClassification.setEnterpriseID(addy.getClassification()
-			                                           .getEnterpriseID());
-			tableForClassification.setClassificationID(addy.getClassification());
+			tableForClassification.setEnterpriseID((Enterprise) addy.getEnterpriseID());
+			tableForClassification.setClassificationID(((Address)addy).getClassification());
 			tableForClassification.setSystemID((Systems) originatingSystem);
 			tableForClassification.setValue("");
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
-			tableForClassification.setActiveFlagID(addy.getClassification()
-			                                           .getActiveFlagID());
-			setMyAddressLinkValue(tableForClassification, (S) addy, addy.getClassification()
-			                                                            .getEnterpriseID());
+			tableForClassification.setActiveFlagID((ActiveFlag) addy.getActiveFlagID());
+			setMyAddressLinkValue(tableForClassification, (S) addy, addy.getEnterpriseID());
 			tableForClassification.persist();
 
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())

@@ -16,6 +16,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
+import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.pairing.Pair;
@@ -56,53 +57,6 @@ public class SystemsSystem
 	public int totalTasks()
 	{
 		return 2;
-	}
-
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = transactionTimeout)
-	public UUID registerNewSystem(IEnterprise<?> enterprise, ISystems<?> newSystem)
-	{
-		//Create Security Token for the created system row
-		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
-		SecurityTokenService securityTokenService = GuiceContext.get(SecurityTokenService.class);
-
-		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                           .getActivityMaster(enterprise);
-		UUID activityMasterSystemUUID = GuiceContext.get(SystemsService.class)
-		                                            .getSecurityIdentityToken(activityMasterSystem);
-
-		SecurityToken newSystemsSecurityToken = (SecurityToken) securityTokenService.create(UserGroupSecurityTokenClassifications.System,
-		                                                                                    newSystem.getName(), newSystem.getDescription(), newSystem);
-
-		SecurityToken systemsToken = (SecurityToken) securityTokenService.create(UserGroupSecurityTokenClassifications.System,
-		                                                                         UserGroupSecurityTokenClassifications.System.classificationName(),
-		                                                                         UserGroupSecurityTokenClassifications.System.classificationDescription(), activityMasterSystem);
-
-		securityTokenService.link(systemsToken, newSystemsSecurityToken,
-		                          (Classification) classificationService.find(UserGroupSecurityTokenClassifications.System, activityMasterSystem.getEnterpriseID(),
-		                                                                      activityMasterSystemUUID));
-		//Add the systems classifications so the UUID can be fetched
-		newSystem.addOrReuse(SystemsClassifications.SystemIdentity, newSystemsSecurityToken.getSecurityToken(), newSystem,
-		              activityMasterSystemUUID);
-
-		UUID newSystemUUID = GuiceContext.get(SystemsService.class)
-		                                 .getSecurityIdentityToken(newSystem, activityMasterSystemUUID);
-
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
-			newSystemsSecurityToken.createDefaultSecurity(activityMasterSystem,activityMasterSystemUUID);
-		}
-
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
-			systemsToken.createDefaultSecurity(activityMasterSystem,activityMasterSystemUUID);
-		}
-
-		GuiceContext.get(SystemsSystem.class)
-		            .createInvolvedPartyForNewSystem(newSystem);
-
-		return newSystemUUID;
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -149,7 +103,7 @@ public class SystemsSystem
 		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
 		                                .create(enterprise, "Systems System",
 		                                        "The system for managing Systems", "");
-		UUID securityToken = GuiceContext.get(SystemsSystem.class)
+		UUID securityToken = GuiceContext.get(ISystemsService.class)
 		                                 .registerNewSystem(enterprise, newSystem);
 
 		systemTokens.put(enterprise, securityToken);

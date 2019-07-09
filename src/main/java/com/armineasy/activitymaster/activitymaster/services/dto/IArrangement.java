@@ -11,7 +11,7 @@ import com.armineasy.activitymaster.activitymaster.services.enumtypes.IArrangeme
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 
 public interface IArrangement<J extends IArrangement<J>>
-		extends IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, Arrangement>,
+		extends IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, IArrangement<?>,IClassification<?>, Arrangement>,
 				        IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceItemClassification<?>,IArrangement<?>, IResourceItem<?>, Arrangement>,
 				        IActivityMasterEntity<Arrangement>,
 				        IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, Arrangement>,

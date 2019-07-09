@@ -39,7 +39,7 @@ import static javax.persistence.FetchType.*;
 @Access(FIELD)
 public class Product
 		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, Long, ProductSecurityToken>
-		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>,Product>,
+		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>,IProduct<?>,IClassification<?>, Product>,
 				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem, IResourceItemClassification<?>,IProduct<?>, IResourceItem<?>, Product>,
 				           IActivityMasterEntity<Product>,
 				           IProduct<Product>

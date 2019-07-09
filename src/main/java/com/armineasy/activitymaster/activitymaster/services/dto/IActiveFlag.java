@@ -14,7 +14,7 @@ import java.io.Serializable;
 public interface IActiveFlag<J extends IActiveFlag<J>>
 		extends Serializable,
 				        INameAndDescription<J>,
-				        IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>,IActiveFlag<J>>,
+				        IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>,IActiveFlag<?>, IClassification<?>,  IActiveFlag<ActiveFlag>>,
 				        IActivityMasterEntity<J>,
 				        IContainsEnterprise<J>
 {

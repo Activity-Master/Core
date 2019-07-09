@@ -8,6 +8,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.yesno.builders.Ye
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivityMasterEntity;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.yesno.IYesNoClassification;
+import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IYesNo;
@@ -36,7 +37,7 @@ import static javax.persistence.FetchType.*;
 @Access(FIELD)
 public class YesNo
 		extends WarehouseTable<YesNo, YesNoQueryBuilder, Long, YesNoSecurityToken>
-		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification<?>,YesNo>,
+		implements IContainsClassifications<YesNo, Classification, YesNoXClassification, IYesNoClassification<?>,IYesNo<?>, IClassification<?>, YesNo>,
 				           IActivityMasterEntity<YesNo>,
 				           IYesNo<YesNo>
 {

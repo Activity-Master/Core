@@ -14,7 +14,7 @@ import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import java.util.UUID;
 
-public interface IInvolvedPartyService
+public interface IInvolvedPartyService<J extends IInvolvedPartyService<J>>
 {
 
 	IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, IEnterprise<?> enterprise);
@@ -40,6 +40,8 @@ public interface IInvolvedPartyService
 	boolean doesUsernameExist(String username, IEnterprise<?> enterprise, UUID... token);
 
 	IInvolvedParty<?> findByUsername(String username, IEnterprise<?> enterprise, UUID... token);
+
+	IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> originatingSystem, UUID... token);
 
 	IInvolvedParty<?> create(ISystems<?> originatingSystem, Pair<IIdentificationType<?>, String> idTypes,
 	                         boolean isOrganic, UUID... identityToken);
