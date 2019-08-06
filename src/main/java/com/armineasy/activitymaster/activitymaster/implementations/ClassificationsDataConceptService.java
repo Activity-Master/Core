@@ -4,6 +4,7 @@ import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
 import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts;
@@ -36,8 +37,8 @@ public class ClassificationsDataConceptService
 		                                            newConcept.builder()
 		                                                       .findByName(name.classificationValue())
 		                                                       .get();
-		ActiveFlag active = GuiceContext.get(IActiveFlagService.class)
-		                                .getActiveFlag(system.getEnterpriseID());
+		IActiveFlag<?> active = GuiceContext.get(IActiveFlagService.class)
+		                                 .getActiveFlag(system.getEnterpriseID());
 
 		if (exists.isEmpty())
 		{
@@ -45,7 +46,7 @@ public class ClassificationsDataConceptService
 			newConcept.setName(name.classificationValue());
 			newConcept.setSystemID((com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems) system);
 			newConcept.setOriginalSourceSystemID((com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems) system);
-			newConcept.setActiveFlagID(active);
+			newConcept.setActiveFlagID((ActiveFlag)active);
 			newConcept.setEnterpriseID((com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise) system.getEnterpriseID());
 			newConcept.persist();
 			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())

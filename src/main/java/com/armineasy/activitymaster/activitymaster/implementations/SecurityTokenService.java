@@ -2,6 +2,7 @@ package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
@@ -68,7 +69,7 @@ public class SecurityTokenService
 			sta.setSystemID((Systems) system);
 			sta.setOriginalSourceSystemID((Systems) system);
 			sta.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			sta.setActiveFlagID(GuiceContext.get(IActiveFlagService.class).getActiveFlag(sta.getEnterpriseID()));
+			sta.setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class).getActiveFlag(sta.getEnterpriseID()));
 			sta.setSecurityTokenID(fromToken);
 			sta.setBase(toToken);
 			sta.setCreateAllowed(create);

@@ -94,7 +94,6 @@ module com.armineasy.activitymaster.activitymaster {
 	requires org.hibernate.orm.core;
 	requires org.hibernate.validator;
 
-	requires lombok;
 
 	requires cache.api;
 	requires com.google.guice.extensions.servlet;

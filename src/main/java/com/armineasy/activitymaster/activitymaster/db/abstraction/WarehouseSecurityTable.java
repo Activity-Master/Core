@@ -101,7 +101,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	@SuppressWarnings("unchecked")
 	public J remove()
 	{
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
 		                                                                               .get(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());

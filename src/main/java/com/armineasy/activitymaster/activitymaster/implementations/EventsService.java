@@ -1,6 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.Event;
 import com.armineasy.activitymaster.activitymaster.db.entities.events.EventType;
@@ -34,7 +35,7 @@ public class EventsService
 		event.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		event.setSystemID((Systems) originatingSystem);
 		event.setOriginalSourceSystemID((Systems) originatingSystem);
-		event.setActiveFlagID(get(IActiveFlagService.class)
+		event.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 				                      .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 		event.persist();
 		event.createDefaultSecurity(originatingSystem, identityToken);
@@ -61,7 +62,7 @@ public class EventsService
 			type.setDescription(eventType.classificationValue());
 			type.setSystemID((Systems) originatingSystem);
 			type.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			type.setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+			type.setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
 			                                 .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			type.setOriginalSourceSystemID((Systems) originatingSystem);
 			type.persist();

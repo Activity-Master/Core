@@ -1,6 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
@@ -94,7 +95,7 @@ public class AddressService implements IAddressService<AddressService>
 			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
-			address.setActiveFlagID(get(IActiveFlagService.class)
+			address.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class)
 					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
 			address.createDefaultSecurity(originatingSystem, identityToken);
@@ -128,7 +129,7 @@ public class AddressService implements IAddressService<AddressService>
 			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
-			address.setActiveFlagID(get(IActiveFlagService.class)
+			address.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class)
 					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
 			address.createDefaultSecurity(originatingSystem, identityToken);
@@ -162,7 +163,7 @@ public class AddressService implements IAddressService<AddressService>
 			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
-			address.setActiveFlagID(get(IActiveFlagService.class)
+			address.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class)
 					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
 			address.createDefaultSecurity(originatingSystem, identityToken);
@@ -210,7 +211,7 @@ public class AddressService implements IAddressService<AddressService>
 				webDetails.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 				webDetails.setSystemID((Systems) originatingSystem);
 				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
-				webDetails.setActiveFlagID(get(IActiveFlagService.class)
+				webDetails.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class)
 						                           .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 				//
 				webDetails = new Address();

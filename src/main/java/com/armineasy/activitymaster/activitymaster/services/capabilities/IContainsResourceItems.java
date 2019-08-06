@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseCoreT
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationship;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.ResourceItem;
@@ -267,15 +268,15 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		storeThread.setData(data);
 		storeThread.setIdentifyingToken(identityToken);
 		storeThread.setOriginatingSystem(originatingSystem);
-		if (async)
+/*		if (async)
 		{
 			JobService.getInstance()
 			          .addJob("StoreResourceItemThread", storeThread);
 		}
 		else
-		{
+		{*/
 			storeThread.run();
-		}
+		//}
 
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		tableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
@@ -283,8 +284,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setClassificationID(classification);
-		tableForClassification.setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-		                                                   .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+		tableForClassification.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		                                                               .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 
 		configureResourceItemLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), originatingSystem.getEnterpriseID());
 
@@ -330,7 +331,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			tableForClassification = exists.get();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID(flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -344,7 +345,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID(flagService.getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureResourceItemLinkValue(newTableForClassification, (P) tableForClassification.getPrimary(), (S) tableForClassification.getSecondary(),
@@ -510,7 +511,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID(flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -524,7 +525,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID(flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(storeValue);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureResourceItemLinkValue(newTableForClassification, (P) this, (S) tableForClassification.getSecondary(), classification, storeValue,
@@ -566,7 +567,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID(flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -580,7 +581,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID(flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureResourceItemLinkValue(newTableForClassification, (P) this, (S) tableForClassification.getSecondary(), classification, storeValue, originatingSystem.getEnterpriseID());
@@ -623,7 +624,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID(flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 		}
@@ -654,7 +655,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID(flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 		}

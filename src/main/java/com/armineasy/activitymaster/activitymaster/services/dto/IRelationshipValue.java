@@ -62,4 +62,11 @@ public interface IRelationshipValue<P,S,J extends IRelationshipValue<P,S,J>>
 		return this;
 	}
 
+
+	default IRelationshipValue<P,S,?> update(ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		WarehouseBaseTable tableForClassification = (WarehouseBaseTable) this;
+		tableForClassification.updateNow();
+		return this;
+	}
 }

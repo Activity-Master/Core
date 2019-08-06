@@ -5,6 +5,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.Active
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo;
+import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
@@ -30,8 +31,8 @@ public class YesNoService
 		                           .get();
 		if (exists.isEmpty())
 		{
-			ActiveFlag activeFlag = GuiceContext.get(IActiveFlagService.class)
-			                                    .getActiveFlag(system.getEnterpriseID());
+			IActiveFlag<?> activeFlag = GuiceContext.get(IActiveFlagService.class)
+			                                     .getActiveFlag(system.getEnterpriseID());
 
 			yn.setYesNoDesc(defaultName);
 			yn.setYNDesc(singleChar);
@@ -42,7 +43,7 @@ public class YesNoService
 			yn.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			yn.setSystemID((Systems) system);
 			yn.setOriginalSourceSystemID((Systems) system);
-			yn.setActiveFlagID(activeFlag);
+			yn.setActiveFlagID((ActiveFlag)activeFlag);
 			yn.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())

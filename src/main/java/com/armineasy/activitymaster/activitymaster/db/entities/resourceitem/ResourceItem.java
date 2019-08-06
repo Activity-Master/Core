@@ -26,8 +26,10 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
+import static com.jwebmp.entityassist.enumerations.Operand.*;
 import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
@@ -148,14 +150,38 @@ public class ResourceItem
 	}
 
 
-	public byte[] getData()
+	public byte[] getData(UUID... identityToken)
 	{
 		if (data == null || data.isEmpty())
 		{
 			return new byte[]{};
 		}
-		return this.data.get(0)
-		                .getResourceItemData();
+		Optional<ResourceItemData> d
+				= new ResourceItemData().builder()
+				                        .inActiveRange(getEnterprise(), identityToken)
+				                        .inDateRange()
+				                        .where(ResourceItemData_.resource, Equals, this)
+				                        .get();
+
+		return d.orElseThrow()
+		        .getResourceItemData();
+	}
+
+	@Override
+	public void updateData(byte[] data, UUID... identityToken)
+	{
+		Optional<ResourceItemData> d
+				= new ResourceItemData().builder()
+				                        .inActiveRange(getEnterprise(), identityToken)
+				                        .inDateRange()
+				                        .where(ResourceItemData_.resource, Equals, this)
+				                        .get();
+		if (d.isPresent())
+		{
+			ResourceItemData rid = d.get();
+			rid.setResourceItemData(data);
+			rid.updateNow();
+		}
 	}
 
 

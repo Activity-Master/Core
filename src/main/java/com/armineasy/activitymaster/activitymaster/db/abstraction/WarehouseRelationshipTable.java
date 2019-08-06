@@ -2,6 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationship;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.IRelationshipValue;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.entityassist.SCDEntity;
@@ -125,8 +126,8 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 	@SuppressWarnings("unchecked")
 	public @NotNull J update(String newValue, UUID... identifyingToken)
 	{
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-		                            .getDeletedFlag(getEnterpriseID(), identifyingToken));
+		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
+		                                        .getDeletedFlag(getEnterpriseID(), identifyingToken));
 		setEffectiveToDate(LocalDateTime.now());
 		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 		update();
@@ -137,7 +138,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 		setEffectiveToDate(SCDEntity.EndOfTime);
 		setWarehouseCreatedTimestamp(LocalDateTime.now());
 		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
 		                            .getActiveFlag(getEnterpriseID(), identifyingToken));
 		persist();
 		if (GuiceContext.get(ActivityMasterConfiguration.class)

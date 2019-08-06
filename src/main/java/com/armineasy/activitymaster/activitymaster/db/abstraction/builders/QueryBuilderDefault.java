@@ -4,6 +4,7 @@ import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseBaseTable;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSCDTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
+import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.entityassist.querybuilder.QueryBuilderSCD;
@@ -13,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -56,10 +58,14 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	@javax.validation.constraints.NotNull
 	public J inActiveRange(IEnterprise<?> enterprise, UUID...identityToken)
 	{
-		Collection<ActiveFlag> flags = GuiceContext.get(IActiveFlagService.class)
-		                                           .findActiveRange(enterprise, identityToken);
-
-		where((SingularAttribute<E, ActiveFlag>) getAttribute("activeFlagID"), InList, flags);
+		Collection<IActiveFlag<?>> flags = GuiceContext.get(IActiveFlagService.class)
+		                                               .findActiveRange(enterprise,identityToken);
+		Collection<ActiveFlag> flagss = new ArrayList<>();
+		for (IActiveFlag<?> flag : flags)
+		{
+			flagss.add((ActiveFlag) flag);
+		}
+		where((SingularAttribute<E, ActiveFlag>) getAttribute("activeFlagID"), InList, flagss);
 		return (J) this;
 	}
 
@@ -67,9 +73,14 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	@javax.validation.constraints.NotNull
 	public J inVisibleRange(IEnterprise<?> enterprise, UUID...identityToken)
 	{
-		Collection<ActiveFlag> flags = GuiceContext.get(IActiveFlagService.class)
+		Collection<IActiveFlag<?>> flags = GuiceContext.get(IActiveFlagService.class)
 		                                           .getVisibleRange(enterprise,identityToken);
-		where((SingularAttribute<E, ActiveFlag>) getAttribute("activeFlagID"), InList, flags);
+		Collection<ActiveFlag> flagss = new ArrayList<>();
+		for (IActiveFlag<?> flag : flags)
+		{
+			flagss.add((ActiveFlag) flag);
+		}
+		where((SingularAttribute<E, ActiveFlag>) getAttribute("activeFlagID"), InList, flagss);
 		return (J) this;
 	}
 
@@ -93,9 +104,6 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 			w.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 		}
 		E ent =  super.update(entity);
-		ent.builder()
-		   .getEntityManager()
-		   .flush();
 		return ent;
 	}
 }

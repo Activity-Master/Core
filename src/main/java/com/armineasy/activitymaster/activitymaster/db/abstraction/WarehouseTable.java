@@ -1,6 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsActiveFlags;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
@@ -67,8 +68,8 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	@SuppressWarnings("unchecked")
 	public J remove()
 	{
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-		                            .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
+		                                        .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
 		                                                                                .get(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
@@ -79,7 +80,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	@SuppressWarnings("unchecked")
 	public J archive()
 	{
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
 		                            .getArchivedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
 		                                                                               .get(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());

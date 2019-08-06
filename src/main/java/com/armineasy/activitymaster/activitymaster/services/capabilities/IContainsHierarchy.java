@@ -7,6 +7,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHiera
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderHierarchyView;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
@@ -81,7 +82,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 			ISystems<?> activityMasterSystem = get(SystemsService.class)
 			                                               .getActivityMaster(enterprise, identifyingToken);
 			linkTable.setSystemID((Systems) activityMasterSystem);
-			linkTable.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(enterprise));
+			linkTable.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(enterprise));
 			linkTable.setOriginalSourceSystemID((Systems) activityMasterSystem);
 			linkTable.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			linkTable.setEnterpriseID((Enterprise) enterprise);

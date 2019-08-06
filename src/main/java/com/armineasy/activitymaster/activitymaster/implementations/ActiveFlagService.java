@@ -15,11 +15,12 @@ import javax.cache.annotation.CacheResult;
 import java.util.*;
 
 @Singleton
+@SuppressWarnings("unchecked")
 public class ActiveFlagService
 		implements IActiveFlagService
 {
 
-	public IActiveFlag create(IEnterprise<?> enterprise, String name, String description, @CacheKey UUID... identifyingToken)
+	public IActiveFlag<?> create(IEnterprise<?> enterprise, String name, String description, @CacheKey UUID... identifyingToken)
 	{
 		ActiveFlag af = new ActiveFlag();
 		Optional<ActiveFlag> exists = ActivityMasterConfiguration
@@ -65,13 +66,13 @@ public class ActiveFlagService
 
 	@Override
 	@CacheResult(cacheName = "FindActiveFlagRange")
-	public List<ActiveFlag> findActiveRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?>> findActiveRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		return (List<ActiveFlag>) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
+		return (List) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
 	}
 
 	@CacheResult(cacheName = "findActiveFlags")
-	private Collection<ActiveFlag> find(@CacheKey String[] name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	private List<ActiveFlag> find(@CacheKey String[] name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
 		ActiveFlag search = new ActiveFlag();
 
@@ -97,59 +98,60 @@ public class ActiveFlagService
 
 	@Override
 	@CacheResult(cacheName = "GetVisibleRange")
-	public List<ActiveFlag> getVisibleRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?>> getVisibleRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		return (List<ActiveFlag>) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()), enterprise, identifyingToken);
+		return (List) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()), enterprise, identifyingToken);
 	}
 
 	@Override
 	@CacheResult
-	public List<ActiveFlag> getRemovedRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?>> getRemovedRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		return (List<ActiveFlag>) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getRemovedRange()), enterprise, identifyingToken);
+		return (List)find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getRemovedRange()), enterprise, identifyingToken);
 	}
 
 	@Override
 	@CacheResult(cacheName = "GetArchivedRange")
-	public List<ActiveFlag> getArchiveRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?>> getArchiveRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		return (List<ActiveFlag>) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getArchivedRange()), enterprise, identifyingToken);
+		return (List) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getArchivedRange()), enterprise, identifyingToken);
 	}
 
 	@Override
 	@CacheResult(cacheName = "GetHighlightedRange")
-	public List<ActiveFlag> getHighlightedRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?>> getHighlightedRange(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		return (List<ActiveFlag>) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getHighlightedRange()), enterprise, identifyingToken);
+		return (List) find(getNamesForFlags(com.jwebmp.entityassist.enumerations.ActiveFlag.getHighlightedRange()), enterprise, identifyingToken);
 	}
 
 	@Override
 	@CacheResult(cacheName = "GetActiveFlag")
-	public ActiveFlag getActiveFlag(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public IActiveFlag<?> getActiveFlag(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		Optional<ActiveFlag> flag = findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag.Active, enterprise, identifyingToken);
+		Optional<IActiveFlag<?>> flag = findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag.Active, enterprise, identifyingToken);
 		return flag.orElse(null);
 	}
 
 	@Override
 	@CacheResult(cacheName = "GetArchivedFlag")
-	public ActiveFlag getArchivedFlag(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public IActiveFlag<?> getArchivedFlag(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		Optional<ActiveFlag> flag = findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag.Archived, enterprise, identifyingToken);
+		Optional<IActiveFlag<?>> flag = findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag.Archived, enterprise, identifyingToken);
 		return flag.orElse(null);
 	}
 
 	@Override
 	@CacheResult(cacheName = "GetDeletedFlag")
-	public ActiveFlag getDeletedFlag(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public IActiveFlag<?> getDeletedFlag(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		Optional<ActiveFlag> flag = findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag.Deleted, enterprise, identifyingToken);
+		Optional<IActiveFlag<?>> flag = findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag.Deleted, enterprise, identifyingToken);
 		return flag.orElse(null);
 	}
 
 	@Override
-	public Optional<ActiveFlag> findFlagByName(@CacheKey com.jwebmp.entityassist.enumerations.ActiveFlag flag, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	public Optional<IActiveFlag<?>> findFlagByName(@CacheKey com.jwebmp.entityassist.enumerations.ActiveFlag flag, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		return findFlagByName(flag.name(), enterprise, identifyingToken);
+		Optional<ActiveFlag> fl =findFlagByName(flag.name(), enterprise, identifyingToken);
+		return Optional.ofNullable(fl.orElse(null));
 	}
 }

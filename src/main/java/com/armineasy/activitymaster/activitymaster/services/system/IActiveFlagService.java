@@ -2,6 +2,7 @@ package com.armineasy.activitymaster.activitymaster.services.system;
 
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
+import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 
 import java.util.List;
@@ -10,21 +11,21 @@ import java.util.UUID;
 
 public interface IActiveFlagService
 {
-	List<ActiveFlag> findActiveRange(IEnterprise<?> enterprise, UUID... identifyingToken);
+	List<IActiveFlag<?>> findActiveRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	List<ActiveFlag> getVisibleRange(IEnterprise<?> enterprise, UUID... identifyingToken);
+	List<IActiveFlag<?>> getVisibleRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	List<ActiveFlag> getRemovedRange(IEnterprise<?> enterprise, UUID... identifyingToken);
+	List<IActiveFlag<?>> getRemovedRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	List<ActiveFlag> getArchiveRange(IEnterprise<?> enterprise, UUID... identifyingToken);
+	List<IActiveFlag<?>> getArchiveRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	List<ActiveFlag> getHighlightedRange(IEnterprise<?> enterprise, UUID... identifyingToken);
+	List<IActiveFlag<?>> getHighlightedRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	ActiveFlag getActiveFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
+	IActiveFlag<?> getActiveFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	ActiveFlag getArchivedFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
+	IActiveFlag<?> getArchivedFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	ActiveFlag getDeletedFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
+	IActiveFlag<?> getDeletedFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	Optional<ActiveFlag> findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag flag, IEnterprise<?> enterprise, UUID... identifyingToken);
+	Optional<IActiveFlag<?>> findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag flag, IEnterprise<?> enterprise, UUID... identifyingToken);
 }

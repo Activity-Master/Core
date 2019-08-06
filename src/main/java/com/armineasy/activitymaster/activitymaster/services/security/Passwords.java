@@ -23,13 +23,14 @@ public class Passwords
 	private static final int ASCII_OFFSET = 21;
 
 	/**
-	 * static utility class
+	 * Passwords tility class
 	 */
-	private Passwords()
+	public Passwords()
 	{
+		//No config required
 	}
 
-	public static String integerEncrypt(byte[] finalPasswordAfterHash)
+	public String integerEncrypt(byte[] finalPasswordAfterHash)
 	{
 		int[] ints = new int[finalPasswordAfterHash.length];
 		for (int n = 0; n < finalPasswordAfterHash.length; n++)
@@ -45,7 +46,7 @@ public class Passwords
 		return sb.toString();
 	}
 
-	public static byte[] integerDecrypt(String input)
+	public byte[] integerDecrypt(String input)
 	{
 		StringTokenizer st = new StringTokenizer(input, "|");
 		List<Byte> bytes = new ArrayList<>();
@@ -70,7 +71,7 @@ public class Passwords
 	 *
 	 * @return a 16 bytes random salt
 	 */
-	public static byte[] getNextSalt()
+	public byte[] getNextSalt()
 	{
 		byte[] salt = new byte[16];
 		RANDOM.nextBytes(salt);
@@ -90,7 +91,7 @@ public class Passwords
 	 *
 	 * @return true if the given password and salt match the hashed value, false otherwise
 	 */
-	public static boolean isExpectedPassword(char[] password, byte[] salt, byte[] expectedHash)
+	public boolean isExpectedPassword(char[] password, byte[] salt, byte[] expectedHash)
 	{
 		byte[] pwdHash = hash(password, salt);
 		Arrays.fill(password, Character.MIN_VALUE);
@@ -119,7 +120,7 @@ public class Passwords
 	 *
 	 * @return the hashed password with a pinch of salt
 	 */
-	public static byte[] hash(char[] password, byte[] salt)
+	public byte[] hash(char[] password, byte[] salt)
 	{
 		PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
 		Arrays.fill(password, Character.MIN_VALUE);
@@ -147,7 +148,7 @@ public class Passwords
 	 *
 	 * @return a random password
 	 */
-	public static String generateRandomPassword(int length)
+	public String generateRandomPassword(int length)
 	{
 		StringBuilder sb = new StringBuilder(length);
 		for (int i = 0; i < length; i++)

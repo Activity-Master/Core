@@ -93,11 +93,11 @@ public class ActivityMasterService
 
 		Pair<IIdentificationType<?>, String> pair = new Pair<>(
 				IdentificationTypeEnterpriseCreatorRole,
-				Passwords.integerEncrypt(adminUserName.getBytes()));
+				new Passwords().integerEncrypt(adminUserName.getBytes()));
 		Optional<InvolvedParty> exists = new InvolvedParty().builder()
 		                                                    .findByIdentificationType(enterprise,
 		                                                                              IdentificationTypeEnterpriseCreatorRole,
-		                                                                              Passwords.integerEncrypt(adminUserName.getBytes()))
+		                                                                              new Passwords().integerEncrypt(adminUserName.getBytes()))
 		                                                    .get();
 
 		IInvolvedParty<?> administratorUser;
@@ -105,7 +105,7 @@ public class ActivityMasterService
 		{
 			IInvolvedParty<?> adminUser = service.create(activityMasterSystem, pair, true);
 
-			adminUser.addOrReuse(IdentificationTypeUserName, Passwords.integerEncrypt(adminUserName.getBytes()),activityMasterSystem, token);
+			adminUser.addOrReuse(IdentificationTypeUserName, new Passwords().integerEncrypt(adminUserName.getBytes()),activityMasterSystem, token);
 
 			adminUser.addOrReuse(TypeIndividual, "Artificial Individual",activityMasterSystem, token);
 			adminUser.addOrReuse(PreferredNameType,  "Enterprise Creator",activityMasterSystem, token);
@@ -115,7 +115,7 @@ public class ActivityMasterService
 			                                                                               adminUserName,
 			                                                                               "The creator of the enterprise", activityMasterSystem, administratorsGroup, token);
 
-			adminUser.addOrReuse(IdentificationTypeEnterpriseCreatorRole,Passwords.integerEncrypt(adminUserName.getBytes()), activityMasterSystem,  token);
+			adminUser.addOrReuse(IdentificationTypeEnterpriseCreatorRole,new Passwords().integerEncrypt(adminUserName.getBytes()), activityMasterSystem,  token);
 			adminUser.addOrReuse(IdentificationTypeUUID, myToken.getSecurityToken(),activityMasterSystem, token);
 
 			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, activityMasterSystem, token);

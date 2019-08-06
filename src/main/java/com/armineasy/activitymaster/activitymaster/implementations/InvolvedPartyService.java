@@ -1,6 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
@@ -63,7 +64,7 @@ public class InvolvedPartyService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -98,7 +99,7 @@ public class InvolvedPartyService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -140,7 +141,7 @@ public class InvolvedPartyService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -175,7 +176,7 @@ public class InvolvedPartyService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID(get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -228,9 +229,9 @@ public class InvolvedPartyService
 		//byte[] salt = saltString.getBytes();
 		byte[] saltDecrypted = salt.getBytes();
 		char[] pass = toEncrypt.toCharArray();
-		byte[] passHashed = Passwords.hash(pass, saltDecrypted);
+		byte[] passHashed = new Passwords().hash(pass, saltDecrypted);
 		//String saltEncrypted = Passwords.integerEncrypt(salt);
-		String passEncrypted = Passwords.integerEncrypt(passHashed);
+		String passEncrypted = new Passwords().integerEncrypt(passHashed);
 		return passEncrypted;
 	}
 
@@ -253,7 +254,7 @@ public class InvolvedPartyService
 		UUID identityToken = InvolvedPartySystem.getSystemTokens()
 		                                        .get(originatingSystem.getEnterpriseID());
 		InvolvedParty foundPart = new InvolvedParty().builder()
-		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes()), identityToken)
+		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()), identityToken)
 		                                             .get()
 		                                             .orElse(null);
 		if (foundPart == null)
@@ -273,7 +274,7 @@ public class InvolvedPartyService
 
 		String saltString = saltEntity.get()
 		                              .getValue();
-		saltString = new String(Passwords.integerDecrypt(saltString));
+		saltString = new String(new Passwords().integerDecrypt(saltString));
 		String passMatch = passEntity.get()
 		                             .getValue();
 		String passEncrypted = encrypt(password, saltString);
@@ -289,7 +290,7 @@ public class InvolvedPartyService
 	public boolean doesUsernameExist(String username, IEnterprise<?> enterprise, UUID... token)
 	{
 		return new InvolvedParty().builder()
-		                          .findByIdentificationType(enterprise, IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes()), token)
+		                          .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()), token)
 		                          .getCount() > 0;
 	}
 
@@ -297,7 +298,7 @@ public class InvolvedPartyService
 	public IInvolvedParty<?> findByUsername(String username, IEnterprise<?> enterprise, UUID... token)
 	{
 		IInvolvedParty<?> party = new InvolvedParty().builder()
-		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes()),
+		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
 		                                                                       token)
 		                                             .get()
 		                                             .orElseThrow(() -> new SecurityAccessException("Involved Party Does Not Exist"));
@@ -318,15 +319,15 @@ public class InvolvedPartyService
 		else
 		{
 			salt = System.getProperty("systemSalt") != null ? System.getProperty("systemSalt")
-			                                                        .getBytes() : Passwords.getNextSalt();
+			                                                        .getBytes() : new Passwords().getNextSalt();
 		}
 
 		String passEncrypted = encrypt(password, new String(salt));
-		String saltEncrypted = Passwords.integerEncrypt(salt);
+		String saltEncrypted = new Passwords().integerEncrypt(salt);
 
 		involvedParty.addOrUpdate(SecurityPassword, passEncrypted, originatingSystem, token);
 		involvedParty.addOrUpdate(SecurityPasswordSalt, saltEncrypted, originatingSystem, token);
-		involvedParty.addOrUpdate(IdentificationTypeUserName, Passwords.integerEncrypt(username.getBytes()), originatingSystem, token);
+		involvedParty.addOrUpdate(IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()), originatingSystem, token);
 
 		if (event != null)
 		{

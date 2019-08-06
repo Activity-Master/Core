@@ -2,6 +2,7 @@ package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.*;
@@ -9,10 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.buil
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItem;
-import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItemType;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
@@ -57,7 +55,7 @@ public class ResourceItemService
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID(get(IActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -136,6 +134,13 @@ public class ResourceItemService
 		Optional<ResourceItemXClassification> exists = builder.get();
 		return exists.map(ResourceItemXClassification::getResourceItemID)
 		             .orElse(null);
+	}
+
+	@Override
+	public byte[] getDataForResourceItemValue(IRelationshipValue<IResourceItem<?>, IResourceData<?>, ?> data)
+	{
+		ResourceItemData d = (ResourceItemData) data.getSecondary();
+		return d.getResourceItemData();
 	}
 
 	@Override

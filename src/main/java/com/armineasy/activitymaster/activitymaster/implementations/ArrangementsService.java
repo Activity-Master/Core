@@ -1,6 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
+import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.builders.ArrangementXArrangementTypeQueryBuilder;
@@ -43,7 +44,7 @@ public class ArrangementsService
 		xr.setSystemID((Systems) system);
 		xr.setOriginalSourceSystemID((Systems) system);
 		xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-		xr.setActiveFlagID(get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
+		xr.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
 		xr.persist();
 
 		if (ActivityMasterConfiguration.get()
@@ -80,7 +81,7 @@ public class ArrangementsService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID(get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
+			xr.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
 			xr.persist();
 		}
 		else

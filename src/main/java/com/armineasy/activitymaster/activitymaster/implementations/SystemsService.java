@@ -10,10 +10,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.SystemXCl
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
 import com.armineasy.activitymaster.activitymaster.services.classifications.systems.SystemsClassifications;
-import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.armineasy.activitymaster.activitymaster.services.dto.IRelationshipValue;
-import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
+import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.armineasy.activitymaster.activitymaster.systems.SystemsSystem;
@@ -133,8 +130,8 @@ public class SystemsService
 	@Override
 	public ISystems<?> create(IEnterprise<?> enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
 	{
-		ActiveFlag flag = GuiceContext.get(IActiveFlagService.class)
-		                              .getActiveFlag(enterprise);
+		IActiveFlag<?> flag = GuiceContext.get(IActiveFlagService.class)
+		                               .getActiveFlag(enterprise);
 		Systems newSystem = new Systems();
 		Optional<Systems> exists = ActivityMasterConfiguration
 				                           .get()
@@ -149,7 +146,7 @@ public class SystemsService
 			newSystem.setDescription(systemDesc);
 			newSystem.setSystemHistoryName(historyName);
 			newSystem.setEnterpriseID((Enterprise) enterprise);
-			newSystem.setActiveFlagID(flag);
+			newSystem.setActiveFlagID((ActiveFlag)flag);
 			newSystem.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())

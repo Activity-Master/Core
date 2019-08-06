@@ -65,7 +65,7 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 	protected J configureDefaultsSystemValues(Systems requestingSystem)
 	{
 		setSystemID(requestingSystem);
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
 		                            .getActiveFlag(requestingSystem.getEnterpriseID()));
 		setEnterpriseID(requestingSystem.getEnterpriseID());
 		return (J) this;
