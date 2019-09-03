@@ -23,10 +23,7 @@ public class ActiveFlagService
 	public IActiveFlag<?> create(IEnterprise<?> enterprise, String name, String description, @CacheKey UUID... identifyingToken)
 	{
 		ActiveFlag af = new ActiveFlag();
-		Optional<ActiveFlag> exists = ActivityMasterConfiguration
-				                              .get()
-				                              .isDoubleCheckDisabled() ? Optional.empty() :
-		                              findFlagByName(name, enterprise, identifyingToken);
+		Optional<ActiveFlag> exists = findFlagByName(name, enterprise, identifyingToken);
 		if (exists.isEmpty())
 		{
 			af.setName(name);
@@ -80,7 +77,7 @@ public class ActiveFlagService
 		List<ActiveFlag> ac = search.builder()
 		                            .findByName(name)
 		                            .inDateRange()
-		                            // .canRead(enterprise,true, identifyingToken)
+		                            .canRead(enterprise,true, identifyingToken)
 		                            .withEnterprise(enterprise)
 		                            .getAll();
 		if (ac.isEmpty())

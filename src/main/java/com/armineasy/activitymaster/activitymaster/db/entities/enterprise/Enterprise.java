@@ -28,7 +28,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAn
 import com.armineasy.activitymaster.activitymaster.services.classifications.enterprise.IEnterpriseClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -48,7 +48,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "Enterprise")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, Long, EnterpriseSecurityToken>

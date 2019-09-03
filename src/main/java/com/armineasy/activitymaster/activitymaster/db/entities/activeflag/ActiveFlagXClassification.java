@@ -8,7 +8,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,7 +26,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "ActiveFlagXClassification")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class ActiveFlagXClassification
 		extends WarehouseClassificationRelationshipTable<ActiveFlag,

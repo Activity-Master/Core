@@ -1,286 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ResourceItemType](
-                                         [ResourceItemTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
-                                         [ResourceItemTypeName] [nvarchar](100) NOT NULL,
-                                         [ResourceItemTypeDesc] [nvarchar](max) NOT NULL,
-                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                         [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
-                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
-                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
-                                         [EffectiveFromDate] [datetime] NOT NULL,
-                                         [EffectiveToDate] [datetime] NOT NULL,
-                                         [ActiveFlagID] [bigint] NOT NULL,
-                                         [EnterpriseID] [bigint] NOT NULL,
-                                         [SystemID] [bigint] NOT NULL,
-                                         CONSTRAINT [PK_ResourceItemType] PRIMARY KEY CLUSTERED
-                                             (
-                                              [ResourceItemTypeID] ASC
-                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ResourceItemXClassification](
-                                                    [ResourceItemXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
-                                                    [ResourceItemID] [bigint] NOT NULL,
-                                                    [ClassificationID] [bigint] NOT NULL,
-                                                    [Value] [nvarchar](500) NOT NULL,
-                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                    [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
-                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
-                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
-                                                    [EffectiveFromDate] [datetime] NOT NULL,
-                                                    [EffectiveToDate] [datetime] NOT NULL,
-                                                    [ActiveFlagID] [bigint] NOT NULL,
-                                                    [EnterpriseID] [bigint] NOT NULL,
-                                                    [SystemID] [bigint] NOT NULL,
-                                                    CONSTRAINT [PK_ResourceItemXClassification] PRIMARY KEY CLUSTERED
-                                                        (
-                                                         [ResourceItemXClassificationID] ASC
-                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ResourceItemXResourceItemType](
-                                                      [ResourceItemXResourceItemTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
-                                                      [ResourceItemID] [bigint] NOT NULL,
-                                                      [ResourceItemTypeID] [bigint] NOT NULL,
-                                                      [Value] [nvarchar](500) NOT NULL,
-                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
-                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
-                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
-                                                      [EffectiveFromDate] [datetime] NOT NULL,
-                                                      [EffectiveToDate] [datetime] NOT NULL,
-                                                      [ActiveFlagID] [bigint] NOT NULL,
-                                                      [EnterpriseID] [bigint] NOT NULL,
-                                                      [SystemID] [bigint] NOT NULL,
-                                                      CONSTRAINT [PK_ResourceItemXResourceItemType] PRIMARY KEY CLUSTERED
-                                                          (
-                                                           [ResourceItemXResourceItemTypeID] ASC
-                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Classification](
-                                       [ClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
-                                       [ClassificationDataConceptID] [bigint] NOT NULL,
-                                       [ClassificationName] [nvarchar](100) NOT NULL,
-                                       [ClassificationDesc] [nvarchar](500) NOT NULL,
-                                       [ClassificationSequenceNumber] [smallint] NOT NULL,
-                                       [OriginalSourceSystemID] [bigint] NOT NULL,
-                                       [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
-                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
-                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
-                                       [EffectiveFromDate] [datetime] NOT NULL,
-                                       [EffectiveToDate] [datetime] NOT NULL,
-                                       [ActiveFlagID] [bigint] NOT NULL,
-                                       [EnterpriseID] [bigint] NOT NULL,
-                                       [SystemID] [bigint] NOT NULL,
-                                       CONSTRAINT [PK_Classification] PRIMARY KEY CLUSTERED
-                                           (
-                                            [ClassificationID] ASC
-                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
-                                       CONSTRAINT [UX_Classification_OnName] UNIQUE NONCLUSTERED
-                                           (
-                                            [ClassificationName] ASC,
-                                            [ClassificationDataConceptID] ASC
-                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ResourceItem](
-                                     [ResourceItemID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
-                                     [ResourceItemUUID] [varchar](128) NOT NULL,
-                                     [ResourceItemDataType] [varchar](150) NOT NULL,
-                                     [OriginalSourceSystemID] [bigint] NOT NULL,
-                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
-                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
-                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
-                                     [EffectiveFromDate] [datetime] NOT NULL,
-                                     [EffectiveToDate] [datetime] NOT NULL,
-                                     [ActiveFlagID] [bigint] NOT NULL,
-                                     [EnterpriseID] [bigint] NOT NULL,
-                                     [SystemID] [bigint] NOT NULL,
-                                     CONSTRAINT [PK_ResourceItem] PRIMARY KEY CLUSTERED
-                                         (
-                                          [ResourceItemID] ASC
-                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ResourceItemData](
-                                         [ResourceItemDataID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
-                                         [ResourceItemID] [bigint] NOT NULL,
-                                         [ResourceItemData] [varbinary](max) NULL,
-                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                         [OriginalSourceSystemUniqueID] [varchar](500) NOT NULL,
-                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
-                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
-                                         [EffectiveFromDate] [datetime] NOT NULL,
-                                         [EffectiveToDate] [datetime] NOT NULL,
-                                         [ActiveFlagID] [bigint] NOT NULL,
-                                         [EnterpriseID] [bigint] NOT NULL,
-                                         [SystemID] [bigint] NOT NULL,
-                                         CONSTRAINT [PK_ResourceItemData] PRIMARY KEY CLUSTERED
-                                             (
-                                              [ResourceItemDataID] ASC
-                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE View [dbo].[ResourceTypeClassificationsView]
-AS
-select ResourceItemUUID,typ.ResourceItemTypeName, t.value 'TypeValue', c.ClassificationName, rc.value 'ClassificationValue',
-       cast(ResourceItemData as varchar(max)) 'Data'
-        ,resourceItemDataType
-from ResourceItem ri
-         left join ResourceItemXClassification rc (nolock)
-                   on ri.ResourceItemID = rc.ResourceItemID
-         left join Classification c  (nolock)
-                   on rc.classificationID = c.classificationID
-         left join ResourceItemXResourceItemType t  (nolock)
-                   on ri.resourceItemID = t.resourceItemID
-         left join ResourceItemType typ  (nolock)
-                   on t.ResourceItemTypeID = typ.ResourceItemTypeID
-         left join ResourceItemData dat
-                   on ri.ResourceItemID = dat.ResourceItemID
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ClassificationXClassification](
-                                                      [ClassificationXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
-                                                      [ChildClassificationID] [bigint] NOT NULL,
-                                                      [ParentClassificationID] [bigint] NOT NULL,
-                                                      [ClassificationID] [bigint] NOT NULL,
-                                                      [Value] [nvarchar](500) NOT NULL,
-                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
-                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
-                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
-                                                      [EffectiveFromDate] [datetime] NOT NULL,
-                                                      [EffectiveToDate] [datetime] NOT NULL,
-                                                      [ActiveFlagID] [bigint] NOT NULL,
-                                                      [EnterpriseID] [bigint] NOT NULL,
-                                                      [SystemID] [bigint] NOT NULL,
-                                                      CONSTRAINT [PK_ClassificationXClassification] PRIMARY KEY CLUSTERED
-                                                          (
-                                                           [ClassificationXClassificationID] ASC
-                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-
-
-
---drop view [dbo].[SecurityHierarchyView];
-CREATE view [dbo].[ClassificationHierarchyView]
-AS
-    with tbl AS
-             (
-                 select st.ClassificationID    'id'
-                      , st.ClassificationName 'name'
-                      , sxs.ParentClassificationID    'ParentID'
-                 from ClassificationXClassification sxs (nolock)
-                          right outer join Classification st (nolock)
-                                           on sxs.ChildClassificationID = st.ClassificationID
-                          left join Classification stChild (nolock)
-                                    on sxs.ChildClassificationID = stChild.ClassificationID
-
-             ),
-         SecurityPath
-             AS (
-             -- anchor
-             SELECT id,
-                    [Name],
-                    ParentID,
-                    CAST(([Name]) AS VARCHAR(1000)) AS "Pather",
-                    CAST((id) AS VARCHAR(1000))     AS "Path"
-             FROM tbl
-             WHERE ParentId IS NULL
-             UNION ALL
-             --recursive member
-             SELECT t.id,
-                    t.[Name],
-                    t.ParentID,
-                    CAST((a.name + '/' + t.Name) AS VARCHAR(1000))                       AS "Path",
-                    CAST((a."Path" + '/' + cast(t.id as varchar(max))) AS VARCHAR(1000)) AS "PathCrypt"
-             FROM tbl AS t
-                      JOIN SecurityPath AS a
-                           ON t.ParentId = a.id
-         )
-    SELECT s.id,s.Name,s.ParentID,s.Pather,s.Path,'1' as 'One'
-    FROM SecurityPath s
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ClassificationDataConcept](
-                                                  [ClassificationDataConceptID] [bigint] IDENTITY(-9223372036854775789,1) NOT NULL,
-                                                  [ClassificationDataConceptName] [nvarchar](100) NOT NULL,
-                                                  [ClassificationDataConceptDesc] [nvarchar](1500) NOT NULL,
-                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
-                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
-                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
-                                                  [EffectiveFromDate] [datetime] NOT NULL,
-                                                  [EffectiveToDate] [datetime] NOT NULL,
-                                                  [ActiveFlagID] [bigint] NOT NULL,
-                                                  [EnterpriseID] [bigint] NOT NULL,
-                                                  [SystemID] [bigint] NOT NULL,
-                                                  CONSTRAINT [PK_ClassificationDataConcept] PRIMARY KEY CLUSTERED
-                                                      (
-                                                       [ClassificationDataConceptID] ASC
-                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE view [dbo].[ClassificationsGroupings]
-as
-
-
-select cdc.ClassificationDataConceptName 'Concept', parent.ClassificationName 'Parent', child.ClassificationName 'Child',cType.ClassificationName 'Type'
-from ClassificationXClassification cxc
-         inner join Classification parent
-                    on cxc.ParentClassificationID = parent.ClassificationID
-         inner join Classification child
-                    on cxc.ChildClassificationID = child.ClassificationID
-         inner join ClassificationDataConcept cdc
-                    on child.ClassificationDataConceptID = cdc.ClassificationDataConceptID
-         inner join Classification cType
-                    on cxc.ClassificationID = cType.ClassificationID
-
-GO
+/****** Object:  Table [dbo].[Arrangement]    Script Date: 2019/09/01 20:47:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -288,7 +6,7 @@ GO
 CREATE TABLE [dbo].[Arrangement](
                                     [ArrangementID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                     [OriginalSourceSystemID] [bigint] NOT NULL,
-                                    [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                    [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                     [EffectiveFromDate] [datetime] NOT NULL,
@@ -302,6 +20,7 @@ CREATE TABLE [dbo].[Arrangement](
                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXArrangement]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -312,9 +31,9 @@ CREATE TABLE [dbo].[ArrangementXArrangement](
                                                 [ChildArrangementID] [bigint] NOT NULL,
                                                 [ArrangementXArrangementTypeID] [bigint] NOT NULL,
                                                 [ClassificationID] [bigint] NOT NULL,
-                                                [Value] [nvarchar](500) NOT NULL,
+                                                [Value] [varchar](1500) NOT NULL,
                                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -328,6 +47,7 @@ CREATE TABLE [dbo].[ArrangementXArrangement](
                                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  View [dbo].[ArrangementHierarchyView]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -375,6 +95,7 @@ AS
     SELECT s.id,s.Name,s.ParentID,s.Pather,s.Path,'1' as 'One'
     FROM SecurityPath s
 GO
+/****** Object:  Table [dbo].[Geography]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -382,10 +103,10 @@ GO
 CREATE TABLE [dbo].[Geography](
                                   [GeographyID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                   [ClassificationID] [bigint] NOT NULL,
-                                  [GeographyName] [nvarchar](500) NOT NULL,
-                                  [GeographyDesc] [nvarchar](500) NOT NULL,
+                                  [GeographyName] [varchar](1500) NOT NULL,
+                                  [GeographyDesc] [varchar](1500) NOT NULL,
                                   [OriginalSourceSystemID] [bigint] NOT NULL,
-                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                   [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                   [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                   [EffectiveFromDate] [datetime] NOT NULL,
@@ -399,6 +120,7 @@ CREATE TABLE [dbo].[Geography](
                                           )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[GeographyXGeography]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -408,9 +130,9 @@ CREATE TABLE [dbo].[GeographyXGeography](
                                             [ParentGeographyID] [bigint] NOT NULL,
                                             [ChildGeographyID] [bigint] NOT NULL,
                                             [ClassificationID] [bigint] NOT NULL,
-                                            [Value] [nvarchar](500) NOT NULL,
+                                            [Value] [varchar](1500) NOT NULL,
                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -424,6 +146,7 @@ CREATE TABLE [dbo].[GeographyXGeography](
                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  View [dbo].[GeographyHierarchyView]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -471,6 +194,7 @@ AS
     SELECT s.id,s.Name,s.ParentID,s.Pather,s.Path,'1' as 'One'
     FROM SecurityPath s
 GO
+/****** Object:  Table [dbo].[InvolvedParty]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -478,7 +202,7 @@ GO
 CREATE TABLE [dbo].[InvolvedParty](
                                       [InvolvedPartyID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                       [OriginalSourceSystemID] [bigint] NOT NULL,
-                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                       [EffectiveFromDate] [datetime] NOT NULL,
@@ -492,6 +216,7 @@ CREATE TABLE [dbo].[InvolvedParty](
                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXInvolvedParty]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -503,7 +228,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedParty](
                                                     [ClassificationID] [bigint] NOT NULL,
                                                     [Value] [decimal](18, 4) NOT NULL,
                                                     [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                    [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                    [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                     [EffectiveFromDate] [datetime] NOT NULL,
@@ -517,6 +242,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedParty](
                                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  View [dbo].[InvolvedPartyHierarchyView]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -564,6 +290,7 @@ AS
     SELECT s.id,s.Name,s.ParentID,s.Pather,s.Path,'1' as 'One'
     FROM SecurityPath s
 GO
+/****** Object:  Table [dbo].[SecurityTokenXSecurityToken]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -573,9 +300,9 @@ CREATE TABLE [dbo].[SecurityTokenXSecurityToken](
                                                     [ParentSecurityTokenID] [bigint] NOT NULL,
                                                     [ChildSecurityTokenID] [bigint] NOT NULL,
                                                     [ClassificationID] [bigint] NOT NULL,
-                                                    [Value] [nvarchar](500) NOT NULL,
+                                                    [Value] [varchar](1500) NOT NULL,
                                                     [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                    [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                    [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                     [EffectiveFromDate] [datetime] NOT NULL,
@@ -589,6 +316,7 @@ CREATE TABLE [dbo].[SecurityTokenXSecurityToken](
                                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SecurityToken]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -602,7 +330,7 @@ CREATE TABLE [dbo].[SecurityToken](
                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                       [OriginalSourceSystemID] [bigint] NOT NULL,
-                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                       [EffectiveFromDate] [datetime] NOT NULL,
                                       [EffectiveToDate] [datetime] NOT NULL,
                                       [ActiveFlagID] [bigint] NOT NULL,
@@ -614,6 +342,7 @@ CREATE TABLE [dbo].[SecurityToken](
                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+/****** Object:  View [dbo].[SecurityHierarchyView]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -662,6 +391,7 @@ AS
     SELECT s.id,s.Name,s.ParentID,s.Pather,s.Path
     FROM SecurityPath s
 GO
+/****** Object:  Table [dbo].[ProductXProduct]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -670,10 +400,10 @@ CREATE TABLE [dbo].[ProductXProduct](
                                         [ProductXProductID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                         [ParentProductID] [bigint] NOT NULL,
                                         [ChildProductID] [bigint] NOT NULL,
-                                        [Value] [nvarchar](500) NOT NULL,
+                                        [Value] [varchar](1500) NOT NULL,
                                         [ClassificationID] [bigint] NOT NULL,
                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                        [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                         [EffectiveFromDate] [datetime] NOT NULL,
@@ -687,6 +417,7 @@ CREATE TABLE [dbo].[ProductXProduct](
                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[Product]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -697,7 +428,7 @@ CREATE TABLE [dbo].[Product](
                                 [ProductDesc] [nvarchar](250) NOT NULL,
                                 [ProductCode] [nvarchar](10) NOT NULL,
                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -711,6 +442,7 @@ CREATE TABLE [dbo].[Product](
                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  View [dbo].[ProductHierarchyView]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -758,6 +490,301 @@ AS
     SELECT s.id,s.Name,s.ParentID,s.Pather,s.Path,'1' as 'One'
     FROM SecurityPath s
 GO
+/****** Object:  Table [dbo].[ResourceItemType]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ResourceItemType](
+                                         [ResourceItemTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
+                                         [ResourceItemTypeName] [nvarchar](100) NOT NULL,
+                                         [ResourceItemTypeDesc] [nvarchar](max) NOT NULL,
+                                         [OriginalSourceSystemID] [bigint] NOT NULL,
+                                         [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
+                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
+                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+                                         [EffectiveFromDate] [datetime] NOT NULL,
+                                         [EffectiveToDate] [datetime] NOT NULL,
+                                         [ActiveFlagID] [bigint] NOT NULL,
+                                         [EnterpriseID] [bigint] NOT NULL,
+                                         [SystemID] [bigint] NOT NULL,
+                                         CONSTRAINT [PK_ResourceItemType] PRIMARY KEY CLUSTERED
+                                             (
+                                              [ResourceItemTypeID] ASC
+                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ResourceItemXClassification]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ResourceItemXClassification](
+                                                    [ResourceItemXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
+                                                    [ResourceItemID] [bigint] NOT NULL,
+                                                    [ClassificationID] [bigint] NOT NULL,
+                                                    [Value] [varchar](1500) NOT NULL,
+                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
+                                                    [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
+                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
+                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+                                                    [EffectiveFromDate] [datetime] NOT NULL,
+                                                    [EffectiveToDate] [datetime] NOT NULL,
+                                                    [ActiveFlagID] [bigint] NOT NULL,
+                                                    [EnterpriseID] [bigint] NOT NULL,
+                                                    [SystemID] [bigint] NOT NULL,
+                                                    CONSTRAINT [PK_ResourceItemXClassification] PRIMARY KEY CLUSTERED
+                                                        (
+                                                         [ResourceItemXClassificationID] ASC
+                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ResourceItemXResourceItemType]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ResourceItemXResourceItemType](
+                                                      [ResourceItemXResourceItemTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
+                                                      [ResourceItemID] [bigint] NOT NULL,
+                                                      [ResourceItemTypeID] [bigint] NOT NULL,
+                                                      [Value] [varchar](1500) NOT NULL,
+                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
+                                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
+                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
+                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+                                                      [EffectiveFromDate] [datetime] NOT NULL,
+                                                      [EffectiveToDate] [datetime] NOT NULL,
+                                                      [ActiveFlagID] [bigint] NOT NULL,
+                                                      [EnterpriseID] [bigint] NOT NULL,
+                                                      [SystemID] [bigint] NOT NULL,
+                                                      CONSTRAINT [PK_ResourceItemXResourceItemType] PRIMARY KEY CLUSTERED
+                                                          (
+                                                           [ResourceItemXResourceItemTypeID] ASC
+                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Classification]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Classification](
+                                       [ClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
+                                       [ClassificationDataConceptID] [bigint] NOT NULL,
+                                       [ClassificationName] [nvarchar](100) NOT NULL,
+                                       [ClassificationDesc] [varchar](1500) NOT NULL,
+                                       [ClassificationSequenceNumber] [smallint] NOT NULL,
+                                       [OriginalSourceSystemID] [bigint] NOT NULL,
+                                       [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
+                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
+                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+                                       [EffectiveFromDate] [datetime] NOT NULL,
+                                       [EffectiveToDate] [datetime] NOT NULL,
+                                       [ActiveFlagID] [bigint] NOT NULL,
+                                       [EnterpriseID] [bigint] NOT NULL,
+                                       [SystemID] [bigint] NOT NULL,
+                                       CONSTRAINT [PK_Classification] PRIMARY KEY CLUSTERED
+                                           (
+                                            [ClassificationID] ASC
+                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+                                       CONSTRAINT [UX_Classification_OnName] UNIQUE NONCLUSTERED
+                                           (
+                                            [ClassificationName] ASC,
+                                            [ClassificationDataConceptID] ASC
+                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ResourceItem]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ResourceItem](
+                                     [ResourceItemID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
+                                     [ResourceItemUUID] [varchar](128) NOT NULL,
+                                     [ResourceItemDataType] [varchar](150) NOT NULL,
+                                     [OriginalSourceSystemID] [bigint] NOT NULL,
+                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
+                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
+                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+                                     [EffectiveFromDate] [datetime] NOT NULL,
+                                     [EffectiveToDate] [datetime] NOT NULL,
+                                     [ActiveFlagID] [bigint] NOT NULL,
+                                     [EnterpriseID] [bigint] NOT NULL,
+                                     [SystemID] [bigint] NOT NULL,
+                                     CONSTRAINT [PK_ResourceItem] PRIMARY KEY CLUSTERED
+                                         (
+                                          [ResourceItemID] ASC
+                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ResourceItemData]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ResourceItemData](
+                                         [ResourceItemDataID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
+                                         [ResourceItemID] [bigint] NOT NULL,
+                                         [ResourceItemData] [varbinary](max) NULL,
+                                         [OriginalSourceSystemID] [bigint] NOT NULL,
+                                         [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
+                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
+                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+                                         [EffectiveFromDate] [datetime] NOT NULL,
+                                         [EffectiveToDate] [datetime] NOT NULL,
+                                         [ActiveFlagID] [bigint] NOT NULL,
+                                         [EnterpriseID] [bigint] NOT NULL,
+                                         [SystemID] [bigint] NOT NULL,
+                                         CONSTRAINT [PK_ResourceItemData] PRIMARY KEY CLUSTERED
+                                             (
+                                              [ResourceItemDataID] ASC
+                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[ResourceTypeClassificationsView]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE View [dbo].[ResourceTypeClassificationsView]
+AS
+select ResourceItemUUID,typ.ResourceItemTypeName, t.value 'TypeValue', c.ClassificationName, rc.value 'ClassificationValue',
+       cast(ResourceItemData as varchar(max)) 'Data'
+        ,resourceItemDataType
+from ResourceItem ri
+         left join ResourceItemXClassification rc (nolock)
+                   on ri.ResourceItemID = rc.ResourceItemID
+         left join Classification c  (nolock)
+                   on rc.classificationID = c.classificationID
+         left join ResourceItemXResourceItemType t  (nolock)
+                   on ri.resourceItemID = t.resourceItemID
+         left join ResourceItemType typ  (nolock)
+                   on t.ResourceItemTypeID = typ.ResourceItemTypeID
+         left join ResourceItemData dat
+                   on ri.ResourceItemID = dat.ResourceItemID
+GO
+/****** Object:  Table [dbo].[ClassificationXClassification]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ClassificationXClassification](
+                                                      [ClassificationXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
+                                                      [ChildClassificationID] [bigint] NOT NULL,
+                                                      [ParentClassificationID] [bigint] NOT NULL,
+                                                      [ClassificationID] [bigint] NOT NULL,
+                                                      [Value] [varchar](1500) NOT NULL,
+                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
+                                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
+                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
+                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+                                                      [EffectiveFromDate] [datetime] NOT NULL,
+                                                      [EffectiveToDate] [datetime] NOT NULL,
+                                                      [ActiveFlagID] [bigint] NOT NULL,
+                                                      [EnterpriseID] [bigint] NOT NULL,
+                                                      [SystemID] [bigint] NOT NULL,
+                                                      CONSTRAINT [PK_ClassificationXClassification] PRIMARY KEY CLUSTERED
+                                                          (
+                                                           [ClassificationXClassificationID] ASC
+                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[ClassificationHierarchyView]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+--drop view [dbo].[SecurityHierarchyView];
+CREATE view [dbo].[ClassificationHierarchyView]
+AS
+    with tbl AS
+             (
+                 select st.ClassificationID    'id'
+                      , st.ClassificationName 'name'
+                      , sxs.ParentClassificationID    'ParentID'
+                 from ClassificationXClassification sxs (nolock)
+                          right outer join Classification st (nolock)
+                                           on sxs.ChildClassificationID = st.ClassificationID
+                          left join Classification stChild (nolock)
+                                    on sxs.ChildClassificationID = stChild.ClassificationID
+
+             ),
+         SecurityPath
+             AS (
+             -- anchor
+             SELECT id,
+                    [Name],
+                    ParentID,
+                    CAST(([Name]) AS VARCHAR(1000)) AS "Pather",
+                    CAST((id) AS VARCHAR(1000))     AS "Path"
+             FROM tbl
+             WHERE ParentId IS NULL
+             UNION ALL
+             --recursive member
+             SELECT t.id,
+                    t.[Name],
+                    t.ParentID,
+                    CAST((a.name + '/' + t.Name) AS VARCHAR(1000))                       AS "Path",
+                    CAST((a."Path" + '/' + cast(t.id as varchar(max))) AS VARCHAR(1000)) AS "PathCrypt"
+             FROM tbl AS t
+                      JOIN SecurityPath AS a
+                           ON t.ParentId = a.id
+         )
+    SELECT s.id,s.Name,s.ParentID,s.Pather,s.Path,'1' as 'One'
+    FROM SecurityPath s
+GO
+/****** Object:  Table [dbo].[ClassificationDataConcept]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ClassificationDataConcept](
+                                                  [ClassificationDataConceptID] [bigint] IDENTITY(-9223372036854775789,1) NOT NULL,
+                                                  [ClassificationDataConceptName] [nvarchar](100) NOT NULL,
+                                                  [ClassificationDataConceptDesc] [nvarchar](1500) NOT NULL,
+                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
+                                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
+                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
+                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+                                                  [EffectiveFromDate] [datetime] NOT NULL,
+                                                  [EffectiveToDate] [datetime] NOT NULL,
+                                                  [ActiveFlagID] [bigint] NOT NULL,
+                                                  [EnterpriseID] [bigint] NOT NULL,
+                                                  [SystemID] [bigint] NOT NULL,
+                                                  CONSTRAINT [PK_ClassificationDataConcept] PRIMARY KEY CLUSTERED
+                                                      (
+                                                       [ClassificationDataConceptID] ASC
+                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[ClassificationsGroupings]    Script Date: 2019/09/01 20:47:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE view [dbo].[ClassificationsGroupings]
+as
+
+
+select cdc.ClassificationDataConceptName 'Concept', parent.ClassificationName 'Parent', child.ClassificationName 'Child',cType.ClassificationName 'Type'
+from ClassificationXClassification cxc
+         inner join Classification parent
+                    on cxc.ParentClassificationID = parent.ClassificationID
+         inner join Classification child
+                    on cxc.ChildClassificationID = child.ClassificationID
+         inner join ClassificationDataConcept cdc
+                    on child.ClassificationDataConceptID = cdc.ClassificationDataConceptID
+         inner join Classification cType
+                    on cxc.ClassificationID = cType.ClassificationID
+
+GO
+/****** Object:  Table [dbo].[ActiveFlag]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -765,7 +792,7 @@ GO
 CREATE TABLE [dbo].[ActiveFlag](
                                    [ActiveFlagID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                    [ActiveFlagName] [nvarchar](100) NOT NULL,
-                                   [ActiveFlagDescription] [nvarchar](500) NOT NULL,
+                                   [ActiveFlagDescription] [varchar](1500) NOT NULL,
                                    [AllowAccess] [bit] NOT NULL,
                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
@@ -778,6 +805,7 @@ CREATE TABLE [dbo].[ActiveFlag](
                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ActiveFlagSecurityToken]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -792,7 +820,7 @@ CREATE TABLE [dbo].[ActiveFlagSecurityToken](
                                                 [ReadAllowed] [bit] NOT NULL,
                                                 [SystemID] [bigint] NOT NULL,
                                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -805,6 +833,7 @@ CREATE TABLE [dbo].[ActiveFlagSecurityToken](
                                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ActiveFlagXClassification]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -813,9 +842,9 @@ CREATE TABLE [dbo].[ActiveFlagXClassification](
                                                   [ActiveFlagXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                   [ActiveFlagID] [bigint] NOT NULL,
                                                   [ClassificationID] [bigint] NOT NULL,
-                                                  [Value] [nvarchar](500) NOT NULL,
+                                                  [Value] [varchar](1500) NOT NULL,
                                                   [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                   [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                   [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                   [EffectiveFromDate] [datetime] NOT NULL,
@@ -828,6 +857,7 @@ CREATE TABLE [dbo].[ActiveFlagXClassification](
                                                           )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ActiveFlagXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -842,7 +872,7 @@ CREATE TABLE [dbo].[ActiveFlagXClassificationSecurityToken](
                                                                [ReadAllowed] [bit] NOT NULL,
                                                                [SystemID] [bigint] NOT NULL,
                                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -855,6 +885,7 @@ CREATE TABLE [dbo].[ActiveFlagXClassificationSecurityToken](
                                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[Address]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -862,9 +893,9 @@ GO
 CREATE TABLE [dbo].[Address](
                                 [AddressID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                 [ClassificationID] [bigint] NOT NULL,
-                                [Value] [nvarchar](500) NOT NULL,
+                                [Value] [varchar](1500) NOT NULL,
                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -878,6 +909,7 @@ CREATE TABLE [dbo].[Address](
                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[AddressSecurityToken]    Script Date: 2019/09/01 20:47:41 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -892,7 +924,7 @@ CREATE TABLE [dbo].[AddressSecurityToken](
                                              [ReadAllowed] [bit] NOT NULL,
                                              [SystemID] [bigint] NOT NULL,
                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -905,6 +937,7 @@ CREATE TABLE [dbo].[AddressSecurityToken](
                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[AddressXClassification]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -913,9 +946,9 @@ CREATE TABLE [dbo].[AddressXClassification](
                                                [AddressXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                [AddressID] [bigint] NOT NULL,
                                                [ClassificationID] [bigint] NOT NULL,
-                                               [Value] [nvarchar](500) NOT NULL,
+                                               [Value] [varchar](1500) NOT NULL,
                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -929,6 +962,7 @@ CREATE TABLE [dbo].[AddressXClassification](
                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[AddressXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -943,7 +977,7 @@ CREATE TABLE [dbo].[AddressXClassificationSecurityToken](
                                                             [ReadAllowed] [bit] NOT NULL,
                                                             [SystemID] [bigint] NOT NULL,
                                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -956,6 +990,7 @@ CREATE TABLE [dbo].[AddressXClassificationSecurityToken](
                                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[AddressXGeography]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -965,9 +1000,9 @@ CREATE TABLE [dbo].[AddressXGeography](
                                           [AddressID] [bigint] NOT NULL,
                                           [GeographyID] [bigint] NOT NULL,
                                           [ClassificationID] [bigint] NOT NULL,
-                                          [Value] [nvarchar](500) NOT NULL,
+                                          [Value] [varchar](1500) NOT NULL,
                                           [OriginalSourceSystemID] [bigint] NOT NULL,
-                                          [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                          [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                           [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                           [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                           [EffectiveFromDate] [datetime] NOT NULL,
@@ -981,6 +1016,7 @@ CREATE TABLE [dbo].[AddressXGeography](
                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[AddressXGeographySecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -995,7 +1031,7 @@ CREATE TABLE [dbo].[AddressXGeographySecurityToken](
                                                        [ReadAllowed] [bit] NOT NULL,
                                                        [SystemID] [bigint] NOT NULL,
                                                        [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                       [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                       [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                        [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                        [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                        [EffectiveFromDate] [datetime] NOT NULL,
@@ -1008,6 +1044,7 @@ CREATE TABLE [dbo].[AddressXGeographySecurityToken](
                                                                )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[AddressXResourceItem]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1017,9 +1054,9 @@ CREATE TABLE [dbo].[AddressXResourceItem](
                                              [AddressID] [bigint] NOT NULL,
                                              [ResourceItemID] [bigint] NOT NULL,
                                              [ClassificationID] [bigint] NOT NULL,
-                                             [Value] [nvarchar](500) NOT NULL,
+                                             [Value] [varchar](1500) NOT NULL,
                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -1033,6 +1070,7 @@ CREATE TABLE [dbo].[AddressXResourceItem](
                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[AddressXResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1047,7 +1085,7 @@ CREATE TABLE [dbo].[AddressXResourceItemSecurityToken](
                                                           [ReadAllowed] [bit] NOT NULL,
                                                           [SystemID] [bigint] NOT NULL,
                                                           [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                          [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                          [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                           [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                           [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                           [EffectiveFromDate] [datetime] NOT NULL,
@@ -1060,6 +1098,7 @@ CREATE TABLE [dbo].[AddressXResourceItemSecurityToken](
                                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1074,7 +1113,7 @@ CREATE TABLE [dbo].[ArrangementSecurityToken](
                                                  [ReadAllowed] [bit] NOT NULL,
                                                  [SystemID] [bigint] NOT NULL,
                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -1087,6 +1126,7 @@ CREATE TABLE [dbo].[ArrangementSecurityToken](
                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementType]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1094,11 +1134,11 @@ GO
 CREATE TABLE [dbo].[ArrangementType](
                                         [ArrangementTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                         [ArrangementTypeName] [nvarchar](150) NOT NULL,
-                                        [ArrangementTypeDescription] [nvarchar](500) NOT NULL,
+                                        [ArrangementTypeDescription] [varchar](1500) NOT NULL,
                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                        [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                         [EffectiveFromDate] [datetime] NOT NULL,
                                         [EffectiveToDate] [datetime] NOT NULL,
                                         [ActiveFlagID] [bigint] NOT NULL,
@@ -1110,6 +1150,7 @@ CREATE TABLE [dbo].[ArrangementType](
                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementTypeSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1124,7 +1165,7 @@ CREATE TABLE [dbo].[ArrangementTypeSecurityToken](
                                                      [ReadAllowed] [bit] NOT NULL,
                                                      [SystemID] [bigint] NOT NULL,
                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -1137,6 +1178,7 @@ CREATE TABLE [dbo].[ArrangementTypeSecurityToken](
                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXArrangementSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1151,7 +1193,7 @@ CREATE TABLE [dbo].[ArrangementXArrangementSecurityToken](
                                                              [ReadAllowed] [bit] NOT NULL,
                                                              [SystemID] [bigint] NOT NULL,
                                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -1164,6 +1206,7 @@ CREATE TABLE [dbo].[ArrangementXArrangementSecurityToken](
                                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXArrangementType]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1172,9 +1215,10 @@ CREATE TABLE [dbo].[ArrangementXArrangementType](
                                                     [ArrangementXArrangementTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                     [ArrangementID] [bigint] NOT NULL,
                                                     [ArrangementTypeID] [bigint] NOT NULL,
-                                                    [Value] [nvarchar](1000) NOT NULL,
+                                                    [ClassificationID] [bigint] NOT NULL,
+                                                    [Value] [varchar](1500) NOT NULL,
                                                     [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                    [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                    [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                     [EffectiveFromDate] [datetime] NOT NULL,
@@ -1188,6 +1232,7 @@ CREATE TABLE [dbo].[ArrangementXArrangementType](
                                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXArrangementTypeSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1202,7 +1247,7 @@ CREATE TABLE [dbo].[ArrangementXArrangementTypeSecurityToken](
                                                                  [ReadAllowed] [bit] NOT NULL,
                                                                  [SystemID] [bigint] NOT NULL,
                                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -1215,6 +1260,7 @@ CREATE TABLE [dbo].[ArrangementXArrangementTypeSecurityToken](
                                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXClassification]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1223,9 +1269,9 @@ CREATE TABLE [dbo].[ArrangementXClassification](
                                                    [ArrangementXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                    [ArrangementID] [bigint] NOT NULL,
                                                    [ClassificationID] [bigint] NOT NULL,
-                                                   [Value] [nvarchar](500) NOT NULL,
+                                                   [Value] [varchar](1500) NOT NULL,
                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                   [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                   [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                    [EffectiveFromDate] [datetime] NOT NULL,
@@ -1239,6 +1285,7 @@ CREATE TABLE [dbo].[ArrangementXClassification](
                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1253,7 +1300,7 @@ CREATE TABLE [dbo].[ArrangementXClassificationSecurityToken](
                                                                 [ReadAllowed] [bit] NOT NULL,
                                                                 [SystemID] [bigint] NOT NULL,
                                                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -1266,6 +1313,7 @@ CREATE TABLE [dbo].[ArrangementXClassificationSecurityToken](
                                                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXInvolvedParty]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1275,9 +1323,9 @@ CREATE TABLE [dbo].[ArrangementXInvolvedParty](
                                                   [ArrangementID] [bigint] NOT NULL,
                                                   [InvolvedPartyID] [bigint] NOT NULL,
                                                   [ClassificationID] [bigint] NOT NULL,
-                                                  [Value] [nvarchar](500) NOT NULL,
+                                                  [Value] [varchar](1500) NOT NULL,
                                                   [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                   [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                   [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                   [EffectiveFromDate] [datetime] NOT NULL,
@@ -1291,6 +1339,7 @@ CREATE TABLE [dbo].[ArrangementXInvolvedParty](
                                                           )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXInvolvedPartySecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1305,7 +1354,7 @@ CREATE TABLE [dbo].[ArrangementXInvolvedPartySecurityToken](
                                                                [ReadAllowed] [bit] NOT NULL,
                                                                [SystemID] [bigint] NOT NULL,
                                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -1318,6 +1367,7 @@ CREATE TABLE [dbo].[ArrangementXInvolvedPartySecurityToken](
                                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXProduct]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1327,9 +1377,9 @@ CREATE TABLE [dbo].[ArrangementXProduct](
                                             [ArrangementID] [bigint] NOT NULL,
                                             [ProductID] [bigint] NOT NULL,
                                             [ClassificationID] [bigint] NOT NULL,
-                                            [Value] [nvarchar](500) NOT NULL,
+                                            [Value] [varchar](1500) NOT NULL,
                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -1343,6 +1393,7 @@ CREATE TABLE [dbo].[ArrangementXProduct](
                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXProductSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1357,7 +1408,7 @@ CREATE TABLE [dbo].[ArrangementXProductSecurityToken](
                                                          [ReadAllowed] [bit] NOT NULL,
                                                          [SystemID] [bigint] NOT NULL,
                                                          [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                         [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                         [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                          [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                          [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                          [EffectiveFromDate] [datetime] NOT NULL,
@@ -1370,6 +1421,7 @@ CREATE TABLE [dbo].[ArrangementXProductSecurityToken](
                                                                  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXResourceItem]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1379,9 +1431,9 @@ CREATE TABLE [dbo].[ArrangementXResourceItem](
                                                  [ArrangementID] [bigint] NOT NULL,
                                                  [ResourceItemID] [bigint] NOT NULL,
                                                  [ClassificationID] [bigint] NOT NULL,
-                                                 [Value] [nvarchar](500) NOT NULL,
+                                                 [Value] [varchar](1500) NOT NULL,
                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -1395,6 +1447,7 @@ CREATE TABLE [dbo].[ArrangementXResourceItem](
                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ArrangementXResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1409,7 +1462,7 @@ CREATE TABLE [dbo].[ArrangementXResourceItemSecurityToken](
                                                               [ReadAllowed] [bit] NOT NULL,
                                                               [SystemID] [bigint] NOT NULL,
                                                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -1422,6 +1475,7 @@ CREATE TABLE [dbo].[ArrangementXResourceItemSecurityToken](
                                                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationDataConceptSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1436,7 +1490,7 @@ CREATE TABLE [dbo].[ClassificationDataConceptSecurityToken](
                                                                [ReadAllowed] [bit] NOT NULL,
                                                                [SystemID] [bigint] NOT NULL,
                                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -1449,6 +1503,7 @@ CREATE TABLE [dbo].[ClassificationDataConceptSecurityToken](
                                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationDataConceptXClassification]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1457,9 +1512,9 @@ CREATE TABLE [dbo].[ClassificationDataConceptXClassification](
                                                                  [ClassificationDataConceptXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                                  [ClassificationDataConceptID] [bigint] NOT NULL,
                                                                  [ClassificationID] [bigint] NOT NULL,
-                                                                 [Value] [nvarchar](500) NOT NULL,
+                                                                 [Value] [varchar](1500) NOT NULL,
                                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -1473,6 +1528,7 @@ CREATE TABLE [dbo].[ClassificationDataConceptXClassification](
                                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationDataConceptXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1487,7 +1543,7 @@ CREATE TABLE [dbo].[ClassificationDataConceptXClassificationSecurityToken](
                                                                               [ReadAllowed] [bit] NOT NULL,
                                                                               [SystemID] [bigint] NOT NULL,
                                                                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -1500,6 +1556,7 @@ CREATE TABLE [dbo].[ClassificationDataConceptXClassificationSecurityToken](
                                                                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationDataConceptXResourceItem]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1509,9 +1566,9 @@ CREATE TABLE [dbo].[ClassificationDataConceptXResourceItem](
                                                                [ClassificationDataConceptID] [bigint] NOT NULL,
                                                                [ResourceItemID] [bigint] NOT NULL,
                                                                [ClassificationID] [bigint] NOT NULL,
-                                                               [Value] [nvarchar](1000) NOT NULL,
+                                                               [Value] [varchar](1500) NOT NULL,
                                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -1525,6 +1582,7 @@ CREATE TABLE [dbo].[ClassificationDataConceptXResourceItem](
                                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationDataConceptXResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1539,7 +1597,7 @@ CREATE TABLE [dbo].[ClassificationDataConceptXResourceItemSecurityToken](
                                                                             [ReadAllowed] [bit] NOT NULL,
                                                                             [SystemID] [bigint] NOT NULL,
                                                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -1552,6 +1610,7 @@ CREATE TABLE [dbo].[ClassificationDataConceptXResourceItemSecurityToken](
                                                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1566,7 +1625,7 @@ CREATE TABLE [dbo].[ClassificationSecurityToken](
                                                     [ReadAllowed] [bit] NOT NULL,
                                                     [SystemID] [bigint] NOT NULL,
                                                     [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                    [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                    [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                     [EffectiveFromDate] [datetime] NOT NULL,
@@ -1579,6 +1638,7 @@ CREATE TABLE [dbo].[ClassificationSecurityToken](
                                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1593,7 +1653,7 @@ CREATE TABLE [dbo].[ClassificationXClassificationSecurityToken](
                                                                    [ReadAllowed] [bit] NOT NULL,
                                                                    [SystemID] [bigint] NOT NULL,
                                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                   [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                   [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                    [EffectiveFromDate] [datetime] NOT NULL,
@@ -1606,6 +1666,7 @@ CREATE TABLE [dbo].[ClassificationXClassificationSecurityToken](
                                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationXResourceItem]    Script Date: 2019/09/01 20:47:42 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1614,9 +1675,9 @@ CREATE TABLE [dbo].[ClassificationXResourceItem](
                                                     [ClassificationXResourceItemID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                     [ResourceItemID] [bigint] NOT NULL,
                                                     [ClassificationID] [bigint] NOT NULL,
-                                                    [Value] [nvarchar](500) NOT NULL,
+                                                    [Value] [varchar](1500) NOT NULL,
                                                     [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                    [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                    [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                     [EffectiveFromDate] [datetime] NOT NULL,
@@ -1630,6 +1691,7 @@ CREATE TABLE [dbo].[ClassificationXResourceItem](
                                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ClassificationXResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1644,7 +1706,7 @@ CREATE TABLE [dbo].[ClassificationXResourceItemSecurityToken](
                                                                  [ReadAllowed] [bit] NOT NULL,
                                                                  [SystemID] [bigint] NOT NULL,
                                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -1657,6 +1719,7 @@ CREATE TABLE [dbo].[ClassificationXResourceItemSecurityToken](
                                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[Enterprise]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1675,6 +1738,7 @@ CREATE TABLE [dbo].[Enterprise](
                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EnterpriseSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1689,7 +1753,7 @@ CREATE TABLE [dbo].[EnterpriseSecurityToken](
                                                 [ReadAllowed] [bit] NOT NULL,
                                                 [SystemID] [bigint] NOT NULL,
                                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -1701,6 +1765,7 @@ CREATE TABLE [dbo].[EnterpriseSecurityToken](
                                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EnterpriseXClassification]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1709,9 +1774,9 @@ CREATE TABLE [dbo].[EnterpriseXClassification](
                                                   [EnterpriseXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                   [EnterpriseID] [bigint] NOT NULL,
                                                   [ClassificationID] [bigint] NOT NULL,
-                                                  [Value] [nvarchar](500) NOT NULL,
+                                                  [Value] [varchar](1500) NOT NULL,
                                                   [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                   [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                   [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                   [EffectiveFromDate] [datetime] NOT NULL,
@@ -1724,6 +1789,7 @@ CREATE TABLE [dbo].[EnterpriseXClassification](
                                                           )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EnterpriseXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1738,7 +1804,7 @@ CREATE TABLE [dbo].[EnterpriseXClassificationSecurityToken](
                                                                [ReadAllowed] [bit] NOT NULL,
                                                                [SystemID] [bigint] NOT NULL,
                                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -1751,6 +1817,7 @@ CREATE TABLE [dbo].[EnterpriseXClassificationSecurityToken](
                                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[Event]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1758,7 +1825,7 @@ GO
 CREATE TABLE [dbo].[Event](
                               [EventID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -1772,6 +1839,7 @@ CREATE TABLE [dbo].[Event](
                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1786,7 +1854,7 @@ CREATE TABLE [dbo].[EventSecurityToken](
                                            [ReadAllowed] [bit] NOT NULL,
                                            [SystemID] [bigint] NOT NULL,
                                            [OriginalSourceSystemID] [bigint] NOT NULL,
-                                           [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                           [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                            [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                            [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                            [EffectiveFromDate] [datetime] NOT NULL,
@@ -1799,6 +1867,7 @@ CREATE TABLE [dbo].[EventSecurityToken](
                                                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventType]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1808,7 +1877,7 @@ CREATE TABLE [dbo].[EventType](
                                   [EventTypeName] [nvarchar](200) NOT NULL,
                                   [EventTypeDesc] [nvarchar](200) NOT NULL,
                                   [OriginalSourceSystemID] [bigint] NOT NULL,
-                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                   [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                   [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                   [EffectiveFromDate] [datetime] NOT NULL,
@@ -1822,6 +1891,7 @@ CREATE TABLE [dbo].[EventType](
                                           )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventTypesSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1836,7 +1906,7 @@ CREATE TABLE [dbo].[EventTypesSecurityToken](
                                                 [ReadAllowed] [bit] NOT NULL,
                                                 [SystemID] [bigint] NOT NULL,
                                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -1849,6 +1919,7 @@ CREATE TABLE [dbo].[EventTypesSecurityToken](
                                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXAddress]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1858,9 +1929,9 @@ CREATE TABLE [dbo].[EventXAddress](
                                       [EventID] [bigint] NOT NULL,
                                       [AddressID] [bigint] NOT NULL,
                                       [ClassificationID] [bigint] NOT NULL,
-                                      [Value] [nvarchar](500) NOT NULL,
+                                      [Value] [varchar](1500) NOT NULL,
                                       [OriginalSourceSystemID] [bigint] NOT NULL,
-                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                       [EffectiveFromDate] [datetime] NOT NULL,
@@ -1874,6 +1945,7 @@ CREATE TABLE [dbo].[EventXAddress](
                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXAddressSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1888,7 +1960,7 @@ CREATE TABLE [dbo].[EventXAddressSecurityToken](
                                                    [ReadAllowed] [bit] NOT NULL,
                                                    [SystemID] [bigint] NOT NULL,
                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                   [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                   [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                    [EffectiveFromDate] [datetime] NOT NULL,
@@ -1901,6 +1973,7 @@ CREATE TABLE [dbo].[EventXAddressSecurityToken](
                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXArrangement]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1910,9 +1983,9 @@ CREATE TABLE [dbo].[EventXArrangement](
                                           [ClassificationID] [bigint] NULL,
                                           [EventID] [bigint] NOT NULL,
                                           [ArrangementID] [bigint] NOT NULL,
-                                          [Value] [nvarchar](500) NOT NULL,
+                                          [Value] [varchar](1500) NOT NULL,
                                           [OriginalSourceSystemID] [bigint] NOT NULL,
-                                          [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                          [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                           [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                           [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                           [EffectiveFromDate] [datetime] NOT NULL,
@@ -1926,6 +1999,7 @@ CREATE TABLE [dbo].[EventXArrangement](
                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXArrangementsSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1940,7 +2014,7 @@ CREATE TABLE [dbo].[EventXArrangementsSecurityToken](
                                                         [ReadAllowed] [bit] NOT NULL,
                                                         [SystemID] [bigint] NOT NULL,
                                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                        [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                         [EffectiveFromDate] [datetime] NOT NULL,
@@ -1953,6 +2027,7 @@ CREATE TABLE [dbo].[EventXArrangementsSecurityToken](
                                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXClassification]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1961,9 +2036,9 @@ CREATE TABLE [dbo].[EventXClassification](
                                              [EventXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                              [EventID] [bigint] NOT NULL,
                                              [ClassificationID] [bigint] NOT NULL,
-                                             [Value] [nvarchar](500) NOT NULL,
+                                             [Value] [varchar](1500) NOT NULL,
                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -1977,6 +2052,7 @@ CREATE TABLE [dbo].[EventXClassification](
                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1991,7 +2067,7 @@ CREATE TABLE [dbo].[EventXClassificationSecurityToken](
                                                           [ReadAllowed] [bit] NOT NULL,
                                                           [SystemID] [bigint] NOT NULL,
                                                           [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                          [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                          [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                           [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                           [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                           [EffectiveFromDate] [datetime] NOT NULL,
@@ -2004,6 +2080,7 @@ CREATE TABLE [dbo].[EventXClassificationSecurityToken](
                                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXEventType]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2012,10 +2089,10 @@ CREATE TABLE [dbo].[EventXEventType](
                                         [EventXEventTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                         [EventID] [bigint] NOT NULL,
                                         [EventTypeID] [bigint] NOT NULL,
-                                        [Value] [varchar](500) NOT NULL,
+                                        [Value] [varchar](1500) NOT NULL,
                                         [ClassificationID] [bigint] NOT NULL,
                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                        [OriginalSourceSystemUniqueID] [varchar](500) NOT NULL,
+                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                         [EffectiveFromDate] [datetime] NOT NULL,
@@ -2029,6 +2106,7 @@ CREATE TABLE [dbo].[EventXEventType](
                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXEventTypeSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2043,7 +2121,7 @@ CREATE TABLE [dbo].[EventXEventTypeSecurityToken](
                                                      [ReadAllowed] [bit] NOT NULL,
                                                      [SystemID] [bigint] NOT NULL,
                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -2056,6 +2134,7 @@ CREATE TABLE [dbo].[EventXEventTypeSecurityToken](
                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXGeography]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2065,9 +2144,9 @@ CREATE TABLE [dbo].[EventXGeography](
                                         [EventID] [bigint] NOT NULL,
                                         [GeographyID] [bigint] NOT NULL,
                                         [ClassificationID] [bigint] NOT NULL,
-                                        [Value] [nvarchar](500) NOT NULL,
+                                        [Value] [varchar](1500) NOT NULL,
                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                        [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                         [EffectiveFromDate] [datetime] NOT NULL,
@@ -2081,6 +2160,7 @@ CREATE TABLE [dbo].[EventXGeography](
                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXGeographySecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2095,7 +2175,7 @@ CREATE TABLE [dbo].[EventXGeographySecurityToken](
                                                      [ReadAllowed] [bit] NOT NULL,
                                                      [SystemID] [bigint] NOT NULL,
                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -2108,6 +2188,7 @@ CREATE TABLE [dbo].[EventXGeographySecurityToken](
                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXInvolvedParty]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2117,9 +2198,9 @@ CREATE TABLE [dbo].[EventXInvolvedParty](
                                             [EventID] [bigint] NOT NULL,
                                             [InvolvedPartyID] [bigint] NOT NULL,
                                             [ClassificationID] [bigint] NOT NULL,
-                                            [Value] [nvarchar](500) NOT NULL,
+                                            [Value] [varchar](1500) NOT NULL,
                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -2133,6 +2214,7 @@ CREATE TABLE [dbo].[EventXInvolvedParty](
                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXInvolvedPartySecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2147,7 +2229,7 @@ CREATE TABLE [dbo].[EventXInvolvedPartySecurityToken](
                                                          [ReadAllowed] [bit] NOT NULL,
                                                          [SystemID] [bigint] NOT NULL,
                                                          [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                         [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                         [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                          [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                          [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                          [EffectiveFromDate] [datetime] NOT NULL,
@@ -2160,6 +2242,7 @@ CREATE TABLE [dbo].[EventXInvolvedPartySecurityToken](
                                                                  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXProduct]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2169,9 +2252,9 @@ CREATE TABLE [dbo].[EventXProduct](
                                       [EventID] [bigint] NOT NULL,
                                       [ProductID] [bigint] NOT NULL,
                                       [ClassificationID] [bigint] NOT NULL,
-                                      [Value] [nvarchar](500) NOT NULL,
+                                      [Value] [varchar](1500) NOT NULL,
                                       [OriginalSourceSystemID] [bigint] NOT NULL,
-                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                       [EffectiveFromDate] [datetime] NOT NULL,
@@ -2185,6 +2268,7 @@ CREATE TABLE [dbo].[EventXProduct](
                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXProductSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2199,7 +2283,7 @@ CREATE TABLE [dbo].[EventXProductSecurityToken](
                                                    [ReadAllowed] [bit] NOT NULL,
                                                    [SystemID] [bigint] NOT NULL,
                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                   [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                   [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                    [EffectiveFromDate] [datetime] NOT NULL,
@@ -2212,6 +2296,7 @@ CREATE TABLE [dbo].[EventXProductSecurityToken](
                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXResourceItem]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2221,9 +2306,9 @@ CREATE TABLE [dbo].[EventXResourceItem](
                                            [EventID] [bigint] NOT NULL,
                                            [ResourceItemID] [bigint] NOT NULL,
                                            [ClassificationID] [bigint] NOT NULL,
-                                           [Value] [nvarchar](500) NOT NULL,
+                                           [Value] [varchar](1500) NOT NULL,
                                            [OriginalSourceSystemID] [bigint] NOT NULL,
-                                           [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                           [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                            [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                            [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                            [EffectiveFromDate] [datetime] NOT NULL,
@@ -2237,6 +2322,7 @@ CREATE TABLE [dbo].[EventXResourceItem](
                                                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[EventXResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2251,7 +2337,7 @@ CREATE TABLE [dbo].[EventXResourceItemSecurityToken](
                                                         [ReadAllowed] [bit] NOT NULL,
                                                         [SystemID] [bigint] NOT NULL,
                                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                        [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                         [EffectiveFromDate] [datetime] NOT NULL,
@@ -2264,6 +2350,7 @@ CREATE TABLE [dbo].[EventXResourceItemSecurityToken](
                                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[GeographySecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2278,7 +2365,7 @@ CREATE TABLE [dbo].[GeographySecurityToken](
                                                [ReadAllowed] [bit] NOT NULL,
                                                [SystemID] [bigint] NOT NULL,
                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -2291,6 +2378,7 @@ CREATE TABLE [dbo].[GeographySecurityToken](
                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[GeographyXClassification]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2299,9 +2387,9 @@ CREATE TABLE [dbo].[GeographyXClassification](
                                                  [GeographyXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                  [GeographyID] [bigint] NOT NULL,
                                                  [ClassificationID] [bigint] NOT NULL,
-                                                 [Value] [nvarchar](500) NOT NULL,
+                                                 [Value] [varchar](1500) NOT NULL,
                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -2315,6 +2403,7 @@ CREATE TABLE [dbo].[GeographyXClassification](
                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[GeographyXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2329,7 +2418,7 @@ CREATE TABLE [dbo].[GeographyXClassificationSecurityToken](
                                                               [ReadAllowed] [bit] NOT NULL,
                                                               [SystemID] [bigint] NOT NULL,
                                                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -2342,6 +2431,7 @@ CREATE TABLE [dbo].[GeographyXClassificationSecurityToken](
                                                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[GeographyXGeographySecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2356,7 +2446,7 @@ CREATE TABLE [dbo].[GeographyXGeographySecurityToken](
                                                          [ReadAllowed] [bit] NOT NULL,
                                                          [SystemID] [bigint] NOT NULL,
                                                          [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                         [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                         [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                          [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                          [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                          [EffectiveFromDate] [datetime] NOT NULL,
@@ -2369,6 +2459,7 @@ CREATE TABLE [dbo].[GeographyXGeographySecurityToken](
                                                                  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[GeographyXResourceItem]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2378,9 +2469,9 @@ CREATE TABLE [dbo].[GeographyXResourceItem](
                                                [GeographyID] [bigint] NOT NULL,
                                                [ResourceItemID] [bigint] NOT NULL,
                                                [ClassificationID] [bigint] NOT NULL,
-                                               [Value] [nvarchar](500) NOT NULL,
+                                               [Value] [varchar](1500) NOT NULL,
                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -2394,6 +2485,7 @@ CREATE TABLE [dbo].[GeographyXResourceItem](
                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[GeographyXResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2408,7 +2500,7 @@ CREATE TABLE [dbo].[GeographyXResourceItemSecurityToken](
                                                             [ReadAllowed] [bit] NOT NULL,
                                                             [SystemID] [bigint] NOT NULL,
                                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -2421,6 +2513,7 @@ CREATE TABLE [dbo].[GeographyXResourceItemSecurityToken](
                                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyIdentificationType]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2428,9 +2521,9 @@ GO
 CREATE TABLE [dbo].[InvolvedPartyIdentificationType](
                                                         [InvolvedPartyIdentificationTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                         [InvolvedPartyIdentificationName] [nvarchar](150) NOT NULL,
-                                                        [InvolvedPartyIdentificationDesc] [nvarchar](500) NOT NULL,
+                                                        [InvolvedPartyIdentificationDesc] [varchar](1500) NOT NULL,
                                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                        [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                         [EffectiveFromDate] [datetime] NOT NULL,
@@ -2444,6 +2537,7 @@ CREATE TABLE [dbo].[InvolvedPartyIdentificationType](
                                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyIdentificationTypeSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2458,7 +2552,7 @@ CREATE TABLE [dbo].[InvolvedPartyIdentificationTypeSecurityToken](
                                                                      [ReadAllowed] [bit] NOT NULL,
                                                                      [SystemID] [bigint] NOT NULL,
                                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -2471,16 +2565,17 @@ CREATE TABLE [dbo].[InvolvedPartyIdentificationTypeSecurityToken](
                                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyNameType]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[InvolvedPartyNameType](
                                               [InvolvedPartyNameTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
-                                              [InvolvedPartyNameTypeName] [nvarchar](500) NOT NULL,
-                                              [InvolvedPartyNameTypeDescr] [nvarchar](500) NOT NULL,
+                                              [InvolvedPartyNameTypeName] [varchar](1500) NOT NULL,
+                                              [InvolvedPartyNameTypeDescr] [varchar](1500) NOT NULL,
                                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -2490,10 +2585,12 @@ CREATE TABLE [dbo].[InvolvedPartyNameType](
                                               [SystemID] [bigint] NOT NULL,
                                               CONSTRAINT [PK_InvolvedPartyNameType] PRIMARY KEY CLUSTERED
                                                   (
-                                                   [InvolvedPartyNameTypeID] ASC
+                                                   [InvolvedPartyNameTypeID] ASC,
+                                                   [EnterpriseID] ASC
                                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyNameTypeSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2508,7 +2605,7 @@ CREATE TABLE [dbo].[InvolvedPartyNameTypeSecurityToken](
                                                            [ReadAllowed] [bit] NOT NULL,
                                                            [SystemID] [bigint] NOT NULL,
                                                            [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                           [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                           [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                            [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                            [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                            [EffectiveFromDate] [datetime] NOT NULL,
@@ -2521,6 +2618,7 @@ CREATE TABLE [dbo].[InvolvedPartyNameTypeSecurityToken](
                                                                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyNonOrganic]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2528,7 +2626,7 @@ GO
 CREATE TABLE [dbo].[InvolvedPartyNonOrganic](
                                                 [InvolvedPartyNonOrganicID] [bigint] NOT NULL,
                                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -2542,6 +2640,7 @@ CREATE TABLE [dbo].[InvolvedPartyNonOrganic](
                                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyNonOrganicSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2556,7 +2655,7 @@ CREATE TABLE [dbo].[InvolvedPartyNonOrganicSecurityToken](
                                                              [ReadAllowed] [bit] NOT NULL,
                                                              [SystemID] [bigint] NOT NULL,
                                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -2569,6 +2668,7 @@ CREATE TABLE [dbo].[InvolvedPartyNonOrganicSecurityToken](
                                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyOrganic]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2576,7 +2676,7 @@ GO
 CREATE TABLE [dbo].[InvolvedPartyOrganic](
                                              [InvolvedPartyOrganicID] [bigint] NOT NULL,
                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -2590,6 +2690,7 @@ CREATE TABLE [dbo].[InvolvedPartyOrganic](
                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyOrganicSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2604,7 +2705,7 @@ CREATE TABLE [dbo].[InvolvedPartyOrganicSecurityToken](
                                                           [ReadAllowed] [bit] NOT NULL,
                                                           [SystemID] [bigint] NOT NULL,
                                                           [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                          [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                          [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                           [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                           [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                           [EffectiveFromDate] [datetime] NOT NULL,
@@ -2617,6 +2718,7 @@ CREATE TABLE [dbo].[InvolvedPartyOrganicSecurityToken](
                                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyOrganicType]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2624,9 +2726,9 @@ GO
 CREATE TABLE [dbo].[InvolvedPartyOrganicType](
                                                  [InvolvedPartyOrganicTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                  [InvolvedPartyTypeName] [nvarchar](200) NOT NULL,
-                                                 [InvolvedPartyTypeDesc] [nvarchar](500) NOT NULL,
+                                                 [InvolvedPartyTypeDesc] [varchar](1500) NOT NULL,
                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -2640,6 +2742,7 @@ CREATE TABLE [dbo].[InvolvedPartyOrganicType](
                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyOrganicTypeSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2654,7 +2757,7 @@ CREATE TABLE [dbo].[InvolvedPartyOrganicTypeSecurityToken](
                                                               [ReadAllowed] [bit] NOT NULL,
                                                               [SystemID] [bigint] NOT NULL,
                                                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -2667,6 +2770,7 @@ CREATE TABLE [dbo].[InvolvedPartyOrganicTypeSecurityToken](
                                                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartySecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2681,7 +2785,7 @@ CREATE TABLE [dbo].[InvolvedPartySecurityToken](
                                                    [ReadAllowed] [bit] NOT NULL,
                                                    [SystemID] [bigint] NOT NULL,
                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                   [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                   [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                    [EffectiveFromDate] [datetime] NOT NULL,
@@ -2694,6 +2798,7 @@ CREATE TABLE [dbo].[InvolvedPartySecurityToken](
                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyType]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2703,7 +2808,7 @@ CREATE TABLE [dbo].[InvolvedPartyType](
                                           [InvolvedPartyTypeName] [nvarchar](100) NOT NULL,
                                           [InvolvedPartyTypeDesc] [nvarchar](max) NOT NULL,
                                           [OriginalSourceSystemID] [bigint] NOT NULL,
-                                          [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                          [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                           [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                           [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                           [EffectiveFromDate] [datetime] NOT NULL,
@@ -2717,6 +2822,7 @@ CREATE TABLE [dbo].[InvolvedPartyType](
                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyTypeSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2731,7 +2837,7 @@ CREATE TABLE [dbo].[InvolvedPartyTypeSecurityToken](
                                                        [ReadAllowed] [bit] NOT NULL,
                                                        [SystemID] [bigint] NOT NULL,
                                                        [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                       [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                       [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                        [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                        [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                        [EffectiveFromDate] [datetime] NOT NULL,
@@ -2744,6 +2850,7 @@ CREATE TABLE [dbo].[InvolvedPartyTypeSecurityToken](
                                                                )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXAddress]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2753,9 +2860,9 @@ CREATE TABLE [dbo].[InvolvedPartyXAddress](
                                               [ClassificationID] [bigint] NOT NULL,
                                               [InvolvedPartyID] [bigint] NOT NULL,
                                               [AddressID] [bigint] NOT NULL,
-                                              [Value] [nvarchar](1000) NOT NULL,
+                                              [Value] [varchar](1500) NOT NULL,
                                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -2769,6 +2876,7 @@ CREATE TABLE [dbo].[InvolvedPartyXAddress](
                                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXAddressSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2783,7 +2891,7 @@ CREATE TABLE [dbo].[InvolvedPartyXAddressSecurityToken](
                                                            [ReadAllowed] [bit] NOT NULL,
                                                            [SystemID] [bigint] NOT NULL,
                                                            [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                           [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                           [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                            [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                            [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                            [EffectiveFromDate] [datetime] NOT NULL,
@@ -2796,6 +2904,7 @@ CREATE TABLE [dbo].[InvolvedPartyXAddressSecurityToken](
                                                                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXClassification]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2804,9 +2913,9 @@ CREATE TABLE [dbo].[InvolvedPartyXClassification](
                                                      [InvolvedPartyXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                      [InvolvedPartyID] [bigint] NOT NULL,
                                                      [ClassificationID] [bigint] NOT NULL,
-                                                     [Value] [nvarchar](500) NOT NULL,
+                                                     [Value] [varchar](1500) NOT NULL,
                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -2820,6 +2929,7 @@ CREATE TABLE [dbo].[InvolvedPartyXClassification](
                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2834,7 +2944,7 @@ CREATE TABLE [dbo].[InvolvedPartyXClassificationSecurityToken](
                                                                   [ReadAllowed] [bit] NOT NULL,
                                                                   [SystemID] [bigint] NOT NULL,
                                                                   [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                   [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                   [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                   [EffectiveFromDate] [datetime] NOT NULL,
@@ -2847,6 +2957,7 @@ CREATE TABLE [dbo].[InvolvedPartyXClassificationSecurityToken](
                                                                           )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXInvolvedPartyIdentificationType]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2855,10 +2966,10 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyIdentificationType](
                                                                       [InvolvedPartyXInvolvedPartyIdentificationTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                                       [InvolvedPartyID] [bigint] NOT NULL,
                                                                       [InvolvedPartyIdentificationTypeID] [bigint] NOT NULL,
-                                                                      [Value] [varchar](500) NOT NULL,
+                                                                      [Value] [varchar](1500) NOT NULL,
                                                                       [SystemID] [bigint] NOT NULL,
                                                                       [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                       [EffectiveFromDate] [datetime] NOT NULL,
@@ -2871,6 +2982,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyIdentificationType](
                                                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2885,7 +2997,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken](
                                                                                    [ReadAllowed] [bit] NOT NULL,
                                                                                    [SystemID] [bigint] NOT NULL,
                                                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                                   [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                                   [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                                    [EffectiveFromDate] [datetime] NOT NULL,
@@ -2898,6 +3010,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken](
                                                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXInvolvedPartyNameType]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2906,9 +3019,9 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyNameType](
                                                             [InvolvedPartyXInvolvedPartyNameTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                             [InvolvedPartyID] [bigint] NOT NULL,
                                                             [InvolvedPartyNameTypeID] [bigint] NOT NULL,
-                                                            [Value] [nvarchar](500) NOT NULL,
+                                                            [Value] [varchar](1500) NOT NULL,
                                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -2922,6 +3035,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyNameType](
                                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]    Script Date: 2019/09/01 20:47:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2936,7 +3050,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken](
                                                                          [ReadAllowed] [bit] NOT NULL,
                                                                          [SystemID] [bigint] NOT NULL,
                                                                          [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                         [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                         [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                          [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                          [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                          [EffectiveFromDate] [datetime] NOT NULL,
@@ -2949,6 +3063,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken](
                                                                                  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXInvolvedPartySecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2963,7 +3078,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartySecurityToken](
                                                                  [ReadAllowed] [bit] NOT NULL,
                                                                  [SystemID] [bigint] NOT NULL,
                                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -2976,6 +3091,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartySecurityToken](
                                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXInvolvedPartyType]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2984,9 +3100,9 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyType](
                                                         [InvolvedPartyXInvolvedPartyTypeID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                         [InvolvedPartyID] [bigint] NOT NULL,
                                                         [InvolvedPartyTypeID] [bigint] NOT NULL,
-                                                        [Value] [nvarchar](500) NOT NULL,
+                                                        [Value] [varchar](1500) NOT NULL,
                                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                        [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                         [EffectiveFromDate] [datetime] NOT NULL,
@@ -3000,6 +3116,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyType](
                                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXInvolvedPartyTypeSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3014,7 +3131,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyTypeSecurityToken](
                                                                      [ReadAllowed] [bit] NOT NULL,
                                                                      [SystemID] [bigint] NOT NULL,
                                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -3027,6 +3144,7 @@ CREATE TABLE [dbo].[InvolvedPartyXInvolvedPartyTypeSecurityToken](
                                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXProduct]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3037,9 +3155,9 @@ CREATE TABLE [dbo].[InvolvedPartyXProduct](
                                               [ProductID] [bigint] NOT NULL,
                                               [ClassificationID] [bigint] NOT NULL,
                                               [ValueTypeClassificationID] [bigint] NOT NULL,
-                                              [Value] [nvarchar](500) NOT NULL,
+                                              [Value] [varchar](1500) NOT NULL,
                                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -3053,6 +3171,7 @@ CREATE TABLE [dbo].[InvolvedPartyXProduct](
                                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXProductSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3067,7 +3186,7 @@ CREATE TABLE [dbo].[InvolvedPartyXProductSecurityToken](
                                                            [ReadAllowed] [bit] NOT NULL,
                                                            [SystemID] [bigint] NOT NULL,
                                                            [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                           [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                           [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                            [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                            [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                            [EffectiveFromDate] [datetime] NOT NULL,
@@ -3080,6 +3199,7 @@ CREATE TABLE [dbo].[InvolvedPartyXProductSecurityToken](
                                                                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXResourceItem]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3091,7 +3211,7 @@ CREATE TABLE [dbo].[InvolvedPartyXResourceItem](
                                                    [ClassificationID] [bigint] NOT NULL,
                                                    [Value] [varchar](max) NOT NULL,
                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                   [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                   [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                    [EffectiveFromDate] [datetime] NOT NULL,
@@ -3105,6 +3225,7 @@ CREATE TABLE [dbo].[InvolvedPartyXResourceItem](
                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[InvolvedPartyXResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3119,7 +3240,7 @@ CREATE TABLE [dbo].[InvolvedPartyXResourceItemSecurityToken](
                                                                 [ReadAllowed] [bit] NOT NULL,
                                                                 [SystemID] [bigint] NOT NULL,
                                                                 [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                 [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                 [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                 [EffectiveFromDate] [datetime] NOT NULL,
@@ -3132,6 +3253,7 @@ CREATE TABLE [dbo].[InvolvedPartyXResourceItemSecurityToken](
                                                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ProductSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3146,7 +3268,7 @@ CREATE TABLE [dbo].[ProductSecurityToken](
                                              [ReadAllowed] [bit] NOT NULL,
                                              [SystemID] [bigint] NOT NULL,
                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -3159,6 +3281,7 @@ CREATE TABLE [dbo].[ProductSecurityToken](
                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ProductXClassification]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3167,9 +3290,9 @@ CREATE TABLE [dbo].[ProductXClassification](
                                                [ProductXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                [ProductID] [bigint] NOT NULL,
                                                [ClassificationID] [bigint] NOT NULL,
-                                               [Value] [nvarchar](500) NOT NULL,
+                                               [Value] [varchar](1500) NOT NULL,
                                                [OriginalSourceSystemID] [bigint] NOT NULL,
-                                               [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                               [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                [EffectiveFromDate] [datetime] NOT NULL,
@@ -3183,6 +3306,7 @@ CREATE TABLE [dbo].[ProductXClassification](
                                                        )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ProductXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3197,7 +3321,7 @@ CREATE TABLE [dbo].[ProductXClassificationSecurityToken](
                                                             [ReadAllowed] [bit] NOT NULL,
                                                             [SystemID] [bigint] NOT NULL,
                                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -3210,6 +3334,7 @@ CREATE TABLE [dbo].[ProductXClassificationSecurityToken](
                                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ProductXProductSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3224,7 +3349,7 @@ CREATE TABLE [dbo].[ProductXProductSecurityToken](
                                                      [ReadAllowed] [bit] NOT NULL,
                                                      [SystemID] [bigint] NOT NULL,
                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -3237,6 +3362,7 @@ CREATE TABLE [dbo].[ProductXProductSecurityToken](
                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ProductXProductType]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3246,7 +3372,7 @@ CREATE TABLE [dbo].[ProductXProductType](
                                             [ProductXProductTypeName] [nvarchar](max) NOT NULL,
                                             [ProductXProductTypeDesc] [nvarchar](max) NOT NULL,
                                             [OriginalSourceSystemID] [bigint] NOT NULL,
-                                            [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                            [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                             [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                             [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                             [EffectiveFromDate] [datetime] NOT NULL,
@@ -3260,6 +3386,7 @@ CREATE TABLE [dbo].[ProductXProductType](
                                                     )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ProductXProductTypeSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3274,7 +3401,7 @@ CREATE TABLE [dbo].[ProductXProductTypeSecurityToken](
                                                          [ReadAllowed] [bit] NOT NULL,
                                                          [SystemID] [bigint] NOT NULL,
                                                          [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                         [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                         [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                          [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                          [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                          [EffectiveFromDate] [datetime] NOT NULL,
@@ -3287,6 +3414,7 @@ CREATE TABLE [dbo].[ProductXProductTypeSecurityToken](
                                                                  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ProductXResourceItem]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3296,9 +3424,9 @@ CREATE TABLE [dbo].[ProductXResourceItem](
                                              [ProductID] [bigint] NOT NULL,
                                              [ResourceItemID] [bigint] NOT NULL,
                                              [ClassificationID] [bigint] NOT NULL,
-                                             [Value] [nvarchar](500) NOT NULL,
+                                             [Value] [varchar](1500) NOT NULL,
                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -3312,6 +3440,7 @@ CREATE TABLE [dbo].[ProductXResourceItem](
                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ProductXResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3326,7 +3455,7 @@ CREATE TABLE [dbo].[ProductXResourceItemSecurityToken](
                                                           [ReadAllowed] [bit] NOT NULL,
                                                           [SystemID] [bigint] NOT NULL,
                                                           [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                          [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                          [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                           [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                           [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                           [EffectiveFromDate] [datetime] NOT NULL,
@@ -3339,6 +3468,7 @@ CREATE TABLE [dbo].[ProductXResourceItemSecurityToken](
                                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ResourceItemDataSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3353,7 +3483,7 @@ CREATE TABLE [dbo].[ResourceItemDataSecurityToken](
                                                       [ReadAllowed] [bit] NOT NULL,
                                                       [SystemID] [bigint] NOT NULL,
                                                       [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                       [EffectiveFromDate] [datetime] NOT NULL,
@@ -3366,6 +3496,7 @@ CREATE TABLE [dbo].[ResourceItemDataSecurityToken](
                                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ResourceItemDataXClassification]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3374,9 +3505,9 @@ CREATE TABLE [dbo].[ResourceItemDataXClassification](
                                                         [ResourceItemDataXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                         [ResourceItemDataID] [bigint] NOT NULL,
                                                         [ClassificationID] [bigint] NOT NULL,
-                                                        [Value] [nvarchar](500) NOT NULL,
+                                                        [Value] [varchar](1500) NOT NULL,
                                                         [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                        [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                        [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                         [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                         [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                         [EffectiveFromDate] [datetime] NOT NULL,
@@ -3390,6 +3521,7 @@ CREATE TABLE [dbo].[ResourceItemDataXClassification](
                                                                 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ResourceItemDataXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3404,7 +3536,7 @@ CREATE TABLE [dbo].[ResourceItemDataXClassificationSecurityToken](
                                                                      [ReadAllowed] [bit] NOT NULL,
                                                                      [SystemID] [bigint] NOT NULL,
                                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -3417,6 +3549,7 @@ CREATE TABLE [dbo].[ResourceItemDataXClassificationSecurityToken](
                                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ResourceItemSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3431,7 +3564,7 @@ CREATE TABLE [dbo].[ResourceItemSecurityToken](
                                                   [ReadAllowed] [bit] NOT NULL,
                                                   [SystemID] [bigint] NOT NULL,
                                                   [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                   [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                   [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                   [EffectiveFromDate] [datetime] NOT NULL,
@@ -3444,6 +3577,7 @@ CREATE TABLE [dbo].[ResourceItemSecurityToken](
                                                           )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ResourceItemTypeSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3458,7 +3592,7 @@ CREATE TABLE [dbo].[ResourceItemTypeSecurityToken](
                                                       [ReadAllowed] [bit] NOT NULL,
                                                       [SystemID] [bigint] NOT NULL,
                                                       [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                      [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                      [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                       [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                       [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                       [EffectiveFromDate] [datetime] NOT NULL,
@@ -3471,6 +3605,7 @@ CREATE TABLE [dbo].[ResourceItemTypeSecurityToken](
                                                               )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ResourceItemXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3485,7 +3620,7 @@ CREATE TABLE [dbo].[ResourceItemXClassificationSecurityToken](
                                                                  [ReadAllowed] [bit] NOT NULL,
                                                                  [SystemID] [bigint] NOT NULL,
                                                                  [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                 [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                 [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                  [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                  [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                  [EffectiveFromDate] [datetime] NOT NULL,
@@ -3498,6 +3633,7 @@ CREATE TABLE [dbo].[ResourceItemXClassificationSecurityToken](
                                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[ResourceItemXResourceItemTypeSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3512,7 +3648,7 @@ CREATE TABLE [dbo].[ResourceItemXResourceItemTypeSecurityToken](
                                                                    [ReadAllowed] [bit] NOT NULL,
                                                                    [SystemID] [bigint] NOT NULL,
                                                                    [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                   [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                   [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                    [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                    [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                    [EffectiveFromDate] [datetime] NOT NULL,
@@ -3525,6 +3661,7 @@ CREATE TABLE [dbo].[ResourceItemXResourceItemTypeSecurityToken](
                                                                            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SecurityHierarchy]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3541,6 +3678,7 @@ CREATE TABLE [dbo].[SecurityHierarchy](
                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SecurityHierarchyParents]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3555,6 +3693,7 @@ CREATE TABLE [dbo].[SecurityHierarchyParents](
                                                          )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SecurityTokensSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3569,7 +3708,7 @@ CREATE TABLE [dbo].[SecurityTokensSecurityToken](
                                                     [ReadAllowed] [bit] NOT NULL,
                                                     [SystemID] [bigint] NOT NULL,
                                                     [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                    [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                    [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                     [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                     [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                     [EffectiveFromDate] [datetime] NOT NULL,
@@ -3582,6 +3721,7 @@ CREATE TABLE [dbo].[SecurityTokensSecurityToken](
                                                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SecurityTokenXClassification]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3590,9 +3730,9 @@ CREATE TABLE [dbo].[SecurityTokenXClassification](
                                                      [SecurityTokenXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                                      [SecurityTokenID] [bigint] NOT NULL,
                                                      [ClassificationID] [bigint] NOT NULL,
-                                                     [Value] [nvarchar](500) NOT NULL,
+                                                     [Value] [varchar](1500) NOT NULL,
                                                      [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                     [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                     [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                      [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                      [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                      [EffectiveFromDate] [datetime] NOT NULL,
@@ -3606,6 +3746,7 @@ CREATE TABLE [dbo].[SecurityTokenXClassification](
                                                              )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SecurityTokenXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3620,7 +3761,7 @@ CREATE TABLE [dbo].[SecurityTokenXClassificationSecurityToken](
                                                                   [ReadAllowed] [bit] NOT NULL,
                                                                   [SystemID] [bigint] NOT NULL,
                                                                   [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                                  [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                                  [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                                   [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                                   [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                                   [EffectiveFromDate] [datetime] NOT NULL,
@@ -3633,6 +3774,7 @@ CREATE TABLE [dbo].[SecurityTokenXClassificationSecurityToken](
                                                                           )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[Systems]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3654,6 +3796,7 @@ CREATE TABLE [dbo].[Systems](
                                         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SystemsSecurityToken]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3667,7 +3810,7 @@ CREATE TABLE [dbo].[SystemsSecurityToken](
                                              [DeleteAllowed] [bit] NOT NULL,
                                              [ReadAllowed] [bit] NOT NULL,
                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -3680,6 +3823,7 @@ CREATE TABLE [dbo].[SystemsSecurityToken](
                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SystemXClassification]    Script Date: 2019/09/01 20:47:45 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3688,9 +3832,9 @@ CREATE TABLE [dbo].[SystemXClassification](
                                               [SystemXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                               [SystemID] [bigint] NOT NULL,
                                               [ClassificationID] [bigint] NOT NULL,
-                                              [Value] [nvarchar](500) NOT NULL,
+                                              [Value] [varchar](1500) NOT NULL,
                                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -3703,6 +3847,7 @@ CREATE TABLE [dbo].[SystemXClassification](
                                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SystemXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3717,7 +3862,7 @@ CREATE TABLE [dbo].[SystemXClassificationSecurityToken](
                                                            [ReadAllowed] [bit] NOT NULL,
                                                            [SystemID] [bigint] NOT NULL,
                                                            [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                           [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                           [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                            [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                            [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                            [EffectiveFromDate] [datetime] NOT NULL,
@@ -3730,6 +3875,7 @@ CREATE TABLE [dbo].[SystemXClassificationSecurityToken](
                                                                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[YesNo]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3743,7 +3889,7 @@ CREATE TABLE [dbo].[YesNo](
                               [YNDesc] [nvarchar](1) NOT NULL,
                               [InOutDesc] [nvarchar](4) NOT NULL,
                               [OriginalSourceSystemID] [bigint] NOT NULL,
-                              [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                              [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                               [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                               [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                               [EffectiveFromDate] [datetime] NOT NULL,
@@ -3757,6 +3903,7 @@ CREATE TABLE [dbo].[YesNo](
                                       )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[YesNoSecurityToken]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3771,7 +3918,7 @@ CREATE TABLE [dbo].[YesNoSecurityToken](
                                            [ReadAllowed] [bit] NOT NULL,
                                            [SystemID] [bigint] NOT NULL,
                                            [OriginalSourceSystemID] [bigint] NOT NULL,
-                                           [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                           [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                            [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                            [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                            [EffectiveFromDate] [datetime] NOT NULL,
@@ -3784,6 +3931,7 @@ CREATE TABLE [dbo].[YesNoSecurityToken](
                                                    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[YesNoXClassification]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3792,9 +3940,9 @@ CREATE TABLE [dbo].[YesNoXClassification](
                                              [YesNoXClassificationID] [bigint] IDENTITY(-9223372036854775807,1) NOT NULL,
                                              [YesNoID] [bigint] NOT NULL,
                                              [ClassificationID] [bigint] NOT NULL,
-                                             [Value] [nvarchar](500) NOT NULL,
+                                             [Value] [varchar](1500) NOT NULL,
                                              [OriginalSourceSystemID] [bigint] NOT NULL,
-                                             [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                             [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                              [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                              [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                              [EffectiveFromDate] [datetime] NOT NULL,
@@ -3808,6 +3956,7 @@ CREATE TABLE [dbo].[YesNoXClassification](
                                                      )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[YesNoXClassificationSecurityToken]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3822,7 +3971,7 @@ CREATE TABLE [dbo].[YesNoXClassificationSecurityToken](
                                                           [ReadAllowed] [bit] NOT NULL,
                                                           [SystemID] [bigint] NOT NULL,
                                                           [OriginalSourceSystemID] [bigint] NOT NULL,
-                                                          [OriginalSourceSystemUniqueID] [nvarchar](500) NOT NULL,
+                                                          [OriginalSourceSystemUniqueID] [varchar](1500) NOT NULL,
                                                           [WarehouseCreatedTimestamp] [datetime] NOT NULL,
                                                           [WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
                                                           [EffectiveFromDate] [datetime] NOT NULL,
@@ -3835,1791 +3984,2149 @@ CREATE TABLE [dbo].[YesNoXClassificationSecurityToken](
                                                                   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EffectiveFromDate] ON [dbo].[ActiveFlag]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EffectiveToDate] ON [dbo].[ActiveFlag]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseID]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseID] ON [dbo].[ActiveFlag]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagSecurityToken]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken] ON [dbo].[ActiveFlagSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagSecurityToken_1]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_1] ON [dbo].[ActiveFlagSecurityToken]
     (
      [ActiveFlagSecurityTokenID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_ActiveFlagId] ON [dbo].[ActiveFlagSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_EffectiveFromDate] ON [dbo].[ActiveFlagSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_EffectiveToDate] ON [dbo].[ActiveFlagSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_EnterpriseId] ON [dbo].[ActiveFlagSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_SystemId] ON [dbo].[ActiveFlagSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassification]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification] ON [dbo].[ActiveFlagXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassification_1]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_1] ON [dbo].[ActiveFlagXClassification]
     (
      [ActiveFlagXClassificationID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_ActiveFlagId] ON [dbo].[ActiveFlagXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_EffectiveFromDate] ON [dbo].[ActiveFlagXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_EffectiveToDate] ON [dbo].[ActiveFlagXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_EnterpriseId] ON [dbo].[ActiveFlagXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_SystemId] ON [dbo].[ActiveFlagXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_ActiveFlagId] ON [dbo].[ActiveFlagXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ActiveFlagXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_EffectiveToDate] ON [dbo].[ActiveFlagXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_EnterpriseId] ON [dbo].[ActiveFlagXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_SystemId] ON [dbo].[ActiveFlagXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Address_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_ActiveFlagId] ON [dbo].[Address]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Address_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_EffectiveFromDate] ON [dbo].[Address]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Address_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_EffectiveToDate] ON [dbo].[Address]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Address_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_EnterpriseId] ON [dbo].[Address]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Address_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_SystemId] ON [dbo].[Address]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_ActiveFlagId] ON [dbo].[AddressSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_EffectiveFromDate] ON [dbo].[AddressSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_EffectiveToDate] ON [dbo].[AddressSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressSecurityToken_EnterprizeId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_EnterprizeId] ON [dbo].[AddressSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_SystemId] ON [dbo].[AddressSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassification]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification] ON [dbo].[AddressXClassification]
     (
      [AddressXClassificationID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_ActiveFlagId] ON [dbo].[AddressXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_EffectiveFromDate] ON [dbo].[AddressXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_EffectiveToDate] ON [dbo].[AddressXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_EnterpriseId] ON [dbo].[AddressXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_SystemId] ON [dbo].[AddressXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_ActiveFlagId] ON [dbo].[AddressXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[AddressXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_EffectiveToDate] ON [dbo].[AddressXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_EnterpriseId] ON [dbo].[AddressXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_SystemId] ON [dbo].[AddressXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeography_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_ActiveFlagId] ON [dbo].[AddressXGeography]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeography_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_EffectiveFromDate] ON [dbo].[AddressXGeography]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeography_effectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_effectiveToDate] ON [dbo].[AddressXGeography]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeography_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_EnterpriseId] ON [dbo].[AddressXGeography]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeography_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_SystemId] ON [dbo].[AddressXGeography]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeographySecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_ActiveFlagId] ON [dbo].[AddressXGeographySecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeographySecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_EffectiveFromDate] ON [dbo].[AddressXGeographySecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeographySecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_EffectiveToDate] ON [dbo].[AddressXGeographySecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeographySecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_EnterpriseId] ON [dbo].[AddressXGeographySecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXGeographySecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_SystemId] ON [dbo].[AddressXGeographySecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_ActiveFlagId] ON [dbo].[AddressXResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_EffectiveFromDate] ON [dbo].[AddressXResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_EffectiveToDate] ON [dbo].[AddressXResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_EnterpriseId] ON [dbo].[AddressXResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_SystemId] ON [dbo].[AddressXResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_ActiveFlagId] ON [dbo].[AddressXResourceItemSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_EffectiveFromDate] ON [dbo].[AddressXResourceItemSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_EffectiveToDate] ON [dbo].[AddressXResourceItemSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_EnterpriseId] ON [dbo].[AddressXResourceItemSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_SystemId] ON [dbo].[AddressXResourceItemSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Arrangement_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_ActiveFlagId] ON [dbo].[Arrangement]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Arrangement_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_EffectiveFromDate] ON [dbo].[Arrangement]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Arrangement_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_EffectiveToDate] ON [dbo].[Arrangement]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Arrangement_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_EnterpriseId] ON [dbo].[Arrangement]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Arrangement_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_SystemId] ON [dbo].[Arrangement]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementSecurityToken]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken] ON [dbo].[ArrangementSecurityToken]
     (
      [ArrangementSecurityTokenID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementSecurityToken_ActiveFlafId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_ActiveFlafId] ON [dbo].[ArrangementSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_EffectiveFromDate] ON [dbo].[ArrangementSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_EffectiveToDate] ON [dbo].[ArrangementSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_EnterpriseId] ON [dbo].[ArrangementSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_SystemId] ON [dbo].[ArrangementSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_ActiveFlagId] ON [dbo].[ArrangementType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_EffectiveFromDate] ON [dbo].[ArrangementType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_EffectiveToDate] ON [dbo].[ArrangementType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_EnterpriseId] ON [dbo].[ArrangementType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_SystemId] ON [dbo].[ArrangementType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_ActiveFlagId] ON [dbo].[ArrangementTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_EffectiveFromDate] ON [dbo].[ArrangementTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_EffectiveToDate] ON [dbo].[ArrangementTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_EnterpriseId] ON [dbo].[ArrangementTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_SystemId] ON [dbo].[ArrangementTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangement_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_ActiveFlagId] ON [dbo].[ArrangementXArrangement]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangement_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_EffectiveFromDate] ON [dbo].[ArrangementXArrangement]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangement_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_EffectiveToDate] ON [dbo].[ArrangementXArrangement]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangement_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_EnterpriseId] ON [dbo].[ArrangementXArrangement]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangement_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_SystemId] ON [dbo].[ArrangementXArrangement]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_ActiveFlagId] ON [dbo].[ArrangementXArrangementSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_EffectiveFromDate] ON [dbo].[ArrangementXArrangementSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_EffectiveToDate] ON [dbo].[ArrangementXArrangementSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_EnterpriseId] ON [dbo].[ArrangementXArrangementSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_SystemId] ON [dbo].[ArrangementXArrangementSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_ActiveFlagId] ON [dbo].[ArrangementXArrangementType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_EffectiveFromDate] ON [dbo].[ArrangementXArrangementType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_EffectiveToDate] ON [dbo].[ArrangementXArrangementType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementType_EnterpriseID]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_EnterpriseID] ON [dbo].[ArrangementXArrangementType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_SystemId] ON [dbo].[ArrangementXArrangementType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_ActiveFlagId] ON [dbo].[ArrangementXArrangementTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_EffectiveFromDate] ON [dbo].[ArrangementXArrangementTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_EffectiveToDate] ON [dbo].[ArrangementXArrangementTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_EnterpriseId] ON [dbo].[ArrangementXArrangementTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_SystemId] ON [dbo].[ArrangementXArrangementTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassification]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification] ON [dbo].[ArrangementXClassification]
     (
      [ArrangementXClassificationID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_ActiveFlagId] ON [dbo].[ArrangementXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_EffectiveFromDate] ON [dbo].[ArrangementXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_EffectiveToDate] ON [dbo].[ArrangementXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_EnterpriseId] ON [dbo].[ArrangementXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_SystemId] ON [dbo].[ArrangementXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_ActiveFlagId] ON [dbo].[ArrangementXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ArrangementXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_EffectiveToDate] ON [dbo].[ArrangementXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_EnterpriseId] ON [dbo].[ArrangementXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_SystemId] ON [dbo].[ArrangementXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedParty_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_ActiveFlagId] ON [dbo].[ArrangementXInvolvedParty]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedParty_effectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_effectiveFromDate] ON [dbo].[ArrangementXInvolvedParty]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedParty_effectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_effectiveToDate] ON [dbo].[ArrangementXInvolvedParty]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedParty_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_EnterpriseId] ON [dbo].[ArrangementXInvolvedParty]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedParty_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_SystemId] ON [dbo].[ArrangementXInvolvedParty]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_ActiveFlagId] ON [dbo].[ArrangementXInvolvedPartySecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_EffectiveFromDate] ON [dbo].[ArrangementXInvolvedPartySecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_EffectiveToDate] ON [dbo].[ArrangementXInvolvedPartySecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_EnterpriseId] ON [dbo].[ArrangementXInvolvedPartySecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_SystemId] ON [dbo].[ArrangementXInvolvedPartySecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProduct_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_ActiveFlagId] ON [dbo].[ArrangementXProduct]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProduct_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_EffectiveFromDate] ON [dbo].[ArrangementXProduct]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProduct_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_EffectiveToDate] ON [dbo].[ArrangementXProduct]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProduct_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_EnterpriseId] ON [dbo].[ArrangementXProduct]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProduct_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_SystemId] ON [dbo].[ArrangementXProduct]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_ActiveFlagId] ON [dbo].[ArrangementXProductSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_EffectiveFromDate] ON [dbo].[ArrangementXProductSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_EffectiveToDate] ON [dbo].[ArrangementXProductSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_EnterpriseId] ON [dbo].[ArrangementXProductSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_SystemId] ON [dbo].[ArrangementXProductSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_ActiveFlagId] ON [dbo].[ArrangementXResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_EffectiveFromDate] ON [dbo].[ArrangementXResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_EffectiveToDate] ON [dbo].[ArrangementXResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_EnterpriseId] ON [dbo].[ArrangementXResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_SystemId] ON [dbo].[ArrangementXResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_ActiveFlagId] ON [dbo].[ArrangementXResourceItemSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_EffectiveFromDate] ON [dbo].[ArrangementXResourceItemSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_EffectiveToDate] ON [dbo].[ArrangementXResourceItemSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_EnterpriseId] ON [dbo].[ArrangementXResourceItemSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_SystemId] ON [dbo].[ArrangementXResourceItemSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Classification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_ActiveFlagId] ON [dbo].[Classification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Classification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_EffectiveFromDate] ON [dbo].[Classification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Classification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_EffectiveToDate] ON [dbo].[Classification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Classification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_EnterpriseId] ON [dbo].[Classification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Classification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_SystemId] ON [dbo].[Classification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConcept_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_ActiveFlagId] ON [dbo].[ClassificationDataConcept]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConcept_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_EffectiveFromDate] ON [dbo].[ClassificationDataConcept]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConcept_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_EffectiveToDate] ON [dbo].[ClassificationDataConcept]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConcept_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_EnterpriseId] ON [dbo].[ClassificationDataConcept]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConcept_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_SystemId] ON [dbo].[ClassificationDataConcept]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_ActiveFlagId] ON [dbo].[ClassificationDataConceptSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_EffectiveFromDate] ON [dbo].[ClassificationDataConceptSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_EffectiveToDate] ON [dbo].[ClassificationDataConceptSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_EnterpriseId] ON [dbo].[ClassificationDataConceptSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_SystemId] ON [dbo].[ClassificationDataConceptSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_ActiveFlagId] ON [dbo].[ClassificationDataConceptXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_EffectiveFromDate] ON [dbo].[ClassificationDataConceptXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_EffectiveToDate] ON [dbo].[ClassificationDataConceptXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_EnterpriseId] ON [dbo].[ClassificationDataConceptXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_SystemId] ON [dbo].[ClassificationDataConceptXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_ActiveFlagId] ON [dbo].[ClassificationDataConceptXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ClassificationDataConceptXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveToDate] ON [dbo].[ClassificationDataConceptXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_EnterpriseId] ON [dbo].[ClassificationDataConceptXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_SystemId] ON [dbo].[ClassificationDataConceptXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem] ON [dbo].[ClassificationDataConceptXResourceItem]
     (
      [ClassificationID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_ActiveFlagId] ON [dbo].[ClassificationDataConceptXResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_EffectiveFromDate] ON [dbo].[ClassificationDataConceptXResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_EffectiveToDate] ON [dbo].[ClassificationDataConceptXResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_EnterpriseId] ON [dbo].[ClassificationDataConceptXResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_SystemId] ON [dbo].[ClassificationDataConceptXResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_ActiveFlagId] ON [dbo].[ClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_EffectiveToDate] ON [dbo].[ClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_EnterpriseId] ON [dbo].[ClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_SystemId] ON [dbo].[ClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_ActiveFlagId] ON [dbo].[ClassificationXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_EffectiveFromDate] ON [dbo].[ClassificationXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_EffectiveToDate] ON [dbo].[ClassificationXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_EnterpriseId] ON [dbo].[ClassificationXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_SystemId] ON [dbo].[ClassificationXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_ActiveFlagId] ON [dbo].[ClassificationXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ClassificationXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_EffectiveToDate] ON [dbo].[ClassificationXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_EnterpriseId] ON [dbo].[ClassificationXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_SystemId] ON [dbo].[ClassificationXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_ActiveFlagId] ON [dbo].[ClassificationXResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_EffectiveFromDate] ON [dbo].[ClassificationXResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_EffectiveToDate] ON [dbo].[ClassificationXResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_EnterpriseId] ON [dbo].[ClassificationXResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_SystemId] ON [dbo].[ClassificationXResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_ActiveFlagId] ON [dbo].[ClassificationXResourceItemSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_EffectiveFromDate] ON [dbo].[ClassificationXResourceItemSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_EffectiveToDate] ON [dbo].[ClassificationXResourceItemSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_EnterpriseId] ON [dbo].[ClassificationXResourceItemSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_SystemId] ON [dbo].[ClassificationXResourceItemSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Enterprise_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Enterprise_EffectiveFromDate] ON [dbo].[Enterprise]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Enterprise_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Enterprise_EffectiveToDate] ON [dbo].[Enterprise]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_ActiveFlagId] ON [dbo].[EnterpriseSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_EffectiveFromDate] ON [dbo].[EnterpriseSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseSecurityToken_EffectiveToId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_EffectiveToId] ON [dbo].[EnterpriseSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_EnterpriseId] ON [dbo].[EnterpriseSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_SystemId] ON [dbo].[EnterpriseSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_ActiveFlagId] ON [dbo].[EnterpriseXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_EffectiveFromDate] ON [dbo].[EnterpriseXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_EffectiveToDate] ON [dbo].[EnterpriseXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_EnterpriseId] ON [dbo].[EnterpriseXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EnterpriseXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_SystemId] ON [dbo].[EnterpriseXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Event_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_ActiveFlagId] ON [dbo].[Event]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Event_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_EffectiveFromDate] ON [dbo].[Event]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Event_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_EffectiveToDate] ON [dbo].[Event]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Event_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_EnterpriseId] ON [dbo].[Event]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Event_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_SystemId] ON [dbo].[Event]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_ActiveFlagId] ON [dbo].[EventSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_EffectiveFromDate] ON [dbo].[EventSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_EffectiveToDate] ON [dbo].[EventSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_EnterpriseId] ON [dbo].[EventSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_SystemId] ON [dbo].[EventSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_ActiveFlagId] ON [dbo].[EventType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_EffectiveFromDate] ON [dbo].[EventType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_EffectiveToDate] ON [dbo].[EventType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_EnterpriseId] ON [dbo].[EventType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_SystemId] ON [dbo].[EventType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventTypesSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_ActiveFlagId] ON [dbo].[EventTypesSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventTypesSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_EffectiveFromDate] ON [dbo].[EventTypesSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventTypesSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_EffectiveToDate] ON [dbo].[EventTypesSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventTypesSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_EnterpriseId] ON [dbo].[EventTypesSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventTypesSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_SystemId] ON [dbo].[EventTypesSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddress_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_ActiveFlagId] ON [dbo].[EventXAddress]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddress_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_EffectiveFromDate] ON [dbo].[EventXAddress]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddress_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_EffectiveToDate] ON [dbo].[EventXAddress]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddress_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_EnterpriseId] ON [dbo].[EventXAddress]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddress_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_SystemId] ON [dbo].[EventXAddress]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddressSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_ActiveFlagId] ON [dbo].[EventXAddressSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddressSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_EffectiveFromDate] ON [dbo].[EventXAddressSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddressSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_EffectiveToDate] ON [dbo].[EventXAddressSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddressSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_EnterpriseId] ON [dbo].[EventXAddressSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXAddressSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_SystemId] ON [dbo].[EventXAddressSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangement_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_ActiveFlagId] ON [dbo].[EventXArrangement]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangement_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_EffectiveFromDate] ON [dbo].[EventXArrangement]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangement_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_EffectiveToDate] ON [dbo].[EventXArrangement]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangement_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_EnterpriseId] ON [dbo].[EventXArrangement]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangement_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_SystemId] ON [dbo].[EventXArrangement]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_ActiveFlagId] ON [dbo].[EventXArrangementsSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_EffectiveFromDate] ON [dbo].[EventXArrangementsSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_EffectiveToDate] ON [dbo].[EventXArrangementsSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_EnterpriseId] ON [dbo].[EventXArrangementsSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_SystemId] ON [dbo].[EventXArrangementsSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_ActiveFlagId] ON [dbo].[EventXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_EffectiveFromDate] ON [dbo].[EventXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_EffectiveToDate] ON [dbo].[EventXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_EnterpriseId] ON [dbo].[EventXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_SystemId] ON [dbo].[EventXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_ActiveFlagId] ON [dbo].[EventXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[EventXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_EffectiveToDate] ON [dbo].[EventXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_EnterpriseId] ON [dbo].[EventXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_SystemId] ON [dbo].[EventXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_ActiveFlagId] ON [dbo].[EventXEventType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_EffectiveFromDate] ON [dbo].[EventXEventType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_EffectiveToDate] ON [dbo].[EventXEventType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_EnterpriseId] ON [dbo].[EventXEventType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_SystemId] ON [dbo].[EventXEventType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_ActiveFlagId] ON [dbo].[EventXEventTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_EffectiveFromDate] ON [dbo].[EventXEventTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_EffectiveToDate] ON [dbo].[EventXEventTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_EnterpriseId] ON [dbo].[EventXEventTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_SystemId] ON [dbo].[EventXEventTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeography_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_ActiveFlagId] ON [dbo].[EventXGeography]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeography_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_EffectiveFromDate] ON [dbo].[EventXGeography]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeography_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_EffectiveToDate] ON [dbo].[EventXGeography]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeography_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_EnterpriseId] ON [dbo].[EventXGeography]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeography_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_SystemId] ON [dbo].[EventXGeography]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeographySecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_ActiveFlagId] ON [dbo].[EventXGeographySecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeographySecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_EffectiveFromDate] ON [dbo].[EventXGeographySecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeographySecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_EffectiveToDate] ON [dbo].[EventXGeographySecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeographySecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_EnterpriseId] ON [dbo].[EventXGeographySecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXGeographySecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_SystemId] ON [dbo].[EventXGeographySecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedParty_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_ActiveFlagId] ON [dbo].[EventXInvolvedParty]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedParty_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_EffectiveFromDate] ON [dbo].[EventXInvolvedParty]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedParty_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_EffectiveToDate] ON [dbo].[EventXInvolvedParty]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedParty_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_EnterpriseId] ON [dbo].[EventXInvolvedParty]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedParty_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_SystemId] ON [dbo].[EventXInvolvedParty]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_ActiveFlagId] ON [dbo].[EventXInvolvedPartySecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_EffectiveFromDate] ON [dbo].[EventXInvolvedPartySecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_EffectiveToDate] ON [dbo].[EventXInvolvedPartySecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_EnterpriseId] ON [dbo].[EventXInvolvedPartySecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_SystemId] ON [dbo].[EventXInvolvedPartySecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProduct_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_ActiveFlagId] ON [dbo].[EventXProduct]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProduct_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_EffectiveFromDate] ON [dbo].[EventXProduct]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProduct_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_EffectiveToDate] ON [dbo].[EventXProduct]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProduct_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_EnterpriseId] ON [dbo].[EventXProduct]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProduct_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_SystemId] ON [dbo].[EventXProduct]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProductSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_ActiveFlagId] ON [dbo].[EventXProductSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProductSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_EffectiveFromDate] ON [dbo].[EventXProductSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProductSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_EffectiveToDate] ON [dbo].[EventXProductSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProductSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_EnterpriseId] ON [dbo].[EventXProductSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXProductSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_SystemId] ON [dbo].[EventXProductSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_ActiveFlagId] ON [dbo].[EventXResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_EffectiveFromDate] ON [dbo].[EventXResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_EffectiveToDate] ON [dbo].[EventXResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_EnterpriseId] ON [dbo].[EventXResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_SystemId] ON [dbo].[EventXResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_ActiveFlagId] ON [dbo].[EventXResourceItemSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_EffectiveFromDate] ON [dbo].[EventXResourceItemSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_EffectiveToDate] ON [dbo].[EventXResourceItemSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_EnterpriseId] ON [dbo].[EventXResourceItemSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_SystemId] ON [dbo].[EventXResourceItemSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Geography_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_ActiveFlagId] ON [dbo].[Geography]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Geography_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_EffectiveFromDate] ON [dbo].[Geography]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Geography_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_EffectiveToDate] ON [dbo].[Geography]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Geography_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_EnterpriseId] ON [dbo].[Geography]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Geography_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_SystemId] ON [dbo].[Geography]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographySecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_ActiveFlagId] ON [dbo].[GeographySecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographySecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_EffectiveFromDate] ON [dbo].[GeographySecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographySecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_EffectiveToDate] ON [dbo].[GeographySecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographySecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_EnterpriseId] ON [dbo].[GeographySecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographySecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_SystemId] ON [dbo].[GeographySecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_ActiveFlagId] ON [dbo].[GeographyXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_EffectiveFromDate] ON [dbo].[GeographyXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_EffectiveToDate] ON [dbo].[GeographyXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_EnterpriseId] ON [dbo].[GeographyXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_SystemId] ON [dbo].[GeographyXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_ActiveFlagId] ON [dbo].[GeographyXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[GeographyXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_EffectiveToDate] ON [dbo].[GeographyXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_EnterpriseId] ON [dbo].[GeographyXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_SystemId] ON [dbo].[GeographyXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeography_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_ActiveFlagId] ON [dbo].[GeographyXGeography]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeography_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_EffectiveFromDate] ON [dbo].[GeographyXGeography]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeography_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_EffectiveToDate] ON [dbo].[GeographyXGeography]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeography_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_EnterpriseId] ON [dbo].[GeographyXGeography]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeography_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_SystemId] ON [dbo].[GeographyXGeography]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_ActiveFlagId] ON [dbo].[GeographyXGeographySecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_EffectiveFromDate] ON [dbo].[GeographyXGeographySecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_EffectiveToDate] ON [dbo].[GeographyXGeographySecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_EnterpriseId] ON [dbo].[GeographyXGeographySecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_SystemId] ON [dbo].[GeographyXGeographySecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_ActiveFlagId] ON [dbo].[GeographyXResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_EffectiveFromDate] ON [dbo].[GeographyXResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_EffectiveToDate] ON [dbo].[GeographyXResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_EnterpriseId] ON [dbo].[GeographyXResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_SystemId] ON [dbo].[GeographyXResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_ActiveFlagId] ON [dbo].[GeographyXResourceItemSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_EffectiveFromDate] ON [dbo].[GeographyXResourceItemSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_EffectiveToDate] ON [dbo].[GeographyXResourceItemSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_EnterpriseId] ON [dbo].[GeographyXResourceItemSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_SystemId] ON [dbo].[GeographyXResourceItemSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedParty_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_ActiveFlagId] ON [dbo].[InvolvedParty]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedParty_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_EffectiveFromDate] ON [dbo].[InvolvedParty]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedParty_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_EffectiveToDate] ON [dbo].[InvolvedParty]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedParty_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_EnterpriseId] ON [dbo].[InvolvedParty]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedParty_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_SystemId] ON [dbo].[InvolvedParty]
     (
      [SystemID] ASC
@@ -5627,1186 +6134,1424 @@ CREATE NONCLUSTERED INDEX [IX_InvolvedParty_SystemId] ON [dbo].[InvolvedParty]
 GO
 SET ANSI_PADDING ON
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationType]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType] ON [dbo].[InvolvedPartyIdentificationType]
     (
-     [InvolvedPartyIdentificationName] ASC
+     [InvolvedPartyIdentificationName] ASC,
+     [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_ActiveFlagId] ON [dbo].[InvolvedPartyIdentificationType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_EffectiveFromDate] ON [dbo].[InvolvedPartyIdentificationType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_EffectiveToDate] ON [dbo].[InvolvedPartyIdentificationType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_EnterpriseId] ON [dbo].[InvolvedPartyIdentificationType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_SystemId] ON [dbo].[InvolvedPartyIdentificationType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyIdentificationTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyIdentificationTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyIdentificationTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyIdentificationTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_SystemId] ON [dbo].[InvolvedPartyIdentificationTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_ActiveFlagId] ON [dbo].[InvolvedPartyNameType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_EffectiveFromDate] ON [dbo].[InvolvedPartyNameType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_EffectiveToDate] ON [dbo].[InvolvedPartyNameType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_EnterpriseId] ON [dbo].[InvolvedPartyNameType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_SystemId] ON [dbo].[InvolvedPartyNameType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyNameTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyNameTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyNameTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyNameTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_SystemId] ON [dbo].[InvolvedPartyNameTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_ActiveFlagId] ON [dbo].[InvolvedPartyNonOrganic]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_EffectiveFromDate] ON [dbo].[InvolvedPartyNonOrganic]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_EffectiveToDate] ON [dbo].[InvolvedPartyNonOrganic]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_EnterpriseId] ON [dbo].[InvolvedPartyNonOrganic]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_SystemId] ON [dbo].[InvolvedPartyNonOrganic]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyNonOrganicSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyNonOrganicSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyNonOrganicSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyNonOrganicSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_SystemId] ON [dbo].[InvolvedPartyNonOrganicSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganic_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_ActiveFlagId] ON [dbo].[InvolvedPartyOrganic]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganic_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_EffectiveFromDate] ON [dbo].[InvolvedPartyOrganic]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganic_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_EffectiveToDate] ON [dbo].[InvolvedPartyOrganic]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganic_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_EnterpriseId] ON [dbo].[InvolvedPartyOrganic]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganic_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_SystemId] ON [dbo].[InvolvedPartyOrganic]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyOrganicSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyOrganicSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyOrganicSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyOrganicSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_SystemId] ON [dbo].[InvolvedPartyOrganicSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_ActiveFlagId] ON [dbo].[InvolvedPartyOrganicType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_EffectiveFromDate] ON [dbo].[InvolvedPartyOrganicType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_EffectiveToDate] ON [dbo].[InvolvedPartyOrganicType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_EnterpriseId] ON [dbo].[InvolvedPartyOrganicType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_SystemId] ON [dbo].[InvolvedPartyOrganicType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyOrganicTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyOrganicTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyOrganicTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyOrganicTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_SystemId] ON [dbo].[InvolvedPartyOrganicTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartySecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartySecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartySecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartySecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_EnterpriseId] ON [dbo].[InvolvedPartySecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartySecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_SystemId] ON [dbo].[InvolvedPartySecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_ActiveFlagId] ON [dbo].[InvolvedPartyType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_EffectiveFromDate] ON [dbo].[InvolvedPartyType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_EffectiveToDate] ON [dbo].[InvolvedPartyType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_EnterpriseId] ON [dbo].[InvolvedPartyType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_SystemId] ON [dbo].[InvolvedPartyType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_SystemId] ON [dbo].[InvolvedPartyTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddress_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_ActiveFlagId] ON [dbo].[InvolvedPartyXAddress]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddress_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_EffectiveFromDate] ON [dbo].[InvolvedPartyXAddress]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddress_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_EffectiveToDate] ON [dbo].[InvolvedPartyXAddress]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddress_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_EnterpriseId] ON [dbo].[InvolvedPartyXAddress]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddress_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_SystemId] ON [dbo].[InvolvedPartyXAddress]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyXAddressSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyXAddressSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyXAddressSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyXAddressSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_SystemId] ON [dbo].[InvolvedPartyXAddressSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_ActiveFlagId] ON [dbo].[InvolvedPartyXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_EffectiveFromDate] ON [dbo].[InvolvedPartyXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_EffectiveToDate] ON [dbo].[InvolvedPartyXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_EnterpriseId] ON [dbo].[InvolvedPartyXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_SystemId] ON [dbo].[InvolvedPartyXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_SystemId] ON [dbo].[InvolvedPartyXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_ActiveFlagId] ON [dbo].[InvolvedPartyXInvolvedParty]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_EffectiveFromDate] ON [dbo].[InvolvedPartyXInvolvedParty]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_EffectiveToDate] ON [dbo].[InvolvedPartyXInvolvedParty]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_EnterpriseId] ON [dbo].[InvolvedPartyXInvolvedParty]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_SystemId] ON [dbo].[InvolvedPartyXInvolvedParty]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_ActiveFlagId] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveFromDate] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveToDate] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_EnterpriseId] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_SystemId] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_SystemId] ON [dbo].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_ActiveFlagId] ON [dbo].[InvolvedPartyXInvolvedPartyNameType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveFromDate] ON [dbo].[InvolvedPartyXInvolvedPartyNameType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveToDate] ON [dbo].[InvolvedPartyXInvolvedPartyNameType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_EnterpriseId] ON [dbo].[InvolvedPartyXInvolvedPartyNameType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_SystemId] ON [dbo].[InvolvedPartyXInvolvedPartyNameType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_SystemId] ON [dbo].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyXInvolvedPartySecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyXInvolvedPartySecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyXInvolvedPartySecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyXInvolvedPartySecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_SystemId] ON [dbo].[InvolvedPartyXInvolvedPartySecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_ActiveFlagId] ON [dbo].[InvolvedPartyXInvolvedPartyType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_EffectiveFromDate] ON [dbo].[InvolvedPartyXInvolvedPartyType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_EffectiveToDate] ON [dbo].[InvolvedPartyXInvolvedPartyType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_EnterpriseId] ON [dbo].[InvolvedPartyXInvolvedPartyType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_SystemId] ON [dbo].[InvolvedPartyXInvolvedPartyType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_SystemId] ON [dbo].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProduct_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_ActiveFlagId] ON [dbo].[InvolvedPartyXProduct]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProduct_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_EffectiveFromDate] ON [dbo].[InvolvedPartyXProduct]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProduct_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_EffectiveToDate] ON [dbo].[InvolvedPartyXProduct]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProduct_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_EnterpriseId] ON [dbo].[InvolvedPartyXProduct]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProduct_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_SystemId] ON [dbo].[InvolvedPartyXProduct]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyXProductSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyXProductSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyXProductSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyXProductSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_SystemId] ON [dbo].[InvolvedPartyXProductSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_ActiveFlagId] ON [dbo].[InvolvedPartyXResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_EffectiveFromDate] ON [dbo].[InvolvedPartyXResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_EffectiveToDate] ON [dbo].[InvolvedPartyXResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_EnterpriseId] ON [dbo].[InvolvedPartyXResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_SystemId] ON [dbo].[InvolvedPartyXResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_ActiveFlagId] ON [dbo].[InvolvedPartyXResourceItemSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveFromDate] ON [dbo].[InvolvedPartyXResourceItemSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveToDate] ON [dbo].[InvolvedPartyXResourceItemSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_EnterpriseId] ON [dbo].[InvolvedPartyXResourceItemSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_SystemId] ON [dbo].[InvolvedPartyXResourceItemSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Product_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_ActiveFlagId] ON [dbo].[Product]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Product_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_EffectiveFromDate] ON [dbo].[Product]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Product_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_EffectiveToDate] ON [dbo].[Product]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Product_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_EnterpriseId] ON [dbo].[Product]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Product_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_SystemId] ON [dbo].[Product]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_ActiveFlagId] ON [dbo].[ProductSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_EffectiveFromDate] ON [dbo].[ProductSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_EffectiveToDate] ON [dbo].[ProductSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_EnterpriseId] ON [dbo].[ProductSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_SystemId] ON [dbo].[ProductSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_ActiveFlagId] ON [dbo].[ProductXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_EffectiveFromDate] ON [dbo].[ProductXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_EffectiveToDate] ON [dbo].[ProductXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_EnterpriseId] ON [dbo].[ProductXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_SystemId] ON [dbo].[ProductXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_ActiveFlagId] ON [dbo].[ProductXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ProductXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_EffectiveToDate] ON [dbo].[ProductXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_EnterpriseId] ON [dbo].[ProductXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_SystemId] ON [dbo].[ProductXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProduct_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_ActiveFlagId] ON [dbo].[ProductXProduct]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProduct_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_EffectiveFromDate] ON [dbo].[ProductXProduct]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProduct_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_EffectiveToDate] ON [dbo].[ProductXProduct]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProduct_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_EnterpriseId] ON [dbo].[ProductXProduct]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProduct_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_SystemId] ON [dbo].[ProductXProduct]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_ActiveFlagId] ON [dbo].[ProductXProductSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_EffectiveFromDate] ON [dbo].[ProductXProductSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_EffectiveToDate] ON [dbo].[ProductXProductSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_EnterpriseId] ON [dbo].[ProductXProductSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_SystemId] ON [dbo].[ProductXProductSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductType_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductType_ActiveFlagId] ON [dbo].[ProductXProductType]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductType_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductType_EffectiveFromDate] ON [dbo].[ProductXProductType]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductType_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductType_EffectiveToDate] ON [dbo].[ProductXProductType]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductType_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductType_EnterpriseId] ON [dbo].[ProductXProductType]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductType_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductType_SystemId] ON [dbo].[ProductXProductType]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductTypeSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductTypeSecurityToken_ActiveFlagId] ON [dbo].[ProductXProductTypeSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductTypeSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductTypeSecurityToken_EffectiveFromDate] ON [dbo].[ProductXProductTypeSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductTypeSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductTypeSecurityToken_EffectiveToDate] ON [dbo].[ProductXProductTypeSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductTypeSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductTypeSecurityToken_EnterpriseId] ON [dbo].[ProductXProductTypeSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXProductTypeSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductTypeSecurityToken_SystemId] ON [dbo].[ProductXProductTypeSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_ActiveFlagId] ON [dbo].[ProductXResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_EffectiveFromDate] ON [dbo].[ProductXResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_EffectiveToDate] ON [dbo].[ProductXResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_EnterpriseId] ON [dbo].[ProductXResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_SystemId] ON [dbo].[ProductXResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_ActiveFlagId] ON [dbo].[ProductXResourceItemSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_EffectiveFromDate] ON [dbo].[ProductXResourceItemSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_EffectiveToDate] ON [dbo].[ProductXResourceItemSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_EnterpriseId] ON [dbo].[ProductXResourceItemSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_SystemId] ON [dbo].[ProductXResourceItemSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItem_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_ActiveFlagId] ON [dbo].[ResourceItem]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItem_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_EffectiveFromDate] ON [dbo].[ResourceItem]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItem_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_EffectiveToDate] ON [dbo].[ResourceItem]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItem_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_EnterpriseId] ON [dbo].[ResourceItem]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItem_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_SystemId] ON [dbo].[ResourceItem]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemData_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_ActiveFlagId] ON [dbo].[ResourceItemData]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemData_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_EffectiveFromDate] ON [dbo].[ResourceItemData]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemData_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_EffectiveToDate] ON [dbo].[ResourceItemData]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemData_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_EnterpriseId] ON [dbo].[ResourceItemData]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemData_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_SystemId] ON [dbo].[ResourceItemData]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_ActiveFlagId] ON [dbo].[ResourceItemDataSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_EffectiveFromDate] ON [dbo].[ResourceItemDataSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_EffectiveToDate] ON [dbo].[ResourceItemDataSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_EnterpriseId] ON [dbo].[ResourceItemDataSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_SystemId] ON [dbo].[ResourceItemDataSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_ActiveFlagId] ON [dbo].[ResourceItemDataXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_EffectiveFromDate] ON [dbo].[ResourceItemDataXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_EffectiveToDate] ON [dbo].[ResourceItemDataXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_EnterpriseId] ON [dbo].[ResourceItemDataXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_SystemId] ON [dbo].[ResourceItemDataXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_ActiveFlagId] ON [dbo].[ResourceItemDataXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ResourceItemDataXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_EffectiveToDate] ON [dbo].[ResourceItemDataXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_EnterpriseId] ON [dbo].[ResourceItemDataXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_SystemId] ON [dbo].[ResourceItemDataXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_ActiveFlagId] ON [dbo].[ResourceItemSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_EffectiveFromDate] ON [dbo].[ResourceItemSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_EffectiveToDate] ON [dbo].[ResourceItemSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_EnterpriseId] ON [dbo].[ResourceItemSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_SystemId] ON [dbo].[ResourceItemSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_ActiveFlagId] ON [dbo].[ResourceItemXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_EffectiveFromDate] ON [dbo].[ResourceItemXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_EffectiveToDate] ON [dbo].[ResourceItemXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_EnterpriseId] ON [dbo].[ResourceItemXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_SystemId] ON [dbo].[ResourceItemXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_ActiveFlagId] ON [dbo].[ResourceItemXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ResourceItemXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_EffectiveToDate] ON [dbo].[ResourceItemXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_EnterpriseId] ON [dbo].[ResourceItemXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_SystemId] ON [dbo].[ResourceItemXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityHierarchy_ParentID]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityHierarchy_ParentID] ON [dbo].[SecurityHierarchy]
     (
      [ParentID] ASC
@@ -6814,147 +7559,176 @@ CREATE NONCLUSTERED INDEX [IX_SecurityHierarchy_ParentID] ON [dbo].[SecurityHier
 GO
 SET ANSI_PADDING ON
 GO
+/****** Object:  Index [IX_SecurityHierarchyName]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityHierarchyName] ON [dbo].[SecurityHierarchy]
     (
      [Name] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityHierarchyParents]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityHierarchyParents] ON [dbo].[SecurityHierarchyParents]
     (
      [id] DESC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [UX_SecurityHierarchyParents]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [UX_SecurityHierarchyParents] ON [dbo].[SecurityHierarchyParents]
     (
      [id] DESC,
      [value] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_ActiveFlagId] ON [dbo].[SecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_EffectiveFromDate] ON [dbo].[SecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_EffectiveToDate] ON [dbo].[SecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_EnterpriseId] ON [dbo].[SecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_SystemId] ON [dbo].[SecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenAccess_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_ActiveFlagId] ON [dbo].[SecurityTokensSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenAccess_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_EffectiveFromDate] ON [dbo].[SecurityTokensSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenAccess_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_EffectiveToDate] ON [dbo].[SecurityTokensSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenAccess_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_EnterpriseId] ON [dbo].[SecurityTokensSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenAccess_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_SystemId] ON [dbo].[SecurityTokensSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_ActiveFlagId] ON [dbo].[SecurityTokenXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_EffectiveFromDate] ON [dbo].[SecurityTokenXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_EffectiveToDate] ON [dbo].[SecurityTokenXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_EnterpriseId] ON [dbo].[SecurityTokenXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_SystemId] ON [dbo].[SecurityTokenXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_ActiveFlagId] ON [dbo].[SecurityTokenXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[SecurityTokenXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_EffectiveToDate] ON [dbo].[SecurityTokenXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_EnterpriseId] ON [dbo].[SecurityTokenXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_SystemId] ON [dbo].[SecurityTokenXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_ActiveFlagId] ON [dbo].[SecurityTokenXSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_EffectiveFromDate] ON [dbo].[SecurityTokenXSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_EffectiveToDate] ON [dbo].[SecurityTokenXSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_EnterpriseId] ON [dbo].[SecurityTokenXSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_SystemId] ON [dbo].[SecurityTokenXSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [UX_SecurityTokenXSecurityToken]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [UX_SecurityTokenXSecurityToken] ON [dbo].[SecurityTokenXSecurityToken]
     (
      [ClassificationID] ASC,
@@ -6962,201 +7736,241 @@ CREATE UNIQUE NONCLUSTERED INDEX [UX_SecurityTokenXSecurityToken] ON [dbo].[Secu
      [ChildSecurityTokenID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Systems_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_ActiveFlagId] ON [dbo].[Systems]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Systems_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_EffectiveFromDate] ON [dbo].[Systems]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Systems_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_EffectiveToDate] ON [dbo].[Systems]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Systems_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_EnterpriseId] ON [dbo].[Systems]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_Systems_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_SystemId] ON [dbo].[Systems]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_ActiveFlagId] ON [dbo].[SystemsSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_EffectiveFromDate] ON [dbo].[SystemsSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_EffectiveToDate] ON [dbo].[SystemsSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_EnterpriseId] ON [dbo].[SystemsSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_SystemId] ON [dbo].[SystemsSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_ActiveFlagId] ON [dbo].[SystemXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_EffectiveFromDate] ON [dbo].[SystemXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_EffectiveToDate] ON [dbo].[SystemXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_EnterpriseId] ON [dbo].[SystemXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_SystemId] ON [dbo].[SystemXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_ActiveFlagId] ON [dbo].[SystemXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[SystemXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_EffectiveToDate] ON [dbo].[SystemXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_EnterpriseId] ON [dbo].[SystemXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_SystemId] ON [dbo].[SystemXClassificationSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNo_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNo_ActiveFlagId] ON [dbo].[YesNo]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNo_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNo_EffectiveFromDate] ON [dbo].[YesNo]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNo_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNo_EffectiveToDate] ON [dbo].[YesNo]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNo_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNo_EnterpriseId] ON [dbo].[YesNo]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNo_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNo_SystemId] ON [dbo].[YesNo]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoSecurityToken_ActiveFlagId] ON [dbo].[YesNoSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoSecurityToken_EffectiveFromDate] ON [dbo].[YesNoSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoSecurityToken_EffectiveToDate] ON [dbo].[YesNoSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoSecurityToken_EnterpriseId] ON [dbo].[YesNoSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoSecurityToken_SystemId] ON [dbo].[YesNoSecurityToken]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassification_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassification_ActiveFlagId] ON [dbo].[YesNoXClassification]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassification_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassification_EffectiveFromDate] ON [dbo].[YesNoXClassification]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassification_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassification_EffectiveToDate] ON [dbo].[YesNoXClassification]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassification_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassification_EnterpriseId] ON [dbo].[YesNoXClassification]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassification_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassification_SystemId] ON [dbo].[YesNoXClassification]
     (
      [SystemID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassificationSecurityToken_ActiveFlagId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassificationSecurityToken_ActiveFlagId] ON [dbo].[YesNoXClassificationSecurityToken]
     (
      [ActiveFlagID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[YesNoXClassificationSecurityToken]
     (
      [EffectiveFromDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassificationSecurityToken_EffectiveToDate]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassificationSecurityToken_EffectiveToDate] ON [dbo].[YesNoXClassificationSecurityToken]
     (
      [EffectiveToDate] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassificationSecurityToken_EnterpriseId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassificationSecurityToken_EnterpriseId] ON [dbo].[YesNoXClassificationSecurityToken]
     (
      [EnterpriseID] ASC
         )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+/****** Object:  Index [IX_YesNoXClassificationSecurityToken_SystemId]    Script Date: 2019/09/01 20:47:46 ******/
 CREATE NONCLUSTERED INDEX [IX_YesNoXClassificationSecurityToken_SystemId] ON [dbo].[YesNoXClassificationSecurityToken]
     (
      [SystemID] ASC
@@ -10031,6 +10845,16 @@ ALTER TABLE [dbo].[ArrangementXArrangementType]  WITH CHECK ADD  CONSTRAINT [FK_
 GO
 ALTER TABLE [dbo].[ArrangementXArrangementType] CHECK CONSTRAINT [FK_ArrangementXArrangementType_ArrangementType]
 GO
+ALTER TABLE [dbo].[ArrangementXArrangementType]  WITH CHECK ADD  CONSTRAINT [FK_ArrangementXArrangementType_ArrangementXArrangementType] FOREIGN KEY([ArrangementXArrangementTypeID])
+    REFERENCES [dbo].[ArrangementXArrangementType] ([ArrangementXArrangementTypeID])
+GO
+ALTER TABLE [dbo].[ArrangementXArrangementType] CHECK CONSTRAINT [FK_ArrangementXArrangementType_ArrangementXArrangementType]
+GO
+ALTER TABLE [dbo].[ArrangementXArrangementType]  WITH CHECK ADD  CONSTRAINT [FK_ArrangementXArrangementType_Classification] FOREIGN KEY([ClassificationID])
+    REFERENCES [dbo].[Classification] ([ClassificationID])
+GO
+ALTER TABLE [dbo].[ArrangementXArrangementType] CHECK CONSTRAINT [FK_ArrangementXArrangementType_Classification]
+GO
 ALTER TABLE [dbo].[ArrangementXArrangementType]  WITH CHECK ADD  CONSTRAINT [FK_ArrangementXArrangementType_OriginalSystems] FOREIGN KEY([OriginalSourceSystemID])
     REFERENCES [dbo].[Systems] ([SystemID])
 GO
@@ -11905,11 +12729,6 @@ ALTER TABLE [dbo].[InvolvedPartyNameTypeSecurityToken]  WITH CHECK ADD  CONSTRAI
 GO
 ALTER TABLE [dbo].[InvolvedPartyNameTypeSecurityToken] CHECK CONSTRAINT [FK_InvolvedPartyNameTypeSecurityToken_Enterprise]
 GO
-ALTER TABLE [dbo].[InvolvedPartyNameTypeSecurityToken]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyNameTypeSecurityTokens_InvolvedPartyNameType] FOREIGN KEY([InvolvedPartyNameTypeID])
-    REFERENCES [dbo].[InvolvedPartyNameType] ([InvolvedPartyNameTypeID])
-GO
-ALTER TABLE [dbo].[InvolvedPartyNameTypeSecurityToken] CHECK CONSTRAINT [FK_InvolvedPartyNameTypeSecurityTokens_InvolvedPartyNameType]
-GO
 ALTER TABLE [dbo].[InvolvedPartyNameTypeSecurityToken]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyNameTypeSecurityTokens_OriginalSystems] FOREIGN KEY([SystemID])
     REFERENCES [dbo].[Systems] ([SystemID])
 GO
@@ -12406,11 +13225,6 @@ ALTER TABLE [dbo].[InvolvedPartyXInvolvedPartyNameType]  WITH CHECK ADD  CONSTRA
     REFERENCES [dbo].[InvolvedParty] ([InvolvedPartyID])
 GO
 ALTER TABLE [dbo].[InvolvedPartyXInvolvedPartyNameType] CHECK CONSTRAINT [FK_InvolvedPartyXInvolvedPartyNameType_InvolvedParty]
-GO
-ALTER TABLE [dbo].[InvolvedPartyXInvolvedPartyNameType]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXInvolvedPartyNameType_InvolvedPartyType] FOREIGN KEY([InvolvedPartyNameTypeID])
-    REFERENCES [dbo].[InvolvedPartyNameType] ([InvolvedPartyNameTypeID])
-GO
-ALTER TABLE [dbo].[InvolvedPartyXInvolvedPartyNameType] CHECK CONSTRAINT [FK_InvolvedPartyXInvolvedPartyNameType_InvolvedPartyType]
 GO
 ALTER TABLE [dbo].[InvolvedPartyXInvolvedPartyNameType]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXInvolvedPartyNameType_Systems] FOREIGN KEY([OriginalSourceSystemID])
     REFERENCES [dbo].[Systems] ([SystemID])
@@ -13750,6 +14564,7 @@ ALTER TABLE [dbo].[YesNoXClassificationSecurityToken]  WITH CHECK ADD  CONSTRAIN
 GO
 ALTER TABLE [dbo].[YesNoXClassificationSecurityToken] CHECK CONSTRAINT [FK_YesNoXClassificationSecurityTokens_YesNoXClassification]
 GO
+/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionary]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13809,6 +14624,7 @@ END
 
 
 GO
+/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionaryForAllTables]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13839,6 +14655,7 @@ END
 
 
 GO
+/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionaryForTable]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13869,6 +14686,7 @@ END
 
 
 GO
+/****** Object:  StoredProcedure [dbo].[InsertHierarchyAll]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13885,6 +14703,7 @@ BEGIN
     select * from SecurityHierarchyView where id not in (select id from SecurityHierarchy);
 END
 GO
+/****** Object:  StoredProcedure [dbo].[MergeHierarchy]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13905,6 +14724,7 @@ BEGIN
     select * from SecurityHierarchyView where id = @id;
 END
 GO
+/****** Object:  StoredProcedure [dbo].[UpdateHierarchyAll]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13927,6 +14747,7 @@ BEGIN
     where sh.Path <> v.Path
 END
 GO
+/****** Object:  StoredProcedure [dbo].[UpdateSecurityHierarchy]    Script Date: 2019/09/01 20:47:46 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13955,6 +14776,46 @@ BEGIN
     from SecurityHierarchyParents
     where id = @id
       and value not in (select value from #tempshp);
+
+    insert into SecurityHierarchyParents (id,value)
+    select t.id,t.value
+    from #tempshp t
+             left join SecurityHierarchyParents shp
+                       on t.id = shp.id
+                           and t.value = shp.value
+    where shp.value is null
+
+    drop table #tempshp;
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[UpdateSecurityHierarchyAll]    Script Date: 2019/09/01 20:47:46 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[UpdateSecurityHierarchyAll]
+AS
+BEGIN
+
+    --DECLARE @id bigint;
+--SET @id = -9223372036854723203;
+--Insert Into SecurityHierarchyParents (id,value)
+    select sh.id, cs.value --SplitData
+    into #tempshp
+    from SecurityHierarchy sh (nolock)
+             cross apply STRING_SPLIT (sh.Path, '/') cs
+
+
+    delete
+    from SecurityHierarchyParents
+    where value not in (select value from #tempshp);
 
     insert into SecurityHierarchyParents (id,value)
     select t.id,t.value
@@ -14485,6 +15346,8 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to the arrangement' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ArrangementXArrangementType', @level2type=N'COLUMN',@level2name=N'ArrangementID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to arrangement type' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ArrangementXArrangementType', @level2type=N'COLUMN',@level2name=N'ArrangementTypeID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The classification of the arrangement type between Involved Party and the Arrangement' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ArrangementXArrangementType', @level2type=N'COLUMN',@level2name=N'ClassificationID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The application or system that is considered to be the primary source for the creation of the instance.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'ArrangementXArrangementType', @level2type=N'COLUMN',@level2name=N'OriginalSourceSystemID'
 GO
@@ -16525,8 +17388,6 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Individual Party Relationship With Individual Party Name Type' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'InvolvedPartyXInvolvedPartyNameType'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Links Name Types to Individual Parties' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'InvolvedPartyXInvolvedPartyNameType', @level2type=N'CONSTRAINT',@level2name=N'FK_InvolvedPartyXInvolvedPartyNameType_InvolvedParty'
-GO
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Link IP Relationship to Name Types' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'InvolvedPartyXInvolvedPartyNameType', @level2type=N'CONSTRAINT',@level2name=N'FK_InvolvedPartyXInvolvedPartyNameType_InvolvedPartyType'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to the security token' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'InvolvedPartyXInvolvedPartyNameTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'SecurityTokenID'
 GO

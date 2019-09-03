@@ -6,7 +6,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IActivi
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEventType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,7 +26,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "EventType")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class EventType
 		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, Long, EventTypesSecurityToken>

@@ -36,7 +36,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItem;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -57,7 +57,6 @@ import static javax.persistence.FetchType.*;
 @Entity
 @Table(name = "Classification")
 @XmlRootElement
-@Accessors(chain = true)
 @Access(FIELD)
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>

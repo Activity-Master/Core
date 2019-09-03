@@ -73,6 +73,7 @@ public class ArrangementsService
 		                                     .findByName(type.name())
 		                                     .inActiveRange(system.getEnterpriseID(), identityToken)
 		                                     .inDateRange()
+		                                     .withEnterprise(system.getEnterprise())
 		                                     .get();
 		if (exists.isEmpty())
 		{

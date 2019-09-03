@@ -7,7 +7,7 @@ package com.armineasy.activitymaster.activitymaster.db.hierarchies;
 
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.builders.SecurityHierarchyParentsQueryBuilder;
 import com.jwebmp.entityassist.BaseEntity;
-import lombok.experimental.Accessors;
+
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "SecurityHierarchyParents")
 @XmlRootElement
-@Accessors(chain = true)
+
 
 @Immutable
 public class SecurityHierarchyParents

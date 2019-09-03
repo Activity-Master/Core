@@ -7,7 +7,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IRelationshipVal
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.entityassist.SCDEntity;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -30,7 +30,7 @@ import java.util.UUID;
  * @since 09 Dec 2016
  */
 @MappedSuperclass
-@Accessors(chain = true)
+
 public abstract class WarehouseRelationshipTable<P extends WarehouseCoreTable,
 		                                                S extends WarehouseCoreTable,
 		                                                J extends WarehouseRelationshipTable<P, S, J, Q, I, ST,L,R>,

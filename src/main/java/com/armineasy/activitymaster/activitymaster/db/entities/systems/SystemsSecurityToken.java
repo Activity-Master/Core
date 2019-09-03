@@ -2,7 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.systems;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.builders.SystemsSecurityTokenQueryBuilder;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,7 +17,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "SystemsSecurityToken")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class SystemsSecurityToken
 		extends WarehouseSecurityTable<SystemsSecurityToken, SystemsSecurityTokenQueryBuilder, Long>

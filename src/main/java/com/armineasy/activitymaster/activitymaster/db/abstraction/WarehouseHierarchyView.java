@@ -2,7 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderHierarchyView;
 import com.jwebmp.entityassist.BaseEntity;
-import lombok.experimental.Accessors;
+
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 @XmlRootElement
-@Accessors(chain = true)
+
 @Immutable
 @MappedSuperclass
 public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends Serializable>

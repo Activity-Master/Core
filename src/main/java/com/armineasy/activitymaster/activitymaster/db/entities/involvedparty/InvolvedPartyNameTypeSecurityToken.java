@@ -2,7 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.involvedparty;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyNameTypeSecurityTokenQueryBuilder;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,7 +17,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "InvolvedPartyNameTypeSecurityToken")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class InvolvedPartyNameTypeSecurityToken
 		extends WarehouseSecurityTable<InvolvedPartyNameTypeSecurityToken, InvolvedPartyNameTypeSecurityTokenQueryBuilder, Long>

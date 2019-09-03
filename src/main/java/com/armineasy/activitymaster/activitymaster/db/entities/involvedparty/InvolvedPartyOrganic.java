@@ -4,7 +4,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseTable
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.builders.InvolvedPartyOrganicQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,7 +22,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "InvolvedPartyOrganic")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class InvolvedPartyOrganic
 		extends WarehouseTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, Long, InvolvedPartyOrganicSecurityToken>

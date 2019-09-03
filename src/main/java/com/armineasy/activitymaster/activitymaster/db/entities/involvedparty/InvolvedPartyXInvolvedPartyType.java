@@ -6,7 +6,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedPartyType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,7 +23,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "InvolvedPartyXInvolvedPartyType")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class InvolvedPartyXInvolvedPartyType
 		extends WarehouseRelationshipTable<InvolvedParty, InvolvedPartyType,

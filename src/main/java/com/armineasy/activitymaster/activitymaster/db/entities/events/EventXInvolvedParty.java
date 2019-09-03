@@ -7,7 +7,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEvent;
 import com.armineasy.activitymaster.activitymaster.services.dto.IInvolvedParty;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,7 +24,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "EventXInvolvedParty")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class EventXInvolvedParty
 		extends WarehouseClassificationRelationshipTable<Event,

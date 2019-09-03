@@ -66,6 +66,7 @@ public class SystemsService
 		                                                              .findChildLink(identifyClassification, token.toString())
 		                                                              .inActiveRange(enterprise, identityToken)
 		                                                              .inDateRange()
+		                                                              .withEnterprise(enterprise)
 		                                                              .canRead(enterprise, identityToken)
 		                                                              .get();
 		if (exists.isEmpty())
@@ -133,11 +134,8 @@ public class SystemsService
 		IActiveFlag<?> flag = GuiceContext.get(IActiveFlagService.class)
 		                               .getActiveFlag(enterprise);
 		Systems newSystem = new Systems();
-		Optional<Systems> exists = ActivityMasterConfiguration
-				                           .get()
-				                           .isDoubleCheckDisabled() ? Optional.empty() :
-
-		                           newSystem.builder()
+		Optional<Systems> exists = newSystem.builder()
+		                                    .withEnterprise(enterprise)
 		                                    .findByName(systemName)
 		                                    .get();
 		if (exists.isEmpty())
@@ -171,6 +169,7 @@ public class SystemsService
 		                                                   .findBySecurityToken(uuidIdentity.toString(), system.getEnterpriseID())
 		                                                   .inActiveRange(system.getEnterpriseID())
 		                                                   .inDateRange()
+		                                                   .withEnterprise(system.getEnterprise())
 		                                                   .canRead(system.getEnterpriseID(), identityToken)
 		                                                   .get();
 		if (token.isEmpty())

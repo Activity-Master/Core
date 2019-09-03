@@ -7,7 +7,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.geography;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.geography.builders.GeographyXGeographySecurityTokenQueryBuilder;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,7 +23,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "GeographyXGeographySecurityToken")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class GeographyXGeographySecurityToken
 		extends WarehouseSecurityTable<GeographyXGeographySecurityToken, GeographyXGeographySecurityTokenQueryBuilder, Long>

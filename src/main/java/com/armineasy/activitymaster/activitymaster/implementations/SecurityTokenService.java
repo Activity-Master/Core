@@ -55,11 +55,8 @@ public class SecurityTokenService
 	                                                      Date effectiveFromDate, Date effectiveToDate)
 	{
 		SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
-		Optional<SecurityTokensSecurityToken> exists = ActivityMasterConfiguration
-				                                               .get()
-				                                               .isDoubleCheckDisabled() ? Optional.empty() :
-
-		                                               sta.builder()
+		Optional<SecurityTokensSecurityToken> exists = sta.builder()
+		                                                  .withEnterprise(system.getEnterprise())
 		                                                  .findBySecurityToken(fromToken, toToken)
 		                                                  .inActiveRange(system.getEnterpriseID())
 		                                                  .inDateRange()
@@ -100,13 +97,12 @@ public class SecurityTokenService
 		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterpriseID(), identityToken);
 
 		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = ActivityMasterConfiguration
-				                                 .get()
-				                                 .isDoubleCheckDisabled() ? Optional.empty() :
-		                                 st.builder()
+		Optional<SecurityToken> exists = st.builder()
+		                                   .withEnterprise(system.getEnterprise())
 		                                   .findBySecurityToken(name, classification.getEnterpriseID())
 		                                   .inActiveRange(classification.getEnterpriseID())
 		                                   .inDateRange()
+		                                   .withEnterprise(system.getEnterprise())
 		                                   .get();
 		if (exists.isEmpty())
 		{
@@ -159,6 +155,7 @@ public class SecurityTokenService
 	{
 		SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
 		Optional<SecurityTokenXSecurityToken> exists = root.builder()
+		                                                   .withEnterprise(classification.getEnterprise())
 		                                                   .findLink(parent, child)
 		                                                   .withClassification(classification)
 		                                                   .inActiveRange(classification.getEnterpriseID())
@@ -214,6 +211,7 @@ public class SecurityTokenService
 		                                   .findByName(Everyone)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   //   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
@@ -229,6 +227,7 @@ public class SecurityTokenService
 		                                   .findByName(Everywhere)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   //      .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
@@ -244,6 +243,7 @@ public class SecurityTokenService
 		                                   .findByName(Guests)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   //     .canRead(enterprise,identityToken)
 		                                   .get();
 		return exists.orElseThrow();
@@ -259,6 +259,7 @@ public class SecurityTokenService
 		                                   .findByName(Registered)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   //    .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
@@ -274,6 +275,7 @@ public class SecurityTokenService
 		                                   .findByName(Visitors)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   //     .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
@@ -289,6 +291,7 @@ public class SecurityTokenService
 		                                   .findByName(Administrators)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   //  .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
@@ -304,6 +307,7 @@ public class SecurityTokenService
 		                                   .findByName(System)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   //.canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
@@ -320,6 +324,7 @@ public class SecurityTokenService
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   //  .canRead(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   .get();
 		return exists.orElseThrow();
 	}
@@ -335,6 +340,7 @@ public class SecurityTokenService
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   //   .canRead(enterprise, identityToken)
 		                                   .inDateRange()
+		                                   .withEnterprise(enterprise)
 		                                   .get();
 		return exists.orElseThrow();
 	}
@@ -348,6 +354,7 @@ public class SecurityTokenService
 		                                        .withEnterprise(enterprise)
 		                                        .inActiveRange(enterprise, identityToken)
 		                                        .inDateRange()
+		                                        .withEnterprise(enterprise)
 		                                        // .canRead(enterprise, identityToken)
 		                                        .get()
 		                                        .orElse(null);

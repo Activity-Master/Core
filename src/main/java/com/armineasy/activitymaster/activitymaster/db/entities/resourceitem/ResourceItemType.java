@@ -9,7 +9,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.INameAn
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.IResourceItemType;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -29,7 +29,7 @@ import static javax.persistence.FetchType.*;
 @Entity
 @Table
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class ResourceItemType
 		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, Long, ResourceItemTypeSecurityToken>

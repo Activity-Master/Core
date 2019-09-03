@@ -47,6 +47,7 @@ public class ResourceItemService
 		                                      .findByName(value.classificationName())
 		                                      .inActiveRange(enterprise, identityToken)
 		                                      .inDateRange()
+		                                      .withEnterprise(system.getEnterprise())
 		                                      .get();
 		if (exists.isEmpty())
 		{
@@ -74,7 +75,7 @@ public class ResourceItemService
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IResourceItem<?> create(IResourceType<?> identityResourceType, String mimeType,
-	                           ISystems system, UUID... identityToken)
+	                               ISystems<?> system, UUID... identityToken)
 	{
 		ResourceItem xr = new ResourceItem();
 		xr.setResourceItemUUID(UUID.randomUUID());
@@ -103,7 +104,7 @@ public class ResourceItemService
 	public IResourceItem<?> findByClassification(@CacheKey IResourceType<?> resourceType,
 	                                          @CacheKey IResourceItemClassification<?> classification,
 	                                          @CacheKey String value,
-	                                          @CacheKey ISystems systems,
+	                                          @CacheKey ISystems<?> systems,
 	                                          @CacheKey UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
@@ -145,10 +146,11 @@ public class ResourceItemService
 
 	@Override
 	@CacheResult(cacheName = "FindResourceItemType")
-	public IResourceItemType<?> findResourceItemType(@CacheKey IResourceType<?> type, @CacheKey ISystems systems, @CacheKey UUID... identityToken)
+	public IResourceItemType<?> findResourceItemType(@CacheKey IResourceType<?> type, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
 		Optional<ResourceItemType> exists = xr.builder()
+		                                      .withEnterprise(systems.getEnterprise())
 		                                      .findByName(type.classificationName())
 		                                      .inActiveRange(systems.getEnterpriseID(), identityToken)
 		                                      .canRead(systems.getEnterpriseID(), identityToken)

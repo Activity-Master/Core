@@ -1,12 +1,12 @@
 package com.armineasy.activitymaster.activitymaster.threads;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
-import lombok.experimental.Accessors;
+
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Accessors(chain = true)
+
 public abstract class IdentifiedThread<J extends IdentifiedThread<J>>
 		implements Runnable
 {

@@ -10,6 +10,8 @@ import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 
+import java.util.Objects;
+
 @Singleton
 public class ActivityMasterConfiguration
 {
@@ -183,80 +185,35 @@ public class ActivityMasterConfiguration
 			this.doubleCheck = doubleCheck;
 		}
 
-		public boolean equals(final Object o)
+		@Override
+		public boolean equals(Object o)
 		{
-			if (o == this)
+			if (this == o)
 			{
 				return true;
 			}
-			if (!(o instanceof ActivityMasterConfigurationDTO))
+			if (o == null || getClass() != o.getClass())
 			{
 				return false;
 			}
-			final ActivityMasterConfigurationDTO other = (ActivityMasterConfigurationDTO) o;
-			if (!other.canEqual((Object) this))
-			{
-				return false;
-			}
-			final Object this$enterpriseName = this.getEnterpriseName();
-			final Object other$enterpriseName = other.getEnterpriseName();
-			if (this$enterpriseName == null ? other$enterpriseName != null : !this$enterpriseName.equals(other$enterpriseName))
-			{
-				return false;
-			}
-			final Object this$token = this.getToken();
-			final Object other$token = other.getToken();
-			if (this$token == null ? other$token != null : !this$token.equals(other$token))
-			{
-				return false;
-			}
-			final Object this$securities = this.getSecurities();
-			final Object other$securities = other.getSecurities();
-			if (this$securities == null ? other$securities != null : !this$securities.equals(other$securities))
-			{
-				return false;
-			}
-			final Object this$async = this.getAsync();
-			final Object other$async = other.getAsync();
-			if (this$async == null ? other$async != null : !this$async.equals(other$async))
-			{
-				return false;
-			}
-			final Object this$doubleCheck = this.getDoubleCheck();
-			final Object other$doubleCheck = other.getDoubleCheck();
-			if (this$doubleCheck == null ? other$doubleCheck != null : !this$doubleCheck.equals(other$doubleCheck))
-			{
-				return false;
-			}
-			return true;
+			ActivityMasterConfigurationDTO that = (ActivityMasterConfigurationDTO) o;
+			return Objects.equals(getEnterpriseName(), that.getEnterpriseName()) &&
+			       Objects.equals(getToken(), that.getToken());
 		}
 
-		protected boolean canEqual(final Object other)
-		{
-			return other instanceof ActivityMasterConfigurationDTO;
-		}
-
+		@Override
 		public int hashCode()
 		{
-			final int PRIME = 59;
-			int result = 1;
-			final Object $enterpriseName = this.getEnterpriseName();
-			result = result * PRIME + ($enterpriseName == null ? 43 : $enterpriseName.hashCode());
-			final Object $token = this.getToken();
-			result = result * PRIME + ($token == null ? 43 : $token.hashCode());
-			final Object $securities = this.getSecurities();
-			result = result * PRIME + ($securities == null ? 43 : $securities.hashCode());
-			final Object $async = this.getAsync();
-			result = result * PRIME + ($async == null ? 43 : $async.hashCode());
-			final Object $doubleCheck = this.getDoubleCheck();
-			result = result * PRIME + ($doubleCheck == null ? 43 : $doubleCheck.hashCode());
-			return result;
+			return Objects.hash(getEnterpriseName(), getToken());
 		}
 
+		@Override
 		public String toString()
 		{
-			return "ActivityMasterConfiguration.ActivityMasterConfigurationDTO(enterpriseName=" + this.getEnterpriseName() + ", token=" + this.getToken() + ", securities=" +
-			       this.getSecurities() + ", async=" + this.getAsync() + ", doubleCheck=" + this.getDoubleCheck() + ")";
+			return "ActivityMasterConfigurationDTO{" +
+			       "enterpriseName=" + enterpriseName +
+			       ", token=" + token +
+			       '}';
 		}
 	}
 }

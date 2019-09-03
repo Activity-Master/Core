@@ -13,7 +13,7 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.reso
 import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.*;
 import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,7 +34,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "InvolvedParty")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, Long, InvolvedPartySecurityToken>

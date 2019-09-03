@@ -162,8 +162,8 @@
                         <configuration>
                             <failOnError>false</failOnError>
                             <enableLazyInitialization>true</enableLazyInitialization>
-                            <enableDirtyTracking>true</enableDirtyTracking>
-                            <enableAssociationManagement>true</enableAssociationManagement>
+                            <enableDirtyTracking>false</enableDirtyTracking>
+                            <enableAssociationManagement>false</enableAssociationManagement>
                             <enableExtendedEnhancement>false</enableExtendedEnhancement>
                         </configuration>
                         <phase>compile</phase>
@@ -175,9 +175,9 @@
                 <configuration>
                     <failOnError>false</failOnError>
                     <enableLazyInitialization>true</enableLazyInitialization>
-                    <enableDirtyTracking>true</enableDirtyTracking>
-                    <enableAssociationManagement>true</enableAssociationManagement>
-                    <enableExtendedEnhancement>true</enableExtendedEnhancement>
+                    <enableDirtyTracking>false</enableDirtyTracking>
+                    <enableAssociationManagement>false</enableAssociationManagement>
+                    <enableExtendedEnhancement>false</enableExtendedEnhancement>
                 </configuration>
                 <dependencies>
                     <dependency>

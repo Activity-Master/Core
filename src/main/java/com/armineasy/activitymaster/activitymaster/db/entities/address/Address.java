@@ -12,7 +12,7 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.addr
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -31,7 +31,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "Address")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, Long, AddressSecurityToken>

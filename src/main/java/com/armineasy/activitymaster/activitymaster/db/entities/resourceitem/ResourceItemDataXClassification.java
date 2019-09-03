@@ -4,7 +4,7 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseClass
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemDataXClassificationQueryBuilder;
 import com.armineasy.activitymaster.activitymaster.services.dto.*;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,7 +22,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "ResourceItemDataXClassification")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class ResourceItemDataXClassification
 		extends WarehouseClassificationRelationshipTable<ResourceItemData,

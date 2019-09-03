@@ -7,7 +7,7 @@ package com.armineasy.activitymaster.activitymaster.db.hierarchies;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHierarchyView;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.builders.SecurityHierarchyViewQueryBuilder;
-import lombok.experimental.Accessors;
+
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Entity;
@@ -24,7 +24,7 @@ import java.util.List;
 @Entity
 @Table(name = "SecurityHierarchy")
 @XmlRootElement
-@Accessors(chain = true)
+
 
 @Immutable
 public class SecurityHierarchyView

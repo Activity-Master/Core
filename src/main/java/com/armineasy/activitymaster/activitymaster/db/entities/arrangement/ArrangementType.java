@@ -5,7 +5,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.arrangement.build
 import com.armineasy.activitymaster.activitymaster.services.dto.IArrangementType;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -25,7 +25,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "ArrangementType")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class ArrangementType
 		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, Long, ArrangementTypeSecurityToken>

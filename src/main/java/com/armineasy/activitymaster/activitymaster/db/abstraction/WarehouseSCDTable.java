@@ -7,7 +7,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -25,7 +25,7 @@ import java.io.Serializable;
  * @since 06 Dec 2016
  */
 @MappedSuperclass
-@Accessors(chain = true)
+
 public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>, Q extends QueryBuilder<Q, J, I, S>,
 		                                       I extends Serializable, S extends WarehouseSecurityTable>
 		extends WarehouseCoreTable<J, Q, I, S>

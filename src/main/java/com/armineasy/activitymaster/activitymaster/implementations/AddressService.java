@@ -46,6 +46,7 @@ public class AddressService implements IAddressService<AddressService>
 		                                      .withEnterprise((Enterprise) originatingSystem.getEnterpriseID())
 		                                      .withValue(value)
 		                                      .inDateRange()
+		                                      .withEnterprise(activityMasterSystem.getEnterprise())
 		                                      .get();
 		if (addressExists.isEmpty())
 		{
@@ -121,6 +122,7 @@ public class AddressService implements IAddressService<AddressService>
 		Optional<Address> exists = address.builder()
 		                                  .withClassification(ipAddressClassification)
 		                                  .withValue(hostName)
+		                                  .withEnterprise(originatingSystem.getEnterprise())
 		                                  .get();
 		if (exists.isEmpty())
 		{
@@ -155,6 +157,7 @@ public class AddressService implements IAddressService<AddressService>
 		Optional<Address> exists = address.builder()
 		                                  .withClassification(ipAddressClassification)
 		                                  .withValue(webAddress)
+		                                  .withEnterprise(originatingSystem.getEnterprise())
 		                                  .get();
 		if (exists.isEmpty())
 		{

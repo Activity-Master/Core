@@ -2,7 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -21,7 +21,7 @@ import java.lang.reflect.ParameterizedType;
  * @since 08 Dec 2016
  */
 @MappedSuperclass
-@Accessors(chain = true)
+
 public abstract class WarehouseClassificationRelationshipTable<P extends WarehouseCoreTable, S extends WarehouseCoreTable,
 		                                                              J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST,L,R>,
 		                                                              Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I, ST>,

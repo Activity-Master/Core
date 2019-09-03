@@ -113,6 +113,7 @@ public class ClassificationService
 		               .inActiveRange(enterprise, identityToken)
 		               .inDateRange()
 		               .canRead(enterprise, identityToken)
+		               .withEnterprise(enterprise)
 		               .get()
 		               .get();
 		return search;

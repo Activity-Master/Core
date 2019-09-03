@@ -12,7 +12,7 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.reso
 import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IArrangementTypes;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,7 +30,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "Arrangement")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, Long, ArrangementSecurityToken>

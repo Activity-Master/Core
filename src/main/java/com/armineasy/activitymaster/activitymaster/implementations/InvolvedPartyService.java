@@ -2,12 +2,10 @@ package com.armineasy.activitymaster.activitymaster.implementations;
 
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
-import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 import com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise;
 import com.armineasy.activitymaster.activitymaster.db.entities.involvedparty.*;
 import com.armineasy.activitymaster.activitymaster.db.entities.security.SecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
-import com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.InvolvedPartyClassifications;
 import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
@@ -21,12 +19,13 @@ import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import com.google.inject.Singleton;
 import com.jwebmp.guicedinjection.interfaces.JobService;
 import com.jwebmp.guicedinjection.pairing.Pair;
-import lombok.extern.java.Log;
+import com.jwebmp.logger.LogFactory;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.events.EventClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.InvolvedPartyClassifications.*;
@@ -36,10 +35,10 @@ import static com.jwebmp.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton
-@Log
 public class InvolvedPartyService
 		implements IInvolvedPartyService<InvolvedPartyService>
 {
+	private static final Logger log = LogFactory.getLog("InvolvedPartyService");
 	@Override
 	public IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, IEnterprise<?> enterprise)
 	{
@@ -56,6 +55,7 @@ public class InvolvedPartyService
 		                                           .findByName(name)
 		                                           .inActiveRange(enterprise, identityToken)
 		                                           .inDateRange()
+		                                           .withEnterprise(enterprise)
 		                                           .get();
 		if (exists.isEmpty())
 		{
@@ -91,6 +91,7 @@ public class InvolvedPartyService
 		                                                     .findByName(name.name())
 		                                                     .inActiveRange(enterprise, identityToken)
 		                                                     .inDateRange()
+		                                                     .withEnterprise(enterprise)
 		                                                     .get();
 		if (exists.isEmpty())
 		{
@@ -133,6 +134,7 @@ public class InvolvedPartyService
 		                                       .findByName(name)
 		                                       .inActiveRange(enterprise, identityToken)
 		                                       .inDateRange()
+		                                       .withEnterprise(enterprise)
 		                                       .get();
 		if (exists.isEmpty())
 		{
@@ -168,6 +170,7 @@ public class InvolvedPartyService
 		                                              .findByName(name.classificationValue())
 		                                              .inActiveRange(enterprise, identityToken)
 		                                              .inDateRange()
+		                                              .withEnterprise(enterprise)
 		                                              .get();
 		if (exists.isEmpty())
 		{
@@ -290,6 +293,7 @@ public class InvolvedPartyService
 	public boolean doesUsernameExist(String username, IEnterprise<?> enterprise, UUID... token)
 	{
 		return new InvolvedParty().builder()
+		                          .withEnterprise(enterprise)
 		                          .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()), token)
 		                          .getCount() > 0;
 	}
@@ -298,6 +302,7 @@ public class InvolvedPartyService
 	public IInvolvedParty<?> findByUsername(String username, IEnterprise<?> enterprise, UUID... token)
 	{
 		IInvolvedParty<?> party = new InvolvedParty().builder()
+		                                             .withEnterprise(enterprise)
 		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
 		                                                                       token)
 		                                             .get()
@@ -344,10 +349,8 @@ public class InvolvedPartyService
 		IEnterprise<?> enterprise = originatingSystem.getEnterpriseID();
 
 		InvolvedParty ip = new InvolvedParty();
-		Optional<InvolvedParty> exists = ActivityMasterConfiguration
-				                                 .get()
-				                                 .isDoubleCheckDisabled() ? Optional.empty() :
-		                                 ip.builder()
+		Optional<InvolvedParty> exists = ip.builder()
+		                                   .withEnterprise(originatingSystem.getEnterprise())
 		                                   .findByIdentificationType(enterprise, idTypes.getKey(), idTypes.getValue(), identityToken)
 		                                   .get();
 
@@ -445,6 +448,7 @@ public class InvolvedPartyService
 		return xr.builder()
 		         .findByName(nameType)
 		         .inActiveRange(enterprise, tokens)
+		         .withEnterprise(enterprise)
 		         .inDateRange()
 		         .canRead(enterprise, tokens)
 		         .get()
@@ -465,6 +469,7 @@ public class InvolvedPartyService
 		         .findByName(nameType)
 		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
+		         .withEnterprise(enterprise)
 		         .canRead(enterprise, tokens)
 		         .get()
 		         .orElse(null);
@@ -479,6 +484,7 @@ public class InvolvedPartyService
 		                                                                          .findChildLink(id, token.getSecurityToken())
 		                                                                          .inActiveRange(((SecurityToken) token).getEnterpriseID())
 		                                                                          .inDateRange()
+		                                                                          .withEnterprise(((SecurityToken) token).getEnterpriseID())
 		                                                                          .canRead(((SecurityToken) token).getEnterpriseID(), tokens)
 		                                                                          .get();
 		return foundLink.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
@@ -496,6 +502,7 @@ public class InvolvedPartyService
 		                                                                          .findChildLink(id, token.toString())
 		                                                                          .inActiveRange(enterprise, tokens)
 		                                                                          .inDateRange()
+		                                                                          .withEnterprise(enterprise)
 		                                                                          .canRead(enterprise, tokens)
 		                                                                          .get();
 		return foundLink.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)

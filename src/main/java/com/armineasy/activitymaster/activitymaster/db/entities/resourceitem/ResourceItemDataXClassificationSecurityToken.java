@@ -2,7 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.resourceitem;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.resourceitem.builders.ResourceItemDataXClassificationSecurityTokenQueryBuilder;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -18,7 +18,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "ResourceItemDataXClassificationSecurityToken")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class ResourceItemDataXClassificationSecurityToken
 		extends WarehouseSecurityTable<ResourceItemDataXClassificationSecurityToken, ResourceItemDataXClassificationSecurityTokenQueryBuilder, Long>

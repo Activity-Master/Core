@@ -7,7 +7,7 @@ package com.armineasy.activitymaster.activitymaster.db.hierarchies;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHierarchyView;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.builders.InvolvedPartyHierarchyViewQueryBuilder;
-import lombok.experimental.Accessors;
+
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Entity;
@@ -22,7 +22,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "GeographyHierarchyView")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Immutable
 public class InvolvedPartyHierarchyView
 		extends WarehouseHierarchyView<InvolvedPartyHierarchyView, InvolvedPartyHierarchyViewQueryBuilder, Long>

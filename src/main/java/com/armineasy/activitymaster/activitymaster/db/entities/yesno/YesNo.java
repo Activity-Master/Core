@@ -12,7 +12,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IYesNo;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -33,7 +33,7 @@ import static javax.persistence.FetchType.*;
 @Entity
 @Table(name = "YesNo")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class YesNo
 		extends WarehouseTable<YesNo, YesNoQueryBuilder, Long, YesNoSecurityToken>

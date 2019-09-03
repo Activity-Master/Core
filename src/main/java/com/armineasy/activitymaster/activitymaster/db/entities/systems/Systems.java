@@ -32,7 +32,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -53,7 +53,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "Systems")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class Systems
 		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, Long, SystemsSecurityToken>

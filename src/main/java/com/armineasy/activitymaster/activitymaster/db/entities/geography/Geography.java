@@ -17,7 +17,7 @@ import com.armineasy.activitymaster.activitymaster.services.classifications.geog
 import com.armineasy.activitymaster.activitymaster.services.classifications.resourceitems.IResourceItemClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IResourceType;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -38,7 +38,7 @@ import static javax.persistence.FetchType.*;
 @Entity
 @Table(name = "Geography")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>

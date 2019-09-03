@@ -7,7 +7,7 @@ import com.armineasy.activitymaster.activitymaster.services.capabilities.IContai
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,7 +26,7 @@ import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
  * @since 07 Dec 2016
  */
 @MappedSuperclass
-@Accessors(chain = true)
+
 public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		                                    Q extends QueryBuilder<Q, J, I, S>,
 		                                    I extends Serializable,

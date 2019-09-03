@@ -2,7 +2,7 @@ package com.armineasy.activitymaster.activitymaster.db.entities.activeflag;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseSecurityTable;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.builders.ActiveFlagSecurityTokenQueryBuilder;
-import lombok.experimental.Accessors;
+
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
@@ -19,7 +19,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "ActiveFlagSecurityToken")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Cacheable
 @org.hibernate.annotations.Cache(usage= CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)

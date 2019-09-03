@@ -8,7 +8,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
 import com.jwebmp.guicedinjection.GuiceContext;
-import lombok.experimental.Accessors;
+
 import org.hibernate.annotations.JoinFormula;
 
 import javax.persistence.*;
@@ -23,7 +23,7 @@ import static javax.persistence.FetchType.*;
  * @since 08 Dec 2016
  */
 @MappedSuperclass
-@Accessors(chain = true)
+
 public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
 		                                            Q extends QueryBuilderSecurities<Q, J, I>, I extends Serializable>
 		extends WarehouseBaseTable<J, Q, I>

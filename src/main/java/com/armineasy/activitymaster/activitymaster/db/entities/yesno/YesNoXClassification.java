@@ -7,7 +7,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IYesNo;
-import lombok.experimental.Accessors;
+
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,7 +24,7 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "YesNoXClassification")
 @XmlRootElement
-@Accessors(chain = true)
+
 @Access(FIELD)
 public class YesNoXClassification
 		extends WarehouseClassificationRelationshipTable<YesNo,

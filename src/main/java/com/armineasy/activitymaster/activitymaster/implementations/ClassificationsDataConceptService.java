@@ -3,12 +3,11 @@ package com.armineasy.activitymaster.activitymaster.implementations;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterConfiguration;
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.ClassificationDataConcept;
-import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
+import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts;
 import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
+import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationDataConceptValue;
-import com.armineasy.activitymaster.activitymaster.services.concepts.EnterpriseClassificationDataConcepts;
-import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationDataConceptService;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
@@ -31,14 +30,13 @@ public class ClassificationsDataConceptService
 	                                                   ISystems<?> system, UUID... identityToken)
 	{
 		ClassificationDataConcept newConcept = new ClassificationDataConcept();
-		Optional<ClassificationDataConcept> exists =ActivityMasterConfiguration
-				                                            .get()
-				                                            .isDoubleCheckDisabled() ? Optional.empty() :
-		                                            newConcept.builder()
+		Optional<ClassificationDataConcept> exists = newConcept.builder()
 		                                                       .findByName(name.classificationValue())
+		                                                       .withEnterprise(system.getEnterprise())
+		                                                       .inActiveRange(system.getEnterprise(),identityToken)
 		                                                       .get();
 		IActiveFlag<?> active = GuiceContext.get(IActiveFlagService.class)
-		                                 .getActiveFlag(system.getEnterpriseID());
+		                                    .getActiveFlag(system.getEnterpriseID());
 
 		if (exists.isEmpty())
 		{
@@ -46,12 +44,14 @@ public class ClassificationsDataConceptService
 			newConcept.setName(name.classificationValue());
 			newConcept.setSystemID((com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems) system);
 			newConcept.setOriginalSourceSystemID((com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems) system);
-			newConcept.setActiveFlagID((ActiveFlag)active);
+			newConcept.setActiveFlagID((ActiveFlag) active);
 			newConcept.setEnterpriseID((com.armineasy.activitymaster.activitymaster.db.entities.enterprise.Enterprise) system.getEnterpriseID());
 			newConcept.persist();
-			if(GuiceContext.get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			if (GuiceContext.get(ActivityMasterConfiguration.class)
+			                .isSecurityEnabled())
 			{
-				newConcept.createDefaultSecurity(GuiceContext.get(ISystemsService.class).getActivityMaster(newConcept.getEnterpriseID(), identityToken),identityToken);
+				newConcept.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
+				                                             .getActivityMaster(newConcept.getEnterpriseID(), identityToken), identityToken);
 			}
 		}
 		else
@@ -77,7 +77,8 @@ public class ClassificationsDataConceptService
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
 		cdc = cdc.builder()
 		         .findByName(name.classificationValue())
-		         .inActiveRange(enterprise,identityToken)
+		         .withEnterprise(enterprise)
+		         .inActiveRange(enterprise, identityToken)
 		         .inDateRange()
 		         .canRead(enterprise, identityToken)
 		         .get()

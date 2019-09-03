@@ -23,11 +23,12 @@ public class YesNoService
 	                    String inOutValue, ISystems<?> system, UUID... identityToken)
 	{
 		YesNo yn = new YesNo();
-		Optional<YesNo> exists = ActivityMasterConfiguration
-				                         .get()
-				                         .isDoubleCheckDisabled() ? Optional.empty() :
-		                         yn.builder()
+		Optional<YesNo> exists = yn.builder()
+		                           .withEnterprise(system.getEnterprise())
 		                           .findByName(defaultName)
+		                           .inDateRange()
+		                           .inActiveRange(system.getEnterprise(),identityToken)
+		                           .canRead(system.getEnterprise(),identityToken)
 		                           .get();
 		if (exists.isEmpty())
 		{
@@ -64,6 +65,8 @@ public class YesNoService
 		return new YesNo().builder()
 		                  .findYes()
 		                  .withEnterprise(enterprise)
+		                  .inDateRange()
+		                  .inVisibleRange(enterprise)
 		                  .get()
 		                  .get();
 	}
