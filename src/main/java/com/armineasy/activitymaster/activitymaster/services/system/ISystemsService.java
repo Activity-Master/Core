@@ -3,7 +3,7 @@ package com.armineasy.activitymaster.activitymaster.services.system;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;

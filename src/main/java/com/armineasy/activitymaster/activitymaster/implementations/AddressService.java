@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.address.AddressRemoteSystemClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.address.AddressWebClassifications.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton

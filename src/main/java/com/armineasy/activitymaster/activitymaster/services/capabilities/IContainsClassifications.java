@@ -19,7 +19,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationValue;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
-import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
+import com.entityassist.querybuilder.builders.JoinExpression;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
@@ -28,10 +28,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.jwebmp.entityassist.SCDEntity.*;
-import static com.jwebmp.entityassist.enumerations.Operand.*;
-import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.entityassist.SCDEntity.*;
+import static com.entityassist.enumerations.Operand.*;
+import static com.entityassist.querybuilder.EntityAssistStrings.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 import static javax.persistence.criteria.JoinType.*;
 
 @SuppressWarnings("Duplicates")

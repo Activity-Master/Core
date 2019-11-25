@@ -2,8 +2,8 @@ package com.armineasy.activitymaster.activitymaster.db.hierarchies.builders;
 
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierarchyParents;
-import com.jwebmp.entityassist.querybuilder.QueryBuilder;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.entityassist.querybuilder.QueryBuilder;
+import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.persistence.EntityManager;
 

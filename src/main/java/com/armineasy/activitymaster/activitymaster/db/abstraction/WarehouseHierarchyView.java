@@ -1,7 +1,7 @@
 package com.armineasy.activitymaster.activitymaster.db.abstraction;
 
 import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.QueryBuilderHierarchyView;
-import com.jwebmp.entityassist.BaseEntity;
+import com.entityassist.BaseEntity;
 
 import org.hibernate.annotations.Immutable;
 

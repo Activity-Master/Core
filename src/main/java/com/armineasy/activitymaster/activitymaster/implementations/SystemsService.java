@@ -15,8 +15,8 @@ import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagSe
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.armineasy.activitymaster.activitymaster.systems.SystemsSystem;
 import com.google.inject.Singleton;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;

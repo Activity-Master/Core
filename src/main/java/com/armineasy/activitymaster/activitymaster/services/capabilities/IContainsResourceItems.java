@@ -19,9 +19,9 @@ import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagSe
 import com.armineasy.activitymaster.activitymaster.services.system.IClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.system.IResourceItemService;
 import com.armineasy.activitymaster.activitymaster.services.threads.StoreResourceItemThread;
-import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedinjection.interfaces.JobService;
+import com.entityassist.querybuilder.builders.JoinExpression;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.interfaces.JobService;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
@@ -29,10 +29,10 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.jwebmp.entityassist.SCDEntity.*;
-import static com.jwebmp.entityassist.enumerations.Operand.*;
-import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.entityassist.SCDEntity.*;
+import static com.entityassist.enumerations.Operand.*;
+import static com.entityassist.querybuilder.EntityAssistStrings.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 import static javax.persistence.criteria.JoinType.*;
 
 @SuppressWarnings("Duplicates")

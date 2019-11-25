@@ -9,15 +9,11 @@ import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierar
 import com.armineasy.activitymaster.activitymaster.implementations.SecurityTokenService;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.SecurityAccessException;
-import com.jwebmp.entityassist.enumerations.Operand;
-import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
-import com.jwebmp.guicedinjection.GuiceContext;
-import org.hibernate.query.criteria.internal.path.SingularAttributePath;
+import com.entityassist.enumerations.Operand;
+import com.entityassist.querybuilder.builders.JoinExpression;
+import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.validation.constraints.NotNull;
@@ -98,7 +94,7 @@ public abstract class QueryBuilder<J extends QueryBuilder<J, E, I, S>,
 		getFilters().add(getCriteriaBuilder().equal(genRoot.get(readAllowed), true));
 
 		SingularAttribute p = (SingularAttribute) sec.getSecurityTokenAttribute();
-		SingularAttributePath securityTableJoinSecurityID = (SingularAttributePath) genRoot.get(p);
+		Path securityTableJoinSecurityID = genRoot.get(p);
 
 		Root<SecurityHierarchyView> hierarchyCrossJoinRoot = getCriteriaQuery().from(SecurityHierarchyView.class);
 		Join join = hierarchyCrossJoinRoot.join("parents",INNER);

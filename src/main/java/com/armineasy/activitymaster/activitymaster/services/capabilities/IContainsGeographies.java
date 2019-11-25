@@ -9,7 +9,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.geography.Geograp
 import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.cache.annotation.CacheKey;
 import javax.validation.constraints.NotNull;

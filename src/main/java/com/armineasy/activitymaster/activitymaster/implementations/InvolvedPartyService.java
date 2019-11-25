@@ -17,9 +17,9 @@ import com.armineasy.activitymaster.activitymaster.services.system.IInvolvedPart
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import com.google.inject.Singleton;
-import com.jwebmp.guicedinjection.interfaces.JobService;
-import com.jwebmp.guicedinjection.pairing.Pair;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.interfaces.JobService;
+import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.logger.LogFactory;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -30,8 +30,8 @@ import java.util.logging.Logger;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.events.EventClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.classifications.involvedparty.InvolvedPartyClassifications.*;
 import static com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes.*;
-import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.entityassist.querybuilder.EntityAssistStrings.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton

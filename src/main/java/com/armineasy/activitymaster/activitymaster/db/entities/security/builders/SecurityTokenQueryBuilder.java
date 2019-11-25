@@ -15,13 +15,13 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.implementations.ClassificationService;
 import com.armineasy.activitymaster.activitymaster.services.classifications.securitytokens.ISecurityTokenClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.persistence.criteria.JoinType;
 import javax.persistence.metamodel.Attribute;
 import java.util.UUID;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 /**
  * @author Marc Magon

@@ -7,13 +7,13 @@ import com.armineasy.activitymaster.activitymaster.implementations.InvolvedParty
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.google.common.base.Strings;
-import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.entityassist.querybuilder.builders.JoinExpression;
+import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.persistence.criteria.JoinType;
 import java.util.UUID;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 public class InvolvedPartyQueryBuilder
 		extends QueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty, Long, InvolvedPartySecurityToken>

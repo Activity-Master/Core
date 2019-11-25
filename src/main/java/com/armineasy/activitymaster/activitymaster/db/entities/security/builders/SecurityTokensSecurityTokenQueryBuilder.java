@@ -7,7 +7,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.security.Security
 
 import javax.persistence.metamodel.Attribute;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 public class SecurityTokensSecurityTokenQueryBuilder
 		extends QueryBuilderSecurities<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, Long>

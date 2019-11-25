@@ -2,8 +2,8 @@ package com.armineasy.activitymaster.activitymaster.injections;
 
 import com.armineasy.activitymaster.activitymaster.implementations.*;
 import com.armineasy.activitymaster.activitymaster.services.system.*;
-import com.jwebmp.guicedinjection.abstractions.GuiceInjectorModule;
-import com.jwebmp.guicedinjection.interfaces.IGuiceDefaultBinder;
+import com.guicedee.guicedinjection.abstractions.GuiceInjectorModule;
+import com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder;
 
 public class ActivityMasterBinder
 		implements IGuiceDefaultBinder<ActivityMasterBinder, GuiceInjectorModule>

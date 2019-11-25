@@ -29,7 +29,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.IClassification;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISecurityToken;
 import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.logger.LogFactory;
 
 
 import javax.persistence.*;

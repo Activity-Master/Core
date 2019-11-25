@@ -7,11 +7,11 @@ import com.armineasy.activitymaster.activitymaster.db.entities.classifications.C
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification_;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IClassificationValue;
-import com.jwebmp.entityassist.enumerations.Operand;
+import com.entityassist.enumerations.Operand;
 
 import java.util.Collection;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 public class ClassificationQueryBuilder
 		extends QueryBuilder<ClassificationQueryBuilder, Classification, Long, ClassificationSecurityToken>

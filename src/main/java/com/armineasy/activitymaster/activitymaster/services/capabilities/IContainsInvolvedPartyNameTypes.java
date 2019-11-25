@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.jwebmp.entityassist.SCDEntity.*;
-import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.entityassist.SCDEntity.*;
+import static com.entityassist.querybuilder.EntityAssistStrings.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings({"Duplicates", "unused"})
 public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,

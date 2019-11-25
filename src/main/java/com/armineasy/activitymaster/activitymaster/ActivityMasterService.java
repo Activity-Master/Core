@@ -20,11 +20,11 @@ import com.armineasy.activitymaster.activitymaster.services.security.Passwords;
 import com.armineasy.activitymaster.activitymaster.services.system.IActivityMasterService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEnterpriseService;
 import com.google.inject.Singleton;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedinjection.interfaces.IDefaultService;
-import com.jwebmp.guicedinjection.pairing.Pair;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.interfaces.IDefaultService;
+import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
+import com.guicedee.logger.LogFactory;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -34,7 +34,7 @@ import static com.armineasy.activitymaster.activitymaster.services.classificatio
 import static com.armineasy.activitymaster.activitymaster.services.types.IPTypes.*;
 import static com.armineasy.activitymaster.activitymaster.services.types.IdentificationTypes.*;
 import static com.armineasy.activitymaster.activitymaster.services.types.NameTypes.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @Singleton
 public class ActivityMasterService

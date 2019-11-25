@@ -7,8 +7,8 @@ import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.Active
 import com.armineasy.activitymaster.activitymaster.services.dto.IActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.IEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
-import com.jwebmp.entityassist.querybuilder.QueryBuilderSCD;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.entityassist.querybuilder.QueryBuilderSCD;
+import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.SingularAttribute;
@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
 		                                         E extends WarehouseBaseTable<E, J, I>,

@@ -18,9 +18,9 @@ import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityMasterException;
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.Singleton;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedinjection.pairing.Pair;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;

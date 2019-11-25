@@ -9,7 +9,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
 import java.util.Collection;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 public abstract class QueryBuilderSCDNameDescription<J extends QueryBuilderSCDNameDescription<J, E, I, S>,
 		                                                    E extends WarehouseSCDNameDescriptionTable<E, J, I, S>,

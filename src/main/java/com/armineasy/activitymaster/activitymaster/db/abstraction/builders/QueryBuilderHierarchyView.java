@@ -3,13 +3,13 @@ package com.armineasy.activitymaster.activitymaster.db.abstraction.builders;
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
 import com.armineasy.activitymaster.activitymaster.db.abstraction.WarehouseHierarchyView;
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.SecurityHierarchyView_;
-import com.jwebmp.entityassist.querybuilder.QueryBuilder;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.entityassist.querybuilder.QueryBuilder;
+import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.persistence.EntityManager;
 import java.io.Serializable;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends Serializable>
 	extends QueryBuilder<J,E,I>

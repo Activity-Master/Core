@@ -5,8 +5,8 @@ import com.armineasy.activitymaster.activitymaster.db.abstraction.builders.Query
 import com.armineasy.activitymaster.activitymaster.db.entities.activeflag.ActiveFlag;
 import com.armineasy.activitymaster.activitymaster.services.dto.IRelationshipValue;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
-import com.jwebmp.entityassist.SCDEntity;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.entityassist.SCDEntity;
+import com.guicedee.guicedinjection.GuiceContext;
 
 
 import javax.persistence.Basic;

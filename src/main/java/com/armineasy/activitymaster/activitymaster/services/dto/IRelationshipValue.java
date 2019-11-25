@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("unused")
 public interface IRelationshipValue<P,S,J extends IRelationshipValue<P,S,J>>

@@ -6,7 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.systems.Systems;
 import com.armineasy.activitymaster.activitymaster.services.capabilities.IContainsActiveFlags;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.systems.ActiveFlagSystem;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.GuiceContext;
 
 
 import javax.persistence.*;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import static com.jwebmp.entityassist.querybuilder.EntityAssistStrings.*;
+import static com.entityassist.querybuilder.EntityAssistStrings.*;
 
 /**
  * @param <S>

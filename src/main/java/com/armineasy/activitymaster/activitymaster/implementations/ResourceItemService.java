@@ -18,8 +18,8 @@ import com.armineasy.activitymaster.activitymaster.services.system.IResourceItem
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.common.base.Strings;
 import com.google.inject.Singleton;
-import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.entityassist.querybuilder.builders.JoinExpression;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -28,8 +28,8 @@ import javax.persistence.criteria.JoinType;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 import static javax.persistence.criteria.JoinType.*;
 
 @Singleton

@@ -1,9 +1,9 @@
 package com.armineasy.activitymaster.activitymaster.threads;
 
 import com.armineasy.activitymaster.activitymaster.db.ActivityMasterDB;
-import com.jwebmp.entityassist.BaseEntity;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.entityassist.BaseEntity;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;

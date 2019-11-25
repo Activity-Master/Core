@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		                                         S extends WarehouseCoreTable,

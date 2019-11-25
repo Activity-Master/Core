@@ -7,7 +7,7 @@ import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagSe
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 public interface IActivityMasterEntity<J extends IActivityMasterEntity<J>>
 {

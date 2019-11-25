@@ -18,7 +18,7 @@ import com.armineasy.activitymaster.activitymaster.services.exceptions.ActivityM
 import com.armineasy.activitymaster.activitymaster.services.system.*;
 import com.armineasy.activitymaster.activitymaster.systems.InvolvedPartySystem;
 import com.google.inject.Singleton;
-import com.jwebmp.entityassist.querybuilder.builders.JoinExpression;
+import com.entityassist.querybuilder.builders.JoinExpression;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -28,8 +28,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.classification.Classifications.*;
-import static com.jwebmp.entityassist.enumerations.Operand.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @Singleton
 public class ArrangementsService

@@ -27,5 +27,5 @@ public interface IActiveFlagService
 
 	IActiveFlag<?> getDeletedFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	Optional<IActiveFlag<?>> findFlagByName(com.jwebmp.entityassist.enumerations.ActiveFlag flag, IEnterprise<?> enterprise, UUID... identifyingToken);
+	Optional<IActiveFlag<?>> findFlagByName(com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?> enterprise, UUID... identifyingToken);
 }

@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 

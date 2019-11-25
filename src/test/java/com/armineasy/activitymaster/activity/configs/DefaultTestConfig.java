@@ -14,16 +14,12 @@ import com.armineasy.activitymaster.activitymaster.services.system.ISecurityToke
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
-import com.jwebmp.guicedhazelcast.HazelcastConfigHandler;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
-import com.jwebmp.guicedservlets.BasicServlet;
-import com.jwebmp.guicedservlets.GuicedServletKeys;
-import com.jwebmp.guicedservlets.RequestScopedObject;
-import com.jwebmp.guicedservlets.mocks.MockRequest;
-import com.jwebmp.guicedservlets.mocks.MockResponse;
-import com.jwebmp.logger.LogFactory;
-import com.jwebmp.logger.logging.LogColourFormatter;
+import com.guicedee.guicedhazelcast.HazelcastProperties;
+import com.guicedee.guicedhazelcast.services.HazelcastPreStartup;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
+import com.guicedee.logger.LogFactory;
+import com.guicedee.logger.logging.LogColourFormatter;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -39,7 +35,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import static com.armineasy.activitymaster.activitymaster.DefaultEnterprise.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 public class DefaultTestConfig
 		implements BeforeEachCallback, AfterEachCallback
@@ -52,7 +48,8 @@ public class DefaultTestConfig
 	public void beforeEach(ExtensionContext extensionContext) throws Exception
 	{
 		BTMAutomatedTransactionHandler.setActive(true);
-		HazelcastConfigHandler.startLocal = true;
+		HazelcastProperties.setStartLocal(true);
+
 		ActivityMasterDBModule.persistenceUnitName = "ActivityMasterUT";
 
 		//HazelcastConfigHandler.startLocal = true;
@@ -62,13 +59,13 @@ public class DefaultTestConfig
 
 		scoper = ServletScopes.scopeRequest(new HashMap<>())
 		                                                   .open();
-		RequestScopedObject obj = GuiceContext.get(RequestScopedObject.class);
+/*		RequestScopedObject obj = GuiceContext.get(RequestScopedObject.class);
 		BasicServlet servlet = GuiceContext.get(BasicServlet.class);
 
 		MockResponse resp = (MockResponse) GuiceContext.get(GuicedServletKeys.getHttpServletResponseKey());
 		MockRequest req = (MockRequest) GuiceContext.get(GuicedServletKeys.getHttpServletRequestKey());
 
-		req.setHeader("User-Agent", FirefoxHeaderAgent);
+		req.setHeader("User-Agent", FirefoxHeaderAgent);*/
 
 		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise);
 		EnterpriseService service = get(EnterpriseService.class);

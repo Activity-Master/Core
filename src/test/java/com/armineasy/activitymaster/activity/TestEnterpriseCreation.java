@@ -4,8 +4,9 @@ import com.armineasy.activitymaster.activity.configs.DefaultTestConfig;
 import com.armineasy.activitymaster.activitymaster.ActivityMasterService;
 import com.armineasy.activitymaster.activitymaster.DefaultEnterprise;
 import com.armineasy.activitymaster.activitymaster.services.IActivityMasterProgressMonitor;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.logger.logging.LogColourFormatter;
+import com.guicedee.guicedinjection.GuiceContext;
+
+import com.guicedee.logger.logging.LogColourFormatter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -23,6 +24,7 @@ public class TestEnterpriseCreation
 	@Test
 	public void testEnterpriseCreation()
 	{
+		System.setErr(System.out);
 		IActivityMasterProgressMonitor soutMonitor = new IActivityMasterProgressMonitor()
 		{
 			int totalTasks = 0;

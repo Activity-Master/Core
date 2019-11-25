@@ -5,7 +5,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNoSecurityToken;
 import com.armineasy.activitymaster.activitymaster.db.entities.yesno.YesNo_;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 public class YesNoQueryBuilder
 		extends QueryBuilder<YesNoQueryBuilder, YesNo, Long, YesNoSecurityToken>

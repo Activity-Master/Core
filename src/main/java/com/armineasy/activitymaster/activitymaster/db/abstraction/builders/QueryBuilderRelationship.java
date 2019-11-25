@@ -13,7 +13,7 @@ import javax.persistence.metamodel.Attribute;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 /**
  * Default query builder for relationship tables

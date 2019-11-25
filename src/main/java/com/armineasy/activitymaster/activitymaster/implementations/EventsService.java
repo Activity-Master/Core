@@ -14,7 +14,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.ISystems;
 import com.armineasy.activitymaster.activitymaster.services.system.IActiveFlagService;
 import com.armineasy.activitymaster.activitymaster.services.system.IEventService;
 import com.google.inject.Singleton;
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.armineasy.activitymaster.activitymaster.services.classifications.classification.Classifications.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @Singleton
 public class EventsService

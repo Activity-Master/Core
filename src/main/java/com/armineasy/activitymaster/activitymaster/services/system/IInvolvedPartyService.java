@@ -8,7 +8,7 @@ import com.armineasy.activitymaster.activitymaster.services.dto.*;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.IIdentificationType;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.INameType;
 import com.armineasy.activitymaster.activitymaster.services.enumtypes.ITypeValue;
-import com.jwebmp.guicedinjection.pairing.Pair;
+import com.guicedee.guicedinjection.pairing.Pair;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;

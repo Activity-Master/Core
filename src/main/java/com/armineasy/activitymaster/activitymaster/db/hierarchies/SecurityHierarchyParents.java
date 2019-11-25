@@ -6,7 +6,7 @@
 package com.armineasy.activitymaster.activitymaster.db.hierarchies;
 
 import com.armineasy.activitymaster.activitymaster.db.hierarchies.builders.SecurityHierarchyParentsQueryBuilder;
-import com.jwebmp.entityassist.BaseEntity;
+import com.entityassist.BaseEntity;
 
 import org.hibernate.annotations.Immutable;
 

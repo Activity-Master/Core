@@ -1,7 +1,7 @@
 package com.armineasy.activitymaster;
 
 import com.google.inject.AbstractModule;
-import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 import net.sf.uadetector.ReadableUserAgent;
 import net.sf.uadetector.UserAgentStringParser;
 import net.sf.uadetector.service.UADetectorServiceFactory;

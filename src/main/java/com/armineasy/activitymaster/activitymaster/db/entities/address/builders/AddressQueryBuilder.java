@@ -6,7 +6,7 @@ import com.armineasy.activitymaster.activitymaster.db.entities.address.AddressSe
 import com.armineasy.activitymaster.activitymaster.db.entities.address.Address_;
 import com.armineasy.activitymaster.activitymaster.db.entities.classifications.Classification;
 
-import static com.jwebmp.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.*;
 
 public class AddressQueryBuilder
 		extends QueryBuilder<AddressQueryBuilder, Address, Long, AddressSecurityToken>

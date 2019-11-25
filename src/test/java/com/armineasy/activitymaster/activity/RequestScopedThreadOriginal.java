@@ -16,8 +16,8 @@ import com.armineasy.activitymaster.activitymaster.services.system.ISecurityToke
 import com.armineasy.activitymaster.activitymaster.services.system.ISystemsService;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import static com.armineasy.activitymaster.activitymaster.DefaultEnterprise.*;
-import static com.jwebmp.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 public abstract class RequestScopedThreadOriginal
 		implements Callable<Object>, Runnable
