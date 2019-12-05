@@ -1,0 +1,181 @@
+package com.guicedee.activitymaster.core.services.capabilities;
+
+import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
+import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
+import com.guicedee.activitymaster.core.implementations.ClassificationService;
+import com.guicedee.activitymaster.core.services.classifications.involvedparty.IInvolvedPartyClassification;
+import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.system.ISystemsService;
+import com.guicedee.guicedinjection.GuiceContext;
+
+import javax.cache.annotation.CacheKey;
+import javax.validation.constraints.NotNull;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.guicedee.guicedinjection.GuiceContext.*;
+
+public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
+		                                         S extends WarehouseCoreTable,
+		                                         J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>>
+{
+	@SuppressWarnings("unchecked")
+	default Optional<J> findInvolvedParty(@CacheKey IInvolvedParty<?> involvedParty, @CacheKey UUID... identityToken)
+	{
+		J activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
+		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
+		                                                         .findLink((P) this, (S) involvedParty, null)
+		                                                         .inActiveRange(involvedParty.getEnterpriseID())
+		                                                         .inDateRange()
+		                                                         .canRead(involvedParty.getEnterpriseID(), identityToken)
+		                                                         .get();
+		return exists;
+	}
+
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<J> findInvolvedPartyQueryRelationshipTableType()
+	{
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
+		{
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsInvolvedParties.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<J>) genericTypes[2];
+			}
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	default boolean hasInvolvedParty(IInvolvedPartyClassification<?> InvolvedPartyClassification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		J activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
+		ISystems activityMasterSystem = get(ISystemsService.class)
+				                               .getActivityMaster(enterprise);
+		Classification classification = (Classification) GuiceContext.get(ClassificationService.class).find(InvolvedPartyClassification,
+		                                                                                                    activityMasterSystem.getEnterpriseID(), identityToken);
+		return activityMasterIdentity.builder()
+		                             .findLink((P) this, (S) classification, null)
+		                             .inActiveRange(classification.getEnterpriseID())
+		                             .inDateRange()
+		                             .canRead(classification.getEnterpriseID(), identityToken)
+		                             .getCount() > 0;
+	}
+
+	@SuppressWarnings("unchecked")
+	default J add(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
+	{
+		ISystems activityMasterSystem = get(ISystemsService.class)
+				                               .getActivityMaster(originatingSystem.getEnterpriseID(),identifyingToken);
+
+		Classification classification = (Classification) get(ClassificationService.class).find(involvedPartyClassification,
+		                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
+
+		InvolvedParty addy = new InvolvedParty();
+		Optional<InvolvedParty> InvolvedPartyExists = addy.builder()
+		                                                  .withClassification(classification, value)
+		                                                  .withEnterprise(originatingSystem.getEnterpriseID())
+		                                                  .inDateRange()
+		                                                  .get();
+		if (InvolvedPartyExists.isEmpty())
+		{
+			addy.setEnterpriseID(classification.getEnterpriseID());
+			addy.setSystemID((Systems) activityMasterSystem);
+			addy.setOriginalSourceSystemID((Systems) activityMasterSystem);
+			addy.setActiveFlagID(classification.getActiveFlagID());
+			addy.persist();
+			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			{
+				addy.createDefaultSecurity(activityMasterSystem, identifyingToken);
+			}
+			addy.add(involvedPartyClassification, value, originatingSystem, identifyingToken);
+		}
+		else
+		{
+			addy = InvolvedPartyExists.get();
+		}
+
+		J tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
+		Optional<J> exists = (Optional<J>) tableForClassification.builder()
+		                                                         .findLink((P) this, (S) addy, null)
+		                                                         .inActiveRange(classification.getEnterpriseID())
+		                                                         .inDateRange()
+		                                                         .get();
+		if (exists.isEmpty())
+		{
+			tableForClassification.setEnterpriseID(classification.getEnterpriseID());
+			tableForClassification.setClassificationID(classification);
+			tableForClassification.setValue(value);
+			tableForClassification.setSystemID((Systems) activityMasterSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) activityMasterSystem);
+			tableForClassification.setActiveFlagID(classification.getActiveFlagID());
+
+			setMyInvolvedPartyLinkValue(tableForClassification, (S) addy, classification.getEnterpriseID());
+
+			tableForClassification.persist();
+			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			{
+				tableForClassification.createDefaultSecurity(activityMasterSystem, identifyingToken);
+			}
+		}
+		else
+		{
+			tableForClassification = exists.get();
+		}
+		return tableForClassification;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	default J add(IInvolvedParty<?> addy, IInvolvedPartyClassification<?> iclassification,String value, ISystems<?> originatingSystem, UUID... identifyingToken)
+	{
+		J tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
+		Optional<J> exists = (Optional<J>) tableForClassification.builder()
+		                                                         .findLink((P) this, (S) addy, null)
+		                                                         .inActiveRange(addy.getEnterpriseID())
+		                                                         .inDateRange()
+		                                                         .canRead(originatingSystem.getEnterpriseID(), identifyingToken)
+		                                                         .get();
+		if (exists.isEmpty())
+		{
+			Classification classification = (Classification) get(ClassificationService.class).find(iclassification,
+			                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
+
+			tableForClassification.setEnterpriseID((Enterprise) addy.getEnterpriseID());
+			tableForClassification.setSystemID((Systems) originatingSystem);
+			tableForClassification.setClassificationID(classification);
+			tableForClassification.setValue(value);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+			tableForClassification.setActiveFlagID((ActiveFlag) addy.getActiveFlagID());
+			setMyInvolvedPartyLinkValue(tableForClassification, (S) addy, addy.getEnterpriseID());
+			tableForClassification.persist();
+
+			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
+			{
+				tableForClassification.createDefaultSecurity(originatingSystem, identifyingToken);
+			}
+		}
+		else
+		{
+			tableForClassification = exists.get();
+		}
+		return tableForClassification;
+	}
+
+
+	void setMyInvolvedPartyLinkValue(J classificationLink, S involvedParty, IEnterprise<?> enterprise);
+}

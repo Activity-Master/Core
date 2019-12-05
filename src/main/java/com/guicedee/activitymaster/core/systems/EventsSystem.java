@@ -1,0 +1,215 @@
+package com.guicedee.activitymaster.core.systems;
+
+import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.implementations.ClassificationService;
+import com.guicedee.activitymaster.core.implementations.SystemsService;
+import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
+import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.system.ISystemsService;
+import com.guicedee.activitymaster.core.services.classifications.events.*;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+@SuppressWarnings("Duplicates")
+public class EventsSystem
+		implements IActivityMasterSystem<EventsSystem>
+{
+
+	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
+
+	@Override
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		createEventInvolvedPartyDefaultClassifications(enterprise, progressMonitor);
+		createEventAddressDefaultClassifications(enterprise, progressMonitor);
+		createEventArrangementDefaultClassifications(enterprise, progressMonitor);
+		createEventEventTypesClassifications(enterprise, progressMonitor);
+		createEventProductsDefaultClassifications(enterprise, progressMonitor);
+		createEventResourceItemDefaultClassifications(enterprise, progressMonitor);
+	}
+
+	@Override
+	public int totalTasks()
+	{
+		return 0;
+	}
+
+	@SuppressWarnings("WeakerAccess")
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	void createEventInvolvedPartyDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                               .getActivityMaster(enterprise);
+
+		ClassificationService service = GuiceContext.get(ClassificationService.class);
+
+		//Involved party relations with events
+		service.create(EventInvolvedPartiesClassifications.InvolvedPartyEvents, activityMasterSystem);
+		service.create(EventInvolvedPartiesClassifications.PerformedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventInvolvedPartiesClassifications.OnBehalfOf, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventInvolvedPartiesClassifications.For, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventInvolvedPartiesClassifications.OwnedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventInvolvedPartiesClassifications.CreatedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventInvolvedPartiesClassifications.UpdatedBy, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventInvolvedPartiesClassifications.SecurityCredentialsOf, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventInvolvedPartiesClassifications.Notifies, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventInvolvedPartiesClassifications.MeantFor, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventClassifications.NotifiesInvolvedParty, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventClassifications.UpdatedPassword, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		service.create(EventClassifications.UpdatedUsername, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
+		logProgress("Events System", "Loaded Event InvolvedParty Classifications...", 1, progressMonitor);
+
+	}
+
+	@SuppressWarnings("WeakerAccess")
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	void createEventAddressDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                               .getActivityMaster(enterprise);
+
+		ClassificationService service = GuiceContext.get(ClassificationService.class);
+		service.create(EventAddressClassifications.AddressEvents, activityMasterSystem);
+		service.create(EventAddressClassifications.SignedAt, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.OccurredAt, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.RemoteAddress, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.LocalAddress, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.PhonedNumber, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.SentAFax, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.Emailed, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.SMSd, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.MMSd, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.Posted, activityMasterSystem, EventAddressClassifications.AddressEvents);
+		service.create(EventAddressClassifications.RegisteredPost, activityMasterSystem, EventAddressClassifications.AddressEvents);
+
+		logProgress("Events System", "Loaded Event Address Classifications...", 1, progressMonitor);
+	}
+
+	@SuppressWarnings("WeakerAccess")
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	void createEventArrangementDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                           .getActivityMaster(enterprise);
+		ClassificationService service = GuiceContext.get(ClassificationService.class);
+
+		service.create(EventArrangementClassifications.ArrangementEvents, activityMasterSystem);
+		service.create(EventArrangementClassifications.Started, activityMasterSystem, EventArrangementClassifications.ArrangementEvents);
+		service.create(EventArrangementClassifications.Concluded, activityMasterSystem, EventArrangementClassifications.ArrangementEvents);
+		service.create(EventArrangementClassifications.AffectedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents);
+		service.create(EventArrangementClassifications.RestartedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents);
+		service.create(EventArrangementClassifications.SkippedThe, activityMasterSystem, EventArrangementClassifications.ArrangementEvents);
+		service.create(EventArrangementClassifications.AlteredRiskValue, activityMasterSystem, EventArrangementClassifications.ArrangementEvents);
+		logProgress("Events System", "Loaded Event Arrangements Classifications...", 1, progressMonitor);
+	}
+
+	@SuppressWarnings("WeakerAccess")
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	void createEventEventTypesClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                           .getActivityMaster(enterprise);
+		ClassificationService service = GuiceContext.get(ClassificationService.class);
+
+
+
+		service.create(EventTypeClassifications.TypeOfEvents, activityMasterSystem);
+		service.create(EventTypeClassifications.HasTheType, activityMasterSystem, EventTypeClassifications.TypeOfEvents);
+		service.create(EventTypeClassifications.CanBeIdentifiedBy, activityMasterSystem, EventTypeClassifications.TypeOfEvents);
+
+		logProgress("Events System", "Loaded Event Event Types Classifications...", 1, progressMonitor);
+	}
+
+	@SuppressWarnings("WeakerAccess")
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	void createEventProductsDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                           .getActivityMaster(enterprise);
+		ClassificationService service = GuiceContext.get(ClassificationService.class);
+
+		service.create(EventProductClassifications.ProductEvent, activityMasterSystem);
+		service.create(EventProductClassifications.ShowedInterestIn, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.Bought, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.Sold, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.MadeBidFor, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.ChangedBidFor, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.RemovedBidFor, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.Cancelled, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.DontShowProduct, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.RemindMeOfTheProduct, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.ChangedTheCostOf, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.AddedTheInterestOf, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.ChangedTheInterestOf, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.RatedTheProduct, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+		service.create(EventProductClassifications.ChangedTheRatingOfTheProduct, activityMasterSystem, EventProductClassifications.ShowedInterestIn);
+
+		logProgress("Events System", "Loaded Event Product Default Classifications...", 1, progressMonitor);
+	}
+
+	@SuppressWarnings("WeakerAccess")
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	void createEventResourceItemDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                           .getActivityMaster(enterprise);
+		ClassificationService service = GuiceContext.get(ClassificationService.class);
+
+
+		service.create(EventResourceItemClassifications.ResourceItemEvent, activityMasterSystem);
+		service.create(EventResourceItemClassifications.AddedResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.ChangedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.UpdatedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.RemovedTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.RegisteredTheResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.RemovedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.LodgedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.DeliveredTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.DestroyedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+
+		service.create(EventResourceItemClassifications.JSONCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.JSONCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.WebServiceCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.WebServiceCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+
+		service.create(EventResourceItemClassifications.HttpCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.HttpCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.HttpSession, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.HttpSessionProperties, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+		service.create(EventResourceItemClassifications.UserAgent, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
+
+		logProgress("Events System", "Loaded Event Resource Item Default Classifications...", 1, progressMonitor);
+	}
+
+	@Override
+	public Integer sortOrder()
+	{
+		return Integer.MIN_VALUE + 9;
+	}
+
+
+	@Override
+	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
+		                                .create(enterprise, "Events System",
+		                                        "The system for managing events", "");
+		UUID securityToken = GuiceContext.get(ISystemsService.class)
+		                                 .registerNewSystem(enterprise, newSystem);
+
+		systemTokens.put(enterprise, securityToken);
+	}
+
+	public static Map<IEnterprise<?>, UUID> getSystemTokens()
+	{
+		return systemTokens;
+	}
+
+}

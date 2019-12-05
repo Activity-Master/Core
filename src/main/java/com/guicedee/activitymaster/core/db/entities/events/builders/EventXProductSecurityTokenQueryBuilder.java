@@ -1,0 +1,17 @@
+package com.guicedee.activitymaster.core.db.entities.events.builders;
+
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecurities;
+import com.guicedee.activitymaster.core.db.entities.events.EventXProductSecurityToken;
+import com.guicedee.activitymaster.core.db.entities.events.EventXProductSecurityToken_;
+
+import javax.persistence.metamodel.Attribute;
+
+public class EventXProductSecurityTokenQueryBuilder
+		extends QueryBuilderSecurities<EventXProductSecurityTokenQueryBuilder, EventXProductSecurityToken, Long>
+{
+	@Override
+	protected Attribute getMyAttribute()
+	{
+		return EventXProductSecurityToken_.base;
+	}
+}

@@ -1,0 +1,27 @@
+package com.guicedee.activitymaster.core.db.entities.involvedparty.builders;
+
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
+import com.guicedee.activitymaster.core.db.entities.address.Address;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXAddress;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXAddressSecurityToken;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXAddress_;
+
+import javax.persistence.metamodel.Attribute;
+
+public class InvolvedPartyXAddressQueryBuilder
+		extends QueryBuilderRelationshipClassification<InvolvedParty, Address, InvolvedPartyXAddressQueryBuilder,
+						                                              InvolvedPartyXAddress, Long, InvolvedPartyXAddressSecurityToken>
+{
+	@Override
+	public Attribute getPrimaryAttribute()
+	{
+		return InvolvedPartyXAddress_.involvedPartyID;
+	}
+
+	@Override
+	public Attribute getSecondaryAttribute()
+	{
+		return InvolvedPartyXAddress_.addressID;
+	}
+}

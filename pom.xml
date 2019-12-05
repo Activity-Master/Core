@@ -23,7 +23,14 @@
                 <artifactId>guicedee-bom</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
-                <version>${project.version}</version>
+                <version>${guicedee.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.guicedee</groupId>
+                <artifactId>guicedee-parent</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${guicedee.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -31,30 +38,20 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-guice</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.persistence</groupId>
             <artifactId>guiced-persistence-btm</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.guicedee.persistence</groupId>
             <artifactId>guiced-persistence</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.guicedee.persistence</groupId>
             <artifactId>guiced-hazelcast</artifactId>
@@ -70,63 +67,35 @@
             <artifactId>guiced-servlets</artifactId>
         </dependency>
 
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>javax.activation</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>jakarta.activation</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>${project.version}</version>
-
         </dependency>
+
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>json</artifactId>
-            <version>${project.version}</version>
-
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>aopalliance-core</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-guice</artifactId>
-            <version>${jackson.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.inject</groupId>
-                    <artifactId>guice</artifactId>
-                </exclusion>
-            </exclusions>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>cache-annotations-ri-common</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -134,14 +103,12 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>cache-annotations-ri-guice</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>javax.transaction</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -149,7 +116,6 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>cache-api</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -157,14 +123,12 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>guava</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>btm</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -172,7 +136,6 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
         </dependency>
 
@@ -180,49 +143,50 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>uadetector-core</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
+            <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>uadetector-resources</artifactId>
-            <version>${project.version}</version>
+            <scope>test</scope>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${project.version}</version>
+
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
-            <version>${project.version}</version>
+
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>hibernate-core</artifactId>
             <type>jar</type>
-            <version>${project.version}</version>
+
         </dependency>
         <dependency>
             <groupId>com.guicedee</groupId>
             <artifactId>guiced-log-master</artifactId>
-            <version>${project.version}</version>
+
         </dependency>
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>${project.version}</version>
+
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>${project.version}</version>
+
             <type>jar</type>
         </dependency>
 
@@ -230,24 +194,24 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>guice</artifactId>
-            <version>${project.version}</version>
+
         </dependency>
         <dependency>
             <groupId>com.guicedee</groupId>
             <artifactId>guiced-injection</artifactId>
-            <version>${project.version}</version>
+
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
-            <version>${project.version}</version>
+
 
         </dependency>
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${project.version}</version>
+
             <type>jar</type>
         </dependency>
 
@@ -289,19 +253,17 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>12</source>
-                    <target>12</target>
                     <release>12</release>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
-                            <groupId>org.hibernate</groupId>
+                            <groupId>com.guicedee.services</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>5.4.8.Final</version>
+                            <version>${guicedee.version}</version>
                         </annotationProcessorPath>
                         <path>
                             <groupId>com.guicedee.services</groupId>
                             <artifactId>jakarta.xml.bind-api</artifactId>
-                            <version>${project.version}</version>
+                            <version>${guicedee.version}</version>
                         </path>
                     </annotationProcessorPaths>
                     <compilerArguments>
