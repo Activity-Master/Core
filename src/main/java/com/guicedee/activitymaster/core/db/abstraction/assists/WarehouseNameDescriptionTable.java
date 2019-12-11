@@ -15,7 +15,7 @@ import java.lang.reflect.Type;
  * @param <S>
  * @param <J>
  *
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 06 Dec 2016
  */

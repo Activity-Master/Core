@@ -16,7 +16,7 @@ import java.lang.reflect.ParameterizedType;
  * @param <J>
  * @param <P>
  *
- * @author GedMarc
+ * @author Marc Magon
  * @since 08 Dec 2016
  */
 @MappedSuperclass

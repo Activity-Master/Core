@@ -21,23 +21,22 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
 @Entity
-@Table
+@Table(name = "InvolvedPartyType",
+		schema = "Party")
 @XmlRootElement
-
 @Access(FIELD)
 public class InvolvedPartyType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, Long, InvolvedPartyTypeSecurityToken>
-				implements IInvolvedPartyType<InvolvedPartyType>,
-						           INameAndDescription<InvolvedPartyType>,
-						           IContainsEnterprise<InvolvedPartyType>,
-						           IActivityMasterEntity<InvolvedPartyType>,
-						           IContainsActiveFlags<InvolvedPartyType>
+		implements IInvolvedPartyType<InvolvedPartyType>,
+				           INameAndDescription<InvolvedPartyType>,
+				           IContainsEnterprise<InvolvedPartyType>,
+				           IActivityMasterEntity<InvolvedPartyType>,
+				           IContainsActiveFlags<InvolvedPartyType>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -46,7 +45,8 @@ public class InvolvedPartyType
 	@Column(nullable = false,
 			name = "InvolvedPartyTypeID")
 	private Long id;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 100)
@@ -54,7 +54,8 @@ public class InvolvedPartyType
 			length = 100,
 			name = "InvolvedPartyTypeName")
 	private String name;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Lob
 	@Column(nullable = false,
@@ -78,14 +79,14 @@ public class InvolvedPartyType
 
 	public InvolvedPartyType(Long involvedPartyTypeID)
 	{
-		this.id = involvedPartyTypeID;
+		id = involvedPartyTypeID;
 	}
 
 	public InvolvedPartyType(Long involvedPartyTypeID, String involvedPartyTypeName, String involvedPartyTypeDesc)
 	{
-		this.id = involvedPartyTypeID;
-		this.name = involvedPartyTypeName;
-		this.description = involvedPartyTypeDesc;
+		id = involvedPartyTypeID;
+		name = involvedPartyTypeName;
+		description = involvedPartyTypeDesc;
 	}
 
 	@Override
@@ -97,12 +98,12 @@ public class InvolvedPartyType
 
 	public List<InvolvedPartyTypeSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public List<InvolvedPartyXInvolvedPartyType> getInvolvedPartyXInvolvedPartyTypeList()
 	{
-		return this.involvedPartyXInvolvedPartyTypeList;
+		return involvedPartyXInvolvedPartyTypeList;
 	}
 
 	public InvolvedPartyType setSecurities(List<InvolvedPartyTypeSecurityToken> securities)
@@ -144,35 +145,39 @@ public class InvolvedPartyType
 		return "Party Type - " + getName();
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 100) String getName()
+	@Override
+	public    String getName()
 	{
-		return this.name;
+		return name;
 	}
 
+	@Override
 	public @NotNull String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
+	@Override
 	public InvolvedPartyType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
-	public InvolvedPartyType setName(@NotNull @Size(min = 1,
-			max = 100) String name)
+	@Override
+	public InvolvedPartyType setName(   String name)
 	{
 		this.name = name;
 		return this;
 	}
 
+	@Override
 	public InvolvedPartyType setDescription(@NotNull String description)
 	{
 		this.description = description;

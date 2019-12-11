@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.db.abstraction.builders;
 
+import com.entityassist.querybuilder.QueryBuilderSCD;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
@@ -7,7 +8,6 @@ import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
-import com.entityassist.querybuilder.QueryBuilderSCD;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.persistence.EntityManager;
@@ -32,6 +32,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	{
 		setRunDetached(true);
 		setReturnFirst(true);
+		setDetach(true);
 	}
 
 	@Override
@@ -46,7 +47,6 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
 	public J withEnterprise(IEnterprise enterprise)
 	{
@@ -54,12 +54,11 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 		return (J) this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J inActiveRange(IEnterprise<?> enterprise, UUID...identityToken)
+	public J inActiveRange(IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		Collection<IActiveFlag<?>> flags = GuiceContext.get(IActiveFlagService.class)
-		                                               .findActiveRange(enterprise,identityToken);
+		                                               .findActiveRange(enterprise, identityToken);
 		Collection<ActiveFlag> flagss = new ArrayList<>();
 		for (IActiveFlag<?> flag : flags)
 		{
@@ -69,12 +68,11 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 		return (J) this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
-	public J inVisibleRange(IEnterprise<?> enterprise, UUID...identityToken)
+	public J inVisibleRange(IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		Collection<IActiveFlag<?>> flags = GuiceContext.get(IActiveFlagService.class)
-		                                           .getVisibleRange(enterprise,identityToken);
+		                                               .getVisibleRange(enterprise, identityToken);
 		Collection<ActiveFlag> flagss = new ArrayList<>();
 		for (IActiveFlag<?> flag : flags)
 		{
@@ -84,7 +82,6 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 		return (J) this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
 	@Override
 	public @javax.validation.constraints.NotNull J inDateRange()
@@ -97,13 +94,13 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	@Override
 	public E update(E entity)
 	{
-		if(entity instanceof WarehouseSCDTable)
+		if (entity instanceof WarehouseSCDTable)
 		{
 			WarehouseSCDTable w = (WarehouseSCDTable) entity;
 			w.setEffectiveToDate(LocalDateTime.now());
 			w.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 		}
-		E ent =  super.update(entity);
+		E ent = super.update(entity);
 		return ent;
 	}
 }

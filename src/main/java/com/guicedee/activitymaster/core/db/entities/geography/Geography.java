@@ -29,13 +29,13 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "Geography")
+@Table(schema="Geography",name = "Geography")
 @XmlRootElement
 
 @Access(FIELD)
@@ -263,14 +263,12 @@ public class Geography
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 500) String getName()
+	public    String getName()
 	{
 		return this.name;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 500) String getDescription()
+	public    String getDescription()
 	{
 		return this.description;
 	}

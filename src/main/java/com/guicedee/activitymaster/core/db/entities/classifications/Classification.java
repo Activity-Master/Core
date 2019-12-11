@@ -51,13 +51,13 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "Classification")
+@Table(schema="Classification",name = "Classification")
 @XmlRootElement
 @Access(FIELD)
 public class Classification
@@ -105,6 +105,13 @@ public class Classification
 	@ManyToOne(optional = false,
 			fetch = FetchType.EAGER)
 	private ClassificationDataConcept concept;
+
+	@OneToMany(
+			mappedBy = "base",
+			fetch = FetchType.LAZY)
+	private List<ClassificationSecurityToken> securities;
+
+/*
 
 	@OneToMany(
 			mappedBy = "classification",
@@ -267,11 +274,7 @@ public class Classification
 	@OneToMany(
 			mappedBy = "classificationID",
 			fetch = FetchType.LAZY)
-	private List<GeographyXGeography> geographyXGeographyList;
-	@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY)
-	private List<ClassificationSecurityToken> securities;
+	private List<GeographyXGeography> geographyXGeographyList;*/
 
 	public Classification()
 	{
@@ -325,457 +328,6 @@ public class Classification
 		newLink.setEnterpriseID(getEnterpriseID());
 	}
 
-	public List<Address> getAddressList()
-	{
-		return this.addressList;
-	}
-
-	public List<InvolvedPartyXResourceItem> getInvolvedPartyXResourceItemList()
-	{
-		return this.involvedPartyXResourceItemList;
-	}
-
-	public List<ClassificationXClassification> getClassificationXClassificationList()
-	{
-		return this.classificationXClassificationList;
-	}
-
-	public List<ClassificationXClassification> getClassificationXClassificationList2()
-	{
-		return this.classificationXClassificationList2;
-	}
-
-	public List<AddressXGeography> getAddressXGeographyList()
-	{
-		return this.addressXGeographyList;
-	}
-
-	public List<SecurityTokenXClassification> getSecurityTokenXClassificationList()
-	{
-		return this.securityTokenXClassificationList;
-	}
-
-	public List<ProductXClassification> getProductXClassificationList()
-	{
-		return this.productXClassificationList;
-	}
-
-	public List<ArrangementXInvolvedParty> getArrangementXInvolvedPartyList()
-	{
-		return this.arrangementXInvolvedPartyList;
-	}
-
-	public List<ArrangementXResourceItem> getArrangementXResourceItemList()
-	{
-		return this.arrangementXResourceItemList;
-	}
-
-	public List<ResourceItemXClassification> getResourceItemXClassificationList()
-	{
-		return this.resourceItemXClassificationList;
-	}
-
-	public List<EventXInvolvedParty> getEventXInvolvedPartyList()
-	{
-		return this.eventXInvolvedPartyList;
-	}
-
-	public List<ActiveFlagXClassification> getActiveFlagXClassificationList()
-	{
-		return this.activeFlagXClassificationList;
-	}
-
-	public List<EnterpriseXClassification> getEnterpriseXClassificationList()
-	{
-		return this.enterpriseXClassificationList;
-	}
-
-	public List<EventXArrangement> getEventXArrangementList()
-	{
-		return this.eventXArrangementList;
-	}
-
-	public List<SecurityToken> getSecurityTokenList()
-	{
-		return this.securityTokenList;
-	}
-
-	public List<SystemXClassification> getSystemXClassificationList()
-	{
-		return this.systemXClassificationList;
-	}
-
-	public List<ArrangementXClassification> getArrangementXClassificationList()
-	{
-		return this.arrangementXClassificationList;
-	}
-
-	public List<AddressXClassification> getAddressXClassificationList()
-	{
-		return this.addressXClassificationList;
-	}
-
-	public List<Geography> getGeographyList()
-	{
-		return this.geographyList;
-	}
-
-	public List<AddressXResourceItem> getAddressXResourceItemList()
-	{
-		return this.addressXResourceItemList;
-	}
-
-	public List<ArrangementXArrangement> getArrangementXArrangementList()
-	{
-		return this.arrangementXArrangementList;
-	}
-
-	public List<ClassificationDataConceptXClassification> getClassificationDataConceptXClassificationList()
-	{
-		return this.classificationDataConceptXClassificationList;
-	}
-
-	public List<ArrangementXProduct> getArrangementXProductList()
-	{
-		return this.arrangementXProductList;
-	}
-
-	public List<InvolvedPartyXInvolvedParty> getInvolvedPartyXInvolvedPartyList()
-	{
-		return this.involvedPartyXInvolvedPartyList;
-	}
-
-	public List<EventXResourceItem> getEventXResourceItemList()
-	{
-		return this.eventXResourceItemList;
-	}
-
-	public List<ClassificationDataConceptXResourceItem> getClassificationDataConceptXResourceItemList()
-	{
-		return this.classificationDataConceptXResourceItemList;
-	}
-
-	public List<InvolvedPartyXClassification> getInvolvedPartyXClassificationList()
-	{
-		return this.involvedPartyXClassificationList;
-	}
-
-	public List<SecurityTokenXSecurityToken> getSecurityTokenXSecurityTokenList()
-	{
-		return this.securityTokenXSecurityTokenList;
-	}
-
-	public List<ProductXResourceItem> getProductXResourceItemList()
-	{
-		return this.productXResourceItemList;
-	}
-
-	public List<EventXAddress> getEventXAddressList()
-	{
-		return this.eventXAddressList;
-	}
-
-	public List<InvolvedPartyXProduct> getInvolvedPartyXProductList()
-	{
-		return this.involvedPartyXProductList;
-	}
-
-	public List<InvolvedPartyXProduct> getInvolvedPartyXProductList1()
-	{
-		return this.involvedPartyXProductList1;
-	}
-
-	public List<ResourceItemDataXClassification> getResourceItemDataXClassificationList()
-	{
-		return this.resourceItemDataXClassificationList;
-	}
-
-	public List<InvolvedPartyXAddress> getInvolvedPartyXAddressList()
-	{
-		return this.involvedPartyXAddressList;
-	}
-
-	public List<ClassificationXResourceItem> getClassificationXResourceItemList()
-	{
-		return this.classificationXResourceItemList;
-	}
-
-	public List<EventXProduct> getEventXProductList()
-	{
-		return this.eventXProductList;
-	}
-
-	public List<GeographyXClassification> getGeographyXClassificationList()
-	{
-		return this.geographyXClassificationList;
-	}
-
-	public List<EventXClassification> getEventXClassificationList()
-	{
-		return this.eventXClassificationList;
-	}
-
-	public List<GeographyXResourceItem> getGeographyXResourceItemList()
-	{
-		return this.geographyXResourceItemList;
-	}
-
-	public List<GeographyXGeography> getGeographyXGeographyList()
-	{
-		return this.geographyXGeographyList;
-	}
-
-	public List<ClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
-	public Classification setAddressList(List<Address> addressList)
-	{
-		this.addressList = addressList;
-		return this;
-	}
-
-	public Classification setInvolvedPartyXResourceItemList(List<InvolvedPartyXResourceItem> involvedPartyXResourceItemList)
-	{
-		this.involvedPartyXResourceItemList = involvedPartyXResourceItemList;
-		return this;
-	}
-
-	public Classification setClassificationXClassificationList(List<ClassificationXClassification> classificationXClassificationList)
-	{
-		this.classificationXClassificationList = classificationXClassificationList;
-		return this;
-	}
-
-	public Classification setClassificationXClassificationList2(List<ClassificationXClassification> classificationXClassificationList2)
-	{
-		this.classificationXClassificationList2 = classificationXClassificationList2;
-		return this;
-	}
-
-	public Classification setAddressXGeographyList(List<AddressXGeography> addressXGeographyList)
-	{
-		this.addressXGeographyList = addressXGeographyList;
-		return this;
-	}
-
-	public Classification setSecurityTokenXClassificationList(List<SecurityTokenXClassification> securityTokenXClassificationList)
-	{
-		this.securityTokenXClassificationList = securityTokenXClassificationList;
-		return this;
-	}
-
-	public Classification setProductXClassificationList(List<ProductXClassification> productXClassificationList)
-	{
-		this.productXClassificationList = productXClassificationList;
-		return this;
-	}
-
-	public Classification setArrangementXInvolvedPartyList(List<ArrangementXInvolvedParty> arrangementXInvolvedPartyList)
-	{
-		this.arrangementXInvolvedPartyList = arrangementXInvolvedPartyList;
-		return this;
-	}
-
-	public Classification setArrangementXResourceItemList(List<ArrangementXResourceItem> arrangementXResourceItemList)
-	{
-		this.arrangementXResourceItemList = arrangementXResourceItemList;
-		return this;
-	}
-
-	public Classification setResourceItemXClassificationList(List<ResourceItemXClassification> resourceItemXClassificationList)
-	{
-		this.resourceItemXClassificationList = resourceItemXClassificationList;
-		return this;
-	}
-
-	public Classification setEventXInvolvedPartyList(List<EventXInvolvedParty> eventXInvolvedPartyList)
-	{
-		this.eventXInvolvedPartyList = eventXInvolvedPartyList;
-		return this;
-	}
-
-	public Classification setActiveFlagXClassificationList(List<ActiveFlagXClassification> activeFlagXClassificationList)
-	{
-		this.activeFlagXClassificationList = activeFlagXClassificationList;
-		return this;
-	}
-
-	public Classification setEnterpriseXClassificationList(List<EnterpriseXClassification> enterpriseXClassificationList)
-	{
-		this.enterpriseXClassificationList = enterpriseXClassificationList;
-		return this;
-	}
-
-	public Classification setEventXArrangementList(List<EventXArrangement> eventXArrangementList)
-	{
-		this.eventXArrangementList = eventXArrangementList;
-		return this;
-	}
-
-	public Classification setSecurityTokenList(List<SecurityToken> securityTokenList)
-	{
-		this.securityTokenList = securityTokenList;
-		return this;
-	}
-
-	public Classification setSystemXClassificationList(List<SystemXClassification> systemXClassificationList)
-	{
-		this.systemXClassificationList = systemXClassificationList;
-		return this;
-	}
-
-	public Classification setArrangementXClassificationList(List<ArrangementXClassification> arrangementXClassificationList)
-	{
-		this.arrangementXClassificationList = arrangementXClassificationList;
-		return this;
-	}
-
-	public Classification setAddressXClassificationList(List<AddressXClassification> addressXClassificationList)
-	{
-		this.addressXClassificationList = addressXClassificationList;
-		return this;
-	}
-
-	public Classification setGeographyList(List<Geography> geographyList)
-	{
-		this.geographyList = geographyList;
-		return this;
-	}
-
-	public Classification setAddressXResourceItemList(List<AddressXResourceItem> addressXResourceItemList)
-	{
-		this.addressXResourceItemList = addressXResourceItemList;
-		return this;
-	}
-
-	public Classification setArrangementXArrangementList(List<ArrangementXArrangement> arrangementXArrangementList)
-	{
-		this.arrangementXArrangementList = arrangementXArrangementList;
-		return this;
-	}
-
-	public Classification setClassificationDataConceptXClassificationList(List<ClassificationDataConceptXClassification> classificationDataConceptXClassificationList)
-	{
-		this.classificationDataConceptXClassificationList = classificationDataConceptXClassificationList;
-		return this;
-	}
-
-	public Classification setArrangementXProductList(List<ArrangementXProduct> arrangementXProductList)
-	{
-		this.arrangementXProductList = arrangementXProductList;
-		return this;
-	}
-
-	public Classification setInvolvedPartyXInvolvedPartyList(List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList)
-	{
-		this.involvedPartyXInvolvedPartyList = involvedPartyXInvolvedPartyList;
-		return this;
-	}
-
-	public Classification setEventXResourceItemList(List<EventXResourceItem> eventXResourceItemList)
-	{
-		this.eventXResourceItemList = eventXResourceItemList;
-		return this;
-	}
-
-	public Classification setClassificationDataConceptXResourceItemList(List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList)
-	{
-		this.classificationDataConceptXResourceItemList = classificationDataConceptXResourceItemList;
-		return this;
-	}
-
-	public Classification setInvolvedPartyXClassificationList(List<InvolvedPartyXClassification> involvedPartyXClassificationList)
-	{
-		this.involvedPartyXClassificationList = involvedPartyXClassificationList;
-		return this;
-	}
-
-	public Classification setSecurityTokenXSecurityTokenList(List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenList)
-	{
-		this.securityTokenXSecurityTokenList = securityTokenXSecurityTokenList;
-		return this;
-	}
-
-	public Classification setProductXResourceItemList(List<ProductXResourceItem> productXResourceItemList)
-	{
-		this.productXResourceItemList = productXResourceItemList;
-		return this;
-	}
-
-	public Classification setEventXAddressList(List<EventXAddress> eventXAddressList)
-	{
-		this.eventXAddressList = eventXAddressList;
-		return this;
-	}
-
-	public Classification setInvolvedPartyXProductList(List<InvolvedPartyXProduct> involvedPartyXProductList)
-	{
-		this.involvedPartyXProductList = involvedPartyXProductList;
-		return this;
-	}
-
-	public Classification setInvolvedPartyXProductList1(List<InvolvedPartyXProduct> involvedPartyXProductList1)
-	{
-		this.involvedPartyXProductList1 = involvedPartyXProductList1;
-		return this;
-	}
-
-	public Classification setResourceItemDataXClassificationList(List<ResourceItemDataXClassification> resourceItemDataXClassificationList)
-	{
-		this.resourceItemDataXClassificationList = resourceItemDataXClassificationList;
-		return this;
-	}
-
-	public Classification setInvolvedPartyXAddressList(List<InvolvedPartyXAddress> involvedPartyXAddressList)
-	{
-		this.involvedPartyXAddressList = involvedPartyXAddressList;
-		return this;
-	}
-
-	public Classification setClassificationXResourceItemList(List<ClassificationXResourceItem> classificationXResourceItemList)
-	{
-		this.classificationXResourceItemList = classificationXResourceItemList;
-		return this;
-	}
-
-	public Classification setEventXProductList(List<EventXProduct> eventXProductList)
-	{
-		this.eventXProductList = eventXProductList;
-		return this;
-	}
-
-	public Classification setGeographyXClassificationList(List<GeographyXClassification> geographyXClassificationList)
-	{
-		this.geographyXClassificationList = geographyXClassificationList;
-		return this;
-	}
-
-	public Classification setEventXClassificationList(List<EventXClassification> eventXClassificationList)
-	{
-		this.eventXClassificationList = eventXClassificationList;
-		return this;
-	}
-
-	public Classification setGeographyXResourceItemList(List<GeographyXResourceItem> geographyXResourceItemList)
-	{
-		this.geographyXResourceItemList = geographyXResourceItemList;
-		return this;
-	}
-
-	public Classification setGeographyXGeographyList(List<GeographyXGeography> geographyXGeographyList)
-	{
-		this.geographyXGeographyList = geographyXGeographyList;
-		return this;
-	}
-
-	public Classification setSecurities(List<ClassificationSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-
 	@Override
 	public boolean equals(Object o)
 	{
@@ -802,14 +354,12 @@ public class Classification
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 100) String getName()
+	public    String getName()
 	{
 		return this.name;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 500) String getDescription()
+	public    String getDescription()
 	{
 		return this.description;
 	}
@@ -830,8 +380,7 @@ public class Classification
 		return this;
 	}
 
-	public Classification setName(@NotNull @Size(min = 1,
-			max = 100) String name)
+	public Classification setName(   String name)
 	{
 		this.name = name;
 		return this;

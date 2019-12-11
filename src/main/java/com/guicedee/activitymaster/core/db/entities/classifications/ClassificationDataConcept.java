@@ -20,13 +20,13 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "ClassificationDataConcept")
+@Table(schema="Classification",name = "ClassificationDataConcept")
 @XmlRootElement
 
 @Access(FIELD)
@@ -196,8 +196,7 @@ public class ClassificationDataConcept
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 100) String getName()
+	public    String getName()
 	{
 		return this.name;
 	}
@@ -214,8 +213,7 @@ public class ClassificationDataConcept
 		return this;
 	}
 
-	public ClassificationDataConcept setName(@NotNull @Size(min = 1,
-			max = 100) String name)
+	public ClassificationDataConcept setName(   String name)
 	{
 		this.name = name;
 		return this;

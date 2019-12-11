@@ -12,10 +12,6 @@
     <packaging>jar</packaging>
     <name>Activity Master</name>
 
-    <properties>
-        <jackson.version>2.10.1</jackson.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -223,11 +219,11 @@
             <plugin>
                 <groupId>org.hibernate.orm.tooling</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>5.4.8.Final</version>
+                <version>5.4.10.Final</version>
                 <executions>
                     <execution>
                         <configuration>
-                            <failOnError>false</failOnError>
+                            <failOnError>true</failOnError>
                             <enableLazyInitialization>true</enableLazyInitialization>
                             <enableDirtyTracking>false</enableDirtyTracking>
                             <enableAssociationManagement>false</enableAssociationManagement>
@@ -240,7 +236,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <failOnError>false</failOnError>
+                    <failOnError>true</failOnError>
                     <enableLazyInitialization>true</enableLazyInitialization>
                     <enableDirtyTracking>false</enableDirtyTracking>
                     <enableAssociationManagement>false</enableAssociationManagement>
@@ -253,7 +249,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>12</release>
+                    <release>13</release>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
                             <groupId>com.guicedee.services</groupId>

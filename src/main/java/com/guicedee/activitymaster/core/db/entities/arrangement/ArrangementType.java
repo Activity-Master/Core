@@ -16,13 +16,13 @@ import java.util.Objects;
 import static javax.persistence.AccessType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "ArrangementType")
+@Table(schema="Arrangement",name = "ArrangementType")
 @XmlRootElement
 
 @Access(FIELD)
@@ -142,14 +142,12 @@ public class ArrangementType
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 150) String getName()
+	public   String getName()
 	{
 		return this.name;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 500) String getDescription()
+	public    String getDescription()
 	{
 		return this.description;
 	}
@@ -160,8 +158,7 @@ public class ArrangementType
 		return this;
 	}
 
-	public ArrangementType setName(@NotNull @Size(min = 1,
-			max = 150) String name)
+	public ArrangementType setName(  String name)
 	{
 		this.name = name;
 		return this;

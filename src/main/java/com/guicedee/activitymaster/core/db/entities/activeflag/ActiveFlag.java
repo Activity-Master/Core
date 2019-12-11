@@ -2,23 +2,9 @@ package com.guicedee.activitymaster.core.db.entities.activeflag;
 
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.builders.ActiveFlagQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.address.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.classifications.*;
+import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification;
-import com.guicedee.activitymaster.core.db.entities.events.*;
-import com.guicedee.activitymaster.core.db.entities.geography.*;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.product.*;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClassification;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokensSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemsSecurityToken;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
@@ -28,14 +14,6 @@ import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.db.entities.address.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.classifications.*;
-import com.guicedee.activitymaster.core.db.entities.events.*;
-import com.guicedee.activitymaster.core.db.entities.geography.*;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.product.*;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
@@ -45,26 +23,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static javax.persistence.AccessType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings({"Duplicates", "unused"})
 @Entity
-@Table(name = "ActiveFlag")
+@Table(name = "ActiveFlag",
+		schema = "dbo")
 @XmlRootElement
-
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ActiveFlag
 		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, Long, ActiveFlagSecurityToken>
 		implements INameAndDescription<ActiveFlag>,
-				           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>, IActiveFlag<?>, IClassification<?>,  IActiveFlag<ActiveFlag>>,
+				           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>, IActiveFlag<?>, IClassification<?>, IActiveFlag<ActiveFlag>>,
 				           IActivityMasterEntity<ActiveFlag>,
 				           IContainsEnterprise<ActiveFlag>,
 				           IActiveFlag<ActiveFlag>
@@ -92,8 +70,7 @@ public class ActiveFlag
 			name = "ActiveFlagName")
 	private String name;
 
-	@Basic(optional = false,
-			fetch = FetchType.LAZY)
+	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
 			max = 100)
@@ -109,6 +86,13 @@ public class ActiveFlag
 			name = "AllowAccess")
 	private boolean allowAccess;
 
+	@SuppressWarnings("unused")
+	@OneToMany(
+			mappedBy = "base",
+			fetch = FetchType.LAZY)
+	private List<ActiveFlagSecurityToken> securities;
+
+/*
 	@OneToMany(
 			mappedBy = "activeFlagID",
 			fetch = FetchType.LAZY)
@@ -118,10 +102,6 @@ public class ActiveFlag
 			fetch = FetchType.LAZY)
 	private List<InvolvedPartyXProductSecurityToken> involvedPartyXProductSecurityTokenList;
 
-	@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY)
-	private List<ActiveFlagSecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "activeFlagID",
@@ -578,7 +558,7 @@ public class ActiveFlag
 			mappedBy = "activeFlagID",
 			fetch = FetchType.LAZY)
 	private List<ClassificationSecurityToken> classificationSecurityTokenList;
-
+*/
 
 	public ActiveFlag()
 	{
@@ -593,12 +573,11 @@ public class ActiveFlag
 	public ActiveFlag(Long id, String activeFlagName, boolean allowAccess)
 	{
 		this.id = id;
-		this.name = activeFlagName;
+		name = activeFlagName;
 		this.allowAccess = allowAccess;
 	}
 
-
-	@SuppressWarnings("unchecked")
+	@Override
 	public ActiveFlag remove()
 	{
 		setEffectiveToDate(LocalDateTime.now());
@@ -606,8 +585,7 @@ public class ActiveFlag
 		return this;
 	}
 
-
-	@SuppressWarnings("unchecked")
+	@Override
 	public ActiveFlag archive()
 	{
 		setEffectiveToDate(LocalDateTime.now());
@@ -623,7 +601,6 @@ public class ActiveFlag
 
 	@Override
 	@NotNull
-	@SuppressWarnings("unchecked")
 	protected Class<ActiveFlagSecurityToken> findPersistentSecurityClass()
 	{
 		return (Class<ActiveFlagSecurityToken>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
@@ -647,1339 +624,58 @@ public class ActiveFlag
 		classificationLink.setActiveFlagID(this);
 	}
 
-	public List<InvolvedPartyXInvolvedPartyNameType> getInvolvedPartyXInvolvedPartyNameTypeList()
+	@Override
+	public boolean equals(Object o)
 	{
-		return this.involvedPartyXInvolvedPartyNameTypeList;
-	}
-
-	public List<InvolvedPartyXProductSecurityToken> getInvolvedPartyXProductSecurityTokenList()
-	{
-		return this.involvedPartyXProductSecurityTokenList;
-	}
-
-	public List<ActiveFlagSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
-	public List<Address> getAddressList()
-	{
-		return this.addressList;
-	}
-
-	public List<ProductXResourceItemSecurityToken> getProductXResourceItemSecurityTokenList()
-	{
-		return this.productXResourceItemSecurityTokenList;
-	}
-
-	public List<Product> getProductList()
-	{
-		return this.productList;
-	}
-
-	public List<ResourceItemXClassificationSecurityToken> getResourceItemXClassificationSecurityTokenList()
-	{
-		return this.resourceItemXClassificationSecurityTokenList;
-	}
-
-	public List<InvolvedPartyXResourceItem> getInvolvedPartyXResourceItemList()
-	{
-		return this.involvedPartyXResourceItemList;
-	}
-
-	public List<InvolvedPartyNameType> getInvolvedPartyNameTypeList()
-	{
-		return this.involvedPartyNameTypeList;
-	}
-
-	public List<EventXClassificationSecurityToken> getEventXClassificationSecurityTokenList()
-	{
-		return this.eventXClassificationSecurityTokenList;
-	}
-
-	public List<ProductSecurityToken> getProductSecurityTokenList()
-	{
-		return this.productSecurityTokenList;
-	}
-
-	public List<InvolvedParty> getInvolvedPartyList()
-	{
-		return this.involvedPartyList;
-	}
-
-	public List<ArrangementXArrangementType> getArrangementXArrangementTypeList()
-	{
-		return this.arrangementXArrangementTypeList;
-	}
-
-	public List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> getInvolvedPartyXInvolvedPartyNameTypeSecurityTokenList()
-	{
-		return this.involvedPartyXInvolvedPartyNameTypeSecurityTokenList;
-	}
-
-	public List<Classification> getClassificationList()
-	{
-		return this.classificationList;
-	}
-
-	public List<EventXEventTypeSecurityToken> getEventXEventTypeSecurityTokenList()
-	{
-		return this.eventXEventTypeSecurityTokenList;
-	}
-
-	public List<ArrangementXResourceItemSecurityToken> getArrangementXResourceItemSecurityTokenList()
-	{
-		return this.arrangementXResourceItemSecurityTokenList;
-	}
-
-	public List<EventXProductSecurityToken> getEventXProductSecurityTokenList()
-	{
-		return this.eventXProductSecurityTokenList;
-	}
-
-	public List<InvolvedPartyNameTypeSecurityToken> getInvolvedPartyNameTypeSecurityTokenList()
-	{
-		return this.involvedPartyNameTypeSecurityTokenList;
-	}
-
-	public List<ClassificationXResourceItemSecurityToken> getClassificationXResourceItemSecurityTokenList()
-	{
-		return this.classificationXResourceItemSecurityTokenList;
-	}
-
-	public List<EventXResourceItemSecurityToken> getEventXResourceItemSecurityTokenList()
-	{
-		return this.eventXResourceItemSecurityTokenList;
-	}
-
-	public List<AddressSecurityToken> getAddressSecurityTokenList()
-	{
-		return this.addressSecurityTokenList;
-	}
-
-	public List<SystemsSecurityToken> getSystemSecurityTokenList()
-	{
-		return this.systemSecurityTokenList;
-	}
-
-	public List<ClassificationXClassification> getClassificationXClassificationList()
-	{
-		return this.classificationXClassificationList;
-	}
-
-	public List<ClassificationDataConcept> getClassificationDataConceptList()
-	{
-		return this.classificationDataConceptList;
-	}
-
-	public List<AddressXGeography> getAddressXGeographyList()
-	{
-		return this.addressXGeographyList;
-	}
-
-	public List<SecurityTokenXClassification> getSecurityTokenXClassificationList()
-	{
-		return this.securityTokenXClassificationList;
-	}
-
-	public List<EventXArrangementsSecurityToken> getEventXArrangementsSecurityTokenList()
-	{
-		return this.eventXArrangementsSecurityTokenList;
-	}
-
-	public List<InvolvedPartyXResourceItemSecurityToken> getInvolvedPartyXResourceItemSecurityTokenList()
-	{
-		return this.involvedPartyXResourceItemSecurityTokenList;
-	}
-
-	public List<ProductXClassification> getProductXClassificationList()
-	{
-		return this.productXClassificationList;
-	}
-
-	public List<ResourceItemDataSecurityToken> getResourceItemDataSecurityTokenList()
-	{
-		return this.resourceItemDataSecurityTokenList;
-	}
-
-	public List<ArrangementXInvolvedParty> getArrangementXInvolvedPartyList()
-	{
-		return this.arrangementXInvolvedPartyList;
-	}
-
-	public List<ArrangementXResourceItem> getArrangementXResourceItemList()
-	{
-		return this.arrangementXResourceItemList;
-	}
-
-	public List<ProductXProductSecurityToken> getProductXProductSecurityTokenList()
-	{
-		return this.productXProductSecurityTokenList;
-	}
-
-	public List<ResourceItemXClassification> getResourceItemXClassificationList()
-	{
-		return this.resourceItemXClassificationList;
-	}
-
-	public List<ArrangementXInvolvedPartySecurityToken> getArrangementXInvolvedPartySecurityTokenList()
-	{
-		return this.arrangementXInvolvedPartySecurityTokenList;
-	}
-
-	public List<InvolvedPartyNonOrganic> getInvolvedPartyNonOrganicList()
-	{
-		return this.involvedPartyNonOrganicList;
-	}
-
-	public List<EventXInvolvedParty> getEventXInvolvedPartyList()
-	{
-		return this.eventXInvolvedPartyList;
-	}
-
-	public List<ActiveFlagXClassification> getClassifications()
-	{
-		return this.classifications;
-	}
-
-	public List<GeographyXResourceItemSecurityToken> getGeographyXResourceItemSecurityTokenList()
-	{
-		return this.geographyXResourceItemSecurityTokenList;
-	}
-
-	public List<EnterpriseXClassification> getEnterpriseXClassificationList()
-	{
-		return this.enterpriseXClassificationList;
-	}
-
-	public List<EventXArrangement> getEventXArrangementList()
-	{
-		return this.eventXArrangementList;
-	}
-
-	public List<InvolvedPartyIdentificationTypeSecurityToken> getInvolvedPartyIdentificationTypeSecurityTokenList()
-	{
-		return this.involvedPartyIdentificationTypeSecurityTokenList;
-	}
-
-	public List<AddressXResourceItemSecurityToken> getAddressXResourceItemSecurityTokenList()
-	{
-		return this.addressXResourceItemSecurityTokenList;
-	}
-
-	public List<InvolvedPartySecurityToken> getInvolvedPartySecurityTokenList()
-	{
-		return this.involvedPartySecurityTokenList;
-	}
-
-	public List<ProductXClassificationSecurityToken> getProductXClassificationSecurityTokenList()
-	{
-		return this.productXClassificationSecurityTokenList;
-	}
-
-	public List<SecurityToken> getSecurityTokenList()
-	{
-		return this.securityTokenList;
-	}
-
-	public List<ArrangementXArrangementTypeSecurityToken> getArrangementXArrangementTypeSecurityTokenList()
-	{
-		return this.arrangementXArrangementTypeSecurityTokenList;
-	}
-
-	public List<EventXInvolvedPartySecurityToken> getEventXInvolvedPartySecurityTokenList()
-	{
-		return this.eventXInvolvedPartySecurityTokenList;
-	}
-
-	public List<InvolvedPartyOrganic> getInvolvedPartyOrganicList()
-	{
-		return this.involvedPartyOrganicList;
-	}
-
-	public List<SystemXClassification> getSystemXClassificationList()
-	{
-		return this.systemXClassificationList;
-	}
-
-	public List<Event> getEventList()
-	{
-		return this.eventList;
-	}
-
-	public List<ClassificationDataConceptXClassificationSecurityToken> getClassificationDataConceptXClassificationSecurityTokenList()
-	{
-		return this.classificationDataConceptXClassificationSecurityTokenList;
-	}
-
-	public List<ActiveFlagSecurityToken> getActiveFlagSecurityTokenList()
-	{
-		return this.activeFlagSecurityTokenList;
-	}
-
-	public List<ActiveFlagSecurityToken> getActiveFlagSecurityTokenList1()
-	{
-		return this.activeFlagSecurityTokenList1;
-	}
-
-	public List<ArrangementXClassification> getArrangementXClassificationList()
-	{
-		return this.arrangementXClassificationList;
-	}
-
-	public List<Geography> getGeographyList()
-	{
-		return this.geographyList;
-	}
-
-	public List<InvolvedPartyOrganicTypeSecurityToken> getInvolvedPartyOrganicTypeSecurityTokenList()
-	{
-		return this.involvedPartyOrganicTypeSecurityTokenList;
-	}
-
-	public List<EventType> getEventTypeList()
-	{
-		return this.eventTypeList;
-	}
-
-	public List<ResourceItemData> getResourceItemDataList()
-	{
-		return this.resourceItemDataList;
-	}
-
-	public List<AddressXResourceItem> getAddressXResourceItemList()
-	{
-		return this.addressXResourceItemList;
-	}
-
-	public List<ArrangementTypeSecurityToken> getArrangementTypeSecurityTokenList()
-	{
-		return this.arrangementTypeSecurityTokenList;
-	}
-
-	public List<InvolvedPartyOrganicSecurityToken> getInvolvedPartyOrganicSecurityTokenList()
-	{
-		return this.involvedPartyOrganicSecurityTokenList;
-	}
-
-	public List<ArrangementXArrangement> getArrangementXArrangementList()
-	{
-		return this.arrangementXArrangementList;
-	}
-
-	public List<ClassificationDataConceptXClassification> getClassificationDataConceptXClassificationList()
-	{
-		return this.classificationDataConceptXClassificationList;
-	}
-
-	public List<ArrangementXProduct> getArrangementXProductList()
-	{
-		return this.arrangementXProductList;
-	}
-
-	public List<InvolvedPartyXInvolvedParty> getInvolvedPartyXInvolvedPartyList()
-	{
-		return this.involvedPartyXInvolvedPartyList;
-	}
-
-	public List<InvolvedPartyXInvolvedPartyType> getInvolvedPartyXInvolvedPartyTypeList()
-	{
-		return this.involvedPartyXInvolvedPartyTypeList;
-	}
-
-	public List<ArrangementSecurityToken> getArrangementSecurityTokenList()
-	{
-		return this.arrangementSecurityTokenList;
-	}
-
-	public List<InvolvedPartyOrganicType> getInvolvedPartyOrganicTypeList()
-	{
-		return this.involvedPartyOrganicTypeList;
-	}
-
-	public List<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken> getInvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenList()
-	{
-		return this.involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenList;
-	}
-
-	public List<InvolvedPartyXInvolvedPartyTypeSecurityToken> getInvolvedPartyXInvolvedPartyTypeSecurityTokenList()
-	{
-		return this.involvedPartyXInvolvedPartyTypeSecurityTokenList;
-	}
-
-	public List<ClassificationDataConceptSecurityToken> getClassificationDataConceptSecurityTokenList()
-	{
-		return this.classificationDataConceptSecurityTokenList;
-	}
-
-	public List<EventXResourceItem> getEventXResourceItemList()
-	{
-		return this.eventXResourceItemList;
-	}
-
-	public List<InvolvedPartyXClassification> getInvolvedPartyXClassificationList()
-	{
-		return this.involvedPartyXClassificationList;
-	}
-
-	public List<ArrangementType> getArrangementTypeList()
-	{
-		return this.arrangementTypeList;
-	}
-
-	public List<Systems> getSystemsList()
-	{
-		return this.systemsList;
-	}
-
-	public List<InvolvedPartyTypeSecurityToken> getInvolvedPartyTypeSecurityTokenList()
-	{
-		return this.involvedPartyTypeSecurityTokenList;
-	}
-
-	public List<SecurityTokenXSecurityToken> getSecurityTokenXSecurityTokenList()
-	{
-		return this.securityTokenXSecurityTokenList;
-	}
-
-	public List<ProductXResourceItem> getProductXResourceItemList()
-	{
-		return this.productXResourceItemList;
-	}
-
-	public List<InvolvedPartyXClassificationSecurityToken> getInvolvedPartyXClassificationSecurityTokenList()
-	{
-		return this.involvedPartyXClassificationSecurityTokenList;
-	}
-
-	public List<EventXAddressSecurityToken> getEventXAddressSecurityTokenList()
-	{
-		return this.eventXAddressSecurityTokenList;
-	}
-
-	public List<ResourceItem> getResourceItemList()
-	{
-		return this.resourceItemList;
-	}
-
-	public List<EventXAddress> getEventXAddressList()
-	{
-		return this.eventXAddressList;
-	}
-
-	public List<ClassificationDataConceptXResourceItem> getClassificationDataConceptXResourceItemList()
-	{
-		return this.classificationDataConceptXResourceItemList;
-	}
-
-	public List<InvolvedPartyXProduct> getInvolvedPartyXProductList()
-	{
-		return this.involvedPartyXProductList;
-	}
-
-	public List<EventSecurityToken> getEventSecurityTokenList()
-	{
-		return this.eventSecurityTokenList;
-	}
-
-	public List<ResourceItemDataXClassification> getResourceItemDataXClassificationList()
-	{
-		return this.resourceItemDataXClassificationList;
-	}
-
-	public List<SecurityTokensSecurityToken> getSecurityTokenAccessList()
-	{
-		return this.securityTokenAccessList;
-	}
-
-	public List<InvolvedPartyXAddress> getInvolvedPartyXAddressList()
-	{
-		return this.involvedPartyXAddressList;
-	}
-
-	public List<GeographyXClassificationSecurityToken> getGeographyXClassificationSecurityTokenList()
-	{
-		return this.geographyXClassificationSecurityTokenList;
-	}
-
-	public List<GeographyXGeographySecurityToken> getGeographyXGeographySecurityTokenList()
-	{
-		return this.geographyXGeographySecurityTokenList;
-	}
-
-	public List<ArrangementXArrangementSecurityToken> getArrangementXArrangementSecurityTokenList()
-	{
-		return this.arrangementXArrangementSecurityTokenList;
-	}
-
-	public List<GeographySecurityToken> getGeographySecurityTokenList()
-	{
-		return this.geographySecurityTokenList;
-	}
-
-	public List<InvolvedPartyXInvolvedPartyIdentificationType> getInvolvedPartyXInvolvedPartyIdentificationTypeList()
-	{
-		return this.involvedPartyXInvolvedPartyIdentificationTypeList;
-	}
-
-	public List<InvolvedPartyIdentificationType> getInvolvedPartyIdentificationTypeList()
-	{
-		return this.involvedPartyIdentificationTypeList;
-	}
-
-	public List<ClassificationXResourceItem> getClassificationXResourceItemList()
-	{
-		return this.classificationXResourceItemList;
-	}
-
-	public List<EventXProduct> getEventXProductList()
-	{
-		return this.eventXProductList;
-	}
-
-	public List<EventXEventType> getEventXEventTypeList()
-	{
-		return this.eventXEventTypeList;
-	}
-
-	public List<InvolvedPartyXInvolvedPartySecurityToken> getInvolvedPartyXInvolvedPartySecurityTokenList()
-	{
-		return this.involvedPartyXInvolvedPartySecurityTokenList;
-	}
-
-	public List<ProductXProduct> getProductXProductList()
-	{
-		return this.productXProductList;
-	}
-
-	public List<InvolvedPartyType> getInvolvedPartyTypeList()
-	{
-		return this.involvedPartyTypeList;
-	}
-
-	public List<ArrangementXClassificationSecurityToken> getArrangementXClassificationSecurityTokenList()
-	{
-		return this.arrangementXClassificationSecurityTokenList;
-	}
-
-	public List<InvolvedPartyXAddressSecurityToken> getInvolvedPartyXAddressSecurityTokenList()
-	{
-		return this.involvedPartyXAddressSecurityTokenList;
-	}
-
-	public List<GeographyXClassification> getGeographyXClassificationList()
-	{
-		return this.geographyXClassificationList;
-	}
-
-	public List<AddressXGeographySecurityToken> getAddressXGeographySecurityTokenList()
-	{
-		return this.addressXGeographySecurityTokenList;
-	}
-
-	public List<InvolvedPartyNonOrganicSecurityToken> getInvolvedPartyNonOrganicSecurityTokenList()
-	{
-		return this.involvedPartyNonOrganicSecurityTokenList;
-	}
-
-	public List<EventXClassification> getEventXClassificationList()
-	{
-		return this.eventXClassificationList;
-	}
-
-	public List<Arrangement> getArrangementList()
-	{
-		return this.arrangementList;
-	}
-
-	public List<ResourceItemSecurityToken> getResourceItemSecurityTokenList()
-	{
-		return this.resourceItemSecurityTokenList;
-	}
-
-	public List<GeographyXResourceItem> getGeographyXResourceItemList()
-	{
-		return this.geographyXResourceItemList;
-	}
-
-	public List<ClassificationXClassificationSecurityToken> getClassificationXClassificationSecurityTokenList()
-	{
-		return this.classificationXClassificationSecurityTokenList;
-	}
-
-	public List<EventTypesSecurityToken> getEventTypesSecurityTokenList()
-	{
-		return this.eventTypesSecurityTokenList;
-	}
-
-
-	public List<GeographyXGeography> getGeographyXGeographyList()
-	{
-		return this.geographyXGeographyList;
-	}
-
-	public List<ClassificationSecurityToken> getClassificationSecurityTokenList()
-	{
-		return this.classificationSecurityTokenList;
-	}
-
-	public ActiveFlag setInvolvedPartyXInvolvedPartyNameTypeList(List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList)
-	{
-		this.involvedPartyXInvolvedPartyNameTypeList = involvedPartyXInvolvedPartyNameTypeList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXProductSecurityTokenList(List<InvolvedPartyXProductSecurityToken> involvedPartyXProductSecurityTokenList)
-	{
-		this.involvedPartyXProductSecurityTokenList = involvedPartyXProductSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setSecurities(List<ActiveFlagSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-
-	public ActiveFlag setAddressList(List<Address> addressList)
-	{
-		this.addressList = addressList;
-		return this;
-	}
-
-	public ActiveFlag setProductXResourceItemSecurityTokenList(List<ProductXResourceItemSecurityToken> productXResourceItemSecurityTokenList)
-	{
-		this.productXResourceItemSecurityTokenList = productXResourceItemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setProductList(List<Product> productList)
-	{
-		this.productList = productList;
-		return this;
-	}
-
-	public ActiveFlag setResourceItemXClassificationSecurityTokenList(List<ResourceItemXClassificationSecurityToken> resourceItemXClassificationSecurityTokenList)
-	{
-		this.resourceItemXClassificationSecurityTokenList = resourceItemXClassificationSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXResourceItemList(List<InvolvedPartyXResourceItem> involvedPartyXResourceItemList)
-	{
-		this.involvedPartyXResourceItemList = involvedPartyXResourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyNameTypeList(List<InvolvedPartyNameType> involvedPartyNameTypeList)
-	{
-		this.involvedPartyNameTypeList = involvedPartyNameTypeList;
-		return this;
-	}
-
-	public ActiveFlag setEventXClassificationSecurityTokenList(List<EventXClassificationSecurityToken> eventXClassificationSecurityTokenList)
-	{
-		this.eventXClassificationSecurityTokenList = eventXClassificationSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setProductSecurityTokenList(List<ProductSecurityToken> productSecurityTokenList)
-	{
-		this.productSecurityTokenList = productSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyList(List<InvolvedParty> involvedPartyList)
-	{
-		this.involvedPartyList = involvedPartyList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXArrangementTypeList(List<ArrangementXArrangementType> arrangementXArrangementTypeList)
-	{
-		this.arrangementXArrangementTypeList = arrangementXArrangementTypeList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXInvolvedPartyNameTypeSecurityTokenList(List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> involvedPartyXInvolvedPartyNameTypeSecurityTokenList)
-	{
-		this.involvedPartyXInvolvedPartyNameTypeSecurityTokenList = involvedPartyXInvolvedPartyNameTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationList(List<Classification> classificationList)
-	{
-		this.classificationList = classificationList;
-		return this;
-	}
-
-	public ActiveFlag setEventXEventTypeSecurityTokenList(List<EventXEventTypeSecurityToken> eventXEventTypeSecurityTokenList)
-	{
-		this.eventXEventTypeSecurityTokenList = eventXEventTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXResourceItemSecurityTokenList(List<ArrangementXResourceItemSecurityToken> arrangementXResourceItemSecurityTokenList)
-	{
-		this.arrangementXResourceItemSecurityTokenList = arrangementXResourceItemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEventXProductSecurityTokenList(List<EventXProductSecurityToken> eventXProductSecurityTokenList)
-	{
-		this.eventXProductSecurityTokenList = eventXProductSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyNameTypeSecurityTokenList(List<InvolvedPartyNameTypeSecurityToken> involvedPartyNameTypeSecurityTokenList)
-	{
-		this.involvedPartyNameTypeSecurityTokenList = involvedPartyNameTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationXResourceItemSecurityTokenList(List<ClassificationXResourceItemSecurityToken> classificationXResourceItemSecurityTokenList)
-	{
-		this.classificationXResourceItemSecurityTokenList = classificationXResourceItemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEventXResourceItemSecurityTokenList(List<EventXResourceItemSecurityToken> eventXResourceItemSecurityTokenList)
-	{
-		this.eventXResourceItemSecurityTokenList = eventXResourceItemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setAddressSecurityTokenList(List<AddressSecurityToken> addressSecurityTokenList)
-	{
-		this.addressSecurityTokenList = addressSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setSystemSecurityTokenList(List<SystemsSecurityToken> systemSecurityTokenList)
-	{
-		this.systemSecurityTokenList = systemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationXClassificationList(List<ClassificationXClassification> classificationXClassificationList)
-	{
-		this.classificationXClassificationList = classificationXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationDataConceptList(List<ClassificationDataConcept> classificationDataConceptList)
-	{
-		this.classificationDataConceptList = classificationDataConceptList;
-		return this;
-	}
-
-	public ActiveFlag setAddressXGeographyList(List<AddressXGeography> addressXGeographyList)
-	{
-		this.addressXGeographyList = addressXGeographyList;
-		return this;
-	}
-
-	public ActiveFlag setSecurityTokenXClassificationList(List<SecurityTokenXClassification> securityTokenXClassificationList)
-	{
-		this.securityTokenXClassificationList = securityTokenXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setEventXArrangementsSecurityTokenList(List<EventXArrangementsSecurityToken> eventXArrangementsSecurityTokenList)
-	{
-		this.eventXArrangementsSecurityTokenList = eventXArrangementsSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXResourceItemSecurityTokenList(List<InvolvedPartyXResourceItemSecurityToken> involvedPartyXResourceItemSecurityTokenList)
-	{
-		this.involvedPartyXResourceItemSecurityTokenList = involvedPartyXResourceItemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setProductXClassificationList(List<ProductXClassification> productXClassificationList)
-	{
-		this.productXClassificationList = productXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setResourceItemDataSecurityTokenList(List<ResourceItemDataSecurityToken> resourceItemDataSecurityTokenList)
-	{
-		this.resourceItemDataSecurityTokenList = resourceItemDataSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXInvolvedPartyList(List<ArrangementXInvolvedParty> arrangementXInvolvedPartyList)
-	{
-		this.arrangementXInvolvedPartyList = arrangementXInvolvedPartyList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXResourceItemList(List<ArrangementXResourceItem> arrangementXResourceItemList)
-	{
-		this.arrangementXResourceItemList = arrangementXResourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setProductXProductSecurityTokenList(List<ProductXProductSecurityToken> productXProductSecurityTokenList)
-	{
-		this.productXProductSecurityTokenList = productXProductSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setResourceItemXClassificationList(List<ResourceItemXClassification> resourceItemXClassificationList)
-	{
-		this.resourceItemXClassificationList = resourceItemXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXInvolvedPartySecurityTokenList(List<ArrangementXInvolvedPartySecurityToken> arrangementXInvolvedPartySecurityTokenList)
-	{
-		this.arrangementXInvolvedPartySecurityTokenList = arrangementXInvolvedPartySecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyNonOrganicList(List<InvolvedPartyNonOrganic> involvedPartyNonOrganicList)
-	{
-		this.involvedPartyNonOrganicList = involvedPartyNonOrganicList;
-		return this;
-	}
-
-	public ActiveFlag setEventXInvolvedPartyList(List<EventXInvolvedParty> eventXInvolvedPartyList)
-	{
-		this.eventXInvolvedPartyList = eventXInvolvedPartyList;
-		return this;
-	}
-
-	public ActiveFlag setClassifications(List<ActiveFlagXClassification> classifications)
-	{
-		this.classifications = classifications;
-		return this;
-	}
-
-	public ActiveFlag setGeographyXResourceItemSecurityTokenList(List<GeographyXResourceItemSecurityToken> geographyXResourceItemSecurityTokenList)
-	{
-		this.geographyXResourceItemSecurityTokenList = geographyXResourceItemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEnterpriseXClassificationList(List<EnterpriseXClassification> enterpriseXClassificationList)
-	{
-		this.enterpriseXClassificationList = enterpriseXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setEventXArrangementList(List<EventXArrangement> eventXArrangementList)
-	{
-		this.eventXArrangementList = eventXArrangementList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyIdentificationTypeSecurityTokenList(List<InvolvedPartyIdentificationTypeSecurityToken> involvedPartyIdentificationTypeSecurityTokenList)
-	{
-		this.involvedPartyIdentificationTypeSecurityTokenList = involvedPartyIdentificationTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setAddressXResourceItemSecurityTokenList(List<AddressXResourceItemSecurityToken> addressXResourceItemSecurityTokenList)
-	{
-		this.addressXResourceItemSecurityTokenList = addressXResourceItemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartySecurityTokenList(List<InvolvedPartySecurityToken> involvedPartySecurityTokenList)
-	{
-		this.involvedPartySecurityTokenList = involvedPartySecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setProductXClassificationSecurityTokenList(List<ProductXClassificationSecurityToken> productXClassificationSecurityTokenList)
-	{
-		this.productXClassificationSecurityTokenList = productXClassificationSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setSecurityTokenList(List<SecurityToken> securityTokenList)
-	{
-		this.securityTokenList = securityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXArrangementTypeSecurityTokenList(List<ArrangementXArrangementTypeSecurityToken> arrangementXArrangementTypeSecurityTokenList)
-	{
-		this.arrangementXArrangementTypeSecurityTokenList = arrangementXArrangementTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEventXInvolvedPartySecurityTokenList(List<EventXInvolvedPartySecurityToken> eventXInvolvedPartySecurityTokenList)
-	{
-		this.eventXInvolvedPartySecurityTokenList = eventXInvolvedPartySecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyOrganicList(List<InvolvedPartyOrganic> involvedPartyOrganicList)
-	{
-		this.involvedPartyOrganicList = involvedPartyOrganicList;
-		return this;
-	}
-
-	public ActiveFlag setSystemXClassificationList(List<SystemXClassification> systemXClassificationList)
-	{
-		this.systemXClassificationList = systemXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setEventList(List<Event> eventList)
-	{
-		this.eventList = eventList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationDataConceptXClassificationSecurityTokenList(List<ClassificationDataConceptXClassificationSecurityToken> classificationDataConceptXClassificationSecurityTokenList)
-	{
-		this.classificationDataConceptXClassificationSecurityTokenList = classificationDataConceptXClassificationSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setActiveFlagSecurityTokenList(List<ActiveFlagSecurityToken> activeFlagSecurityTokenList)
-	{
-		this.activeFlagSecurityTokenList = activeFlagSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setActiveFlagSecurityTokenList1(List<ActiveFlagSecurityToken> activeFlagSecurityTokenList1)
-	{
-		this.activeFlagSecurityTokenList1 = activeFlagSecurityTokenList1;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXClassificationList(List<ArrangementXClassification> arrangementXClassificationList)
-	{
-		this.arrangementXClassificationList = arrangementXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setGeographyList(List<Geography> geographyList)
-	{
-		this.geographyList = geographyList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyOrganicTypeSecurityTokenList(List<InvolvedPartyOrganicTypeSecurityToken> involvedPartyOrganicTypeSecurityTokenList)
-	{
-		this.involvedPartyOrganicTypeSecurityTokenList = involvedPartyOrganicTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEventTypeList(List<EventType> eventTypeList)
-	{
-		this.eventTypeList = eventTypeList;
-		return this;
-	}
-
-	public ActiveFlag setResourceItemDataList(List<ResourceItemData> resourceItemDataList)
-	{
-		this.resourceItemDataList = resourceItemDataList;
-		return this;
-	}
-
-	public ActiveFlag setAddressXResourceItemList(List<AddressXResourceItem> addressXResourceItemList)
-	{
-		this.addressXResourceItemList = addressXResourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementTypeSecurityTokenList(List<ArrangementTypeSecurityToken> arrangementTypeSecurityTokenList)
-	{
-		this.arrangementTypeSecurityTokenList = arrangementTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyOrganicSecurityTokenList(List<InvolvedPartyOrganicSecurityToken> involvedPartyOrganicSecurityTokenList)
-	{
-		this.involvedPartyOrganicSecurityTokenList = involvedPartyOrganicSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXArrangementList(List<ArrangementXArrangement> arrangementXArrangementList)
-	{
-		this.arrangementXArrangementList = arrangementXArrangementList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationDataConceptXClassificationList(List<ClassificationDataConceptXClassification> classificationDataConceptXClassificationList)
-	{
-		this.classificationDataConceptXClassificationList = classificationDataConceptXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXProductList(List<ArrangementXProduct> arrangementXProductList)
-	{
-		this.arrangementXProductList = arrangementXProductList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXInvolvedPartyList(List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList)
-	{
-		this.involvedPartyXInvolvedPartyList = involvedPartyXInvolvedPartyList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXInvolvedPartyTypeList(List<InvolvedPartyXInvolvedPartyType> involvedPartyXInvolvedPartyTypeList)
-	{
-		this.involvedPartyXInvolvedPartyTypeList = involvedPartyXInvolvedPartyTypeList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementSecurityTokenList(List<ArrangementSecurityToken> arrangementSecurityTokenList)
-	{
-		this.arrangementSecurityTokenList = arrangementSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyOrganicTypeList(List<InvolvedPartyOrganicType> involvedPartyOrganicTypeList)
-	{
-		this.involvedPartyOrganicTypeList = involvedPartyOrganicTypeList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenList(List<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken> involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenList)
-	{
-		this.involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenList = involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXInvolvedPartyTypeSecurityTokenList(List<InvolvedPartyXInvolvedPartyTypeSecurityToken> involvedPartyXInvolvedPartyTypeSecurityTokenList)
-	{
-		this.involvedPartyXInvolvedPartyTypeSecurityTokenList = involvedPartyXInvolvedPartyTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationDataConceptSecurityTokenList(List<ClassificationDataConceptSecurityToken> classificationDataConceptSecurityTokenList)
-	{
-		this.classificationDataConceptSecurityTokenList = classificationDataConceptSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEventXResourceItemList(List<EventXResourceItem> eventXResourceItemList)
-	{
-		this.eventXResourceItemList = eventXResourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXClassificationList(List<InvolvedPartyXClassification> involvedPartyXClassificationList)
-	{
-		this.involvedPartyXClassificationList = involvedPartyXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementTypeList(List<ArrangementType> arrangementTypeList)
-	{
-		this.arrangementTypeList = arrangementTypeList;
-		return this;
-	}
-
-	public ActiveFlag setSystemsList(List<Systems> systemsList)
-	{
-		this.systemsList = systemsList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyTypeSecurityTokenList(List<InvolvedPartyTypeSecurityToken> involvedPartyTypeSecurityTokenList)
-	{
-		this.involvedPartyTypeSecurityTokenList = involvedPartyTypeSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setSecurityTokenXSecurityTokenList(List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenList)
-	{
-		this.securityTokenXSecurityTokenList = securityTokenXSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setProductXResourceItemList(List<ProductXResourceItem> productXResourceItemList)
-	{
-		this.productXResourceItemList = productXResourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXClassificationSecurityTokenList(List<InvolvedPartyXClassificationSecurityToken> involvedPartyXClassificationSecurityTokenList)
-	{
-		this.involvedPartyXClassificationSecurityTokenList = involvedPartyXClassificationSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEventXAddressSecurityTokenList(List<EventXAddressSecurityToken> eventXAddressSecurityTokenList)
-	{
-		this.eventXAddressSecurityTokenList = eventXAddressSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setResourceItemList(List<ResourceItem> resourceItemList)
-	{
-		this.resourceItemList = resourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setEventXAddressList(List<EventXAddress> eventXAddressList)
-	{
-		this.eventXAddressList = eventXAddressList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationDataConceptXResourceItemList(List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList)
-	{
-		this.classificationDataConceptXResourceItemList = classificationDataConceptXResourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXProductList(List<InvolvedPartyXProduct> involvedPartyXProductList)
-	{
-		this.involvedPartyXProductList = involvedPartyXProductList;
-		return this;
-	}
-
-	public ActiveFlag setEventSecurityTokenList(List<EventSecurityToken> eventSecurityTokenList)
-	{
-		this.eventSecurityTokenList = eventSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setResourceItemDataXClassificationList(List<ResourceItemDataXClassification> resourceItemDataXClassificationList)
-	{
-		this.resourceItemDataXClassificationList = resourceItemDataXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setSecurityTokenAccessList(List<SecurityTokensSecurityToken> securityTokenAccessList)
-	{
-		this.securityTokenAccessList = securityTokenAccessList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXAddressList(List<InvolvedPartyXAddress> involvedPartyXAddressList)
-	{
-		this.involvedPartyXAddressList = involvedPartyXAddressList;
-		return this;
-	}
-
-	public ActiveFlag setGeographyXClassificationSecurityTokenList(List<GeographyXClassificationSecurityToken> geographyXClassificationSecurityTokenList)
-	{
-		this.geographyXClassificationSecurityTokenList = geographyXClassificationSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setGeographyXGeographySecurityTokenList(List<GeographyXGeographySecurityToken> geographyXGeographySecurityTokenList)
-	{
-		this.geographyXGeographySecurityTokenList = geographyXGeographySecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXArrangementSecurityTokenList(List<ArrangementXArrangementSecurityToken> arrangementXArrangementSecurityTokenList)
-	{
-		this.arrangementXArrangementSecurityTokenList = arrangementXArrangementSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setGeographySecurityTokenList(List<GeographySecurityToken> geographySecurityTokenList)
-	{
-		this.geographySecurityTokenList = geographySecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXInvolvedPartyIdentificationTypeList(List<InvolvedPartyXInvolvedPartyIdentificationType> involvedPartyXInvolvedPartyIdentificationTypeList)
-	{
-		this.involvedPartyXInvolvedPartyIdentificationTypeList = involvedPartyXInvolvedPartyIdentificationTypeList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyIdentificationTypeList(List<InvolvedPartyIdentificationType> involvedPartyIdentificationTypeList)
-	{
-		this.involvedPartyIdentificationTypeList = involvedPartyIdentificationTypeList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationXResourceItemList(List<ClassificationXResourceItem> classificationXResourceItemList)
-	{
-		this.classificationXResourceItemList = classificationXResourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setEventXProductList(List<EventXProduct> eventXProductList)
-	{
-		this.eventXProductList = eventXProductList;
-		return this;
-	}
-
-	public ActiveFlag setEventXEventTypeList(List<EventXEventType> eventXEventTypeList)
-	{
-		this.eventXEventTypeList = eventXEventTypeList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXInvolvedPartySecurityTokenList(List<InvolvedPartyXInvolvedPartySecurityToken> involvedPartyXInvolvedPartySecurityTokenList)
-	{
-		this.involvedPartyXInvolvedPartySecurityTokenList = involvedPartyXInvolvedPartySecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setProductXProductList(List<ProductXProduct> productXProductList)
-	{
-		this.productXProductList = productXProductList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyTypeList(List<InvolvedPartyType> involvedPartyTypeList)
-	{
-		this.involvedPartyTypeList = involvedPartyTypeList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementXClassificationSecurityTokenList(List<ArrangementXClassificationSecurityToken> arrangementXClassificationSecurityTokenList)
-	{
-		this.arrangementXClassificationSecurityTokenList = arrangementXClassificationSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyXAddressSecurityTokenList(List<InvolvedPartyXAddressSecurityToken> involvedPartyXAddressSecurityTokenList)
-	{
-		this.involvedPartyXAddressSecurityTokenList = involvedPartyXAddressSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setGeographyXClassificationList(List<GeographyXClassification> geographyXClassificationList)
-	{
-		this.geographyXClassificationList = geographyXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setAddressXGeographySecurityTokenList(List<AddressXGeographySecurityToken> addressXGeographySecurityTokenList)
-	{
-		this.addressXGeographySecurityTokenList = addressXGeographySecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setInvolvedPartyNonOrganicSecurityTokenList(List<InvolvedPartyNonOrganicSecurityToken> involvedPartyNonOrganicSecurityTokenList)
-	{
-		this.involvedPartyNonOrganicSecurityTokenList = involvedPartyNonOrganicSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEventXClassificationList(List<EventXClassification> eventXClassificationList)
-	{
-		this.eventXClassificationList = eventXClassificationList;
-		return this;
-	}
-
-	public ActiveFlag setArrangementList(List<Arrangement> arrangementList)
-	{
-		this.arrangementList = arrangementList;
-		return this;
-	}
-
-	public ActiveFlag setResourceItemSecurityTokenList(List<ResourceItemSecurityToken> resourceItemSecurityTokenList)
-	{
-		this.resourceItemSecurityTokenList = resourceItemSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setGeographyXResourceItemList(List<GeographyXResourceItem> geographyXResourceItemList)
-	{
-		this.geographyXResourceItemList = geographyXResourceItemList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationXClassificationSecurityTokenList(List<ClassificationXClassificationSecurityToken> classificationXClassificationSecurityTokenList)
-	{
-		this.classificationXClassificationSecurityTokenList = classificationXClassificationSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setEventTypesSecurityTokenList(List<EventTypesSecurityToken> eventTypesSecurityTokenList)
-	{
-		this.eventTypesSecurityTokenList = eventTypesSecurityTokenList;
-		return this;
-	}
-
-	public ActiveFlag setGeographyXGeographyList(List<GeographyXGeography> geographyXGeographyList)
-	{
-		this.geographyXGeographyList = geographyXGeographyList;
-		return this;
-	}
-
-	public ActiveFlag setClassificationSecurityTokenList(List<ClassificationSecurityToken> classificationSecurityTokenList)
-	{
-		this.classificationSecurityTokenList = classificationSecurityTokenList;
-		return this;
-	}
-
-
-
-	public boolean equals(final Object o)
-	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof ActiveFlag))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final ActiveFlag other = (ActiveFlag) o;
-		if (!other.canEqual((Object) this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		ActiveFlag that = (ActiveFlag) o;
+		return getEnterpriseID().equals(that.getEnterpriseID()) &&
+		       getName().equals(that.getName());
 	}
 
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof ActiveFlag;
-	}
-
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hash(getEnterpriseID(), getName());
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
+	@Override
 	public Enterprise getEnterpriseID()
 	{
-		return this.enterpriseID;
+		return enterpriseID;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 100) String getName()
+	@Override
+	public String getName()
 	{
-		return this.name;
+		return name;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 100) String getDescription()
+	@Override
+	public String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
-	public @NotNull boolean isAllowAccess()
+	public boolean isAllowAccess()
 	{
-		return this.allowAccess;
+		return allowAccess;
 	}
 
+	@Override
 	public ActiveFlag setId(Long id)
 	{
 		this.id = id;
@@ -1992,21 +688,21 @@ public class ActiveFlag
 		return this;
 	}
 
-	public ActiveFlag setName(@NotNull @Size(min = 1,
-			max = 100) String name)
+	@Override
+	public ActiveFlag setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
 
-	public ActiveFlag setDescription(@NotNull @Size(min = 1,
-			max = 100) String description)
+	@Override
+	public ActiveFlag setDescription(String description)
 	{
 		this.description = description;
 		return this;
 	}
 
-	public ActiveFlag setAllowAccess(@NotNull boolean allowAccess)
+	public ActiveFlag setAllowAccess(boolean allowAccess)
 	{
 		this.allowAccess = allowAccess;
 		return this;

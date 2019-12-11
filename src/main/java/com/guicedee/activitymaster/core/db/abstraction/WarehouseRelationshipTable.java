@@ -24,7 +24,7 @@ import java.util.UUID;
  * @param <P>
  * @param <Q>
  *
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 09 Dec 2016
  */

@@ -21,14 +21,14 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @Entity
-@Table
+@Table(name = "ResourceItemType",
+		schema = "Resource")
 @XmlRootElement
-
 @Access(FIELD)
 public class ResourceItemType
 		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, Long, ResourceItemTypeSecurityToken>
@@ -79,14 +79,14 @@ public class ResourceItemType
 
 	public ResourceItemType(Long resourceItemTypeID)
 	{
-		this.id = resourceItemTypeID;
+		id = resourceItemTypeID;
 	}
 
 	public ResourceItemType(Long resourceItemTypeID, String resourceItemTypeName, String resourceItemTypeDesc)
 	{
-		this.id = resourceItemTypeID;
-		this.name = resourceItemTypeName;
-		this.description = resourceItemTypeDesc;
+		id = resourceItemTypeID;
+		name = resourceItemTypeName;
+		description = resourceItemTypeDesc;
 	}
 
 	@Override
@@ -98,12 +98,12 @@ public class ResourceItemType
 
 	public List<ResourceItemTypeSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public List<ResourceItemXResourceItemType> getInvolvedPartyXResourceItemTypeList()
 	{
-		return this.involvedPartyXResourceItemTypeList;
+		return involvedPartyXResourceItemTypeList;
 	}
 
 	public ResourceItemType setSecurities(List<ResourceItemTypeSecurityToken> securities)
@@ -145,35 +145,39 @@ public class ResourceItemType
 		return "ResourceType - " + getName();
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 100) String getName()
+	@Override
+	public    String getName()
 	{
-		return this.name;
+		return name;
 	}
 
+	@Override
 	public @NotNull String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
+	@Override
 	public ResourceItemType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
-	public ResourceItemType setName(@NotNull @Size(min = 1,
-			max = 100) String name)
+	@Override
+	public ResourceItemType setName(   String name)
 	{
 		this.name = name;
 		return this;
 	}
 
+	@Override
 	public ResourceItemType setDescription(@NotNull String description)
 	{
 		this.description = description;

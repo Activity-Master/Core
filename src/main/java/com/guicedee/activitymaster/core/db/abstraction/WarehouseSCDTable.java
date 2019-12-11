@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @param <J>
  * @param <S>
  *
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 06 Dec 2016
  */

@@ -2,8 +2,7 @@ package com.guicedee.activitymaster.core.injections;
 
 import com.guicedee.activitymaster.core.implementations.*;
 import com.guicedee.activitymaster.core.services.system.*;
-import com.guicedee.activitymaster.core.implementations.*;
-import com.guicedee.activitymaster.core.services.system.*;
+import com.guicedee.activitymaster.core.systems.TimeSystem;
 import com.guicedee.guicedinjection.abstractions.GuiceInjectorModule;
 import com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder;
 
@@ -45,5 +44,8 @@ public class ActivityMasterBinder
 
 		module.bind(IArrangementsService.class)
 		      .to(ArrangementsService.class);
+
+		module.bind(ITimeSystem.class)
+		      .to(TimeSystem.class);
 	}
 }

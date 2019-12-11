@@ -21,13 +21,13 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "InvolvedPartyOrganicType")
+@Table(schema="Party",name = "InvolvedPartyOrganicType")
 @XmlRootElement
 
 @Access(FIELD)
@@ -134,8 +134,7 @@ public class InvolvedPartyOrganicType
 		return this.name;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 500) String getDescription()
+	public    String getDescription()
 	{
 		return this.description;
 	}

@@ -30,13 +30,13 @@ import java.util.logging.Logger;
 import static javax.persistence.AccessType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "InvolvedParty")
+@Table(schema="Party",name = "InvolvedParty")
 @XmlRootElement
 
 @Access(FIELD)

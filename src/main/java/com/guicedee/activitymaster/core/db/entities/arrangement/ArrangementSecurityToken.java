@@ -15,12 +15,12 @@ import java.io.Serializable;
 import static javax.persistence.AccessType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @Entity
-@Table(name = "ArrangementSecurityToken")
+@Table(schema="Arrangement",name = "ArrangementSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)

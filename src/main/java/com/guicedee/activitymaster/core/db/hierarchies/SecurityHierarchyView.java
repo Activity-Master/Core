@@ -7,7 +7,6 @@ package com.guicedee.activitymaster.core.db.hierarchies;
 
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.core.db.hierarchies.builders.SecurityHierarchyViewQueryBuilder;
-
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Entity;
@@ -19,13 +18,12 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  */
 @Entity
-@Table(name = "SecurityHierarchy")
+@Table(name = "SecurityHierarchy",
+		schema = "Security")
 @XmlRootElement
-
-
 @Immutable
 public class SecurityHierarchyView
 		extends WarehouseHierarchyView<SecurityHierarchyView, SecurityHierarchyViewQueryBuilder, Long>
@@ -42,16 +40,18 @@ public class SecurityHierarchyView
 	{
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
 	public List<SecurityHierarchyParents> getParents()
 	{
-		return this.parents;
+		return parents;
 	}
 
+	@Override
 	public SecurityHierarchyView setId(Long id)
 	{
 		this.id = id;
@@ -64,7 +64,8 @@ public class SecurityHierarchyView
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
 		if (o == this)
 		{
@@ -74,13 +75,13 @@ public class SecurityHierarchyView
 		{
 			return false;
 		}
-		final SecurityHierarchyView other = (SecurityHierarchyView) o;
+		SecurityHierarchyView other = (SecurityHierarchyView) o;
 		if (!other.canEqual((Object) this))
 		{
 			return false;
 		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
+		Object this$id = getId();
+		Object other$id = other.getId();
 		if (this$id == null ? other$id != null : !this$id.equals(other$id))
 		{
 			return false;
@@ -88,16 +89,17 @@ public class SecurityHierarchyView
 		return true;
 	}
 
-	protected boolean canEqual(final Object other)
+	protected boolean canEqual(Object other)
 	{
 		return other instanceof SecurityHierarchyView;
 	}
 
+	@Override
 	public int hashCode()
 	{
 		final int PRIME = 59;
 		int result = 1;
-		final Object $id = this.getId();
+		Object $id = getId();
 		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
 		return result;
 	}

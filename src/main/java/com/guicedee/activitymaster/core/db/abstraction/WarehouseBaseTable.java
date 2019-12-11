@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderDefault;
 import com.entityassist.SCDEntity;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderDefault;
 
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
@@ -16,14 +16,14 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 		implements Serializable
 {
 
-	@SuppressWarnings("unchecked")
+	private static final long serialVersionUID = 7208739285773494981L;
+
 	public @NotNull J updateNow()
 	{
 		return super.builder()
 		            .updateNow((J) this);
 	}
 
-	@SuppressWarnings("unchecked")
 	public J expireIn(Duration duration)
 	{
 		setEffectiveToDate(LocalDateTime.now()

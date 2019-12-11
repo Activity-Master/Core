@@ -21,13 +21,13 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "InvolvedPartyIdentificationType")
+@Table(schema="Party",name = "InvolvedPartyIdentificationType")
 @XmlRootElement
 
 @Access(FIELD)
@@ -151,14 +151,12 @@ public class InvolvedPartyIdentificationType
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 150) String getName()
+	public   String getName()
 	{
 		return this.name;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 500) String getDescription()
+	public    String getDescription()
 	{
 		return this.description;
 	}
@@ -169,8 +167,7 @@ public class InvolvedPartyIdentificationType
 		return this;
 	}
 
-	public InvolvedPartyIdentificationType setName(@NotNull @Size(min = 1,
-			max = 150) String name)
+	public InvolvedPartyIdentificationType setName(  String name)
 	{
 		this.name = name;
 		return this;

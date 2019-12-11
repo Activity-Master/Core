@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  */
 @Entity
 @Table(name = "SecurityHierarchyParents")

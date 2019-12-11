@@ -1,0 +1,33 @@
+package com.guicedee.activitymaster.core.db.entities.time.builders;
+
+import com.entityassist.BaseEntity;
+import com.entityassist.querybuilder.QueryBuilder;
+import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.guicedinjection.GuiceContext;
+
+import javax.persistence.EntityManager;
+import java.io.Serializable;
+
+public abstract class DefaultTimeQueryBuilder<J extends DefaultTimeQueryBuilder<J, E, I>, E extends BaseEntity<E, J, I>, I extends Serializable>
+		extends QueryBuilder<J, E, I>
+{
+	public DefaultTimeQueryBuilder()
+	{
+		setRunDetached(true);
+		setReturnFirst(true);
+		setDetach(true);
+	}
+
+	@Override
+	public EntityManager getEntityManager()
+	{
+		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
+	}
+
+	@Override
+	protected boolean isIdGenerated()
+	{
+		return false;
+	}
+
+}

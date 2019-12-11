@@ -45,7 +45,7 @@ import java.util.Objects;
 import static javax.persistence.AccessType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
@@ -89,6 +89,10 @@ public class Enterprise
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
 	private List<EnterpriseSecurityToken> securities;
+
+
+
+	/*
 	@OneToMany(
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
@@ -545,7 +549,7 @@ public class Enterprise
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
 	private List<ClassificationSecurityToken> classificationSecurityTokenList;
-
+*/
 	public Enterprise()
 	{
 
@@ -596,6 +600,7 @@ public class Enterprise
 	{
 		return this.securities;
 	}
+/*
 
 	public List<InvolvedPartyXInvolvedPartyNameType> getInvolvedPartyXInvolvedPartyNameTypeList()
 	{
@@ -1856,6 +1861,7 @@ public class Enterprise
 		this.classificationSecurityTokenList = classificationSecurityTokenList;
 		return this;
 	}
+*/
 
 
 	@Override

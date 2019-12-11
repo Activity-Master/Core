@@ -20,15 +20,14 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
 @Entity
-@Table
+@Table(name = "InvolvedPartyNameType",
+		schema = "Party")
 @XmlRootElement
-
 @Access(FIELD)
 public class InvolvedPartyNameType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, Long, InvolvedPartyNameTypeSecurityToken>
@@ -45,7 +44,8 @@ public class InvolvedPartyNameType
 	@Column(nullable = false,
 			name = "InvolvedPartyNameTypeID")
 	private Long id;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
@@ -53,7 +53,8 @@ public class InvolvedPartyNameType
 			length = 500,
 			name = "InvolvedPartyNameTypeName")
 	private String name;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
@@ -79,14 +80,14 @@ public class InvolvedPartyNameType
 
 	public InvolvedPartyNameType(Long involvedPartyNameTypeID)
 	{
-		this.id = involvedPartyNameTypeID;
+		id = involvedPartyNameTypeID;
 	}
 
 	public InvolvedPartyNameType(Long involvedPartyNameTypeID, String involvedPartyName, String involvedPartyNameDescr)
 	{
-		this.id = involvedPartyNameTypeID;
-		this.name = involvedPartyName;
-		this.description = involvedPartyNameDescr;
+		id = involvedPartyNameTypeID;
+		name = involvedPartyName;
+		description = involvedPartyNameDescr;
 	}
 
 	@Override
@@ -104,12 +105,12 @@ public class InvolvedPartyNameType
 
 	public List<InvolvedPartyXInvolvedPartyNameType> getInvolvedPartyXInvolvedPartyNameTypeList()
 	{
-		return this.involvedPartyXInvolvedPartyNameTypeList;
+		return involvedPartyXInvolvedPartyNameTypeList;
 	}
 
 	public List<InvolvedPartyNameTypeSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public InvolvedPartyNameType setInvolvedPartyXInvolvedPartyNameTypeList(List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList)
@@ -124,7 +125,8 @@ public class InvolvedPartyNameType
 		return this;
 	}
 
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
 		if (o == this)
 		{
@@ -134,13 +136,13 @@ public class InvolvedPartyNameType
 		{
 			return false;
 		}
-		final InvolvedPartyNameType other = (InvolvedPartyNameType) o;
+		InvolvedPartyNameType other = (InvolvedPartyNameType) o;
 		if (!other.canEqual((Object) this))
 		{
 			return false;
 		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
+		Object this$id = getId();
+		Object other$id = other.getId();
 		if (this$id == null ? other$id != null : !this$id.equals(other$id))
 		{
 			return false;
@@ -148,43 +150,47 @@ public class InvolvedPartyNameType
 		return true;
 	}
 
-	protected boolean canEqual(final Object other)
+	protected boolean canEqual(Object other)
 	{
 		return other instanceof InvolvedPartyNameType;
 	}
 
+	@Override
 	public int hashCode()
 	{
 		final int PRIME = 59;
 		int result = 1;
-		final Object $id = this.getId();
+		Object $id = getId();
 		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
 		return result;
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 500) String getName()
+	@Override
+	public    String getName()
 	{
-		return this.name;
+		return name;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 500) String getDescription()
+	@Override
+	public    String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
+	@Override
 	public InvolvedPartyNameType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
+	@Override
 	public InvolvedPartyNameType setName(@NotNull @Size(min = 1,
 			max = 500) String name)
 	{
@@ -192,6 +198,7 @@ public class InvolvedPartyNameType
 		return this;
 	}
 
+	@Override
 	public InvolvedPartyNameType setDescription(@NotNull @Size(min = 1,
 			max = 500) String description)
 	{

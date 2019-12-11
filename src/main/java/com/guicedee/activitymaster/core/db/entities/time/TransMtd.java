@@ -1,0 +1,67 @@
+package com.guicedee.activitymaster.core.db.entities.time;
+
+import com.entityassist.BaseEntity;
+import com.guicedee.activitymaster.core.db.entities.time.builders.TransMtdQueryBuilder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.Objects;
+
+/**
+ * @author MMagon
+ * @since
+ */
+
+@Entity
+@Table(name = "Trans_Mtd",
+		schema = "Time")
+@XmlRootElement
+@Getter
+@Setter
+@Accessors(chain = true)
+public class TransMtd
+		extends BaseEntity<TransMtd, TransMtdQueryBuilder, TransMtdPK>
+		implements Serializable
+{
+	private static final long serialVersionUID = 1L;
+	@EmbeddedId
+	protected TransMtdPK id;
+
+	public TransMtd()
+	{
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		TransMtd transMtd = (TransMtd) o;
+		return getId().equals(transMtd.getId());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		return "" + id;
+	}
+
+}

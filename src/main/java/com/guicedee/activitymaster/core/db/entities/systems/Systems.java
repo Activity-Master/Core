@@ -50,7 +50,7 @@ import java.util.Objects;
 import static javax.persistence.AccessType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
@@ -113,6 +113,13 @@ public class Systems
 	@ManyToOne(optional = false,
 			fetch = FetchType.LAZY)
 	private ActiveFlag activeFlagID;
+
+	@OneToMany(
+			mappedBy = "systemID",
+			fetch = FetchType.LAZY)
+	private List<SystemsSecurityToken> securities;
+
+	/*
 	@OneToMany(
 			mappedBy = "originalSourceSystemID",
 			fetch = FetchType.LAZY)
@@ -282,10 +289,7 @@ public class Systems
 			mappedBy = "originalSourceSystemID",
 			fetch = FetchType.LAZY)
 	private List<AddressSecurityToken> addressSecurityTokenList1;
-	@OneToMany(
-			mappedBy = "systemID",
-			fetch = FetchType.LAZY)
-	private List<SystemsSecurityToken> securities;
+
 
 	@OneToMany(
 			mappedBy = "originalSourceSystemID",
@@ -988,7 +992,7 @@ public class Systems
 			mappedBy = "systemID",
 			fetch = FetchType.LAZY)
 	private List<ClassificationSecurityToken> classificationSecurityTokenList1;
-
+*/
 	public Systems()
 	{
 
@@ -1077,8 +1081,7 @@ public class Systems
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 150) String getName()
+	public   String getName()
 	{
 		return this.name;
 	}
@@ -1088,8 +1091,7 @@ public class Systems
 		return this.description;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 250) String getSystemHistoryName()
+	public   String getSystemHistoryName()
 	{
 		return this.systemHistoryName;
 	}
@@ -1110,8 +1112,7 @@ public class Systems
 		return this;
 	}
 
-	public Systems setName(@NotNull @Size(min = 1,
-			max = 150) String name)
+	public Systems setName(  String name)
 	{
 		this.name = name;
 		return this;
@@ -1123,7 +1124,7 @@ public class Systems
 		return this;
 	}
 
-	public Systems setSystemHistoryName(@NotNull @Size(min = 1,max = 250) String systemHistoryName)
+	public Systems setSystemHistoryName(@NotNull String systemHistoryName)
 	{
 		this.systemHistoryName = systemHistoryName;
 		return this;

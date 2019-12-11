@@ -1,5 +1,8 @@
 package com.guicedee.activitymaster.core.implementations;
 
+import com.google.inject.servlet.RequestScoper;
+import com.google.inject.servlet.ServletScopes;
+import com.guicedee.activitymaster.ActivityMasterTestBinder;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.ActivityMasterService;
 import com.guicedee.activitymaster.core.db.ActivityMasterDBModule;
@@ -9,9 +12,6 @@ import com.guicedee.activitymaster.core.services.dto.ISecurityToken;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.ISecurityTokenService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.google.inject.servlet.RequestScoper;
-import com.google.inject.servlet.ServletScopes;
-import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
 import com.guicedee.logger.LogFactory;
@@ -45,13 +45,17 @@ public class DefaultTestConfig
 	public void beforeEach(ExtensionContext extensionContext) throws Exception
 	{
 		BTMAutomatedTransactionHandler.setActive(true);
-	//	HazelcastProperties.setStartLocal(true);
+		GuiceContext.instance()
+		            .loadIGuiceModules()
+		            .add(new ActivityMasterTestBinder());
+		//	HazelcastProperties.setStartLocal(true);
 
 		ActivityMasterDBModule.persistenceUnitName = "ActivityMasterUT";
 
 		//HazelcastConfigHandler.startLocal = true;
 		LogFactory.configureConsoleColourOutput(Level.FINE);
-		LogColourFormatter.setRenderBlack(false);
+	//	LogColourFormatter.setRenderBlack(false);
+		LogFactory.configureDefaultLogHiding();
 		GuiceContext.inject();
 
 		scoper = ServletScopes.scopeRequest(new HashMap<>())
@@ -117,7 +121,7 @@ public class DefaultTestConfig
 			@Override
 			public void progressUpdate(String source, String message)
 			{
-				log.info(source + " - " + message + " || " + currentTasks + "/" + totalTasks);
+				DefaultTestConfig.log.info(source + " - " + message + " || " + currentTasks + "/" + totalTasks);
 			}
 
 			@Override

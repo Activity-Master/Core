@@ -17,12 +17,12 @@ import java.util.Objects;
 import static javax.persistence.AccessType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @Entity
-@Table(name = "SecurityTokenXClassification")
+@Table(schema="Security",name = "SecurityTokenXClassification")
 @XmlRootElement
 
 @Access(FIELD)

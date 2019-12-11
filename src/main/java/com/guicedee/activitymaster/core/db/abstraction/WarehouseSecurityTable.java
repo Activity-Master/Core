@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import org.hibernate.annotations.JoinFormula;
 
 import javax.persistence.*;
@@ -19,7 +18,7 @@ import java.time.LocalDateTime;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @since 08 Dec 2016
  */
 @MappedSuperclass
@@ -98,66 +97,64 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public J remove()
 	{
-		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
-		                            .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
-		                                                                               .get(getEnterpriseID())));
+		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		                                         .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		                                                                                            .get(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
-		return (J)this;
+		return (J) this;
 	}
-
 
 	public @NotNull boolean isCreateAllowed()
 	{
-		return this.createAllowed;
+		return createAllowed;
 	}
 
 	public @NotNull boolean isUpdateAllowed()
 	{
-		return this.updateAllowed;
+		return updateAllowed;
 	}
 
 	public @NotNull boolean isDeleteAllowed()
 	{
-		return this.deleteAllowed;
+		return deleteAllowed;
 	}
 
 	public @NotNull boolean isReadAllowed()
 	{
-		return this.readAllowed;
+		return readAllowed;
 	}
 
 	public SecurityToken getSecurityTokenID()
 	{
-		return this.securityTokenID;
+		return securityTokenID;
 	}
 
 	public ActiveFlag getActiveFlagID()
 	{
-		return this.activeFlagID;
+		return activeFlagID;
 	}
 
 	public Enterprise getEnterpriseID()
 	{
-		return this.enterpriseID;
+		return enterpriseID;
 	}
 
 	public Systems getSystemID()
 	{
-		return this.systemID;
+		return systemID;
 	}
 
 	public @NotNull String getOriginalSourceSystemUniqueID()
 	{
-		return this.originalSourceSystemUniqueID;
+		return originalSourceSystemUniqueID;
 	}
 
 	public Systems getOriginalSourceSystemID()
 	{
-		return this.originalSourceSystemID;
+		return originalSourceSystemID;
 	}
 
 	public WarehouseSecurityTable<J, Q, I> setCreateAllowed(@NotNull boolean createAllowed)

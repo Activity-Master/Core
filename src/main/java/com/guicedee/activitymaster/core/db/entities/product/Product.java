@@ -26,13 +26,13 @@ import static javax.persistence.AccessType.*;
 import static javax.persistence.FetchType.*;
 
 /**
- * @author GedMarc
+ * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "Product")
+@Table(schema="Product",name = "Product")
 @XmlRootElement
 
 @Access(FIELD)
@@ -270,14 +270,12 @@ public class Product
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 150) String getName()
+	public   String getName()
 	{
 		return this.name;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 250) String getDescription()
+	public   String getDescription()
 	{
 		return this.description;
 	}
@@ -294,15 +292,13 @@ public class Product
 		return this;
 	}
 
-	public Product setName(@NotNull @Size(min = 1,
-			max = 150) String name)
+	public Product setName(  String name)
 	{
 		this.name = name;
 		return this;
 	}
 
-	public Product setDescription(@NotNull @Size(min = 1,
-			max = 250) String description)
+	public Product setDescription(  String description)
 	{
 		this.description = description;
 		return this;
