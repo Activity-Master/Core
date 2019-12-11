@@ -48,17 +48,12 @@ public class ActiveFlagService
 
 	private Optional<ActiveFlag> findFlagByName(String flag, IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
-		Optional<ActiveFlag> op = new ActiveFlag().builder()
-		                                          .findByName(flag)
-		                                          .inDateRange()
-		                                          .canRead(enterprise, identifyingToken)
-		                                          .withEnterprise(enterprise)
-		                                          .get();
-		if (op.isEmpty())
-		{
-			System.out.println("Empty Flag!");
-		}
-		return op;
+		return new ActiveFlag().builder()
+		                       .findByName(flag)
+		                       .inDateRange()
+		                       .canRead(enterprise, identifyingToken)
+		                       .withEnterprise(enterprise)
+		                       .get();
 	}
 
 	@Override
@@ -72,19 +67,12 @@ public class ActiveFlagService
 	private List<ActiveFlag> find(@CacheKey String[] name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
 		ActiveFlag search = new ActiveFlag();
-
-
-		List<ActiveFlag> ac = search.builder()
-		                            .findByName(name)
-		                            .inDateRange()
-		                            .canRead(enterprise,true, identifyingToken)
-		                            .withEnterprise(enterprise)
-		                            .getAll();
-		if (ac.isEmpty())
-		{
-			System.out.println("Empty List!");
-		}
-		return ac;
+		return search.builder()
+		             .findByName(name)
+		             .inDateRange()
+		             .canRead(enterprise,true, identifyingToken)
+		             .withEnterprise(enterprise)
+		             .getAll();
 	}
 
 	private String[] getNamesForFlags(Set<com.entityassist.enumerations.ActiveFlag> flags)

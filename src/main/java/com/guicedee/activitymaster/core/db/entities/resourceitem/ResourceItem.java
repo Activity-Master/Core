@@ -217,8 +217,7 @@ public class ResourceItem
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 128) UUID getResourceItemUUID()
+	public     UUID getResourceItemUUID()
 	{
 		return this.resourceItemUUID;
 	}
@@ -234,8 +233,7 @@ public class ResourceItem
 		return this;
 	}
 
-	public ResourceItem setResourceItemUUID(@NotNull @Size(min = 1,
-			max = 128) UUID resourceItemUUID)
+	public ResourceItem setResourceItemUUID(    UUID resourceItemUUID)
 	{
 		this.resourceItemUUID = resourceItemUUID;
 		return this;

@@ -4,6 +4,8 @@ import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.time.*;
 import com.guicedee.activitymaster.core.db.timelord.EnglishNumberToWords;
 import com.guicedee.activitymaster.core.services.system.ITimeSystem;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
@@ -19,6 +21,7 @@ import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.core.services.types.DateTimeFormats.*;
 import static com.guicedee.activitymaster.core.services.types.NumberFormats.*;
 import static java.time.temporal.ChronoUnit.*;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class TimeSystem
 		implements ITimeSystem
@@ -28,6 +31,7 @@ public class TimeSystem
 			timeout = 50000)
 	public void loadTimeRange(int startYear, int endYear)
 	{
+		JobService.getInstance().setMaxQueueCount("TimeRangeLoading",500);
 		GregorianCalendar startYearGC = new GregorianCalendar();
 		startYearGC.set(Calendar.YEAR, startYear);
 		startYearGC.set(Calendar.MONTH, 0);
@@ -45,6 +49,9 @@ public class TimeSystem
 			getDay(startYearGC.getTime());
 			startYearGC.add(Calendar.DATE, 1);
 		}
+
+		JobService.getInstance()
+		          .waitForJob("TimeRangeLoading",15,MINUTES);
 	}
 
 	@Override
@@ -431,7 +438,12 @@ public class TimeSystem
 		{
 			day = createDay(date);
 			day.persist();
-			populateTransformationTables(date, -3);
+			TimeLoaderThread thread = GuiceContext.get(TimeLoaderThread.class);
+			thread.setDate(date);
+			JobService.getInstance()
+			          .addJob("TimeRangeLoading", thread);
+
+			//populateTransformationTables(date, -3);
 		}
 		return day;
 	}
@@ -555,7 +567,7 @@ public class TimeSystem
 		return newDay;
 	}
 
-	private void populateTransformationTables(Date date, int fiscalLag)
+	void populateTransformationTables(Date date, int fiscalLag)
 	{
 		try
 		{
@@ -840,4 +852,7 @@ public class TimeSystem
 
 		}
 	}
+
+
+
 }

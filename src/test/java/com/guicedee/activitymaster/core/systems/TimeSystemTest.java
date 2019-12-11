@@ -7,16 +7,24 @@ import org.junit.jupiter.api.Test;
 
 import java.util.logging.Level;
 
-class TimeSystemTest
+public class TimeSystemTest
 {
 
 	@Test
-	void loadTimeRange()
+	public void testLoadTimeRange()
 	{
 		LogFactory.configureConsoleColourOutput(Level.FINE);
 		LogFactory.configureDefaultLogHiding();
 		ITimeSystem timeSystem = GuiceContext.get(ITimeSystem.class);
-		timeSystem.loadTimeRange(1992, 2019);
-		//timeSystem.createTime();
+		timeSystem.loadTimeRange(1990, 2020);
+	}
+
+	@Test
+	public void testCreateTime()
+	{
+		LogFactory.configureConsoleColourOutput(Level.FINE);
+		LogFactory.configureDefaultLogHiding();
+		ITimeSystem timeSystem = GuiceContext.get(ITimeSystem.class);
+		timeSystem.createTime();
 	}
 }

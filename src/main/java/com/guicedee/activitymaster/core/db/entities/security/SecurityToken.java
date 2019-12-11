@@ -35,7 +35,6 @@ import com.guicedee.activitymaster.core.services.dto.ISecurityToken;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.logger.LogFactory;
 
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -54,13 +53,14 @@ import static javax.persistence.FetchType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Security",name = "SecurityToken")
+@Table(schema = "Security",
+		name = "SecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
 public class SecurityToken
 		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, Long, SecurityTokensSecurityToken>
-		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>,ISecurityToken<?>, IClassification<?>,SecurityToken>,
+		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>, ISecurityToken<?>, IClassification<?>, SecurityToken>,
 				           IActivityMasterEntity<SecurityToken>,
 				           ISecurityToken<SecurityToken>
 {
@@ -81,16 +81,15 @@ public class SecurityToken
 			length = 128,
 			name = "SecurityToken")
 	private String securityToken;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
-	@Lob
 	@Column(nullable = false,
 			name = "SecurityTokenFriendlyName")
 	private String name;
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
 	@NotNull
-	@Lob
 	@Column(nullable = false,
 			name = "SecurityTokenFriendlyDescription")
 	private String description;
@@ -105,6 +104,16 @@ public class SecurityToken
 			mappedBy = "securityTokenID",
 			fetch = FetchType.LAZY)
 	private List<SecurityTokenXClassification> classifications;
+	@OneToMany(
+			mappedBy = "securityTokenID",
+			fetch = FetchType.LAZY)
+	private List<SecurityTokensSecurityToken> securities;
+
+	@OneToMany(
+			mappedBy = "childSecurityTokenID",
+			fetch = FetchType.LAZY)
+	private List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenChildList;
+	/*
 
 	@OneToMany(
 			mappedBy = "securityTokenID",
@@ -262,10 +271,7 @@ public class SecurityToken
 			mappedBy = "parentSecurityTokenID",
 			fetch = FetchType.LAZY)
 	private List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenParentList;
-	@OneToMany(
-			mappedBy = "childSecurityTokenID",
-			fetch = FetchType.LAZY)
-	private List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenChildList;
+
 	@OneToMany(
 			mappedBy = "securityTokenID",
 			fetch = FetchType.LAZY)
@@ -282,10 +288,7 @@ public class SecurityToken
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<SecurityTokensSecurityToken> securityTokenAccessList;
-	@OneToMany(
-			mappedBy = "securityTokenID",
-			fetch = FetchType.LAZY)
-	private List<SecurityTokensSecurityToken> securities;
+
 	@OneToMany(
 			mappedBy = "securityTokenID",
 			fetch = FetchType.LAZY)
@@ -338,7 +341,7 @@ public class SecurityToken
 			mappedBy = "securityTokenID",
 			fetch = FetchType.LAZY)
 	private List<ClassificationSecurityToken> classificationSecurityTokenList;
-
+*/
 	public SecurityToken()
 	{
 
@@ -381,6 +384,7 @@ public class SecurityToken
 	{
 		return this.classifications;
 	}
+/*
 
 	public List<InvolvedPartyXProductSecurityToken> getInvolvedPartyXProductSecurityTokenList()
 	{
@@ -666,12 +670,14 @@ public class SecurityToken
 	{
 		return this.classificationSecurityTokenList;
 	}
+*/
 
 	public SecurityToken setClassifications(List<SecurityTokenXClassification> classifications)
 	{
 		this.classifications = classifications;
 		return this;
 	}
+/*
 
 	public SecurityToken setInvolvedPartyXProductSecurityTokenList(List<InvolvedPartyXProductSecurityToken> involvedPartyXProductSecurityTokenList)
 	{
@@ -1014,6 +1020,7 @@ public class SecurityToken
 		this.classificationSecurityTokenList = classificationSecurityTokenList;
 		return this;
 	}
+*/
 
 	@Override
 	public boolean equals(Object o)
@@ -1041,8 +1048,7 @@ public class SecurityToken
 		return this.id;
 	}
 
-	public @NotNull @Size(min = 1,
-			max = 128) String getSecurityToken()
+	public String getSecurityToken()
 	{
 		return this.securityToken;
 	}
@@ -1068,8 +1074,7 @@ public class SecurityToken
 		return this;
 	}
 
-	public SecurityToken setSecurityToken(@NotNull @Size(min = 1,
-			max = 128) String securityToken)
+	public SecurityToken setSecurityToken(String securityToken)
 	{
 		this.securityToken = securityToken;
 		return this;
