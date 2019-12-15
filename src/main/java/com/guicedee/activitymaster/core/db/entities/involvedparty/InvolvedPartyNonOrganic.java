@@ -4,6 +4,7 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyNonOrganicQueryBuilder;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -19,9 +20,11 @@ import static javax.persistence.AccessType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Party",name = "InvolvedPartyNonOrganic")
+@Table(schema = "Party",
+		name = "InvolvedPartyNonOrganic")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class InvolvedPartyNonOrganic
 		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, Long, InvolvedPartyNonOrganicSecurityToken>
@@ -54,7 +57,7 @@ public class InvolvedPartyNonOrganic
 
 	public InvolvedPartyNonOrganic(Long involvedPartyNonOrganicID)
 	{
-		this.id = involvedPartyNonOrganicID;
+		id = involvedPartyNonOrganicID;
 	}
 
 	@Override
@@ -66,7 +69,7 @@ public class InvolvedPartyNonOrganic
 
 	public List<InvolvedPartyNonOrganicSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public InvolvedPartyNonOrganic setSecurities(List<InvolvedPartyNonOrganicSecurityToken> securities)
@@ -102,16 +105,18 @@ public class InvolvedPartyNonOrganic
 		return "NonOrganicParty - " + getId();
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
 	public InvolvedParty getInvolvedParty()
 	{
-		return this.involvedParty;
+		return involvedParty;
 	}
 
+	@Override
 	public InvolvedPartyNonOrganic setId(Long id)
 	{
 		this.id = id;

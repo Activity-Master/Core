@@ -13,7 +13,7 @@ import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceI
 import com.guicedee.activitymaster.core.services.classifications.product.IProductClassification;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.dto.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -32,14 +32,16 @@ import static javax.persistence.FetchType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Product",name = "Product")
+@Table(schema = "Product",
+		name = "Product")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class Product
 		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, Long, ProductSecurityToken>
 		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>, IProduct<?>, IClassification<?>, Product>,
-				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem, IResourceItemClassification<?>,IProduct<?>, IResourceItem<?>, Product>,
+				           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem, IResourceItemClassification<?>, IProduct<?>, IResourceItem<?>, Product>,
 				           IActivityMasterEntity<Product>,
 				           IProduct<Product>
 {
@@ -50,7 +52,8 @@ public class Product
 	@Column(nullable = false,
 			name = "ProductID")
 	private Long id;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 150)
@@ -58,7 +61,8 @@ public class Product
 			length = 150,
 			name = "ProductName")
 	private String name;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 250)
@@ -66,7 +70,8 @@ public class Product
 			length = 250,
 			name = "ProductDesc")
 	private String description;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 10)
@@ -117,14 +122,14 @@ public class Product
 
 	public Product(Long productID)
 	{
-		this.id = productID;
+		id = productID;
 	}
 
 	public Product(Long productID, String productName, String productDesc, String productCode)
 	{
-		this.id = productID;
-		this.name = productName;
-		this.description = productDesc;
+		id = productID;
+		name = productName;
+		description = productDesc;
 		this.productCode = productCode;
 	}
 
@@ -150,42 +155,42 @@ public class Product
 
 	public List<ProductXClassification> getClassifications()
 	{
-		return this.classifications;
+		return classifications;
 	}
 
 	public List<ProductSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public List<ArrangementXProduct> getArrangements()
 	{
-		return this.arrangements;
+		return arrangements;
 	}
 
 	public List<ProductXResourceItem> getResources()
 	{
-		return this.resources;
+		return resources;
 	}
 
 	public List<InvolvedPartyXProduct> getParties()
 	{
-		return this.parties;
+		return parties;
 	}
 
 	public List<EventXProduct> getEvents()
 	{
-		return this.events;
+		return events;
 	}
 
 	public List<ProductXProduct> getProductXProductList()
 	{
-		return this.productXProductList;
+		return productXProductList;
 	}
 
 	public List<ProductXProduct> getProductXProductList1()
 	{
-		return this.productXProductList1;
+		return productXProductList1;
 	}
 
 	public Product setClassifications(List<ProductXClassification> classifications)
@@ -236,7 +241,6 @@ public class Product
 		return this;
 	}
 
-
 	@Override
 	public boolean equals(Object o)
 	{
@@ -265,40 +269,42 @@ public class Product
 		return "Product - " + getProductCode() + " - " + getName();
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
-	public   String getName()
+	public String getName()
 	{
-		return this.name;
+		return name;
 	}
 
-	public   String getDescription()
+	public String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
 	public @NotNull @Size(min = 1,
 			max = 10) String getProductCode()
 	{
-		return this.productCode;
+		return productCode;
 	}
 
+	@Override
 	public Product setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
-	public Product setName(  String name)
+	public Product setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
 
-	public Product setDescription(  String description)
+	public Product setDescription(String description)
 	{
 		this.description = description;
 		return this;
@@ -310,6 +316,5 @@ public class Product
 		this.productCode = productCode;
 		return this;
 	}
-
 
 }

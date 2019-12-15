@@ -1,31 +1,8 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagXClassification;
-import com.guicedee.activitymaster.core.db.entities.address.Address;
-import com.guicedee.activitymaster.core.db.entities.address.AddressXClassification;
-import com.guicedee.activitymaster.core.db.entities.address.AddressXGeography;
-import com.guicedee.activitymaster.core.db.entities.address.AddressXResourceItem;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification;
-import com.guicedee.activitymaster.core.db.entities.events.*;
-import com.guicedee.activitymaster.core.db.entities.geography.Geography;
-import com.guicedee.activitymaster.core.db.entities.geography.GeographyXClassification;
-import com.guicedee.activitymaster.core.db.entities.geography.GeographyXGeography;
-import com.guicedee.activitymaster.core.db.entities.geography.GeographyXResourceItem;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.product.ProductXClassification;
-import com.guicedee.activitymaster.core.db.entities.product.ProductXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemDataXClassification;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXClassification;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClassification;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification;
 import com.guicedee.activitymaster.core.db.hierarchies.ClassificationHierarchyView;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -36,9 +13,8 @@ import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.db.entities.events.*;
 import com.guicedee.guicedinjection.GuiceContext;
-
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -57,13 +33,16 @@ import static javax.persistence.FetchType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Classification",name = "Classification")
+@Table(schema = "Classification",
+		name = "Classification")
 @XmlRootElement
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>
 		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView>,
-				           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IResourceItemClassification<?>, IClassification<?>, IResourceItem<?>,						                                 Classification>,
+				           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IResourceItemClassification<?>, IClassification<?>, IResourceItem<?>, Classification>,
 				           IActivityMasterEntity<Classification>,
 				           IClassification<Classification>
 {
@@ -283,14 +262,14 @@ public class Classification
 
 	public Classification(Long classificationID)
 	{
-		this.id = classificationID;
+		id = classificationID;
 	}
 
 	public Classification(Long classificationID, String classificationName, String classificationDesc, short classificationSequenceNumber)
 	{
-		this.id = classificationID;
-		this.name = classificationName;
-		this.description = classificationDesc;
+		id = classificationID;
+		name = classificationName;
+		description = classificationDesc;
 		this.classificationSequenceNumber = classificationSequenceNumber;
 	}
 
@@ -318,7 +297,6 @@ public class Classification
 		classificationLink.setParentClassificationID(this);
 		classificationLink.setClassificationID(hierarchyClassification);
 	}
-
 
 	@Override
 	public void configureNewHierarchyItem(ClassificationXClassification newLink, Classification parent, Classification child, String value)
@@ -349,43 +327,49 @@ public class Classification
 		return Objects.hash(getId());
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
-	public    String getName()
+	@Override
+	public String getName()
 	{
-		return this.name;
+		return name;
 	}
 
-	public    String getDescription()
+	@Override
+	public String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
 	public @NotNull Short getClassificationSequenceNumber()
 	{
-		return this.classificationSequenceNumber;
+		return classificationSequenceNumber;
 	}
 
 	public ClassificationDataConcept getConcept()
 	{
-		return this.concept;
+		return concept;
 	}
 
+	@Override
 	public Classification setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
-	public Classification setName(   String name)
+	@Override
+	public Classification setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
 
+	@Override
 	public Classification setDescription(@NotNull @Size(min = 1,
 			max = 500) String description)
 	{

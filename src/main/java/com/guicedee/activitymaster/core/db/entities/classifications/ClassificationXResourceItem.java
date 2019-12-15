@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,17 +23,19 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Classification",name = "ClassificationXResourceItem")
+@Table(schema = "Classification",
+		name = "ClassificationXResourceItem")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ClassificationXResourceItem
 		extends WarehouseClassificationRelationshipTable<Classification,
-						                                                ResourceItem,
-						                                                ClassificationXResourceItem,
+				                                                ResourceItem,
+				                                                ClassificationXResourceItem,
 				                                                ClassificationXResourceItemQueryBuilder,
-						                                                Long,
-						                                                ClassificationXResourceItemSecurityToken,
+				                                                Long,
+				                                                ClassificationXResourceItemSecurityToken,
 				                                                IClassification<?>, IResourceItem<?>>
 		implements Serializable
 {
@@ -70,7 +73,7 @@ public class ClassificationXResourceItem
 
 	public ClassificationXResourceItem(Long classificationXResourceItemID)
 	{
-		this.id = classificationXResourceItemID;
+		id = classificationXResourceItemID;
 	}
 
 	@Override
@@ -80,26 +83,29 @@ public class ClassificationXResourceItem
 		            .setBase(this);
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
 	public List<ClassificationXResourceItemSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
+	@Override
 	public Classification getClassificationID()
 	{
-		return this.classificationID;
+		return classificationID;
 	}
 
 	public ResourceItem getResourceItemID()
 	{
-		return this.resourceItemID;
+		return resourceItemID;
 	}
 
+	@Override
 	public ClassificationXResourceItem setId(Long id)
 	{
 		this.id = id;
@@ -112,6 +118,7 @@ public class ClassificationXResourceItem
 		return this;
 	}
 
+	@Override
 	public ClassificationXResourceItem setClassificationID(Classification classificationID)
 	{
 		this.classificationID = classificationID;
@@ -123,7 +130,6 @@ public class ClassificationXResourceItem
 		this.resourceItemID = resourceItemID;
 		return this;
 	}
-
 
 	@Override
 	public boolean equals(Object o)

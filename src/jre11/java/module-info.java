@@ -58,6 +58,16 @@ module com.guicedee.activitymaster.core {
 	exports com.guicedee.activitymaster.core.services.system;
 	exports com.guicedee.activitymaster.core.services.types;
 
+	exports com.guicedee.activitymaster.core.services.classifications.activeflag;
+	exports com.guicedee.activitymaster.core.services.classifications.classification;
+	exports com.guicedee.activitymaster.core.services.classifications.classificationdataconcepts;
+	exports com.guicedee.activitymaster.core.services.classifications.geography;
+	exports com.guicedee.activitymaster.core.services.classifications.involvedparty;
+	exports com.guicedee.activitymaster.core.services.classifications.product;
+	exports com.guicedee.activitymaster.core.services.classifications.resourceitems;
+	exports com.guicedee.activitymaster.core.services.classifications.securitytokens;
+	exports com.guicedee.activitymaster.core.services.classifications.systems;
+
 	//exports com.guicedee.activitymaster.core.systems;
 
 	exports com.guicedee.activitymaster.core.threads;
@@ -148,9 +158,20 @@ module com.guicedee.activitymaster.core {
 	opens com.guicedee.activitymaster.core.services to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.capabilities to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	//opens com.guicedee.activitymaster.core.services.classifications to com.google.guice, org.hibernate.orm.core,com.entityassist,com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.activeflag to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.classifications.address to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.classifications.arrangement to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.classification to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.classificationdataconcepts to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.enterprise to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.classifications.events to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.geography to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.involvedparty to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.product to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.resourceitems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.securitytokens to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.classifications.systems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+
 	opens com.guicedee.activitymaster.core.services.concepts to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.exceptions to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.security to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
@@ -160,9 +181,5 @@ module com.guicedee.activitymaster.core {
 	opens com.guicedee.activitymaster.core.services.enumtypes to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 
 	opens com.guicedee.activitymaster.core.services.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind;
-
-	exports com.guicedee.activitymaster.core.services.classifications.resourceitems;
-	exports com.guicedee.activitymaster.core.services.classifications.involvedparty;
-	exports com.guicedee.activitymaster.core.services.classifications.securitytokens;
 
 }

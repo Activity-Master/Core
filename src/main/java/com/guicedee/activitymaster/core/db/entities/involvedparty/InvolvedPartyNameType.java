@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.core.services.capabilities.INameAndDescriptio
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyNameType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -29,6 +30,8 @@ import static javax.persistence.FetchType.*;
 		schema = "Party")
 @XmlRootElement
 @Access(FIELD)
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class InvolvedPartyNameType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, Long, InvolvedPartyNameTypeSecurityToken>
 		implements INameAndDescription<InvolvedPartyNameType>,
@@ -172,13 +175,13 @@ public class InvolvedPartyNameType
 	}
 
 	@Override
-	public    String getName()
+	public String getName()
 	{
 		return name;
 	}
 
 	@Override
-	public    String getDescription()
+	public String getDescription()
 	{
 		return description;
 	}

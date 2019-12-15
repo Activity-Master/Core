@@ -1,39 +1,15 @@
 package com.guicedee.activitymaster.core.db.entities.enterprise;
 
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagXClassification;
-import com.guicedee.activitymaster.core.db.entities.address.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.classifications.*;
+import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.events.*;
-import com.guicedee.activitymaster.core.db.entities.geography.*;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.product.*;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClassification;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokensSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemsSecurityToken;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
 import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseClassification;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.db.entities.address.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.classifications.*;
-import com.guicedee.activitymaster.core.db.entities.events.*;
-import com.guicedee.activitymaster.core.db.entities.geography.*;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.product.*;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -53,7 +29,8 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "Enterprise")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, Long, EnterpriseSecurityToken>
@@ -89,8 +66,6 @@ public class Enterprise
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
 	private List<EnterpriseSecurityToken> securities;
-
-
 
 	/*
 	@OneToMany(
@@ -563,8 +538,8 @@ public class Enterprise
 	public Enterprise(Long id, String enterpriseName, String enterpriseDesc)
 	{
 		this.id = id;
-		this.name = enterpriseName;
-		this.description = enterpriseDesc;
+		name = enterpriseName;
+		description = enterpriseDesc;
 	}
 
 	@Override
@@ -579,6 +554,7 @@ public class Enterprise
 
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Enterprise remove()
 	{
@@ -587,7 +563,7 @@ public class Enterprise
 		return this;
 	}
 
-
+	@Override
 	@SuppressWarnings("unchecked")
 	public Enterprise archive()
 	{
@@ -598,7 +574,7 @@ public class Enterprise
 
 	public List<EnterpriseSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 /*
 
@@ -1863,7 +1839,6 @@ public class Enterprise
 	}
 */
 
-
 	@Override
 	public boolean equals(Object o)
 	{
@@ -1885,33 +1860,39 @@ public class Enterprise
 		return Objects.hash(getId());
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
+	@Override
 	public @NotNull String getName()
 	{
-		return this.name;
+		return name;
 	}
 
+	@Override
 	public @NotNull String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
+	@Override
 	public Enterprise setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
+	@Override
 	public Enterprise setName(@NotNull String name)
 	{
 		this.name = name;
 		return this;
 	}
 
+	@Override
 	public Enterprise setDescription(@NotNull String description)
 	{
 		this.description = description;

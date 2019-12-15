@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.core.services.capabilities.INameAndDescriptio
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyOrganicType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,9 +28,11 @@ import static javax.persistence.FetchType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Party",name = "InvolvedPartyOrganicType")
+@Table(schema = "Party",
+		name = "InvolvedPartyOrganicType")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class InvolvedPartyOrganicType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, Long, InvolvedPartyOrganicTypeSecurityToken>
@@ -46,7 +49,8 @@ public class InvolvedPartyOrganicType
 	@Column(nullable = false,
 			name = "InvolvedPartyOrganicTypeID")
 	private Long id;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 200)
@@ -54,7 +58,8 @@ public class InvolvedPartyOrganicType
 			length = 200,
 			name = "InvolvedPartyTypeName")
 	private String name;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
@@ -75,7 +80,7 @@ public class InvolvedPartyOrganicType
 
 	public InvolvedPartyOrganicType(Long involvedPartyOrganicTypeID)
 	{
-		this.id = involvedPartyOrganicTypeID;
+		id = involvedPartyOrganicTypeID;
 	}
 
 	@Override
@@ -93,7 +98,7 @@ public class InvolvedPartyOrganicType
 
 	public List<InvolvedPartyOrganicTypeSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public InvolvedPartyOrganicType setSecurities(List<InvolvedPartyOrganicTypeSecurityToken> securities)
@@ -123,28 +128,33 @@ public class InvolvedPartyOrganicType
 		return Objects.hash(getId());
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
+	@Override
 	public @NotNull @Size(min = 1,
 			max = 200) String getName()
 	{
-		return this.name;
+		return name;
 	}
 
-	public    String getDescription()
+	@Override
+	public String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
+	@Override
 	public InvolvedPartyOrganicType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
+	@Override
 	public InvolvedPartyOrganicType setName(@NotNull @Size(min = 1,
 			max = 200) String name)
 	{
@@ -152,6 +162,7 @@ public class InvolvedPartyOrganicType
 		return this;
 	}
 
+	@Override
 	public InvolvedPartyOrganicType setDescription(@NotNull @Size(min = 1,
 			max = 500) String description)
 	{

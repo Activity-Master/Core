@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.builders.Enterpri
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,15 +23,16 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "EnterpriseXClassification")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class EnterpriseXClassification
 		extends WarehouseClassificationRelationshipTable<Enterprise,
 				                                                Classification,
-						                                                EnterpriseXClassification,
+				                                                EnterpriseXClassification,
 				                                                EnterpriseXClassificationQueryBuilder,
-						                                                Long,
-						                                                EnterpriseXClassificationSecurityToken,
+				                                                Long,
+				                                                EnterpriseXClassificationSecurityToken,
 				                                                IEnterprise<?>, IClassification<?>>
 {
 
@@ -41,12 +43,10 @@ public class EnterpriseXClassification
 			name = "EnterpriseXClassificationID")
 	private Long id;
 
-
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<EnterpriseXClassificationSecurityToken> securities;
-
 
 	public EnterpriseXClassification()
 	{
@@ -55,7 +55,7 @@ public class EnterpriseXClassification
 
 	public EnterpriseXClassification(Long enterpriseXClassificationID)
 	{
-		this.id = enterpriseXClassificationID;
+		id = enterpriseXClassificationID;
 	}
 
 	@Override
@@ -65,16 +65,18 @@ public class EnterpriseXClassification
 		            .setBase(this);
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
 	public List<EnterpriseXClassificationSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
+	@Override
 	public EnterpriseXClassification setId(Long id)
 	{
 		this.id = id;

@@ -2,29 +2,8 @@ package com.guicedee.activitymaster.core.db.entities.systems;
 
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagXClassification;
-import com.guicedee.activitymaster.core.db.entities.address.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.classifications.*;
-import com.guicedee.activitymaster.core.db.entities.address.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.classifications.*;
+import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification;
-import com.guicedee.activitymaster.core.db.entities.events.*;
-import com.guicedee.activitymaster.core.db.entities.geography.*;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.product.*;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
-import com.guicedee.activitymaster.core.db.entities.events.*;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.product.*;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClassification;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokensSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.builders.SystemsQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
@@ -36,8 +15,8 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
-import com.guicedee.activitymaster.core.db.entities.geography.*;
 import com.guicedee.guicedinjection.GuiceContext;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -58,11 +37,12 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "Systems")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class Systems
 		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, Long, SystemsSecurityToken>
-		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>,ISystems<?>, IClassification<?>, Systems>,
+		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>, ISystems<?>, IClassification<?>, Systems>,
 				           IActivityMasterEntity<Systems>,
 				           INameAndDescription<Systems>,
 				           IContainsEnterprise<Systems>,
@@ -1000,14 +980,14 @@ public class Systems
 
 	public Systems(Long systemID)
 	{
-		this.id = systemID;
+		id = systemID;
 	}
 
 	public Systems(Long systemID, String systemName, String systemDesc, String systemHistoryName)
 	{
-		this.id = systemID;
-		this.name = systemName;
-		this.description = systemDesc;
+		id = systemID;
+		name = systemName;
+		description = systemDesc;
 		this.systemHistoryName = systemHistoryName;
 	}
 
@@ -1031,25 +1011,25 @@ public class Systems
 		classificationLink.setSystemID(this);
 	}
 
-
+	@Override
 	@SuppressWarnings("unchecked")
 	public Systems remove()
 	{
-		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
-		                            .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
-		                                                                               .get(getEnterpriseID())));
+		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		                                         .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		                                                                                            .get(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;
 	}
 
-
+	@Override
 	@SuppressWarnings("unchecked")
 	public Systems archive()
 	{
-		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
-		                            .getArchivedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
-		                                                                                .get(getEnterpriseID())));
+		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		                                         .getArchivedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
+		                                                                                             .get(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;
@@ -1076,48 +1056,55 @@ public class Systems
 		return Objects.hash(getId());
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
-	public   String getName()
+	@Override
+	public String getName()
 	{
-		return this.name;
+		return name;
 	}
 
+	@Override
 	public @NotNull @Size() String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
-	public   String getSystemHistoryName()
+	public String getSystemHistoryName()
 	{
-		return this.systemHistoryName;
+		return systemHistoryName;
 	}
 
+	@Override
 	public Enterprise getEnterpriseID()
 	{
-		return this.enterpriseID;
+		return enterpriseID;
 	}
 
 	public ActiveFlag getActiveFlagID()
 	{
-		return this.activeFlagID;
+		return activeFlagID;
 	}
 
+	@Override
 	public Systems setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
-	public Systems setName(  String name)
+	@Override
+	public Systems setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
 
+	@Override
 	public Systems setDescription(@NotNull @Size() String description)
 	{
 		this.description = description;

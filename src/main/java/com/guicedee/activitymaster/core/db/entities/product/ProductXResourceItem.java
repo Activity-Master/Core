@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IProduct;
 import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,9 +23,11 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Product",name = "ProductXResourceItem")
+@Table(schema = "Product",
+		name = "ProductXResourceItem")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ProductXResourceItem
 		extends WarehouseClassificationRelationshipTable<Product,
@@ -67,7 +70,7 @@ public class ProductXResourceItem
 
 	public ProductXResourceItem(Long productXResourceItemID)
 	{
-		this.id = productXResourceItemID;
+		id = productXResourceItemID;
 	}
 
 	@Override
@@ -77,26 +80,28 @@ public class ProductXResourceItem
 		            .setBase(this);
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
 	public List<ProductXResourceItemSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public Product getProductID()
 	{
-		return this.productID;
+		return productID;
 	}
 
 	public ResourceItem getResourceItemID()
 	{
-		return this.resourceItemID;
+		return resourceItemID;
 	}
 
+	@Override
 	public ProductXResourceItem setId(Long id)
 	{
 		this.id = id;

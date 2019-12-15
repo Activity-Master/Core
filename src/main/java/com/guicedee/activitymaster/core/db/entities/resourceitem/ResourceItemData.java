@@ -23,9 +23,9 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="BinaryStorage",name = "ResourceItemData")
+@Table(schema = "Resource",
+		name = "ResourceItemData")
 @XmlRootElement
-
 @Access(FIELD)
 public class ResourceItemData
 		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, Long, ResourceItemDataSecurityToken>
@@ -68,7 +68,7 @@ public class ResourceItemData
 
 	public ResourceItemData(Long resourceItemDataID)
 	{
-		this.id = resourceItemDataID;
+		id = resourceItemDataID;
 	}
 
 	@Override
@@ -86,12 +86,12 @@ public class ResourceItemData
 
 	public List<ResourceItemDataSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public List<ResourceItemDataXClassification> getClassifications()
 	{
-		return this.classifications;
+		return classifications;
 	}
 
 	public ResourceItemData setSecurities(List<ResourceItemDataSecurityToken> securities)
@@ -133,21 +133,23 @@ public class ResourceItemData
 		return "Data - " + getId();
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
 	public byte[] getResourceItemData()
 	{
-		return this.resourceItemData;
+		return resourceItemData;
 	}
 
 	public ResourceItem getResource()
 	{
-		return this.resource;
+		return resource;
 	}
 
+	@Override
 	public ResourceItemData setId(Long id)
 	{
 		this.id = id;

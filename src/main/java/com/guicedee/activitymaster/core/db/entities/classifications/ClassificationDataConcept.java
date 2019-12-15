@@ -7,7 +7,7 @@ import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEnt
 import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.dto.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,9 +26,11 @@ import static javax.persistence.FetchType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Classification",name = "ClassificationDataConcept")
+@Table(schema = "Classification",
+		name = "ClassificationDataConcept")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ClassificationDataConcept
 		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, Long, ClassificationDataConceptSecurityToken>
@@ -45,7 +47,8 @@ public class ClassificationDataConcept
 			name = "ClassificationDataConceptID")
 	private Long id;
 
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 100)
@@ -53,7 +56,8 @@ public class ClassificationDataConcept
 			length = 100,
 			name = "classificationDataConceptName")
 	private String name;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 1500)
@@ -89,14 +93,14 @@ public class ClassificationDataConcept
 
 	public ClassificationDataConcept(Long classificationDataConceptID)
 	{
-		this.id = classificationDataConceptID;
+		id = classificationDataConceptID;
 	}
 
 	public ClassificationDataConcept(Long classificationDataConceptID, String classificationDataConceptName, String classificationDataConceptDesc, String originalSourceSystemUniqueID)
 	{
-		this.id = classificationDataConceptID;
-		this.name = classificationDataConceptName;
-		this.description = classificationDataConceptDesc;
+		id = classificationDataConceptID;
+		name = classificationDataConceptName;
+		description = classificationDataConceptDesc;
 
 	}
 
@@ -128,22 +132,22 @@ public class ClassificationDataConcept
 
 	public List<Classification> getClassificationList()
 	{
-		return this.classificationList;
+		return classificationList;
 	}
 
 	public List<ClassificationDataConceptXClassification> getClassifications()
 	{
-		return this.classifications;
+		return classifications;
 	}
 
 	public List<ClassificationDataConceptSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public List<ClassificationDataConceptXResourceItem> getClassificationDataConceptXResourceItemList()
 	{
-		return this.classificationDataConceptXResourceItemList;
+		return classificationDataConceptXResourceItemList;
 	}
 
 	public ClassificationDataConcept setClassificationList(List<Classification> classificationList)
@@ -191,29 +195,31 @@ public class ClassificationDataConcept
 		return Objects.hash(getId());
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
-	public    String getName()
+	public String getName()
 	{
-		return this.name;
+		return name;
 	}
 
 	public @NotNull @Size(min = 1,
 			max = 1500) String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
+	@Override
 	public ClassificationDataConcept setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
-	public ClassificationDataConcept setName(   String name)
+	public ClassificationDataConcept setName(String name)
 	{
 		this.name = name;
 		return this;

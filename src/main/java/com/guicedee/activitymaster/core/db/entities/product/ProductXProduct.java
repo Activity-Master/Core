@@ -5,6 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.product.builders.ProductXPro
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IProduct;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,9 +21,11 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Product",name = "ProductXProduct")
+@Table(schema = "Product",
+		name = "ProductXProduct")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ProductXProduct
 		extends WarehouseClassificationRelationshipTable<Product,
@@ -31,7 +34,7 @@ public class ProductXProduct
 				                                                ProductXProductQueryBuilder,
 				                                                Long,
 				                                                ProductXProductSecurityToken,
-				                                                IProduct<?>,IProduct<?>>
+				                                                IProduct<?>, IProduct<?>>
 		implements Serializable
 {
 
@@ -67,7 +70,7 @@ public class ProductXProduct
 
 	public ProductXProduct(Long productXProductID)
 	{
-		this.id = productXProductID;
+		id = productXProductID;
 	}
 
 	@Override
@@ -77,26 +80,28 @@ public class ProductXProduct
 		            .setBase(this);
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
 	public List<ProductXProductSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public Product getChildProductID()
 	{
-		return this.childProductID;
+		return childProductID;
 	}
 
 	public Product getParentProductID()
 	{
-		return this.parentProductID;
+		return parentProductID;
 	}
 
+	@Override
 	public ProductXProduct setId(Long id)
 	{
 		this.id = id;

@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.injections;
 
+import com.guicedee.activitymaster.core.ActivityMasterService;
 import com.guicedee.activitymaster.core.implementations.*;
 import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.activitymaster.core.systems.TimeSystem;
@@ -47,5 +48,8 @@ public class ActivityMasterBinder
 
 		module.bind(ITimeSystem.class)
 		      .to(TimeSystem.class);
+
+		module.bind(IActivityMasterService.class)
+		      .to(ActivityMasterService.class);
 	}
 }

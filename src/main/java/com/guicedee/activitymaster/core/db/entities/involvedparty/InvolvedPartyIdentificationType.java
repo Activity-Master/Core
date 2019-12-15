@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.core.services.capabilities.INameAndDescriptio
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyIdentificationType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,9 +28,11 @@ import static javax.persistence.FetchType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Party",name = "InvolvedPartyIdentificationType")
+@Table(schema = "Party",
+		name = "InvolvedPartyIdentificationType")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class InvolvedPartyIdentificationType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder, Long, InvolvedPartyIdentificationTypeSecurityToken>
@@ -45,7 +48,8 @@ public class InvolvedPartyIdentificationType
 	@Column(nullable = false,
 			name = "InvolvedPartyIdentificationTypeID")
 	private Long id;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 150)
@@ -53,7 +57,8 @@ public class InvolvedPartyIdentificationType
 			length = 150,
 			name = "InvolvedPartyIdentificationName")
 	private String name;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
@@ -79,14 +84,14 @@ public class InvolvedPartyIdentificationType
 
 	public InvolvedPartyIdentificationType(Long involvedPartyIdentificationTypeID)
 	{
-		this.id = involvedPartyIdentificationTypeID;
+		id = involvedPartyIdentificationTypeID;
 	}
 
 	public InvolvedPartyIdentificationType(Long involvedPartyIdentificationTypeID, String involvedPartyIdentificationName, String involvedPartyIdentificationDesc)
 	{
-		this.id = involvedPartyIdentificationTypeID;
-		this.name = involvedPartyIdentificationName;
-		this.description = involvedPartyIdentificationDesc;
+		id = involvedPartyIdentificationTypeID;
+		name = involvedPartyIdentificationName;
+		description = involvedPartyIdentificationDesc;
 	}
 
 	@Override
@@ -104,12 +109,12 @@ public class InvolvedPartyIdentificationType
 
 	public List<InvolvedPartyIdentificationTypeSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
 	public List<InvolvedPartyXInvolvedPartyIdentificationType> getInvolvedPartyXInvolvedPartyIdentificationTypeList()
 	{
-		return this.involvedPartyXInvolvedPartyIdentificationTypeList;
+		return involvedPartyXInvolvedPartyIdentificationTypeList;
 	}
 
 	public InvolvedPartyIdentificationType setSecurities(List<InvolvedPartyIdentificationTypeSecurityToken> securities)
@@ -145,34 +150,39 @@ public class InvolvedPartyIdentificationType
 		return Objects.hash(getId());
 	}
 
-
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
-	public   String getName()
+	@Override
+	public String getName()
 	{
-		return this.name;
+		return name;
 	}
 
-	public    String getDescription()
+	@Override
+	public String getDescription()
 	{
-		return this.description;
+		return description;
 	}
 
+	@Override
 	public InvolvedPartyIdentificationType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
-	public InvolvedPartyIdentificationType setName(  String name)
+	@Override
+	public InvolvedPartyIdentificationType setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
 
+	@Override
 	public InvolvedPartyIdentificationType setDescription(@NotNull @Size(min = 1,
 			max = 500) String description)
 	{

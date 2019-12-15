@@ -5,6 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.classifications.builders.Cla
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,17 +21,20 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Classification",name = "ClassificationXClassification")
+@Table(schema = "Classification",
+		name = "ClassificationXClassification")
 @XmlRootElement
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ClassificationXClassification
 		extends WarehouseClassificationRelationshipTable<Classification,
-						                                                Classification,
-						                                                ClassificationXClassification,
+				                                                Classification,
+				                                                ClassificationXClassification,
 				                                                ClassificationXClassificationQueryBuilder,
-						                                                Long,
-						                                                ClassificationXClassificationSecurityToken,
-				                                                IClassification<?>,IClassification<?>>
+				                                                Long,
+				                                                ClassificationXClassificationSecurityToken,
+				                                                IClassification<?>, IClassification<?>>
 		implements Serializable
 {
 
@@ -67,7 +71,7 @@ public class ClassificationXClassification
 
 	public ClassificationXClassification(Long classificationXClassificationID)
 	{
-		this.id = classificationXClassificationID;
+		id = classificationXClassificationID;
 	}
 
 	@Override
@@ -77,26 +81,28 @@ public class ClassificationXClassification
 		            .setBase(this);
 	}
 
+	@Override
 	public Long getId()
 	{
-		return this.id;
+		return id;
 	}
 
 	public Classification getChildClassificationID()
 	{
-		return this.childClassificationID;
+		return childClassificationID;
 	}
 
 	public Classification getParentClassificationID()
 	{
-		return this.parentClassificationID;
+		return parentClassificationID;
 	}
 
 	public List<ClassificationXClassificationSecurityToken> getSecurities()
 	{
-		return this.securities;
+		return securities;
 	}
 
+	@Override
 	public ClassificationXClassification setId(Long id)
 	{
 		this.id = id;
@@ -114,8 +120,6 @@ public class ClassificationXClassification
 		this.parentClassificationID = parentClassificationID;
 		return this;
 	}
-
-
 
 	public ClassificationXClassification setSecurities(List<ClassificationXClassificationSecurityToken> securities)
 	{
