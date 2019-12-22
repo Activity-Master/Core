@@ -19,9 +19,6 @@ import static javax.persistence.AccessType.*;
 @Entity
 @Table(name = "ActiveFlagSecurityToken")
 @XmlRootElement
-
-@Cacheable
-@org.hibernate.annotations.Cache(usage= CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ActiveFlagSecurityToken
 		extends WarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, Long>

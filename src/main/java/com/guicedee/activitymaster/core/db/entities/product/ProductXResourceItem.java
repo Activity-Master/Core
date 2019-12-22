@@ -26,8 +26,6 @@ import static javax.persistence.AccessType.*;
 @Table(schema = "Product",
 		name = "ProductXResourceItem")
 @XmlRootElement
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ProductXResourceItem
 		extends WarehouseClassificationRelationshipTable<Product,
