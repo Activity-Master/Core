@@ -49,4 +49,6 @@ public interface IInvolvedPartyService<J extends IInvolvedPartyService<J>>
 	IInvolvedParty<?> findByToken(@CacheKey ISecurityToken<?> token, @CacheKey UUID... tokens);
 
 	IInvolvedParty<?> findByUUID(@CacheKey UUID token, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens);
+
+	IInvolvedParty<?> findByIdentificationType(String identificationType, String value);
 }

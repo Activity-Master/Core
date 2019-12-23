@@ -20845,3 +20845,5 @@ USE [master]
 GO
 ALTER DATABASE [FSDM] SET READ_WRITE
 GO
+USE [FSDM]
+exec dbo.LoadInitialTimeData;

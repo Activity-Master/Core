@@ -5,6 +5,9 @@ import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
@@ -25,10 +28,12 @@ import com.guicedee.logger.LogFactory;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
+import javax.persistence.criteria.JoinType;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.core.services.classifications.events.EventClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications.*;
 import static com.guicedee.activitymaster.core.services.types.IdentificationTypes.*;
@@ -41,6 +46,7 @@ public class InvolvedPartyService
 		implements IInvolvedPartyService<InvolvedPartyService>
 {
 	private static final Logger log = LogFactory.getLog("InvolvedPartyService");
+
 	@Override
 	public IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, IEnterprise<?> enterprise)
 	{
@@ -66,7 +72,7 @@ public class InvolvedPartyService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag) get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -102,7 +108,7 @@ public class InvolvedPartyService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag) get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -145,7 +151,7 @@ public class InvolvedPartyService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag) get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -181,7 +187,7 @@ public class InvolvedPartyService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag)get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setActiveFlagID((ActiveFlag) get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
 			xr.persist();
 		}
 		else
@@ -259,7 +265,8 @@ public class InvolvedPartyService
 		UUID identityToken = InvolvedPartySystem.getSystemTokens()
 		                                        .get(originatingSystem.getEnterpriseID());
 		InvolvedParty foundPart = new InvolvedParty().builder()
-		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()), identityToken)
+		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
+		                                                                       identityToken)
 		                                             .get()
 		                                             .orElse(null);
 		if (foundPart == null)
@@ -267,8 +274,8 @@ public class InvolvedPartyService
 			throw new SecurityAccessException("Unable to find any Involved Party with that username");
 		}
 
-		Optional<IRelationshipValue<IInvolvedParty<?>, IClassification<?>,?>> saltEntity = foundPart.find(SecurityPasswordSalt, originatingSystem, identityToken);
-		Optional<IRelationshipValue<IInvolvedParty<?>,IClassification<?>,?>> passEntity = foundPart.find(SecurityPassword, originatingSystem, identityToken);
+		Optional<IRelationshipValue<IInvolvedParty<?>, IClassification<?>, ?>> saltEntity = foundPart.find(SecurityPasswordSalt, originatingSystem, identityToken);
+		Optional<IRelationshipValue<IInvolvedParty<?>, IClassification<?>, ?>> passEntity = foundPart.find(SecurityPassword, originatingSystem, identityToken);
 		if (saltEntity.isEmpty() || passEntity.isEmpty())
 		{
 			if (throwForNoUser)
@@ -509,5 +516,21 @@ public class InvolvedPartyService
 		                                                                          .get();
 		return foundLink.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
 		                .orElse(null);
+	}
+
+	@Override
+	public IInvolvedParty<?> findByIdentificationType(String identificationType, String value)
+	{
+		InvolvedPartyIdentificationTypeQueryBuilder builder = new InvolvedPartyIdentificationType().builder();
+		builder.inDateRange()
+		       .where(InvolvedPartyIdentificationType_.name, Equals, identificationType);
+
+		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder ipQb = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
+		ipQb.inDateRange()
+		    .join(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, builder, JoinType.INNER);
+
+		Optional<InvolvedPartyXInvolvedPartyIdentificationType> opt = ipQb.get();
+		return opt.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
+		          .orElse(null);
 	}
 }

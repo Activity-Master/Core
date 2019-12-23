@@ -17,14 +17,12 @@ import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterExcept
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.google.inject.Singleton;
 import com.guicedee.guicedinjection.GuiceContext;
+import io.github.classgraph.ClassInfo;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,9 +76,9 @@ public class EnterpriseService
 	public Optional<IEnterprise<?>> findEnterprise(IEnterpriseName<?> name)
 	{
 		return (Optional) new Enterprise().builder()
-		                       .findByName(name.classificationName())
-		                       .inDateRange()
-		                       .get();
+		                                  .findByName(name.classificationName())
+		                                  .inDateRange()
+		                                  .get();
 	}
 
 	/**
@@ -118,8 +116,6 @@ public class EnterpriseService
 		{
 			ISystems<?> activityMasterSystem = get(SystemsService.class)
 					                                   .getActivityMaster(enterprise);
-			UUID identityToken = get(SystemsService.class).getSecurityIdentityToken(activityMasterSystem);
-
 			if (enterprise.has(Version, activityMasterSystem))
 			{
 				if (ActivityMasterConfiguration.version > enterprise.find(Version, activityMasterSystem)
@@ -140,5 +136,41 @@ public class EnterpriseService
 			            .runUpdatesOnEnterprise(enterpriseName, progressMonitor);
 		}
 		return enterprise;
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Override
+	@CacheResult
+	public Set<IEnterpriseName<?>> getIEnterprises()
+	{
+		Set<IEnterpriseName<?>> output = new HashSet<>();
+
+		for (ClassInfo classInfo : GuiceContext.instance()
+		                                       .getScanResult()
+		                                       .getClassesImplementing(IEnterpriseName.class.getCanonicalName()))
+		{
+			Class<IEnterpriseName> o = (Class<IEnterpriseName>) classInfo.loadClass();
+			for (Object enumConstant : o.getEnumConstants())
+			{
+				IEnterpriseName<?> e = (IEnterpriseName<?>) enumConstant;
+				output.add(e);
+			}
+		}
+		return output;
+	}
+
+	@CacheResult
+	@Override
+	public IEnterpriseName<?> getIEnterprise(@CacheKey IEnterprise<?> enterprise)
+	{
+		for (IEnterpriseName<?> e : getIEnterprises())
+		{
+			if (enterprise.getName()
+			              .equals(e.name()))
+			{
+				return e;
+			}
+		}
+		return null;
 	}
 }

@@ -4,7 +4,10 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.List;
+import java.util.Set;
 
 public interface IEnterpriseService
 {
@@ -19,4 +22,10 @@ public interface IEnterpriseService
 	 * @return The enterprise
 	 */
 	IEnterprise<?> getEnterprise(IEnterpriseName<?> name);
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	Set<IEnterpriseName<?>> getIEnterprises();
+
+	@CacheResult
+	IEnterpriseName<?> getIEnterprise(@CacheKey IEnterprise<?> enterprise);
 }
