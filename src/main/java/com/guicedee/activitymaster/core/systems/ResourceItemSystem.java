@@ -22,7 +22,7 @@ public class ResourceItemSystem
 {
 
 	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
-	private static final Map<IEnterprise<?>, Systems> systemEnterprises = new HashMap<>();
+	private static final Map<IEnterprise<?>, Systems> systemsMap = new HashMap<>();
 
 	@SuppressWarnings("Duplicates")
 	@Override
@@ -59,7 +59,6 @@ public class ResourceItemSystem
 		service.createType(ResourceItemTypes.BrowserDeviceIcon, activityMasterSystem);
 		service.createType(ResourceItemTypes.BrowserDeviceName, activityMasterSystem);
 
-
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
 		classificationService.create(ResourceItemClassifications.FileResourceItemClassifications, activityMasterSystem);
 		classificationService.create(ResourceItemClassifications.AddedANewDevice, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications);
@@ -92,16 +91,34 @@ public class ResourceItemSystem
 	}
 
 	@Override
-	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Resource Items System",
-		                                        "The system for managing Resource Items", "");
-		UUID securityToken = GuiceContext.get(ISystemsService.class)
-		                                 .registerNewSystem(enterprise, newSystem);
+		final String systemName = "Resource Items System";
+		final String systemDesc = "The system for managing Resource Items";
+		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
+		                                    .findSystem(enterprise, systemName);
+		UUID securityToken = null;
+		if (sys == null)
+		{
+			sys = (Systems) GuiceContext.get(SystemsService.class)
+			                                    .create(enterprise, systemName, systemDesc, systemName);
 
+			securityToken = GuiceContext.get(ISystemsService.class)
+			                            .registerNewSystem(enterprise, sys);
+		}
+		else
+		{
+			securityToken = GuiceContext.get(SystemsService.class)
+			                            .getSecurityIdentityToken(sys);
+		}
 		systemTokens.put(enterprise, securityToken);
-		systemEnterprises.put(enterprise, (Systems) newSystem);
+		systemsMap.put(enterprise, sys);
+	}
+
+	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+
 	}
 
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()
@@ -109,8 +126,8 @@ public class ResourceItemSystem
 		return systemTokens;
 	}
 
-	public static Map<IEnterprise<?>, Systems> getSystemEnterprises()
+	public static Map<IEnterprise<?>, Systems> getSystemsMap()
 	{
-		return systemEnterprises;
+		return systemsMap;
 	}
 }

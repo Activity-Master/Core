@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
@@ -51,6 +53,7 @@ public class Classification
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ClassificationID")
+	@JsonValue
 	private Long id;
 
 	@Basic(optional = false,
@@ -60,7 +63,7 @@ public class Classification
 			max = 100)
 	@Column(nullable = false,
 			length = 100,
-			name = "ClassificationName")
+			name = "ClassificationName")@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -69,191 +72,26 @@ public class Classification
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
-			name = "ClassificationDesc")
+			name = "ClassificationDesc")@JsonIgnore
 	private String description;
 	@Basic(optional = false,
 			fetch = EAGER)
 	@NotNull
 	@Column(nullable = false,
-			name = "ClassificationSequenceNumber")
+			name = "ClassificationSequenceNumber")@JsonIgnore
 	@OrderBy
 	private Short classificationSequenceNumber;
 	@JoinColumn(name = "ClassificationDataConceptID",
 			referencedColumnName = "ClassificationDataConceptID",
 			nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.EAGER)
+			fetch = FetchType.EAGER)@JsonIgnore
 	private ClassificationDataConcept concept;
 
 	@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY)@JsonIgnore
 	private List<ClassificationSecurityToken> securities;
-
-/*
-
-	@OneToMany(
-			mappedBy = "classification",
-			fetch = FetchType.LAZY)
-	private List<Address> addressList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<InvolvedPartyXResourceItem> involvedPartyXResourceItemList;
-
-	@OneToMany(
-			mappedBy = "childClassificationID",
-			fetch = FetchType.LAZY)
-	private List<ClassificationXClassification> classificationXClassificationList;
-
-	@OneToMany(
-			mappedBy = "parentClassificationID",
-			fetch = FetchType.LAZY)
-	private List<ClassificationXClassification> classificationXClassificationList2;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<AddressXGeography> addressXGeographyList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<SecurityTokenXClassification> securityTokenXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ProductXClassification> productXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ArrangementXInvolvedParty> arrangementXInvolvedPartyList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ArrangementXResourceItem> arrangementXResourceItemList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ResourceItemXClassification> resourceItemXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<EventXInvolvedParty> eventXInvolvedPartyList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ActiveFlagXClassification> activeFlagXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<EnterpriseXClassification> enterpriseXClassificationList;
-	@OneToMany(mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<EventXArrangement> eventXArrangementList;
-	@OneToMany(
-			mappedBy = "securityTokenClassificationID",
-			fetch = FetchType.LAZY)
-	private List<SecurityToken> securityTokenList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<SystemXClassification> systemXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ArrangementXClassification> arrangementXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	//@JoinColumn(name = "ClassificationID", referencedColumnName = "ClassificationID", nullable = false)
-	private List<AddressXClassification> addressXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<Geography> geographyList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<AddressXResourceItem> addressXResourceItemList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ArrangementXArrangement> arrangementXArrangementList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ClassificationDataConceptXClassification> classificationDataConceptXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ArrangementXProduct> arrangementXProductList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<EventXResourceItem> eventXResourceItemList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<InvolvedPartyXClassification> involvedPartyXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ProductXResourceItem> productXResourceItemList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<EventXAddress> eventXAddressList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<InvolvedPartyXProduct> involvedPartyXProductList;
-	@OneToMany(
-			mappedBy = "valueTypeClassificationID",
-			fetch = FetchType.LAZY)
-	private List<InvolvedPartyXProduct> involvedPartyXProductList1;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ResourceItemDataXClassification> resourceItemDataXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<InvolvedPartyXAddress> involvedPartyXAddressList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<ClassificationXResourceItem> classificationXResourceItemList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<EventXProduct> eventXProductList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<GeographyXClassification> geographyXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<EventXClassification> eventXClassificationList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<GeographyXResourceItem> geographyXResourceItemList;
-	@OneToMany(
-			mappedBy = "classificationID",
-			fetch = FetchType.LAZY)
-	private List<GeographyXGeography> geographyXGeographyList;*/
 
 	public Classification()
 	{

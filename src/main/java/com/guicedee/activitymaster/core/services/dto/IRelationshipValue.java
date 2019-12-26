@@ -9,12 +9,16 @@ import java.util.UUID;
 
 /**
  * An actual value for a relationship
- * @param <P> The primary source
- * @param <S> The secondary source
- * @param <J> This object
+ *
+ * @param <P>
+ * 		The primary source
+ * @param <S>
+ * 		The secondary source
+ * @param <J>
+ * 		This object
  */
 @SuppressWarnings("unused")
-public interface IRelationshipValue<P,S,J extends IRelationshipValue<P,S,J>>
+public interface IRelationshipValue<P, S, J extends IRelationshipValue<P, S, J>>
 {
 	J setValue(String value);
 
@@ -25,7 +29,8 @@ public interface IRelationshipValue<P,S,J extends IRelationshipValue<P,S,J>>
 		return Integer.parseInt(getValue());
 	}
 
-	default Long getValueAsLong(){
+	default Long getValueAsLong()
+	{
 		return Long.parseLong(getValue());
 	}
 
@@ -51,28 +56,38 @@ public interface IRelationshipValue<P,S,J extends IRelationshipValue<P,S,J>>
 
 	/**
 	 * The left hand side of the relationship
+	 *
 	 * @return
 	 */
 	P getPrimary();
 
 	/**
 	 * The right hand side of the relationship
+	 *
 	 * @return
 	 */
 	S getSecondary();
 
-	default IRelationshipValue<P,S,?> expire(Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<P, S, ?> expire(Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		WarehouseBaseTable<?,?,?> tableForClassification = (WarehouseBaseTable) this;
+		WarehouseBaseTable<?, ?, ?> tableForClassification = (WarehouseBaseTable) this;
 		tableForClassification.setEffectiveToDate(LocalDateTime.now()
 		                                                       .plus(duration));
 		tableForClassification.updateNow();
 		return this;
 	}
 
-	default IRelationshipValue<P,S,?> update(ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<P, S, ?> expire()
 	{
-		WarehouseBaseTable<?,?,?> tableForClassification = (WarehouseBaseTable) this;
+		WarehouseBaseTable<?, ?, ?> tableForClassification = (WarehouseBaseTable) this;
+		tableForClassification.setEffectiveToDate(LocalDateTime.now());
+		tableForClassification.updateNow();
+		return this;
+	}
+
+	default IRelationshipValue<P, S, ?> update(ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		WarehouseBaseTable<?, ?, ?> tableForClassification = (WarehouseBaseTable) this;
 		tableForClassification.updateNow();
 		return this;
 	}

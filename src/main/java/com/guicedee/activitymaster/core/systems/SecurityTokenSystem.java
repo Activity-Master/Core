@@ -47,6 +47,8 @@ public class SecurityTokenSystem
 {
 
 	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
+
+	private static final Map<IEnterprise<?>, Systems> systemsMap = new HashMap<>();
 	private static final Logger log = Logger.getLogger(SecurityTokenSystem.class.getName());
 
 	@Override
@@ -443,15 +445,34 @@ public class SecurityTokenSystem
 
 
 	@Override
-	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Security Tokens System",
-		                                        "The system for managing Security Tokens", "");
-		UUID securityToken = GuiceContext.get(ISystemsService.class)
-		                                 .registerNewSystem(enterprise, newSystem);
+		final String systemName = "Security Tokens System";
+		final String systemDesc = "The system for managing Security Tokens";
+		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
+		                                    .findSystem(enterprise, systemName);
+		UUID securityToken = null;
+		if (sys == null)
+		{
+			sys = (Systems) GuiceContext.get(SystemsService.class)
+			                                    .create(enterprise, systemName, systemDesc, systemName);
 
+			securityToken = GuiceContext.get(ISystemsService.class)
+			                            .registerNewSystem(enterprise, sys);
+		}
+		else
+		{
+			securityToken = GuiceContext.get(SystemsService.class)
+			                            .getSecurityIdentityToken(sys);
+		}
 		systemTokens.put(enterprise, securityToken);
+		systemsMap.put(enterprise, sys);
+	}
+
+	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+
 	}
 
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()

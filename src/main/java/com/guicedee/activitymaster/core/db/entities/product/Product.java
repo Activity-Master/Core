@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXProduct;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -51,6 +53,7 @@ public class Product
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ProductID")
+	@JsonValue
 	private Long id;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -60,6 +63,7 @@ public class Product
 	@Column(nullable = false,
 			length = 150,
 			name = "ProductName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -69,6 +73,7 @@ public class Product
 	@Column(nullable = false,
 			length = 250,
 			name = "ProductDesc")
+	@JsonIgnore
 	private String description;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -78,41 +83,50 @@ public class Product
 	@Column(nullable = false,
 			length = 10,
 			name = "ProductCode")
+	@JsonIgnore
 	private String productCode;
 
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ProductXClassification> classifications;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ProductSecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXProduct> arrangements;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ProductXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyXProduct> parties;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXProduct> events;
 	@OneToMany(
 			mappedBy = "childProductID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ProductXProduct> productXProductList;
 	@OneToMany(
 			mappedBy = "parentProductID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ProductXProduct> productXProductList1;
 
 	public Product()

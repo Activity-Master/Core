@@ -86,7 +86,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 			}
 		}
 
-
 		if (async)
 		{
 			JobService.getInstance()
@@ -174,7 +173,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 			configureDefaultsForNewToken(exist, system.getEnterpriseID(), system);
 		}
 
-
 		createDefaultAdministratorSecurityAccess(system.getEnterpriseID());
 		createDefaultEveryoneSecurityAccess(system.getEnterpriseID());
 		createDefaultEverywhereSecurityAccess(system.getEnterpriseID());
@@ -183,7 +181,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		createDefaultPluginsSecurityAccess(system.getEnterpriseID());
 		createDefaultGuestReadSecurityAccess(system.getEnterpriseID());
 	}
-
 
 	private S createDefaultAdministratorSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
 	{

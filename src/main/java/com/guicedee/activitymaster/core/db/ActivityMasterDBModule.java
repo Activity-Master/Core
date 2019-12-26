@@ -26,8 +26,8 @@ public class ActivityMasterDBModule
 		//BTMAutomatedTransactionHandler.setActive(true);
 		return new BTMConnectionBaseInfo()
 				       .setEnableJdbc4ConnectionTest(true)
-				       .setMaxPoolSize(4)
-				       .setMinPoolSize(2)
+				       .setMaxPoolSize(50)
+				       .setMinPoolSize(1)
 				       .setPrefill(true)
 				       .setShareTransactionConnections(true)
 				       .setTransactionIsolation("READ_UNCOMMITTED")

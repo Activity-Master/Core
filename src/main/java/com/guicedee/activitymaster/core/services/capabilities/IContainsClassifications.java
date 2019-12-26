@@ -39,8 +39,8 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                                         S extends WarehouseCoreTable<?, ? extends QueryBuilderDefault, ?, ?>,
 		                                         Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, L, R>,
 		                                         T extends IClassificationValue<?>,
-												 L,R,
-		                                         J extends IContainsClassifications<P, S, Q, T,L,R, J>>
+		                                         L, R,
+		                                         J extends IContainsClassifications<P, S, Q, T, L, R, J>>
 {
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -58,7 +58,6 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		}
 		return null;
 	}
-
 
 	void configureForClassification(Q classificationLink, IEnterprise<?> enterprise);
 
@@ -148,7 +147,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 
 	default double sumAll(T value, ISystems<?> originatingSystem, UUID identityToken)
 	{
-		List<String> results = getValues(value, null,originatingSystem, identityToken);
+		List<String> results = getValues(value, null, originatingSystem, identityToken);
 		double d = 0.0d;
 		for (String result : results)
 		{
@@ -159,33 +158,45 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L,R,?>> findFirst(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findFirst(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationService classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
 
-		return (Optional<IRelationshipValue<L,R,?>>) activityMasterIdentity.builder()
-		                                           .findLink((P) this, (S) classification, null)
-		                                           .inActiveRange(originatingSystem.getEnterpriseID())
-		                                           .inDateRange()
-		                                           .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                           .setReturnFirst(true)
-		                                           .get();
+		return (Optional<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
+		                                                                     .findLink((P) this, (S) classification, null)
+		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                     .inDateRange()
+		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                     .setReturnFirst(true)
+		                                                                     .get();
 	}
 
 	@SuppressWarnings("unchecked")
-	default List<IRelationshipValue<L,R,?>> findAll(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAll(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
-		IClassificationService classificationService = get(IClassificationService.class);
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-		return (List<IRelationshipValue<L,R,?>>) activityMasterIdentity.builder()
-		                                       .findLink((P) this, (S) classification, null)
-		                                       .inActiveRange(originatingSystem.getEnterpriseID())
-		                                       .inDateRange()
-		                                       .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                       .getAll();
+		return (List<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
+		                                                                 .findLink((P) this, (S) classification, null)
+		                                                                 .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                 .inDateRange()
+		                                                                 .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                 .getAll();
+	}
+
+	@SuppressWarnings("unchecked")
+	default List<IRelationshipValue<L, R, ?>> findAllClassifications(ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
+		return (List<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
+		                                                                 .findParentLink((P) this, null)
+		                                                                 .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                 .inDateRange()
+		                                                                 .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                 .getAll();
 	}
 
 	default boolean has(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
@@ -209,7 +220,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> add(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> add(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -236,7 +247,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> addOrUpdate(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrUpdate(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -259,7 +270,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -274,7 +285,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureForClassification(newTableForClassification, originatingSystem.getEnterpriseID());
@@ -290,7 +301,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> addOrReuse(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrReuse(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -331,7 +342,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> add(IClassification<?> classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> add(IClassification<?> classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -355,7 +366,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> addOrReuse(IClassification<?> classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrReuse(IClassification<?> classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -391,7 +402,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> addOrUpdate(IClassification<?> classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrUpdate(IClassification<?> classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -425,7 +436,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -439,7 +450,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureForClassification(newTableForClassification, originatingSystem.getEnterpriseID());
@@ -455,7 +466,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> update(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> update(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -478,7 +489,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -492,7 +503,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureForClassification(newTableForClassification, originatingSystem.getEnterpriseID());
@@ -507,9 +518,8 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 
-
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> expire(T classificationValue, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> expire(T classificationValue, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -537,7 +547,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> archive(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> archive(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -560,14 +570,14 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.updateNow();
 		}
 		return tableForClassification;
 	}
 
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L,R,?> remove(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> remove(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
@@ -587,7 +597,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 		}

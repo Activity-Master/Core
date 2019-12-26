@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.resourceitem;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -44,6 +46,7 @@ public class ResourceItemType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ResourceItemTypeID")
+	@JsonValue
 	private Long id;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -53,6 +56,7 @@ public class ResourceItemType
 	@Column(nullable = false,
 			length = 100,
 			name = "ResourceItemTypeName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -60,16 +64,19 @@ public class ResourceItemType
 	@Lob
 	@Column(nullable = false,
 			name = "ResourceItemTypeDesc")
+	@JsonIgnore
 	private String description;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ResourceItemTypeSecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "resourceItemTypeID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ResourceItemXResourceItemType> involvedPartyXResourceItemTypeList;
 
 	public ResourceItemType()
@@ -152,7 +159,7 @@ public class ResourceItemType
 	}
 
 	@Override
-	public    String getName()
+	public String getName()
 	{
 		return name;
 	}
@@ -171,7 +178,7 @@ public class ResourceItemType
 	}
 
 	@Override
-	public ResourceItemType setName(   String name)
+	public ResourceItemType setName(String name)
 	{
 		this.name = name;
 		return this;

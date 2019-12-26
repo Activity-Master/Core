@@ -5,13 +5,17 @@
  */
 package com.guicedee.activitymaster.core.db.entities.geography;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXGeography;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.geography.builders.GeographyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.hierarchies.GeographyHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsHierarchy;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
 import com.guicedee.activitymaster.core.services.classifications.geography.IGeographyClassification;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
@@ -35,15 +39,17 @@ import static javax.persistence.FetchType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Geography",name = "Geography")
+@Table(schema = "Geography",
+		name = "Geography")
 @XmlRootElement
 
 @Access(FIELD)
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
 		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, IGeography<?>, IClassification<?>, Geography>,
-				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceItemClassification<?>,IGeography<?>, IResourceItem<?>,Geography>,
+				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceItemClassification<?>, IGeography<?>, IResourceItem<?>, Geography>,
 				           IActivityMasterEntity<Geography>,
+				           IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView>,
 				           IGeography<Geography>
 {
 
@@ -52,33 +58,40 @@ public class Geography
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "GeographyID")
+	@JsonValue
 	private Long id;
 
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
 			name = "GeographyName")
+	@JsonIgnore
 	private String name;
-	@Basic(optional = false,fetch = EAGER)
+	@Basic(optional = false,
+			fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
 			name = "GeographyDesc")
+	@JsonIgnore
 	private String description;
 
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<GeographyXClassification> classifications;
 
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<AddressXGeography> addresses;
 
 	@JoinColumn(name = "ClassificationID",
@@ -86,24 +99,29 @@ public class Geography
 			nullable = false)
 	@ManyToOne(optional = false,
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private Classification classificationID;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<GeographySecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<GeographyXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "parentGeographyID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<GeographyXGeography> geographyXGeographyList;
 	@OneToMany(
 			mappedBy = "childGeographyID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<GeographyXGeography> geographyXGeographyList1;
 
 	public Geography()
@@ -263,12 +281,12 @@ public class Geography
 		return this.id;
 	}
 
-	public    String getName()
+	public String getName()
 	{
 		return this.name;
 	}
 
-	public    String getDescription()
+	public String getDescription()
 	{
 		return this.description;
 	}
@@ -290,6 +308,12 @@ public class Geography
 			max = 500) String description)
 	{
 		this.description = description;
+		return this;
+	}
+
+	public Geography setClassification(Classification classification)
+	{
+		this.classificationID = classification;
 		return this;
 	}
 

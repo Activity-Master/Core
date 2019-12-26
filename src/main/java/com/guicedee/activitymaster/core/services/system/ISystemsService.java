@@ -5,6 +5,8 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.ActivityMasterStatics.*;
@@ -13,10 +15,15 @@ public interface ISystemsService
 {
 	ISystems<?> getActivityMaster(IEnterprise<?> enterprise, UUID... token);
 
-	ISystems<?> findSystem(IEnterprise<?> enterprise,UUID token, UUID... identityToken);
+	ISystems<?> findSystem(IEnterprise<?> enterprise, String systemName, UUID... token);
 
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = transactionTimeout)
+	ISystems<?> findSystem(IEnterprise<?> enterprise, UUID token, UUID... identityToken);
+
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
+			timeout = transactionTimeout)
 	UUID registerNewSystem(IEnterprise<?> enterprise, ISystems<?> newSystem);
 
 	ISystems<?> create(IEnterprise<?> enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken);
+
+	UUID getSecurityIdentityToken(ISystems<?> system, UUID... identityToken);
 }

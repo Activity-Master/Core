@@ -1,6 +1,8 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Singleton
 public class ArrangementsSystem
 		implements IActivityMasterSystem<ArrangementsSystem>
 {
@@ -27,11 +30,52 @@ public class ArrangementsSystem
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
+
+	}
+
+	@Override
+	public int totalTasks()
+	{
+		return 0;
+	}
+
+	@Override
+	public Integer sortOrder()
+	{
+		return Integer.MIN_VALUE + 8;
+	}
+
+	@Override
+	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		final String systemName = "Arrangements System";
+		final String systemDesc = "The system for the arrangement management";
+		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
+		                                    .findSystem(enterprise, systemName);
+		UUID securityToken = null;
+		if (sys == null)
+		{
+			sys = (Systems) GuiceContext.get(SystemsService.class)
+			                                    .create(enterprise, systemName, systemDesc, systemName);
+
+			securityToken = GuiceContext.get(ISystemsService.class)
+			                            .registerNewSystem(enterprise, sys);
+		}
+		else
+		{
+			securityToken = GuiceContext.get(SystemsService.class)
+			                            .getSecurityIdentityToken(sys);
+		}
+		systemTokens.put(enterprise, securityToken);
+	}
+
+	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                               .getActivityMaster(enterprise);
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
 		logProgress("Classifications System", "Checking/Creating Defaults...", progressMonitor);
-
 
 		//arrangement relationships with parties
 		service.create(ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements, activityMasterSystem);
@@ -61,30 +105,8 @@ public class ArrangementsSystem
 		service.create(ArrangementTypeClassifications.ProductLead, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		logProgress("Classifications System", "Loaded Arrangement Type Classifications...", 1, progressMonitor);
 
-
 	}
 
-	@Override
-	public int totalTasks()
-	{
-		return 0;
-	}
-
-	@Override
-	public Integer sortOrder()
-	{
-		return Integer.MIN_VALUE + 8;
-	}
-	@Override
-	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
-	{
-		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Arrangements System", "The system for the arrangements management", "");
-		UUID securityToken = GuiceContext.get(ISystemsService.class)
-		                                 .registerNewSystem(enterprise, newSystem);
-
-		systemTokens.put(enterprise, securityToken);
-	}
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()
 	{
 		return systemTokens;

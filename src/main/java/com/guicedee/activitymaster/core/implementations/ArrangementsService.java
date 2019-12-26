@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.core.implementations;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXArrangementTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXClassificationQueryBuilder;
@@ -14,10 +13,8 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
-import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
 import com.google.inject.Singleton;
@@ -196,7 +193,7 @@ public class ArrangementsService
 		IArrangementType<?> type = find(idType, enterprise, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, enterprise, identityToken);
-		ISystems<?> systems = InvolvedPartySystem.getNewSystem()
+		ISystems<?> systems = InvolvedPartySystem.getSystemsMap()
 		                                         .get(enterprise);
 
 		ArrangementQueryBuilder aqb = new Arrangement().builder();

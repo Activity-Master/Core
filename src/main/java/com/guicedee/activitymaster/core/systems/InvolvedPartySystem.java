@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.core.systems;
 
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.InvolvedPartyService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
@@ -24,7 +25,7 @@ public class InvolvedPartySystem
 {
 
 	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
-	private static final Map<IEnterprise<?>, ISystems> newSystem = new HashMap<>();
+	private static final Map<IEnterprise<?>, ISystems<?>> systemsMap = new HashMap<>();
 
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -129,15 +130,34 @@ public class InvolvedPartySystem
 
 
 	@Override
-	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		newSystem.put(enterprise, GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Involved Party System",
-		                                        "The system for managing Involved Parties", ""));
-		UUID securityToken = GuiceContext.get(ISystemsService.class)
-		                                 .registerNewSystem(enterprise,  newSystem.get(enterprise));
+		final String systemName = "Involved Party System";
+		final String systemDesc = "The system for managing Involved Parties";
+		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
+		                                    .findSystem(enterprise, systemName);
+		UUID securityToken = null;
+		if (sys == null)
+		{
+			sys = (Systems) GuiceContext.get(SystemsService.class)
+			                                    .create(enterprise, systemName, systemDesc, systemName);
 
+			securityToken = GuiceContext.get(ISystemsService.class)
+			                            .registerNewSystem(enterprise, sys);
+		}
+		else
+		{
+			securityToken = GuiceContext.get(SystemsService.class)
+			                            .getSecurityIdentityToken(sys);
+		}
 		systemTokens.put(enterprise, securityToken);
+		systemsMap.put(enterprise, sys);
+	}
+
+	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+
 	}
 
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()
@@ -145,8 +165,8 @@ public class InvolvedPartySystem
 		return systemTokens;
 	}
 
-	public static Map<IEnterprise<?>, ISystems> getNewSystem()
+	public static Map<IEnterprise<?>, ISystems<?>> getSystemsMap()
 	{
-		return newSystem;
+		return systemsMap;
 	}
 }

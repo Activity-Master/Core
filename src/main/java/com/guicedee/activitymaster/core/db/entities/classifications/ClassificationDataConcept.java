@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationDataConceptQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
@@ -45,6 +47,7 @@ public class ClassificationDataConcept
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ClassificationDataConceptID")
+	@JsonValue
 	private Long id;
 
 	@Basic(optional = false,
@@ -55,6 +58,7 @@ public class ClassificationDataConcept
 	@Column(nullable = false,
 			length = 100,
 			name = "classificationDataConceptName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -64,26 +68,31 @@ public class ClassificationDataConcept
 	@Column(nullable = false,
 			length = 1500,
 			name = "ClassificationDataConceptDesc")
+	@JsonIgnore
 	private String description;
 
 	@OneToMany(
 			mappedBy = "concept",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<Classification> classificationList;
 
 	@OneToMany(
 			mappedBy = "classificationDataConceptID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ClassificationDataConceptXClassification> classifications;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ClassificationDataConceptSecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "classificationDataConceptID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList;
 
 	public ClassificationDataConcept()

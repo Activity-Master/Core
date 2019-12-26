@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.events;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -23,7 +25,8 @@ import static javax.persistence.AccessType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Event",name = "EventType")
+@Table(schema = "Event",
+		name = "EventType")
 @XmlRootElement
 
 @Access(FIELD)
@@ -37,6 +40,7 @@ public class EventType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "EventTypeID")
+	@JsonValue
 	private Long id;
 	@Basic(optional = false)
 	@NotNull
@@ -45,6 +49,7 @@ public class EventType
 	@Column(nullable = false,
 			length = 200,
 			name = "EventTypeName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false)
 	@NotNull
@@ -53,15 +58,18 @@ public class EventType
 	@Column(nullable = false,
 			length = 200,
 			name = "EventTypeDesc")
+	@JsonIgnore
 	private String description;
 
 	@OneToMany(
 			mappedBy = "eventTypeID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXEventType> eventXEventTypeList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventTypesSecurityToken> securities;
 
 	public EventType()

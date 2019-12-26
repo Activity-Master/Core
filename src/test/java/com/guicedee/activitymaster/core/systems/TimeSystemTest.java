@@ -16,7 +16,7 @@ public class TimeSystemTest
 		LogFactory.configureConsoleColourOutput(Level.FINE);
 		LogFactory.configureDefaultLogHiding();
 		ITimeSystem timeSystem = GuiceContext.get(ITimeSystem.class);
-		timeSystem.loadTimeRange(1990, 2020);
+		timeSystem.loadTimeRange(1990, 2020,null);
 	}
 
 	@Test

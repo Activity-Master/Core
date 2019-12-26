@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.enterprise;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
@@ -49,6 +51,7 @@ public class Enterprise
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "EnterpriseID")
+	@JsonValue
 	private Long id;
 
 	@Basic(optional = false,
@@ -57,6 +60,7 @@ public class Enterprise
 	@Lob
 	@Column(nullable = false,
 			name = "EnterpriseName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
@@ -64,11 +68,13 @@ public class Enterprise
 	@Lob
 	@Column(nullable = false,
 			name = "EnterpriseDesc")
+	@JsonIgnore
 	private String description;
 
 	@OneToMany(
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EnterpriseSecurityToken> securities;
 
 	public Enterprise()

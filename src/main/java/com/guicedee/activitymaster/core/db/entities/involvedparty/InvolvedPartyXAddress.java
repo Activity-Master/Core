@@ -5,6 +5,7 @@
  */
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXAddressQueryBuilder;
@@ -26,17 +27,18 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Party",name = "InvolvedPartyXAddress")
+@Table(schema = "Party",
+		name = "InvolvedPartyXAddress")
 @XmlRootElement
 
 @Access(FIELD)
 public class InvolvedPartyXAddress
 		extends WarehouseClassificationRelationshipTable<InvolvedParty,
 				                                                Address,
-						                                                InvolvedPartyXAddress,
+				                                                InvolvedPartyXAddress,
 				                                                InvolvedPartyXAddressQueryBuilder,
-						                                                Long,
-						                                                InvolvedPartyXAddressSecurityToken,
+				                                                Long,
+				                                                InvolvedPartyXAddressSecurityToken,
 				                                                IInvolvedParty<?>, IAddress<?>>
 {
 	private static final long serialVersionUID = 1L;
@@ -44,6 +46,7 @@ public class InvolvedPartyXAddress
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "InvolvedPartyXAddressID")
+	@JsonValue
 	private Long id;
 
 	@JoinColumn(name = "AddressID",

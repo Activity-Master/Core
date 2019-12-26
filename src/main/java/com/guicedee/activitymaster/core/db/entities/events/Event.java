@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.events;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -9,6 +11,7 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.capabilities.*;
+import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
@@ -29,7 +32,8 @@ import static javax.persistence.AccessType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Event",name = "Event")
+@Table(schema = "Event",
+		name = "Event")
 @XmlRootElement
 
 @Access(FIELD)
@@ -37,59 +41,80 @@ public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
 		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>, IEvent<?>, IClassification<?>, Event>,
 				           IContainsGeographies<Event, Geography, EventXGeography>,
-				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IResourceItemClassification<?>,IEvent<?>, IResourceItem<?>, Event>,
+				           IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IResourceItemClassification<?>, IEvent<?>, IResourceItem<?>, Event>,
 				           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty>,
-				           IContainsAddresses<Event, Address, EventXAddress>,
-				           IContainsEventTypes<Event, EventType, EventXEventType, IEventTypeValue<?>,Event>,
+				           IContainsAddresses<Event, Address, EventXAddress, IAddressClassification<?>, IEvent<?>, IAddress<?>, Event>,
+				           IContainsEventTypes<Event, EventType, EventXEventType, IEventTypeValue<?>, Event>,
 				           IActivityMasterEntity<Event>,
 				           IEvent<Event>
 {
 
 	private static final long serialVersionUID = 1L;
+
+	@Basic(optional = false)
+	@Column(nullable = false)
+	private int dayID;
+	@Basic(optional = false)
+	@Column(nullable = false)
+	private int hourID;
+	@Basic(optional = false)
+	@Column(nullable = false)
+	private int minuteID;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "EventID")
+	@JsonValue
 	private Long id;
 
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXClassification> classifications;
 
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXInvolvedParty> parties;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXArrangement> arrangements;
 
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXAddress> addresses;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXProduct> products;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXGeography> geographies;
 
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXEventType> eventTypes;
 
 	public Event()
@@ -100,6 +125,13 @@ public class Event
 	public Event(Long eventID)
 	{
 		this.id = eventID;
+	}
+
+	@Override
+	public void configureAddressLinkValue(EventXAddress linkTable, Event primary, Address secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setEventID(primary);
+		linkTable.setAddressID(secondary);
 	}
 
 	@Override
@@ -122,7 +154,6 @@ public class Event
 		classificationLink.setGeographyID(geography);
 	}
 
-
 	@Override
 	public void configureResourceItemLinkValue(EventXResourceItem linkTable, Event primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
@@ -138,17 +169,43 @@ public class Event
 	}
 
 	@Override
-	public void setMyAddressLinkValue(EventXAddress classificationLink, Address address, IEnterprise<?> enterprise)
-	{
-		classificationLink.setEventID(this);
-		classificationLink.setAddressID(address);
-	}
-
-	@Override
 	public void configureEventTypeLinkValue(EventXEventType linkTable, Event primary, EventType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setEventID(primary);
 		linkTable.setEventTypeID(secondary);
+	}
+
+	public int getDayID()
+	{
+		return dayID;
+	}
+
+	public Event setDayID(int dayID)
+	{
+		this.dayID = dayID;
+		return this;
+	}
+
+	public int getHourID()
+	{
+		return hourID;
+	}
+
+	public Event setHourID(int hourID)
+	{
+		this.hourID = hourID;
+		return this;
+	}
+
+	public int getMinuteID()
+	{
+		return minuteID;
+	}
+
+	public Event setMinuteID(int minuteID)
+	{
+		this.minuteID = minuteID;
+		return this;
 	}
 
 	public List<EventXClassification> getClassifications()
@@ -287,6 +344,5 @@ public class Event
 		this.id = id;
 		return this;
 	}
-
 
 }

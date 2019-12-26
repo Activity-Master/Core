@@ -42,6 +42,7 @@ public class SystemsService
 	}
 
 	@CacheResult(cacheName = "FindSystem")
+	@Override
 	public ISystems<?> findSystem(@CacheKey IEnterprise<?> enterprise, @CacheKey String systemName, @CacheKey UUID... token)
 	{
 		Systems search = new Systems();
@@ -52,7 +53,7 @@ public class SystemsService
 		             .inDateRange()
 		             .canRead(enterprise, token)
 		             .get()
-		             .get();
+		             .orElse(null);
 	}
 
 	@CacheResult(cacheName = "FindSystemByIdentityClassification")
@@ -82,7 +83,8 @@ public class SystemsService
 	}
 
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = transactionTimeout)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
+			timeout = transactionTimeout)
 	public UUID registerNewSystem(IEnterprise<?> enterprise, ISystems<?> newSystem)
 	{
 		//Create Security Token for the created system row
@@ -114,13 +116,13 @@ public class SystemsService
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			newSystemsSecurityToken.createDefaultSecurity(activityMasterSystem,activityMasterSystemUUID);
+			newSystemsSecurityToken.createDefaultSecurity(activityMasterSystem, activityMasterSystemUUID);
 		}
 
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			systemsToken.createDefaultSecurity(activityMasterSystem,activityMasterSystemUUID);
+			systemsToken.createDefaultSecurity(activityMasterSystem, activityMasterSystemUUID);
 		}
 
 		GuiceContext.get(SystemsSystem.class)
@@ -145,7 +147,7 @@ public class SystemsService
 			newSystem.setDescription(systemDesc);
 			newSystem.setSystemHistoryName(historyName);
 			newSystem.setEnterpriseID((Enterprise) enterprise);
-			newSystem.setActiveFlagID((ActiveFlag)flag);
+			newSystem.setActiveFlagID((ActiveFlag) flag);
 			newSystem.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
@@ -184,9 +186,10 @@ public class SystemsService
 	}
 
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
+	@Override
 	public UUID getSecurityIdentityToken(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		Optional<IRelationshipValue<ISystems<?>, IClassification<?>,?>> systemToken = system.find(SystemIdentity, system, identityToken);
+		Optional<IRelationshipValue<ISystems<?>, IClassification<?>, ?>> systemToken = system.find(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())
 		{
 			return null;

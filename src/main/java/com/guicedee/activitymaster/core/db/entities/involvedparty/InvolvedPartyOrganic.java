@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyOrganicQueryBuilder;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
@@ -31,6 +33,7 @@ public class InvolvedPartyOrganic
 	@Id
 	@Column(nullable = false,
 			name = "InvolvedPartyOrganicID")
+	@JsonValue
 	private Long id;
 
 	@JoinColumn(name = "InvolvedPartyOrganicID",
@@ -40,11 +43,13 @@ public class InvolvedPartyOrganic
 			updatable = false)
 	@OneToOne(optional = false,
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private InvolvedParty involvedParty;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyOrganicSecurityToken> securities;
 
 	public InvolvedPartyOrganic()

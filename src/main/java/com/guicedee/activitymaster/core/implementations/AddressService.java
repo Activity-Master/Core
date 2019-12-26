@@ -14,6 +14,7 @@ import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IAddressService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.google.inject.Singleton;
+import com.guicedee.activitymaster.core.systems.AddressSystem;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,7 +29,8 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 @Singleton
-public class AddressService implements IAddressService<AddressService>
+public class AddressService
+		implements IAddressService<AddressService>
 {
 	private static final Pattern ipAddressPattern = Pattern.compile("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\\.|$)){4}");
 
@@ -36,8 +38,8 @@ public class AddressService implements IAddressService<AddressService>
 	public IAddress<?> create(IAddressClassification<?> addressClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
 	{
 		Address addy = new Address();
-		ISystems activityMasterSystem = get(ISystemsService.class)
-				                                .getActivityMaster(originatingSystem.getEnterpriseID());
+		ISystems<?> activityMasterSystem = get(ISystemsService.class)
+				                                   .getActivityMaster(originatingSystem.getEnterpriseID());
 
 		Classification classification = (Classification) get(ClassificationService.class).find(addressClassification,
 		                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
@@ -96,8 +98,8 @@ public class AddressService implements IAddressService<AddressService>
 			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
-			address.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class)
-					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+			address.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
 			address.createDefaultSecurity(originatingSystem, identityToken);
 		}
@@ -131,8 +133,8 @@ public class AddressService implements IAddressService<AddressService>
 			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
-			address.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class)
-					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+			address.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
 			address.createDefaultSecurity(originatingSystem, identityToken);
 		}
@@ -166,8 +168,8 @@ public class AddressService implements IAddressService<AddressService>
 			address.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			address.setSystemID((Systems) originatingSystem);
 			address.setOriginalSourceSystemID((Systems) originatingSystem);
-			address.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class)
-					                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+			address.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 			address.persist();
 			address.createDefaultSecurity(originatingSystem, identityToken);
 
@@ -213,37 +215,63 @@ public class AddressService implements IAddressService<AddressService>
 				Address webDetails = new Address();
 				webDetails.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 				webDetails.setSystemID((Systems) originatingSystem);
+				webDetails.setEnterpriseID(((Systems) originatingSystem).getEnterpriseID());
 				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
-				webDetails.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class)
-						                           .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+						                                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+
 				//
 				webDetails = new Address();
 				webDetails.setValue(url.getPort() + "");
 				webDetails.setClassification(webPortAddressClassification);
+				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
+				webDetails.setSystemID((Systems) originatingSystem);
+				webDetails.setEnterpriseID(((Systems) originatingSystem).getEnterpriseID());
+				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+						                                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
 				webDetails = new Address();
 				webDetails.setValue(domain);
 				webDetails.setClassification(webDomainAddressClassification);
+				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
+				webDetails.setSystemID((Systems) originatingSystem);
+				webDetails.setEnterpriseID(((Systems) originatingSystem).getEnterpriseID());
+				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+						                                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
 				webDetails = new Address();
 				webDetails.setValue(domain);
 				webDetails.setClassification(webDomainAddressClassification);
+				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
+				webDetails.setSystemID((Systems) originatingSystem);
+				webDetails.setEnterpriseID(((Systems) originatingSystem).getEnterpriseID());
+				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+						                                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
 				webDetails = new Address();
 				webDetails.setValue(protocol);
 				webDetails.setClassification(webProtocolAddressClassification);
+				webDetails.setSystemID((Systems) originatingSystem);
+				webDetails.setEnterpriseID(((Systems) originatingSystem).getEnterpriseID());
+				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+						                                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 
 				webDetails = new Address();
 				webDetails.setValue(protocol);
+				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
 				webDetails.setClassification(webSiteAddressClassification);
+				webDetails.setSystemID((Systems) originatingSystem);
+				webDetails.setEnterpriseID(((Systems) originatingSystem).getEnterpriseID());
+				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+						                                        .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 				webDetails.persist();
 				webDetails.createDefaultSecurity(originatingSystem, identityToken);
 			}

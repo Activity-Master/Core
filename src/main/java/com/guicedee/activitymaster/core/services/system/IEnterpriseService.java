@@ -28,4 +28,7 @@ public interface IEnterpriseService
 
 	@CacheResult
 	IEnterpriseName<?> getIEnterprise(@CacheKey IEnterprise<?> enterprise);
+
+	@CacheResult
+	IEnterprise<?> getIEnterpriseFromName(@CacheKey IEnterpriseName<?> enterprise);
 }

@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.resourceitem;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXResourceItem;
@@ -40,7 +42,8 @@ import static javax.persistence.FetchType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Resource",name = "ResourceItem")
+@Table(schema = "Resource",
+		name = "ResourceItem")
 @XmlRootElement
 
 @Access(FIELD)
@@ -59,6 +62,7 @@ public class ResourceItem
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ResourceItemID")
+	@JsonValue
 	private Long id;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -68,6 +72,7 @@ public class ResourceItem
 	@Column(nullable = false,
 			length = 128,
 			name = "ResourceItemUUID")
+	@JsonIgnore
 	private UUID resourceItemUUID;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -75,60 +80,73 @@ public class ResourceItem
 			name = "ResourceItemDataType",
 			length = 150)
 	@Size(max = 150)
+	@JsonIgnore
 	private String resourceItemDataType;
 
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ResourceItemXClassification> classifications;
 
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ResourceItemXResourceItemType> types;
 
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyXResourceItem> parties;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXResourceItem> arrangements;
 
 	@OneToMany(
 			mappedBy = "resource",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ResourceItemData> data;
 
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<AddressXResourceItem> addresses;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXResourceItem> events;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ProductXResourceItem> products;
 
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ClassificationDataConceptXResourceItem> concept;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ClassificationXResourceItem> classificationXResourceItemList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ResourceItemSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<GeographyXResourceItem> geographies;
 
 	public ResourceItem()
@@ -148,7 +166,6 @@ public class ResourceItem
 	{
 		classificationLink.setResourceItemID(this);
 	}
-
 
 	public byte[] getData(UUID... identityToken)
 	{
@@ -184,7 +201,6 @@ public class ResourceItem
 		}
 	}
 
-
 	@Override
 	public boolean equals(Object o)
 	{
@@ -217,7 +233,7 @@ public class ResourceItem
 		return this.id;
 	}
 
-	public     UUID getResourceItemUUID()
+	public UUID getResourceItemUUID()
 	{
 		return this.resourceItemUUID;
 	}
@@ -233,7 +249,7 @@ public class ResourceItem
 		return this;
 	}
 
-	public ResourceItem setResourceItemUUID(    UUID resourceItemUUID)
+	public ResourceItem setResourceItemUUID(UUID resourceItemUUID)
 	{
 		this.resourceItemUUID = resourceItemUUID;
 		return this;

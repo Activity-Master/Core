@@ -3,7 +3,10 @@ package com.guicedee.activitymaster.core.systems;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.time.*;
 import com.guicedee.activitymaster.core.db.timelord.EnglishNumberToWords;
+import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.core.services.IProgressable;
 import com.guicedee.activitymaster.core.services.system.ITimeSystem;
+import com.guicedee.activitymaster.core.threads.TimeLoaderThread;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
@@ -24,14 +27,17 @@ import static java.time.temporal.ChronoUnit.*;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class TimeSystem
-		implements ITimeSystem
+		implements ITimeSystem, IProgressable
 {
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
 			timeout = 50000)
-	public void loadTimeRange(int startYear, int endYear)
+	public void loadTimeRange(int startYear, int endYear, IActivityMasterProgressMonitor progressMonitoro)
 	{
-		JobService.getInstance().setMaxQueueCount("TimeRangeLoading",500);
+		JobService.getInstance()
+		          .setMaxQueueCount("TimeRangeLoading", 500);
+
+		logProgress("Starting Time Load", "Time load is starting from " + startYear + " + to " + endYear, progressMonitoro);
 		GregorianCalendar startYearGC = new GregorianCalendar();
 		startYearGC.set(Calendar.YEAR, startYear);
 		startYearGC.set(Calendar.MONTH, 0);
@@ -51,10 +57,9 @@ public class TimeSystem
 		}
 
 		JobService.getInstance()
-		          .waitForJob("TimeRangeLoading",15,MINUTES);
+		          .waitForJob("TimeRangeLoading", 15, MINUTES);
 	}
 
-	@Override
 	@CacheResult(cacheName = "Years")
 	public Years getYear(@CacheKey Date date)
 	{
@@ -163,7 +168,6 @@ public class TimeSystem
 		return quarter;
 	}
 
-	@Override
 	@CacheResult
 	public Quarters getQuarter(@CacheKey Date date)
 	{
@@ -245,7 +249,6 @@ public class TimeSystem
 	 *
 	 * @return
 	 */
-	@Override
 	@CacheResult
 	public Months getMonth(@CacheKey Date date)
 	{
@@ -354,7 +357,6 @@ public class TimeSystem
 	 *
 	 * @throws Exception
 	 */
-	@Override
 	@CacheResult
 	public Weeks getWeek(@CacheKey Date date)
 	{
@@ -420,9 +422,9 @@ public class TimeSystem
 	 *
 	 * @return
 	 */
-	@Override
 	@CacheResult
-	public Days getDay(@CacheKey Date date)
+	@Override
+	public boolean getDay(@CacheKey Date date)
 	{
 		Days day = null;
 		try
@@ -442,10 +444,8 @@ public class TimeSystem
 			thread.setDate(date);
 			JobService.getInstance()
 			          .addJob("TimeRangeLoading", thread);
-
-			//populateTransformationTables(date, -3);
 		}
-		return day;
+		return true;
 	}
 
 	@CacheResult
@@ -567,7 +567,7 @@ public class TimeSystem
 		return newDay;
 	}
 
-	void populateTransformationTables(Date date, int fiscalLag)
+	public void populateTransformationTables(Date date, int fiscalLag)
 	{
 		try
 		{
@@ -852,7 +852,5 @@ public class TimeSystem
 
 		}
 	}
-
-
 
 }

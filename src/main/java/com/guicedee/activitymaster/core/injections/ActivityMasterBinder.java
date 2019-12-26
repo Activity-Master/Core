@@ -51,5 +51,9 @@ public class ActivityMasterBinder
 
 		module.bind(IActivityMasterService.class)
 		      .to(ActivityMasterService.class);
+
+		module.bind(ITimeService.class)
+		      .to(TimeService.class);
+
 	}
 }

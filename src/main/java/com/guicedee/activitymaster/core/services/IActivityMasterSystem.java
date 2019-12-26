@@ -10,8 +10,10 @@ public interface IActivityMasterSystem<J extends IActivityMasterSystem<J>>
 
 	int totalTasks();
 
-	default void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	default void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 
 	}
+
+	void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor);
 }

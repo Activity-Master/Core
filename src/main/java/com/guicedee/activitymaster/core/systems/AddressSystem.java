@@ -1,6 +1,8 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Singleton
 public class AddressSystem
 		implements IActivityMasterSystem<AddressSystem>
 {
@@ -44,7 +47,6 @@ public class AddressSystem
 		service.create(AddressHomeTelephoneClassifications.HomeTelephoneExtensionNumber, system, AddressHomeTelephoneClassifications.HomeTelephoneNumber);
 		service.create(AddressHomeTelephoneClassifications.HomeTelephoneAreaCode, system, AddressHomeTelephoneClassifications.HomeTelephoneNumber);
 
-
 		logProgress("Address System", "Done Home Telephones", 1, progressMonitor);
 
 		service.create(AddressHomeFaxClassifications.HomeFaxNumber, system);
@@ -59,14 +61,12 @@ public class AddressSystem
 		service.create(AddressHomeCellClassifications.HomeCellExtensionNumber, system, AddressHomeCellClassifications.HomeCellNumber);
 		service.create(AddressHomeCellClassifications.HomeCellAreaCode, system, AddressHomeCellClassifications.HomeCellNumber);
 
-
 		logProgress("Address System", "Done Home Cell", 1, progressMonitor);
 
 		service.create(AddressHomePagerClassifications.HomePagerNumber, system);
 		service.create(AddressHomePagerClassifications.HomePagerCountryCode, system, AddressHomePagerClassifications.HomePagerNumber);
 		service.create(AddressHomePagerClassifications.HomePagerExtensionNumber, system, AddressHomePagerClassifications.HomePagerNumber);
 		service.create(AddressHomePagerClassifications.HomePagerAreaCode, system, AddressHomePagerClassifications.HomePagerNumber);
-
 
 		logProgress("Address System", "Done Home Pager", 1, progressMonitor);
 
@@ -82,14 +82,12 @@ public class AddressSystem
 		service.create(AddressOfficeFaxClassifications.OfficeFaxExtensionNumber, system, AddressOfficeFaxClassifications.OfficeFaxNumber);
 		service.create(AddressOfficeFaxClassifications.OfficeFaxAreaCode, system, AddressOfficeFaxClassifications.OfficeFaxNumber);
 
-
 		logProgress("Address System", "Done Office Fax", 1, progressMonitor);
 
 		service.create(AddressOfficeCellClassifications.OfficeCellNumber, system);
 		service.create(AddressOfficeCellClassifications.OfficeCellCountryCode, system, AddressOfficeCellClassifications.OfficeCellNumber);
 		service.create(AddressOfficeCellClassifications.OfficeCellExtensionNumber, system, AddressOfficeCellClassifications.OfficeCellNumber);
 		service.create(AddressOfficeCellClassifications.OfficeCellAreaCode, system, AddressOfficeCellClassifications.OfficeCellNumber);
-
 
 		logProgress("Address System", "Done Office Cell", 1, progressMonitor);
 
@@ -107,7 +105,7 @@ public class AddressSystem
 		logProgress("Address System", "Starting Internet Address Checks", progressMonitor);
 
 		ISystems<?> system = GuiceContext.get(SystemsService.class)
-		                             .getActivityMaster(enterprise);
+		                                 .getActivityMaster(enterprise);
 
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
 
@@ -118,10 +116,15 @@ public class AddressSystem
 		service.create(AddressInternalSystemClassifications.InternalAddressDns, system, AddressInternalSystemClassifications.InternalAddress);
 		service.create(AddressInternalSystemClassifications.InternalAddressGateway, system, AddressInternalSystemClassifications.InternalAddress);
 
-
 		service.create(AddressRemoteSystemClassifications.RemoteAddress, system);
 		service.create(AddressRemoteSystemClassifications.RemoteAddressHostName, system, AddressRemoteSystemClassifications.RemoteAddress);
 		service.create(AddressRemoteSystemClassifications.RemoteAddressIPAddress, system, AddressRemoteSystemClassifications.RemoteAddress);
+
+
+		service.create(AddressLocalSystemClassifications.LocalAddress, system);
+		service.create(AddressLocalSystemClassifications.LocalAddressHostName, system, AddressLocalSystemClassifications.LocalAddress);
+		service.create(AddressLocalSystemClassifications.LocalAddressIPAddress, system, AddressLocalSystemClassifications.LocalAddress);
+
 
 		logProgress("Address System", "Done Internal Addresses", 1, progressMonitor);
 
@@ -129,14 +132,12 @@ public class AddressSystem
 		service.create(AddressExternalSystemClassifications.ExternalAddressHostName, system, AddressExternalSystemClassifications.ExternalAddress);
 		service.create(AddressExternalSystemClassifications.ExternalAddressIPAddress, system, AddressExternalSystemClassifications.ExternalAddress);
 
-
 		logProgress("Address System", "Done External Addresses", 1, progressMonitor);
 
 		service.create(AddressEmailClassifications.EmailAddress, system);
 		service.create(AddressEmailClassifications.EmailAddressDomain, system, AddressEmailClassifications.EmailAddress);
 		service.create(AddressEmailClassifications.EmailAddressHost, system, AddressEmailClassifications.EmailAddress);
 		service.create(AddressEmailClassifications.EmailAddressUser, system, AddressEmailClassifications.EmailAddress);
-
 
 		logProgress("Address System", "Done Email Addresses", 1, progressMonitor);
 
@@ -157,7 +158,7 @@ public class AddressSystem
 	{
 		logProgress("Address System", "Starting Physical Address Checks", progressMonitor);
 		ISystems<?> system = GuiceContext.get(SystemsService.class)
-		                             .getActivityMaster(enterprise);
+		                                 .getActivityMaster(enterprise);
 
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
 
@@ -202,14 +203,33 @@ public class AddressSystem
 	}
 
 	@Override
-	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Address System", "The system for the address management", "");
-		UUID securityToken = GuiceContext.get(ISystemsService.class)
-		                                 .registerNewSystem(enterprise, newSystem);
+		final String systemName = "Address System";
+		final String systemDesc = "The system for the address management";
+		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
+		                                    .findSystem(enterprise, systemName);
+		UUID securityToken = null;
+		if (sys == null)
+		{
+			sys = (Systems) GuiceContext.get(SystemsService.class)
+			                                    .create(enterprise, systemName, systemDesc, systemName);
 
+			securityToken = GuiceContext.get(ISystemsService.class)
+			                            .registerNewSystem(enterprise, sys);
+		}
+		else
+		{
+			securityToken = GuiceContext.get(SystemsService.class)
+			                            .getSecurityIdentityToken(sys);
+		}
 		systemTokens.put(enterprise, securityToken);
+	}
+
+	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+
 	}
 
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()

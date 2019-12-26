@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -47,6 +49,7 @@ public class InvolvedPartyIdentificationType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "InvolvedPartyIdentificationTypeID")
+	@JsonValue
 	private Long id;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -56,6 +59,7 @@ public class InvolvedPartyIdentificationType
 	@Column(nullable = false,
 			length = 150,
 			name = "InvolvedPartyIdentificationName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -65,16 +69,19 @@ public class InvolvedPartyIdentificationType
 	@Column(nullable = false,
 			length = 500,
 			name = "InvolvedPartyIdentificationDesc")
+	@JsonIgnore
 	private String description;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyIdentificationTypeSecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "involvedPartyIdentificationTypeID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyXInvolvedPartyIdentificationType> involvedPartyXInvolvedPartyIdentificationTypeList;
 
 	public InvolvedPartyIdentificationType()

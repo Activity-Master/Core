@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.address;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.builders.AddressQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -29,14 +31,15 @@ import static javax.persistence.AccessType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Address",name = "Address")
+@Table(schema = "Address",
+		name = "Address")
 @XmlRootElement
 @Access(FIELD)
 public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, Long, AddressSecurityToken>
 		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>, IAddress<?>, IClassification<?>, Address>,
 				           IContainsGeographies<Address, Geography, AddressXGeography>,
-				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IResourceItemClassification<?>,IAddress<?>, IResourceItem<?>, Address>,
+				           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IResourceItemClassification<?>, IAddress<?>, IResourceItem<?>, Address>,
 				           IActivityMasterEntity<Address>,
 				           IContainsEnterprise<Address>,
 				           IContainsActiveFlags<Address>,
@@ -48,18 +51,20 @@ public class Address
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "AddressID")
+	@JsonValue
 	private Long id;
 
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<AddressXClassification> classifications;
-
 
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 			name = "Value")
+	@JsonIgnore
 	private String value;
 
 	@JoinColumn(name = "ClassificationID",
@@ -67,29 +72,35 @@ public class Address
 			nullable = false)
 	@ManyToOne(optional = false,
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private Classification classification;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<AddressSecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<AddressXGeography> geographies;
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<AddressXResourceItem> resources;
 
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXAddress> events;
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyXAddress> addresses;
 
 	public Address()
@@ -114,8 +125,6 @@ public class Address
 	{
 		this.id = addressID;
 	}
-
-
 
 	@Override
 	protected AddressSecurityToken configureDefaultsForNewToken(AddressSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
@@ -252,6 +261,5 @@ public class Address
 		this.classification = classification;
 		return this;
 	}
-
 
 }

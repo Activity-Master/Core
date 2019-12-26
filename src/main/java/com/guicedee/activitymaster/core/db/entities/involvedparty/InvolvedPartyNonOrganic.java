@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyNonOrganicQueryBuilder;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
@@ -34,6 +36,7 @@ public class InvolvedPartyNonOrganic
 	@Id
 	@Column(nullable = false,
 			name = "InvolvedPartyNonOrganicID")
+	@JsonValue
 	private Long id;
 
 	@JoinColumn(name = "InvolvedPartyNonOrganicID",
@@ -43,11 +46,13 @@ public class InvolvedPartyNonOrganic
 			updatable = false)
 	@OneToOne(optional = false,
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private InvolvedParty involvedParty;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyNonOrganicSecurityToken> securities;
 
 	public InvolvedPartyNonOrganic()

@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyOrganicTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -48,6 +50,7 @@ public class InvolvedPartyOrganicType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "InvolvedPartyOrganicTypeID")
+	@JsonValue
 	private Long id;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -57,6 +60,7 @@ public class InvolvedPartyOrganicType
 	@Column(nullable = false,
 			length = 200,
 			name = "InvolvedPartyTypeName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -66,6 +70,7 @@ public class InvolvedPartyOrganicType
 	@Column(nullable = false,
 			length = 500,
 			name = "InvolvedPartyTypeDesc")
+	@JsonIgnore
 	private String description;
 
 	@OneToMany(

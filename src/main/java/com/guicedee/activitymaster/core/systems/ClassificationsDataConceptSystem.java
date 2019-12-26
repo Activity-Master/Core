@@ -1,6 +1,8 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationsDataConceptService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Singleton
 public class ClassificationsDataConceptSystem
 		implements IActivityMasterSystem<ClassificationsDataConceptSystem>
 {
@@ -60,6 +63,7 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GeographyXClassification, "All Geography Classifications", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GeographyXGeography, "All Geography Relationships", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GeographyXResourceItem, "All geography resource items", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.Geography, "Specific to a geography item", activityMaster);
 
 		logProgress("Classification Data Concept System", "Still loading base concepts..", 20, progressMonitor);
 
@@ -132,14 +136,33 @@ public class ClassificationsDataConceptSystem
 	}
 
 	@Override
-	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Classification Data Concept System", "The system for handling classification data concepts", "");
-		UUID securityToken = GuiceContext.get(ISystemsService.class)
-		                                 .registerNewSystem(enterprise, newSystem);
+		final String systemName = "Classification Data Concept System";
+		final String systemDesc = "The system for handling classification data concepts";
+		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
+		                                    .findSystem(enterprise, systemName);
 
+		UUID securityToken = null;
+		if (sys == null)
+		{
+			sys = (Systems) GuiceContext.get(SystemsService.class)
+			                                    .create(enterprise, systemName, systemDesc, systemName);
+			securityToken = GuiceContext.get(ISystemsService.class)
+			                            .registerNewSystem(enterprise, sys);
+		}
+		else
+		{
+			securityToken = GuiceContext.get(SystemsService.class)
+			                            .getSecurityIdentityToken(sys);
+		}
 		systemTokens.put(enterprise, securityToken);
+	}
+
+	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+
 	}
 
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()

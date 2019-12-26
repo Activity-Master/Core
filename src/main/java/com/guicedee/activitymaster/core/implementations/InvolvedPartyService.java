@@ -31,6 +31,7 @@ import javax.cache.annotation.CacheResult;
 import javax.persistence.criteria.JoinType;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -529,8 +530,17 @@ public class InvolvedPartyService
 		ipQb.inDateRange()
 		    .join(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, builder, JoinType.INNER);
 
-		Optional<InvolvedPartyXInvolvedPartyIdentificationType> opt = ipQb.get();
-		return opt.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
-		          .orElse(null);
+		try
+		{
+			Optional<InvolvedPartyXInvolvedPartyIdentificationType> opt = ipQb.get();
+			return opt.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
+			          .orElse(null);
+		}
+		catch (Throwable t)
+		{
+			log.log(Level.WARNING, "Unable to find involved party for session");
+			log.log(Level.FINE, "Unable to find involved party for session", t);
+			return null;
+		}
 	}
 }

@@ -115,7 +115,7 @@ public class ClassificationService
 		               .canRead(enterprise, identityToken)
 		               .withEnterprise(enterprise)
 		               .get()
-		               .get();
+		               .orElseThrow();
 		return search;
 	}
 

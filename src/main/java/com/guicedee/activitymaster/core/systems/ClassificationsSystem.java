@@ -1,8 +1,10 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Singleton
 public class ClassificationsSystem
 		implements IActivityMasterSystem<ClassificationsSystem>
 {
@@ -59,6 +62,7 @@ public class ClassificationsSystem
 		service.create(EnterpriseClassifications.RequiresUpdate, activityMasterSystem, enterpriseName);
 		service.create(EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterpriseName);
 
+
 		//Checks
 		List<Classification> output = rootClassification.findChildren();
 		Classification parent = service.find(Classifications.NoClassification, enterprise)
@@ -87,22 +91,34 @@ public class ClassificationsSystem
 	}
 
 	@Override
-	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
-		                                .create(enterprise, "Classifications System", "The system for handling classifications", "");
+		final String systemName = "Classifications System";
+		final String systemDesc = "The system for handling classifications";
+		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
+		                                    .findSystem(enterprise, systemName);
+		UUID securityToken = null;
+		if (sys == null)
+		{
+			sys = (Systems) GuiceContext.get(SystemsService.class)
+			                                    .create(enterprise, systemName, systemDesc, systemName);
 
-		systemsMap.put(enterprise, newSystem);
-		UUID securityToken = GuiceContext.get(ISystemsService.class)
-		                                 .registerNewSystem(enterprise, newSystem);
-
-		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                           .getActivityMaster(enterprise);
-
-		GuiceContext.get(ClassificationService.class)
-		            .create(EnterpriseClassifications.Version, activityMasterSystem);
-
+			securityToken = GuiceContext.get(ISystemsService.class)
+			                            .registerNewSystem(enterprise, sys);
+		}
+		else
+		{
+			securityToken = GuiceContext.get(SystemsService.class)
+			                            .getSecurityIdentityToken(sys);
+		}
 		systemTokens.put(enterprise, securityToken);
+		systemsMap.put(enterprise, sys);
+	}
+
+	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+
 	}
 
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()

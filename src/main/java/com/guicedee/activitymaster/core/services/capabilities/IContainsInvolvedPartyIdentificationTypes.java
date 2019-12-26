@@ -106,6 +106,19 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		                                       .getAll();
 	}
 
+	@SuppressWarnings("unchecked")
+	default List<IRelationshipValue<L, R, ?>> findAllIdentificationTypes(ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
+		return (List<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
+		                                                                 .findParentLink((P) this, null)
+		                                                                 .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                 .inDateRange()
+		                                                                 .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                 .getAll();
+	}
+
+
 	default boolean has(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		return numberOf(classificationValue, originatingSystem, identityToken) > 0;

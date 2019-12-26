@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.arrangement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.dto.IArrangementType;
@@ -22,7 +24,8 @@ import static javax.persistence.AccessType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Arrangement",name = "ArrangementType")
+@Table(schema = "Arrangement",
+		name = "ArrangementType")
 @XmlRootElement
 
 @Access(FIELD)
@@ -36,6 +39,7 @@ public class ArrangementType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ArrangementTypeID")
+	@JsonValue
 	private Long id;
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
@@ -58,11 +62,13 @@ public class ArrangementType
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementTypeSecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "type",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXArrangementType> arrangementsList;
 
 	public ArrangementType()
@@ -142,12 +148,12 @@ public class ArrangementType
 		return this.id;
 	}
 
-	public   String getName()
+	public String getName()
 	{
 		return this.name;
 	}
 
-	public    String getDescription()
+	public String getDescription()
 	{
 		return this.description;
 	}
@@ -158,7 +164,7 @@ public class ArrangementType
 		return this;
 	}
 
-	public ArrangementType setName(  String name)
+	public ArrangementType setName(String name)
 	{
 		this.name = name;
 		return this;

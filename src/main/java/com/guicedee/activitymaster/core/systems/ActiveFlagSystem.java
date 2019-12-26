@@ -1,6 +1,8 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ActiveFlagService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Singleton
 public class ActiveFlagSystem
 		implements IActivityMasterSystem<ActiveFlagSystem>
 {
@@ -28,7 +31,8 @@ public class ActiveFlagSystem
 		logProgress("Active Flag Service", "Loading Active Flags", progressMonitor);
 		for (ActiveFlag activeFlag : ActiveFlag.values())
 		{
-			GuiceContext.get(ActiveFlagService.class).create(enterprise, activeFlag.name(), activeFlag.getDescription());
+			GuiceContext.get(ActiveFlagService.class)
+			            .create(enterprise, activeFlag.name(), activeFlag.getDescription());
 		}
 	}
 
@@ -45,14 +49,31 @@ public class ActiveFlagSystem
 	}
 
 	@Override
-	public void postUpdate(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> newSystem = GuiceContext.get(SystemsService.class)
-		                                    .create(enterprise, "Active Flag System", "The system for the active flag management", "Active Flag System");
-		UUID securityToken = GuiceContext.get(ISystemsService.class)
-		                                 .registerNewSystem(enterprise, newSystem);
+		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
+		                                    .findSystem(enterprise, "Active Flag System");
+		UUID securityToken = null;
+		if (sys == null)
+		{
+			sys = (Systems) GuiceContext.get(SystemsService.class)
+			                                    .create(enterprise, "Active Flag System", "The system for the active flag management", "Active Flag System");
 
+			securityToken = GuiceContext.get(ISystemsService.class)
+			                            .registerNewSystem(enterprise, sys);
+		}
+		else
+		{
+			securityToken = GuiceContext.get(SystemsService.class)
+			                            .getSecurityIdentityToken(sys);
+		}
 		systemTokens.put(enterprise, securityToken);
+	}
+
+	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+
 	}
 
 	public static Map<IEnterprise<?>, UUID> getSystemTokens()

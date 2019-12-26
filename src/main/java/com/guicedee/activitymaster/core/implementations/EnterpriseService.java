@@ -173,4 +173,14 @@ public class EnterpriseService
 		}
 		return null;
 	}
+
+	@CacheResult
+	@Override
+	public IEnterprise<?> getIEnterpriseFromName(@CacheKey IEnterpriseName<?> enterprise)
+	{
+		return new Enterprise().builder()
+		                       .findByName(enterprise.classificationName())
+		                       .get()
+		                       .get();
+	}
 }

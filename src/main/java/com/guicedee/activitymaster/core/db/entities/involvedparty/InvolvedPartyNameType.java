@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyNameTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -46,6 +48,7 @@ public class InvolvedPartyNameType
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "InvolvedPartyNameTypeID")
+	@JsonValue
 	private Long id;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -55,6 +58,7 @@ public class InvolvedPartyNameType
 	@Column(nullable = false,
 			length = 500,
 			name = "InvolvedPartyNameTypeName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -64,16 +68,19 @@ public class InvolvedPartyNameType
 	@Column(nullable = false,
 			length = 500,
 			name = "InvolvedPartyNameTypeDescr")
+	@JsonIgnore
 	private String description;
 
 	@OneToMany(
 			mappedBy = "involvedPartyNameTypeID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList;
 
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<InvolvedPartyNameTypeSecurityToken> securities;
 
 	public InvolvedPartyNameType()

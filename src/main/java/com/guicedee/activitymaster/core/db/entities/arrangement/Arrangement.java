@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.arrangement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -28,14 +30,15 @@ import static javax.persistence.AccessType.*;
  */
 @SuppressWarnings("unused")
 @Entity
-@Table(schema="Arrangement",name = "Arrangement")
+@Table(schema = "Arrangement",
+		name = "Arrangement")
 @XmlRootElement
 
 @Access(FIELD)
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, Long, ArrangementSecurityToken>
 		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, IArrangement<?>, IClassification<?>, Arrangement>,
-				           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceItemClassification<?>,IArrangement<?>, IResourceItem<?>, Arrangement>,
+				           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IResourceItemClassification<?>, IArrangement<?>, IResourceItem<?>, Arrangement>,
 				           IActivityMasterEntity<Arrangement>,
 				           IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, Arrangement>,
 				           IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty>,
@@ -48,46 +51,56 @@ public class Arrangement
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
 			name = "ArrangementID")
+	@JsonValue
 	private Long id;
 
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXClassification> classifications;
 
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXInvolvedParty> parties;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<EventXArrangement> events;
 
 	@OneToMany(
 			mappedBy = "childArrangementID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXArrangement> arrangementXArrangementList;
 	@OneToMany(
 			mappedBy = "parentArrangementID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXArrangement> arrangementXArrangementList1;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementXProduct> products;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ArrangementSecurityToken> securities;
 
 	@OneToMany(
 			fetch = FetchType.LAZY,
 			mappedBy = "arrangement")
+	@JsonIgnore
 	private List<ArrangementXArrangementType> types;
 
 	public Arrangement()
@@ -112,7 +125,6 @@ public class Arrangement
 	{
 		classificationLink.setArrangementID(this);
 	}
-
 
 	@Override
 	public void configureResourceItemLinkValue(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
@@ -319,6 +331,5 @@ public class Arrangement
 		this.id = id;
 		return this;
 	}
-
 
 }
