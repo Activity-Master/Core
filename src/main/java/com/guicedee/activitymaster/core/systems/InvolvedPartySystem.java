@@ -1,14 +1,12 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.InvolvedPartyService;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.core.services.types.IPTypes;
 import com.guicedee.activitymaster.core.services.types.IdentificationTypes;
 import com.guicedee.activitymaster.core.services.types.NameTypes;
@@ -16,17 +14,11 @@ import com.guicedee.activitymaster.core.services.types.OrganicPartyTypes;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+@Singleton
 public class InvolvedPartySystem
+		extends ActivityMasterDefaultSystem<InvolvedPartySystem>
 		implements IActivityMasterSystem<InvolvedPartySystem>
 {
-
-	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
-	private static final Map<IEnterprise<?>, ISystems<?>> systemsMap = new HashMap<>();
-
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
@@ -56,7 +48,8 @@ public class InvolvedPartySystem
 		service.createIdentificationType(enterprise, IdentificationTypes.IdentificationTypeUUID, "A given unique system identifier");
 		service.createIdentificationType(enterprise, IdentificationTypes.IdentificationTypeSessionID, "A Given JavascriptSession ID");
 		service.createIdentificationType(enterprise, IdentificationTypes.IdentificationTypeSystemID, "A unique system identifier granted to each each system on registration");
-		service.createIdentificationType(enterprise, IdentificationTypes.IdentificationTypeEnterpriseCreatorRole, "An identifier marking the involved party as the creator of the enterprise");
+		service.createIdentificationType(enterprise, IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
+		                                 "An identifier marking the involved party as the creator of the enterprise");
 		service.createIdentificationType(enterprise, IdentificationTypes.IdentificationTypeUnassigned, "This involved party is unassigned and should be classified");
 
 		logProgress("Involved Party System", "Loaded Identification Types", 16, progressMonitor);
@@ -128,45 +121,22 @@ public class InvolvedPartySystem
 		return Integer.MIN_VALUE + 7;
 	}
 
-
-	@Override
-	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
-	{
-		final String systemName = "Involved Party System";
-		final String systemDesc = "The system for managing Involved Parties";
-		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
-		                                    .findSystem(enterprise, systemName);
-		UUID securityToken = null;
-		if (sys == null)
-		{
-			sys = (Systems) GuiceContext.get(SystemsService.class)
-			                                    .create(enterprise, systemName, systemDesc, systemName);
-
-			securityToken = GuiceContext.get(ISystemsService.class)
-			                            .registerNewSystem(enterprise, sys);
-		}
-		else
-		{
-			securityToken = GuiceContext.get(SystemsService.class)
-			                            .getSecurityIdentityToken(sys);
-		}
-		systemTokens.put(enterprise, securityToken);
-		systemsMap.put(enterprise, sys);
-	}
-
 	@Override
 	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 
 	}
 
-	public static Map<IEnterprise<?>, UUID> getSystemTokens()
+	@Override
+	public String getSystemName()
 	{
-		return systemTokens;
+		return "Involved Party System";
 	}
 
-	public static Map<IEnterprise<?>, ISystems<?>> getSystemsMap()
+	@Override
+	public String getSystemDescription()
 	{
-		return systemsMap;
+		return "The system for managing Involved Parties";
 	}
+
 }

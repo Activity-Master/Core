@@ -1,30 +1,24 @@
 package com.guicedee.activitymaster.core.systems;
 
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.implementations.ResourceItemService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.ResourceItemClassifications;
+import com.guicedee.activitymaster.core.services.classifications.resourceitems.ResourceItemTypes;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.ResourceItemTypes;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+@Singleton
 public class ResourceItemSystem
+		extends ActivityMasterDefaultSystem<ResourceItemSystem>
 		implements IActivityMasterSystem<ResourceItemSystem>
 {
 
-	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
-	private static final Map<IEnterprise<?>, Systems> systemsMap = new HashMap<>();
-
-	@SuppressWarnings("Duplicates")
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
@@ -85,49 +79,20 @@ public class ResourceItemSystem
 	}
 
 	@Override
+	public String getSystemName()
+	{
+		return "Resource Items System";
+	}
+
+	@Override
+	public String getSystemDescription()
+	{
+		return "The system for managing Resource Items";
+	}
+
+	@Override
 	public Integer sortOrder()
 	{
 		return Integer.MIN_VALUE + 10;
-	}
-
-	@Override
-	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
-	{
-		final String systemName = "Resource Items System";
-		final String systemDesc = "The system for managing Resource Items";
-		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
-		                                    .findSystem(enterprise, systemName);
-		UUID securityToken = null;
-		if (sys == null)
-		{
-			sys = (Systems) GuiceContext.get(SystemsService.class)
-			                                    .create(enterprise, systemName, systemDesc, systemName);
-
-			securityToken = GuiceContext.get(ISystemsService.class)
-			                            .registerNewSystem(enterprise, sys);
-		}
-		else
-		{
-			securityToken = GuiceContext.get(SystemsService.class)
-			                            .getSecurityIdentityToken(sys);
-		}
-		systemTokens.put(enterprise, securityToken);
-		systemsMap.put(enterprise, sys);
-	}
-
-	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
-	{
-
-	}
-
-	public static Map<IEnterprise<?>, UUID> getSystemTokens()
-	{
-		return systemTokens;
-	}
-
-	public static Map<IEnterprise<?>, Systems> getSystemsMap()
-	{
-		return systemsMap;
 	}
 }

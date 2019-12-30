@@ -25,8 +25,9 @@ import static com.guicedee.activitymaster.core.services.concepts.EnterpriseClass
 
 @Singleton
 public class ClassificationsDataConceptService
-		implements IClassificationDataConceptService
+		implements IClassificationDataConceptService<ClassificationsDataConceptService>
 {
+	@Override
 	public ClassificationDataConcept createDataConcept(IClassificationDataConceptValue<?> name,
 	                                                   String description,
 	                                                   ISystems<?> system, UUID... identityToken)
@@ -35,7 +36,7 @@ public class ClassificationsDataConceptService
 		Optional<ClassificationDataConcept> exists = newConcept.builder()
 		                                                       .findByName(name.classificationValue())
 		                                                       .withEnterprise(system.getEnterprise())
-		                                                       .inActiveRange(system.getEnterprise(),identityToken)
+		                                                       .inActiveRange(system.getEnterprise(), identityToken)
 		                                                       .get();
 		IActiveFlag<?> active = GuiceContext.get(IActiveFlagService.class)
 		                                    .getActiveFlag(system.getEnterpriseID());

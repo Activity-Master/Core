@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import static com.entityassist.querybuilder.EntityAssistStrings.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 
 /**
  * @param <S>
@@ -69,8 +70,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	public J remove()
 	{
 		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
-		                                        .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
-		                                                                                           .get(getEnterpriseID())));
+		                                        .getDeletedFlag(getEnterpriseID(),  get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return (J)this;
@@ -81,8 +81,8 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	public J archive()
 	{
 		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
-		                            .getArchivedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
-		                                                                               .get(getEnterpriseID())));
+		                            .getArchivedFlag(getEnterpriseID(),  get(ActiveFlagSystem.class)
+		                                                                               .getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return (J)this;

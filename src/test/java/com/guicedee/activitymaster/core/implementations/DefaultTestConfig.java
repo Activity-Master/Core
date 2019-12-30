@@ -119,9 +119,10 @@ public class DefaultTestConfig
 			int currentTasks = 0;
 
 			@Override
-			public void progressUpdate(String source, String message)
+			public IActivityMasterProgressMonitor progressUpdate(String source, String message)
 			{
 				DefaultTestConfig.log.info(source + " - " + message + " || " + currentTasks + "/" + totalTasks);
+				return this;
 			}
 
 			@Override
@@ -131,9 +132,10 @@ public class DefaultTestConfig
 			}
 
 			@Override
-			public void setCurrentTask(Integer i)
+			public IActivityMasterProgressMonitor setCurrentTask(Integer i)
 			{
 				currentTasks = i;
+				return this;
 			}
 
 			@Override
@@ -143,9 +145,10 @@ public class DefaultTestConfig
 			}
 
 			@Override
-			public void setTotalTasks(Integer i)
+			public IActivityMasterProgressMonitor setTotalTasks(Integer i)
 			{
 				totalTasks = i;
+				return this;
 			}
 		};
 		LogColourFormatter.setRenderBlack(false);

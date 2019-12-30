@@ -27,9 +27,10 @@ public class TestEnterpriseCreation
 			int currentTasks = 0;
 
 			@Override
-			public void progressUpdate(String source, String message)
+			public IActivityMasterProgressMonitor progressUpdate(String source, String message)
 			{
-				log.info(source + " - " + message + " || " + currentTasks + "/" + totalTasks);
+				TestEnterpriseCreation.log.info(source + " - " + message + " || " + currentTasks + "/" + totalTasks);
+				return this;
 			}
 
 			@Override
@@ -39,9 +40,10 @@ public class TestEnterpriseCreation
 			}
 
 			@Override
-			public void setCurrentTask(Integer i)
+			public IActivityMasterProgressMonitor setCurrentTask(Integer i)
 			{
 				currentTasks = i;
+				return this;
 			}
 
 			@Override
@@ -51,9 +53,10 @@ public class TestEnterpriseCreation
 			}
 
 			@Override
-			public void setTotalTasks(Integer i)
+			public IActivityMasterProgressMonitor setTotalTasks(Integer i)
 			{
 				totalTasks = i;
+				return this;
 			}
 		};
 

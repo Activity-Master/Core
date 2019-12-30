@@ -14,6 +14,7 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ActiveFlagService;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
+import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
@@ -189,7 +190,45 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		qb.inDateRange();
 		List<J> returnedEntity = qb.getAll();
 		return returnedEntity;
+	}
 
+	@SuppressWarnings("unchecked")
+	default List<J> findChildren(IClassification<?> filter,UUID... identifyingToken)
+	{
+		Class<W> hierarchyView = findHierarchyViewType();
+		W hierarchy = get(hierarchyView);
+
+		J me = (J) this;
+		List<W> hierarchies = (List<W>) hierarchy.builder()
+		                                         .findMyChildren((Long) me.getId())
+		                                         .getAll();
+		Set<Long> search = new LinkedHashSet<>();
+		for (W w : hierarchies)
+		{
+			String[] split = w.getPath()
+			                  .split("/");
+			boolean foundMe = false;
+			for (String s : split)
+			{
+				if (!foundMe)
+				{
+					if (s.equals(me.getId()
+					               .toString()))
+					{
+						foundMe = true;
+					}
+				}
+				else
+				{
+					search.add(Long.valueOf(s));
+				}
+			}
+		}
+		QueryBuilder qb = (QueryBuilder) me.builder()
+		                                   .find(search);
+		qb.inDateRange();
+		List<J> returnedEntity = qb.getAll();
+		return returnedEntity;
 	}
 
 	default Q findLink(J child, IEnterprise<?> enterprise, UUID... identifyingToken)

@@ -1,16 +1,14 @@
 package com.guicedee.activitymaster.core.implementations;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
 import com.guicedee.activitymaster.core.services.enumtypes.INameType;
@@ -21,7 +19,6 @@ import com.guicedee.activitymaster.core.services.security.Passwords;
 import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
-import com.google.inject.Singleton;
 import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.logger.LogFactory;
@@ -35,10 +32,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
+import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.activitymaster.core.services.classifications.events.EventClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications.*;
 import static com.guicedee.activitymaster.core.services.types.IdentificationTypes.*;
-import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
@@ -236,17 +233,6 @@ public class InvolvedPartyService
 		              .orElse(null);
 	}
 
-	private String encrypt(String toEncrypt, String salt)
-	{
-		//byte[] salt = saltString.getBytes();
-		byte[] saltDecrypted = salt.getBytes();
-		char[] pass = toEncrypt.toCharArray();
-		byte[] passHashed = new Passwords().hash(pass, saltDecrypted);
-		//String saltEncrypted = Passwords.integerEncrypt(salt);
-		String passEncrypted = new Passwords().integerEncrypt(passHashed);
-		return passEncrypted;
-	}
-
 	@Override
 	public IInvolvedParty<?> findByUsernameAndPassword(String username, String password, ISystems<?> originatingSystem, boolean throwForNoUser, UUID... token)
 	{
@@ -263,8 +249,7 @@ public class InvolvedPartyService
 			}
 		}
 
-		UUID identityToken = InvolvedPartySystem.getSystemTokens()
-		                                        .get(originatingSystem.getEnterpriseID());
+		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(originatingSystem.getEnterpriseID());
 		InvolvedParty foundPart = new InvolvedParty().builder()
 		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
 		                                                                       identityToken)
@@ -297,6 +282,17 @@ public class InvolvedPartyService
 			throw new SecurityAccessException("Password Incorrect");
 		}
 		return foundPart;
+	}
+
+	private String encrypt(String toEncrypt, String salt)
+	{
+		//byte[] salt = saltString.getBytes();
+		byte[] saltDecrypted = salt.getBytes();
+		char[] pass = toEncrypt.toCharArray();
+		byte[] passHashed = new Passwords().hash(pass, saltDecrypted);
+		//String saltEncrypted = Passwords.integerEncrypt(salt);
+		String passEncrypted = new Passwords().integerEncrypt(passHashed);
+		return passEncrypted;
 	}
 
 	@Override

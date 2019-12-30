@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import static com.guicedee.guicedinjection.GuiceContext.*;
 import static javax.persistence.FetchType.*;
 
 /**
@@ -99,9 +100,9 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 
 	public J remove()
 	{
-		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
-		                                                                                            .get(getEnterpriseID())));
+		setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
+		                                                                                            .getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return (J) this;

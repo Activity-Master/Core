@@ -2,28 +2,22 @@ package com.guicedee.activitymaster.core.systems;
 
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationsDataConceptService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
+import com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 @Singleton
 public class ClassificationsDataConceptSystem
+		extends ActivityMasterDefaultSystem<ClassificationsDataConceptSystem>
 		implements IActivityMasterSystem<ClassificationsDataConceptSystem>
 {
-	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
-
 	@SuppressWarnings("Duplicates")
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -48,16 +42,21 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.AddressXGeography, "Any classifications for Address Geography groupings", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.AddressXResourceItem, "Any classification for resource items", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXClassification, "Any classifications for arrangements", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXArrangementType, "Any classifications for the type specified in the arrangement", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXArrangement, "Any classifications for the Relationships between Arrangement and X Arrangements", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXArrangementType, "Any classifications for the type specified in the arrangement",
+		                          activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXArrangement, "Any classifications for the Relationships between Arrangement and X Arrangements",
+		                          activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.AddressXInvolvedParty, "Any Address Relationship with Involved Parties", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXResourceItem, "Any Arrangement Relationship with a Resource Item", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXProduct, "Arrangement classifications with product", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationXResourceItem, "Any classification type that exists for classification and resource items, usually icons etc", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationXResourceItem,
+		                          "Any classification type that exists for classification and resource items, usually icons etc", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXClassification, "All classifications that relate to events", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXAddress, "Any classifications that relate to Events and Classifications, such as occured at", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXAddress, "Any classifications that relate to Events and Classifications, such as occured at",
+		                          activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXArrangement, "Any classifications for event and arrangements", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXInvolvedParty, "Any classifications for involved parties and events like bought, purchased, called, emailed", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXInvolvedParty,
+		                          "Any classifications for involved parties and events like bought, purchased, called, emailed", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXProduct, "Any Product that exists for X product classifications", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXResourceItem, "Any event resource items, usually json or data received in some force", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GeographyXClassification, "All Geography Classifications", activityMaster);
@@ -67,9 +66,11 @@ public class ClassificationsDataConceptSystem
 
 		logProgress("Classification Data Concept System", "Still loading base concepts..", 20, progressMonitor);
 
-		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyIdentificationType, "All classifications for identification type and involved party relationships", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyIdentificationType,
+		                          "All classifications for identification type and involved party relationships", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXProduct, "All classifications for involved party and product relationships", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXResourceItem, "All classifications for involved party and resource item relationships", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXResourceItem, "All classifications for involved party and resource item relationships",
+		                          activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ProductXProduct, "Product Hierarchy", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ProductXResourceItem, "All product and resource item relationship classifications", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemXClassification, "all resource item classifications", activityMaster);
@@ -136,37 +137,15 @@ public class ClassificationsDataConceptSystem
 	}
 
 	@Override
-	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public String getSystemName()
 	{
-		final String systemName = "Classification Data Concept System";
-		final String systemDesc = "The system for handling classification data concepts";
-		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
-		                                    .findSystem(enterprise, systemName);
-
-		UUID securityToken = null;
-		if (sys == null)
-		{
-			sys = (Systems) GuiceContext.get(SystemsService.class)
-			                                    .create(enterprise, systemName, systemDesc, systemName);
-			securityToken = GuiceContext.get(ISystemsService.class)
-			                            .registerNewSystem(enterprise, sys);
-		}
-		else
-		{
-			securityToken = GuiceContext.get(SystemsService.class)
-			                            .getSecurityIdentityToken(sys);
-		}
-		systemTokens.put(enterprise, securityToken);
+		return "Classification Data Concept System";
 	}
 
 	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public String getSystemDescription()
 	{
-
+		return "The system for handling classification data concepts";
 	}
 
-	public static Map<IEnterprise<?>, UUID> getSystemTokens()
-	{
-		return systemTokens;
-	}
 }

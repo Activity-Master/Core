@@ -1,12 +1,8 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
-import com.entityassist.enumerations.Operand;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
@@ -22,25 +18,25 @@ import com.guicedee.activitymaster.core.services.classifications.address.IAddres
 import com.guicedee.activitymaster.core.services.classifications.involvedparty.IInvolvedPartyClassification;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
-import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
 import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
 import com.guicedee.activitymaster.core.services.enumtypes.INameType;
 import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
+import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.types.IdentificationTypes;
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 import static javax.persistence.AccessType.*;
 
 /**
@@ -105,17 +101,21 @@ public class InvolvedParty
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<InvolvedPartySecurityToken> securities;
+/*
 
 	@OneToOne(
 			mappedBy = "involvedParty",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private InvolvedPartyOrganic involvedPartyOrganic;
+
+
 	@OneToOne(
 			mappedBy = "involvedParty",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private InvolvedPartyNonOrganic involvedPartyNonOrganic;
+*/
 
 	@OneToMany(
 			mappedBy = "childInvolvedPartyID",
@@ -165,25 +165,22 @@ public class InvolvedParty
 		InvolvedParty dest = (InvolvedParty) destination;
 		dest.setOriginalSourceSystemUniqueID(getId().toString());
 
-		ISystems<?> originatingSystem = InvolvedPartySystem.getSystemsMap()
-		                                                   .get(dest.getEnterprise());
-		UUID identityToken = InvolvedPartySystem.getSystemTokens()
-		                                        .get(dest.getEnterprise());
+		ISystems<?> originatingSystem = get(InvolvedPartySystem.class).getSystem(dest.getEnterprise());
+		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(dest.getEnterprise());
 
 		InvolvedParty me = builder().getEntityManager()
 		                            .find(InvolvedParty.class, getId());
 
 		List<InvolvedPartyXClassification> classifications = new InvolvedPartyXClassification()
-				                                                    .builder()
-				                                                    .inDateRange()
-				                                                    .inActiveRange(getEnterprise(),identityToken)
-				                                                    .where(InvolvedPartyXClassification_.involvedPartyID, Equals, this)
-				                                                    .getAll();
+				                                                     .builder()
+				                                                     .inDateRange()
+				                                                     .inActiveRange(getEnterprise(), identityToken)
+				                                                     .where(InvolvedPartyXClassification_.involvedPartyID, Equals, this)
+				                                                     .getAll();
 		for (InvolvedPartyXClassification item : classifications)
 		{
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 
@@ -197,9 +194,8 @@ public class InvolvedParty
 			newItem.setInvolvedPartyID(dest);
 			newItem.setEffectiveFromDate(LocalDateTime.now());
 			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                                 .getActiveFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                    .get(getEnterprise())));
+			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(getEnterprise(), identityToken));
 			newItem.persist();
 		}
 		//not names?
@@ -208,16 +204,15 @@ public class InvolvedParty
 
 		}*/
 		List<InvolvedPartyXResourceItem> resources = new InvolvedPartyXResourceItem()
-				                                                     .builder()
-				                                                     .inDateRange()
-				                                                     .inActiveRange(getEnterprise(),identityToken)
-				                                                     .where(InvolvedPartyXResourceItem_.involvedPartyID, Equals, this)
-				                                                     .getAll();
+				                                             .builder()
+				                                             .inDateRange()
+				                                             .inActiveRange(getEnterprise(), identityToken)
+				                                             .where(InvolvedPartyXResourceItem_.involvedPartyID, Equals, this)
+				                                             .getAll();
 		for (InvolvedPartyXResourceItem item : resources)
 		{
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 
@@ -232,22 +227,20 @@ public class InvolvedParty
 			newItem.setInvolvedPartyID(dest);
 			newItem.setEffectiveFromDate(LocalDateTime.now());
 			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                                 .getActiveFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                    .get(getEnterprise())));
+			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(getEnterprise(), identityToken));
 			newItem.persist();
 		}
 		List<ArrangementXInvolvedParty> arrangements = new ArrangementXInvolvedParty()
-				                                             .builder()
-				                                             .inDateRange()
-				                                             .inActiveRange(getEnterprise(),identityToken)
-				                                             .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, this)
-				                                             .getAll();
+				                                               .builder()
+				                                               .inDateRange()
+				                                               .inActiveRange(getEnterprise(), identityToken)
+				                                               .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, this)
+				                                               .getAll();
 		for (ArrangementXInvolvedParty item : arrangements)
 		{
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 
@@ -261,22 +254,20 @@ public class InvolvedParty
 			newItem.setInvolvedPartyID(dest);
 			newItem.setEffectiveFromDate(LocalDateTime.now());
 			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                                 .getActiveFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                    .get(getEnterprise())));
+			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(getEnterprise(), identityToken));
 			newItem.persist();
 		}
 		List<EventXInvolvedParty> events = new EventXInvolvedParty()
-				                                               .builder()
-				                                               .inDateRange()
-				                                               .inActiveRange(getEnterprise(),identityToken)
-				                                               .where(EventXInvolvedParty_.involvedPartyID, Equals, this)
-				                                               .getAll();
+				                                   .builder()
+				                                   .inDateRange()
+				                                   .inActiveRange(getEnterprise(), identityToken)
+				                                   .where(EventXInvolvedParty_.involvedPartyID, Equals, this)
+				                                   .getAll();
 		for (EventXInvolvedParty item : events)
 		{
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 
@@ -290,22 +281,20 @@ public class InvolvedParty
 			newItem.setInvolvedPartyID(dest);
 			newItem.setEffectiveFromDate(LocalDateTime.now());
 			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                                 .getActiveFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                    .get(getEnterprise())));
+			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(getEnterprise(), identityToken));
 			newItem.persist();
 		}
 		List<InvolvedPartyXInvolvedPartyType> types = new InvolvedPartyXInvolvedPartyType()
-				                                   .builder()
-				                                   .inDateRange()
-				                                   .inActiveRange(getEnterprise(),identityToken)
-				                                   .where(InvolvedPartyXInvolvedPartyType_.involvedPartyID, Equals, this)
-				                                   .getAll();
+				                                              .builder()
+				                                              .inDateRange()
+				                                              .inActiveRange(getEnterprise(), identityToken)
+				                                              .where(InvolvedPartyXInvolvedPartyType_.involvedPartyID, Equals, this)
+				                                              .getAll();
 		for (InvolvedPartyXInvolvedPartyType item : types)
 		{
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 
@@ -319,22 +308,20 @@ public class InvolvedParty
 			newItem.setInvolvedPartyID(dest);
 			newItem.setEffectiveFromDate(LocalDateTime.now());
 			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                                 .getActiveFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                    .get(getEnterprise())));
+			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(getEnterprise(), identityToken));
 			newItem.persist();
 		}
 		List<InvolvedPartyXAddress> addresses = new InvolvedPartyXAddress()
-				                                              .builder()
-				                                              .inDateRange()
-				                                              .inActiveRange(getEnterprise(),identityToken)
-				                                              .where(InvolvedPartyXAddress_.involvedPartyID, Equals, this)
-				                                              .getAll();
+				                                        .builder()
+				                                        .inDateRange()
+				                                        .inActiveRange(getEnterprise(), identityToken)
+				                                        .where(InvolvedPartyXAddress_.involvedPartyID, Equals, this)
+				                                        .getAll();
 		for (InvolvedPartyXAddress item : addresses)
 		{
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 
@@ -349,22 +336,20 @@ public class InvolvedParty
 			newItem.setInvolvedPartyID(dest);
 			newItem.setEffectiveFromDate(LocalDateTime.now());
 			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                                 .getActiveFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                    .get(getEnterprise())));
+			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(getEnterprise(), identityToken));
 			newItem.persist();
 		}
 		List<InvolvedPartyXProduct> products = new InvolvedPartyXProduct()
-				                                        .builder()
-				                                        .inDateRange()
-				                                        .inActiveRange(getEnterprise(),identityToken)
-				                                        .where(InvolvedPartyXProduct_.involvedPartyID, Equals, this)
-				                                        .getAll();
+				                                       .builder()
+				                                       .inDateRange()
+				                                       .inActiveRange(getEnterprise(), identityToken)
+				                                       .where(InvolvedPartyXProduct_.involvedPartyID, Equals, this)
+				                                       .getAll();
 		for (InvolvedPartyXProduct item : products)
 		{
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 
@@ -379,22 +364,20 @@ public class InvolvedParty
 			newItem.setInvolvedPartyID(dest);
 			newItem.setEffectiveFromDate(LocalDateTime.now());
 			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                                 .getActiveFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                    .get(getEnterprise())));
+			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(getEnterprise(), identityToken));
 			newItem.persist();
 		}
 		List<InvolvedPartyXInvolvedPartyIdentificationType> identities = new InvolvedPartyXInvolvedPartyIdentificationType()
-				                                       .builder()
-				                                       .inDateRange()
-				                                       .inActiveRange(getEnterprise(),identityToken)
-				                                       .where(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyID, Equals, this)
-				                                       .getAll();
+				                                                                 .builder()
+				                                                                 .inDateRange()
+				                                                                 .inActiveRange(getEnterprise(), identityToken)
+				                                                                 .where(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyID, Equals, this)
+				                                                                 .getAll();
 		for (InvolvedPartyXInvolvedPartyIdentificationType item : identities)
 		{
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 
@@ -409,33 +392,40 @@ public class InvolvedParty
 			newItem.setInvolvedPartyID(dest);
 			newItem.setEffectiveFromDate(LocalDateTime.now());
 			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                                 .getActiveFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                    .get(getEnterprise())));
+			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                     .getActiveFlag(getEnterprise(), identityToken));
 			newItem.persist();
 		}
 
-		if (me.involvedPartyOrganic != null)
+		Optional<InvolvedPartyOrganic> oIpo = new InvolvedPartyOrganic().builder()
+		                                                                .inActiveRange(getEnterprise())
+		                                                                .inDateRange()
+		                                                                .where(InvolvedPartyOrganic_.involvedParty, Equals, this)
+		                                                                .get();
+		if (oIpo.isPresent())
 		{
-			InvolvedPartyOrganic item = me.involvedPartyOrganic;
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			InvolvedPartyOrganic item = oIpo.get();
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 		}
-		else if (me.involvedPartyNonOrganic != null)
+		else
 		{
-			InvolvedPartyNonOrganic item = me.involvedPartyNonOrganic;
-			item.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                              .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-			                                                                                                  .get(getEnterprise())));
+			InvolvedPartyNonOrganic item = new InvolvedPartyNonOrganic().builder()
+			                                                            .inActiveRange(getEnterprise())
+			                                                            .inDateRange()
+			                                                            .where(InvolvedPartyNonOrganic_.involvedParty, Equals, this)
+			                                                            .get()
+			                                                            .get();
+			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
 			item.update();
 		}
-		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getDeletedFlag(getEnterprise(), InvolvedPartySystem.getSystemTokens()
-		                                                                                             .get(getEnterprise())));
+
+		setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+				                             .getDeletedFlag(getEnterprise(), identityToken));
 		setEffectiveToDate(LocalDateTime.now());
 		update();
 		return dest;
@@ -444,11 +434,23 @@ public class InvolvedParty
 	@Override
 	public UUID getSecurityIdentity()
 	{
-		String value = find(IdentificationTypes.IdentificationTypeUUID, InvolvedPartySystem.getSystemsMap()
-		                                                                                   .get(getEnterpriseID()), InvolvedPartySystem.getSystemTokens()
-		                                                                                                                               .get(getEnterpriseID())).orElseThrow()
-		                                                                                                                                                       .getValue();
+		String value = find(IdentificationTypes.IdentificationTypeUUID, get(InvolvedPartySystem.class).getSystem(getEnterpriseID()),
+		                    get(InvolvedPartySystem.class).getSystemToken(getEnterprise())).orElseThrow()
+		                                                                                   .getValue();
 		return UUID.fromString(value);
+	}
+
+	@Override
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	@Override
+	public InvolvedParty setId(Long id)
+	{
+		this.id = id;
+		return this;
 	}
 
 	@Override
@@ -500,6 +502,12 @@ public class InvolvedParty
 	}
 
 	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
+	}
+
+	@Override
 	public boolean equals(Object o)
 	{
 		if (this == o)
@@ -515,26 +523,9 @@ public class InvolvedParty
 	}
 
 	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-
-	@Override
 	public String toString()
 	{
 		return "InvolvedParty - " + getId();
-	}
-
-	public Long getId()
-	{
-		return this.id;
-	}
-
-	public InvolvedParty setId(Long id)
-	{
-		this.id = id;
-		return this;
 	}
 
 }

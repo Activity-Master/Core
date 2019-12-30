@@ -161,7 +161,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findFirst(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
-		IClassificationService classificationService = get(IClassificationService.class);
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
 
 		return (Optional<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
@@ -208,7 +208,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	default long numberOf(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
-		IClassificationService classificationService = get(IClassificationService.class);
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
 
 		return activityMasterIdentity.builder()
@@ -224,7 +224,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
-		IClassificationService classificationService = get(IClassificationService.class);
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
 
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
@@ -251,7 +251,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
-		IClassificationService classificationService = get(IClassificationService.class);
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
@@ -305,7 +305,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 
-		IClassificationService classificationService = get(IClassificationService.class);
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()

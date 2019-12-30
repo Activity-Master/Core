@@ -1,32 +1,26 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
+import com.guicedee.activitymaster.core.services.classifications.events.*;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.classifications.events.*;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.core.services.system.ITimeSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
-@SuppressWarnings("Duplicates")
+@Singleton
 public class EventsSystem
+		extends ActivityMasterDefaultSystem<EventsSystem>
 		implements IActivityMasterSystem<EventsSystem>
 {
-
-	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
-	private static final Map<IEnterprise<?>, ISystems<?>> systemsMap = new HashMap<>();
-
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
@@ -43,7 +37,7 @@ public class EventsSystem
 
 		GuiceContext.get(ITimeSystem.class)
 		            .getDay(new Date());
-		logProgress("Loading Time", "Creating Time", progressMonitor);
+		logProgress("Loading Time", "Creating Hours and Minutes", progressMonitor);
 		GuiceContext.get(ITimeSystem.class)
 		            .createTime();
 	}
@@ -205,39 +199,15 @@ public class EventsSystem
 	}
 
 	@Override
-	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public String getSystemName()
 	{
-		final String systemName = "Events System";
-		final String systemDesc = "The system for managing events";
-		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
-		                                    .findSystem(enterprise, systemName);
-		UUID securityToken = null;
-		if (sys == null)
-		{
-			sys = (Systems) GuiceContext.get(SystemsService.class)
-			                            .create(enterprise, systemName, systemDesc, systemName);
-
-			securityToken = GuiceContext.get(ISystemsService.class)
-			                            .registerNewSystem(enterprise, sys);
-		}
-		else
-		{
-			securityToken = GuiceContext.get(SystemsService.class)
-			                            .getSecurityIdentityToken(sys);
-		}
-		systemTokens.put(enterprise, securityToken);
-		systemsMap.put(enterprise, sys);
+		return "Events System";
 	}
 
 	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public String getSystemDescription()
 	{
-
-	}
-
-	public static Map<IEnterprise<?>, UUID> getSystemTokens()
-	{
-		return systemTokens;
+		return "The system for managing events";
 	}
 
 }

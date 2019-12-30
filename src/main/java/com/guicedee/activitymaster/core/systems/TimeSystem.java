@@ -29,6 +29,8 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 public class TimeSystem
 		implements ITimeSystem, IProgressable
 {
+	private IActivityMasterProgressMonitor progressMonitor;
+
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
 			timeout = 50000)
@@ -36,6 +38,8 @@ public class TimeSystem
 	{
 		JobService.getInstance()
 		          .setMaxQueueCount("TimeRangeLoading", 500);
+
+		progressMonitor = progressMonitoro;
 
 		logProgress("Starting Time Load", "Time load is starting from " + startYear + " + to " + endYear, progressMonitoro);
 		GregorianCalendar startYearGC = new GregorianCalendar();
@@ -67,10 +71,10 @@ public class TimeSystem
 		year = getYearFromID(date);
 		if (year == null)
 		{
-			System.out.println("Creating Year [" +
-			                   YearIDFormat.getSimpleDateFormat()
-			                               .format(date) +
-			                   "]");
+			logProgress("Time Lord", "Creating Year [" +
+			                         YearIDFormat.getSimpleDateFormat()
+			                                     .format(date) +
+			                         "]", progressMonitor);
 			year = createYear(date);
 		}
 		return year;
@@ -257,8 +261,10 @@ public class TimeSystem
 		if (month == null)
 		{
 			month = createMonth(date);
+			logProgress("Time Lord", "Creating Month [" +
+			                         month.getMonthDescription() +
+			                         "]", 1, progressMonitor);
 			month.persist();
-			System.out.println("Creating Month [" + month.getMonthDescription() + "]");
 		}
 		return month;
 	}

@@ -1,17 +1,16 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
-import com.guicedee.activitymaster.core.db.entities.arrangement.*;
 import com.guicedee.activitymaster.core.db.entities.arrangement.*;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXClassification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification;
 import com.guicedee.activitymaster.core.db.entities.events.EventType;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemType;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
@@ -22,33 +21,29 @@ import com.guicedee.activitymaster.core.implementations.SecurityTokenService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
+import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
+import com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
+import com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications;
 import com.guicedee.activitymaster.core.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
 import com.guicedee.activitymaster.core.services.classifications.systems.SystemsClassifications;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications;
-import com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
+@Singleton
 public class SecurityTokenSystem
+		extends ActivityMasterDefaultSystem<SecurityTokenSystem>
 		implements IActivityMasterSystem<SecurityTokenSystem>
 {
-
-	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
-
-	private static final Map<IEnterprise<?>, Systems> systemsMap = new HashMap<>();
 	private static final Logger log = Logger.getLogger(SecurityTokenSystem.class.getName());
 
 	@Override
@@ -57,19 +52,20 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Starting Security Structure Checks/Install", progressMonitor);
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                               .getActivityMaster(enterprise);
-		IEnterpriseName<?> enterpriseName = GuiceContext.get(ActivityMasterConfiguration.class).getEnterpriseName();
-		if(enterpriseName == null)
+		IEnterpriseName<?> enterpriseName = GuiceContext.get(ActivityMasterConfiguration.class)
+		                                                .getEnterpriseName();
+		if (enterpriseName == null)
 		{
 			throw new ActivityMasterException("IEnterpriseName is not set for security root. Make sure to set it in ActivityMasterConfiguration from a created type");
 		}
 
-		createSecurityDefaults(GuiceContext.get(ActivityMasterConfiguration.class).getEnterpriseName(),activityMasterSystem,progressMonitor);
+		createSecurityDefaults(GuiceContext.get(ActivityMasterConfiguration.class)
+		                                   .getEnterpriseName(), activityMasterSystem, progressMonitor);
 		SecurityToken rootToken = createSecurityTokens(enterpriseName, enterprise, progressMonitor);
 		createGroupsAndFolders(enterprise, rootToken, progressMonitor);
 		applyDefaultsToNewEnterprise(enterprise, progressMonitor);
 		createActivityMasterInvolvedParty(enterprise);
 		applyDefaultsToNewEnterpriseAfterActivityMaster(enterprise, progressMonitor);
-
 
 		UUID newSystemUUID = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(activityMasterSystem);
@@ -106,23 +102,22 @@ public class SecurityTokenSystem
 
 		service.create(SecurityTokenClassifications.Identity, originatingSystem, Classifications.Security);
 
-
 		logProgress("Security Token Service", "Security Classifications Installed", 11, progressMonitor);
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	SecurityToken createSecurityTokens(IEnterpriseName<?> enterpriseName,IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	SecurityToken createSecurityTokens(IEnterpriseName<?> enterpriseName, IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                           .getActivityMaster(enterprise);
-		UUID uuid = SecurityTokenSystem.getSystemTokens()
-		                               .get(enterprise);
+		                                               .getActivityMaster(enterprise);
+		UUID uuid = getSystemToken(enterpriseName);
 
 		SecurityTokenService system = GuiceContext.get(SecurityTokenService.class);
 
 		SecurityToken rootToken = (SecurityToken) system.create(enterpriseName,
 		                                                        enterprise.getName(), enterprise.getDescription()
-		                                                                        .isEmpty() ? "An enterprise-wide project" : enterprise.getDescription(), activityMasterSystem);
+		                                                                                        .isEmpty() ? "An enterprise-wide project" : enterprise.getDescription(),
+		                                                        activityMasterSystem);
 
 		system.grantAccessToToken(rootToken, rootToken, false, false, false, false, activityMasterSystem);
 
@@ -141,7 +136,7 @@ public class SecurityTokenSystem
 
 		SecurityTokenService system = GuiceContext.get(SecurityTokenService.class);
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                           .getActivityMaster(enterprise);
+		                                               .getActivityMaster(enterprise);
 
 		SecurityToken everyoneToken = (SecurityToken) system.create(
 				SecurityTokenClassifications.UserGroup,
@@ -191,11 +186,9 @@ public class SecurityTokenSystem
 				UserGroupSecurityTokenClassifications.Plugins.classificationDescription(),
 				activityMasterSystem);
 
-
 		SecurityToken activityMasterToken = (SecurityToken) system.create(
 				UserGroupSecurityTokenClassifications.System,
 				"Activity Master System", "Defines the activity master as a system", activityMasterSystem);
-
 
 		logProgress("Security Token Service", "Base Security Tokens", 11, progressMonitor);
 
@@ -204,30 +197,30 @@ public class SecurityTokenSystem
 		                                activityMasterSystem);
 
 		system.link(rootToken, everyoneToken,
-		            (Classification) classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
+		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
 		system.link(rootToken, everywhereToken,
-		            (Classification) classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
+		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
 		system.link(everyoneToken, administratorsToken,
-		            (Classification) classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
+		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
 	/*	link(everyoneToken, usersToken,
 		     classificationService.find(UserGroup, SecurityTokenXSecurityToken.class, activityMasterSystem));
 */
 		system.link(everyoneToken, usersGuestsToken,
-		            (Classification) classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
+		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
 		system.link(usersGuestsToken, usersGuestsRegisteredToken,
-		            (Classification) classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
+		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
 		system.link(usersGuestsToken, usersGuestsVisitorsToken,
-		            (Classification) classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
+		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
 
 		system.link(rootToken, applicationToken,
-		            (Classification) classificationService.find(SecurityTokenClassifications.Application, enterprise));
+		            classificationService.find(SecurityTokenClassifications.Application, enterprise));
 		system.link(rootToken, systemsToken,
-		            (Classification) classificationService.find(UserGroupSecurityTokenClassifications.System, enterprise));
+		            classificationService.find(UserGroupSecurityTokenClassifications.System, enterprise));
 		system.link(rootToken, pluginToken,
-		            (Classification) classificationService.find(SecurityTokenClassifications.Plugin, enterprise));
+		            classificationService.find(SecurityTokenClassifications.Plugin, enterprise));
 
 		system.link(systemsToken, activityMasterToken,
-		            (Classification) classificationService.find(UserGroupSecurityTokenClassifications.System, enterprise));
+		            classificationService.find(UserGroupSecurityTokenClassifications.System, enterprise));
 
 		logProgress("Security Token Service", "Security Hierarchy Confirmed", 11, progressMonitor);
 
@@ -240,7 +233,6 @@ public class SecurityTokenSystem
 		system.grantAccessToToken(administratorsToken, usersGuestsToken, true, true, true, true, activityMasterSystem);
 		system.grantAccessToToken(administratorsToken, systemsToken, true, true, false, true, activityMasterSystem);
 		system.grantAccessToToken(administratorsToken, pluginToken, true, true, false, true, activityMasterSystem);
-
 
 		//Allow default access to everyone
 		system.grantAccessToToken(usersGuestsToken, rootToken, false, false, false, false, activityMasterSystem);
@@ -362,7 +354,6 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Starting Final Enterprise checks", 1, progressMonitor);
 		createDefaultSecurityForTable(new EnterpriseXClassification(), system, progressMonitor);
 
-
 		createDefaultSecurityForTable((WarehouseCoreTable<?, ?, ?, ?>) enterprise, system, progressMonitor);
 		logProgress("Security Token Service", "Completed Checks", 1, progressMonitor);
 	}
@@ -371,9 +362,9 @@ public class SecurityTokenSystem
 	void createActivityMasterInvolvedParty(IEnterprise<?> enterprise)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                           .getActivityMaster(enterprise);
+		                                               .getActivityMaster(enterprise);
 		get(SystemsSystem.class)
-		            .createInvolvedPartyForNewSystem(activityMasterSystem);
+				.createInvolvedPartyForNewSystem(activityMasterSystem);
 	}
 
 	void applyDefaultsToNewEnterpriseAfterActivityMaster(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
@@ -415,7 +406,7 @@ public class SecurityTokenSystem
 		createDefaultSecurityForTable(new ArrangementXProduct(), system, progressMonitor);
 	}
 
-	void createDefaultSecurityForTable(WarehouseCoreTable<?, ?, ?, ?> table, ISystems<?> system, IActivityMasterProgressMonitor progressMonitor, UUID...identityToken)
+	void createDefaultSecurityForTable(WarehouseCoreTable<?, ?, ?, ?> table, ISystems<?> system, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)
 	{
 		for (WarehouseCoreTable next : table.builder()
 		                                    .withEnterprise(system.getEnterpriseID())
@@ -423,10 +414,10 @@ public class SecurityTokenSystem
 		                                    .inDateRange()
 		                                    .getAll())
 		{
-			/*logProgress("Security Token Service", "Checking - " +
+			logProgress("Security Token Service", "Checking - " +
 			                                      next.getClass()
 			                                          .getSimpleName(), progressMonitor);
-			*/next.createDefaultSecurity(system,identityToken);
+			next.createDefaultSecurity(system, identityToken);
 		}
 
 	}
@@ -443,40 +434,15 @@ public class SecurityTokenSystem
 		return Integer.MIN_VALUE + 23;
 	}
 
-
 	@Override
-	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public String getSystemName()
 	{
-		final String systemName = "Security Tokens System";
-		final String systemDesc = "The system for managing Security Tokens";
-		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
-		                                    .findSystem(enterprise, systemName);
-		UUID securityToken = null;
-		if (sys == null)
-		{
-			sys = (Systems) GuiceContext.get(SystemsService.class)
-			                                    .create(enterprise, systemName, systemDesc, systemName);
-
-			securityToken = GuiceContext.get(ISystemsService.class)
-			                            .registerNewSystem(enterprise, sys);
-		}
-		else
-		{
-			securityToken = GuiceContext.get(SystemsService.class)
-			                            .getSecurityIdentityToken(sys);
-		}
-		systemTokens.put(enterprise, securityToken);
-		systemsMap.put(enterprise, sys);
+		return "Security Tokens System";
 	}
 
 	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public String getSystemDescription()
 	{
-
-	}
-
-	public static Map<IEnterprise<?>, UUID> getSystemTokens()
-	{
-		return systemTokens;
+		return "The system for managing Security Tokens";
 	}
 }

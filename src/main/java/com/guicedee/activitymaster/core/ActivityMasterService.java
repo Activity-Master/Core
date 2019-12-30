@@ -207,11 +207,21 @@ public class ActivityMasterService
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
 		IEnterprise<?> enterprise = get(IEnterpriseService.class)
 				                            .getEnterprise(enterpriseName);
-		for (IActivityMasterSystem allSystem : allSystems)
+		if (progressMonitor != null)
+		{
+			progressMonitor.setTotalTasks(allSystems.size() * 3);
+		}
+
+		for (IActivityMasterSystem<?> allSystem : allSystems)
 		{
 			logProgress("System Updating", "Updating system " + allSystem.getClass()
 			                                                             .getName(), 1, progressMonitor);
 			allSystem.loadUpdates(enterprise, progressMonitor);
+		}
+		if (progressMonitor != null)
+		{
+			int cur = progressMonitor.getTotalTasks() - progressMonitor.getCurrentTask();
+			logProgress("System Updating", "Completed Updating Systems", cur, progressMonitor);
 		}
 		ActivityMasterConfiguration.get()
 		                           .setDoubleCheckDisabled(true);

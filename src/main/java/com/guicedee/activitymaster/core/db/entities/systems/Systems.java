@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static com.guicedee.guicedinjection.GuiceContext.*;
 import static javax.persistence.AccessType.*;
 
 /**
@@ -151,8 +152,7 @@ public class Systems
 	public Systems remove()
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getDeletedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
-		                                                                                            .get(getEnterpriseID())));
+		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;
@@ -163,8 +163,7 @@ public class Systems
 	public Systems archive()
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getArchivedFlag(getEnterpriseID(), ActiveFlagSystem.getSystemTokens()
-		                                                                                             .get(getEnterpriseID())));
+		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;

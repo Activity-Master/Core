@@ -2,28 +2,22 @@ package com.guicedee.activitymaster.core.systems;
 
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
+import com.guicedee.activitymaster.core.services.classifications.address.*;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.classifications.address.*;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 @Singleton
 public class AddressSystem
+		extends ActivityMasterDefaultSystem<AddressSystem>
 		implements IActivityMasterSystem<AddressSystem>
 {
-	private static final Map<IEnterprise<?>, UUID> systemTokens = new HashMap<>();
-
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
@@ -120,11 +114,9 @@ public class AddressSystem
 		service.create(AddressRemoteSystemClassifications.RemoteAddressHostName, system, AddressRemoteSystemClassifications.RemoteAddress);
 		service.create(AddressRemoteSystemClassifications.RemoteAddressIPAddress, system, AddressRemoteSystemClassifications.RemoteAddress);
 
-
 		service.create(AddressLocalSystemClassifications.LocalAddress, system);
 		service.create(AddressLocalSystemClassifications.LocalAddressHostName, system, AddressLocalSystemClassifications.LocalAddress);
 		service.create(AddressLocalSystemClassifications.LocalAddressIPAddress, system, AddressLocalSystemClassifications.LocalAddress);
-
 
 		logProgress("Address System", "Done Internal Addresses", 1, progressMonitor);
 
@@ -203,37 +195,14 @@ public class AddressSystem
 	}
 
 	@Override
-	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public String getSystemName()
 	{
-		final String systemName = "Address System";
-		final String systemDesc = "The system for the address management";
-		Systems sys = (Systems) GuiceContext.get(SystemsService.class)
-		                                    .findSystem(enterprise, systemName);
-		UUID securityToken = null;
-		if (sys == null)
-		{
-			sys = (Systems) GuiceContext.get(SystemsService.class)
-			                                    .create(enterprise, systemName, systemDesc, systemName);
-
-			securityToken = GuiceContext.get(ISystemsService.class)
-			                            .registerNewSystem(enterprise, sys);
-		}
-		else
-		{
-			securityToken = GuiceContext.get(SystemsService.class)
-			                            .getSecurityIdentityToken(sys);
-		}
-		systemTokens.put(enterprise, securityToken);
+		return "Address System";
 	}
 
 	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public String getSystemDescription()
 	{
-
-	}
-
-	public static Map<IEnterprise<?>, UUID> getSystemTokens()
-	{
-		return systemTokens;
+		return "The system for the address management";
 	}
 }

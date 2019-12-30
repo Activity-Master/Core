@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.implementations;
 
+import com.entityassist.querybuilder.builders.JoinExpression;
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.arrangement.*;
@@ -17,8 +19,6 @@ import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
-import com.google.inject.Singleton;
-import com.entityassist.querybuilder.builders.JoinExpression;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -27,8 +27,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @Singleton
@@ -44,7 +44,7 @@ public class ArrangementsService
 		xr.setSystemID((Systems) system);
 		xr.setOriginalSourceSystemID((Systems) system);
 		xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-		xr.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
+		xr.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
 		xr.persist();
 
 		if (ActivityMasterConfiguration.get()
@@ -82,7 +82,7 @@ public class ArrangementsService
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag)get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
+			xr.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
 			xr.persist();
 		}
 		else
@@ -136,7 +136,7 @@ public class ArrangementsService
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 
 		List<Arrangement> arrangementList = aqb.getAll();
-		return (List)arrangementList;
+		return (List) arrangementList;
 	}
 
 	@CacheResult(cacheName = "ArrangementArrangementType")
@@ -193,8 +193,7 @@ public class ArrangementsService
 		IArrangementType<?> type = find(idType, enterprise, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, enterprise, identityToken);
-		ISystems<?> systems = InvolvedPartySystem.getSystemsMap()
-		                                         .get(enterprise);
+		ISystems<?> systems = get(InvolvedPartySystem.class).getSystem(enterprise);
 
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
 		aqb.withEnterprise(systems.getEnterprise())
@@ -210,9 +209,9 @@ public class ArrangementsService
 
 		ArrangementXArrangementTypeQueryBuilder tqb = new ArrangementXArrangementType().builder();
 		tqb.withEnterprise(systems.getEnterprise())
-		  .findChildLink((ArrangementType) type)
-		  .inActiveRange(systems.getEnterpriseID(), identityToken)
-		  .inDateRange();
+		   .findChildLink((ArrangementType) type)
+		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		   .inDateRange();
 
 		JoinExpression aje = new JoinExpression();
 		JoinExpression ate = new JoinExpression();
