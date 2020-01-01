@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
+import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
@@ -14,14 +15,17 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ActiveFlagService;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
+import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
-import com.google.common.base.Strings;
+import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.validation.constraints.NotNull;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -36,24 +40,26 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
  * 		The type containing the hierarchy
  */
 public interface IContainsHierarchy<J extends WarehouseCoreTable,
-		                                   Q extends WarehouseClassificationRelationshipTable<J, J, Q, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>,
-		                                   W extends WarehouseHierarchyView<?, ? extends QueryBuilderHierarchyView, ?>>
+		                                   Q extends WarehouseClassificationRelationshipTable<J, J, Q, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>,
+		                                   W extends WarehouseHierarchyView<?, ? extends QueryBuilderHierarchyView, ?>,
+		                                   T>
 {
-	default J addChild(J child, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default J addChild(T child, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
-		return addChild(child, "", enterprise, identifyingToken);
+		return addChild(child, STRING_EMPTY, enterprise, identifyingToken);
 	}
+	//	Optional<IRelationshipValue<T, T, ?>>
 
 	@SuppressWarnings({"unchecked", "Duplicates"})
 	@NotNull
-	default J addChild(J child, String value, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default J addChild(T child, String value, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
 		Q linkTable = get(hierarchyTable);
 
 		Optional<Q> exists = linkTable.builder()
-		                              .findLink(me, child, null)
+		                              .findLink(me, (J) child, null)
 		                              .inActiveRange(enterprise, identifyingToken)
 		                              .inDateRange()
 		                              .canCreate(enterprise, identifyingToken)
@@ -62,19 +68,19 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		if (exists.isEmpty())
 		{
 			if (linkTable.builder()
-			             .findChildLink(child)
+			             .findChildLink((J) child)
 			             .inActiveRange(enterprise, identifyingToken)
 			             .inDateRange()
 			             .getCount() > 0
 			)
 			{
 				Q existingLink = linkTable.builder()
-				                          .findChildLink(child)
+				                          .findChildLink((J) child)
 				                          .inActiveRange(enterprise, identifyingToken)
 				                          .inDateRange()
 				                          .get()
 				                          .orElseThrow();
-				configureNewHierarchyItem(existingLink, me, child, value);
+				configureNewHierarchyItem(existingLink, (T) me, (T) child, value);
 				existingLink.update();
 				return me;
 			}
@@ -84,32 +90,52 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 			ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 			                                               .getActivityMaster(enterprise, identifyingToken);
 			linkTable.setSystemID((Systems) activityMasterSystem);
-			linkTable.setActiveFlagID((ActiveFlag) GuiceContext.get(ActiveFlagService.class).getActiveFlag(enterprise));
+			linkTable.setActiveFlagID((ActiveFlag) GuiceContext.get(ActiveFlagService.class)
+			                                                   .getActiveFlag(enterprise));
 			linkTable.setOriginalSourceSystemID((Systems) activityMasterSystem);
 			linkTable.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			linkTable.setEnterpriseID((Enterprise) enterprise);
 			linkTable.setClassificationID(hierarchyType);
 			linkTable.setValue(Strings.nullToEmpty(value));
-			configureNewHierarchyItem(linkTable, me, child, value);
+			configureNewHierarchyItem(linkTable, (T) me, (T) child, value);
 			linkTable.persist();
 			if (get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
+					    .isSecurityEnabled())
 			{
 				linkTable.createDefaultSecurity(activityMasterSystem, identifyingToken);
 			}
 		}
-		return child;
+		return (J) child;
 	}
+
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<Q> findHierarchyTableType()
+	{
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
+		{
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsHierarchy.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<Q>) genericTypes[1];
+			}
+		}
+		return null;
+	}
+
+	void configureNewHierarchyItem(Q newLink, T parent, T child, String value);
 
 	@SuppressWarnings({"unchecked", "Duplicates"})
 	@NotNull
-	default J removeChild(J child, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default J removeChild(T child, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
 		Q linkTable = get(hierarchyTable);
 		Optional<Q> exists = linkTable.builder()
-		                              .findLink(me, child, null)
+		                              .findLink(me, (J) child, null)
 		                              .inActiveRange(enterprise, identifyingToken)
 		                              .inDateRange()
 		                              .canDelete(enterprise, identifyingToken)
@@ -148,6 +174,23 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 			J returnedEntity = (J) qb.get()
 			                         .orElseThrow();
 			return returnedEntity;
+		}
+		return null;
+	}
+
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<W> findHierarchyViewType()
+	{
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
+		{
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsHierarchy.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<W>) genericTypes[2];
+			}
 		}
 		return null;
 	}
@@ -193,7 +236,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default List<J> findChildren(IClassification<?> filter,UUID... identifyingToken)
+	default Set<Long> findSecurityChildren(IClassification<?> filter, IEnterpriseName<?> enterpriseName, UUID... identifyingToken)
 	{
 		Class<W> hierarchyView = findHierarchyViewType();
 		W hierarchy = get(hierarchyView);
@@ -224,25 +267,47 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 				}
 			}
 		}
-		QueryBuilder qb = (QueryBuilder) me.builder()
-		                                   .find(search);
-		qb.inDateRange();
-		List<J> returnedEntity = qb.getAll();
-		return returnedEntity;
+		return search;
 	}
 
-	default Q findLink(J child, IEnterprise<?> enterprise, UUID... identifyingToken)
+	@SuppressWarnings("unchecked")
+	default List<IRelationshipValue<T, T, ?>> findChildren(IClassification<?> filter, IEnterpriseName<?> enterpriseName, UUID... identifyingToken)
+	{
+		Class<Q> relationshipTableClass = findHierarchyTableType();
+		try
+		{
+			IEnterprise<?> enterprise = get(IEnterpriseService.class).getEnterprise(enterpriseName);
+			Q relationshipTable = relationshipTableClass.getDeclaredConstructor()
+			                                            .newInstance();
+			QueryBuilderRelationshipClassification qb = relationshipTable.builder()
+			                                                             .findParentLink((J) this)
+			                                                             .inActiveRange(enterprise, identifyingToken)
+			                                                             .inDateRange();
+			if (filter != null)
+			{
+				qb.withClassification(filter);
+			}
+			return (List<IRelationshipValue<T, T, ?>>) qb.getAll();
+		}
+		catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
+		{
+			e.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
+
+	default Q findLink(T child, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		return findLink(child, enterprise, null, identifyingToken);
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q findLink(J child, IEnterprise<?> enterprise, String value, UUID... identifyingToken)
+	default Q findLink(T child, IEnterprise<?> enterprise, String value, UUID... identifyingToken)
 	{
 		Class<Q> hierarchyView = findHierarchyTableType();
 		Q linkTable = get(hierarchyView);
 		return linkTable.builder()
-		                .findLink((J) this, child, value)
+		                .findLink((J) this, (J) child, value)
 		                .inActiveRange(enterprise, identifyingToken)
 		                .canRead(enterprise, identifyingToken)
 		                .inDateRange()
@@ -250,12 +315,10 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		                .orElse(null);
 	}
 
-	default J setParent(J parent, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default J setParent(T parent, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		return null;
 	}
-
-	void configureNewHierarchyItem(Q newLink, J parent, J child, String value);
 
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -269,40 +332,6 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 			{
 				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
 				return (Class<J>) genericTypes[0];
-			}
-		}
-		return null;
-	}
-
-	@NotNull
-	@SuppressWarnings("unchecked")
-	default Class<Q> findHierarchyTableType()
-	{
-		Type[] genericInterfaces = getClass().getGenericInterfaces();
-		for (Type genericInterface : genericInterfaces)
-		{
-			String clazz = genericInterface.getTypeName();
-			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsHierarchy.class.getCanonicalName()))
-			{
-				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
-				return (Class<Q>) genericTypes[1];
-			}
-		}
-		return null;
-	}
-
-	@NotNull
-	@SuppressWarnings("unchecked")
-	default Class<W> findHierarchyViewType()
-	{
-		Type[] genericInterfaces = getClass().getGenericInterfaces();
-		for (Type genericInterface : genericInterfaces)
-		{
-			String clazz = genericInterface.getTypeName();
-			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsHierarchy.class.getCanonicalName()))
-			{
-				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
-				return (Class<W>) genericTypes[2];
 			}
 		}
 		return null;

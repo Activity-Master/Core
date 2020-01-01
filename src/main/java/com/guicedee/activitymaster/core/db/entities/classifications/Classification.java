@@ -43,7 +43,7 @@ import static javax.persistence.FetchType.*;
 @Access(FIELD)
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>
-		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView>,
+		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView, IClassification<?>>,
 				           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IResourceItemClassification<?>, IClassification<?>, IResourceItem<?>, Classification>,
 				           IActivityMasterEntity<Classification>,
 				           IClassification<Classification>
@@ -63,7 +63,8 @@ public class Classification
 			max = 100)
 	@Column(nullable = false,
 			length = 100,
-			name = "ClassificationName")@JsonIgnore
+			name = "ClassificationName")
+	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
@@ -72,25 +73,29 @@ public class Classification
 			max = 500)
 	@Column(nullable = false,
 			length = 500,
-			name = "ClassificationDesc")@JsonIgnore
+			name = "ClassificationDesc")
+	@JsonIgnore
 	private String description;
 	@Basic(optional = false,
 			fetch = EAGER)
 	@NotNull
 	@Column(nullable = false,
-			name = "ClassificationSequenceNumber")@JsonIgnore
+			name = "ClassificationSequenceNumber")
+	@JsonIgnore
 	@OrderBy
 	private Short classificationSequenceNumber;
 	@JoinColumn(name = "ClassificationDataConceptID",
 			referencedColumnName = "ClassificationDataConceptID",
 			nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.EAGER)@JsonIgnore
+			fetch = FetchType.EAGER)
+	@JsonIgnore
 	private ClassificationDataConcept concept;
 
 	@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)@JsonIgnore
+			fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ClassificationSecurityToken> securities;
 
 	public Classification()
@@ -109,12 +114,6 @@ public class Classification
 		name = classificationName;
 		description = classificationDesc;
 		this.classificationSequenceNumber = classificationSequenceNumber;
-	}
-
-	@Override
-	public String toString()
-	{
-		return "Classification - " + getName() + " - " + getDescription();
 	}
 
 	@Override
@@ -137,11 +136,17 @@ public class Classification
 	}
 
 	@Override
-	public void configureNewHierarchyItem(ClassificationXClassification newLink, Classification parent, Classification child, String value)
+	public void configureNewHierarchyItem(ClassificationXClassification newLink, IClassification<?> parent, IClassification<?> child, String value)
 	{
 		newLink.setParentClassificationID(this);
-		newLink.setChildClassificationID(child);
+		newLink.setChildClassificationID((Classification) child);
 		newLink.setEnterpriseID(getEnterpriseID());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
 	}
 
 	@Override
@@ -160,9 +165,9 @@ public class Classification
 	}
 
 	@Override
-	public int hashCode()
+	public String toString()
 	{
-		return Objects.hash(getId());
+		return "Classification - " + getName() + " - " + getDescription();
 	}
 
 	@Override
@@ -172,33 +177,52 @@ public class Classification
 	}
 
 	@Override
-	public String getName()
-	{
-		return name;
-	}
-
-	@Override
-	public String getDescription()
-	{
-		return description;
-	}
-
-	public @NotNull Short getClassificationSequenceNumber()
-	{
-		return classificationSequenceNumber;
-	}
-
-	public ClassificationDataConcept getConcept()
-	{
-		return concept;
-	}
-
-	@Override
 	public Classification setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
+
+	public @NotNull Short getClassificationSequenceNumber()
+	{
+		return classificationSequenceNumber;
+	}	@Override
+	public String getName()
+	{
+		return name;
+	}
+
+	public Classification setClassificationSequenceNumber(@NotNull Short classificationSequenceNumber)
+	{
+		this.classificationSequenceNumber = classificationSequenceNumber;
+		return this;
+	}
+
+	public ClassificationDataConcept getConcept()
+	{
+		return concept;
+	}	@Override
+	public String getDescription()
+	{
+		return description;
+	}
+
+	public Classification setConcept(ClassificationDataConcept concept)
+	{
+		this.concept = concept;
+		return this;
+	}
+
+	@Override
+	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setClassificationID(this);
+		linkTable.setResourceItemID(secondary);
+	}
+
+
+
+
 
 	@Override
 	public Classification setName(String name)
@@ -215,22 +239,4 @@ public class Classification
 		return this;
 	}
 
-	public Classification setClassificationSequenceNumber(@NotNull Short classificationSequenceNumber)
-	{
-		this.classificationSequenceNumber = classificationSequenceNumber;
-		return this;
-	}
-
-	public Classification setConcept(ClassificationDataConcept concept)
-	{
-		this.concept = concept;
-		return this;
-	}
-
-	@Override
-	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
-	{
-		linkTable.setClassificationID(this);
-		linkTable.setResourceItemID(secondary);
-	}
 }

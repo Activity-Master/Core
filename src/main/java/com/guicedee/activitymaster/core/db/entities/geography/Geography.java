@@ -20,7 +20,6 @@ import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceI
 import com.guicedee.activitymaster.core.services.classifications.geography.IGeographyClassification;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.dto.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -49,7 +48,7 @@ public class Geography
 		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, IGeography<?>, IClassification<?>, Geography>,
 				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceItemClassification<?>, IGeography<?>, IResourceItem<?>, Geography>,
 				           IActivityMasterEntity<Geography>,
-				           IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView>,
+				           IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView, IGeography<?>>,
 				           IGeography<Geography>
 {
 
@@ -155,10 +154,11 @@ public class Geography
 		classificationLink.setGeographyID(this);
 	}
 
-	public void configureNewHierarchyItem(GeographyXGeography newLink, Geography parent, Geography child, String value)
+	@Override
+	public void configureNewHierarchyItem(GeographyXGeography newLink, IGeography<?> parent, IGeography<?> child, String value)
 	{
-		newLink.setParentGeographyID(parent);
-		newLink.setChildGeographyID(child);
+		newLink.setParentGeographyID((Geography) parent);
+		newLink.setChildGeographyID((Geography) child);
 		if (value != null)
 		{
 			newLink.setValue(value);
@@ -177,40 +177,15 @@ public class Geography
 		return this.classifications;
 	}
 
-	public List<AddressXGeography> getAddresses()
-	{
-		return this.addresses;
-	}
-
-	public Classification getClassificationID()
-	{
-		return this.classificationID;
-	}
-
-	public List<GeographySecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
-	public List<GeographyXResourceItem> getResources()
-	{
-		return this.resources;
-	}
-
-	public List<GeographyXGeography> getGeographyXGeographyList()
-	{
-		return this.geographyXGeographyList;
-	}
-
-	public List<GeographyXGeography> getGeographyXGeographyList1()
-	{
-		return this.geographyXGeographyList1;
-	}
-
 	public Geography setClassifications(List<GeographyXClassification> classifications)
 	{
 		this.classifications = classifications;
 		return this;
+	}
+
+	public List<AddressXGeography> getAddresses()
+	{
+		return this.addresses;
 	}
 
 	public Geography setAddresses(List<AddressXGeography> addresses)
@@ -219,10 +194,20 @@ public class Geography
 		return this;
 	}
 
+	public Classification getClassificationID()
+	{
+		return this.classificationID;
+	}
+
 	public Geography setClassificationID(Classification classificationID)
 	{
 		this.classificationID = classificationID;
 		return this;
+	}
+
+	public List<GeographySecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 
 	public Geography setSecurities(List<GeographySecurityToken> securities)
@@ -231,10 +216,20 @@ public class Geography
 		return this;
 	}
 
+	public List<GeographyXResourceItem> getResources()
+	{
+		return this.resources;
+	}
+
 	public Geography setResources(List<GeographyXResourceItem> resources)
 	{
 		this.resources = resources;
 		return this;
+	}
+
+	public List<GeographyXGeography> getGeographyXGeographyList()
+	{
+		return this.geographyXGeographyList;
 	}
 
 	public Geography setGeographyXGeographyList(List<GeographyXGeography> geographyXGeographyList)
@@ -243,10 +238,21 @@ public class Geography
 		return this;
 	}
 
+	public List<GeographyXGeography> getGeographyXGeographyList1()
+	{
+		return this.geographyXGeographyList1;
+	}
+
 	public Geography setGeographyXGeographyList1(List<GeographyXGeography> geographyXGeographyList1)
 	{
 		this.geographyXGeographyList1 = geographyXGeographyList1;
 		return this;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
 	}
 
 	@Override
@@ -265,20 +271,9 @@ public class Geography
 	}
 
 	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-
-	@Override
 	public String toString()
 	{
 		return "Geography - " + getName();
-	}
-
-	public Long getId()
-	{
-		return this.id;
 	}
 
 	public String getName()
@@ -286,22 +281,29 @@ public class Geography
 		return this.name;
 	}
 
-	public String getDescription()
+	public Geography setName(@NotNull @Size(min = 1,
+			max = 500) String name)
 	{
-		return this.description;
+		this.name = name;
+		return this;
 	}
 
+	@Override
+	public Long getId()
+	{
+		return this.id;
+	}
+
+	@Override
 	public Geography setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
 
-	public Geography setName(@NotNull @Size(min = 1,
-			max = 500) String name)
+	public String getDescription()
 	{
-		this.name = name;
-		return this;
+		return this.description;
 	}
 
 	public Geography setDescription(@NotNull @Size(min = 1,

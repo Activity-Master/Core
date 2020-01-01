@@ -21,6 +21,10 @@ import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
+import static com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications.*;
 
 @Singleton
 public class ClassificationsSystem
@@ -80,9 +84,31 @@ public class ClassificationsSystem
 	}
 
 	@Override
-	public Integer sortOrder()
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		return Integer.MIN_VALUE + 4;
+		super.loadUpdates(enterprise, progressMonitor);
+		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		                                               .getActivityMaster(enterprise);
+		UUID identityToken = GuiceContext.get(SystemsService.class)
+		                                 .getSecurityIdentityToken(activityMasterSystem);
+		ClassificationService service = GuiceContext.get(ClassificationService.class);
+
+		//Create Root Enterprise Name
+		IEnterpriseName<?> enterpriseName = GuiceContext.get(ActivityMasterConfiguration.class)
+		                                                .getEnterpriseName();
+		try
+		{
+			service.find(Languages, enterprise, identityToken);
+		}
+		catch (NoSuchElementException nre)
+		{
+			service.create(Languages, activityMasterSystem, Classifications.DefaultClassification);
+			service.create(InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages);
+			service.create(InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages);
+			service.create(ISO6392EnglishName, activityMasterSystem, Languages);
+			service.create(ISO6392FrenchName, activityMasterSystem, Languages);
+			service.create(ISO6392GermanName, activityMasterSystem, Languages);
+		}
 	}
 
 	@Override
@@ -95,5 +121,11 @@ public class ClassificationsSystem
 	public String getSystemDescription()
 	{
 		return "The system for handling classifications";
+	}
+
+	@Override
+	public Integer sortOrder()
+	{
+		return Integer.MIN_VALUE + 4;
 	}
 }

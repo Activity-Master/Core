@@ -81,50 +81,21 @@ public class ClassificationXClassification
 		            .setBase(this);
 	}
 
-	@Override
-	public Long getId()
-	{
-		return id;
-	}
-
-	public Classification getChildClassificationID()
-	{
-		return childClassificationID;
-	}
-
-	public Classification getParentClassificationID()
-	{
-		return parentClassificationID;
-	}
-
 	public List<ClassificationXClassificationSecurityToken> getSecurities()
 	{
 		return securities;
-	}
-
-	@Override
-	public ClassificationXClassification setId(Long id)
-	{
-		this.id = id;
-		return this;
-	}
-
-	public ClassificationXClassification setChildClassificationID(Classification childClassificationID)
-	{
-		this.childClassificationID = childClassificationID;
-		return this;
-	}
-
-	public ClassificationXClassification setParentClassificationID(Classification parentClassificationID)
-	{
-		this.parentClassificationID = parentClassificationID;
-		return this;
 	}
 
 	public ClassificationXClassification setSecurities(List<ClassificationXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getId());
 	}
 
 	@Override
@@ -143,9 +114,16 @@ public class ClassificationXClassification
 	}
 
 	@Override
-	public int hashCode()
+	public Long getId()
 	{
-		return Objects.hash(getId());
+		return id;
+	}
+
+	@Override
+	public ClassificationXClassification setId(Long id)
+	{
+		this.id = id;
+		return this;
 	}
 
 	@Override
@@ -154,9 +132,31 @@ public class ClassificationXClassification
 		return getParentClassificationID();
 	}
 
+	public Classification getParentClassificationID()
+	{
+		return parentClassificationID;
+	}
+
+	public ClassificationXClassification setParentClassificationID(Classification parentClassificationID)
+	{
+		this.parentClassificationID = parentClassificationID;
+		return this;
+	}
+
 	@Override
 	public IClassification<?> getSecondary()
 	{
 		return getChildClassificationID();
+	}
+
+	public Classification getChildClassificationID()
+	{
+		return childClassificationID;
+	}
+
+	public ClassificationXClassification setChildClassificationID(Classification childClassificationID)
+	{
+		this.childClassificationID = childClassificationID;
+		return this;
 	}
 }
