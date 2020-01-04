@@ -192,5 +192,6 @@ module com.guicedee.activitymaster.core {
 	exports com.guicedee.activitymaster.core.db.entities.geography to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.core.implementations to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.core.db.entities.geography.builders to com.guicedee.activitymaster.geography;
+	exports com.guicedee.activitymaster.core.db;
 
 }

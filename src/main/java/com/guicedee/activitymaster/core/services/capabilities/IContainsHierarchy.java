@@ -68,7 +68,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable,
 		if (exists.isEmpty())
 		{
 			if (linkTable.builder()
-			             .findChildLink((J) child)
+			             .findChildLink((J) child, value)
 			             .inActiveRange(enterprise, identifyingToken)
 			             .inDateRange()
 			             .getCount() > 0
