@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
@@ -12,6 +13,7 @@ import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.IProgressable;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
+import com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
@@ -19,8 +21,6 @@ import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
 import com.guicedee.activitymaster.core.services.security.Passwords;
 import com.guicedee.activitymaster.core.services.system.IActivityMasterService;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
-import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications;
 import com.guicedee.activitymaster.core.services.types.IPTypes;
 import com.guicedee.activitymaster.core.services.types.IdentificationTypes;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
@@ -71,6 +71,40 @@ public class ActivityMasterService
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(true);
 		return enterprise;
+	}
+
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	public void runUpdatesOnEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
+	{
+		get(ActivityMasterConfiguration.class)
+				.setSecurityEnabled(false);
+
+		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
+		IEnterprise<?> enterprise = get(IEnterpriseService.class)
+				                            .getEnterprise(enterpriseName);
+		//Find all systems required for first time installation/updates
+		int total = allSystems.size();
+		int current = 0;
+		//progressMonitor.setCurrentTask(0);
+		//progressMonitor.setTotalTasks(total);
+		for (Iterator<IActivityMasterSystem> iterator = allSystems.iterator(); iterator.hasNext(); )
+		{
+			IActivityMasterSystem allSystem = iterator.next();
+			logProgress("Running System", allSystem.getClass()
+			                                       .getSimpleName(), progressMonitor);
+			String nameC = cleanName(allSystem.getClass()
+			                                  .getSimpleName());
+			allSystem.createDefaults(enterprise, progressMonitor);
+			logProgress("Completed with System", nameC, 1, progressMonitor);
+		}
+
+		logProgress("System Configuration", "Starting System Startups", 1, progressMonitor);
+		loadSystems(enterpriseName, progressMonitor);
+		logProgress("System Configuration", "Enterprise All Updates. Updating Systems", 1, progressMonitor);
+		loadUpdates(enterpriseName, progressMonitor);
+		logProgress("System Configuration", "Done", 1, progressMonitor);
+		get(ActivityMasterConfiguration.class)
+				.setSecurityEnabled(true);
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -131,55 +165,6 @@ public class ActivityMasterService
 		return administratorUser;
 	}
 
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public void runUpdatesOnEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
-	{
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(false);
-
-		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-		IEnterprise<?> enterprise = get(IEnterpriseService.class)
-				                            .getEnterprise(enterpriseName);
-		//Find all systems required for first time installation/updates
-		int total = allSystems.size();
-		int current = 0;
-		//progressMonitor.setCurrentTask(0);
-		//progressMonitor.setTotalTasks(total);
-		for (Iterator<IActivityMasterSystem> iterator = allSystems.iterator(); iterator.hasNext(); )
-		{
-			IActivityMasterSystem allSystem = iterator.next();
-			logProgress("Running System", allSystem.getClass()
-			                                       .getSimpleName(), progressMonitor);
-			String nameC = cleanName(allSystem.getClass()
-			                                  .getSimpleName());
-			allSystem.createDefaults(enterprise, progressMonitor);
-			logProgress("Completed with System", nameC, 1, progressMonitor);
-		}
-
-		logProgress("System Configuration", "Starting System Startups", 1, progressMonitor);
-		loadSystems(enterpriseName, progressMonitor);
-		logProgress("System Configuration", "Enterprise All Updates. Updating Systems", 1, progressMonitor);
-		loadUpdates(enterpriseName, progressMonitor);
-		logProgress("System Configuration", "Done", 1, progressMonitor);
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(true);
-	}
-
-	public void runScript(String script)
-	{
-		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
-		try (java.sql.Connection c = ds.getConnection();
-		     java.sql.Statement st = c.createStatement())
-		{
-			st.executeUpdate(script);
-		}
-		catch (java.sql.SQLException e)
-		{
-			LogFactory.getLog("ActivityMasterService")
-			          .log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
-		}
-	}
-
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
 			timeout = 5000)
@@ -187,16 +172,23 @@ public class ActivityMasterService
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
 
-		IEnterprise<?> enterprise = get(IEnterpriseService.class)
-				                            .getEnterprise(enterpriseName);
-		for (IActivityMasterSystem allSystem : allSystems)
+		try
 		{
-			logProgress("System Loading", "Starting up system " + allSystem.getClass()
-			                                                               .getName(), 1, progressMonitor);
-			allSystem.postStartup(enterprise, progressMonitor);
+			IEnterprise<?> enterprise = get(IEnterpriseService.class)
+					                            .getEnterprise(enterpriseName);
+			for (IActivityMasterSystem allSystem : allSystems)
+			{
+				logProgress("System Loading", "Starting up system " + allSystem.getClass()
+				                                                               .getName(), 1, progressMonitor);
+				allSystem.postStartup(enterprise, progressMonitor);
+			}
+			ActivityMasterConfiguration.get()
+			                           .setDoubleCheckDisabled(true);
 		}
-		ActivityMasterConfiguration.get()
-		                           .setDoubleCheckDisabled(true);
+		catch (NoSuchElementException e)
+		{
+
+		}
 	}
 
 	@Override
@@ -225,5 +217,20 @@ public class ActivityMasterService
 		}
 		ActivityMasterConfiguration.get()
 		                           .setDoubleCheckDisabled(true);
+	}
+
+	public void runScript(String script)
+	{
+		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
+		try (java.sql.Connection c = ds.getConnection();
+		     java.sql.Statement st = c.createStatement())
+		{
+			st.executeUpdate(script);
+		}
+		catch (java.sql.SQLException e)
+		{
+			LogFactory.getLog("ActivityMasterService")
+			          .log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
+		}
 	}
 }
