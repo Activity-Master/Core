@@ -26,12 +26,14 @@ import com.guicedee.logger.LogFactory;
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import javax.persistence.criteria.JoinType;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.OrderByType.*;
 import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.activitymaster.core.services.classifications.events.EventClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications.*;
@@ -216,7 +218,8 @@ public class InvolvedPartyService
 	}
 
 	@Override
-	public IInvolvedParty<?> findByIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey String value, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
+	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
+	public IInvolvedParty<?> findByIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey String value, ISystems<?> system, UUID... tokens)
 	{
 		IEnterprise<?> enterprise = system.getEnterpriseID();
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> builder = new InvolvedPartyXInvolvedPartyIdentificationType()
@@ -520,10 +523,16 @@ public class InvolvedPartyService
 	{
 		InvolvedPartyIdentificationTypeQueryBuilder builder = new InvolvedPartyIdentificationType().builder();
 		builder.inDateRange()
-		       .where(InvolvedPartyIdentificationType_.name, Equals, identificationType);
+		       .where(InvolvedPartyIdentificationType_.name, Equals, identificationType)
+		;
 
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder ipQb = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
+		if (value != null)
+		{
+			ipQb.withValue(value);
+		}
 		ipQb.inDateRange()
+		    .orderBy(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, DESC)
 		    .join(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, builder, JoinType.INNER);
 
 		try
@@ -531,6 +540,37 @@ public class InvolvedPartyService
 			Optional<InvolvedPartyXInvolvedPartyIdentificationType> opt = ipQb.get();
 			return opt.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
 			          .orElse(null);
+		}
+		catch (Throwable t)
+		{
+			log.log(Level.WARNING, "Unable to find involved party for session");
+			log.log(Level.FINE, "Unable to find involved party for session", t);
+			return null;
+		}
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public List<IRelationshipValue<IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>, ?>> findAllByIdentificationType(String identificationType, String value)
+	{
+		InvolvedPartyIdentificationTypeQueryBuilder builder = new InvolvedPartyIdentificationType().builder();
+		builder.inDateRange()
+		       .where(InvolvedPartyIdentificationType_.name, Equals, identificationType)
+		;
+
+		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder ipQb = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
+		if (value != null)
+		{
+			ipQb.withValue(value);
+		}
+
+		ipQb.inDateRange()
+		    .orderBy(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, DESC)
+		    .join(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, builder, JoinType.INNER);
+
+		try
+		{
+			return (List) ipQb.getAll();
 		}
 		catch (Throwable t)
 		{

@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
+import com.entityassist.querybuilder.builders.JoinExpression;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
@@ -19,7 +20,6 @@ import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.entityassist.querybuilder.builders.JoinExpression;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
@@ -42,6 +42,20 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                                         L, R,
 		                                         J extends IContainsClassifications<P, S, Q, T, L, R, J>>
 {
+	@SuppressWarnings("unchecked")
+	default Optional<IRelationshipValue<L, R, ?>> find(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		return (Optional<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
+		                                                                     .findLink((P) this, (S) classification, null)
+		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                     .inDateRange()
+		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                     .get();
+	}
+
 	@NotNull
 	@SuppressWarnings("unchecked")
 	default Class<Q> findClassificationQueryRelationshipTableType()
@@ -59,20 +73,16 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		return null;
 	}
 
-	void configureForClassification(Q classificationLink, IEnterprise<?> enterprise);
-
-	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> find(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default double sumAll(T value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
-		                                                                     .findLink((P) this, (S) classification, null)
-		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
-		                                                                     .inDateRange()
-		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                                                     .get();
+		List<Object[]> results = getValues(value, null, originatingSystem, identityToken);
+		double d = 0.0d;
+		for (Object[] result : results)
+		{
+			Double D = Double.parseDouble(result[0].toString());
+			d += D;
+		}
+		return d;
 	}
 
 	/**
@@ -91,7 +101,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	 *
 	 * @return The result of List&gt;String&lt; or List&gt;Object[]&lt;
 	 */
-	default List getValues(T value, String searchValue, ISystems<?> originatingSystem, UUID identityToken, T... values)
+	default List<Object[]> getValues(T value, String searchValue, ISystems<?> originatingSystem, UUID[] identityToken, T... values)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationService classificationService = get(IClassificationService.class);
@@ -143,18 +153,6 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 
 		List list = baseTableBuilder.getAll();
 		return list;
-	}
-
-	default double sumAll(T value, ISystems<?> originatingSystem, UUID identityToken)
-	{
-		List<String> results = getValues(value, null, originatingSystem, identityToken);
-		double d = 0.0d;
-		for (String result : results)
-		{
-			Double D = Double.parseDouble(result);
-			d += D;
-		}
-		return d;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -245,6 +243,8 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 
 		return tableForClassification;
 	}
+
+	void configureForClassification(Q classificationLink, IEnterprise<?> enterprise);
 
 	@SuppressWarnings("unchecked")
 	default IRelationshipValue<L, R, ?> addOrUpdate(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)

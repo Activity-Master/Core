@@ -578,14 +578,6 @@ public class ActiveFlag
 	}
 
 	@Override
-	public ActiveFlag remove()
-	{
-		setEffectiveToDate(LocalDateTime.now());
-		updateNow();
-		return this;
-	}
-
-	@Override
 	public ActiveFlag archive()
 	{
 		setEffectiveToDate(LocalDateTime.now());
@@ -594,9 +586,11 @@ public class ActiveFlag
 	}
 
 	@Override
-	public String toString()
+	public ActiveFlag remove()
 	{
-		return getName();
+		setEffectiveToDate(LocalDateTime.now());
+		updateNow();
+		return this;
 	}
 
 	@Override
@@ -625,6 +619,12 @@ public class ActiveFlag
 	}
 
 	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getName());
+	}
+
+	@Override
 	public boolean equals(Object o)
 	{
 		if (this == o)
@@ -636,14 +636,13 @@ public class ActiveFlag
 			return false;
 		}
 		ActiveFlag that = (ActiveFlag) o;
-		return getEnterpriseID().equals(that.getEnterpriseID()) &&
-		       getName().equals(that.getName());
+		return getName().equals(that.getName());
 	}
 
 	@Override
-	public int hashCode()
+	public String toString()
 	{
-		return Objects.hash(getEnterpriseID(), getName());
+		return getName();
 	}
 
 	@Override
@@ -653,18 +652,27 @@ public class ActiveFlag
 	}
 
 	@Override
-	public Enterprise getEnterpriseID()
+	public ActiveFlag setId(Long id)
 	{
-		return enterpriseID;
+		this.id = id;
+		return this;
 	}
 
 	@Override
+	public Enterprise getEnterpriseID()
+	{
+		return enterpriseID;
+	}	@Override
 	public String getName()
 	{
 		return name;
 	}
 
-	@Override
+	public ActiveFlag setEnterpriseID(Enterprise enterpriseID)
+	{
+		this.enterpriseID = enterpriseID;
+		return this;
+	}	@Override
 	public String getDescription()
 	{
 		return description;
@@ -675,18 +683,13 @@ public class ActiveFlag
 		return allowAccess;
 	}
 
-	@Override
-	public ActiveFlag setId(Long id)
+	public ActiveFlag setAllowAccess(boolean allowAccess)
 	{
-		this.id = id;
+		this.allowAccess = allowAccess;
 		return this;
 	}
 
-	public ActiveFlag setEnterpriseID(Enterprise enterpriseID)
-	{
-		this.enterpriseID = enterpriseID;
-		return this;
-	}
+
 
 	@Override
 	public ActiveFlag setName(String name)
@@ -702,9 +705,5 @@ public class ActiveFlag
 		return this;
 	}
 
-	public ActiveFlag setAllowAccess(boolean allowAccess)
-	{
-		this.allowAccess = allowAccess;
-		return this;
-	}
+
 }

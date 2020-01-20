@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.implementations;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
@@ -13,8 +14,6 @@ import com.guicedee.activitymaster.core.services.exceptions.AddressException;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IAddressService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.systems.AddressSystem;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -257,6 +256,7 @@ public class AddressService
 				webDetails = new Address();
 				webDetails.setValue(protocol);
 				webDetails.setClassification(webProtocolAddressClassification);
+				webDetails.setOriginalSourceSystemID((Systems) originatingSystem);
 				webDetails.setSystemID((Systems) originatingSystem);
 				webDetails.setEnterpriseID(((Systems) originatingSystem).getEnterpriseID());
 				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)

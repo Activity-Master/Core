@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXInvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.events.EventXInvolvedParty_;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.hierarchies.InvolvedPartyHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
 import com.guicedee.activitymaster.core.services.classifications.involvedparty.IInvolvedPartyClassification;
@@ -29,13 +30,11 @@ import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
+import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static javax.persistence.AccessType.*;
 
@@ -60,7 +59,8 @@ public class InvolvedParty
 				           IContainsAddresses<InvolvedParty, Address, InvolvedPartyXAddress, IAddressClassification<?>, IInvolvedParty<?>, IAddress<?>, InvolvedParty>,
 				           IActivityMasterEntity<InvolvedParty>,
 				           IContainsEnterprise<InvolvedParty>,
-				           IInvolvedParty<InvolvedParty>
+				           IInvolvedParty<InvolvedParty>,
+				           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView, IInvolvedParty<?>>
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
@@ -177,12 +177,12 @@ public class InvolvedParty
 				                                                     .inActiveRange(getEnterprise(), identityToken)
 				                                                     .where(InvolvedPartyXClassification_.involvedPartyID, Equals, this)
 				                                                     .getAll();
-		for (InvolvedPartyXClassification item : classifications)
+		for (InvolvedPartyXClassification item : new HashSet<>(classifications))
 		{
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 
 			InvolvedPartyXClassification newItem = new InvolvedPartyXClassification();
 			newItem.setValue(item.getValue());
@@ -214,7 +214,7 @@ public class InvolvedParty
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 
 			InvolvedPartyXResourceItem newItem = new InvolvedPartyXResourceItem();
 			newItem.setValue(item.getValue());
@@ -242,7 +242,7 @@ public class InvolvedParty
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 
 			ArrangementXInvolvedParty newItem = new ArrangementXInvolvedParty();
 			newItem.setValue(item.getValue());
@@ -269,7 +269,7 @@ public class InvolvedParty
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 
 			EventXInvolvedParty newItem = new EventXInvolvedParty();
 			newItem.setValue(item.getValue());
@@ -296,7 +296,7 @@ public class InvolvedParty
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 
 			InvolvedPartyXInvolvedPartyType newItem = new InvolvedPartyXInvolvedPartyType();
 			newItem.setValue(item.getValue());
@@ -323,7 +323,7 @@ public class InvolvedParty
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 
 			InvolvedPartyXAddress newItem = new InvolvedPartyXAddress();
 			newItem.setValue(item.getValue());
@@ -351,7 +351,7 @@ public class InvolvedParty
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 
 			InvolvedPartyXProduct newItem = new InvolvedPartyXProduct();
 			newItem.setValue(item.getValue());
@@ -379,7 +379,7 @@ public class InvolvedParty
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 
 			InvolvedPartyXInvolvedPartyIdentificationType newItem = new InvolvedPartyXInvolvedPartyIdentificationType();
 			newItem.setValue(item.getValue());
@@ -408,7 +408,7 @@ public class InvolvedParty
 			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 					                                  .getDeletedFlag(getEnterprise(), identityToken));
 			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
+			item.deleteId();
 		}
 		else
 		{
@@ -427,7 +427,7 @@ public class InvolvedParty
 		setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 				                             .getDeletedFlag(getEnterprise(), identityToken));
 		setEffectiveToDate(LocalDateTime.now());
-		update();
+		deleteId();
 		return dest;
 	}
 
@@ -528,4 +528,15 @@ public class InvolvedParty
 		return "InvolvedParty - " + getId();
 	}
 
+	@Override
+	public void configureNewHierarchyItem(InvolvedPartyXInvolvedParty newLink, IInvolvedParty<?> parent, IInvolvedParty<?> child, String value)
+	{
+		newLink.setParentInvolvedPartyID((InvolvedParty) parent);
+		newLink.setChildInvolvedPartyID((InvolvedParty) child);
+		if (value == null)
+		{
+			value = STRING_EMPTY;
+		}
+		newLink.setValue(value);
+	}
 }
