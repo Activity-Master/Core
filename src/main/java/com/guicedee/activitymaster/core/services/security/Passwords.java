@@ -18,7 +18,7 @@ public class Passwords
 
 	private static final Random RANDOM = new SecureRandom();
 	private static final int ITERATIONS = 10000;
-	private static final int KEY_LENGTH = 256;
+	private static final int KEY_LENGTH = 512;
 
 	private static final int ASCII_OFFSET = 21;
 

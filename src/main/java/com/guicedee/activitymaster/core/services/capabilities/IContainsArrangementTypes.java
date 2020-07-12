@@ -9,10 +9,8 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IArrangementsService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
@@ -27,17 +25,29 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.entityassist.SCDEntity.*;
-import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 @SuppressWarnings("Duplicates")
 public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
-		                                     S extends WarehouseCoreTable,
-		                                          Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>,
+		                                          S extends WarehouseCoreTable,
+		                                          Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>,
 		                                          T extends IArrangementTypes<?>,
 		                                          J extends IContainsArrangementTypes<P, S, Q, T, J>>
 {
-	void configureArrangementType(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
+	@SuppressWarnings("unchecked")
+	default Optional<IRelationshipValue<P, S, ?>> find(T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findArrangementPartyTypeQueryRelationshipTableType());
+		IArrangementsService arrangementTypeService = get(IArrangementsService.class);
+		IArrangementType classification = arrangementTypeService.find((IArrangementTypes<?>) arrangementType, originatingSystem.getEnterpriseID(), identityToken);
+		return (Optional<IRelationshipValue<P, S, ?>>) activityMasterIdentity.builder()
+		                                                                     .findLink((P) this, (S) classification, null)
+		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                     .inDateRange()
+		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                     .get();
+	}
 
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -54,20 +64,6 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			}
 		}
 		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<P,S,?>> find(T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		Q activityMasterIdentity = get(findArrangementPartyTypeQueryRelationshipTableType());
-		IArrangementsService arrangementTypeService = get(IArrangementsService.class);
-		IArrangementType classification = arrangementTypeService.find((IArrangementTypes<?>) arrangementType, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<P,S,?>>) activityMasterIdentity.builder()
-		                                                               .findLink((P) this, (S) classification, null)
-		                                                               .inActiveRange(originatingSystem.getEnterpriseID())
-		                                                               .inDateRange()
-		                                                               .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                                               .get();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -139,7 +135,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-		configureArrangementType(tableForClassification,(P)this,(S)iArrangementType, classification,value,originatingSystem.getEnterpriseID());
+		configureArrangementType(tableForClassification, (P) this, (S) iArrangementType, classification, value, originatingSystem.getEnterpriseID());
 
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
@@ -150,6 +146,8 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 
 		return tableForClassification;
 	}
+
+	void configureArrangementType(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
 
 	@SuppressWarnings("unchecked")
 	default Q addOrUpdate(IClassificationValue<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
@@ -179,7 +177,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -193,10 +191,10 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureArrangementType(newTableForClassification,(P)this,(S)iArrangementType, classification,value,originatingSystem.getEnterpriseID());
+			configureArrangementType(newTableForClassification, (P) this, (S) iArrangementType, classification, value, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
 
 			if (get(ActivityMasterConfiguration.class)
@@ -237,7 +235,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-			configureArrangementType(tableForClassification,(P)this,(S)iArrangementType, classification,value,originatingSystem.getEnterpriseID());
+			configureArrangementType(tableForClassification, (P) this, (S) iArrangementType, classification, value, originatingSystem.getEnterpriseID());
 
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -268,7 +266,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-		configureArrangementType(tableForClassification,(P)this,(S)iArrangementType, classificationValue,value,originatingSystem.getEnterpriseID());
+		configureArrangementType(tableForClassification, (P) this, (S) iArrangementType, classificationValue, value, originatingSystem.getEnterpriseID());
 
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
@@ -304,7 +302,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-			configureArrangementType(tableForClassification,(P)this,(S)iArrangementType, classification,value,originatingSystem.getEnterpriseID());
+			configureArrangementType(tableForClassification, (P) this, (S) iArrangementType, classification, value, originatingSystem.getEnterpriseID());
 
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -344,7 +342,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-			configureArrangementType(tableForClassification,(P)this,(S)iArrangementType, classification,value,originatingSystem.getEnterpriseID());
+			configureArrangementType(tableForClassification, (P) this, (S) iArrangementType, classification, value, originatingSystem.getEnterpriseID());
 
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -359,7 +357,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -373,10 +371,10 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureArrangementType(newTableForClassification,(P)this,(S)iArrangementType, classification,value,originatingSystem.getEnterpriseID());
+			configureArrangementType(newTableForClassification, (P) this, (S) iArrangementType, classification, value, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
 
 			if (get(ActivityMasterConfiguration.class)
@@ -413,7 +411,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -427,10 +425,10 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureArrangementType(newTableForClassification,(P)this,(S)iArrangementType, classification,value,originatingSystem.getEnterpriseID());
+			configureArrangementType(newTableForClassification, (P) this, (S) iArrangementType, classification, value, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
 
 			if (get(ActivityMasterConfiguration.class)
@@ -443,7 +441,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q expire(T arrangementType, Duration duration,ISystems<?> originatingSystem, UUID... identityToken)
+	default Q expire(T arrangementType, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementPartyTypeQueryRelationshipTableType());
 		IArrangementsService classificationDataConceptService = get(IArrangementsService.class);
@@ -495,14 +493,14 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.updateNow();
 		}
 		return tableForClassification;
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q remove(IClassification<?> classification, T arrangementType,  ISystems<?> originatingSystem, UUID... identityToken)
+	default Q remove(IClassification<?> classification, T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementPartyTypeQueryRelationshipTableType());
 
@@ -521,7 +519,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 		}

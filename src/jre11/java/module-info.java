@@ -17,7 +17,7 @@ module com.guicedee.activitymaster.core {
 	//exports com.guicedee.activitymaster.core.db.entities.activeflag ;
 	//exports com.guicedee.activitymaster.core.db.entities.activeflag.builders ;
 	//exports com.guicedee.activitymaster.core.db.entities.address ;
-	//exports com.guicedee.activitymaster.core.db.entities.address.builders ;
+	//exports com.guicedee.activitymaster.core.db.entities.address.bwooduilders ;
 	//exports com.guicedee.activitymaster.core.db.entities.arrangement ;
 	//exports com.guicedee.activitymaster.core.db.entities.arrangement.builders ;
 	//exports com.guicedee.activitymaster.core.db.entities.classifications ;
@@ -78,7 +78,7 @@ module com.guicedee.activitymaster.core {
 
 	requires com.guicedee.guicedinjection;
 	requires com.guicedee.guicedpersistence;
-	requires com.guicedee.guicedpersistence.btm;
+
 	requires com.entityassist;
 
 	requires com.google.common;
@@ -104,11 +104,14 @@ module com.guicedee.activitymaster.core {
 
 	requires org.hibernate.orm.core;
 	requires org.hibernate.validator;
-	requires javax.servlet.api;
+	requires java.servlet;
 
 	requires cache.api;
 
 	requires static lombok;
+	requires guiced.injection;
+	requires guiced.persistence;
+	requires entity.assist;
 
 	provides IGuiceModule with ActivityMasterDBModule;
 

@@ -10,10 +10,10 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.EventType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IEventTypeValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
@@ -28,16 +28,30 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.entityassist.SCDEntity.*;
-import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 @SuppressWarnings("Duplicates")
 public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		                                    S extends WarehouseCoreTable,
-		                                    Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>,
+		                                    Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>,
 		                                    T extends IEventTypeValue<?>,
 		                                    J extends IContainsEventTypes<P, S, Q, T, J>>
 {
+	@SuppressWarnings("unchecked")
+	default Optional<IRelationshipValue<P, S, ?>> find(T classificationDataConceptType, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findEventTypeQueryRelationshipTableType());
+		IEventService classificationService = get(IEventService.class);
+		EventType classification = (EventType) classificationService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		return (Optional<IRelationshipValue<P, S, ?>>) activityMasterIdentity.builder()
+		                                                                     .findLink((P) this, (S) classification, null)
+		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                     .inDateRange()
+		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                     .get();
+	}
+
 	@NotNull
 	@SuppressWarnings("unchecked")
 	default Class<Q> findEventTypeQueryRelationshipTableType()
@@ -53,22 +67,6 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			}
 		}
 		return null;
-	}
-
-	void configureEventTypeLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
-
-	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<P,S,?>> find(T classificationDataConceptType, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		Q activityMasterIdentity = get(findEventTypeQueryRelationshipTableType());
-		IEventService classificationService = get(IEventService.class);
-		EventType classification = (EventType) classificationService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<P,S,?>>) activityMasterIdentity.builder()
-		                                                               .findLink((P) this, (S) classification, null)
-		                                                               .inActiveRange(originatingSystem.getEnterpriseID())
-		                                                               .inDateRange()
-		                                                               .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                                               .get();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,7 +125,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 
 		IEventService classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		                                                                                                 identityToken);
 
 		IClassificationService classificationService = get(IClassificationService.class);
 		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
@@ -139,7 +138,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-		configureEventTypeLinkValue(tableForClassification,(P)this,(S)classificationDataConcept, classification,value,originatingSystem.getEnterpriseID());
+		configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
 
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
@@ -151,12 +150,15 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 
+	void configureEventTypeLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
+
 	@SuppressWarnings("unchecked")
 	default Q addOrUpdate(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		                                                                                                 identityToken);
 
 		IClassificationService classificationService = get(IClassificationService.class);
 		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
@@ -178,7 +180,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -192,10 +194,10 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureEventTypeLinkValue(newTableForClassification,(P)this,(S)classificationDataConcept, classification,value,originatingSystem.getEnterpriseID());
+			configureEventTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
 
 			if (get(ActivityMasterConfiguration.class)
@@ -212,7 +214,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		                                                                                                 identityToken);
 
 		IClassificationService classificationService = get(IClassificationService.class);
 		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
@@ -236,7 +239,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 			//			configureInvolvedPartyIdentificationType(tableForClassification, classification, (Q) classificationDataConcept, originatingSystem.getEnterpriseID());
-			configureEventTypeLinkValue(tableForClassification,(P)this,(S)classificationDataConcept, classification,value,originatingSystem.getEnterpriseID());
+			configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
 
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -257,7 +260,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept =(EventType)  classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		                                                                                                 identityToken);
 
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		tableForClassification.setClassificationID((Classification) classificationValue);
@@ -266,7 +270,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-		configureEventTypeLinkValue(tableForClassification,(P)this,(S)classificationDataConcept, classificationValue,value,originatingSystem.getEnterpriseID());
+		configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classificationValue, value, originatingSystem.getEnterpriseID());
 
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
@@ -283,7 +287,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		                                                                                                 identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -301,7 +306,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-			configureEventTypeLinkValue(tableForClassification,(P)this,(S)classificationDataConcept, classification,value,originatingSystem.getEnterpriseID());
+			configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
 
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -322,7 +327,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		                                                                                                 identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -340,7 +346,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-			configureEventTypeLinkValue(tableForClassification,(P)this,(S)classificationDataConcept, classification,value,originatingSystem.getEnterpriseID());
+			configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
 
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -355,7 +361,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -369,10 +375,10 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureEventTypeLinkValue(newTableForClassification,(P)this,(S)classificationDataConcept, classification,value,originatingSystem.getEnterpriseID());
+			configureEventTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
 
 			if (get(ActivityMasterConfiguration.class)
@@ -389,7 +395,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept =(EventType)  classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		                                                                                                 identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -408,7 +415,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 
@@ -422,10 +429,10 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag)flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureEventTypeLinkValue(newTableForClassification,(P)this,(S)classificationDataConcept, classification,value,originatingSystem.getEnterpriseID());
+			configureEventTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
 
 			if (get(ActivityMasterConfiguration.class)
@@ -443,7 +450,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(), identityToken);
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		                                                                                                 identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -462,14 +470,14 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.updateNow();
 		}
 		return tableForClassification;
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q remove(IClassification<?> classification,T identificationType,ISystems<?> originatingSystem, UUID... identityToken)
+	default Q remove(IClassification<?> classification, T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 
@@ -487,7 +495,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag)flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 		}

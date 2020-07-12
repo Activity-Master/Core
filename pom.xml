@@ -34,23 +34,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-guice</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.persistence</groupId>
-            <artifactId>guiced-persistence-btm</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.guicedee.persistence</groupId>
             <artifactId>guiced-persistence</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.persistence</groupId>
-            <artifactId>guiced-hazelcast</artifactId>
         </dependency>
 
         <dependency>
@@ -69,8 +54,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>com.guicedee.servlets</groupId>
+            <artifactId>guiced-servlets</artifactId>
         </dependency>
 
         <dependency>
@@ -219,7 +204,7 @@
             <plugin>
                 <groupId>org.hibernate.orm.tooling</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>5.4.10.Final</version>
+                <version>5.4.18.Final</version>
                 <executions>
                     <execution>
                         <configuration>
@@ -249,7 +234,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>13</release>
+                    <release>14</release>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
                             <groupId>com.guicedee.services</groupId>
@@ -264,7 +249,7 @@
                         <annotationProcessorPath>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.10</version>
+                            <version>1.18.12</version>
                         </annotationProcessorPath>
                         <path>
                             <groupId>org.mapstruct</groupId>

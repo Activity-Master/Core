@@ -29,8 +29,8 @@ import java.util.*;
 
 import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
-import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 import static javax.persistence.criteria.JoinType.*;
 
 public interface IContainsAddresses<P extends WarehouseCoreTable,
@@ -40,23 +40,16 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		                                   L, R,
 		                                   J extends IContainsAddresses<P, S, Q, T, L, R, J>>
 {
-	void configureAddressLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
-
-	@NotNull
-	@SuppressWarnings("unchecked")
-	default Class<Q> findAddressQueryRelationshipTableType()
+	default double sumAll(T reesourceItemType, ISystems<?> originatingSystem, UUID identityToken)
 	{
-		Type[] genericInterfaces = getClass().getGenericInterfaces();
-		for (Type genericInterface : genericInterfaces)
+		List<String> results = getValues(reesourceItemType, null, originatingSystem, identityToken);
+		double d = 0.0d;
+		for (String result : results)
 		{
-			String clazz = genericInterface.getTypeName();
-			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsAddresses.class.getCanonicalName()))
-			{
-				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
-				return (Class<Q>) genericTypes[2];
-			}
+			Double D = Double.parseDouble(result);
+			d += D;
 		}
-		return null;
+		return d;
 	}
 
 	/**
@@ -125,16 +118,21 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		return list;
 	}
 
-	default double sumAll(T reesourceItemType, ISystems<?> originatingSystem, UUID identityToken)
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<Q> findAddressQueryRelationshipTableType()
 	{
-		List<String> results = getValues(reesourceItemType, null, originatingSystem, identityToken);
-		double d = 0.0d;
-		for (String result : results)
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
 		{
-			Double D = Double.parseDouble(result);
-			d += D;
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsAddresses.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<Q>) genericTypes[2];
+			}
 		}
-		return d;
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -224,11 +222,6 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		return numberOf(classificationValue, originatingSystem, identityToken) > 0;
 	}
 
-	default boolean has(T classificationValue, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		return numberOf(classificationValue, searchValue, originatingSystem, identityToken) > 0;
-	}
-
 	@SuppressWarnings("unchecked")
 	default long numberOf(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
@@ -250,6 +243,11 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		                             .inDateRange()
 		                             .canRead(originatingSystem.getEnterpriseID(), identityToken)
 		                             .getCount();
+	}
+
+	default boolean has(T classificationValue, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return numberOf(classificationValue, searchValue, originatingSystem, identityToken) > 0;
 	}
 
 	default IRelationshipValue<L, R, ?> add(R secondary, T addressClassification, ISystems<?> originatingSystem, UUID... identityToken)
@@ -280,39 +278,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 
-	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> add(T addressClassification,
-	                                        String storeValue,
-	                                        ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		Q tableForClassification = GuiceContext.get(findAddressQueryRelationshipTableType());
-
-		IAddressService<?> service = GuiceContext.get(IAddressService.class);
-		Address item = (Address) service.create(addressClassification, originatingSystem, storeValue, identityToken);
-
-		IClassificationService<?> addressService = get(IClassificationService.class);
-		Classification classification = (Classification) addressService.find(addressClassification, originatingSystem.getEnterpriseID(), identityToken);
-
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-		tableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
-		tableForClassification.setClassificationID(classification);
-		tableForClassification.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                                                .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
-
-		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), originatingSystem.getEnterpriseID());
-
-		tableForClassification.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-		}
-
-		return tableForClassification;
-	}
+	void configureAddressLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
 
 	@SuppressWarnings("unchecked")
 	default IRelationshipValue<L, R, ?> addOrUpdate(T classificationValue,
@@ -371,6 +337,40 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 				newTableForClassification.createDefaultSecurity(originatingSystem, identityToken);
 			}
 		}
+		return tableForClassification;
+	}
+
+	@SuppressWarnings("unchecked")
+	default IRelationshipValue<L, R, ?> add(T addressClassification,
+	                                        String storeValue,
+	                                        ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		Q tableForClassification = GuiceContext.get(findAddressQueryRelationshipTableType());
+
+		IAddressService<?> service = GuiceContext.get(IAddressService.class);
+		Address item = (Address) service.create(addressClassification, originatingSystem, storeValue, identityToken);
+
+		IClassificationService<?> addressService = get(IClassificationService.class);
+		Classification classification = (Classification) addressService.find(addressClassification, originatingSystem.getEnterpriseID(), identityToken);
+
+		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		tableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
+		tableForClassification.setSystemID((Systems) originatingSystem);
+		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
+		tableForClassification.setClassificationID(classification);
+		tableForClassification.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		                                                                .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+
+		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), originatingSystem.getEnterpriseID());
+
+		tableForClassification.persist();
+		if (GuiceContext.get(ActivityMasterConfiguration.class)
+		                .isSecurityEnabled())
+		{
+			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+		}
+
 		return tableForClassification;
 	}
 

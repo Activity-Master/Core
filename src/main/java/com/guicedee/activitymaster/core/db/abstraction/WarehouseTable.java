@@ -8,14 +8,13 @@ import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 /**
  * @param <S>
@@ -33,7 +32,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		                                    I extends Serializable,
 		                                    S extends WarehouseSecurityTable>
 		extends WarehouseSCDTable<J, Q, I, S>
-	implements IContainsActiveFlags<J>
+		implements IContainsActiveFlags<J>
 {
 	private static final long serialVersionUID = 1L;
 
@@ -69,23 +68,23 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	@SuppressWarnings("unchecked")
 	public J remove()
 	{
-		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
-		                                        .getDeletedFlag(getEnterpriseID(),  get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
+		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
-		return (J)this;
+		return (J) this;
 	}
 
 
 	@SuppressWarnings("unchecked")
 	public J archive()
 	{
-		setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
-		                            .getArchivedFlag(getEnterpriseID(),  get(ActiveFlagSystem.class)
-		                                                                               .getSystemToken(getEnterpriseID())));
+		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
+				                                                                             .getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
-		return (J)this;
+		return (J) this;
 	}
 
 	public @NotNull String getOriginalSourceSystemUniqueID()
@@ -93,15 +92,15 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		return this.originalSourceSystemUniqueID;
 	}
 
-	public Systems getOriginalSourceSystemID()
-	{
-		return this.originalSourceSystemID;
-	}
-
 	public WarehouseTable<J, Q, I, S> setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
 	{
 		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
 		return this;
+	}
+
+	public Systems getOriginalSourceSystemID()
+	{
+		return this.originalSourceSystemID;
 	}
 
 	public WarehouseTable<J, Q, I, S> setOriginalSourceSystemID(Systems originalSourceSystemID)

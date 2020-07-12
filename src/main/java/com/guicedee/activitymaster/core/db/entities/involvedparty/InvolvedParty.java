@@ -34,8 +34,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
-import static com.entityassist.querybuilder.EntityAssistStrings.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 import static javax.persistence.AccessType.*;
 
 /**
