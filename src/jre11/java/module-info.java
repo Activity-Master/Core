@@ -109,9 +109,6 @@ module com.guicedee.activitymaster.core {
 	requires cache.api;
 
 	requires static lombok;
-	requires guiced.injection;
-	requires guiced.persistence;
-	requires entity.assist;
 
 	provides IGuiceModule with ActivityMasterDBModule;
 
