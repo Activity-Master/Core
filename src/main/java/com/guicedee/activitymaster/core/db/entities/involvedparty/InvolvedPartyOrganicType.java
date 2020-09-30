@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyOrganicTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
+import com.guicedee.activitymaster.core.services.capabilities.IHasActiveFlags;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
 import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
@@ -42,7 +42,7 @@ public class InvolvedPartyOrganicType
 				           INameAndDescription<InvolvedPartyOrganicType>,
 				           IContainsEnterprise<InvolvedPartyOrganicType>,
 				           IActivityMasterEntity<InvolvedPartyOrganicType>,
-				           IContainsActiveFlags<InvolvedPartyOrganicType>
+				   IHasActiveFlags<InvolvedPartyOrganicType>
 {
 
 	private static final long serialVersionUID = 1L;

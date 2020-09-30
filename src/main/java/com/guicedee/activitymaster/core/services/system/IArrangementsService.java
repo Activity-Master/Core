@@ -1,31 +1,48 @@
 package com.guicedee.activitymaster.core.services.system;
 
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 public interface IArrangementsService<J extends IArrangementsService<J>>
 {
-	IArrangement<?> create(IArrangementTypes<?> type, String arrangementTypeValue,
-	                       ISystems system,
+	IArrangement<?> create(IArrangementTypes<?> type, IClassificationValue<?> arrangementTypeClassification,
+	                       String arrangementTypeValue,
+	                       ISystems<?> system,
+	                       LocalDateTime createdDate,
 	                       UUID... identityToken);
-
+	
+	IArrangement<?> create(IArrangementTypes<?> type,
+	                       IClassificationValue<?> arrangementTypeClassification,
+	                       String arrangementTypeValue,
+	                       ISystems<?> system,
+	                       LocalDateTime createdDate,
+	                       LocalDateTime endCompletionDate,
+	                       UUID... identityToken);
+	
 	IArrangementType<?> createArrangementType(IArrangementTypes<?> type, ISystems<?> system, UUID... identityToken);
-
+	
 	List<IArrangement<?>> findInvolvedPartyArrangements(IInvolvedParty<?> ip, IArrangementTypes<?> arrType, ISystems<?> systems, UUID... identityToken);
-
+	
 	List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, String value, ISystems<?> systems, UUID... identityToken);
-
+	
+	List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken);
+	
 	IArrangementType<?> find(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... tokens);
-
+	
+	@CacheResult(cacheName = "ArrangementArrangementTypeString")
+	IArrangementType<?> find(@CacheKey String idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens);
+	
 	IArrangement<?> find(long id, IEnterprise<?> enterprise, UUID... tokens);
-
+	
+	IArrangement<?> find(long id);
+	
 	List<IArrangement<?>> findAll(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... tokens);
-
-	Double sumAll(IArrangementTypes<?> idType, IArrangementClassification<?> classificationValue,
-	              IEnterpriseName<?> enterpriseName, UUID... identityToken);
 }

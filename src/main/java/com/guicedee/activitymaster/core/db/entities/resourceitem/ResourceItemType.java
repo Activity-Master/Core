@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
+import com.guicedee.activitymaster.core.services.capabilities.IHasActiveFlags;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
 import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceItemType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -38,7 +39,8 @@ public class ResourceItemType
 				           INameAndDescription<ResourceItemType>,
 				           IContainsEnterprise<ResourceItemType>,
 				           IActivityMasterEntity<ResourceItemType>,
-				           IContainsActiveFlags<ResourceItemType>
+				   IHasActiveFlags<ResourceItemType>,
+				   IResourceType
 {
 
 	private static final long serialVersionUID = 1L;
@@ -61,7 +63,6 @@ public class ResourceItemType
 	@Basic(optional = false,
 			fetch = EAGER)
 	@NotNull
-	@Lob
 	@Column(nullable = false,
 			name = "ResourceItemTypeDesc")
 	@JsonIgnore
@@ -189,5 +190,29 @@ public class ResourceItemType
 	{
 		this.description = description;
 		return this;
+	}
+	
+	@Override
+	public String name()
+	{
+		return getName();
+	}
+	
+	@Override
+	public String classificationName()
+	{
+		return getName();
+	}
+	
+	@Override
+	public String classificationValue()
+	{
+		return getName();
+	}
+	
+	@Override
+	public String classificationDescription()
+	{
+		return getDescription();
 	}
 }

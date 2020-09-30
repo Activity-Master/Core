@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.activitymaster.core.systems.TimeSystem;
 import com.guicedee.guicedinjection.abstractions.GuiceInjectorModule;
 import com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder;
+import com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateEntityManagerProperties;
 
 public class ActivityMasterBinder
 		implements IGuiceDefaultBinder<ActivityMasterBinder, GuiceInjectorModule>
@@ -48,7 +49,13 @@ public class ActivityMasterBinder
 
 		module.bind(ITimeSystem.class)
 		      .to(TimeSystem.class);
-
+		
+		module.bind(IProductService.class)
+		      .to(ProductService.class);
+		
+		module.bind(IRulesService.class)
+		      .to(RulesService.class);
+		
 		module.bind(IActivityMasterService.class)
 		      .to(ActivityMasterService.class);
 

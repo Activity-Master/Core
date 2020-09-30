@@ -13,6 +13,9 @@ import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSys
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
+import static com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts.*;
+import static com.guicedee.activitymaster.core.services.system.IActivityMasterService.*;
+
 @Singleton
 public class ClassificationsDataConceptSystem
 		extends ActivityMasterDefaultSystem<ClassificationsDataConceptSystem>
@@ -23,20 +26,21 @@ public class ClassificationsDataConceptSystem
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
+		wipeCaches();
 		ISystems<?> activityMaster = GuiceContext.get(SystemsService.class)
 		                                         .getActivityMaster(enterprise);
-
+		
 		logProgress("Classification Data Concept System", "Checking/Creating Base Concepts", progressMonitor);
-
+		
 		ClassificationsDataConceptService service = GuiceContext.get(ClassificationsDataConceptService.class);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GlobalClassificationsDataConceptName, "Any general classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, "No classification is applicable", activityMaster);
-
+		
 		service.createDataConcept(EnterpriseClassificationDataConcepts.SecurityTokenXClassification, "Security Token Classifications", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken, "Security Token Hierarchy", activityMaster);
-
+		
 		logProgress("Classification Data Concept System", "Loading base concepts", 4, progressMonitor);
-
+		
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ActiveFlagXClassification, "Any active flag classifications", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Address, "Addresses are a physical location in a certain geography", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.AddressXGeography, "Any classifications for Address Geography groupings", activityMaster);
@@ -63,9 +67,9 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GeographyXGeography, "All Geography Relationships", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GeographyXResourceItem, "All geography resource items", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Geography, "Specific to a geography item", activityMaster);
-
+		
 		logProgress("Classification Data Concept System", "Still loading base concepts..", 20, progressMonitor);
-
+		
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyIdentificationType,
 		                          "All classifications for identification type and involved party relationships", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXProduct, "All classifications for involved party and product relationships", activityMaster);
@@ -79,19 +83,19 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationDataConceptXResourceItem, "Resource Items for data concepts", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationXClassification, "The Classification Hierarchy", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.EnterpriseXClassification, "Classifications for an enterprise", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.EventXEventType, "Classifications for events", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXAddress, "All involved party identification types", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXClassification, "All involved party custom classifications", activityMaster);
-		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedParty, "Involved Party Hierarchy", activityMaster);
+		service.createDataConcept(EventXEventType, "Classifications for events", activityMaster);
+		service.createDataConcept(InvolvedPartyXAddress, "All involved party identification types", activityMaster);
+		service.createDataConcept(InvolvedPartyXClassification, "All involved party custom classifications", activityMaster);
+		service.createDataConcept(InvolvedPartyXInvolvedParty, "Involved Party Hierarchy", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyNameType, "Involved Party Name Types", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyType, "Involved Party Types", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ProductXClassification, "All product classifications", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ProductXProductType, "Product Types", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemDataXClassification, "Resource Item Data Classifications", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.YesNoXClassification, "Yes No Classifications", activityMaster);
-
+		
 		logProgress("Classification Data Concept System", "Loaded all Base Concepts", 21, progressMonitor);
-
+		
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ActiveFlag, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.AddressXClassification, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Arrangement, "Standard Table Based Classification", activityMaster);
@@ -118,34 +122,34 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Systems, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.SystemXClassification, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.YesNo, "Standard Table Based Classification", activityMaster);
-
+		
 		service.createDataConcept(EnterpriseClassificationDataConcepts.SecurityToken, "Standard Table Based Classification", activityMaster);
-
+		
 		logProgress("Classification Data Concept System", "Loaded all Table Base Concepts", 4, progressMonitor);
 	}
-
+	
 	@Override
 	public int totalTasks()
 	{
 		return 45;
 	}
-
+	
 	@Override
 	public Integer sortOrder()
 	{
 		return Integer.MIN_VALUE + 3;
 	}
-
+	
 	@Override
 	public String getSystemName()
 	{
 		return "Classification Data Concept System";
 	}
-
+	
 	@Override
 	public String getSystemDescription()
 	{
 		return "The system for handling classification data concepts";
 	}
-
+	
 }

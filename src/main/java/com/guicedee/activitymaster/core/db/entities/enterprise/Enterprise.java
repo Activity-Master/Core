@@ -57,7 +57,6 @@ public class Enterprise
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
 	@NotNull
-	@Lob
 	@Column(nullable = false,
 			name = "EnterpriseName")
 	@JsonIgnore
@@ -65,7 +64,6 @@ public class Enterprise
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
 	@NotNull
-	@Lob
 	@Column(nullable = false,
 			name = "EnterpriseDesc")
 	@JsonIgnore

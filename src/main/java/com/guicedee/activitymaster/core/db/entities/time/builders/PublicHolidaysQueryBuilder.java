@@ -6,7 +6,7 @@ public class PublicHolidaysQueryBuilder
 		extends DefaultTimeQueryBuilder<PublicHolidaysQueryBuilder, PublicHolidays, Integer>
 {
 	@Override
-	protected boolean isIdGenerated()
+	public boolean isIdGenerated()
 	{
 		return true;
 	}

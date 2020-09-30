@@ -22,21 +22,21 @@ public class EnterpriseSystem
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-
+	
 	}
-
+	
 	@Override
 	public int totalTasks()
 	{
 		return 0;
 	}
-
+	
 	@Override
 	public Integer sortOrder()
 	{
 		return Integer.MIN_VALUE;
 	}
-
+	
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
@@ -47,32 +47,32 @@ public class EnterpriseSystem
 		          .destroy();
 		super.postStartup(enterprise, progressMonitor);
 	}
-
+	
 	@Override
 	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Systems newSystem = (Systems) getSystem(enterprise);
 		UUID securityToken = getSystemToken(enterprise);
-		if (!enterprise.has(EnterpriseClassifications.Version, newSystem, securityToken))
+		if (!enterprise.hasClassifications(EnterpriseClassifications.Version, newSystem, securityToken))
 		{
 			enterprise.addOrUpdate(EnterpriseClassifications.Version, ActivityMasterConfiguration.version.toString(), newSystem, securityToken);
 			enterprise.addOrUpdate(EnterpriseClassifications.RequiresUpdate, Boolean.FALSE.toString(), newSystem, securityToken);
-			ActivityMasterConfiguration.requiresUpdate = enterprise.find(EnterpriseClassifications.RequiresUpdate, newSystem, securityToken)
+			ActivityMasterConfiguration.requiresUpdate = enterprise.findClassifications(EnterpriseClassifications.RequiresUpdate, enterprise, securityToken)
 			                                                       .orElseThrow()
 			                                                       .getValueAsBoolean();
 		}
 	}
-
+	
 	@Override
 	public String getSystemName()
 	{
 		return "Enterprise System";
 	}
-
+	
 	@Override
 	public String getSystemDescription()
 	{
 		return "The system for handling enterprises";
 	}
-
+	
 }

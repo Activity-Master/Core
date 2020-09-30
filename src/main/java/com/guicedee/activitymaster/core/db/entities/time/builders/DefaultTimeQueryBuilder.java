@@ -25,7 +25,7 @@ public abstract class DefaultTimeQueryBuilder<J extends DefaultTimeQueryBuilder<
 	}
 
 	@Override
-	protected boolean isIdGenerated()
+	public boolean isIdGenerated()
 	{
 		return false;
 	}

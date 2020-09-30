@@ -32,19 +32,21 @@ import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.logging.Level;
 
+import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 import static com.guicedee.activitymaster.core.services.types.NameTypes.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @Singleton
 public class ActivityMasterService
-		implements IProgressable, IActivityMasterService
+		implements IProgressable,
+		           IActivityMasterService
 {
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-			timeout = 6000)
+	               timeout = 6000)
 	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
-
+		
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		get(ActivityMasterConfiguration.class)
@@ -52,36 +54,36 @@ public class ActivityMasterService
 		get(ActivityMasterConfiguration.class)
 				.setEnterpriseName(enterpriseName);
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-
+		
 		int totalTasks = allSystems.stream()
 		                           .mapToInt(IActivityMasterSystem::totalTasks)
 		                           .sum() + 1;
-
+		
 		logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks, progressMonitor);
 		Enterprise enterprise = get(EnterpriseService.class).create(enterpriseName.classificationName(), enterpriseName.classificationDescription(), progressMonitor);
 		get(ActivityMasterConfiguration.class)
 				.getEnterpriseName()
 				.setEnterprise(enterprise);
-
+		
 		runUpdatesOnEnterprise(enterpriseName, progressMonitor);
-
+		
 		//Create Involved Party for Enterprise
 		createAdminAndCreatorUserForEnterprise(enterpriseName, adminUserName, adminPassword, progressMonitor);
-
+		
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(true);
 		return enterprise;
 	}
-
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void runUpdatesOnEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
-
+		
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
 		IEnterprise<?> enterprise = get(IEnterpriseService.class)
-				                            .getEnterprise(enterpriseName);
+				.getEnterprise(enterpriseName);
 		//Find all systems required for first time installation/updates
 		int total = allSystems.size();
 		int current = 0;
@@ -97,7 +99,7 @@ public class ActivityMasterService
 			allSystem.createDefaults(enterprise, progressMonitor);
 			logProgress("Completed with System", nameC, 1, progressMonitor);
 		}
-
+		
 		logProgress("System Configuration", "Starting System Startups", 1, progressMonitor);
 		loadSystems(enterpriseName, progressMonitor);
 		logProgress("System Configuration", "Enterprise All Updates. Updating Systems", 1, progressMonitor);
@@ -106,7 +108,7 @@ public class ActivityMasterService
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(true);
 	}
-
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	protected IInvolvedParty<?> createAdminAndCreatorUserForEnterprise(IEnterpriseName<?> enterpriseName, String adminUserName,
 	                                                                   @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
@@ -114,16 +116,16 @@ public class ActivityMasterService
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		IEnterprise<?> enterprise = get(IEnterpriseService.class)
-				                            .getEnterprise(enterpriseName);
-
+				.getEnterprise(enterpriseName);
+		
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1, progressMonitor);
-
+		
 		ISystems<?> activityMasterSystem = get(SystemsService.class).getActivityMaster(enterprise);
 		UUID token = get(SystemsService.class).getSecurityIdentityToken(activityMasterSystem);
 		SecurityToken administratorsGroup = (SecurityToken) get(SecurityTokenService.class).getAdministratorsFolder(enterprise);
-
+		
 		InvolvedPartyService service = get(InvolvedPartyService.class);
-
+		
 		Pair<IIdentificationType<?>, String> pair = new Pair<>(
 				IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
 				new Passwords().integerEncrypt(adminUserName.getBytes()));
@@ -132,26 +134,28 @@ public class ActivityMasterService
 		                                                                              IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
 		                                                                              new Passwords().integerEncrypt(adminUserName.getBytes()))
 		                                                    .get();
-
+		
 		IInvolvedParty<?> administratorUser;
 		if (exists.isEmpty())
 		{
 			IInvolvedParty<?> adminUser = service.create(activityMasterSystem, pair, true);
-
-			adminUser.addOrReuse(IdentificationTypes.IdentificationTypeUserName, new Passwords().integerEncrypt(adminUserName.getBytes()), activityMasterSystem, token);
-
-			adminUser.addOrReuse(IPTypes.TypeIndividual, "Creator Individual", activityMasterSystem, token);
-			adminUser.addOrReuse(PreferredNameType, "Enterprise Creator", activityMasterSystem, token);
-			adminUser.addOrReuse(FirstNameType, "Administrator", activityMasterSystem, token);
-
+			
+			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUserName, NoClassification.classificationName(),new Passwords().integerEncrypt(adminUserName.getBytes()), enterprise, token);
+			
+			adminUser.addOrReuseType(IPTypes.TypeIndividual, NoClassification.classificationName(),"Creator Individual", enterprise, token);
+			adminUser.addOrReuseNameType(PreferredNameType, NoClassification.name(),"Enterprise Creator", enterprise, token);
+			adminUser.addOrReuseNameType(CommonNameType, NoClassification.name(),"Enterprise Creator", enterprise, token);
+			adminUser.addOrReuseNameType(FullNameType, NoClassification.name(),"Enterprise Creator", enterprise, token);
+			adminUser.addOrReuseNameType(FirstNameType,NoClassification.name(), "Administrator", enterprise, token);
+			
 			SecurityToken myToken = (SecurityToken) get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity,
 			                                                                               adminUserName,
 			                                                                               "The creator of the enterprise", activityMasterSystem, administratorsGroup, token);
-
-			adminUser.addOrReuse(IdentificationTypes.IdentificationTypeEnterpriseCreatorRole, new Passwords().integerEncrypt(adminUserName.getBytes()), activityMasterSystem,
+			
+			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,NoClassification.classificationName(), new Passwords().integerEncrypt(adminUserName.getBytes()), enterprise,
 			                     token);
-			adminUser.addOrReuse(IdentificationTypes.IdentificationTypeUUID, myToken.getSecurityToken(), activityMasterSystem, token);
-
+			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUUID, NoClassification.classificationName(),myToken.getSecurityToken(), enterprise, token);
+			
 			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, activityMasterSystem, token);
 			adminUser.createDefaultSecurity(activityMasterSystem, token);
 			administratorUser = adminUser;
@@ -164,19 +168,19 @@ public class ActivityMasterService
 				.setSecurityEnabled(true);
 		return administratorUser;
 	}
-
+	
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-			timeout = 5000)
+	               timeout = 5000)
 	public void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-
+		
 		try
 		{
 			IEnterprise<?> enterprise = get(IEnterpriseService.class)
-					                            .getEnterprise(enterpriseName);
-			for (IActivityMasterSystem allSystem : allSystems)
+					.getEnterprise(enterpriseName);
+			for (IActivityMasterSystem<?> allSystem : allSystems)
 			{
 				logProgress("System Loading", "Starting up system " + allSystem.getClass()
 				                                                               .getName(), 1, progressMonitor);
@@ -187,23 +191,23 @@ public class ActivityMasterService
 		}
 		catch (NoSuchElementException e)
 		{
-
+		
 		}
 	}
-
+	
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-			timeout = 5000)
+	               timeout = 5000)
 	public void loadUpdates(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
 		IEnterprise<?> enterprise = get(IEnterpriseService.class)
-				                            .getEnterprise(enterpriseName);
+				.getEnterprise(enterpriseName);
 		if (progressMonitor != null)
 		{
 			progressMonitor.setTotalTasks(allSystems.size() * 3);
 		}
-
+		
 		for (IActivityMasterSystem<?> allSystem : allSystems)
 		{
 			logProgress("System Updating", "Updating system " + allSystem.getClass()
@@ -218,7 +222,8 @@ public class ActivityMasterService
 		ActivityMasterConfiguration.get()
 		                           .setDoubleCheckDisabled(true);
 	}
-
+	
+	@Override
 	public void runScript(String script)
 	{
 		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
@@ -233,4 +238,67 @@ public class ActivityMasterService
 			          .log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}
 	}
+	
+	@Override
+	public void updatePartitionBases()
+	{
+		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
+		
+		try (java.sql.Connection c = ds.getConnection();
+		     java.sql.CallableStatement st = c.prepareCall("{call CreateResourceDataPartitions (?)}");
+		     java.sql.CallableStatement stPar = c.prepareCall("{call CreateEventDataPartitions (?)}");
+		
+		     java.sql.CallableStatement stPar1 = c.prepareCall("{call CreateAddressDataPartitions (?)}");
+		     java.sql.CallableStatement stPar2 = c.prepareCall("{call CreateAddressXClassificationDataPartitions (?)}");
+		     java.sql.CallableStatement stPar3 = c.prepareCall("{call CreateAddressXGeographyDataPartitions (?)}");
+		     java.sql.CallableStatement stPar4 = c.prepareCall("{call CreateAddressXResourceItemDataPartitions (?)}");
+		     java.sql.CallableStatement stPar5 = c.prepareCall("{call CreateArrangementXClassificationPartitions (?)}");
+		     java.sql.CallableStatement stPar6 = c.prepareCall("{call CreateArrangementXProductPartitions (?)}");
+		     java.sql.CallableStatement stPar7 = c.prepareCall("{call CreateArrangementXResourceItemPartitions (?)}");
+		     java.sql.CallableStatement stPar8 = c.prepareCall("{call CreateEventXAddressPartitions (?)}");
+		     java.sql.CallableStatement stPar9 = c.prepareCall("{call CreateEventXArrangementPartitions (?)}");
+		     java.sql.CallableStatement stPar10 = c.prepareCall("{call CreateEventXClassificationPartitions (?)}");
+		     java.sql.CallableStatement stPar11 = c.prepareCall("{call CreateEventXGeographyPartitions (?)}");
+		     java.sql.CallableStatement stPar12 = c.prepareCall("{call CreateEventXProductPartitions (?)}");
+		     java.sql.CallableStatement stPar13 = c.prepareCall("{call CreateEventXResourceItemPartitions (?)}");
+		)
+		{
+			st.setString(1, "ResourceItemData");
+			st.execute();
+			stPar.setString(1, "EventData");
+			stPar.execute();
+			stPar1.setString(1, "AddressData");
+			stPar1.execute();
+			stPar2.setString(1, "AddressXClassificationData");
+			stPar2.execute();
+			stPar3.setString(1, "AddressXGeographyData");
+			stPar3.execute();
+			stPar4.setString(1, "AddressXResourceItemData");
+			stPar4.execute();
+			stPar5.setString(1, "ArrangementXClassification");
+			stPar5.execute();
+			stPar6.setString(1, "ArrangementXProduct");
+			stPar6.execute();
+			stPar7.setString(1, "ArrangementXResourceItem");
+			stPar7.execute();
+			stPar8.setString(1, "EventXAddress");
+			stPar8.execute();
+			stPar9.setString(1, "EventXArrangement");
+			stPar9.execute();
+			stPar10.setString(1, "EventXClassification");
+			stPar10.execute();
+			stPar11.setString(1, "EventXGeography");
+			stPar11.execute();
+			stPar12.setString(1, "EventXProduct");
+			stPar12.execute();
+			stPar13.setString(1, "EventXResourceItem");
+			stPar13.execute();
+		}
+		catch (java.sql.SQLException e)
+		{
+			LogFactory.getLog("ActivityMasterService")
+			          .log(Level.SEVERE, "Unable to execute updates to partitions file structure", e);
+		}
+	}
+	
 }

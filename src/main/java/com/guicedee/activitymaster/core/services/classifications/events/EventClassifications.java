@@ -13,19 +13,25 @@ public enum EventClassifications
 	;
 	private String classificationValue;
 	private IClassificationDataConceptValue<?> dataConceptValue;
-
+	
 	EventClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
 	}
-
+	
 	@Override
 	public String classificationDescription()
 	{
 		return classificationValue;
 	}
-
+	
+	@Override
+	public String classificationValue()
+	{
+		return name();
+	}
+	
 	@Override
 	public IClassificationDataConceptValue<?> concept()
 	{

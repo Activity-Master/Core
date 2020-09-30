@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceData;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,7 +30,7 @@ import static javax.persistence.AccessType.*;
 @Access(FIELD)
 public class ResourceItemData
 		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, Long, ResourceItemDataSecurityToken>
-		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IResourceItemClassification<?>, IResourceData<?>, IClassification<?>, ResourceItemData>
+		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IClassificationValue<?>, IResourceData<?>, IClassification<?>, ResourceItemData>
 				           , IResourceData<ResourceItemData>
 {
 

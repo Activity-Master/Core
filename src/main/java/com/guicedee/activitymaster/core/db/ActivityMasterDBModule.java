@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.core.db;
 import com.guicedee.guicedpersistence.btm.BTMConnectionBaseInfo;
 import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
 import com.guicedee.guicedpersistence.db.DatabaseModule;
-import com.oracle.jaxb21.PersistenceUnit;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
@@ -21,7 +21,7 @@ public class ActivityMasterDBModule
 	}
 
 	@Override
-	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit persistenceUnit, Properties properties)
+	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(ParsedPersistenceXmlDescriptor persistenceUnit, Properties properties)
 	{
 		//BTMAutomatedTransactionHandler.setActive(true);
 		return new BTMConnectionBaseInfo()

@@ -7,6 +7,7 @@ import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.io.Serializable;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -15,13 +16,20 @@ public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchy
 	extends QueryBuilder<J,E,I>
 {
 	@Override
+	public void onSelectExecution(TypedQuery<?> query)
+	{
+		org.hibernate.query.Query<?> q = query.unwrap(org.hibernate.query.Query.class);
+		q.addQueryHint("MAXRECURSION 0");
+	}
+	
+	@Override
 	public EntityManager getEntityManager()
 	{
 		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
 	}
 
 	@Override
-	protected boolean isIdGenerated()
+	public boolean isIdGenerated()
 	{
 		return false;
 	}
@@ -46,6 +54,14 @@ public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchy
 	public J findMyChildren(Long securityTokenID)
 	{
 		where(SecurityHierarchyView_.parentID, Equals, securityTokenID);
+		return (J) this;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public J withValue(String value)
+	{
+		where(this.<E,String>getAttribute("value"), Equals, value);
 		return (J) this;
 	}
 }

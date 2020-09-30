@@ -1,92 +1,111 @@
 package com.guicedee.activitymaster.core.implementations;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.Event;
 import com.guicedee.activitymaster.core.db.entities.events.EventType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
+import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
+import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
+import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IEvent;
 import com.guicedee.activitymaster.core.services.dto.IEventType;
-import com.guicedee.activitymaster.core.services.enumtypes.IEventTypeValue;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.IEventTypeValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IEventService;
-import com.google.inject.Singleton;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
-@Singleton
+
 public class EventsService
 		implements IEventService<EventsService>
 {
 	@Override
-	public IEvent<?> createEvent(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
+	public IEvent<?> createEvent(IEventClassification<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Event event = new Event();
 		event.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		event.setSystemID((Systems) originatingSystem);
 		event.setOriginalSourceSystemID((Systems) originatingSystem);
 		event.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				                      .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+				.getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 		event.persist();
 		event.createDefaultSecurity(originatingSystem, identityToken);
-		event.add(NoClassification,eventType, "", originatingSystem, identityToken);
+		event.add(NoClassification, eventType, STRING_EMPTY, originatingSystem, identityToken);
+		EventThread.event.set(event);
 		return event;
 	}
-
+	
 	@Override
 	public IEventType<?> createEventType(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		Optional<EventType> typeExists = ActivityMasterConfiguration
-				                                 .get()
-				                                 .isDoubleCheckDisabled() ? Optional.empty() :
-		                                 new EventType().builder()
-		                                                .findByName(eventType.name())
-		                                                .withEnterprise(originatingSystem.getEnterpriseID())
-		                                                .inActiveRange(originatingSystem.getEnterpriseID())
-		                                                .inDateRange()
-		                                                .get();
-		if (typeExists.isEmpty())
+		EventType et = new EventType();
+		
+		boolean exists = et.builder()
+		                   .withName(eventType.name())
+		                   .withEnterprise(originatingSystem.getEnterpriseID())
+		                   .inActiveRange(originatingSystem.getEnterpriseID())
+		                   .inDateRange()
+		                   .getCount() > 0;
+		
+		if (!exists)
 		{
-			EventType type = new EventType();
-			type.setName(eventType.name());
-			type.setDescription(eventType.classificationValue());
-			type.setSystemID((Systems) originatingSystem);
-			type.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			type.setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class)
-			                                 .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
-			type.setOriginalSourceSystemID((Systems) originatingSystem);
-			type.persist();
+			et.setName(eventType.name());
+			et.setDescription(eventType.classificationValue());
+			et.setSystemID((Systems) originatingSystem);
+			et.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+			et.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+			                                            .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+			et.setOriginalSourceSystemID((Systems) originatingSystem);
+			et.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				type.createDefaultSecurity(originatingSystem, identityToken);
+				et.createDefaultSecurity(originatingSystem, identityToken);
 			}
-			typeExists = Optional.of(type);
+			return et;
 		}
-		return typeExists.get();
+		else
+		{
+			return findEventType(eventType, originatingSystem.getEnterprise(), identityToken);
+		}
 	}
-
+	
 	@Override
 	@CacheResult(cacheName = "EventTypes")
 	public IEventType<?> findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
 	{
 		return new EventType().builder()
-		                      .findByName(eventType.name())
+		                      .withName(eventType.name())
 		                      .withEnterprise(enterprise)
 		                      .inActiveRange(enterprise, identityToken)
 		                      .inDateRange()
 		                      .canRead(enterprise, identityToken)
 		                      .get()
-		                      .get();
+		                      .orElseThrow();
+	}
+	
+	@Override
+	@CacheResult(cacheName = "EventTypesStrings")
+	public IEventType<?> findEventType(@CacheKey String eventType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	{
+		return new EventType().builder()
+		                      .withName(eventType)
+		                      .withEnterprise(enterprise)
+		                      .inActiveRange(enterprise, identityToken)
+		                      .inDateRange()
+		                      .canRead(enterprise, identityToken)
+		                      .get()
+		                      .orElseThrow();
 	}
 }

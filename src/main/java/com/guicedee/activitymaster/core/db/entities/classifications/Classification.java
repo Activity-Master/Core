@@ -8,13 +8,15 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.hierarchies.ClassificationHierarchyView;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsHierarchy;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.guicedinjection.GuiceContext;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -36,7 +38,7 @@ import static javax.persistence.FetchType.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(schema = "Classification",
-		name = "Classification")
+       name = "Classification")
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -44,70 +46,72 @@ import static javax.persistence.FetchType.*;
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>
 		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView, IClassification<?>>,
-				           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IResourceItemClassification<?>, IClassification<?>, IResourceItem<?>, Classification>,
-				           IActivityMasterEntity<Classification>,
-				           IClassification<Classification>
+		           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IClassificationValue<?>, IClassification<?>, IResourceItem<?>, Classification>,
+		           IContainsClassifications<Classification, Classification, ClassificationXClassification, IClassificationValue<?>, IClassification<?>, IClassification<?>, Classification>,
+		           IActivityMasterEntity<Classification>,
+		           IClassification<Classification>,
+		           IClassificationValue
 {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
-			name = "ClassificationID")
+	        name = "ClassificationID")
 	@JsonValue
 	private Long id;
-
+	
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 100)
+	      max = 100)
 	@Column(nullable = false,
-			length = 100,
-			name = "ClassificationName")
+	        length = 100,
+	        name = "ClassificationName")
 	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 500)
+	      max = 500)
 	@Column(nullable = false,
-			length = 500,
-			name = "ClassificationDesc")
+	        length = 500,
+	        name = "ClassificationDesc")
 	@JsonIgnore
 	private String description;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Column(nullable = false,
-			name = "ClassificationSequenceNumber")
+	        name = "ClassificationSequenceNumber")
 	@JsonIgnore
 	@OrderBy
 	private Short classificationSequenceNumber;
 	@JoinColumn(name = "ClassificationDataConceptID",
-			referencedColumnName = "ClassificationDataConceptID",
-			nullable = false)
+	            referencedColumnName = "ClassificationDataConceptID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.EAGER)
+	           fetch = FetchType.EAGER)
 	@JsonIgnore
 	private ClassificationDataConcept concept;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<ClassificationSecurityToken> securities;
-
+	
 	public Classification()
 	{
-
+	
 	}
-
+	
 	public Classification(Long classificationID)
 	{
 		id = classificationID;
 	}
-
+	
 	public Classification(Long classificationID, String classificationName, String classificationDesc, short classificationSequenceNumber)
 	{
 		id = classificationID;
@@ -115,7 +119,7 @@ public class Classification
 		description = classificationDesc;
 		this.classificationSequenceNumber = classificationSequenceNumber;
 	}
-
+	
 	@Override
 	protected ClassificationSecurityToken configureDefaultsForNewToken(ClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
@@ -123,18 +127,18 @@ public class Classification
 		token.setBase(this);
 		return token;
 	}
-
+	
 	public void configureForClassification(ClassificationXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		Classification hierarchyClassification = (Classification) GuiceContext.get(ClassificationService.class)
 		                                                                      .getHierarchyType(classificationLink.getEnterpriseID());
 		Classification incomingClassification = classificationLink.getClassificationID();
-
+		
 		classificationLink.setChildClassificationID(incomingClassification);
 		classificationLink.setParentClassificationID(this);
 		classificationLink.setClassificationID(hierarchyClassification);
 	}
-
+	
 	@Override
 	public void configureNewHierarchyItem(ClassificationXClassification newLink, IClassification<?> parent, IClassification<?> child, String value)
 	{
@@ -142,13 +146,13 @@ public class Classification
 		newLink.setChildClassificationID((Classification) child);
 		newLink.setEnterpriseID(getEnterpriseID());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -163,80 +167,105 @@ public class Classification
 		Classification that = (Classification) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "Classification - " + getName() + " - " + getDescription();
 	}
-
+	
 	@Override
 	public Long getId()
 	{
 		return id;
 	}
-
+	
 	@Override
 	public Classification setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public @NotNull Short getClassificationSequenceNumber()
 	{
 		return classificationSequenceNumber;
-	}	@Override
+	}
+	
+	@Override
 	public String getName()
 	{
 		return name;
 	}
-
+	
 	public Classification setClassificationSequenceNumber(@NotNull Short classificationSequenceNumber)
 	{
 		this.classificationSequenceNumber = classificationSequenceNumber;
 		return this;
 	}
-
+	
 	public ClassificationDataConcept getConcept()
 	{
 		return concept;
-	}	@Override
+	}
+	
+	@Override
 	public String getDescription()
 	{
 		return description;
 	}
-
+	
 	public Classification setConcept(ClassificationDataConcept concept)
 	{
 		this.concept = concept;
 		return this;
 	}
-
+	
 	@Override
 	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setClassificationID(this);
 		linkTable.setResourceItemID(secondary);
 	}
-
-
-
-
-
+	
+	@Override
+	public void configureResourceItemAddable(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setClassificationID(this);
+		linkTable.setResourceItemID(secondary);
+	}
+	
+	
 	@Override
 	public Classification setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
 	@Override
 	public Classification setDescription(@NotNull @Size(min = 1,
-			max = 500) String description)
+	                                                    max = 500) String description)
 	{
 		this.description = description;
 		return this;
 	}
-
+	
+	@Override
+	public String name()
+	{
+		return name;
+	}
+	
+	@Override
+	public String classificationDescription()
+	{
+		return description;
+	}
+	
+	@Override
+	public IClassificationDataConceptValue<?> concept()
+	{
+		return concept;
+	}
 }

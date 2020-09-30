@@ -8,9 +8,10 @@ import static com.guicedee.activitymaster.core.services.concepts.EnterpriseClass
 public enum ResourceItemTypes
 		implements IResourceType<ResourceItemTypes>
 {
-
 	PhysicalDocuments("This is a reference to a physical document", ResourceItem),
 	Documents("An electronic document", ResourceItem),
+	JsonPacket("A JSON packet", ResourceItem),
+	XMLPacket("A XML packet", ResourceItem),
 	Invoices("An invoice", ResourceItem),
 	Statements("A statement", ResourceItem),
 	ElectronicDocuments("A collection of electronic documents", ResourceItem),
@@ -25,48 +26,43 @@ public enum ResourceItemTypes
 	JavaScriptTemplates("A JavaScript Template", ResourceItem),
 	HtmlTemplate("A HTML 5 Template", ResourceItem),
 	MobileDevice("A physical mobile device", ResourceItem),
-	BrowserDeviceCategory("A browser category", ResourceItem),
-	BrowserDeviceName("A browser that was used", ResourceItem),
-	BrowserDeviceIcon("A browser that was used registered icon", ResourceItem),
-	OperatingSystem("The operating system that was used", ResourceItem),
-	OperatingSystemFamily("The operating system that was used", ResourceItem),
+	
 	BrowserInformation("Browser Identifying Information", ResourceItem),
-
-
-
 	;
+	
+	
 	private String classificationValue;
 	private IClassificationDataConceptValue<?> dataConceptValue;
-
+	
 	ResourceItemTypes(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
 	}
-
+	
 	ResourceItemTypes(String classificationValue)
 	{
 		this.classificationValue = classificationValue;
 	}
-
+	
 	@Override
 	public String classificationName()
 	{
 		return name();
 	}
-
+	
 	@Override
 	public String classificationValue()
 	{
 		return this.classificationValue;
 	}
-
+	
 	@Override
 	public String classificationDescription()
 	{
 		return this.classificationValue;
 	}
-
+	
 	@Override
 	public IClassificationDataConceptValue<?> concept()
 	{

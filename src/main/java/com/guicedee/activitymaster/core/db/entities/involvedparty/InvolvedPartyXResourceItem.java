@@ -26,108 +26,110 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Party",name = "InvolvedPartyXResourceItem")
+@Table(schema = "Party",
+       name = "InvolvedPartyXResourceItem")
 @XmlRootElement
 
 @Access(FIELD)
 public class InvolvedPartyXResourceItem
 		extends WarehouseClassificationRelationshipTable<InvolvedParty,
-						                                                ResourceItem,
-						                                                InvolvedPartyXResourceItem,
-				                                                InvolvedPartyXResourceItemQueryBuilder,
-						                                                Long,
-						                                                InvolvedPartyXResourceItemSecurityToken,
-				                                                IInvolvedParty<?>, IResourceItem<?>>
+		ResourceItem,
+		InvolvedPartyXResourceItem,
+		InvolvedPartyXResourceItemQueryBuilder,
+		Long,
+		InvolvedPartyXResourceItemSecurityToken,
+		IInvolvedParty<?>,
+		IResourceItem<?>>
 
 {
-
+	
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
-			name = "InvolvedPartyXResourceItemID")
+	        name = "InvolvedPartyXResourceItemID")
 	private Long id;
-
+	
 	@JoinColumn(name = "InvolvedPartyID",
-			referencedColumnName = "InvolvedPartyID",
-			nullable = false)
+	            referencedColumnName = "InvolvedPartyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private InvolvedParty involvedPartyID;
 	@JoinColumn(name = "ResourceItemID",
-			referencedColumnName = "ResourceItemID",
-			nullable = false)
+	            referencedColumnName = "ResourceItemID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private ResourceItem resourceItemID;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<InvolvedPartyXResourceItemSecurityToken> securities;
-
+	
 	public InvolvedPartyXResourceItem()
 	{
-
+	
 	}
-
+	
 	public InvolvedPartyXResourceItem(Long involvedPartyXResourceItemID)
 	{
 		this.id = involvedPartyXResourceItemID;
 	}
-
+	
 	@Override
 	protected InvolvedPartyXResourceItemSecurityToken configureDefaultsForNewToken(InvolvedPartyXResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
-
+	
 	public Long getId()
 	{
 		return this.id;
 	}
-
+	
 	public InvolvedParty getInvolvedPartyID()
 	{
 		return this.involvedPartyID;
 	}
-
+	
 	public ResourceItem getResourceItemID()
 	{
 		return this.resourceItemID;
 	}
-
+	
 	public List<InvolvedPartyXResourceItemSecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public InvolvedPartyXResourceItem setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public InvolvedPartyXResourceItem setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
 	}
-
+	
 	public InvolvedPartyXResourceItem setResourceItemID(ResourceItem resourceItemID)
 	{
 		this.resourceItemID = resourceItemID;
 		return this;
 	}
-
+	
 	public InvolvedPartyXResourceItem setSecurities(List<InvolvedPartyXResourceItemSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
-
+	
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -142,19 +144,19 @@ public class InvolvedPartyXResourceItem
 		InvolvedPartyXResourceItem that = (InvolvedPartyXResourceItem) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public IInvolvedParty<?> getPrimary()
 	{
 		return getInvolvedPartyID();
 	}
-
+	
 	@Override
 	public IResourceItem<?> getSecondary()
 	{

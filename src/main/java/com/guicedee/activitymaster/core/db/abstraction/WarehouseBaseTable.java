@@ -16,7 +16,7 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 		implements Serializable
 {
 
-	private static final long serialVersionUID = 7208739285773494981L;
+	private static final long serialVersionUID = 1L;
 
 	public @NotNull J updateNow()
 	{

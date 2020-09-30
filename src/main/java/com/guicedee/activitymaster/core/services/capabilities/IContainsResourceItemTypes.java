@@ -1,9 +1,12 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
+import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
@@ -28,7 +31,7 @@ import static com.guicedee.guicedinjection.json.StaticStrings.*;
 @SuppressWarnings("Duplicates")
 public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		                                           S extends WarehouseCoreTable,
-		                                           Q extends WarehouseRelationshipTable<P, S, ?, ? extends QueryBuilderRelationship, ?, ?, ?, ?>,
+		                                           Q extends WarehouseClassificationRelationshipTypesTable<P, S, ?, ? extends QueryBuilderRelationshipClassificationTypes,T, ?, ?, ?, ?>,
 		                                           T extends IResourceType<?>,
 		                                           J extends IContainsResourceItemTypes<P, S, Q, T, J>>
 {
@@ -37,8 +40,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<P, S, ?>> find(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService involvedPartyIdentificationTypeService = get(IResourceItemService.class);
-		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> involvedPartyIdentificationTypeService = get(IResourceItemService.class);
+		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 		return (Optional<IRelationshipValue<P, S, ?>>) activityMasterIdentity.builder()
 		                                                                     .findLink((P) this, (S) classification, null)
 		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
@@ -68,8 +71,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default Optional<Q> findFirst(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService involvedPartyIdentificationTypeService = get(IResourceItemService.class);
-		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> involvedPartyIdentificationTypeService = get(IResourceItemService.class);
+		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 
 		return (Optional<Q>) activityMasterIdentity.builder()
 		                                           .findLink((P) this, (S) classification, null)
@@ -84,8 +87,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default List<Q> findAll(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService involvedPartyIdentificationTypeService = get(IResourceItemService.class);
-		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> involvedPartyIdentificationTypeService = get(IResourceItemService.class);
+		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 		return (List<Q>) activityMasterIdentity.builder()
 		                                       .findLink((P) this, (S) classification, null)
 		                                       .inActiveRange(originatingSystem.getEnterpriseID())
@@ -103,8 +106,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default long numberOf(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService involvedPartyIdentificationTypeService = get(IResourceItemService.class);
-		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(classificationValue, originatingSystem, identityToken);
+		IResourceItemService<?> involvedPartyIdentificationTypeService = get(IResourceItemService.class);
+		IResourceItemType<?> classification = involvedPartyIdentificationTypeService.findResourceItemType(classificationValue, originatingSystem.getEnterprise(), identityToken);
 
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, null)
@@ -119,13 +122,14 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
 
-		IResourceItemService classificationDataConceptService = get(IResourceItemService.class);
-		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
+		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		tableForClassification.setValue(value);
 		tableForClassification.setSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 		configureResourceItemTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, null, value, originatingSystem.getEnterpriseID());
@@ -146,8 +150,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default Q addOrReuse(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService classificationDataConceptService = get(IResourceItemService.class);
-		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
+		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -183,8 +187,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default Q addOrUpdate(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService classificationDataConceptService = get(IResourceItemService.class);
-		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
+		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -211,6 +215,10 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		}
 		else
 		{
+			if(Strings.nullToEmpty(value).equals(exists.get().getValue()))
+			{
+				return exists.get();
+			}
 			tableForClassification = exists.get();
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
@@ -247,8 +255,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default Q update(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService classificationDataConceptService = get(IResourceItemService.class);
-		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
+		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -263,6 +271,10 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		else
 		{
 			tableForClassification = exists.get();
+			if(Strings.nullToEmpty(value).equals(exists.get().getValue()))
+			{
+				return exists.get();
+			}
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 
 			IActiveFlagService flagService = get(IActiveFlagService.class);
@@ -298,8 +310,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default Q expire(T resourceType, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService classificationDataConceptService = get(IResourceItemService.class);
-		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
+		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -325,8 +337,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default Q archive(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService classificationDataConceptService = get(IResourceItemService.class);
-		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
+		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -352,8 +364,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	default Q remove(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
-		IResourceItemService classificationDataConceptService = get(IResourceItemService.class);
-		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem, identityToken);
+		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
+		IResourceItemType<?> classificationDataConcept = classificationDataConceptService.findResourceItemType(resourceType, originatingSystem.getEnterprise(), identityToken);
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())

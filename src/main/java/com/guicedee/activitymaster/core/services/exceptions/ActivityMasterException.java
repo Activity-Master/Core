@@ -1,7 +1,5 @@
 package com.guicedee.activitymaster.core.services.exceptions;
 
-import java.util.function.Supplier;
-
 public class ActivityMasterException
 		extends RuntimeException
 {

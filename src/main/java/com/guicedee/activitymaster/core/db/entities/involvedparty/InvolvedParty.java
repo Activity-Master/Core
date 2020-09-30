@@ -4,36 +4,32 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXInvolvedParty;
-import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXInvolvedParty_;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.EventXInvolvedParty;
-import com.guicedee.activitymaster.core.db.entities.events.EventXInvolvedParty_;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.hierarchies.InvolvedPartyHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
+import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
 import com.guicedee.activitymaster.core.services.classifications.involvedparty.IInvolvedPartyClassification;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-import com.guicedee.activitymaster.core.services.enumtypes.INameType;
-import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
+import com.guicedee.activitymaster.core.services.enumtypes.*;
+import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.activitymaster.core.services.types.IdentificationTypes;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
+import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 import static javax.persistence.AccessType.*;
@@ -46,31 +42,32 @@ import static javax.persistence.AccessType.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(schema = "Party",
-		name = "InvolvedParty")
+       name = "InvolvedParty")
 @XmlRootElement
 @Access(FIELD)
 public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, Long, InvolvedPartySecurityToken>
 		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, IInvolvedParty<?>, IClassification<?>, InvolvedParty>,
-				           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IResourceItemClassification<?>, IInvolvedParty<?>, IResourceItem<?>, InvolvedParty>,
-				           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IIdentificationType<?>, IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>, InvolvedParty>,
-				           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, INameType<?>, IInvolvedParty<?>, IInvolvedPartyNameType<?>, InvolvedParty>,
-				           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, ITypeValue<?>, IInvolvedParty<?>, IInvolvedPartyType<?>, InvolvedParty>,
-				           IContainsAddresses<InvolvedParty, Address, InvolvedPartyXAddress, IAddressClassification<?>, IInvolvedParty<?>, IAddress<?>, InvolvedParty>,
-				           IActivityMasterEntity<InvolvedParty>,
-				           IContainsEnterprise<InvolvedParty>,
-				           IInvolvedParty<InvolvedParty>,
-				           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView, IInvolvedParty<?>>
+		           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IClassificationValue<?>, IInvolvedParty<?>, IResourceItem<?>, InvolvedParty>,
+		           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType,IClassification<?>, IIdentificationType<?>, IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>, InvolvedParty>,
+		           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType,IClassification<?>, INameType<?>, IInvolvedParty<?>, IInvolvedPartyNameType<?>, InvolvedParty>,
+		           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType,IClassification<?>, ITypeValue<?>, IInvolvedParty<?>, IInvolvedPartyType<?>, InvolvedParty>,
+		           IContainsAddresses<InvolvedParty, Address, InvolvedPartyXAddress, IAddressClassification<?>, IInvolvedParty<?>, IAddress<?>, InvolvedParty>,
+		           IActivityMasterEntity<InvolvedParty>,
+		           IContainsEnterprise<InvolvedParty>,
+		           IInvolvedParty<InvolvedParty>,
+		           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView, IInvolvedParty<?>>,
+		           IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassification<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
-			name = "InvolvedPartyID")
+	        name = "InvolvedPartyID")
 	@JsonValue
 	private Long id;
-
+	
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
@@ -116,7 +113,7 @@ public class InvolvedParty
 	@JsonIgnore
 	private InvolvedPartyNonOrganic involvedPartyNonOrganic;
 */
-
+	
 	@OneToMany(
 			mappedBy = "childInvolvedPartyID",
 			fetch = FetchType.LAZY)
@@ -147,366 +144,162 @@ public class InvolvedParty
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
-
+	
 	public InvolvedParty()
 	{
-
+	
 	}
-
+	
 	public InvolvedParty(Long involvedPartyID)
 	{
 		this.id = involvedPartyID;
 	}
-
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public InvolvedParty move(IInvolvedParty<?> destination)
+	public InvolvedParty moveWebClientUUIDToNewInvolvedParty(IInvolvedParty<?> destination, UUID newUUID)
 	{
 		InvolvedParty dest = (InvolvedParty) destination;
 		dest.setOriginalSourceSystemUniqueID(getId().toString());
-
+		
 		ISystems<?> originatingSystem = get(InvolvedPartySystem.class).getSystem(dest.getEnterprise());
 		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(dest.getEnterprise());
-
-		InvolvedParty me = builder().getEntityManager()
-		                            .find(InvolvedParty.class, getId());
-
-		List<InvolvedPartyXClassification> classifications = new InvolvedPartyXClassification()
-				                                                     .builder()
-				                                                     .inDateRange()
-				                                                     .inActiveRange(getEnterprise(), identityToken)
-				                                                     .where(InvolvedPartyXClassification_.involvedPartyID, Equals, this)
-				                                                     .getAll();
-		for (InvolvedPartyXClassification item : new HashSet<>(classifications))
+		
+		InvolvedParty me = builder().find(getId())
+		                            .get()
+		                            .orElseThrow();
+		
+		IInvolvedPartyService<?> partyService = get(IInvolvedPartyService.class);
+		IIdentificationType<?> partyType = (IIdentificationType<?>) partyService.findIdentificationType("IdentificationTypeWebClientUUID", getEnterprise(), identityToken);
+		for (var identificationTypeWebClientUUID : partyService.findAllByIdentificationType("IdentificationTypeWebClientUUID", newUUID.toString()))
 		{
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-
-			InvolvedPartyXClassification newItem = new InvolvedPartyXClassification();
-			newItem.setValue(item.getValue());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setOriginalSourceSystemID(item.getOriginalSourceSystemID());
-			newItem.setSystemID(item.getSystemID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setClassificationID(item.getClassificationID());
-			newItem.setInvolvedPartyID(dest);
-			newItem.setEffectiveFromDate(LocalDateTime.now());
-			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                     .getActiveFlag(getEnterprise(), identityToken));
-			newItem.persist();
+			identificationTypeWebClientUUID.expire();
 		}
-		//not names?
-		/*for (InvolvedPartyXInvolvedPartyNameType item : me.names)
-		{
-
-		}*/
-		List<InvolvedPartyXResourceItem> resources = new InvolvedPartyXResourceItem()
-				                                             .builder()
-				                                             .inDateRange()
-				                                             .inActiveRange(getEnterprise(), identityToken)
-				                                             .where(InvolvedPartyXResourceItem_.involvedPartyID, Equals, this)
-				                                             .getAll();
-		for (InvolvedPartyXResourceItem item : resources)
-		{
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-
-			InvolvedPartyXResourceItem newItem = new InvolvedPartyXResourceItem();
-			newItem.setValue(item.getValue());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setOriginalSourceSystemID(item.getOriginalSourceSystemID());
-			newItem.setSystemID(item.getSystemID());
-			newItem.setResourceItemID(item.getResourceItemID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setClassificationID(item.getClassificationID());
-			newItem.setInvolvedPartyID(dest);
-			newItem.setEffectiveFromDate(LocalDateTime.now());
-			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                     .getActiveFlag(getEnterprise(), identityToken));
-			newItem.persist();
-		}
-		List<ArrangementXInvolvedParty> arrangements = new ArrangementXInvolvedParty()
-				                                               .builder()
-				                                               .inDateRange()
-				                                               .inActiveRange(getEnterprise(), identityToken)
-				                                               .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, this)
-				                                               .getAll();
-		for (ArrangementXInvolvedParty item : arrangements)
-		{
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-
-			ArrangementXInvolvedParty newItem = new ArrangementXInvolvedParty();
-			newItem.setValue(item.getValue());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setOriginalSourceSystemID(item.getOriginalSourceSystemID());
-			newItem.setSystemID(item.getSystemID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setClassificationID(item.getClassificationID());
-			newItem.setInvolvedPartyID(dest);
-			newItem.setEffectiveFromDate(LocalDateTime.now());
-			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                     .getActiveFlag(getEnterprise(), identityToken));
-			newItem.persist();
-		}
-		List<EventXInvolvedParty> events = new EventXInvolvedParty()
-				                                   .builder()
-				                                   .inDateRange()
-				                                   .inActiveRange(getEnterprise(), identityToken)
-				                                   .where(EventXInvolvedParty_.involvedPartyID, Equals, this)
-				                                   .getAll();
-		for (EventXInvolvedParty item : events)
-		{
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-
-			EventXInvolvedParty newItem = new EventXInvolvedParty();
-			newItem.setValue(item.getValue());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setOriginalSourceSystemID(item.getOriginalSourceSystemID());
-			newItem.setSystemID(item.getSystemID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setClassificationID(item.getClassificationID());
-			newItem.setInvolvedPartyID(dest);
-			newItem.setEffectiveFromDate(LocalDateTime.now());
-			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                     .getActiveFlag(getEnterprise(), identityToken));
-			newItem.persist();
-		}
-		List<InvolvedPartyXInvolvedPartyType> types = new InvolvedPartyXInvolvedPartyType()
-				                                              .builder()
-				                                              .inDateRange()
-				                                              .inActiveRange(getEnterprise(), identityToken)
-				                                              .where(InvolvedPartyXInvolvedPartyType_.involvedPartyID, Equals, this)
-				                                              .getAll();
-		for (InvolvedPartyXInvolvedPartyType item : types)
-		{
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-
-			InvolvedPartyXInvolvedPartyType newItem = new InvolvedPartyXInvolvedPartyType();
-			newItem.setValue(item.getValue());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setOriginalSourceSystemID(item.getOriginalSourceSystemID());
-			newItem.setSystemID(item.getSystemID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			//	newItem.setClassificationID(item.getClassificationID());
-			newItem.setInvolvedPartyID(dest);
-			newItem.setEffectiveFromDate(LocalDateTime.now());
-			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                     .getActiveFlag(getEnterprise(), identityToken));
-			newItem.persist();
-		}
-		List<InvolvedPartyXAddress> addresses = new InvolvedPartyXAddress()
-				                                        .builder()
-				                                        .inDateRange()
-				                                        .inActiveRange(getEnterprise(), identityToken)
-				                                        .where(InvolvedPartyXAddress_.involvedPartyID, Equals, this)
-				                                        .getAll();
-		for (InvolvedPartyXAddress item : addresses)
-		{
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-
-			InvolvedPartyXAddress newItem = new InvolvedPartyXAddress();
-			newItem.setValue(item.getValue());
-			newItem.setAddressID(item.getAddressID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setOriginalSourceSystemID(item.getOriginalSourceSystemID());
-			newItem.setSystemID(item.getSystemID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setClassificationID(item.getClassificationID());
-			newItem.setInvolvedPartyID(dest);
-			newItem.setEffectiveFromDate(LocalDateTime.now());
-			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                     .getActiveFlag(getEnterprise(), identityToken));
-			newItem.persist();
-		}
-		List<InvolvedPartyXProduct> products = new InvolvedPartyXProduct()
-				                                       .builder()
-				                                       .inDateRange()
-				                                       .inActiveRange(getEnterprise(), identityToken)
-				                                       .where(InvolvedPartyXProduct_.involvedPartyID, Equals, this)
-				                                       .getAll();
-		for (InvolvedPartyXProduct item : products)
-		{
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-
-			InvolvedPartyXProduct newItem = new InvolvedPartyXProduct();
-			newItem.setValue(item.getValue());
-			newItem.setProductID(item.getProductID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setOriginalSourceSystemID(item.getOriginalSourceSystemID());
-			newItem.setSystemID(item.getSystemID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setClassificationID(item.getClassificationID());
-			newItem.setInvolvedPartyID(dest);
-			newItem.setEffectiveFromDate(LocalDateTime.now());
-			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                     .getActiveFlag(getEnterprise(), identityToken));
-			newItem.persist();
-		}
-		List<InvolvedPartyXInvolvedPartyIdentificationType> identities = new InvolvedPartyXInvolvedPartyIdentificationType()
-				                                                                 .builder()
-				                                                                 .inDateRange()
-				                                                                 .inActiveRange(getEnterprise(), identityToken)
-				                                                                 .where(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyID, Equals, this)
-				                                                                 .getAll();
-		for (InvolvedPartyXInvolvedPartyIdentificationType item : identities)
-		{
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-
-			InvolvedPartyXInvolvedPartyIdentificationType newItem = new InvolvedPartyXInvolvedPartyIdentificationType();
-			newItem.setValue(item.getValue());
-			newItem.setInvolvedPartyIdentificationTypeID(item.getInvolvedPartyIdentificationTypeID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			newItem.setOriginalSourceSystemID(item.getOriginalSourceSystemID());
-			newItem.setSystemID(item.getSystemID());
-			newItem.setEnterpriseID(item.getEnterpriseID());
-			//	newItem.setClassificationID(item.getClassificationID());
-			newItem.setInvolvedPartyID(dest);
-			newItem.setEffectiveFromDate(LocalDateTime.now());
-			newItem.setEffectiveToDate(EndOfTime);
-			newItem.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                     .getActiveFlag(getEnterprise(), identityToken));
-			newItem.persist();
-		}
-
-		Optional<InvolvedPartyOrganic> oIpo = new InvolvedPartyOrganic().builder()
-		                                                                .inActiveRange(getEnterprise())
-		                                                                .inDateRange()
-		                                                                .where(InvolvedPartyOrganic_.involvedParty, Equals, this)
-		                                                                .get();
-		if (oIpo.isPresent())
-		{
-			InvolvedPartyOrganic item = oIpo.get();
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.deleteId();
-		}
-		else
-		{
-			InvolvedPartyNonOrganic item = new InvolvedPartyNonOrganic().builder()
-			                                                            .inActiveRange(getEnterprise())
-			                                                            .inDateRange()
-			                                                            .where(InvolvedPartyNonOrganic_.involvedParty, Equals, this)
-			                                                            .get()
-			                                                            .get();
-			item.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					                                  .getDeletedFlag(getEnterprise(), identityToken));
-			item.setEffectiveToDate(LocalDateTime.now());
-			item.update();
-		}
-
-		setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				                             .getDeletedFlag(getEnterprise(), identityToken));
-		setEffectiveToDate(LocalDateTime.now());
-		deleteId();
+		destination.addIdentificationType(partyType, newUUID.toString(), destination.getEnterprise(), identityToken);
 		return dest;
 	}
-
+	
 	@Override
 	public UUID getSecurityIdentity()
 	{
-		String value = find(IdentificationTypes.IdentificationTypeUUID, get(InvolvedPartySystem.class).getSystem(getEnterpriseID()),
-		                    get(InvolvedPartySystem.class).getSystemToken(getEnterprise())).orElseThrow()
-		                                                                                   .getValue();
+		String value = this.findIdentificationType(IdentificationTypes.IdentificationTypeUUID, Classifications.NoClassification.classificationName(),true,true, getEnterprise(),
+		                                           get(InvolvedPartySystem.class).getSystemToken(getEnterprise()))
+		                   .orElseThrow()
+		                   .getValue();
 		return UUID.fromString(value);
 	}
-
+	
 	@Override
 	public Long getId()
 	{
 		return this.id;
 	}
-
+	
 	@Override
 	public InvolvedParty setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	@Override
 	protected InvolvedPartySecurityToken configureDefaultsForNewToken(InvolvedPartySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
-
+	
 	@Override
 	public void configureForClassification(InvolvedPartyXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setInvolvedPartyID(this);
 	}
-
+	
 	@Override
 	public void configureResourceItemLinkValue(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setResourceItemID(secondary);
 		linkTable.setInvolvedPartyID(this);
 	}
-
+	
 	@Override
-	public void configureAddressLinkValue(InvolvedPartyXAddress linkTable, InvolvedParty primary, Address secondary, IClassification classificationValue, String value, IEnterprise enterprise)
+	public void configureResourceItemAddable(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setResourceItemID(secondary);
+		linkTable.setInvolvedPartyID(this);
+	}
+	
+	@Override
+	public void configureAddressLinkValue(InvolvedPartyXAddress linkTable, InvolvedParty primary, Address secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setInvolvedPartyID(this);
 		linkTable.setAddressID(secondary);
 	}
-
+	
 	@Override
-	public void configureInvolvedPartyIdentificationType(InvolvedPartyXInvolvedPartyIdentificationType linkTable, InvolvedParty primary, InvolvedPartyIdentificationType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public IIdentificationType<?> stringToIdentificationType(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		linkTable.setInvolvedPartyID(this);
+		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
+		return (IIdentificationType<?>) service.findIdentificationType(typeName, enterprise, identityToken);
+	}
+	
+	@Override
+	public void configureAddableIdentificationType(InvolvedPartyXInvolvedPartyIdentificationType linkTable, InvolvedParty primary, InvolvedPartyIdentificationType secondary, IClassification<?> classificationValue, IIdentificationType<?> type, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setInvolvedPartyID(primary);
 		linkTable.setInvolvedPartyIdentificationTypeID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+		linkTable.setEnterpriseID((Enterprise) enterprise);
 	}
-
+	
 	@Override
-	public void configureInvolvedPartyNameTypeLinkValue(InvolvedPartyXInvolvedPartyNameType linkTable, InvolvedParty primary, InvolvedPartyNameType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public INameType<?> stringToNameType(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		linkTable.setInvolvedPartyID(this);
+		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
+		return (INameType<?>) service.findNameType(typeName, enterprise, identityToken);
+	}
+	
+	@Override
+	public void configureIPNameTypesAddable(InvolvedPartyXInvolvedPartyNameType linkTable, InvolvedParty primary, InvolvedPartyNameType secondary, IClassification<?> classificationValue, INameType<?> type, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setInvolvedPartyID(primary);
 		linkTable.setInvolvedPartyNameTypeID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+		linkTable.setEnterpriseID((Enterprise) enterprise);
 	}
-
+	
 	@Override
-	public void configureInvolvedPartyTypeLinkValue(InvolvedPartyXInvolvedPartyType linkTable, InvolvedParty primary, InvolvedPartyType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public ITypeValue<?> stringToIPTypesType(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		linkTable.setInvolvedPartyID(this);
-		linkTable.setInvolvedPartyTypeID(secondary);
+		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
+		return (ITypeValue<?>) service.findType(typeName, enterprise, identityToken);
 	}
-
+	
+	@Override
+	public InvolvedPartyType stringToIPTypesSecondary(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
+		return (InvolvedPartyType) service.findType(typeName, enterprise, identityToken);
+	}
+	
+	@Override
+	public void configureIPTypesAddable(InvolvedPartyXInvolvedPartyType linkTable, InvolvedParty primary, InvolvedPartyType secondary, IClassification<?> classificationValue, ITypeValue<?> type, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setInvolvedPartyID(primary);
+		linkTable.setInvolvedPartyTypeID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+		linkTable.setEnterpriseID((Enterprise) enterprise);
+	}
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -521,13 +314,13 @@ public class InvolvedParty
 		InvolvedParty that = (InvolvedParty) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "InvolvedParty - " + getId();
 	}
-
+	
 	@Override
 	public void configureNewHierarchyItem(InvolvedPartyXInvolvedParty newLink, IInvolvedParty<?> parent, IInvolvedParty<?> child, String value)
 	{
@@ -538,5 +331,15 @@ public class InvolvedParty
 			value = STRING_EMPTY;
 		}
 		newLink.setValue(value);
+	}
+	
+	@Override
+	public void configureAddableProduct(InvolvedPartyXProduct linkTable, InvolvedParty primary, Product secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setInvolvedPartyID(primary);
+		linkTable.setProductID(secondary);
+		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setValue(value);
+		linkTable.setClassificationID((Classification) classificationValue);
 	}
 }

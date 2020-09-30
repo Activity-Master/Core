@@ -5,12 +5,13 @@
  */
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseRelationshipTable;
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyNameTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
 import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyNameType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.INameType;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -25,111 +26,116 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Party",name = "InvolvedPartyXInvolvedPartyNameType")
+@Table(schema = "Party",
+       name = "InvolvedPartyXInvolvedPartyNameType")
 @XmlRootElement
 
 @Access(FIELD)
 public class InvolvedPartyXInvolvedPartyNameType
-		extends WarehouseRelationshipTable<InvolvedParty, InvolvedPartyNameType,
-						                                  InvolvedPartyXInvolvedPartyNameType,
-				                                  InvolvedPartyXInvolvedPartyNameTypeQueryBuilder,
-						                                  Long,
-						                                  InvolvedPartyXInvolvedPartyNameTypeSecurityToken,
-				                                  IInvolvedParty<?>, IInvolvedPartyNameType<?>>
+		extends WarehouseClassificationRelationshipTypesTable<InvolvedParty, InvolvedPartyNameType,
+		InvolvedPartyXInvolvedPartyNameType,
+		InvolvedPartyXInvolvedPartyNameTypeQueryBuilder,
+		INameType<?>,
+		Long,
+		InvolvedPartyXInvolvedPartyNameTypeSecurityToken,
+		IInvolvedParty<?>,
+		IInvolvedPartyNameType<?>>
 {
-
+	
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
-			name = "InvolvedPartyXInvolvedPartyNameTypeID")
+	        name = "InvolvedPartyXInvolvedPartyNameTypeID")
 	private Long id;
-
+	
 	@JoinColumn(name = "InvolvedPartyID",
-			referencedColumnName = "InvolvedPartyID",
-			nullable = false)
+	            referencedColumnName = "InvolvedPartyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private InvolvedParty involvedPartyID;
 	@JoinColumn(name = "InvolvedPartyNameTypeID",
-			referencedColumnName = "InvolvedPartyNameTypeID",
-			nullable = false)
+	            referencedColumnName = "InvolvedPartyNameTypeID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private InvolvedPartyNameType involvedPartyNameTypeID;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> securities;
-
+	
 	public InvolvedPartyXInvolvedPartyNameType()
 	{
-
+	
 	}
-
+	
 	public InvolvedPartyXInvolvedPartyNameType(Long involvedPartyXInvolvedPartyNameTypeID)
 	{
 		this.id = involvedPartyXInvolvedPartyNameTypeID;
 	}
-
+	
 	public InvolvedPartyXInvolvedPartyNameType(Long involvedPartyXInvolvedPartyNameTypeID, String involvedPartyName)
 	{
 		this.id = involvedPartyXInvolvedPartyNameTypeID;
 		setValue(involvedPartyName);
 	}
-
+	
 	@Override
 	protected InvolvedPartyXInvolvedPartyNameTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXInvolvedPartyNameTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
-
+	
+	@Override
 	public Long getId()
 	{
 		return this.id;
 	}
-
+	
 	public InvolvedParty getInvolvedPartyID()
 	{
 		return this.involvedPartyID;
 	}
-
+	
 	public InvolvedPartyNameType getInvolvedPartyNameTypeID()
 	{
 		return this.involvedPartyNameTypeID;
 	}
-
+	
 	public List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
+	@Override
 	public InvolvedPartyXInvolvedPartyNameType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public InvolvedPartyXInvolvedPartyNameType setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
 	}
-
+	
 	public InvolvedPartyXInvolvedPartyNameType setInvolvedPartyNameTypeID(InvolvedPartyNameType involvedPartyNameTypeID)
 	{
 		this.involvedPartyNameTypeID = involvedPartyNameTypeID;
 		return this;
 	}
-
+	
 	public InvolvedPartyXInvolvedPartyNameType setSecurities(List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -144,19 +150,19 @@ public class InvolvedPartyXInvolvedPartyNameType
 		InvolvedPartyXInvolvedPartyNameType that = (InvolvedPartyXInvolvedPartyNameType) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public IInvolvedParty<?> getPrimary()
 	{
 		return getInvolvedPartyID();
 	}
-
+	
 	@Override
 	public IInvolvedPartyNameType<?> getSecondary()
 	{

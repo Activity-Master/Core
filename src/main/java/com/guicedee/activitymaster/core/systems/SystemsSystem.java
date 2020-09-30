@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.guicedee.activitymaster.core.implementations.SystemsService.*;
+import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 
 @Singleton
 public class SystemsSystem
@@ -66,10 +67,10 @@ public class SystemsSystem
 		try
 		{
 			IInvolvedParty<?> ip = ipService.create(newSystem, Pair.of(IdentificationTypes.IdentificationTypeUUID, newSystemUUID.toString()), false, activityMasterSystemUUID);
-			ip.addOrReuse(IdentificationTypes.IdentificationTypeSystemID, newSystem.getId()
-			                                                                       .toString(), newSystem, activityMasterSystemUUID);
-			ip.addOrReuse(IPTypes.TypeSystem, newSystemUUID.toString(), newSystem, activityMasterSystemUUID);
-			ip.addOrReuse(NameTypes.PreferredNameType, newSystem.getName(), newSystem, activityMasterSystemUUID);
+			ip.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeSystemID,NoClassification.name(), newSystem.getId()
+			                                                                       .toString(), newSystem.getEnterprise(), activityMasterSystemUUID);
+			ip.addOrReuseType(IPTypes.TypeSystem, NoClassification.name(),newSystemUUID.toString(), newSystem.getEnterprise(), activityMasterSystemUUID);
+			ip.addOrReuseNameType(NameTypes.PreferredNameType, NoClassification.name(), newSystem.getName(), newSystem.getEnterprise(), activityMasterSystemUUID);
 			return ip;
 		}
 		catch (Exception e)

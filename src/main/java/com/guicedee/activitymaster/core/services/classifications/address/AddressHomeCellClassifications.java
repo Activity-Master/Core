@@ -10,7 +10,7 @@ public enum AddressHomeCellClassifications
 
 	HomeCellNumber("A Cellphone (Home) Number", Address),
 	HomeCellCountryCode("The country code for the Cell number", Address),
-	HomeCellExtensionNumber("Cell Number for the Cell number", Address),
+	HomeCellExtensionNumber("Extension Number for the Cell number", Address),
 	HomeCellAreaCode("The area code for the Cell number", Address),
 	;
 	private String classificationValue;

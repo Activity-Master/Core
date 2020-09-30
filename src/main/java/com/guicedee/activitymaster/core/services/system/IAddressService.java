@@ -16,4 +16,12 @@ public interface IAddressService<J extends IAddressService<?>>
 	IAddress<?> addOrFindHostName(String hostName, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException;
 
 	IAddress<?> addOrFindWebAddress(String webAddress, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException;
+
+	IAddress<?> addOrFindHomePhoneContact(String phoneNumber, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException;
+
+	IAddress<?> addOrFindCellPhoneContact(String phoneNumber, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException;
+
+    IAddress<?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException;
+
+	IAddress<?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException;
 }

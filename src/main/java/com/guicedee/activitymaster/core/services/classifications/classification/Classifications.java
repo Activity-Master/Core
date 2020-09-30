@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.services.classifications.classification;
 
+import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationClassificationDataConceptTypes;
 

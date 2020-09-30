@@ -7,17 +7,17 @@ import com.guicedee.activitymaster.core.db.entities.geography.GeographyXGeograph
 import com.guicedee.activitymaster.core.db.entities.geography.GeographyXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.hierarchies.GeographyHierarchyView;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsHierarchy;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
+import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.geography.IGeographyClassification;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 public interface IGeography<J extends IGeography<J>>
 		extends IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, IGeography<?>, IClassification<?>, Geography>,
-				        IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceItemClassification<?>, IGeography<?>, IResourceItem<?>, Geography>,
-				        IActivityMasterEntity<Geography>,
-				        IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView, IGeography<?>>
+		        IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IClassificationValue<?>, IGeography<?>, IResourceItem<?>, Geography>,
+		        IActivityMasterEntity<Geography>,
+		        IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView, IGeography<?>>,
+		        IHasActiveFlags<Geography>,
+		        INameAndDescription<Geography>
 {
 }

@@ -38,9 +38,7 @@ public abstract class WarehouseNameDescriptionTable<J extends WarehouseNameDescr
 	@SuppressWarnings("unchecked")
 	protected Class<Q> getClassQueryBuilderClass()
 	{
-		Type type = getClass().getGenericSuperclass();
 		return (Class<Q>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 	}
-
 
 }

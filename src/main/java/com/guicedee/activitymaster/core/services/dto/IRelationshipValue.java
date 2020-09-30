@@ -73,7 +73,7 @@ public interface IRelationshipValue<P, S, J extends IRelationshipValue<P, S, J>>
 		WarehouseBaseTable<?, ?, ?> tableForClassification = (WarehouseBaseTable) this;
 		tableForClassification.setEffectiveToDate(LocalDateTime.now()
 		                                                       .plus(duration));
-		tableForClassification.updateNow();
+		tableForClassification.update();
 		return this;
 	}
 
@@ -81,14 +81,14 @@ public interface IRelationshipValue<P, S, J extends IRelationshipValue<P, S, J>>
 	{
 		WarehouseBaseTable<?, ?, ?> tableForClassification = (WarehouseBaseTable) this;
 		tableForClassification.setEffectiveToDate(LocalDateTime.now());
-		tableForClassification.updateNow();
+		tableForClassification.update();
 		return this;
 	}
 
 	default IRelationshipValue<P, S, ?> update(ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		WarehouseBaseTable<?, ?, ?> tableForClassification = (WarehouseBaseTable) this;
-		tableForClassification.updateNow();
+		tableForClassification.update();
 		return this;
 	}
 }

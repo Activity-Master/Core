@@ -3,10 +3,10 @@ package com.guicedee.activitymaster.core.services.enumtypes;
 /**
  * Service restricted to enumerations
  *
- * @param <J>
- * 		This enum type
+ * @param <J> This enum type
  */
-public interface IArrangementTypes<J extends Enum<J> & IArrangementTypes<J>> extends ITypeValue<J>
+public interface IArrangementTypes<J extends Enum<J> & IArrangementTypes<J>> extends ITypeValue<J>,
+                                                                                     IClassificationValue<J>
 {
 	/**
 	 * Overrides the enum and string
@@ -14,15 +14,15 @@ public interface IArrangementTypes<J extends Enum<J> & IArrangementTypes<J>> ext
 	 * @return The string for the enum
 	 */
 	String name();
-
-
+	
+	
 	/**
 	 * The physical classification value
 	 *
 	 * @return
 	 */
 	String classificationValue();
-
+	
 	/**
 	 * The physical classification value
 	 *

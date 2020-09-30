@@ -1,9 +1,9 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilder;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
+import com.guicedee.activitymaster.core.services.capabilities.IHasActiveFlags;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 /**
  * @param <S>
@@ -26,13 +25,12 @@ import static com.guicedee.guicedinjection.json.StaticStrings.*;
  * @since 07 Dec 2016
  */
 @MappedSuperclass
-
 public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
-		                                    Q extends QueryBuilder<Q, J, I, S>,
+		                                    Q extends QueryBuilderTable<Q, J, I, S>,
 		                                    I extends Serializable,
 		                                    S extends WarehouseSecurityTable>
 		extends WarehouseSCDTable<J, Q, I, S>
-		implements IContainsActiveFlags<J>
+		implements IHasActiveFlags<J>
 {
 	private static final long serialVersionUID = 1L;
 
@@ -40,7 +38,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	@NotNull
 	@Column(nullable = false,
 			name = "OriginalSourceSystemUniqueID")
-	private String originalSourceSystemUniqueID = STRING_EMPTY;
+	private String originalSourceSystemUniqueID;
 
 	@JoinColumn(name = "OriginalSourceSystemID",
 			referencedColumnName = "SystemID",
@@ -61,7 +59,6 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	{
 		super.configureDefaultsSystemValues(requestingSystem);
 		setOriginalSourceSystemID(requestingSystem);
-		setOriginalSourceSystemUniqueID("");
 		return (J) this;
 	}
 
@@ -86,7 +83,8 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		updateNow();
 		return (J) this;
 	}
-
+	
+	@Override
 	public @NotNull String getOriginalSourceSystemUniqueID()
 	{
 		return this.originalSourceSystemUniqueID;

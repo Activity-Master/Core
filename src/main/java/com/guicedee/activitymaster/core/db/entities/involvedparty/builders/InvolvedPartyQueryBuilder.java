@@ -1,23 +1,24 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty.builders;
 
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilder;
+import com.entityassist.querybuilder.builders.JoinExpression;
+import com.google.common.base.Strings;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
+import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContainsClassificationsQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.implementations.InvolvedPartyService;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-import com.google.common.base.Strings;
-import com.entityassist.querybuilder.builders.JoinExpression;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import javax.persistence.criteria.JoinType;
 import java.util.UUID;
 
-import static com.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.Operand.Equals;
 
 public class InvolvedPartyQueryBuilder
-		extends QueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty, Long, InvolvedPartySecurityToken>
+		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, Long, InvolvedPartySecurityToken>
+		implements IContainsClassificationsQueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty,Long, InvolvedPartyXClassification>
 {
 
 	public InvolvedPartyQueryBuilder findByIdentificationType(IEnterprise<?> enterprise, IIdentificationType<?> idType)

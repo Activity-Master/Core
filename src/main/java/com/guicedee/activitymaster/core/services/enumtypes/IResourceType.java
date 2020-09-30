@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificati
  * @param <J>
  * 		This enum type
  */
-public interface IResourceType<J extends Enum<J> & IResourceType<J>>
+public interface IResourceType<J extends Enum<J> & IResourceType<J>> extends ITypeValue<J>
 {
 	/**
 	 * Overrides the enum and string

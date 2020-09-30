@@ -6,6 +6,8 @@ import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.UUID;
 
 public interface IClassificationDataConceptService<J extends IClassificationDataConceptService<J>>
@@ -17,7 +19,10 @@ public interface IClassificationDataConceptService<J extends IClassificationData
 	IClassificationDataConcept<?> getGlobalConcept(IEnterprise<?> enterprise, UUID... identityToken);
 
 	IClassificationDataConcept<?> find(IClassificationDataConceptValue<?> name, IEnterprise<?> enterprise, UUID... identityToken);
-
+	
+	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
+	ClassificationDataConcept find(@CacheKey String name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken);
+	
 	IClassificationDataConcept<?> getNoConcept(IEnterprise<?> enterprise, UUID... identityToken);
 
 	IClassificationDataConcept<?> getSecurityHierarchyConcept(IEnterprise<?> enterprise, UUID... identityToken);

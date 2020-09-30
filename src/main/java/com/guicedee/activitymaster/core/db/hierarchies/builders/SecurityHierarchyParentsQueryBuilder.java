@@ -17,7 +17,7 @@ public class SecurityHierarchyParentsQueryBuilder
 	}
 
 	@Override
-	protected boolean isIdGenerated()
+	public boolean isIdGenerated()
 	{
 		return false;
 	}

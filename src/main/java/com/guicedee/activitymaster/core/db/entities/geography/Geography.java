@@ -13,13 +13,11 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.geography.builders.GeographyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.hierarchies.GeographyHierarchyView;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsHierarchy;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
+import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.geography.IGeographyClassification;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
+
 import com.guicedee.activitymaster.core.services.dto.*;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -39,74 +37,75 @@ import static javax.persistence.FetchType.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(schema = "Geography",
-		name = "Geography")
+       name = "Geography")
 @XmlRootElement
 
 @Access(FIELD)
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
 		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, IGeography<?>, IClassification<?>, Geography>,
-				           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IResourceItemClassification<?>, IGeography<?>, IResourceItem<?>, Geography>,
-				           IActivityMasterEntity<Geography>,
-				           IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView, IGeography<?>>,
-				           IGeography<Geography>
+		           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IClassificationValue<?>, IGeography<?>, IResourceItem<?>, Geography>,
+		           IActivityMasterEntity<Geography>,
+		           IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView, IGeography<?>>,
+		           INameAndDescription<Geography>,
+		           IGeography<Geography>
 {
-
+	
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
-			name = "GeographyID")
+	        name = "GeographyID")
 	@JsonValue
 	private Long id;
-
+	
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 500)
+	      max = 500)
 	@Column(nullable = false,
-			length = 500,
-			name = "GeographyName")
+	        length = 500,
+	        name = "GeographyName")
 	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 500)
+	      max = 500)
 	@Column(nullable = false,
-			length = 500,
-			name = "GeographyDesc")
+	        length = 500,
+	        name = "GeographyDesc")
 	@JsonIgnore
 	private String description;
-
+	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<GeographyXClassification> classifications;
-
+	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<AddressXGeography> addresses;
-
+	
 	@JoinColumn(name = "ClassificationID",
-			referencedColumnName = "ClassificationID",
-			nullable = false)
+	            referencedColumnName = "ClassificationID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Classification classificationID;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<GeographySecurityToken> securities;
-
+	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
@@ -122,38 +121,38 @@ public class Geography
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<GeographyXGeography> geographyXGeographyList1;
-
+	
 	public Geography()
 	{
-
+	
 	}
-
+	
 	public Geography(Long geographyID)
 	{
 		this.id = geographyID;
 	}
-
+	
 	public Geography(Long geographyID, String geographyName, String geographyDesc)
 	{
 		this.id = geographyID;
 		this.name = geographyName;
 		this.description = geographyDesc;
-
+		
 	}
-
+	
 	@Override
 	protected GeographySecurityToken configureDefaultsForNewToken(GeographySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
-
+	
 	@Override
 	public void configureForClassification(GeographyXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setGeographyID(this);
 	}
-
+	
 	@Override
 	public void configureNewHierarchyItem(GeographyXGeography newLink, IGeography<?> parent, IGeography<?> child, String value)
 	{
@@ -164,97 +163,104 @@ public class Geography
 			newLink.setValue(value);
 		}
 	}
-
+	
 	@Override
 	public void configureResourceItemLinkValue(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setGeographyID(this);
 		linkTable.setResourceItemID(secondary);
 	}
-
+	
+	@Override
+	public void configureResourceItemAddable(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setGeographyID(this);
+		linkTable.setResourceItemID(secondary);
+	}
+	
 	public List<GeographyXClassification> getClassifications()
 	{
 		return this.classifications;
 	}
-
+	
 	public Geography setClassifications(List<GeographyXClassification> classifications)
 	{
 		this.classifications = classifications;
 		return this;
 	}
-
+	
 	public List<AddressXGeography> getAddresses()
 	{
 		return this.addresses;
 	}
-
+	
 	public Geography setAddresses(List<AddressXGeography> addresses)
 	{
 		this.addresses = addresses;
 		return this;
 	}
-
+	
 	public Classification getClassificationID()
 	{
 		return this.classificationID;
 	}
-
+	
 	public Geography setClassificationID(Classification classificationID)
 	{
 		this.classificationID = classificationID;
 		return this;
 	}
-
+	
 	public List<GeographySecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public Geography setSecurities(List<GeographySecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	public List<GeographyXResourceItem> getResources()
 	{
 		return this.resources;
 	}
-
+	
 	public Geography setResources(List<GeographyXResourceItem> resources)
 	{
 		this.resources = resources;
 		return this;
 	}
-
+	
 	public List<GeographyXGeography> getGeographyXGeographyList()
 	{
 		return this.geographyXGeographyList;
 	}
-
+	
 	public Geography setGeographyXGeographyList(List<GeographyXGeography> geographyXGeographyList)
 	{
 		this.geographyXGeographyList = geographyXGeographyList;
 		return this;
 	}
-
+	
 	public List<GeographyXGeography> getGeographyXGeographyList1()
 	{
 		return this.geographyXGeographyList1;
 	}
-
+	
 	public Geography setGeographyXGeographyList1(List<GeographyXGeography> geographyXGeographyList1)
 	{
 		this.geographyXGeographyList1 = geographyXGeographyList1;
 		return this;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -269,54 +275,54 @@ public class Geography
 		Geography geography = (Geography) o;
 		return Objects.equals(getId(), geography.getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "Geography - " + getName();
 	}
-
+	
 	public String getName()
 	{
 		return this.name;
 	}
-
+	
 	public Geography setName(@NotNull @Size(min = 1,
-			max = 500) String name)
+	                                        max = 500) String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
 	@Override
 	public Long getId()
 	{
 		return this.id;
 	}
-
+	
 	@Override
 	public Geography setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public String getDescription()
 	{
 		return this.description;
 	}
-
+	
 	public Geography setDescription(@NotNull @Size(min = 1,
-			max = 500) String description)
+	                                               max = 500) String description)
 	{
 		this.description = description;
 		return this;
 	}
-
+	
 	public Geography setClassification(Classification classification)
 	{
 		this.classificationID = classification;
 		return this;
 	}
-
+	
 }

@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilder;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderCore;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
@@ -35,7 +35,7 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
 @SuppressWarnings({"Duplicates", "unchecked"})
 @MappedSuperclass()
 public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S>,
-		                                        Q extends QueryBuilder<Q, J, I, S>,
+		                                        Q extends QueryBuilderCore<Q, J, I, S>,
 		                                        I extends Serializable,
 		                                        S extends WarehouseSecurityTable>
 		extends WarehouseBaseTable<J, Q, I>
@@ -48,7 +48,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	public void createDefaultSecurity(ISystems system, UUID... identity)
+	public void createDefaultSecurity(ISystems<?> system, UUID... identity)
 	{
 		boolean async = ActivityMasterConfiguration.get()
 		                                           .isAsyncEnabled();

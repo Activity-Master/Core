@@ -3,33 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.armineasy.activitymaster</groupId>
-        <artifactId>activitymaster-group</artifactId>
+     <groupId>com.armineasy.activitymaster</groupId>
+    <artifactId>activitymaster-group</artifactId>
         <version>0.0.0_0-SNAPSHOT</version>
     </parent>
 
     <artifactId>activity-master</artifactId>
     <packaging>jar</packaging>
     <name>Activity Master</name>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.guicedee</groupId>
-                <artifactId>guicedee-bom</artifactId>
-                <type>pom</type>
-                <scope>import</scope>
-                <version>${guicedee.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.guicedee</groupId>
-                <artifactId>guicedee-parent</artifactId>
-                <type>pom</type>
-                <scope>import</scope>
-                <version>${guicedee.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
 
@@ -50,49 +31,8 @@
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
-            <artifactId>jakarta.activation</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.servlets</groupId>
-            <artifactId>guiced-servlets</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>aopalliance-core</artifactId>
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>cache-annotations-ri-common</artifactId>
-            <type>jar</type>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>cache-annotations-ri-guice</artifactId>
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>javax.transaction</artifactId>
-            <type>jar</type>
-        </dependency>
-
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
@@ -100,16 +40,9 @@
             <type>jar</type>
         </dependency>
 
-
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>guava</artifactId>
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>btm</artifactId>
             <type>jar</type>
         </dependency>
 
@@ -137,63 +70,36 @@
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
             <artifactId>hibernate-core</artifactId>
             <type>jar</type>
-
         </dependency>
-        <dependency>
-            <groupId>com.guicedee</groupId>
-            <artifactId>guiced-log-master</artifactId>
 
-        </dependency>
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>hibernate-validator</artifactId>
-
             <type>jar</type>
         </dependency>
 
 
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>guice</artifactId>
-
-        </dependency>
         <dependency>
             <groupId>com.guicedee</groupId>
             <artifactId>guiced-injection</artifactId>
-
         </dependency>
 
         <dependency>
-            <groupId>com.guicedee.services.extensions</groupId>
-            <artifactId>guice-servlet</artifactId>
-
-
+            <groupId>com.guicedee.persistence</groupId>
+            <artifactId>guiced-hazelcast-hibernate</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.guicedee.services</groupId>
-            <artifactId>commons-io</artifactId>
-
-            <type>jar</type>
+            <artifactId>mapstruct</artifactId>
         </dependency>
 
     </dependencies>
@@ -204,7 +110,7 @@
             <plugin>
                 <groupId>org.hibernate.orm.tooling</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>5.4.18.Final</version>
+                <version>5.4.21.Final</version>
                 <executions>
                     <execution>
                         <configuration>
@@ -237,31 +143,60 @@
                     <release>14</release>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
-                            <groupId>com.guicedee.services</groupId>
+                            <groupId>org.hibernate</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${guicedee.version}</version>
+                            <version>5.4.21.Final</version>
                         </annotationProcessorPath>
-                        <path>
-                            <groupId>com.guicedee.services</groupId>
-                            <artifactId>jakarta.xml.bind-api</artifactId>
-                            <version>${guicedee.version}</version>
-                        </path>
                         <annotationProcessorPath>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>1.18.12</version>
+                            <groupId>javax.xml.bind</groupId>
+                            <artifactId>jaxb-api</artifactId>
+                            <version>2.3.1</version>
                         </annotationProcessorPath>
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>1.3.1.Final</version>
+                            <version>1.4.0.Final</version>
+                        </path>
+                        <!-- other annotation processors -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.12</version>
                         </path>
                     </annotationProcessorPaths>
+                    <annotationProcessors>
+                        <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
+                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+                        <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
+                    </annotationProcessors>
                     <compilerArguments>
                         <AaddGeneratedAnnotation>false</AaddGeneratedAnnotation>
                         <Adebug>true</Adebug>
                     </compilerArguments>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm</artifactId>
+                        <version>9.0</version>
+                        <type>jar</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>5.4.21.Final</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>1.18.12</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
         </plugins>

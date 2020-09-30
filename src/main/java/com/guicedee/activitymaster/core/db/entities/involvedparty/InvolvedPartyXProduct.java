@@ -53,14 +53,7 @@ public class InvolvedPartyXProduct
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<InvolvedPartyXProductSecurityToken> securities;
-
-	@JoinColumn(name = "ValueTypeClassificationID",
-			referencedColumnName = "ClassificationID",
-			nullable = false)
-	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-	private Classification valueTypeClassificationID;
-
+	
 	@JoinColumn(name = "InvolvedPartyID",
 			referencedColumnName = "InvolvedPartyID",
 			nullable = false)
@@ -113,11 +106,6 @@ public class InvolvedPartyXProduct
 		return this.securities;
 	}
 
-	public Classification getValueTypeClassificationID()
-	{
-		return this.valueTypeClassificationID;
-	}
-
 	public InvolvedParty getInvolvedPartyID()
 	{
 		return this.involvedPartyID;
@@ -149,13 +137,7 @@ public class InvolvedPartyXProduct
 		this.securities = securities;
 		return this;
 	}
-
-	public InvolvedPartyXProduct setValueTypeClassificationID(Classification valueTypeClassificationID)
-	{
-		this.valueTypeClassificationID = valueTypeClassificationID;
-		return this;
-	}
-
+	
 	public InvolvedPartyXProduct setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;

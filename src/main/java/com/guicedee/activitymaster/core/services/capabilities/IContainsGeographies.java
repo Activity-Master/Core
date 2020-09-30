@@ -7,7 +7,9 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
+import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.IGeography;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
 
@@ -19,22 +21,24 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IContainsGeographies<P extends WarehouseCoreTable,
-		                                     S extends WarehouseCoreTable,
-		                                     J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?,?,?>>
+		S extends WarehouseCoreTable,
+		J extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>
+		>
 {
+	
 	@SuppressWarnings("unchecked")
-	default Optional<J> findGeography(@CacheKey Geography classification, @CacheKey UUID... identityToken)
+	default Optional<J> findGeography(@CacheKey IGeography<?> classification, @CacheKey UUID... identityToken)
 	{
 		J activityMasterIdentity = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) activityMasterIdentity.builder()
 		                                                         .findLink((P) this, (S) classification, null)
-		                                                         .inActiveRange(classification.getEnterpriseID())
+		                                                         .inActiveRange(((Geography) classification).getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(classification.getEnterpriseID(), identityToken)
+		                                                         .canRead(((Geography) classification).getEnterpriseID(), identityToken)
 		                                                         .get();
 		return exists;
 	}
-
+	
 	@NotNull
 	@SuppressWarnings("unchecked")
 	default Class<J> findGeographyQueryRelationshipTableType()
@@ -51,40 +55,42 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 		}
 		return null;
 	}
-
+	
+	
 	@SuppressWarnings("unchecked")
-	default boolean hasGeography(Geography classification, @CacheKey UUID... identityToken)
+	default boolean hasGeography(IGeography<?> classification, @CacheKey UUID... identityToken)
 	{
 		J activityMasterIdentity = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, null)
-		                             .inActiveRange(classification.getEnterpriseID())
+		                             .inActiveRange(((Geography) classification).getEnterpriseID())
 		                             .inDateRange()
-		                             .canRead(classification.getEnterpriseID(), identityToken)
+		                             .canRead(((Geography) classification).getEnterpriseID(), identityToken)
 		                             .getCount() > 0;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	default J add(Geography geography, Classification classification, String value, UUID... identifyingToken)
+	default J add(IGeography<?> geography, IClassification<?> classification, String value, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classification, null)
+		                                                         .findLink((P) this, (S) geography, value)
 		                                                         .inActiveRange(classification.getEnterpriseID())
+		                                                         .withClassification(classification)
 		                                                         .inDateRange()
 		                                                         .get();
 		if (exists.isEmpty())
 		{
 			Systems activityMasterSystem = (Systems) GuiceContext.get(ISystemsService.class)
 			                                                     .getActivityMaster(classification.getEnterpriseID());
-			tableForClassification.setEnterpriseID(classification.getEnterpriseID());
-			tableForClassification.setClassificationID(classification);
+			tableForClassification.setEnterpriseID(((Classification) classification).getEnterpriseID());
+			tableForClassification.setClassificationID(((Classification) classification));
 			tableForClassification.setValue(value);
 			tableForClassification.setSystemID(activityMasterSystem);
 			tableForClassification.setOriginalSourceSystemID(activityMasterSystem);
-			tableForClassification.setActiveFlagID(classification.getActiveFlagID());
+			tableForClassification.setActiveFlagID(((Classification) classification).getActiveFlagID());
 			setMyGeographyLinkValue(tableForClassification, (S) geography, classification.getEnterpriseID());
-
+			
 			tableForClassification.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
@@ -98,8 +104,8 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 		}
 		return tableForClassification;
 	}
-
-
+	
+	
 	void setMyGeographyLinkValue(J classificationLink, S geography, IEnterprise<?> enterprise);
-
+	
 }

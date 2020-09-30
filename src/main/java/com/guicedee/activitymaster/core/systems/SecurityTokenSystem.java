@@ -70,7 +70,7 @@ public class SecurityTokenSystem
 		UUID newSystemUUID = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(activityMasterSystem);
 
-		SecurityToken activityMasterToken = GuiceContext.get(SystemsService.class)
+		SecurityToken activityMasterToken = (SecurityToken) GuiceContext.get(SystemsService.class)
 		                                                .getSecurityToken(newSystemUUID, activityMasterSystem, newSystemUUID);
 
 		logProgress("Security Management", "Setting Security Configurator to Activity Master", progressMonitor);
@@ -410,7 +410,7 @@ public class SecurityTokenSystem
 	{
 		for (WarehouseCoreTable next : table.builder()
 		                                    .withEnterprise(system.getEnterpriseID())
-		                                    .whereNoSecurityIsApplied(system.getEnterpriseID())
+		                                    .whereNoSecurityIsApplied()
 		                                    .inDateRange()
 		                                    .getAll())
 		{
@@ -419,7 +419,6 @@ public class SecurityTokenSystem
 			                                          .getSimpleName(), progressMonitor);
 			next.createDefaultSecurity(system, identityToken);
 		}
-
 	}
 
 	@Override

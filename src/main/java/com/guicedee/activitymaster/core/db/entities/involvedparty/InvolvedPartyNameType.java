@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyNameTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
+import com.guicedee.activitymaster.core.services.capabilities.IHasActiveFlags;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
 import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyNameType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.INameType;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
@@ -29,7 +30,7 @@ import static javax.persistence.FetchType.*;
  */
 @Entity
 @Table(name = "InvolvedPartyNameType",
-		schema = "Party")
+       schema = "Party")
 @XmlRootElement
 @Access(FIELD)
 @Cacheable
@@ -37,104 +38,105 @@ import static javax.persistence.FetchType.*;
 public class InvolvedPartyNameType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, Long, InvolvedPartyNameTypeSecurityToken>
 		implements INameAndDescription<InvolvedPartyNameType>,
-				           IContainsEnterprise<InvolvedPartyNameType>,
-				           IActivityMasterEntity<InvolvedPartyNameType>,
-				           IContainsActiveFlags<InvolvedPartyNameType>,
-				           IInvolvedPartyNameType<InvolvedPartyNameType>
+		           IContainsEnterprise<InvolvedPartyNameType>,
+		           IActivityMasterEntity<InvolvedPartyNameType>,
+		           IHasActiveFlags<InvolvedPartyNameType>,
+		           IInvolvedPartyNameType<InvolvedPartyNameType>,
+		           INameType
 
 {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
-			name = "InvolvedPartyNameTypeID")
+	        name = "InvolvedPartyNameTypeID")
 	@JsonValue
 	private Long id;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 500)
+	      max = 500)
 	@Column(nullable = false,
-			length = 500,
-			name = "InvolvedPartyNameTypeName")
+	        length = 500,
+	        name = "InvolvedPartyNameTypeName")
 	@JsonIgnore
 	private String name;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 500)
+	      max = 500)
 	@Column(nullable = false,
-			length = 500,
-			name = "InvolvedPartyNameTypeDescr")
+	        length = 500,
+	        name = "InvolvedPartyNameTypeDescr")
 	@JsonIgnore
 	private String description;
-
+	
 	@OneToMany(
 			mappedBy = "involvedPartyNameTypeID",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<InvolvedPartyNameTypeSecurityToken> securities;
-
+	
 	public InvolvedPartyNameType()
 	{
-
+	
 	}
-
+	
 	public InvolvedPartyNameType(Long involvedPartyNameTypeID)
 	{
 		id = involvedPartyNameTypeID;
 	}
-
+	
 	public InvolvedPartyNameType(Long involvedPartyNameTypeID, String involvedPartyName, String involvedPartyNameDescr)
 	{
 		id = involvedPartyNameTypeID;
 		name = involvedPartyName;
 		description = involvedPartyNameDescr;
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "IdentificationNameType - " + getName();
 	}
-
+	
 	@Override
 	protected InvolvedPartyNameTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyNameTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
-
+	
 	public List<InvolvedPartyXInvolvedPartyNameType> getInvolvedPartyXInvolvedPartyNameTypeList()
 	{
 		return involvedPartyXInvolvedPartyNameTypeList;
 	}
-
+	
 	public List<InvolvedPartyNameTypeSecurityToken> getSecurities()
 	{
 		return securities;
 	}
-
+	
 	public InvolvedPartyNameType setInvolvedPartyXInvolvedPartyNameTypeList(List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList)
 	{
 		this.involvedPartyXInvolvedPartyNameTypeList = involvedPartyXInvolvedPartyNameTypeList;
 		return this;
 	}
-
+	
 	public InvolvedPartyNameType setSecurities(List<InvolvedPartyNameTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -159,12 +161,12 @@ public class InvolvedPartyNameType
 		}
 		return true;
 	}
-
+	
 	protected boolean canEqual(Object other)
 	{
 		return other instanceof InvolvedPartyNameType;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
@@ -174,45 +176,63 @@ public class InvolvedPartyNameType
 		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public Long getId()
 	{
 		return id;
 	}
-
+	
 	@Override
 	public String getName()
 	{
 		return name;
 	}
-
+	
 	@Override
 	public String getDescription()
 	{
 		return description;
 	}
-
+	
 	@Override
 	public InvolvedPartyNameType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	@Override
 	public InvolvedPartyNameType setName(@NotNull @Size(min = 1,
-			max = 500) String name)
+	                                                    max = 500) String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
 	@Override
 	public InvolvedPartyNameType setDescription(@NotNull @Size(min = 1,
-			max = 500) String description)
+	                                                           max = 500) String description)
 	{
 		this.description = description;
 		return this;
+	}
+	
+	@Override
+	public String name()
+	{
+		return getName();
+	}
+	
+	@Override
+	public String classificationValue()
+	{
+		return getName();
+	}
+	
+	@Override
+	public String classificationDescription()
+	{
+		return getDescription();
 	}
 }

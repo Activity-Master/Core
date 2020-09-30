@@ -6,9 +6,10 @@ import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClass
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 public interface ISecurityToken<J extends ISecurityToken<J>>
-		extends IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>,ISecurityToken<?>, IClassification<?>,SecurityToken>,
+		extends IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IClassificationValue<?>,ISecurityToken<?>, IClassification<?>,SecurityToken>,
 				        IActivityMasterEntity<SecurityToken>
 
 {

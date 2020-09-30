@@ -6,11 +6,12 @@
 package com.guicedee.activitymaster.core.db.entities.security.builders;
 
 import com.guicedee.activitymaster.core.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
+import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContainsClassificationsQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken_;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokensSecurityToken;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXClassification;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.security.*;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.services.classifications.securitytokens.ISecurityTokenClassification;
@@ -29,6 +30,7 @@ import static com.entityassist.enumerations.Operand.*;
  */
 public class SecurityTokenQueryBuilder
 		extends QueryBuilderSCDNameDescription<SecurityTokenQueryBuilder, SecurityToken, Long, SecurityTokensSecurityToken>
+		implements IContainsClassificationsQueryBuilder<SecurityTokenQueryBuilder, SecurityToken, Long, SecurityTokenXClassification>
 {
 	public SecurityTokenQueryBuilder findFolder(ISecurityTokenClassification<?> securityTokenClassification, IEnterprise<?> enterprise, UUID... identityToken)
 	{
@@ -66,10 +68,10 @@ public class SecurityTokenQueryBuilder
 	 */
 	public SecurityToken getIdentity(Systems system, UUID name)
 	{
-		return findByName(name.toString()).inActiveRange(system.getEnterpriseID())
-		                                  .inDateRange()
-		                                  .get()
-		                                  .get();
+		return withName(name.toString()).inActiveRange(system.getEnterpriseID())
+		                                .inDateRange()
+		                                .get()
+		                                .get();
 	}
 
 	public SecurityTokenQueryBuilder findBySecurityToken(String token, IEnterprise<?> enterprise)

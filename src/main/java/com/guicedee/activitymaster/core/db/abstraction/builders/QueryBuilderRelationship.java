@@ -5,9 +5,11 @@
  */
 package com.guicedee.activitymaster.core.db.abstraction.builders;
 
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasValueQueryBuilder;
+import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasClassificationQueryBuilder;
 
 import javax.persistence.metamodel.Attribute;
 import java.io.Serializable;
@@ -18,26 +20,22 @@ import static com.entityassist.enumerations.Operand.*;
 /**
  * Default query builder for relationship tables
  *
- * @param <P>
- * 		the type parameter
- * @param <S>
- * 		the type parameter
- * @param <J>
- * 		the type parameter
- * @param <E>
- * 		the type parameter
- * @param <I>
- * 		the type parameter
- *
+ * @param <P> the type parameter
+ * @param <S> the type parameter
+ * @param <J> the type parameter
+ * @param <E> the type parameter
+ * @param <I> the type parameter
  * @author Marc Magon
  */
-public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
-		                                              S extends WarehouseCoreTable,
-		                                              J extends QueryBuilderRelationship<P, S, J, E, I, ST>,
-		                                              E extends WarehouseRelationshipTable<P, S, E, J, I, ST,?,?>,
-		                                              I extends Serializable,
-		                                              ST extends WarehouseSecurityTable>
-		extends QueryBuilder<J, E, I, ST>
+public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
+		S extends WarehouseBaseTable,
+		J extends QueryBuilderRelationship<P, S, J, E, I, ST>,
+		E extends WarehouseRelationshipTable<P, S, E, J, I, ST, ?, ?>,
+		I extends Serializable,
+		ST extends WarehouseSecurityTable>
+		extends QueryBuilderTable<J, E, I, ST>
+		implements IHasValueQueryBuilder<J, E, I>,
+		           IHasClassificationQueryBuilder<J, E, I>
 {
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
@@ -47,39 +45,29 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 		where(getSecondaryAttribute(), Equals, child);
 		return (J) this;
 	}
-
+	
 	public abstract Attribute getPrimaryAttribute();
-
+	
 	public abstract Attribute getSecondaryAttribute();
-
+	
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
 	public J findLink(P parent, S child, String value)
 	{
 		where(getPrimaryAttribute(), Equals, parent);
-		where(getSecondaryAttribute(), Equals, child);
+		if (child != null)
+		{ where(getSecondaryAttribute(), Equals, child); }
 		withValue(value);
 		return (J) this;
 	}
-
-	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
-	public J withValue(String value)
-	{
-		if (value != null)
-		{
-			where(getAttribute("value"), Equals, value);
-		}
-		return (J) this;
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
 	public J findChildLink(S child)
 	{
 		return findChildLink(child, null);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
 	public J findChildLink(S child, String value)
@@ -91,15 +79,15 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 		}
 		return (J) this;
 	}
-
-
+	
+	
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
 	public J findParentLink(P child)
 	{
 		return findParentLink(child, null);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@javax.validation.constraints.NotNull
 	public J findParentLink(P parent, String value)
@@ -111,13 +99,11 @@ public abstract class QueryBuilderRelationship<P extends WarehouseCoreTable,
 		}
 		return (J) this;
 	}
-
-
-	@SuppressWarnings("unchecked")
-	@Override
+	
+	
 	public Class<ST> findSecurityClass()
 	{
 		return (Class<ST>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[5];
 	}
-
+	
 }

@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "HalfHours",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -33,48 +33,48 @@ public class HalfHours
 {
 	private static final long serialVersionUID = 1L;
 	@EmbeddedId
-	protected TimePK id;
-
+	private TimePK id;
+	
 	@Basic(optional = false)
 	@Column(name = "TwelveHourClockDesc",
-			nullable = false,
-			length = 10)
+	        nullable = false,
+	        length = 10)
 	private String twelveHourClockDesc;
 	@Basic(optional = false)
 	@Column(name = "TwentyFourHourClockDesc",
-			nullable = false,
-			length = 10)
+	        nullable = false,
+	        length = 10)
 	private String twentyFourHourClockDesc;
 	@Basic(optional = false)
 	@Column(name = "AmPmDesc",
-			nullable = false,
-			length = 5)
+	        nullable = false,
+	        length = 5)
 	private String amPmDesc;
 	@Basic(optional = false)
 	@Column(name = "PreviousHourID",
-			nullable = false)
+	        nullable = false)
 	private int previousHourID;
 	@Basic(optional = false)
 	@Column(name = "PreviousHalfHourMinuteID",
-			nullable = false)
+	        nullable = false)
 	private int previousHalfHourMinuteID;
 	@JoinColumn(name = "HourID",
-			referencedColumnName = "HourID",
-			nullable = false,
-			insertable = false,
-			updatable = false)
+	            referencedColumnName = "HourID",
+	            nullable = false,
+	            insertable = false,
+	            updatable = false)
 	@ManyToOne(optional = false)
 	private Hours Hours;
-
+	
 	public HalfHours()
 	{
 	}
-
+	
 	public HalfHours(TimePK id)
 	{
 		this.id = id;
 	}
-
+	
 	public HalfHours(TimePK id, String hourClockDesc, String twentyFourHourClockDesc, String amPmDesc, int previousHourID, int previousHalfHourMinuteID)
 	{
 		this.id = id;
@@ -84,7 +84,7 @@ public class HalfHours
 		this.previousHourID = previousHourID;
 		this.previousHalfHourMinuteID = previousHalfHourMinuteID;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -99,17 +99,17 @@ public class HalfHours
 		HalfHours halfHours = (HalfHours) o;
 		return id.equals(halfHours.id);
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(id);
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "timelord.entities.HalfHours[ lUHalfHoursPK=" + id + " ]";
 	}
-
+	
 }

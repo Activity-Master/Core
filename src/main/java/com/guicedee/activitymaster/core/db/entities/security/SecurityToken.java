@@ -35,6 +35,7 @@ import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISecurityToken;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.logger.LogFactory;
 
 import javax.persistence.*;
@@ -62,7 +63,7 @@ import static javax.persistence.FetchType.*;
 @Access(FIELD)
 public class SecurityToken
 		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, Long, SecurityTokensSecurityToken>
-		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IResourceItemClassification<?>, ISecurityToken<?>, IClassification<?>, SecurityToken>,
+		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IClassificationValue<?>, ISecurityToken<?>, IClassification<?>, SecurityToken>,
 				           IActivityMasterEntity<SecurityToken>,
 				           ISecurityToken<SecurityToken>
 {

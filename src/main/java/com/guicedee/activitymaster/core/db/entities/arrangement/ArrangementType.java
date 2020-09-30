@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementTypeQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
+import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
 import com.guicedee.activitymaster.core.services.dto.IArrangementType;
+import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
@@ -25,103 +29,112 @@ import static javax.persistence.AccessType.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(schema = "Arrangement",
-		name = "ArrangementType")
+       name = "ArrangementType")
 @XmlRootElement
 
 @Access(FIELD)
 public class ArrangementType
 		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, Long, ArrangementTypeSecurityToken>
-		implements IArrangementType<ArrangementType>
+		implements IContainsClassifications<ArrangementType, Classification, ArrangementTypeXClassification, IArrangementClassification<?>, IArrangementType<?>, IClassification<?>, ArrangementType>,
+		           IArrangementType<ArrangementType>
 {
-
+	
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
-			name = "ArrangementTypeID")
+	        name = "ArrangementTypeID")
 	@JsonValue
 	private Long id;
 	@Basic(optional = false,
-			fetch = FetchType.EAGER)
+	       fetch = FetchType.EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 150)
+	      max = 150)
 	@Column(nullable = false,
-			length = 150,
-			name = "ArrangementTypeName")
+	        length = 150,
+	        name = "ArrangementTypeName")
 	private String name;
 	@Basic(optional = false,
-			fetch = FetchType.EAGER)
+	       fetch = FetchType.EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 500)
+	      max = 500)
 	@Column(nullable = false,
-			length = 500,
-			name = "ArrangementTypeDescription")
+	        length = 500,
+	        name = "ArrangementTypeDescription")
 	private String description;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<ArrangementTypeSecurityToken> securities;
-
+	
+	@OneToMany(
+			mappedBy = "arrangementID",
+			fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<ArrangementTypeXClassification> classifications;
+	
 	@OneToMany(
 			mappedBy = "type",
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<ArrangementXArrangementType> arrangementsList;
-
+	
+	
 	public ArrangementType()
 	{
-
+	
 	}
-
+	
 	public ArrangementType(Long arrangementTypeID)
 	{
 		this.id = arrangementTypeID;
 	}
-
+	
 	public ArrangementType(Long arrangementTypeID, String arrangementTypeName, String arrangementTypeDescription)
 	{
 		this.id = arrangementTypeID;
 		this.name = arrangementTypeName;
 		this.description = arrangementTypeDescription;
 	}
-
+	
 	@Override
 	protected ArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
-
+	
 	public List<ArrangementTypeSecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public List<ArrangementXArrangementType> getArrangementsList()
 	{
 		return this.arrangementsList;
 	}
-
+	
 	public ArrangementType setSecurities(List<ArrangementTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	public ArrangementType setArrangementsList(List<ArrangementXArrangementType> arrangementsList)
 	{
 		this.arrangementsList = arrangementsList;
 		return this;
 	}
-
+	
+	@Override
 	public String toString()
 	{
 		return "ArrangementType - " + getName();
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -136,44 +149,52 @@ public class ArrangementType
 		ArrangementType that = (ArrangementType) o;
 		return Objects.equals(getName(), that.getName());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
+	@Override
 	public Long getId()
 	{
 		return this.id;
 	}
-
+	
 	public String getName()
 	{
 		return this.name;
 	}
-
+	
 	public String getDescription()
 	{
 		return this.description;
 	}
-
+	
+	@Override
 	public ArrangementType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public ArrangementType setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
 	public ArrangementType setDescription(@NotNull @Size(min = 1,
-			max = 500) String description)
+	                                                     max = 500) String description)
 	{
 		this.description = description;
 		return this;
+	}
+	
+	@Override
+	public void configureForClassification(ArrangementTypeXClassification classificationLink, IEnterprise<?> enterprise)
+	{
+		classificationLink.setArrangementTypeID(this);
 	}
 }

@@ -14,8 +14,9 @@
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <validation-mode>NONE</validation-mode>
         <properties>
-            <property name="hibernate.show_sql" value="false"/>
-            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2012Dialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.connection.useUnicode" value="yes"/>
             <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;DatabaseName=FSDM"/>
@@ -42,8 +43,9 @@
         <validation-mode>NONE</validation-mode>
 
         <properties>
-            <property name="hibernate.show_sql" value="false"/>
-            <property name="hibernate.format_sql" value="false"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2012Dialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.connection.useUnicode" value="yes"/>
             <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;DatabaseName=FSDM"/>

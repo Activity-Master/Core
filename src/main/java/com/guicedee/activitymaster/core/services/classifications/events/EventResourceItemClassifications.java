@@ -17,41 +17,47 @@ public enum EventResourceItemClassifications
 	LodgedTheResourceItemRegistration("Lodged the Resource", EventXResourceItem),
 	DeliveredTheResourceItemRegistration("Delivered the Resource", EventXResourceItem),
 	DestroyedTheResourceItemRegistration("Destroyed the Resource", EventXResourceItem),
-
-
-	JSONCallRequest("With a JSON Request Of",EventXResourceItem),
-	JSONCallResponse("The JSON Response Was",EventXResourceItem),
-	WebServiceCallRequest("With a WebService Request To",EventXResourceItem),
-	WebServiceCallResponse("The WebService Response Was",EventXResourceItem),
-
-	HttpCallRequest("With a Http Request Of",EventXResourceItem),
-	HttpCallResponse("The Http Response Was",EventXResourceItem),
-	HttpSession("The HttpSession details",EventXResourceItem),
-	HttpSessionProperties("The Session Properties was",EventXResourceItem),
-
+	
+	
+	JSONCallRequest("With a JSON Request Of", EventXResourceItem),
+	JSONCallResponse("The JSON Response Was", EventXResourceItem),
+	WebServiceCallRequest("With a WebService Request To", EventXResourceItem),
+	WebServiceCallResponse("The WebService Response Was", EventXResourceItem),
+	
+	HttpCallRequest("With a Http Request Of", EventXResourceItem),
+	HttpCallResponse("The Http Response Was", EventXResourceItem),
+	HttpSession("The HttpSession details", EventXResourceItem),
+	HttpSessionProperties("The Session Properties was", EventXResourceItem),
+	
 	UserAgent("The User Agent details were", EventXResourceItem),
-
+	
 	;
 	private String classificationValue;
 	private IClassificationDataConceptValue<?> dataConceptValue;
-
+	
 	EventResourceItemClassifications(String classificationValue, IClassificationDataConceptValue<?> dataConceptValue)
 	{
 		this.classificationValue = classificationValue;
 		this.dataConceptValue = dataConceptValue;
 	}
-
+	
 	EventResourceItemClassifications(String classificationValue)
 	{
 		this.classificationValue = classificationValue;
 	}
-
+	
 	@Override
 	public String classificationDescription()
 	{
 		return classificationValue;
 	}
-
+	
+	@Override
+	public String classificationValue()
+	{
+		return name();
+	}
+	
 	@Override
 	public IClassificationDataConceptValue<?> concept()
 	{

@@ -16,22 +16,22 @@ public enum NameTypes
 	InitialsType("Initials"),
 	SurnameType("Surname"),
 	QualificationType("Qualification"),
-	SuffixType("Suffix"),
-	Username("Username"),
-	EmailAddress("Email Address");
+	SuffixType("Suffix");
+	
+	
 	private String classificationValue;
-
+	
 	NameTypes(String classificationValue)
 	{
 		this.classificationValue = classificationValue;
 	}
-
+	
 	@Override
 	public String classificationValue()
 	{
 		return name();
 	}
-
+	
 	@Override
 	public String classificationDescription()
 	{

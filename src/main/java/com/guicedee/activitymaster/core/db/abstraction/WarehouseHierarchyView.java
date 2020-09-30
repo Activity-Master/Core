@@ -25,6 +25,8 @@ public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J
 	private String pather;
 	@Column
 	private String path;
+/*	@Column
+	private String value;*/
 	@Column
 	private Integer one;
 
@@ -52,6 +54,15 @@ public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J
 	{
 		return this.one;
 	}
+
+/*	public String getValue() {
+		return value;
+	}
+
+	public WarehouseHierarchyView<J, Q, I> setValue(String value) {
+		this.value = value;
+		return this;
+	}*/
 
 	public WarehouseHierarchyView<J, Q, I> setName(String name)
 	{

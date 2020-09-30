@@ -1,11 +1,14 @@
 package com.guicedee.activitymaster.core.db.entities.resourceitem;
 
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.IResourceItemType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
+import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,103 +23,108 @@ import static javax.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Resource",name = "ResourceItemXResourceItemType")
+@Table(schema = "Resource",
+       name = "ResourceItemXResourceItemType")
 @XmlRootElement
 
 @Access(FIELD)
 public class ResourceItemXResourceItemType
-		extends WarehouseRelationshipTable<ResourceItem, ResourceItemType,
-						                                  ResourceItemXResourceItemType,
-				                                  ResourceItemXResourceItemTypeQueryBuilder, Long,
-						                                  ResourceItemXResourceItemTypeSecurityToken,
-				                                  IResourceItem<?>, IResourceItemType<?>>
+		extends WarehouseClassificationRelationshipTypesTable<ResourceItem,
+		ResourceItemType,
+		ResourceItemXResourceItemType,
+		ResourceItemXResourceItemTypeQueryBuilder,
+		IResourceType<?>,
+		Long,
+		ResourceItemXResourceItemTypeSecurityToken,
+		IResourceItem<?>,
+		IResourceItemType<?>>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,
-			name = "ResourceItemXResourceItemTypeID")
+	        name = "ResourceItemXResourceItemTypeID")
 	private Long id;
-
+	
 	@JoinColumn(name = "ResourceItemID",
-			referencedColumnName = "ResourceItemID",
-			nullable = false)
+	            referencedColumnName = "ResourceItemID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private ResourceItem resourceItemID;
 	@JoinColumn(name = "ResourceItemTypeID",
-			referencedColumnName = "ResourceItemTypeID",
-			nullable = false)
+	            referencedColumnName = "ResourceItemTypeID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private ResourceItemType resourceItemTypeID;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<ResourceItemXResourceItemTypeSecurityToken> securities;
-
+	
 	public ResourceItemXResourceItemType()
 	{
-
+	
 	}
-
+	
 	public ResourceItemXResourceItemType(Long resourceItemXResourceItemTypeID)
 	{
 		this.id = resourceItemXResourceItemTypeID;
 	}
-
+	
 	@Override
 	protected ResourceItemXResourceItemTypeSecurityToken configureDefaultsForNewToken(ResourceItemXResourceItemTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
-
+	
 	public Long getId()
 	{
 		return this.id;
 	}
-
+	
 	public ResourceItem getResourceItemID()
 	{
 		return this.resourceItemID;
 	}
-
+	
 	public ResourceItemType getResourceItemTypeID()
 	{
 		return this.resourceItemTypeID;
 	}
-
+	
 	public List<ResourceItemXResourceItemTypeSecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public ResourceItemXResourceItemType setId(Long id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public ResourceItemXResourceItemType setResourceItemID(ResourceItem resourceItemID)
 	{
 		this.resourceItemID = resourceItemID;
 		return this;
 	}
-
+	
 	public ResourceItemXResourceItemType setResourceItemTypeID(ResourceItemType resourceItemTypeID)
 	{
 		this.resourceItemTypeID = resourceItemTypeID;
 		return this;
 	}
-
+	
 	public ResourceItemXResourceItemType setSecurities(List<ResourceItemXResourceItemTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -131,19 +139,19 @@ public class ResourceItemXResourceItemType
 		ResourceItemXResourceItemType that = (ResourceItemXResourceItemType) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public IResourceItem<?> getPrimary()
 	{
 		return getResourceItemID();
 	}
-
+	
 	@Override
 	public IResourceItemType<?> getSecondary()
 	{

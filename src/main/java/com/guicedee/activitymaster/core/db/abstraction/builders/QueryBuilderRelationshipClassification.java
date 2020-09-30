@@ -8,51 +8,38 @@ package com.guicedee.activitymaster.core.db.abstraction.builders;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasValueQueryBuilder;
+import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasClassificationQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.implementations.ClassificationService;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
+import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.io.Serializable;
-
-import static com.entityassist.enumerations.Operand.*;
 
 /**
  * @param <P>
  * @param <S>
  * @param <J>
- *
  * @author Marc Magon
  * @since 01 May 2017
  */
 public abstract class QueryBuilderRelationshipClassification<P extends WarehouseCoreTable, S extends WarehouseCoreTable,
-		                                                            J extends QueryBuilderRelationshipClassification<P, S, J, E, I, ST>,
-		                                                            E extends WarehouseClassificationRelationshipTable<P, S, E, J, I, ST,?,?>,
-		                                                            I extends Serializable, ST extends WarehouseSecurityTable>
+		J extends QueryBuilderRelationshipClassification<P, S, J, E, I, ST>,
+		E extends WarehouseClassificationRelationshipTable<P, S, E, J, I, ST, ?, ?>,
+		I extends Serializable, ST extends WarehouseSecurityTable>
 		extends QueryBuilderRelationship<P, S, J, E, I, ST>
+		implements IHasClassificationQueryBuilder<J, E, I>,
+		           IHasValueQueryBuilder<J,E,I>
 {
-
-	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
-	public J findHierarchyLink(P parent, S child, IEnterprise<?> enterprise)
+	@Override
+	public boolean onCreate(E entity)
 	{
-		findLink(parent, child);
-		ClassificationService service = GuiceContext.get(ClassificationService.class);
-		Classification hierarchyType = (Classification) service.getHierarchyType(enterprise);
-
-		withClassification(hierarchyType);
-		return (J) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
-	public J withClassification(IClassification<?> classification)
-	{
-		if (classification != null)
+		if (entity.getClassificationID() == null)
 		{
-			where(getAttribute("classificationID"), Equals, classification);
+			IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
+			entity.setClassificationID((Classification) classificationService.find(Classifications.NoClassification, entity.getEnterpriseID()));
 		}
-		return (J) this;
+		return super.onCreate(entity);
 	}
 }

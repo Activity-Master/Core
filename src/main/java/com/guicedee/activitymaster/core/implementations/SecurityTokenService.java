@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.implementations;
 
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
@@ -28,7 +27,6 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications.*;
@@ -37,7 +35,7 @@ import static com.guicedee.activitymaster.core.services.classifications.security
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
-@Singleton
+
 public class SecurityTokenService
 		implements ISecurityTokenService<SecurityTokenService>
 {
@@ -107,7 +105,7 @@ public class SecurityTokenService
 		if (exists.isEmpty())
 		{
 			exists = st.builder()
-			           .findByName(name)
+			           .withName(name)
 			           .inActiveRange(classification.getEnterpriseID())
 			           .inDateRange()
 			           .get();
@@ -183,7 +181,9 @@ public class SecurityTokenService
 
 	private void updateSecurityHierarchy(Long securityTokenID)
 	{
-		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
+
+		//TODO hierarchy updates? i wonder
+		/*javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
 
 		try (java.sql.Connection c = ds.getConnection();
 		     java.sql.CallableStatement st = c.prepareCall("{call MergeHierarchy (?)}");
@@ -198,7 +198,7 @@ public class SecurityTokenService
 		catch (java.sql.SQLException e)
 		{
 			log.log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
-		}
+		}*/
 	}
 
 	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
@@ -208,7 +208,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup, enterprise, identityToken)
-		                                   .findByName(Everyone)
+		                                   .withName(Everyone)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .withEnterprise(enterprise)
@@ -224,7 +224,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup, enterprise, identityToken)
-		                                   .findByName(Everywhere)
+		                                   .withName(Everywhere)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .withEnterprise(enterprise)
@@ -240,7 +240,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup, enterprise, identityToken)
-		                                   .findByName(Guests)
+		                                   .withName(Guests)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .withEnterprise(enterprise)
@@ -256,7 +256,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup, enterprise, identityToken)
-		                                   .findByName(Registered)
+		                                   .withName(Registered)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .withEnterprise(enterprise)
@@ -272,7 +272,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup, enterprise, identityToken)
-		                                   .findByName(Visitors)
+		                                   .withName(Visitors)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .withEnterprise(enterprise)
@@ -288,7 +288,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroup, enterprise, identityToken)
-		                                   .findByName(Administrators)
+		                                   .withName(Administrators)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .withEnterprise(enterprise)
@@ -304,7 +304,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(UserGroupSecurityTokenClassifications.System, enterprise, identityToken)
-		                                   .findByName(System)
+		                                   .withName(System)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
 		                                   .withEnterprise(enterprise)
@@ -320,7 +320,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(Plugin, enterprise, identityToken)
-		                                   .findByName(Plugins)
+		                                   .withName(Plugins)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   //  .canRead(enterprise, identityToken)
 		                                   .inDateRange()
@@ -336,7 +336,7 @@ public class SecurityTokenService
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .findFolder(Application, enterprise, identityToken)
-		                                   .findByName(Applications)
+		                                   .withName(Applications)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   //   .canRead(enterprise, identityToken)
 		                                   .inDateRange()

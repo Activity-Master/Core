@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.implementations;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
@@ -11,11 +12,9 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
 import com.guicedee.activitymaster.core.services.classifications.systems.SystemsClassifications;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.activitymaster.core.systems.SystemsSystem;
-import com.google.inject.Singleton;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
@@ -24,10 +23,10 @@ import javax.cache.annotation.CacheResult;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.guicedee.activitymaster.core.ActivityMasterStatics.*;
-import static com.guicedee.activitymaster.core.services.classifications.systems.SystemsClassifications.*;
+import static com.guicedee.activitymaster.core.ActivityMasterStatics.transactionTimeout;
+import static com.guicedee.activitymaster.core.services.classifications.systems.SystemsClassifications.SystemIdentity;
 
-@Singleton
+
 public class SystemsService
 		implements ISystemsService
 {
@@ -47,7 +46,7 @@ public class SystemsService
 	{
 		Systems search = new Systems();
 		return search.builder()
-		             .findByName(systemName)
+		             .withName(systemName)
 		             .withEnterprise(enterprise)
 		             .inActiveRange(enterprise, token)
 		             .inDateRange()
@@ -139,7 +138,7 @@ public class SystemsService
 		Systems newSystem = new Systems();
 		Optional<Systems> exists = newSystem.builder()
 		                                    .withEnterprise(enterprise)
-		                                    .findByName(systemName)
+		                                    .withName(systemName)
 		                                    .get();
 		if (exists.isEmpty())
 		{
@@ -159,14 +158,14 @@ public class SystemsService
 		}
 		else
 		{
-			newSystem = exists.get();
+			return findSystem(enterprise, systemName, identityToken);
 		}
 
 		return newSystem;
 	}
 
 	@CacheResult(cacheName = "SystemGetSecurityToken")
-	public SecurityToken getSecurityToken(@CacheKey UUID uuidIdentity, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getSecurityToken(@CacheKey UUID uuidIdentity, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		Optional<SecurityToken> token = new SecurityToken().builder()
 		                                                   .findBySecurityToken(uuidIdentity.toString(), system.getEnterpriseID())
@@ -189,7 +188,7 @@ public class SystemsService
 	@Override
 	public UUID getSecurityIdentityToken(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		Optional<IRelationshipValue<ISystems<?>, IClassification<?>, ?>> systemToken = system.find(SystemIdentity, system, identityToken);
+		Optional<IRelationshipValue<ISystems<?>, IClassification<?>, ?>> systemToken = system.findClassifications(SystemIdentity, system.getEnterprise(), identityToken);
 		if (systemToken.isEmpty())
 		{
 			return null;

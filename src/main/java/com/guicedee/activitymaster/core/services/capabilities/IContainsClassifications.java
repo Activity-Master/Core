@@ -1,14 +1,15 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.entityassist.querybuilder.builders.JoinExpression;
+import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilder;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderDefault;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
@@ -34,30 +35,263 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 import static javax.persistence.criteria.JoinType.*;
 
-//import static com.guicedee.guicedinjection.json.StaticStrings.*;
-
 @SuppressWarnings("Duplicates")
 public interface IContainsClassifications<P extends WarehouseCoreTable,
-		                                         S extends WarehouseCoreTable<?, ? extends QueryBuilderDefault, ?, ?>,
-		                                         Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, L, R>,
-		                                         T extends IClassificationValue<?>,
-		                                         L, R,
-		                                         J extends IContainsClassifications<P, S, Q, T, L, R, J>>
+		S extends WarehouseCoreTable<?, ? extends QueryBuilderDefault, ?, ?>,
+		Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, L, R>,
+		C extends IClassificationValue<?>,
+		L, R,
+		J extends IContainsClassifications<P, S, Q, C, L, R, J>>
 {
-	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> find(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default double sumAll(C value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		List<Object[]> results = getValues(value, null, originatingSystem, identityToken);
+		double d = 0.0d;
+		for (Object[] result : results)
+		{
+			Double D = Double.parseDouble(result[0].toString());
+			d += D;
+		}
+		return d;
+	}
+	
+	/**
+	 * Returns either a List with Strings, or a List with Object[] for each row and values returned
+	 *
+	 * @param value             The classification value to use
+	 * @param searchValue       The search Value to use
+	 * @param originatingSystem The system coming from
+	 * @param identityToken     The identity token to use
+	 * @param values            Any additional values to select
+	 * @return The result of List&gt;String&lt; or List&gt;Object[]&lt;
+	 */
+	default List<Object[]> getValues(C value, String searchValue, ISystems<?> originatingSystem, UUID[] identityToken, C... values)
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-		return (Optional<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
-		                                                                     .findLink((P) this, (S) classification, null)
-		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
-		                                                                     .inDateRange()
-		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                                                     .get();
+		List<C> fetching = new ArrayList<>();
+		fetching.add(value);
+		if (values != null)
+		{
+			fetching.addAll(Arrays.asList(values));
+		}
+		
+		WarehouseBaseTable base = (WarehouseBaseTable) this;
+		QueryBuilderTable baseTableBuilder = (QueryBuilderTable) base.builder();
+		
+		QueryBuilderRelationship builder = activityMasterIdentity.builder();
+		List<JoinExpression> joins = new ArrayList<>();
+		
+		for (C classificationValue : fetching)
+		{
+			IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+			
+			JoinExpression<?, ?, ?> newExpression = new JoinExpression<>();
+			baseTableBuilder.join(baseTableBuilder.getAttribute("classifications"), LEFT, newExpression);
+			
+			baseTableBuilder.where((newExpression.getGeneratedRoot()
+			                                     .get("classificationID")), Equals, classification);
+			
+			baseTableBuilder.where((newExpression.getGeneratedRoot()
+			                                     .get("activeFlagID")), InList, get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterpriseID(), identityToken));
+			baseTableBuilder.where((newExpression.getGeneratedRoot()
+			                                     .get("enterpriseID")), Equals, originatingSystem.getEnterpriseID());
+			baseTableBuilder.where((newExpression.getGeneratedRoot()
+			                                     .get("effectiveFromDate")), LessThanEqualTo, LocalDateTime.now());
+			baseTableBuilder.where((newExpression.getGeneratedRoot()
+			                                     .get("effectiveToDate")), GreaterThanEqualTo, LocalDateTime.now());
+			
+			baseTableBuilder.where((newExpression.getGeneratedRoot()
+			                                     .get(builder.getPrimaryAttribute()
+			                                                 .getName())), Equals, base.getId());
+			
+			baseTableBuilder.selectColumn(newExpression.getGeneratedRoot()
+			                                           .get("value"));
+			joins.add(newExpression);
+		}
+		
+		if (searchValue != null && !searchValue.isEmpty())
+		{
+			baseTableBuilder.where(baseTableBuilder.getRoot()
+			                                       .get("value"), Equals, searchValue);
+		}
+		
+		List list = baseTableBuilder.getAll();
+		return list;
 	}
-
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(C classification, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification, null, enterprise, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(C classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification.classificationName(), value, enterprise, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(String classification, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification, null, enterprise, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification, searchValue, enterprise, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(C classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification.classificationName(), value, enterprise, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification, null, enterprise, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(String classification, String searchValue, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification, searchValue, enterprise, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(C classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification.classificationName(), value, enterprise, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification, null, enterprise, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(String classification, String searchValue, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification, searchValue, enterprise, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassificationsFirst(C classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassifications(classification.classificationName(), searchValue, originatingSystem.getEnterprise(), true, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassificationsFirst(C classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification.classificationName(), searchValue, enterprise, true, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassificationsFirst(C classification, String searchValue, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassifications(classification.classificationName(), searchValue, originatingSystem.getEnterprise(), true, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findClassificationsFirst(C classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassifications(classification.classificationName(), searchValue, enterprise, true, latest, identityToken);
+	}
+	
+	@SuppressWarnings("unchecked")
+	default Optional<IRelationshipValue<L, R, ?>> findClassifications(String classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	{
+		Q relationshipTable = get(findClassificationQueryRelationshipTableType());
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		var queryBuilderRelationshipClassification
+				= relationshipTable.builder()
+				                   .findLink((P) this,(S) iClassification,searchValue)
+				                   .inActiveRange(enterprise, identityToken)
+				                   .inDateRange()
+				                   .withEnterprise(enterprise)
+				                   .canRead(enterprise, identityToken);
+		if (first)
+		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		if (latest)
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		
+		//noinspection rawtypes
+		return (Optional) queryBuilderRelationshipClassification.get();
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(C classification, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassificationsAll(classification.classificationName(), null, originatingSystem.getEnterprise(), false, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(C classification, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassificationsAll(classification.classificationName(), null, originatingSystem.getEnterprise(), latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(C classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassificationsAll(classification.classificationName(), null, enterprise, latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(C classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassificationsAll(classification.classificationName(), value, originatingSystem.getEnterprise(), false, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(C classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassificationsAll(classification.classificationName(), value, originatingSystem.getEnterprise(), latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(C classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassificationsAll(classification.classificationName(), value, enterprise, latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(String classification, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassificationsAll(classification, null, originatingSystem.getEnterprise(), false, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(String classification, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassificationsAll(classification, null, originatingSystem.getEnterprise(), latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassificationsAll(classification, null, enterprise, latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(String classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassificationsAll(classification, value, originatingSystem.getEnterprise(), false, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(String classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findClassificationsAll(classification, value, originatingSystem.getEnterprise(), latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findClassificationsAll(String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findClassificationsAll(classification, value, enterprise, latest, identityToken);
+	}
+	
+	@SuppressWarnings("unchecked")
+	default @NotNull List<IRelationshipValue<L, R, ?>> findClassificationsAll(String classification, String searchValue, IEnterprise<?> enterprise, boolean latest, UUID... identityToken)
+	{
+		Q relationshipTable = get(findClassificationQueryRelationshipTableType());
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		var queryBuilderRelationshipClassification
+				= relationshipTable.builder()
+				                   .findParentLink((P) this)
+				                   .inActiveRange(enterprise, identityToken)
+				                   .withValue(searchValue)
+				                   .withClassification(iClassification)
+				                   .inDateRange()
+				                   .canRead(enterprise, identityToken);
+		if (latest)
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		return (List) queryBuilderRelationshipClassification.getAll();
+	}
+	
+	
 	@NotNull
 	@SuppressWarnings("unchecked")
 	default Class<Q> findClassificationQueryRelationshipTableType()
@@ -74,119 +308,24 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		}
 		return null;
 	}
-
-	default double sumAll(T value, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		List<Object[]> results = getValues(value, null, originatingSystem, identityToken);
-		double d = 0.0d;
-		for (Object[] result : results)
-		{
-			Double D = Double.parseDouble(result[0].toString());
-			d += D;
-		}
-		return d;
-	}
-
-	/**
-	 * Returns either a List with Strings, or a List with Object[] for each row and values returned
-	 *
-	 * @param value
-	 * 		The classification value to use
-	 * @param searchValue
-	 * 		The search Value to use
-	 * @param originatingSystem
-	 * 		The system coming from
-	 * @param identityToken
-	 * 		The identity token to use
-	 * @param values
-	 * 		Any additional values to select
-	 *
-	 * @return The result of List&gt;String&lt; or List&gt;Object[]&lt;
-	 */
-	default List<Object[]> getValues(T value, String searchValue, ISystems<?> originatingSystem, UUID[] identityToken, T... values)
-	{
-		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
-		IClassificationService classificationService = get(IClassificationService.class);
-		List<T> fetching = new ArrayList<>();
-		fetching.add(value);
-		if (values != null)
-		{
-			fetching.addAll(Arrays.asList(values));
-		}
-
-		WarehouseBaseTable base = (WarehouseBaseTable) this;
-		QueryBuilder baseTableBuilder = (QueryBuilder) base.builder();
-
-		QueryBuilderRelationship builder = activityMasterIdentity.builder();
-		List<JoinExpression> joins = new ArrayList<>();
-
-		for (T classificationValue : fetching)
-		{
-			IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
-			JoinExpression newExpression = new JoinExpression();
-			baseTableBuilder.join(baseTableBuilder.getAttribute("classifications"), LEFT, newExpression);
-			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get("classificationID")), Equals, classification);
-
-			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get("activeFlagID")), InList, get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterpriseID(), identityToken));
-			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get("enterpriseID")), Equals, originatingSystem.getEnterpriseID());
-			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get("effectiveFromDate")), LessThanEqualTo, LocalDateTime.now());
-			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get("effectiveToDate")), GreaterThanEqualTo, LocalDateTime.now());
-
-			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get(builder.getPrimaryAttribute()
-			                                                 .getName())), Equals, base.getId());
-
-			baseTableBuilder.selectColumn(newExpression.getGeneratedRoot()
-			                                           .get("value"));
-			joins.add(newExpression);
-		}
-
-		if (searchValue != null && !searchValue.isEmpty())
-		{
-			baseTableBuilder.where(baseTableBuilder.getRoot()
-			                                       .get("value"), Equals, searchValue);
-		}
-
-		List list = baseTableBuilder.getAll();
-		return list;
-	}
-
+	
+	@NotNull
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> findFirst(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default Class<P> findClassificationsPrimaryTableType()
 	{
-		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
-		return (Optional<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
-		                                                                     .findLink((P) this, (S) classification, null)
-		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
-		                                                                     .inDateRange()
-		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                                                     .setReturnFirst(true)
-		                                                                     .get();
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
+		{
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsClassifications.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<P>) genericTypes[0];
+			}
+		}
+		return null;
 	}
-
-	@SuppressWarnings("unchecked")
-	default List<IRelationshipValue<L, R, ?>> findAll(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-		return (List<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
-		                                                                 .findLink((P) this, (S) classification, null)
-		                                                                 .inActiveRange(originatingSystem.getEnterpriseID())
-		                                                                 .inDateRange()
-		                                                                 .canRead(originatingSystem.getEnterpriseID(), identityToken)
-		                                                                 .getAll();
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	default List<IRelationshipValue<L, R, ?>> findAllClassifications(ISystems<?> originatingSystem, UUID... identityToken)
 	{
@@ -198,35 +337,117 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                                                                 .canRead(originatingSystem.getEnterpriseID(), identityToken)
 		                                                                 .getAll();
 	}
-
-	default boolean has(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	
+	
+	default boolean hasClassificationsBefore(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		return numberOf(classificationValue, originatingSystem, identityToken) > 0;
+		return numberOfAllClassifications(classificationValue, enterprise, identityToken) > 0;
 	}
-
-	@SuppressWarnings("unchecked")
-	default long numberOf(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	
+	default boolean hasClassificationsBefore(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
+		return numberOfAllClassifications(classificationValue, value, enterprise, identityToken) > 0;
+	}
+	
+	default boolean hasClassifications(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return numberOfClassifications(classificationValue, enterprise, identityToken) > 0;
+	}
+	
+	default boolean hasClassifications(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return numberOfClassifications(classificationValue, value, enterprise, identityToken) > 0;
+	}
+	
+	default boolean hasClassifications(C classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return numberOfClassifications(classificationValue, originatingSystem.getEnterprise(), identityToken) > 0;
+	}
+	
+	default boolean hasClassifications(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return numberOfClassifications(classificationValue, value, originatingSystem.getEnterprise(), identityToken) > 0;
+	}
+	
+	@SuppressWarnings("unchecked")
+	default long numberOfClassifications(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findClassificationCountableQueryRelationshipTableType());
+		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
+		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, null)
-		                             .inActiveRange(originatingSystem.getEnterpriseID())
+		                             .inActiveRange(enterprise)
 		                             .inDateRange()
-		                             .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                             .canRead(enterprise, identityToken)
 		                             .getCount();
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> add(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default long numberOfClassifications(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findClassificationCountableQueryRelationshipTableType());
+		
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		return activityMasterIdentity.builder()
+		                             .findLink((P) this, (S) classification, value)
+		                             .inActiveRange(enterprise)
+		                             .inDateRange()
+		                             .canRead(enterprise, identityToken)
+		                             .getCount();
+	}
+	
+	@SuppressWarnings("unchecked")
+	default long numberOfAllClassifications(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findClassificationCountableQueryRelationshipTableType());
+		
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		return activityMasterIdentity.builder()
+		                             .findLink((P) this, (S) classification, null)
+		                             .getCount();
+	}
+	
+	@SuppressWarnings("unchecked")
+	default long numberOfAllClassifications(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findClassificationCountableQueryRelationshipTableType());
+		
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		return activityMasterIdentity.builder()
+		                             .findLink((P) this, (S) classification, value)
+		                             .getCount();
+	}
+	
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<Q> findClassificationCountableQueryRelationshipTableType()
+	{
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
+		{
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsClassifications.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<Q>) genericTypes[2];
+			}
+		}
+		return null;
+	}
+	
+	
+	default IRelationshipValue<L, R, ?> add(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
+		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
+		
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		tableForClassification.setClassificationID((Classification) classification);
 		tableForClassification.setValue(value);
@@ -235,29 +456,29 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 		configureForClassification(tableForClassification, originatingSystem.getEnterpriseID());
-
+		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
-				    .isSecurityEnabled())
+				.isSecurityEnabled())
 		{
 			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
 		}
-
+		
 		return tableForClassification;
 	}
-
+	
 	void configureForClassification(Q classificationLink, IEnterprise<?> enterprise);
-
+	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> addOrUpdate(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrUpdate(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
+		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
+		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classification, null)
+		                                                         .findLink((P) this, (S) classification, value)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canCreate(originatingSystem.getEnterpriseID(), identityToken)
@@ -269,15 +490,22 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		else
 		{
 			tableForClassification = exists.get();
+			if (Strings.nullToEmpty(value)
+			           .equals(exists.get()
+			                         .getValue()))
+			{
+				return exists.get();
+			}
+			
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
-
+			
 			IActiveFlagService flagService = get(IActiveFlagService.class);
 			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
-
+			
 			Q newTableForClassification = get(findClassificationQueryRelationshipTableType());
-
+			
 			newTableForClassification.setId(null);
 			newTableForClassification.setClassificationID(tableForClassification.getClassificationID());
 			newTableForClassification.setSystemID((Systems) originatingSystem);
@@ -292,24 +520,24 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureForClassification(newTableForClassification, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
-
+			
 			if (get(ActivityMasterConfiguration.class)
-					    .isSecurityEnabled())
+					.isSecurityEnabled())
 			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
 			}
 		}
 		return tableForClassification;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> addOrReuse(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrReuse(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
+		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
+		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
@@ -317,7 +545,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		                                                         .withEnterprise(originatingSystem.getEnterpriseID())
 		                                                         .canCreate(originatingSystem.getEnterpriseID(), identityToken)
 		                                                         .get();
-
+		
 		if (exists.isEmpty())
 		{
 			tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
@@ -328,10 +556,10 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 			configureForClassification(tableForClassification, originatingSystem.getEnterpriseID());
-
+			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
-					    .isSecurityEnabled())
+					.isSecurityEnabled())
 			{
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
 			}
@@ -342,12 +570,11 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		}
 		return tableForClassification;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	default IRelationshipValue<L, R, ?> add(IClassification<?> classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
+		
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		tableForClassification.setClassificationID((Classification) classificationValue);
 		tableForClassification.setValue(value);
@@ -356,22 +583,22 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 		configureForClassification(tableForClassification, originatingSystem.getEnterpriseID());
-
+		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
-				    .isSecurityEnabled())
+				.isSecurityEnabled())
 		{
 			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
 		}
-
+		
 		return tableForClassification;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	default IRelationshipValue<L, R, ?> addOrReuse(IClassification<?> classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
+		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
@@ -388,10 +615,10 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 			configureForClassification(tableForClassification, originatingSystem.getEnterpriseID());
-
+			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
-					    .isSecurityEnabled())
+					.isSecurityEnabled())
 			{
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
 			}
@@ -402,12 +629,12 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		}
 		return tableForClassification;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	default IRelationshipValue<L, R, ?> addOrUpdate(IClassification<?> classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
+		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
@@ -424,24 +651,30 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 			configureForClassification(tableForClassification, originatingSystem.getEnterpriseID());
-
+			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
-					    .isSecurityEnabled())
+					.isSecurityEnabled())
 			{
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
 			}
 		}
 		else
 		{
+			if (Strings.nullToEmpty(value)
+			           .equals(exists.get()
+			                         .getValue()))
+			{
+				return exists.get();
+			}
 			tableForClassification = exists.get();
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
-
+			
 			IActiveFlagService flagService = get(IActiveFlagService.class);
 			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
-
+			
 			Q newTableForClassification = get(findClassificationQueryRelationshipTableType());
 			newTableForClassification.setId(null);
 			newTableForClassification.setClassificationID(tableForClassification.getClassificationID());
@@ -457,24 +690,24 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureForClassification(newTableForClassification, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
-
+			
 			if (get(ActivityMasterConfiguration.class)
-					    .isSecurityEnabled())
+					.isSecurityEnabled())
 			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
 			}
 		}
 		return tableForClassification;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> update(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> update(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
-		IClassificationService classificationService = get(IClassificationService.class);
+		
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
+		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
@@ -488,13 +721,19 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		else
 		{
 			tableForClassification = exists.get();
+			if (Strings.nullToEmpty(value)
+			           .equals(exists.get()
+			                         .getValue()))
+			{
+				return exists.get();
+			}
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
-
+			
 			IActiveFlagService flagService = get(IActiveFlagService.class);
 			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
-
+			
 			Q newTableForClassification = get(findClassificationQueryRelationshipTableType());
 			newTableForClassification.setId(null);
 			newTableForClassification.setClassificationID(tableForClassification.getClassificationID());
@@ -510,24 +749,24 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			configureForClassification(newTableForClassification, originatingSystem.getEnterpriseID());
 			newTableForClassification.persist();
-
+			
 			if (get(ActivityMasterConfiguration.class)
-					    .isSecurityEnabled())
+					.isSecurityEnabled())
 			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
 			}
 		}
 		return tableForClassification;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> expire(T classificationValue, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> expire(C classificationValue, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
+		
 		IClassificationService classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
+		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
@@ -547,17 +786,17 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		}
 		return tableForClassification;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> archive(T classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> archive(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
-		IClassificationService classificationService = get(IClassificationService.class);
+		
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
+		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classification, null)
+		                                                         .findLink((P) this, (S) classification, value)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
@@ -570,22 +809,22 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
-
+			
 			IActiveFlagService flagService = get(IActiveFlagService.class);
 			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
 			tableForClassification.updateNow();
 		}
 		return tableForClassification;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> remove(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> remove(C classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
-
-		IClassificationService classificationService = get(IClassificationService.class);
+		
+		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
-
+		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
@@ -605,5 +844,5 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		}
 		return tableForClassification;
 	}
-
+	
 }

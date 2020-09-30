@@ -1,8 +1,10 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.guicedee.activitymaster.core.ActivityMasterService;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.time.*;
 import com.guicedee.activitymaster.core.db.timelord.EnglishNumberToWords;
+import com.guicedee.activitymaster.core.implementations.TimeService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IProgressable;
 import com.guicedee.activitymaster.core.services.system.ITimeSystem;
@@ -24,46 +26,47 @@ import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.core.services.types.DateTimeFormats.*;
 import static com.guicedee.activitymaster.core.services.types.NumberFormats.*;
 import static java.time.temporal.ChronoUnit.*;
-import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class TimeSystem
-		implements ITimeSystem, IProgressable
+		implements ITimeSystem,
+		           IProgressable
 {
 	private IActivityMasterProgressMonitor progressMonitor;
-
+	
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-			timeout = 50000)
+	               timeout = 50000)
 	public void loadTimeRange(int startYear, int endYear, IActivityMasterProgressMonitor progressMonitoro)
 	{
 		JobService.getInstance()
 		          .setMaxQueueCount("TimeRangeLoading", 500);
-
+		
 		progressMonitor = progressMonitoro;
-
+		
 		logProgress("Starting Time Load", "Time load is starting from " + startYear + " + to " + endYear, progressMonitoro);
 		GregorianCalendar startYearGC = new GregorianCalendar();
 		startYearGC.set(Calendar.YEAR, startYear);
 		startYearGC.set(Calendar.MONTH, 0);
 		startYearGC.set(Calendar.DATE, 1);
-
+		
 		GregorianCalendar endGC = new GregorianCalendar();
 		endGC.set(Calendar.YEAR, endYear);
 		endGC.set(Calendar.MONTH, 11);
 		endGC.set(Calendar.DATE, 31);
 		while (startYearGC.getTime()
 		                  .getTime() <=
-		       endGC.getTime()
-		            .getTime())
+				endGC.getTime()
+				     .getTime())
 		{
 			getDay(startYearGC.getTime());
 			startYearGC.add(Calendar.DATE, 1);
 		}
-
-		JobService.getInstance()
-		          .waitForJob("TimeRangeLoading", 15, MINUTES);
+		
+		//Create data storage partitions
+		GuiceContext.get(ActivityMasterService.class)
+		            .updatePartitionBases();
 	}
-
+	
 	@CacheResult(cacheName = "Years")
 	public Years getYear(@CacheKey Date date)
 	{
@@ -72,14 +75,14 @@ public class TimeSystem
 		if (year == null)
 		{
 			logProgress("Time Lord", "Creating Year [" +
-			                         YearIDFormat.getSimpleDateFormat()
-			                                     .format(date) +
-			                         "]", progressMonitor);
+					YearIDFormat.getSimpleDateFormat()
+					            .format(date) +
+					"]", progressMonitor);
 			year = createYear(date);
 		}
 		return year;
 	}
-
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Years createYear(Date date)
 	{
@@ -103,7 +106,7 @@ public class TimeSystem
 		year.persist();
 		return year;
 	}
-
+	
 	private Years getYearFromID(Date date)
 	{
 		return new Years().builder()
@@ -112,7 +115,7 @@ public class TimeSystem
 		                  .get()
 		                  .orElse(null);
 	}
-
+	
 	private int getLastYearID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -121,57 +124,56 @@ public class TimeSystem
 		return Integer.parseInt(YearIDFormat.getSimpleDateFormat()
 		                                    .format(gc.getTime()));
 	}
-
+	
 	/**
 	 * @param date
-	 *
 	 * @return
 	 */
-
+	
 	private Quarters createQuarter(Date date)
 	{
 		Quarters quarter = new Quarters(getQuarterID(date));
 		quarter.setLastYearID((short) getLastYearQuarterID(date));
 		quarter.setLastQuarterID((short) getLastQuarterID(date));
 		quarter.setQuarterDescription("Q" +
-		                              getQuarterNumber(date) +
-		                              " " +
-		                              YearIDFormat.getSimpleDateFormat()
-		                                          .format(date));
+				                              getQuarterNumber(date) +
+				                              " " +
+				                              YearIDFormat.getSimpleDateFormat()
+				                                          .format(date));
 		quarter.setQuarterGraphDescription("Q" +
-		                                   getQuarterNumber(date) +
-		                                   " - " +
-		                                   YearIDFormat.getSimpleDateFormat()
-		                                               .format(date));
+				                                   getQuarterNumber(date) +
+				                                   " - " +
+				                                   YearIDFormat.getSimpleDateFormat()
+				                                               .format(date));
 		quarter.setQuarterGridDescription("Quarter " +
-		                                  getQuarterNumber(date) +
-		                                  " - " +
-		                                  YearIDFormat.getSimpleDateFormat()
-		                                              .format(date));
+				                                  getQuarterNumber(date) +
+				                                  " - " +
+				                                  YearIDFormat.getSimpleDateFormat()
+				                                              .format(date));
 		quarter.setId(getQuarterID(date));
 		quarter.setQuarterInYear(getQuarterNumber(date));
 		quarter.setQuarterQQMMDescription("Q" +
-		                                  DoubleDigits.formatter()
-		                                              .format(getQuarterNumber(date)) +
-		                                  " " +
-		                                  MonthNumberFormat.getSimpleDateFormat()
-		                                                   .format(date));
+				                                  DoubleDigits.formatter()
+				                                              .format(getQuarterNumber(date)) +
+				                                  " " +
+				                                  MonthNumberFormat.getSimpleDateFormat()
+				                                                   .format(date));
 		quarter.setQuarterSmallDescription("Quart " +
-		                                   getQuarterNumber(date) +
-		                                   " " +
-		                                   YearIDFormat.getSimpleDateFormat()
-		                                               .format(date));
+				                                   getQuarterNumber(date) +
+				                                   " " +
+				                                   YearIDFormat.getSimpleDateFormat()
+				                                               .format(date));
 		quarter.setQuarterYYMMDescription("'" +
-		                                  YearShortFormat.getSimpleDateFormat()
-		                                                 .format(date) +
-		                                  " Q" +
-		                                  DoubleDigits.formatter()
-		                                              .format(getQuarterNumber(date)));
+				                                  YearShortFormat.getSimpleDateFormat()
+				                                                 .format(date) +
+				                                  " Q" +
+				                                  DoubleDigits.formatter()
+				                                              .format(getQuarterNumber(date)));
 		quarter.setQuarterYearDescription(quarter.getQuarterDescription());
 		quarter.setYearID(getYear(date));
 		return quarter;
 	}
-
+	
 	@CacheResult
 	public Quarters getQuarter(@CacheKey Date date)
 	{
@@ -191,7 +193,7 @@ public class TimeSystem
 		}
 		return month;
 	}
-
+	
 	private Quarters getQuarterFromID(Date date) throws Exception
 	{
 		return new Quarters().builder()
@@ -199,7 +201,7 @@ public class TimeSystem
 		                     .get()
 		                     .orElse(null);
 	}
-
+	
 	private int getLastQuarterID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -207,7 +209,7 @@ public class TimeSystem
 		gc.add(Calendar.MONTH, -4);
 		return getQuarterID(gc.getTime());
 	}
-
+	
 	private int getQuarterNumber(Date date)
 	{
 		int quarterNumber = 0;
@@ -231,7 +233,7 @@ public class TimeSystem
 		}
 		return quarterNumber;
 	}
-
+	
 	private int getQuarterID(Date date)
 	{
 		int quarterNumber = getQuarterNumber(date);
@@ -239,7 +241,7 @@ public class TimeSystem
 		                                                             .format(date)) + "" + quarterNumber);
 		return returnId;
 	}
-
+	
 	private int getLastYearQuarterID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -247,10 +249,9 @@ public class TimeSystem
 		gc.add(Calendar.YEAR, -1);
 		return getQuarterID(gc.getTime());
 	}
-
+	
 	/**
 	 * @param date
-	 *
 	 * @return
 	 */
 	@CacheResult
@@ -262,13 +263,13 @@ public class TimeSystem
 		{
 			month = createMonth(date);
 			logProgress("Time Lord", "Creating Month [" +
-			                         month.getMonthDescription() +
-			                         "]", 1, progressMonitor);
+					month.getMonthDescription() +
+					"]", 1, progressMonitor);
 			month.persist();
 		}
 		return month;
 	}
-
+	
 	@CacheResult
 	private MonthOfYear getMonthOfYear(@CacheKey Integer MonthOfYear)
 	{
@@ -277,7 +278,7 @@ public class TimeSystem
 		                        .get()
 		                        .orElse(null);
 	}
-
+	
 	private Months createMonth(Date date)
 	{
 		Months month = new Months(Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
@@ -310,7 +311,7 @@ public class TimeSystem
 		                                             .format(date)));
 		return month;
 	}
-
+	
 	private int getLastQuarterMonthID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -319,7 +320,7 @@ public class TimeSystem
 		return Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
 		                                     .format(gc.getTime()));
 	}
-
+	
 	private int getLastMonthYearID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -328,7 +329,7 @@ public class TimeSystem
 		return Integer.parseInt(YearIDFormat.getSimpleDateFormat()
 		                                    .format(gc.getTime()));
 	}
-
+	
 	private int getLastMonthID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -337,7 +338,7 @@ public class TimeSystem
 		return Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
 		                                     .format(gc.getTime()));
 	}
-
+	
 	private int getLastYearMonthID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -346,7 +347,7 @@ public class TimeSystem
 		return Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
 		                                     .format(gc.getTime()));
 	}
-
+	
 	private Months getMonthFromID(Date date)
 	{
 		return new Months().builder()
@@ -355,12 +356,10 @@ public class TimeSystem
 		                   .get()
 		                   .orElse(null);
 	}
-
+	
 	/**
 	 * @param date
-	 *
 	 * @return
-	 *
 	 * @throws Exception
 	 */
 	@CacheResult
@@ -382,7 +381,7 @@ public class TimeSystem
 		}
 		return month;
 	}
-
+	
 	private Weeks getWeekFromID(Date date)
 	{
 		int weekID = getWeekID(date);
@@ -391,7 +390,7 @@ public class TimeSystem
 		                  .get()
 		                  .orElse(null);
 	}
-
+	
 	private int getWeekID(Date date)
 	{
 		GregorianCalendar gc = (GregorianCalendar) GregorianCalendar.getInstance();
@@ -402,7 +401,7 @@ public class TimeSystem
 		//System.out.println("Week ID : " + weekID);
 		return weekID;
 	}
-
+	
 	private Weeks createWeek(Date date)
 	{
 		Weeks week = new Weeks();
@@ -417,15 +416,14 @@ public class TimeSystem
 		week.setWeekShortDescription("W" + gc.get(Calendar.WEEK_OF_YEAR));
 		week.setYearID(Integer.parseInt(YearIDFormat.getSimpleDateFormat()
 		                                            .format(date)));
-
+		
 		return week;
 	}
-
+	
 	/**
 	 * Day
 	 *
 	 * @param date
-	 *
 	 * @return
 	 */
 	@CacheResult
@@ -453,7 +451,7 @@ public class TimeSystem
 		}
 		return true;
 	}
-
+	
 	@CacheResult
 	private DayNames getDayName(@CacheKey String dayName)
 	{
@@ -462,7 +460,7 @@ public class TimeSystem
 		                     .get()
 		                     .orElse(null);
 	}
-
+	
 	private Days getDayFromID(Date date)
 	{
 		return new Days().builder()
@@ -471,7 +469,7 @@ public class TimeSystem
 		                 .get()
 		                 .orElse(null);
 	}
-
+	
 	private int getLastDayID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -480,7 +478,7 @@ public class TimeSystem
 		return Integer.parseInt(DayIDFormat.getSimpleDateFormat()
 		                                   .format(gc.getTime()));
 	}
-
+	
 	private int getLastMonthDayID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -489,7 +487,7 @@ public class TimeSystem
 		return Integer.parseInt(DayIDFormat.getSimpleDateFormat()
 		                                   .format(gc.getTime()));
 	}
-
+	
 	private int getLastYearDayID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -498,7 +496,7 @@ public class TimeSystem
 		return Integer.parseInt(DayIDFormat.getSimpleDateFormat()
 		                                   .format(gc.getTime()));
 	}
-
+	
 	private int getLastQuarterDayID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -507,7 +505,7 @@ public class TimeSystem
 		return Integer.parseInt(DayIDFormat.getSimpleDateFormat()
 		                                   .format(gc.getTime()));
 	}
-
+	
 	private Days createDay(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -517,7 +515,7 @@ public class TimeSystem
 		gc.set(GregorianCalendar.MINUTE, 0);
 		gc.set(GregorianCalendar.MILLISECOND, 0);
 		date = gc.getTime();
-
+		
 		Days newDay = new Days();
 		newDay.setId(Integer.parseInt(DayIDFormat.getSimpleDateFormat()
 		                                         .format(date)));
@@ -530,27 +528,27 @@ public class TimeSystem
 		newDay.setDayLongDescription(DayLongDescriptionFormat.getSimpleDateFormat()
 		                                                     .format(date));
 		newDay.setDayMMQQDescription("Q" +
-		                             DoubleDigits.formatter()
-		                                         .format(getQuarterNumber(date)) +
-		                             "-" +
-		                             MonthNumberFormat.getSimpleDateFormat()
-		                                              .format(date) +
-		                             "-" +
-		                             DayInMonthFormat.getSimpleDateFormat()
-		                                             .format(date));
+				                             DoubleDigits.formatter()
+				                                         .format(getQuarterNumber(date)) +
+				                             "-" +
+				                             MonthNumberFormat.getSimpleDateFormat()
+				                                              .format(date) +
+				                             "-" +
+				                             DayInMonthFormat.getSimpleDateFormat()
+				                                             .format(date));
 		newDay.setDayMonthDescription(MonthLongDescriptionFormat.getSimpleDateFormat()
 		                                                        .format(date));
 		newDay.setDayNameID(getDayName(gc.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH)));
 		newDay.setDayYYYYMMDescription(DaySlashIDFormat.getSimpleDateFormat()
 		                                               .format(date));
-
+		
 		newDay.setDayDDMMYYYYDescription(DayDDMMYYYYFormat.getSimpleDateFormat()
 		                                                  .format(date));
 		newDay.setDayDDMMYYYYSlashDescription(DaySlashDDMMYYYYFormat.getSimpleDateFormat()
 		                                                            .format(date));
 		newDay.setDayDDMMYYYYHyphenDescription(DayHyphenDDMMYYYYFormat.getSimpleDateFormat()
 		                                                              .format(date));
-
+		
 		newDay.setLastMonthID(getLastMonthDayID(date));
 		newDay.setLastQuarterID(getLastQuarterDayID(date));
 		newDay.setLastYearID(getLastYearDayID(date));
@@ -567,12 +565,12 @@ public class TimeSystem
 			Logger.getLogger(TimeSystem.class.getName())
 			      .log(Level.SEVERE, null, ex);
 		}
-
+		
 		newDay.setDayFullDescription(DayFullDescriptionFormat.getSimpleDateFormat()
 		                                                     .format(date));
 		return newDay;
 	}
-
+	
 	public void populateTransformationTables(Date date, int fiscalLag)
 	{
 		try
@@ -588,18 +586,18 @@ public class TimeSystem
 		getDayMTD(date);
 		getDayFiscal(date, fiscalLag);
 	}
-
+	
 	private void getDayYTD(Date date)
 	{
-
+		
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(date);
-
+		
 		GregorianCalendar startYearGC = new GregorianCalendar();
 		startYearGC.set(Calendar.YEAR, gc.get(Calendar.YEAR));
 		startYearGC.set(Calendar.MONTH, 0);
 		startYearGC.set(Calendar.DATE, 1);
-
+		
 		gc.set(GregorianCalendar.HOUR, 0);
 		gc.set(GregorianCalendar.SECOND, 0);
 		gc.set(GregorianCalendar.MINUTE, 0);
@@ -608,12 +606,12 @@ public class TimeSystem
 		startYearGC.set(GregorianCalendar.SECOND, 0);
 		startYearGC.set(GregorianCalendar.MINUTE, 0);
 		startYearGC.set(GregorianCalendar.MILLISECOND, 0);
-
+		
 		ArrayList<TransYtd> arr = new ArrayList<>();
 		while (startYearGC.getTime()
 		                  .getTime() <=
-		       gc.getTime()
-		         .getTime())
+				gc.getTime()
+				  .getTime())
 		{
 			/*System.out.println("Creating YTD Day [" +
 			                   DayIDFormat.getSimpleDateFormat()
@@ -626,26 +624,26 @@ public class TimeSystem
 			arr.add(tran);
 			startYearGC.add(Calendar.DATE, 1);
 		}
-
+		
 		for (TransYtd transYtd : arr)
 		{
 			transYtd.persist();
 		}
 		arr.clear();
 	}
-
+	
 	private void getDayMTD(Date date)
 	{
-
+		
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(date);
-
+		
 		GregorianCalendar startYearGC = new GregorianCalendar();
 		startYearGC.setTime(date);
 		startYearGC.set(Calendar.YEAR, gc.get(Calendar.YEAR));
 		//startYearGC.set(Calendar.MONTH, 0);
 		startYearGC.set(Calendar.DATE, 1);
-
+		
 		gc.set(GregorianCalendar.HOUR, 0);
 		gc.set(GregorianCalendar.SECOND, 0);
 		gc.set(GregorianCalendar.MINUTE, 0);
@@ -658,8 +656,8 @@ public class TimeSystem
 		ArrayList<TransMtd> arr = new ArrayList<>();
 		while (startYearGC.getTime()
 		                  .getTime() <=
-		       gc.getTime()
-		         .getTime())
+				gc.getTime()
+				  .getTime())
 		{
 			//System.out.println("Creating MTD Day [" + dayIdFormat.format(startYearGC.getTime()) + "]");
 			TransMtd tran = new TransMtd().setId(new TransMtdPK().setDayID(Integer.parseInt(DayIDFormat.getSimpleDateFormat()
@@ -675,12 +673,12 @@ public class TimeSystem
 		}
 		arr.clear();
 	}
-
+	
 	private TransFiscal getDayFiscal(Date date, int fiscalMonthLag)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(date);
-
+		
 		GregorianCalendar startYearGC = new GregorianCalendar();
 		startYearGC.setTime(date);
 		startYearGC.add(Calendar.MONTH, fiscalMonthLag);
@@ -690,16 +688,16 @@ public class TimeSystem
 		tran.persist();
 		return tran;
 	}
-
+	
 	private void getDayQTD(Date date)
 	{
-
+		
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(date);
-
+		
 		GregorianCalendar startYearGC = new GregorianCalendar();
 		startYearGC.set(Calendar.YEAR, gc.get(Calendar.YEAR));
-
+		
 		gc.set(GregorianCalendar.HOUR, 0);
 		gc.set(GregorianCalendar.SECOND, 0);
 		gc.set(GregorianCalendar.MINUTE, 0);
@@ -708,7 +706,7 @@ public class TimeSystem
 		startYearGC.set(GregorianCalendar.SECOND, 0);
 		startYearGC.set(GregorianCalendar.MINUTE, 0);
 		startYearGC.set(GregorianCalendar.MILLISECOND, 0);
-
+		
 		int qNum = getQuarterNumber(date);
 		ArrayList<TransQtd> arr = new ArrayList<>();
 		switch (qNum)
@@ -734,14 +732,14 @@ public class TimeSystem
 				break;
 			}
 		}
-
+		
 		//startYearGC.set(Calendar.MONTH, 0);
 		startYearGC.set(Calendar.DATE, 1);
-
+		
 		while (startYearGC.getTime()
 		                  .getTime() <=
-		       gc.getTime()
-		         .getTime())
+				gc.getTime()
+				  .getTime())
 		{
 			/*System.out.println("Creating QTD Day [" +
 			                   DayIDFormat.getSimpleDateFormat()
@@ -761,10 +759,10 @@ public class TimeSystem
 		}
 		arr.clear();
 	}
-
+	
 	@Override
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-			timeout = 500)
+	               timeout = 500)
 	public void createTime()
 	{
 		System.out.println("Creating Time Table");
@@ -773,24 +771,24 @@ public class TimeSystem
 			Hours hour = new Hours(hr);
 			hour.setAmPmDesc(hr < 13 ? "AM" : "PM");
 			hour.setTwelveHour(hr > 12
-			                   ? "" +
-			                     DoubleDigits.formatter()
-			                                 .format(hr - 12) +
-			                     ":" +
-			                     DoubleDigits.formatter()
-			                                 .format(0)
-			                   : DoubleDigits.formatter()
-			                                 .format(hr) +
-			                     ":" +
-			                     DoubleDigits.formatter()
-			                                 .format(0));
+					                   ? "" +
+					DoubleDigits.formatter()
+					            .format(hr - 12) +
+					":" +
+					DoubleDigits.formatter()
+					            .format(0)
+					                   : DoubleDigits.formatter()
+					                                 .format(hr) +
+					":" +
+					DoubleDigits.formatter()
+					            .format(0));
 			hour.setTwentyFourHour(DoubleDigits.formatter()
 			                                   .format(hr) +
-			                       ":" +
-			                       DoubleDigits.formatter()
-			                                   .format(0));
+					                       ":" +
+					                       DoubleDigits.formatter()
+					                                   .format(0));
 			hour.setPreviousHourID(hr == 0 ? 23 : hr - 1);
-
+			
 			List<HalfHours> halfs = new ArrayList<>();
 			for (int min = 0; min < 60; min++)
 			{
@@ -798,65 +796,84 @@ public class TimeSystem
 				Time time = new Time(primKey);
 				time.setAmPmDesc(hr < 13 ? "AM" : "PM");
 				time.setTwelveHoursDesc(hr > 12
-				                        ? "" +
-				                          DoubleDigits.formatter()
-				                                      .format(hr - 12) +
-				                          ":" +
-				                          DoubleDigits.formatter()
-				                                      .format(min)
-				                        : DoubleDigits.formatter()
-				                                      .format(hr) +
-				                          ":" +
-				                          DoubleDigits.formatter()
-				                                      .format(min));
+						                        ? "" +
+						DoubleDigits.formatter()
+						            .format(hr - 12) +
+						":" +
+						DoubleDigits.formatter()
+						            .format(min)
+						                        : DoubleDigits.formatter()
+						                                      .format(hr) +
+						":" +
+						DoubleDigits.formatter()
+						            .format(min));
 				time.setTwentyFourHoursDesc(DoubleDigits.formatter()
 				                                        .format(hr) +
-				                            ":" +
-				                            DoubleDigits.formatter()
-				                                        .format(min));
+						                            ":" +
+						                            DoubleDigits.formatter()
+						                                        .format(min));
 				time.setPreviousHourID(hr == 0 ? 23 : hr - 1);
 				time.setPreviousMinuteID(min == 0 ? 59 : min - 1);
 				hour.getTimeList()
 				    .add(time);
-
+				
 				if (min == 30 || min == 0)
 				{
 					HalfHours halfHours = new HalfHours().setId(new TimePK(hr, min));
 					halfHours.setAmPmDesc(hr < 13 ? "AM" : "PM");
 					halfHours.setTwelveHourClockDesc(
 							hr > 12
-							? "" +
-							  DoubleDigits.formatter()
-							              .format(hr - 12) +
-							  ":" +
-							  DoubleDigits.formatter()
-							              .format(min)
-							: DoubleDigits.formatter()
-							              .format(hr) +
-							  ":" +
-							  DoubleDigits.formatter()
-							              .format(min));
+									? "" +
+									DoubleDigits.formatter()
+									            .format(hr - 12) +
+									":" +
+									DoubleDigits.formatter()
+									            .format(min)
+									: DoubleDigits.formatter()
+									              .format(hr) +
+									":" +
+									DoubleDigits.formatter()
+									            .format(min));
 					halfHours.setTwentyFourHourClockDesc(DoubleDigits.formatter()
 					                                                 .format(hr) +
-					                                     ":" +
-					                                     DoubleDigits.formatter()
-					                                                 .format(min));
+							                                     ":" +
+							                                     DoubleDigits.formatter()
+							                                                 .format(min));
 					halfHours.setPreviousHourID(hr == 0 ? 23 : hr - 1);
 					halfHours.setPreviousHalfHourMinuteID(min == 0 ? 30 : -0);
 					halfs.add(halfHours);
 				}
 			}
-			hour.persist();
-			for (Time time : hour.getTimeList())
+			
+			try
 			{
-				time.persist();
+				hour.persist();
+				for (Time time : hour.getTimeList())
+				{
+					time.persist();
+				}
+				for (HalfHours half : halfs)
+				{
+					half.persist();
+					HalfHourDayParts halfHourDayParts = new HalfHourDayParts();
+					halfHourDayParts.setHourID(half.getId()
+					                               .getHourID());
+					halfHourDayParts.setMinuteID(half.getId()
+					                                 .getMinuteID());
+					TimeService<?> timeService = GuiceContext.get(TimeService.class);
+					halfHourDayParts.setDayPartID(timeService.getDayPart(half.getId()
+					                                                         .getHourID(),
+					                                                     half.getId()
+					                                                         .getMinuteID()));
+					halfHourDayParts.persist();
+				}
 			}
-			for (HalfHours half : halfs)
+			catch (Exception sql)
 			{
-				half.persist();
+				sql.printStackTrace();
 			}
-
+			
 		}
 	}
-
+	
 }

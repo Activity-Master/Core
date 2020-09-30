@@ -10,6 +10,7 @@ public enum IdentificationTypes
 	IdentificationTypePassportNumber("Passport Number"),
 	IdentificationTypeTaxNumber("Tax Number"),
 	IdentificationTypeVATNumber("Vat Registration Number"),
+	IdentificationTypeRegistrationNumber("Business Registration Number"),
 	IdentificationTypeIdentityNumber("Identity Number"),
 	IdentificationTypeEmailAddress("Email Address"),
 	IdentificationTypeCellPhoneNumber("Cell Phone Number"),
