@@ -9,8 +9,8 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.entityassist.enumerations.Operand;
 
 public class ClassificationQueryBuilder
-		extends QueryBuilderTable<ClassificationQueryBuilder, Classification, Long, ClassificationSecurityToken>
-		implements IContainsNameDescriptionQueryBuilder<ClassificationQueryBuilder, Classification, Long>
+		extends QueryBuilderTable<ClassificationQueryBuilder, Classification, java.util.UUID, ClassificationSecurityToken>
+		implements IContainsNameDescriptionQueryBuilder<ClassificationQueryBuilder, Classification, java.util.UUID>
 	
 {
 	public ClassificationQueryBuilder findByNameAndConcept(String name, ClassificationDataConcept concept)

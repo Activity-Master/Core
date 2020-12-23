@@ -27,9 +27,9 @@ import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
-import javax.persistence.criteria.JoinType;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.criteria.JoinType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -282,7 +282,7 @@ public class ArrangementsService
 	}
 	
 	@Override
-	public IArrangement<?> find(long id, IEnterprise<?> enterprise, UUID... tokens)
+	public IArrangement<?> find(UUID id, IEnterprise<?> enterprise, UUID... tokens)
 	{
 		Arrangement xr = new Arrangement();
 		return xr.builder()
@@ -295,7 +295,7 @@ public class ArrangementsService
 	}
 	
 	@Override
-	public IArrangement<?> find(long id)
+	public IArrangement<?> find(UUID id)
 	{
 		Arrangement xr = new Arrangement();
 		return xr.builder()

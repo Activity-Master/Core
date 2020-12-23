@@ -7,18 +7,18 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContai
 import com.guicedee.activitymaster.core.db.entities.geography.*;
 import com.guicedee.activitymaster.core.services.dto.IGeography;
 
-import javax.persistence.criteria.JoinType;
-import javax.validation.constraints.Null;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.validation.constraints.Null;
 
 import static com.entityassist.enumerations.Operand.*;
 
 public class GeographyQueryBuilder
-		extends QueryBuilderSCDNameDescription<GeographyQueryBuilder, Geography, Long, GeographySecurityToken>
-		implements IContainsClassificationsQueryBuilder<GeographyQueryBuilder, Geography, Long, GeographyXClassification>
-		           //IContainsValueQueryBuilder<GeographyQueryBuilder, Geography, Long>
+		extends QueryBuilderSCDNameDescription<GeographyQueryBuilder, Geography, java.util.UUID, GeographySecurityToken>
+		implements IContainsClassificationsQueryBuilder<GeographyQueryBuilder, Geography, java.util.UUID, GeographyXClassification>
+		           //IContainsValueQueryBuilder<GeographyQueryBuilder, Geography, java.util.UUID>
 {
 
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public GeographyQueryBuilder withParent(IGeography<?> parent, @Null String value)
 	{
 		if(parent == null)
@@ -41,9 +41,9 @@ public class GeographyQueryBuilder
 		return this;
 	}
 
-	public GeographyQueryBuilder withGeoNameID(Long id)
+	public GeographyQueryBuilder withGeoNameID(String id)
 	{
-		where(Geography_.originalSourceSystemUniqueID, Equals, Long.toString(id));
+		where(Geography_.originalSourceSystemUniqueID, Equals, id);
 		return this;
 	}
 }

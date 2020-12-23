@@ -8,11 +8,12 @@ package com.guicedee.activitymaster.core.db.entities.arrangement;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -25,16 +26,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ArrangementSecurityToken
-		extends WarehouseSecurityTable<ArrangementSecurityToken, ArrangementSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ArrangementSecurityToken, ArrangementSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "ArrangementSecurityTokenID")
-	private Long id;
+			name = "ArrangementSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ArrangementID",
 			referencedColumnName = "ArrangementID",
@@ -49,7 +50,7 @@ public class ArrangementSecurityToken
 
 	}
 
-	public ArrangementSecurityToken(Long arrangementSecurityTokenID)
+	public ArrangementSecurityToken(UUID arrangementSecurityTokenID)
 	{
 		this.id = arrangementSecurityTokenID;
 	}
@@ -59,7 +60,7 @@ public class ArrangementSecurityToken
 		return "ArrangementSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -69,7 +70,7 @@ public class ArrangementSecurityToken
 		return this.base;
 	}
 
-	public ArrangementSecurityToken setId(Long id)
+	public ArrangementSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

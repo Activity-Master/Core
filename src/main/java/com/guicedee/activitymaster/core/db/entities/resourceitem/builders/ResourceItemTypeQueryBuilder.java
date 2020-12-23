@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemTyp
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemTypeSecurityToken;
 
 public class ResourceItemTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<ResourceItemTypeQueryBuilder, ResourceItemType, Long, ResourceItemTypeSecurityToken>
+		extends QueryBuilderSCDNameDescription<ResourceItemTypeQueryBuilder, ResourceItemType, java.util.UUID, ResourceItemTypeSecurityToken>
 {
 
 }

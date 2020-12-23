@@ -6,11 +6,11 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyX
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXInvolvedPartySecurityToken;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXInvolvedParty_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class InvolvedPartyXInvolvedPartyQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, InvolvedParty, InvolvedPartyXInvolvedPartyQueryBuilder,
-						                                              InvolvedPartyXInvolvedParty, Long, InvolvedPartyXInvolvedPartySecurityToken>
+						                                              InvolvedPartyXInvolvedParty, java.util.UUID, InvolvedPartyXInvolvedPartySecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

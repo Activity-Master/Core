@@ -8,12 +8,13 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -29,15 +30,15 @@ import static javax.persistence.AccessType.*;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class InvolvedPartyNonOrganic
-		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, Long, InvolvedPartyNonOrganicSecurityToken>
+		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, java.util.UUID, InvolvedPartyNonOrganicSecurityToken>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(nullable = false,
 			name = "InvolvedPartyNonOrganicID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "InvolvedPartyNonOrganicID",
 			referencedColumnName = "InvolvedPartyID",
@@ -60,7 +61,7 @@ public class InvolvedPartyNonOrganic
 
 	}
 
-	public InvolvedPartyNonOrganic(Long involvedPartyNonOrganicID)
+	public InvolvedPartyNonOrganic(UUID involvedPartyNonOrganicID)
 	{
 		id = involvedPartyNonOrganicID;
 	}
@@ -111,7 +112,7 @@ public class InvolvedPartyNonOrganic
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -122,7 +123,7 @@ public class InvolvedPartyNonOrganic
 	}
 
 	@Override
-	public InvolvedPartyNonOrganic setId(Long id)
+	public InvolvedPartyNonOrganic setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

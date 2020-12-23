@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.events.EventType;
 import com.guicedee.activitymaster.core.db.entities.events.EventTypesSecurityToken;
 
 public class EventTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<EventTypeQueryBuilder, EventType, Long, EventTypesSecurityToken>
+		extends QueryBuilderSCDNameDescription<EventTypeQueryBuilder, EventType, java.util.UUID, EventTypesSecurityToken>
 {
 
 }

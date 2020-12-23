@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.product;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductXClassificationSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -20,16 +21,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ProductXClassificationSecurityToken
-		extends WarehouseSecurityTable<ProductXClassificationSecurityToken, ProductXClassificationSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ProductXClassificationSecurityToken, ProductXClassificationSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "ProductXClassificationSecurityTokenID")
-	private Long id;
+			name = "ProductXClassificationSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ProductXClassificationID",
 			referencedColumnName = "ProductXClassificationID",
@@ -44,7 +45,7 @@ public class ProductXClassificationSecurityToken
 
 	}
 
-	public ProductXClassificationSecurityToken(Long productXClassificationSecurityTokenID)
+	public ProductXClassificationSecurityToken(UUID productXClassificationSecurityTokenID)
 	{
 		this.id = productXClassificationSecurityTokenID;
 	}
@@ -54,7 +55,7 @@ public class ProductXClassificationSecurityToken
 		return "ProductXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -64,7 +65,7 @@ public class ProductXClassificationSecurityToken
 		return this.base;
 	}
 
-	public ProductXClassificationSecurityToken setId(Long id)
+	public ProductXClassificationSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

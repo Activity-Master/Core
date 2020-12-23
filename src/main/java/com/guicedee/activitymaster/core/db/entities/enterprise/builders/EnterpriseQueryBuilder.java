@@ -11,11 +11,11 @@ import com.guicedee.activitymaster.core.db.entities.events.builders.EventQueryBu
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 
 public class EnterpriseQueryBuilder
-		extends QueryBuilderNameDescription<EnterpriseQueryBuilder, Enterprise, Long, EnterpriseSecurityToken>
-		implements IContainsClassificationsQueryBuilder<EnterpriseQueryBuilder, Enterprise, Long, EnterpriseXClassification>
+		extends QueryBuilderNameDescription<EnterpriseQueryBuilder, Enterprise, java.util.UUID, EnterpriseSecurityToken>
+		implements IContainsClassificationsQueryBuilder<EnterpriseQueryBuilder, Enterprise, java.util.UUID, EnterpriseXClassification>
 {
 	@Override
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public EnterpriseQueryBuilder withEnterprise(IEnterprise<?> enterprise)
 	{
 		withName(enterprise.getName());

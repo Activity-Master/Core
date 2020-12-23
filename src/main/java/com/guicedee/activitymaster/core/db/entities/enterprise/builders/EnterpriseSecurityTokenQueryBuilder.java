@@ -4,10 +4,10 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseSecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class EnterpriseSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EnterpriseSecurityTokenQueryBuilder, EnterpriseSecurityToken, Long>
+		extends QueryBuilderSecurities<EnterpriseSecurityTokenQueryBuilder, EnterpriseSecurityToken, java.util.UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

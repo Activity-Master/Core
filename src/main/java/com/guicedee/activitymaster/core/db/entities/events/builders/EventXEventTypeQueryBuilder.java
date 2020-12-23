@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.system.IEventService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import java.util.UUID;
 
 public class EventXEventTypeQueryBuilder
@@ -17,7 +17,7 @@ public class EventXEventTypeQueryBuilder
 		EventXEventTypeQueryBuilder,
 		EventXEventType,
 		IEventClassification<?>,
-		Long,
+		java.util.UUID,
 		EventXEventTypeSecurityToken>
 {
 	@Override

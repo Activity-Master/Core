@@ -7,8 +7,8 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementSecur
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXClassification;
 
 public class ArrangementQueryBuilder
-		extends QueryBuilderTable<ArrangementQueryBuilder, Arrangement, Long, ArrangementSecurityToken>
-		implements IContainsClassificationsQueryBuilder<ArrangementQueryBuilder, Arrangement, Long, ArrangementXClassification>
+		extends QueryBuilderTable<ArrangementQueryBuilder, Arrangement, java.util.UUID, ArrangementSecurityToken>
+		implements IContainsClassificationsQueryBuilder<ArrangementQueryBuilder, Arrangement, java.util.UUID, ArrangementXClassification>
 {
 
 }

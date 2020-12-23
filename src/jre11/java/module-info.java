@@ -1,5 +1,6 @@
 import com.guicedee.activitymaster.core.db.ActivityMasterDBModule;
 import com.guicedee.activitymaster.core.injections.ActivityMasterBinder;
+import com.guicedee.activitymaster.core.injections.ActivityMasterModuleInclusion;
 import com.guicedee.activitymaster.core.injections.HazelcastClientConfig;
 import com.guicedee.activitymaster.core.injections.HazelcastServerConfig;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
@@ -54,12 +55,12 @@ module com.guicedee.activitymaster.core {
 	requires java.sql;
 	requires com.microsoft.sqlserver.jdbc;
 	
-	requires java.persistence;
+	requires jakarta.persistence;
 	
-	requires java.xml.bind;
+	requires jakarta.xml.bind;
 	
 	requires jakarta.activation;
-	requires java.validation;
+	requires jakarta.validation;
 	
 	requires com.google.guice.extensions.servlet;
 	requires cache.annotations.ri.guice;
@@ -72,7 +73,6 @@ module com.guicedee.activitymaster.core {
 	
 	requires org.hibernate.orm.core;
 	requires org.hibernate.validator;
-	requires java.servlet;
 	
 	requires com.guicedee.guicedhazelcast.hibernate;
 	requires com.guicedee.guicedhazelcast;
@@ -90,6 +90,8 @@ module com.guicedee.activitymaster.core {
 	provides com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder with ActivityMasterBinder;
 	provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
 	provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
+
+	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 	
 	uses IActivityMasterSystem;
 	

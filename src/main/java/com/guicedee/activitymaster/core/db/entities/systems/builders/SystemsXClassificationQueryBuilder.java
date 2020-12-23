@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassificatio
 import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification_;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class SystemsXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Systems, Classification, SystemsXClassificationQueryBuilder,
-				                                              SystemXClassification, Long, SystemXClassificationSecurityToken>
+				                                              SystemXClassification, java.util.UUID, SystemXClassificationSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

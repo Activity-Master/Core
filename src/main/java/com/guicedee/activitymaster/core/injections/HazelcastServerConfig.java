@@ -9,13 +9,12 @@ import com.hazelcast.config.MetricsConfig;
 import com.hazelcast.config.MetricsJmxConfig;
 import com.hazelcast.config.MetricsManagementCenterConfig;
 
-import javax.cache.CacheManager;
+import jakarta.cache.CacheManager;
 
 public class HazelcastServerConfig
         implements IGuicedHazelcastServerConfig<HazelcastServerConfig> {
     @Override
     public Config buildConfig(Config config) {
-
         if (HazelcastProperties.isStartLocal())
         {
             config.getNetworkConfig()

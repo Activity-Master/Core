@@ -16,8 +16,8 @@ import com.guicedee.activitymaster.core.services.system.IClassificationDataConce
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts.GlobalClassificationsDataConceptName;
@@ -42,7 +42,7 @@ public class ClassificationsDataConceptService
 				.getCount() > 0;
 
 		IActiveFlag<?> active = GuiceContext.get(IActiveFlagService.class)
-		                                    .getActiveFlag(system.getEnterpriseID());
+		                                    .getActiveFlag(system.getEnterprise());
 
 		if (!exists)
 		{
@@ -51,7 +51,7 @@ public class ClassificationsDataConceptService
 			newConcept.setSystemID((Systems) system);
 			newConcept.setOriginalSourceSystemID((Systems) system);
 			newConcept.setActiveFlagID((ActiveFlag) active);
-			newConcept.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			newConcept.setEnterpriseID((Enterprise) active.getEnterpriseID());
 			newConcept.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())

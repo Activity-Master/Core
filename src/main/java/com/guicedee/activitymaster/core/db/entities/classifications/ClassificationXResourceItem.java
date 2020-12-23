@@ -9,13 +9,14 @@ import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -34,7 +35,7 @@ public class ClassificationXResourceItem
 				                                                ResourceItem,
 				                                                ClassificationXResourceItem,
 				                                                ClassificationXResourceItemQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                ClassificationXResourceItemSecurityToken,
 				                                                IClassification<?>, IResourceItem<?>>
 		implements Serializable
@@ -42,10 +43,10 @@ public class ClassificationXResourceItem
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "ClassificationXResourceItemID")
-	private Long id;
+			name = "ClassificationXResourceItemID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -71,7 +72,7 @@ public class ClassificationXResourceItem
 
 	}
 
-	public ClassificationXResourceItem(Long classificationXResourceItemID)
+	public ClassificationXResourceItem(UUID classificationXResourceItemID)
 	{
 		id = classificationXResourceItemID;
 	}
@@ -84,7 +85,7 @@ public class ClassificationXResourceItem
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -106,7 +107,7 @@ public class ClassificationXResourceItem
 	}
 
 	@Override
-	public ClassificationXResourceItem setId(Long id)
+	public ClassificationXResourceItem setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

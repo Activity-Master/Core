@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.base.Strings;
 import lombok.Data;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

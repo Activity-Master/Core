@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyX
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXAddressSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXAddress_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class InvolvedPartyXAddressQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, Address, InvolvedPartyXAddressQueryBuilder,
-						                                              InvolvedPartyXAddress, Long, InvolvedPartyXAddressSecurityToken>
+						                                              InvolvedPartyXAddress, java.util.UUID, InvolvedPartyXAddressSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

@@ -11,14 +11,14 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.Equals;
 
 public class InvolvedPartyQueryBuilder
-		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, Long, InvolvedPartySecurityToken>
-		implements IContainsClassificationsQueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty,Long, InvolvedPartyXClassification>
+		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, java.util.UUID, InvolvedPartySecurityToken>
+		implements IContainsClassificationsQueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty,java.util.UUID, InvolvedPartyXClassification>
 {
 
 	public InvolvedPartyQueryBuilder findByIdentificationType(IEnterprise<?> enterprise, IIdentificationType<?> idType)
@@ -49,7 +49,7 @@ public class InvolvedPartyQueryBuilder
 	}
 
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public InvolvedPartyQueryBuilder withClassification(Classification classification, String value)
 	{
 		JoinExpression joinExpression = new JoinExpression();

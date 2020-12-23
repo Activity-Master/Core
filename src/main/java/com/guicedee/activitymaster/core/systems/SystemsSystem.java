@@ -33,7 +33,6 @@ public class SystemsSystem
 	private static final Logger log = Logger.getLogger(SystemsSystem.class.getName());
 
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		GuiceContext.get(SystemsService.class)
@@ -49,7 +48,6 @@ public class SystemsSystem
 		return 2;
 	}
 
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedParty<?> createInvolvedPartyForNewSystem(ISystems newSystem, UUID... identityToken)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)

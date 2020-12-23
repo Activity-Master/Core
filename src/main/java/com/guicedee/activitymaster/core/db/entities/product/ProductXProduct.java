@@ -7,13 +7,14 @@ import com.guicedee.activitymaster.core.services.dto.IProduct;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -32,7 +33,7 @@ public class ProductXProduct
 				                                                Product,
 				                                                ProductXProduct,
 				                                                ProductXProductQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                ProductXProductSecurityToken,
 				                                                IProduct<?>, IProduct<?>>
 		implements Serializable
@@ -40,10 +41,10 @@ public class ProductXProduct
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ProductXProductID")
-	private Long id;
+			name = "ProductXProductID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -68,7 +69,7 @@ public class ProductXProduct
 
 	}
 
-	public ProductXProduct(Long productXProductID)
+	public ProductXProduct(UUID productXProductID)
 	{
 		id = productXProductID;
 	}
@@ -81,7 +82,7 @@ public class ProductXProduct
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -102,7 +103,7 @@ public class ProductXProduct
 	}
 
 	@Override
-	public ProductXProduct setId(Long id)
+	public ProductXProduct setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

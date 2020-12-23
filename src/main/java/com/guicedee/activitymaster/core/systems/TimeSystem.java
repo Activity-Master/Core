@@ -13,8 +13,8 @@ import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,8 +34,6 @@ public class TimeSystem
 	private IActivityMasterProgressMonitor progressMonitor;
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-	               timeout = 50000)
 	public void loadTimeRange(int startYear, int endYear, IActivityMasterProgressMonitor progressMonitoro)
 	{
 		JobService.getInstance()
@@ -82,8 +80,6 @@ public class TimeSystem
 		}
 		return year;
 	}
-	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Years createYear(Date date)
 	{
 		Years year = new Years().setId(Short.parseShort(YearIDFormat.getSimpleDateFormat()
@@ -761,8 +757,6 @@ public class TimeSystem
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-	               timeout = 500)
 	public void createTime()
 	{
 		System.out.println("Creating Time Table");

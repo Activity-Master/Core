@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.core.services.dto.ISecurityToken;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.ISecurityTokenService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
+import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
 import com.guicedee.logger.LogFactory;
@@ -44,15 +45,23 @@ public class DefaultTestConfig
 	@Override
 	public void beforeEach(ExtensionContext extensionContext) throws Exception
 	{
-		BTMAutomatedTransactionHandler.setActive(true);
 		GuiceContext.instance()
 		            .loadIGuiceModules()
 		            .add(new ActivityMasterTestBinder());
-		//	HazelcastProperties.setStartLocal(true);
+		HazelcastProperties.setStartLocal(true);
+		HazelcastProperties.setGroupName("fsdm");
+		HazelcastProperties.setInstanceName("fsdm");
+		if (HazelcastProperties.getAddress() == null) {
+			HazelcastProperties.setAddress("127.0.0.1");
+		}
+		GuiceContext.instance().getConfig()
+				.setIncludeModuleAndJars(true)
+				.setClasspathScanning(true)
+				.setMethodInfo(true)
+				.setFieldInfo(true)
+				.setAnnotationScanning(true)
+				.setPathScanning(true);
 
-		ActivityMasterDBModule.persistenceUnitName = "ActivityMasterUT";
-
-		//HazelcastConfigHandler.startLocal = true;
 		LogFactory.configureConsoleColourOutput(Level.FINE);
 	//	LogColourFormatter.setRenderBlack(false);
 		LogFactory.configureDefaultLogHiding();

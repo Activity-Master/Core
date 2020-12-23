@@ -16,16 +16,18 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.Type;
+
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -40,7 +42,7 @@ import static javax.persistence.AccessType.*;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ActiveFlag
-		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, Long, ActiveFlagSecurityToken>
+		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.util.UUID, ActiveFlagSecurityToken>
 		implements INameAndDescription<ActiveFlag>,
 				           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>, IActiveFlag<?>, IClassification<?>, IActiveFlag<ActiveFlag>>,
 				           IActivityMasterEntity<ActiveFlag>,
@@ -49,10 +51,11 @@ public class ActiveFlag
 {
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
 			name = "ActiveFlagID")
-	private Long id;
+@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "EnterpriseID",
 			referencedColumnName = "EnterpriseID",
@@ -565,12 +568,12 @@ public class ActiveFlag
 
 	}
 
-	public ActiveFlag(Long id)
+	public ActiveFlag(java.util.UUID id)
 	{
 		this.id = id;
 	}
 
-	public ActiveFlag(Long id, String activeFlagName, boolean allowAccess)
+	public ActiveFlag(java.util.UUID id, String activeFlagName, boolean allowAccess)
 	{
 		this.id = id;
 		name = activeFlagName;
@@ -646,13 +649,13 @@ public class ActiveFlag
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
 
 	@Override
-	public ActiveFlag setId(Long id)
+	public ActiveFlag setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

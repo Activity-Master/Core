@@ -4,10 +4,10 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.events.EventXAddressSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.events.EventXAddressSecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class EventXAddressSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EventXAddressSecurityTokenQueryBuilder, EventXAddressSecurityToken, Long>
+		extends QueryBuilderSecurities<EventXAddressSecurityTokenQueryBuilder, EventXAddressSecurityToken, java.util.UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

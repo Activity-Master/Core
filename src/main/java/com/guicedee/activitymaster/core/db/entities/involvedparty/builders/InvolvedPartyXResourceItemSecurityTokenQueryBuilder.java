@@ -4,10 +4,10 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXResourceItemSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXResourceItemSecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class InvolvedPartyXResourceItemSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<InvolvedPartyXResourceItemSecurityTokenQueryBuilder, InvolvedPartyXResourceItemSecurityToken, Long>
+		extends QueryBuilderSecurities<InvolvedPartyXResourceItemSecurityTokenQueryBuilder, InvolvedPartyXResourceItemSecurityToken, java.util.UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface IInvolvedPartyService<J extends IInvolvedPartyService<J>>
 {
 	
-	IInvolvedParty<?> findByID(Long id);
+	IInvolvedParty<?> findByID(UUID id);
 	
 	IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, IEnterprise<?> enterprise);
 	

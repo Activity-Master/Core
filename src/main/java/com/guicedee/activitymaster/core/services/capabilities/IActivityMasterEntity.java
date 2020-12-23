@@ -2,15 +2,15 @@ package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface IActivityMasterEntity<J extends IActivityMasterEntity<J>>
 {
-	Long getId();
+	UUID getId();
 
-	J setId(Long id);
+	J setId(UUID id);
 
 	void createDefaultSecurity(ISystems<?> system, UUID... identity);
 

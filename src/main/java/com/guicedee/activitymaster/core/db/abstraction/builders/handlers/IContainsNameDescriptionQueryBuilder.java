@@ -23,7 +23,7 @@ public interface IContainsNameDescriptionQueryBuilder<J extends QueryBuilderDefa
 {
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J withName(String name)
 	{
 		where(this.<E,String>getAttribute("name"), Equals, name);
@@ -31,7 +31,7 @@ public interface IContainsNameDescriptionQueryBuilder<J extends QueryBuilderDefa
 	}
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J withName(IClassificationValue<?> name)
 	{
 		where(this.<E,String>getAttribute("name"), Equals, name.classificationName());
@@ -39,7 +39,7 @@ public interface IContainsNameDescriptionQueryBuilder<J extends QueryBuilderDefa
 	}
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J withDescription(String name)
 	{
 		where(this.<E,String>getAttribute("description"), Equals, name);
@@ -47,7 +47,7 @@ public interface IContainsNameDescriptionQueryBuilder<J extends QueryBuilderDefa
 	}
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J withDescriptionLike(String name)
 	{
 		where(this.<E,String>getAttribute("description"), Like, "%" + name + "%");
@@ -55,7 +55,7 @@ public interface IContainsNameDescriptionQueryBuilder<J extends QueryBuilderDefa
 	}
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J withName(String... name)
 	{
 		where(this.<E,String>getAttribute("name"), InList, name);
@@ -63,7 +63,7 @@ public interface IContainsNameDescriptionQueryBuilder<J extends QueryBuilderDefa
 	}
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J withName(Collection<String> name)
 	{
 		where(this.<E,String>getAttribute("name"), InList, name);

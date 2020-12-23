@@ -25,14 +25,14 @@ import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.*;
 import java.util.logging.Logger;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -46,7 +46,7 @@ import static javax.persistence.AccessType.*;
 @XmlRootElement
 @Access(FIELD)
 public class InvolvedParty
-		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, Long, InvolvedPartySecurityToken>
+		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, java.util.UUID, InvolvedPartySecurityToken>
 		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, IInvolvedParty<?>, IClassification<?>, InvolvedParty>,
 		           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IClassificationValue<?>, IInvolvedParty<?>, IResourceItem<?>, InvolvedParty>,
 		           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType,IClassification<?>, IIdentificationType<?>, IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>, InvolvedParty>,
@@ -57,16 +57,16 @@ public class InvolvedParty
 		           IContainsEnterprise<InvolvedParty>,
 		           IInvolvedParty<InvolvedParty>,
 		           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView, IInvolvedParty<?>>,
-		           IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassification<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>
+		           IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassificationValue<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 	        name = "InvolvedPartyID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@OneToMany(
 			mappedBy = "involvedPartyID",
@@ -150,7 +150,7 @@ public class InvolvedParty
 	
 	}
 	
-	public InvolvedParty(Long involvedPartyID)
+	public InvolvedParty(UUID involvedPartyID)
 	{
 		this.id = involvedPartyID;
 	}
@@ -190,13 +190,13 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public InvolvedParty setId(Long id)
+	public InvolvedParty setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
@@ -334,7 +334,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureAddableProduct(InvolvedPartyXProduct linkTable, InvolvedParty primary, Product secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureAddableProduct(InvolvedPartyXProduct linkTable, InvolvedParty primary, Product secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
 	{
 		linkTable.setInvolvedPartyID(primary);
 		linkTable.setProductID(secondary);

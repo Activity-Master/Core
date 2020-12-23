@@ -6,11 +6,11 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXClassificationSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXClassification_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ClassificationXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Classification, Classification, ClassificationXClassificationQueryBuilder,
-						                                              ClassificationXClassification, Long, ClassificationXClassificationSecurityToken>
+						                                              ClassificationXClassification, java.util.UUID, ClassificationXClassificationSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

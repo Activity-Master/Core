@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXProductSecurity
 import com.guicedee.activitymaster.core.db.entities.events.EventXProduct_;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class EventXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Product, EventXProductQueryBuilder,
-				                                              EventXProduct, Long, EventXProductSecurityToken>
+				                                              EventXProduct, java.util.UUID, EventXProductSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

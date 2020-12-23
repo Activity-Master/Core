@@ -6,8 +6,8 @@ import com.guicedee.activitymaster.core.services.dto.IRulesType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.util.UUID;
 
 public interface IRulesService<J extends IRulesService<J>>

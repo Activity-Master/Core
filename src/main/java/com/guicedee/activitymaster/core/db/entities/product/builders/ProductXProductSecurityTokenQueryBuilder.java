@@ -4,10 +4,10 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.product.ProductXProductSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.product.ProductXProductSecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ProductXProductSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ProductXProductSecurityTokenQueryBuilder, ProductXProductSecurityToken, Long>
+		extends QueryBuilderSecurities<ProductXProductSecurityTokenQueryBuilder, ProductXProductSecurityToken, java.util.UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

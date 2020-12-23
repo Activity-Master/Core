@@ -5,8 +5,8 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISecurityToken;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.util.UUID;
 
 public interface ISecurityTokenService<J extends ISecurityTokenService<J>>

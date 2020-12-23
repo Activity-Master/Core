@@ -17,14 +17,14 @@ import com.guicedee.guicedinjection.GuiceContext;
 import io.github.classgraph.ClassInfo;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -39,7 +39,7 @@ import static javax.persistence.AccessType.*;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class Enterprise
-		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, Long, EnterpriseSecurityToken>
+		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.util.UUID, EnterpriseSecurityToken>
 		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise<?>, IClassification<?>, Enterprise>,
 				           IActivityMasterEntity<Enterprise>,
 				           INameAndDescription<Enterprise>,
@@ -48,11 +48,11 @@ public class Enterprise
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 			name = "EnterpriseID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
@@ -80,12 +80,12 @@ public class Enterprise
 
 	}
 
-	public Enterprise(Long id)
+	public Enterprise(java.util.UUID id)
 	{
 		this.id = id;
 	}
 
-	public Enterprise(Long id, String enterpriseName, String enterpriseDesc)
+	public Enterprise(java.util.UUID id, String enterpriseName, String enterpriseDesc)
 	{
 		this.id = id;
 		name = enterpriseName;
@@ -105,7 +105,6 @@ public class Enterprise
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Enterprise remove()
 	{
 		setEffectiveToDate(LocalDateTime.now());
@@ -114,7 +113,6 @@ public class Enterprise
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Enterprise archive()
 	{
 		setEffectiveToDate(LocalDateTime.now());
@@ -149,7 +147,7 @@ public class Enterprise
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -167,7 +165,7 @@ public class Enterprise
 	}
 
 	@Override
-	public Enterprise setId(Long id)
+	public Enterprise setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

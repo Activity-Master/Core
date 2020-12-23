@@ -3,10 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.arrangement;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXInvolvedPartySecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import static javax.persistence.AccessType.*;
+import java.util.UUID;
+
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -19,15 +21,15 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ArrangementXInvolvedPartySecurityToken
-		extends WarehouseSecurityTable<ArrangementXInvolvedPartySecurityToken, ArrangementXInvolvedPartySecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ArrangementXInvolvedPartySecurityToken, ArrangementXInvolvedPartySecurityTokenQueryBuilder, java.util.UUID>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ArrangementXInvolvedPartySecurityTokenID")
-	private Long id;
+			name = "ArrangementXInvolvedPartySecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ArrangementXInvolvedPartyID",
 			referencedColumnName = "ArrangementXInvolvedPartyID",
@@ -42,7 +44,7 @@ public class ArrangementXInvolvedPartySecurityToken
 
 	}
 
-	public ArrangementXInvolvedPartySecurityToken(Long arrangementXInvolvedPartySecurityTokenID)
+	public ArrangementXInvolvedPartySecurityToken(UUID arrangementXInvolvedPartySecurityTokenID)
 	{
 		this.id = arrangementXInvolvedPartySecurityTokenID;
 	}
@@ -52,7 +54,7 @@ public class ArrangementXInvolvedPartySecurityToken
 		return "ArrangementXInvolvedPartySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -62,7 +64,7 @@ public class ArrangementXInvolvedPartySecurityToken
 		return this.base;
 	}
 
-	public ArrangementXInvolvedPartySecurityToken setId(Long id)
+	public ArrangementXInvolvedPartySecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

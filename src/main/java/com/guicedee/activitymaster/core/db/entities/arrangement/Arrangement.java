@@ -16,12 +16,13 @@ import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -36,7 +37,7 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class Arrangement
-		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, Long, ArrangementSecurityToken>
+		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, java.util.UUID, ArrangementSecurityToken>
 		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, IArrangement<?>, IClassification<?>, Arrangement>,
 		           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IClassificationValue<?>, IArrangement<?>, IResourceItem<?>, Arrangement>,
 		           IActivityMasterEntity<Arrangement>,
@@ -49,11 +50,11 @@ public class Arrangement
 {
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 	        name = "ArrangementID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@OneToMany(
 			mappedBy = "arrangementID",
@@ -109,7 +110,7 @@ public class Arrangement
 	
 	}
 	
-	public Arrangement(Long arrangementID)
+	public Arrangement(UUID arrangementID)
 	{
 		this.id = arrangementID;
 	}
@@ -329,13 +330,13 @@ public class Arrangement
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public Arrangement setId(Long id)
+	public Arrangement setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

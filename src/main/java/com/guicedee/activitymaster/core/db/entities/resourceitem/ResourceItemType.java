@@ -13,15 +13,18 @@ import com.guicedee.activitymaster.core.services.dto.IResourceItemType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.AccessType.*;
+import static jakarta.persistence.FetchType.*;
 
 /**
  * @author Marc Magon
@@ -32,9 +35,11 @@ import static javax.persistence.FetchType.*;
 @Table(name = "ResourceItemType",
 		schema = "Resource")
 @XmlRootElement
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ResourceItemType
-		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, Long, ResourceItemTypeSecurityToken>
+		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, java.util.UUID, ResourceItemTypeSecurityToken>
 		implements IResourceItemType<ResourceItemType>,
 				           INameAndDescription<ResourceItemType>,
 				           IContainsEnterprise<ResourceItemType>,
@@ -45,11 +50,11 @@ public class ResourceItemType
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 			name = "ResourceItemTypeID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Basic(optional = false,
 			fetch = EAGER)
 	@NotNull
@@ -85,12 +90,12 @@ public class ResourceItemType
 
 	}
 
-	public ResourceItemType(Long resourceItemTypeID)
+	public ResourceItemType(UUID resourceItemTypeID)
 	{
 		id = resourceItemTypeID;
 	}
 
-	public ResourceItemType(Long resourceItemTypeID, String resourceItemTypeName, String resourceItemTypeDesc)
+	public ResourceItemType(UUID resourceItemTypeID, String resourceItemTypeName, String resourceItemTypeDesc)
 	{
 		id = resourceItemTypeID;
 		name = resourceItemTypeName;
@@ -154,7 +159,7 @@ public class ResourceItemType
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -172,7 +177,7 @@ public class ResourceItemType
 	}
 
 	@Override
-	public ResourceItemType setId(Long id)
+	public ResourceItemType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

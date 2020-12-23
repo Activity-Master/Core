@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagXClassi
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagXClassification_;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ActiveFlagXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ActiveFlag, Classification, ActiveFlagXClassificationQueryBuilder,
-						                                              ActiveFlagXClassification, Long, ActiveFlagXClassificationSecurityToken>
+						                                              ActiveFlagXClassification, java.util.UUID, ActiveFlagXClassificationSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

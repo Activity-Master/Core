@@ -17,7 +17,6 @@ public class ActiveFlagSystem
 		implements IActivityMasterSystem<ActiveFlagSystem>
 {
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Active Flag Service", "Loading Active Flags", progressMonitor);

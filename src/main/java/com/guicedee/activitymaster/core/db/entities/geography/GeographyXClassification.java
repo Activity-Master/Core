@@ -14,13 +14,14 @@ import com.guicedee.activitymaster.core.services.dto.IGeography;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -37,7 +38,7 @@ public class GeographyXClassification
 				                                                Classification,
 				                                                GeographyXClassification,
 				                                                GeographyXClassificationQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                GeographyXClassificationSecurityToken,
 				                                                IGeography<?>, IClassification<?>>
 		implements Serializable
@@ -45,10 +46,10 @@ public class GeographyXClassification
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "GeographyXClassificationID")
-	private Long id;
+			name = "GeographyXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "GeographyID",
 			referencedColumnName = "GeographyID",
@@ -67,7 +68,7 @@ public class GeographyXClassification
 
 	}
 
-	public GeographyXClassification(Long geographyXClassificationID)
+	public GeographyXClassification(UUID geographyXClassificationID)
 	{
 		this.id = geographyXClassificationID;
 	}
@@ -79,7 +80,7 @@ public class GeographyXClassification
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -94,7 +95,7 @@ public class GeographyXClassification
 		return this.securities;
 	}
 
-	public GeographyXClassification setId(Long id)
+	public GeographyXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

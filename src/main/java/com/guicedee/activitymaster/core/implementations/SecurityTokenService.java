@@ -21,9 +21,9 @@ import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.google.inject.Singleton;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
-import javax.validation.constraints.NotNull;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -179,7 +179,7 @@ public class SecurityTokenService
 		return root;
 	}
 
-	private void updateSecurityHierarchy(Long securityTokenID)
+	private void updateSecurityHierarchy(UUID securityTokenID)
 	{
 
 		//TODO hierarchy updates? i wonder

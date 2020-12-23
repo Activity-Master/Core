@@ -5,12 +5,12 @@ import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityTokensSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityTokensSecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 import static com.entityassist.enumerations.Operand.*;
 
 public class SecurityTokensSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, Long>
+		extends QueryBuilderSecurities<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, java.util.UUID>
 {
 	public SecurityTokensSecurityTokenQueryBuilder findBySecurityToken(SecurityToken fromToken, SecurityToken forToken)
 	{

@@ -19,12 +19,13 @@ import com.guicedee.activitymaster.core.services.classifications.classification.
 import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IProductService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -41,7 +42,7 @@ import static com.guicedee.guicedinjection.json.StaticStrings.*;
 public interface IContainsProducts<P extends WarehouseCoreTable,
 		S extends WarehouseCoreTable,
 		Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>,
-		C extends IClassification<?>,
+		C extends IClassificationValue<?>,
 		L, R,
 		J extends IContainsProducts<P, S, Q, C, L, R, J>>
 {
@@ -52,7 +53,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		return findProduct(classification.getName(), value, enterprise, false, false, identityToken);
+		return findProduct(((IClassification)classification).getName(), value, enterprise, false, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, IEnterprise<?> enterprise, UUID... identityToken)
@@ -70,7 +71,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		
-		return findProduct(classification.getName(), value, enterprise, first, false, identityToken);
+		return findProduct(((IClassification)classification).getName(), value, enterprise, first, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
@@ -88,7 +89,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		
-		return findProduct(classification.getName(), value, enterprise, first, latest, identityToken);
+		return findProduct(((IClassification)classification).getName(), value, enterprise, first, latest, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
@@ -106,13 +107,13 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findProductFirst(C classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		
-		return findProduct(classification.getName(), searchValue, enterprise, true, false, identityToken);
+		return findProduct(((IClassification)classification).getName(), searchValue, enterprise, true, false, identityToken);
 	}
 	
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductFirst(C classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		return findProduct(classification.getName(), searchValue, enterprise, true, latest, identityToken);
+		return findProduct(((IClassification)classification).getName(), searchValue, enterprise, true, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -143,18 +144,18 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	default List<IRelationshipValue<L, R, ?>> findProductsAll(C classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		
-		return findProductsAll(classification.getName(), null, enterprise, latest, identityToken);
+		return findProductsAll(((IClassification)classification).getName(), null, enterprise, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductsAll(C classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		return findProductsAll(classification.getName(), value, originatingSystem.getEnterprise(), latest, identityToken);
+		return findProductsAll(((IClassification)classification).getName(), value, originatingSystem.getEnterprise(), latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductsAll(C classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		
-		return findProductsAll(classification.getName(), value, enterprise, latest, identityToken);
+		return findProductsAll(((IClassification)classification).getName(), value, enterprise, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductsAll(String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
@@ -223,12 +224,12 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	
 	default boolean hasProductsBefore(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		return numberOfProductsAll(classificationValue.getName(), enterprise, identityToken) > 0;
+		return numberOfProductsAll(((IClassification)classificationValue).getName(), enterprise, identityToken) > 0;
 	}
 	
 	default boolean hasProductsBefore(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		return numberOfProductsAll(classificationValue.getName(), value, enterprise, identityToken) > 0;
+		return numberOfProductsAll(((IClassification)classificationValue).getName(), value, enterprise, identityToken) > 0;
 	}
 	
 	default boolean hasProductsBefore(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
@@ -238,7 +239,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	
 	default boolean hasProducts(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		return numberOfProducts(classificationValue.getName(), enterprise, identityToken) > 0;
+		return numberOfProducts(((IClassification)classificationValue).getName(), enterprise, identityToken) > 0;
 	}
 	
 	default boolean hasProducts(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
@@ -248,7 +249,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	
 	default boolean hasProducts(C classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		return numberOfProducts(classificationValue.getName(), originatingSystem.getEnterprise(), identityToken) > 0;
+		return numberOfProducts(((IClassification)classificationValue).getName(), originatingSystem.getEnterprise(), identityToken) > 0;
 	}
 	
 	default boolean hasProducts(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
@@ -278,12 +279,12 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	
 	default long numberOfProducts(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		return numberOfProducts(classificationValue.getName(), value, enterprise, identityToken);
+		return numberOfProducts(((IClassification)classificationValue).getName(), value, enterprise, identityToken);
 	}
 	
 	default long numberOfProductsAll(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
-		return numberOfProductsAll(classificationValue.getName(), null, enterprise, identityToken);
+		return numberOfProductsAll(((IClassification)classificationValue).getName(), null, enterprise, identityToken);
 	}
 	
 	default long numberOfProductsAll(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
@@ -512,7 +513,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	                             @NotNull IEnterprise<?> enterprise,
 	                             UUID... identityToken)
 	{
-		return addOrUpdateProduct(type, classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addOrUpdateProduct(type, ((IClassification)classificationName).getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrUpdateProduct(@NotNull String type,

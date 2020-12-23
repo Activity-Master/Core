@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.address.AddressXClassificati
 import com.guicedee.activitymaster.core.db.entities.address.AddressXClassification_;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class AddressXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Address, Classification, AddressXClassificationQueryBuilder,
-				                                              AddressXClassification, Long, AddressXClassificationSecurityToken>
+				                                              AddressXClassification, java.util.UUID, AddressXClassificationSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

@@ -9,7 +9,7 @@ import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
 import com.guicedee.activitymaster.core.services.system.IProductService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -20,7 +20,7 @@ public class ProductXProductTypeQueryBuilder
 		ProductXProductTypeQueryBuilder,
 		ProductXProductType,
 		IProductTypeValue<?>,
-		Long,
+		java.util.UUID,
 		ProductXProductTypeSecurityToken>
 {
 	@Override

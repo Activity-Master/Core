@@ -7,12 +7,13 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.Invol
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -26,15 +27,15 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class InvolvedPartyOrganic
-		extends WarehouseTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, Long, InvolvedPartyOrganicSecurityToken>
+		extends WarehouseTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, java.util.UUID, InvolvedPartyOrganicSecurityToken>
 
 {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(nullable = false,
 			name = "InvolvedPartyOrganicID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "InvolvedPartyOrganicID",
 			referencedColumnName = "InvolvedPartyID",
@@ -57,7 +58,7 @@ public class InvolvedPartyOrganic
 
 	}
 
-	public InvolvedPartyOrganic(Long involvedPartyOrganicID)
+	public InvolvedPartyOrganic(UUID involvedPartyOrganicID)
 	{
 		this.id = involvedPartyOrganicID;
 	}
@@ -107,7 +108,7 @@ public class InvolvedPartyOrganic
 		return "OrganicParty - " + getId();
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -117,7 +118,7 @@ public class InvolvedPartyOrganic
 		return this.involvedParty;
 	}
 
-	public InvolvedPartyOrganic setId(Long id)
+	public InvolvedPartyOrganic setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

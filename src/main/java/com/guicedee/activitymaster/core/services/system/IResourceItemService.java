@@ -7,8 +7,8 @@ import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

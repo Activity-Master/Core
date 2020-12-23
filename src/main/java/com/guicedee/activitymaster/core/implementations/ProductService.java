@@ -12,8 +12,8 @@ import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IProductService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;

@@ -4,10 +4,10 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConceptXClassificationSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConceptXClassificationSecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ClassificationDataConceptXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ClassificationDataConceptXClassificationSecurityTokenQueryBuilder, ClassificationDataConceptXClassificationSecurityToken, Long>
+		extends QueryBuilderSecurities<ClassificationDataConceptXClassificationSecurityTokenQueryBuilder, ClassificationDataConceptXClassificationSecurityToken, java.util.UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

@@ -10,11 +10,12 @@ import com.guicedee.activitymaster.core.db.hierarchies.builders.ProductHierarchy
 
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -25,25 +26,26 @@ import java.io.Serializable;
 
 @Immutable
 public class ProductHierarchyView
-		extends WarehouseHierarchyView<ProductHierarchyView, ProductHierarchyViewQueryBuilder, Long>
+		extends WarehouseHierarchyView<ProductHierarchyView, ProductHierarchyViewQueryBuilder, UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	private Long id;
+	@org.hibernate.annotations.Type(type = "uuid-char")
+	private UUID id;
 
 
 	public ProductHierarchyView()
 	{
 	}
 
-	public Long getId()
+	public UUID getId()
 	{
 		return this.id;
 	}
 
-	public ProductHierarchyView setId(Long id)
+	public ProductHierarchyView setId(UUID id)
 	{
 		this.id = id;
 		return this;

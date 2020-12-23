@@ -8,13 +8,14 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -31,7 +32,7 @@ public class ArrangementXResourceItem
 				                                                ResourceItem,
 						                                                ArrangementXResourceItem,
 				                                                ArrangementXResourceItemQueryBuilder,
-						                                                Long,
+						                                                java.util.UUID,
 						                                                ArrangementXResourceItemSecurityToken,
 				                                                IArrangement<?>, IResourceItem<?>>
 		implements Serializable
@@ -39,10 +40,10 @@ public class ArrangementXResourceItem
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ArrangementXResourceItemID")
-	private Long id;
+			name = "ArrangementXResourceItemID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -73,7 +74,7 @@ public class ArrangementXResourceItem
 
 	}
 
-	public ArrangementXResourceItem(Long arrangementXResourceItemID)
+	public ArrangementXResourceItem(UUID arrangementXResourceItemID)
 	{
 		this.id = arrangementXResourceItemID;
 	}
@@ -85,7 +86,7 @@ public class ArrangementXResourceItem
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -110,7 +111,7 @@ public class ArrangementXResourceItem
 		return this.securities;
 	}
 
-	public ArrangementXResourceItem setId(Long id)
+	public ArrangementXResourceItem setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

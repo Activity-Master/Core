@@ -21,7 +21,7 @@ public interface IQueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>, E 
 		extends IQueryBuilderSCD<J,E,I>
 {
 
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J withEnterprise(IEnterprise<?> enterprise)
 	{
 		where(getAttribute("enterpriseID"), Equals, enterprise);
@@ -29,7 +29,7 @@ public interface IQueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>, E 
 		return (J) this;
 	}
 	
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J inActiveRange(IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		Collection<IActiveFlag<?>> flags = GuiceContext.get(IActiveFlagService.class)
@@ -44,7 +44,7 @@ public interface IQueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>, E 
 		return (J) this;
 	}
 	
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J inVisibleRange(IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		Collection<IActiveFlag<?>> flags = GuiceContext.get(IActiveFlagService.class)

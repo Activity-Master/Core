@@ -8,11 +8,12 @@ package com.guicedee.activitymaster.core.db.entities.resourceitem;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -25,16 +26,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ResourceItemXResourceItemTypeSecurityToken
-		extends WarehouseSecurityTable<ResourceItemXResourceItemTypeSecurityToken, ResourceItemXResourceItemTypeSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ResourceItemXResourceItemTypeSecurityToken, ResourceItemXResourceItemTypeSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ResourceItemXResourceItemTypeSecurityTokenID")
-	private Long id;
+			name = "ResourceItemXResourceItemTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@JoinColumn(name = "ResourceItemXResourceItemTypeID",
 			referencedColumnName = "ResourceItemXResourceItemTypeID",
 			nullable = false)
@@ -48,7 +49,7 @@ public class ResourceItemXResourceItemTypeSecurityToken
 
 	}
 
-	public ResourceItemXResourceItemTypeSecurityToken(Long resourceItemXResourceItemTypeSecurityTokenID)
+	public ResourceItemXResourceItemTypeSecurityToken(UUID resourceItemXResourceItemTypeSecurityTokenID)
 	{
 		this.id = resourceItemXResourceItemTypeSecurityTokenID;
 	}
@@ -58,7 +59,7 @@ public class ResourceItemXResourceItemTypeSecurityToken
 		return "ResourceItemXResourceItemTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -68,7 +69,7 @@ public class ResourceItemXResourceItemTypeSecurityToken
 		return this.base;
 	}
 
-	public ResourceItemXResourceItemTypeSecurityToken setId(Long id)
+	public ResourceItemXResourceItemTypeSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

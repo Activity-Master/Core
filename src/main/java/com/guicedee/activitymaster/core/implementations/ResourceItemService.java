@@ -22,17 +22,17 @@ import com.guicedee.activitymaster.core.services.system.IResourceItemService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.Equals;
 import static com.guicedee.guicedinjection.GuiceContext.get;
-import static javax.persistence.criteria.JoinType.INNER;
+import static jakarta.persistence.criteria.JoinType.INNER;
 
 
 public class ResourceItemService
@@ -43,8 +43,7 @@ public class ResourceItemService
 	{
 		return createType(value.classificationName(), value.classificationDescription(), system, identityToken);
 	}
-	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+
 	@Override
 	public IResourceItemType<?> createType(String value, String description, ISystems<?> system, UUID... identityToken)
 	{
@@ -81,24 +80,21 @@ public class ResourceItemService
 		return xr;
 	}
 	
-	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+
 	@Override
 	public IResourceItem<?> create(IResourceType<?> identityResourceType, String mimeType,
 	                               ISystems<?> system, UUID... identityToken)
 	{
 		return create(identityResourceType.classificationName(), mimeType, system, identityToken);
 	}
-	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+
 	@Override
 	public IResourceItem<?> create(String identityResourceType, String mimeType,
 	                               ISystems<?> system, UUID... identityToken)
 	{
 		return create(identityResourceType, mimeType, "", LocalDateTime.now(), system, identityToken);
 	}
-	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+
 	@Override
 	public IResourceItem<?> create(String identityResourceType, String mimeType, String originalSourceSystemUniqueID,
 	                               LocalDateTime effectiveFromDate,

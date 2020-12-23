@@ -13,15 +13,16 @@ import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyOrganicType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.AccessType.*;
+import static jakarta.persistence.FetchType.*;
 
 /**
  * @author Marc Magon
@@ -37,7 +38,7 @@ import static javax.persistence.FetchType.*;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class InvolvedPartyOrganicType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, Long, InvolvedPartyOrganicTypeSecurityToken>
+		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, java.util.UUID, InvolvedPartyOrganicTypeSecurityToken>
 		implements IInvolvedPartyOrganicType<InvolvedPartyOrganicType>,
 				           INameAndDescription<InvolvedPartyOrganicType>,
 				           IContainsEnterprise<InvolvedPartyOrganicType>,
@@ -47,11 +48,11 @@ public class InvolvedPartyOrganicType
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 			name = "InvolvedPartyOrganicTypeID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Basic(optional = false,
 			fetch = EAGER)
 	@NotNull
@@ -83,7 +84,7 @@ public class InvolvedPartyOrganicType
 
 	}
 
-	public InvolvedPartyOrganicType(Long involvedPartyOrganicTypeID)
+	public InvolvedPartyOrganicType(UUID involvedPartyOrganicTypeID)
 	{
 		id = involvedPartyOrganicTypeID;
 	}
@@ -134,7 +135,7 @@ public class InvolvedPartyOrganicType
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -153,7 +154,7 @@ public class InvolvedPartyOrganicType
 	}
 
 	@Override
-	public InvolvedPartyOrganicType setId(Long id)
+	public InvolvedPartyOrganicType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

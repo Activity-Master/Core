@@ -8,13 +8,14 @@ import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyIdentificatio
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -32,7 +33,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 		InvolvedPartyXInvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
 		IIdentificationType<?>,
-		Long,
+		java.util.UUID,
 		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken,
 		IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>
 		>
@@ -41,10 +42,10 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-	        name = "InvolvedPartyXInvolvedPartyIdentificationTypeID")
-	private Long id;
+	        name = "InvolvedPartyXInvolvedPartyIdentificationTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -70,12 +71,12 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	
 	}
 	
-	public InvolvedPartyXInvolvedPartyIdentificationType(Long involvedPartyXInvolvedPartyIdentificationTypeID)
+	public InvolvedPartyXInvolvedPartyIdentificationType(UUID involvedPartyXInvolvedPartyIdentificationTypeID)
 	{
 		this.id = involvedPartyXInvolvedPartyIdentificationTypeID;
 	}
 	
-	public InvolvedPartyXInvolvedPartyIdentificationType(Long involvedPartyXInvolvedPartyIdentificationTypeID, String value)
+	public InvolvedPartyXInvolvedPartyIdentificationType(UUID involvedPartyXInvolvedPartyIdentificationTypeID, String value)
 	{
 		this.id = involvedPartyXInvolvedPartyIdentificationTypeID;
 		setValue(value);
@@ -89,7 +90,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -110,7 +111,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyIdentificationType setId(Long id)
+	public InvolvedPartyXInvolvedPartyIdentificationType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

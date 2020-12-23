@@ -8,12 +8,13 @@ import com.guicedee.activitymaster.core.services.dto.IEvent;
 import com.guicedee.activitymaster.core.services.dto.IEventType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -32,17 +33,17 @@ public class EventXEventType
 		EventXEventType,
 		EventXEventTypeQueryBuilder,
 		IEventClassification<?>,
-		Long,
+		java.util.UUID,
 		EventXEventTypeSecurityToken,
 		IEvent<?>, IEventType<?>>
 {
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-	        name = "EventXEventTypeID")
-	private Long id;
+	        name = "EventXEventTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -67,7 +68,7 @@ public class EventXEventType
 	
 	}
 	
-	public EventXEventType(Long eventXEventTypeID)
+	public EventXEventType(UUID eventXEventTypeID)
 	{
 		this.id = eventXEventTypeID;
 	}
@@ -80,7 +81,7 @@ public class EventXEventType
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -101,7 +102,7 @@ public class EventXEventType
 	}
 	
 	@Override
-	public EventXEventType setId(Long id)
+	public EventXEventType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

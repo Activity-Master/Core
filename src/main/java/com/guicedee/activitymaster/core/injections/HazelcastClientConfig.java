@@ -14,7 +14,6 @@ public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<Hazel
 
     @Override
     public ClientConfig buildConfig(ClientConfig config) {
-
         config.getNetworkConfig()
                 .addAddress(HazelcastProperties.getAddress())
                 .setRedoOperation(true)

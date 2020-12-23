@@ -28,7 +28,7 @@ public interface IInvolvedParty<J extends IInvolvedParty<J>>
 		        IHasActiveFlags<InvolvedParty>,
 		        IActivityMasterEntity<InvolvedParty>,
 		        IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView, IInvolvedParty<?>>,
-		        IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassification<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>
+		IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassificationValue<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>
 {
 	IInvolvedParty<?> moveWebClientUUIDToNewInvolvedParty(IInvolvedParty<?> destination, UUID newUUID);
 	

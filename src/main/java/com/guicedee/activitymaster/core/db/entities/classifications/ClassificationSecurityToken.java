@@ -3,10 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.classifications;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationsSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import static javax.persistence.AccessType.*;
+import java.util.UUID;
+
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -19,15 +21,15 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ClassificationSecurityToken
-		extends WarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, java.util.UUID>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ClassificationSecurityTokenID")
-	private Long id;
+			name = "ClassificationSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ClassificationID",
 			referencedColumnName = "ClassificationID",
@@ -41,7 +43,7 @@ public class ClassificationSecurityToken
 
 	}
 
-	public ClassificationSecurityToken(Long classificationSecurityTokenID)
+	public ClassificationSecurityToken(UUID classificationSecurityTokenID)
 	{
 		this.id = classificationSecurityTokenID;
 	}
@@ -51,7 +53,7 @@ public class ClassificationSecurityToken
 		return "ClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -61,7 +63,7 @@ public class ClassificationSecurityToken
 		return this.base;
 	}
 
-	public ClassificationSecurityToken setId(Long id)
+	public ClassificationSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

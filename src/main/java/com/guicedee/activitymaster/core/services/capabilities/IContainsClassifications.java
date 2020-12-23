@@ -22,7 +22,7 @@ import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -33,7 +33,7 @@ import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
-import static javax.persistence.criteria.JoinType.*;
+import static jakarta.persistence.criteria.JoinType.*;
 
 @SuppressWarnings("Duplicates")
 public interface IContainsClassifications<P extends WarehouseCoreTable,

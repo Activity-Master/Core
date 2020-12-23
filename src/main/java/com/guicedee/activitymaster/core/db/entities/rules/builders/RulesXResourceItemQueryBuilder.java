@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.rules.RulesXResourceItemSecu
 import com.guicedee.activitymaster.core.db.entities.rules.RulesXResourceItem_;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class RulesXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, ResourceItem, RulesXResourceItemQueryBuilder,
-				                                              RulesXResourceItem, Long, RulesXResourceItemSecurityToken>
+				                                              RulesXResourceItem, java.util.UUID, RulesXResourceItemSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

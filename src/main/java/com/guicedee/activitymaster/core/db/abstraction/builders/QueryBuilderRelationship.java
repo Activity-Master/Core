@@ -11,7 +11,7 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasValueQueryBuilder;
 import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasClassificationQueryBuilder;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
@@ -38,7 +38,7 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
 		           IHasClassificationQueryBuilder<J, E, I>
 {
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public J findLink(P parent, S child)
 	{
 		where(getPrimaryAttribute(), Equals, parent);
@@ -51,7 +51,7 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
 	public abstract Attribute getSecondaryAttribute();
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public J findLink(P parent, S child, String value)
 	{
 		where(getPrimaryAttribute(), Equals, parent);
@@ -62,14 +62,14 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public J findChildLink(S child)
 	{
 		return findChildLink(child, null);
 	}
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public J findChildLink(S child, String value)
 	{
 		where(getSecondaryAttribute(), Equals, child);
@@ -82,14 +82,14 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
 	
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public J findParentLink(P child)
 	{
 		return findParentLink(child, null);
 	}
 	
 	@SuppressWarnings("unchecked")
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	public J findParentLink(P parent, String value)
 	{
 		where(getPrimaryAttribute(), Equals, parent);

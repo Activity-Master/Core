@@ -7,8 +7,8 @@ import com.guicedee.activitymaster.core.db.entities.product.ProductSecurityToken
 import com.guicedee.activitymaster.core.db.entities.product.ProductXClassification;
 
 public class ProductQueryBuilder
-		extends QueryBuilderSCDNameDescription<ProductQueryBuilder, Product, Long, ProductSecurityToken>
-		implements IContainsClassificationsQueryBuilder<ProductQueryBuilder,Product,Long, ProductXClassification>
+		extends QueryBuilderSCDNameDescription<ProductQueryBuilder, Product, java.util.UUID, ProductSecurityToken>
+		implements IContainsClassificationsQueryBuilder<ProductQueryBuilder,Product,java.util.UUID, ProductXClassification>
 {
 
 }

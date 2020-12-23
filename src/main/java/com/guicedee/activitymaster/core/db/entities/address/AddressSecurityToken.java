@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.address;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.address.builders.AddressSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -20,16 +21,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class AddressSecurityToken
-		extends WarehouseSecurityTable<AddressSecurityToken, AddressSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<AddressSecurityToken, AddressSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "AddressSecurityTokenID")
-	private Long id;
+			name = "AddressSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "AddressID",
 			referencedColumnName = "AddressID",
@@ -43,7 +44,7 @@ public class AddressSecurityToken
 
 	}
 
-	public AddressSecurityToken(Long addressSecurityTokenID)
+	public AddressSecurityToken(UUID addressSecurityTokenID)
 	{
 		this.id = addressSecurityTokenID;
 	}
@@ -53,7 +54,7 @@ public class AddressSecurityToken
 		return "AddressSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -63,7 +64,7 @@ public class AddressSecurityToken
 		return this.base;
 	}
 
-	public AddressSecurityToken setId(Long id)
+	public AddressSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

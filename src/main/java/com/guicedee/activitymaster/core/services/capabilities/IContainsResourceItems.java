@@ -35,7 +35,7 @@ import com.guicedee.activitymaster.core.systems.ResourceItemSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.JobService;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -47,7 +47,7 @@ import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.core.services.classifications.events.EventInvolvedPartiesClassifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
-import static javax.persistence.criteria.JoinType.*;
+import static jakarta.persistence.criteria.JoinType.*;
 
 @SuppressWarnings("Duplicates")
 public interface IContainsResourceItems<P extends WarehouseCoreTable,

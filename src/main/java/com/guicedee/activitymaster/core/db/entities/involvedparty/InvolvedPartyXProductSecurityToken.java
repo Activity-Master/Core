@@ -8,10 +8,12 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXProductSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import static javax.persistence.AccessType.*;
+import java.util.UUID;
+
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -24,15 +26,15 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class InvolvedPartyXProductSecurityToken
-		extends WarehouseSecurityTable<InvolvedPartyXProductSecurityToken, InvolvedPartyXProductSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<InvolvedPartyXProductSecurityToken, InvolvedPartyXProductSecurityTokenQueryBuilder, java.util.UUID>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "InvolvedPartyXProductSecurityTokenID")
-	private Long id;
+			name = "InvolvedPartyXProductSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "InvolvedPartyXProductID",
 			referencedColumnName = "InvolvedPartyXProductID",
@@ -47,7 +49,7 @@ public class InvolvedPartyXProductSecurityToken
 
 	}
 
-	public InvolvedPartyXProductSecurityToken(Long involvedPartyXProductSecurityTokenID)
+	public InvolvedPartyXProductSecurityToken(UUID involvedPartyXProductSecurityTokenID)
 	{
 		this.id = involvedPartyXProductSecurityTokenID;
 	}
@@ -57,7 +59,7 @@ public class InvolvedPartyXProductSecurityToken
 		return "InvolvedPartyXProductSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -67,7 +69,7 @@ public class InvolvedPartyXProductSecurityToken
 		return this.base;
 	}
 
-	public InvolvedPartyXProductSecurityToken setId(Long id)
+	public InvolvedPartyXProductSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

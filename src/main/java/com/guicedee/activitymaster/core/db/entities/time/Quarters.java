@@ -6,8 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +26,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @Accessors(chain = true)
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Quarters
 		extends BaseEntity<Quarters, QuartersQueryBuilder, Integer>
 		implements Serializable

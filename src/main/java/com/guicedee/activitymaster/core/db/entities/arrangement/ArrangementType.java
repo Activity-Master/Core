@@ -12,14 +12,17 @@ import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -31,21 +34,22 @@ import static javax.persistence.AccessType.*;
 @Table(schema = "Arrangement",
        name = "ArrangementType")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ArrangementType
-		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, Long, ArrangementTypeSecurityToken>
+		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, java.util.UUID, ArrangementTypeSecurityToken>
 		implements IContainsClassifications<ArrangementType, Classification, ArrangementTypeXClassification, IArrangementClassification<?>, IArrangementType<?>, IClassification<?>, ArrangementType>,
 		           IArrangementType<ArrangementType>
 {
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
 	        name = "ArrangementTypeID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -88,12 +92,12 @@ public class ArrangementType
 	
 	}
 	
-	public ArrangementType(Long arrangementTypeID)
+	public ArrangementType(UUID arrangementTypeID)
 	{
 		this.id = arrangementTypeID;
 	}
 	
-	public ArrangementType(Long arrangementTypeID, String arrangementTypeName, String arrangementTypeDescription)
+	public ArrangementType(UUID arrangementTypeID, String arrangementTypeName, String arrangementTypeDescription)
 	{
 		this.id = arrangementTypeID;
 		this.name = arrangementTypeName;
@@ -157,7 +161,7 @@ public class ArrangementType
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -173,7 +177,7 @@ public class ArrangementType
 	}
 	
 	@Override
-	public ArrangementType setId(Long id)
+	public ArrangementType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

@@ -10,12 +10,13 @@ import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
 import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -34,17 +35,17 @@ public class ResourceItemXResourceItemType
 		ResourceItemXResourceItemType,
 		ResourceItemXResourceItemTypeQueryBuilder,
 		IResourceType<?>,
-		Long,
+		java.util.UUID,
 		ResourceItemXResourceItemTypeSecurityToken,
 		IResourceItem<?>,
 		IResourceItemType<?>>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-	        name = "ResourceItemXResourceItemTypeID")
-	private Long id;
+	        name = "ResourceItemXResourceItemTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ResourceItemID",
 	            referencedColumnName = "ResourceItemID",
@@ -69,7 +70,7 @@ public class ResourceItemXResourceItemType
 	
 	}
 	
-	public ResourceItemXResourceItemType(Long resourceItemXResourceItemTypeID)
+	public ResourceItemXResourceItemType(UUID resourceItemXResourceItemTypeID)
 	{
 		this.id = resourceItemXResourceItemTypeID;
 	}
@@ -81,7 +82,7 @@ public class ResourceItemXResourceItemType
 		            .setBase(this);
 	}
 	
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -101,7 +102,7 @@ public class ResourceItemXResourceItemType
 		return this.securities;
 	}
 	
-	public ResourceItemXResourceItemType setId(Long id)
+	public ResourceItemXResourceItemType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.classifications;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationDataConceptXResourceItemSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -20,16 +21,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ClassificationDataConceptXResourceItemSecurityToken
-		extends WarehouseSecurityTable<ClassificationDataConceptXResourceItemSecurityToken, ClassificationDataConceptXResourceItemSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ClassificationDataConceptXResourceItemSecurityToken, ClassificationDataConceptXResourceItemSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "ClassificationDataConceptXResourceItemSecurityTokenID")
-	private Long id;
+			name = "ClassificationDataConceptXResourceItemSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ClassificationDataConceptXResourceItemID",
 			referencedColumnName = "ClassificationDataConceptXResourceItemID",
@@ -44,7 +45,7 @@ public class ClassificationDataConceptXResourceItemSecurityToken
 
 	}
 
-	public ClassificationDataConceptXResourceItemSecurityToken(Long classificationDataConceptXResourceItemSecurityTokenID)
+	public ClassificationDataConceptXResourceItemSecurityToken(UUID classificationDataConceptXResourceItemSecurityTokenID)
 	{
 		this.id = classificationDataConceptXResourceItemSecurityTokenID;
 	}
@@ -54,7 +55,7 @@ public class ClassificationDataConceptXResourceItemSecurityToken
 		return "ClassificationDataConceptXResourceItemSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -64,7 +65,7 @@ public class ClassificationDataConceptXResourceItemSecurityToken
 		return this.base;
 	}
 
-	public ClassificationDataConceptXResourceItemSecurityToken setId(Long id)
+	public ClassificationDataConceptXResourceItemSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

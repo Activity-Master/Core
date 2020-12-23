@@ -21,7 +21,6 @@ public class ArrangementsSystem
 		implements IActivityMasterSystem<ArrangementsSystem>
 {
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 	

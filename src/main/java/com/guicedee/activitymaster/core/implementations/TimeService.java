@@ -3,8 +3,8 @@ package com.guicedee.activitymaster.core.implementations;
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.entities.time.DayParts;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;

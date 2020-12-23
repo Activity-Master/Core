@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassi
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassificationSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class EnterpriseXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Enterprise, Classification, EnterpriseXClassificationQueryBuilder,
-						                                              EnterpriseXClassification, Long, EnterpriseXClassificationSecurityToken>
+						                                              EnterpriseXClassification, java.util.UUID, EnterpriseXClassificationSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

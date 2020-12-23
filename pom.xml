@@ -4,7 +4,7 @@
 
     <parent>
      <groupId>com.armineasy.activitymaster</groupId>
-    <artifactId>activitymaster-group</artifactId>
+        <artifactId>activitymaster-group</artifactId>
         <version>0.0.0_0-SNAPSHOT</version>
     </parent>
 
@@ -86,7 +86,6 @@
             <type>jar</type>
         </dependency>
 
-
         <dependency>
             <groupId>com.guicedee</groupId>
             <artifactId>guiced-injection</artifactId>
@@ -108,30 +107,15 @@
         <plugins>
 
             <plugin>
-                <groupId>org.hibernate.orm.tooling</groupId>
+                <groupId>com.guicedee.services</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>5.4.21.Final</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <failOnError>true</failOnError>
-                            <enableLazyInitialization>true</enableLazyInitialization>
-                            <enableDirtyTracking>false</enableDirtyTracking>
-                            <enableAssociationManagement>false</enableAssociationManagement>
-                            <enableExtendedEnhancement>false</enableExtendedEnhancement>
-                        </configuration>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>enhance</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <version>${jwebmp.version}</version>
                 <configuration>
                     <failOnError>true</failOnError>
                     <enableLazyInitialization>true</enableLazyInitialization>
                     <enableDirtyTracking>false</enableDirtyTracking>
                     <enableAssociationManagement>false</enableAssociationManagement>
-                    <enableExtendedEnhancement>false</enableExtendedEnhancement>
+                    <enableExtendedEnhancement>true</enableExtendedEnhancement>
                 </configuration>
             </plugin>
 
@@ -140,28 +124,27 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>14</release>
+                    <release>15</release>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
-                            <groupId>org.hibernate</groupId>
+                            <groupId>com.guicedee.services</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>5.4.21.Final</version>
-                        </annotationProcessorPath>
-                        <annotationProcessorPath>
-                            <groupId>javax.xml.bind</groupId>
-                            <artifactId>jaxb-api</artifactId>
-                            <version>2.3.1</version>
+                            <version>${jwebmp.version}</version>
+                        </annotationProcessorPath>    <annotationProcessorPath>
+                            <groupId>com.guicedee.services</groupId>
+                            <artifactId>jakarta.xml.bind-api</artifactId>
+                            <version>${jwebmp.version}</version>
                         </annotationProcessorPath>
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>1.4.0.Final</version>
+                            <version>1.4.1.Final</version>
                         </path>
                         <!-- other annotation processors -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.12</version>
+                            <version>1.18.16</version>
                         </path>
                     </annotationProcessorPaths>
                     <annotationProcessors>
@@ -182,19 +165,19 @@
                         <type>jar</type>
                     </dependency>
                     <dependency>
-                        <groupId>org.hibernate</groupId>
+                        <groupId>com.guicedee.services</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>5.4.21.Final</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.3.1</version>
+                        <version>${jwebmp.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
-                        <version>1.18.12</version>
+                        <version>1.18.16</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.guicedee.services</groupId>
+                        <artifactId>jakarta.xml.bind-api</artifactId>
+                        <version>${jwebmp.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

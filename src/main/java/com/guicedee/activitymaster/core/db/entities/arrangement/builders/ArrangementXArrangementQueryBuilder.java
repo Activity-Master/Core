@@ -6,11 +6,11 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXArra
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXArrangementSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXArrangement_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ArrangementXArrangementQueryBuilder
 		extends QueryBuilderRelationshipClassification<Arrangement, Arrangement, ArrangementXArrangementQueryBuilder,
-						                                              ArrangementXArrangement, Long, ArrangementXArrangementSecurityToken>
+						                                              ArrangementXArrangement, java.util.UUID, ArrangementXArrangementSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

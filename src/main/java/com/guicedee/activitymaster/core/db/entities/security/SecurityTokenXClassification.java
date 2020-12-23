@@ -8,13 +8,14 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISecurityToken;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -31,7 +32,7 @@ public class SecurityTokenXClassification
 				                                                Classification,
 				                                                SecurityTokenXClassification,
 				                                                SecurityTokenXClassificationQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                SecurityTokenXClassificationSecurityToken,
 				                                                ISecurityToken<?>, IClassification<?>>
 		implements Serializable
@@ -39,10 +40,10 @@ public class SecurityTokenXClassification
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "SecurityTokenXClassificationID")
-	private Long id;
+			name = "SecurityTokenXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "SecurityTokenID",
 			referencedColumnName = "SecurityTokenID",
@@ -61,7 +62,7 @@ public class SecurityTokenXClassification
 
 	}
 
-	public SecurityTokenXClassification(Long securityTokenXClassificationID)
+	public SecurityTokenXClassification(UUID securityTokenXClassificationID)
 	{
 		this.id = securityTokenXClassificationID;
 	}
@@ -73,7 +74,7 @@ public class SecurityTokenXClassification
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -88,7 +89,7 @@ public class SecurityTokenXClassification
 		return this.securities;
 	}
 
-	public SecurityTokenXClassification setId(Long id)
+	public SecurityTokenXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

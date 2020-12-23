@@ -4,10 +4,10 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXArrangementTypeSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXArrangementTypeSecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ArrangementXArrangementTypeSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ArrangementXArrangementTypeSecurityTokenQueryBuilder, ArrangementXArrangementTypeSecurityToken, Long>
+		extends QueryBuilderSecurities<ArrangementXArrangementTypeSecurityTokenQueryBuilder, ArrangementXArrangementTypeSecurityToken, java.util.UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

@@ -8,14 +8,12 @@ import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.logger.LogFactory;
 import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
 
-import javax.cache.CacheManager;
+import jakarta.cache.CacheManager;
 
 public interface IActivityMasterService
 {
 	void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor);
 
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-			timeout = 5000)
 	void loadUpdates(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor);
 
     void runScript(String script);

@@ -8,13 +8,14 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IGeography;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -31,7 +32,7 @@ public class AddressXGeography
 				                                                Geography,
 				                                                AddressXGeography,
 				                                                AddressXGeographyQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                AddressXGeographySecurityToken,
 				                                                IAddress<?>, IGeography<?>>
 		implements Serializable
@@ -39,10 +40,10 @@ public class AddressXGeography
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "AddressXGeographyID")
-	private Long id;
+			name = "AddressXGeographyID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "AddressID",
 			referencedColumnName = "AddressID",
@@ -67,7 +68,7 @@ public class AddressXGeography
 
 	}
 
-	public AddressXGeography(Long addressXGeographyID)
+	public AddressXGeography(UUID addressXGeographyID)
 	{
 		this.id = addressXGeographyID;
 	}
@@ -79,7 +80,7 @@ public class AddressXGeography
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -99,7 +100,7 @@ public class AddressXGeography
 		return this.securities;
 	}
 
-	public AddressXGeography setId(Long id)
+	public AddressXGeography setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

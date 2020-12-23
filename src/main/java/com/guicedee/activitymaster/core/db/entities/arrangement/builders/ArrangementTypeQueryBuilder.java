@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementType;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementTypeSecurityToken;
 
 public class ArrangementTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<ArrangementTypeQueryBuilder, ArrangementType, Long, ArrangementTypeSecurityToken>
+		extends QueryBuilderSCDNameDescription<ArrangementTypeQueryBuilder, ArrangementType, java.util.UUID, ArrangementTypeSecurityToken>
 {
 
 }

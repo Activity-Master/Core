@@ -8,10 +8,12 @@ package com.guicedee.activitymaster.core.db.entities.resourceitem;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemTypeSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import static javax.persistence.AccessType.*;
+import java.util.UUID;
+
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -24,15 +26,15 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ResourceItemTypeSecurityToken
-		extends WarehouseSecurityTable<ResourceItemTypeSecurityToken, ResourceItemTypeSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ResourceItemTypeSecurityToken, ResourceItemTypeSecurityTokenQueryBuilder, java.util.UUID>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "ResourceItemTypeSecurityTokenID")
-	private Long id;
+			name = "ResourceItemTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ResourceItemTypeID",
 			referencedColumnName = "ResourceItemTypeID",
@@ -47,7 +49,7 @@ public class ResourceItemTypeSecurityToken
 
 	}
 
-	public ResourceItemTypeSecurityToken(Long resourceItemTypeSecurityTokenID)
+	public ResourceItemTypeSecurityToken(UUID resourceItemTypeSecurityTokenID)
 	{
 		this.id = resourceItemTypeSecurityTokenID;
 	}
@@ -57,7 +59,7 @@ public class ResourceItemTypeSecurityToken
 		return "ResourceItemTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -67,7 +69,7 @@ public class ResourceItemTypeSecurityToken
 		return this.base;
 	}
 
-	public ResourceItemTypeSecurityToken setId(Long id)
+	public ResourceItemTypeSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

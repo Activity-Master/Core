@@ -22,18 +22,18 @@ import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
-import static javax.persistence.AccessType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.AccessType.*;
+import static jakarta.persistence.FetchType.*;
 
 /**
  * @author Marc Magon
@@ -48,7 +48,7 @@ import static javax.persistence.FetchType.*;
 
 @Access(FIELD)
 public class ResourceItem
-		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, Long, ResourceItemSecurityToken>
+		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.util.UUID, ResourceItemSecurityToken>
 		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IClassificationValue<?>, IResourceItem<?>, IClassification<?>, ResourceItem>,
 		           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType, IResourceType<?>, ResourceItem>,
 		           IActivityMasterEntity<ResourceItem>,
@@ -61,11 +61,11 @@ public class ResourceItem
 {
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 	        name = "ResourceItemID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -230,7 +230,7 @@ public class ResourceItem
 		return "ResourceItem -  " + getResourceItemUUID();
 	}
 	
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -245,7 +245,7 @@ public class ResourceItem
 		return this.resourceItemDataType;
 	}
 	
-	public ResourceItem setId(Long id)
+	public ResourceItem setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

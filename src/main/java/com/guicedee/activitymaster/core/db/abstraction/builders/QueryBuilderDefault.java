@@ -12,7 +12,7 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -36,6 +36,15 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	}
 
 	@Override
+	public boolean onCreate(E entity) {
+		if (entity.getId() == null) {
+			//noinspection unchecked
+			entity.setId((I) UUID.randomUUID());
+		}
+		return super.onCreate(entity);
+	}
+
+	@Override
 	public EntityManager getEntityManager()
 	{
 		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
@@ -44,6 +53,6 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	@Override
 	public boolean isIdGenerated()
 	{
-		return true;
+		return false;
 	}
 }

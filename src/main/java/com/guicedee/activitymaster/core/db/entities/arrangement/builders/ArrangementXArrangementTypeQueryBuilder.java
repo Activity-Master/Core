@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.system.IArrangementsService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import java.util.UUID;
 
 public class ArrangementXArrangementTypeQueryBuilder
@@ -17,7 +17,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 		ArrangementXArrangementTypeQueryBuilder,
 		ArrangementXArrangementType,
 		IArrangementTypes<?>,
-		Long,
+		java.util.UUID,
 		ArrangementXArrangementTypeSecurityToken>
 {
 	@Override

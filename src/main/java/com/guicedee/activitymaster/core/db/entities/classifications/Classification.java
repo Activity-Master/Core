@@ -20,15 +20,17 @@ import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.guicedinjection.GuiceContext;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.AccessType.*;
+import static jakarta.persistence.FetchType.*;
 
 /**
  * @author Marc Magon
@@ -44,7 +46,7 @@ import static javax.persistence.FetchType.*;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class Classification
-		extends WarehouseTable<Classification, ClassificationQueryBuilder, Long, ClassificationSecurityToken>
+		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.util.UUID, ClassificationSecurityToken>
 		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView, IClassification<?>>,
 		           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IClassificationValue<?>, IClassification<?>, IResourceItem<?>, Classification>,
 		           IContainsClassifications<Classification, Classification, ClassificationXClassification, IClassificationValue<?>, IClassification<?>, IClassification<?>, Classification>,
@@ -52,13 +54,14 @@ public class Classification
 		           IClassification<Classification>,
 		           IClassificationValue
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
 	        name = "ClassificationID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -107,12 +110,12 @@ public class Classification
 	
 	}
 	
-	public Classification(Long classificationID)
+	public Classification(UUID classificationID)
 	{
 		id = classificationID;
 	}
 	
-	public Classification(Long classificationID, String classificationName, String classificationDesc, short classificationSequenceNumber)
+	public Classification(UUID classificationID, String classificationName, String classificationDesc, short classificationSequenceNumber)
 	{
 		id = classificationID;
 		name = classificationName;
@@ -175,13 +178,13 @@ public class Classification
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public Classification setId(Long id)
+	public Classification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

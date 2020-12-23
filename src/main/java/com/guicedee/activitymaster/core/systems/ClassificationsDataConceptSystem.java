@@ -23,7 +23,6 @@ public class ClassificationsDataConceptSystem
 {
 	@SuppressWarnings("Duplicates")
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		wipeCaches();

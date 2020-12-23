@@ -11,7 +11,7 @@ import static com.entityassist.enumerations.Operand.*;
 public interface IHasValueQueryBuilder<J extends QueryBuilderDefault<J, E, I>, E extends WarehouseBaseTable<E, J, I>, I extends Serializable>
 		extends IQueryBuilderDefault<J, E, I>
 {
-	@javax.validation.constraints.NotNull
+	@jakarta.validation.constraints.NotNull
 	default J withValue(String value)
 	{
 		if (value != null)

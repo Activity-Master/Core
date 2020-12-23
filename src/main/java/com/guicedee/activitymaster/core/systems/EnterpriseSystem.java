@@ -38,13 +38,11 @@ public class EnterpriseSystem
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		/*defaultWaitTime = 5L;
 		defaultWaitUnit = TimeUnit.MINUTES;*/
-		JobService.getInstance()
-		          .destroy();
+
 		super.postStartup(enterprise, progressMonitor);
 	}
 	

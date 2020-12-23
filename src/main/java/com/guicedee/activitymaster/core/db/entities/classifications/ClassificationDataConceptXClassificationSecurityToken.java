@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.classifications;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationDataConceptXClassificationSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -20,16 +21,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ClassificationDataConceptXClassificationSecurityToken
-		extends WarehouseSecurityTable<ClassificationDataConceptXClassificationSecurityToken, ClassificationDataConceptXClassificationSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ClassificationDataConceptXClassificationSecurityToken, ClassificationDataConceptXClassificationSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ClassificationDataConceptXClassificationSecurityTokenID")
-	private Long id;
+			name = "ClassificationDataConceptXClassificationSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ClassificationDataConceptXClassificationID",
 			referencedColumnName = "ClassificationDataConceptXClassificationID",
@@ -44,7 +45,7 @@ public class ClassificationDataConceptXClassificationSecurityToken
 
 	}
 
-	public ClassificationDataConceptXClassificationSecurityToken(Long classificationDataConceptXClassificationSecurityTokenID)
+	public ClassificationDataConceptXClassificationSecurityToken(UUID classificationDataConceptXClassificationSecurityTokenID)
 	{
 		this.id = classificationDataConceptXClassificationSecurityTokenID;
 	}
@@ -54,7 +55,7 @@ public class ClassificationDataConceptXClassificationSecurityToken
 		return "ClassificationDataConceptXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -64,7 +65,7 @@ public class ClassificationDataConceptXClassificationSecurityToken
 		return this.base;
 	}
 
-	public ClassificationDataConceptXClassificationSecurityToken setId(Long id)
+	public ClassificationDataConceptXClassificationSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

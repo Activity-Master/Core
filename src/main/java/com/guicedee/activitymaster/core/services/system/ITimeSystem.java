@@ -3,8 +3,8 @@ package com.guicedee.activitymaster.core.services.system;
 import com.guicedee.activitymaster.core.db.entities.time.Days;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.util.Date;
 
 public interface ITimeSystem

@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyN
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyNonOrganicSecurityToken;
 
 public class InvolvedPartyNonOrganicQueryBuilder
-		extends QueryBuilderTable<InvolvedPartyNonOrganicQueryBuilder, InvolvedPartyNonOrganic, Long, InvolvedPartyNonOrganicSecurityToken>
+		extends QueryBuilderTable<InvolvedPartyNonOrganicQueryBuilder, InvolvedPartyNonOrganic, java.util.UUID, InvolvedPartyNonOrganicSecurityToken>
 {
 
 	@Override

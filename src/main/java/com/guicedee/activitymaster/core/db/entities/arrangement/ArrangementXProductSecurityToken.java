@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.arrangement;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXProductSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -20,16 +21,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ArrangementXProductSecurityToken
-		extends WarehouseSecurityTable<ArrangementXProductSecurityToken, ArrangementXProductSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ArrangementXProductSecurityToken, ArrangementXProductSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ArrangementXProductSecurityTokenID")
-	private Long id;
+			name = "ArrangementXProductSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ArrangementXProductID",
 			referencedColumnName = "ArrangementXProductID",
@@ -43,7 +44,7 @@ public class ArrangementXProductSecurityToken
 
 	}
 
-	public ArrangementXProductSecurityToken(Long arrangementXProductSecurityTokenID)
+	public ArrangementXProductSecurityToken(UUID arrangementXProductSecurityTokenID)
 	{
 		this.id = arrangementXProductSecurityTokenID;
 	}
@@ -53,7 +54,7 @@ public class ArrangementXProductSecurityToken
 		return "ArrangementXProductSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -63,7 +64,7 @@ public class ArrangementXProductSecurityToken
 		return this.base;
 	}
 
-	public ArrangementXProductSecurityToken setId(Long id)
+	public ArrangementXProductSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

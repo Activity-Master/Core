@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.geography.GeographyXResource
 import com.guicedee.activitymaster.core.db.entities.geography.GeographyXResourceItem_;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class GeographyXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<Geography, ResourceItem, GeographyXResourceItemQueryBuilder,
-				                                              GeographyXResourceItem, Long, GeographyXResourceItemSecurityToken>
+				                                              GeographyXResourceItem, java.util.UUID, GeographyXResourceItemSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

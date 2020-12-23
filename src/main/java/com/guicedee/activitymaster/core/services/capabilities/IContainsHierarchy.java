@@ -25,12 +25,14 @@ import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessExcept
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static com.entityassist.enumerations.Operand.Equals;
+import static com.entityassist.enumerations.Operand.InList;
 import static com.guicedee.guicedinjection.GuiceContext.get;
 import static com.guicedee.guicedinjection.json.StaticStrings.STRING_EMPTY;
 
@@ -40,7 +42,7 @@ import static com.guicedee.guicedinjection.json.StaticStrings.STRING_EMPTY;
  * @param <Q> The type containing the hierarchy
  */
 @SuppressWarnings({"rawtypes", "UnnecessaryLocalVariable"})
-public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, Long, ?>,
+public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		Q extends WarehouseClassificationRelationshipTable<J, J, Q, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>,
 		W extends WarehouseHierarchyView<?, ? extends QueryBuilderHierarchyView, ?>,
 		T>
@@ -326,25 +328,13 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, Long, ?>,
 		Class<W> hierarchyView = findHierarchyViewType();
 		W hierarchy = get(hierarchyView);
 		J me = (J) this;
-		hierarchy = (W) hierarchy.builder()
-		                         .findMyHierarchy(me.getId())
-		                         //todo hierarchy types
-		                         //.withValue(hierarchyType)
-		                         .get()
-		                         .orElseThrow();
-		
-		Long parent = hierarchy.getParentID();
-		if (parent != null)
-		{
-			QueryBuilderCore<?, J, Long, ?> qb = me.builder()
-			                                       .find(parent);
-			qb.inDateRange();
-			
-			J returnedEntity = (J) qb.get()
-			                         .orElseThrow();
-			return returnedEntity;
-		}
-		return null;
+		QueryBuilderHierarchyView<? extends QueryBuilderHierarchyView, ?, ?> builder = hierarchy.builder();
+		UUID iid = builder.where(builder.getAttribute("id"), Equals, me.getId())
+				.selectColumn(builder.getAttribute("parentID"))
+				.get(UUID.class)
+				.orElse(null);
+
+		return me.builder().find(iid).get().orElseThrow();
 	}
 	
 	/**
@@ -397,39 +387,14 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, Long, ?>,
 	{
 		Class<W> hierarchyView = findHierarchyViewType();
 		W hierarchy = get(hierarchyView);
-		
 		J me = (J) this;
-		List<W> hierarchies = (List<W>) hierarchy.builder()
-		                                         .findMyChildren(me.getId())
-		                                         .getAll();
-		
-		Set<Long> search = new LinkedHashSet<>();
-		for (W w : hierarchies)
-		{
-			String[] split = w.getPath()
-			                  .split("/");
-			boolean foundMe = false;
-			for (String s : split)
-			{
-				if (!foundMe)
-				{
-					if (s.equals(me.getId()
-					               .toString()))
-					{
-						foundMe = true;
-					}
-				}
-				else
-				{
-					search.add(Long.valueOf(s));
-				}
-			}
-		}
-		QueryBuilderCore<?, J, Long, ?> qb = me.builder()
-		                                       .find(search);
-		qb.inDateRange();
-		List<J> returnedEntity = qb.getAll();
-		return returnedEntity;
+
+		QueryBuilderHierarchyView<? extends QueryBuilderHierarchyView, ?, ?> builder = hierarchy.builder();
+		Collection<UUID> iids = builder.where(builder.getAttribute("parentID"), Equals, me.getId())
+				.selectColumn(builder.getAttribute("id"))
+				.getAll(UUID.class);
+		QueryBuilderCore<?, J, UUID, ?> builder1 = me.builder();
+		return builder1.where(builder1.<J,UUID>getAttribute("id"),InList,iids).getAll();
 	}
 	
 	@SuppressWarnings("unchecked")

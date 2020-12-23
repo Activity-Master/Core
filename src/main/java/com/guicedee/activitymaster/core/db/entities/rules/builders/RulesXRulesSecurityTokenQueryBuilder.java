@@ -4,10 +4,10 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.rules.RulesXRulesSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesXRulesSecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class RulesXRulesSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<RulesXRulesSecurityTokenQueryBuilder, RulesXRulesSecurityToken, Long>
+		extends QueryBuilderSecurities<RulesXRulesSecurityTokenQueryBuilder, RulesXRulesSecurityToken, java.util.UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

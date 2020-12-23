@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.time.DayNames;
 import com.guicedee.activitymaster.core.db.entities.time.Days;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public class DaysQueryBuilder
 		extends DefaultTimeQueryBuilder<DaysQueryBuilder, Days, Integer>

@@ -10,9 +10,10 @@ import com.entityassist.BaseEntity;
 
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -24,13 +25,14 @@ import java.io.Serializable;
 
 @Immutable
 public class SecurityHierarchyParents
-		extends BaseEntity<SecurityHierarchyParents, SecurityHierarchyParentsQueryBuilder, Long>
+		extends BaseEntity<SecurityHierarchyParents, SecurityHierarchyParentsQueryBuilder, UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	private Long id;
+	@org.hibernate.annotations.Type(type = "uuid-char")
+	private UUID id;
 
 	@ManyToOne()
 	@JoinColumn(name = "id",insertable = false,updatable = false,referencedColumnName = "id")
@@ -44,7 +46,7 @@ public class SecurityHierarchyParents
 	}
 
 
-	public Long getId()
+	public UUID getId()
 	{
 		return this.id;
 	}
@@ -59,7 +61,7 @@ public class SecurityHierarchyParents
 		return this.value;
 	}
 
-	public SecurityHierarchyParents setId(Long id)
+	public SecurityHierarchyParents setId(UUID id)
 	{
 		this.id = id;
 		return this;

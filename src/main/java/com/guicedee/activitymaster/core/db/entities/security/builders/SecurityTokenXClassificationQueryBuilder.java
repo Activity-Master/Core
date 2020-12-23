@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClass
 import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClassificationSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClassification_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class SecurityTokenXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<SecurityToken, Classification, SecurityTokenXClassificationQueryBuilder,
-				                                              SecurityTokenXClassification, Long, SecurityTokenXClassificationSecurityToken>
+				                                              SecurityTokenXClassification, java.util.UUID, SecurityTokenXClassificationSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

@@ -4,11 +4,11 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.core.db.entities.classifications.*;
 import com.guicedee.activitymaster.core.db.entities.classifications.*;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ClassificationDataConceptXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ClassificationDataConcept, Classification, ClassificationDataConceptXClassificationQueryBuilder,
-				                                              ClassificationDataConceptXClassification, Long, ClassificationDataConceptXClassificationSecurityToken>
+				                                              ClassificationDataConceptXClassification, java.util.UUID, ClassificationDataConceptXClassificationSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

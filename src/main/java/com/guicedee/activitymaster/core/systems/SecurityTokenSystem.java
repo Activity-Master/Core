@@ -84,7 +84,6 @@ public class SecurityTokenSystem
 		            .setDoubleCheckDisabled(true);
 	}
 
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createSecurityDefaults(IEnterpriseName<?> enterpriseName, ISystems<?> originatingSystem, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)
 	{
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
@@ -105,7 +104,6 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Security Classifications Installed", 11, progressMonitor);
 	}
 
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	SecurityToken createSecurityTokens(IEnterpriseName<?> enterpriseName, IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
@@ -129,7 +127,6 @@ public class SecurityTokenSystem
 	}
 
 	@SuppressWarnings("Duplicates")
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createGroupsAndFolders(IEnterprise<?> enterprise, SecurityToken rootToken, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
@@ -358,7 +355,6 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Completed Checks", 1, progressMonitor);
 	}
 
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createActivityMasterInvolvedParty(IEnterprise<?> enterprise)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)

@@ -11,12 +11,13 @@ import com.guicedee.activitymaster.core.services.dto.IArrangement;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -33,7 +34,7 @@ public class ArrangementXArrangement
 						                                                Arrangement,
 						                                                ArrangementXArrangement,
 				                                                ArrangementXArrangementQueryBuilder,
-						                                                Long,
+						                                                java.util.UUID,
 						                                                ArrangementXArrangementSecurityToken,
 				                                                IArrangement<?>,
 						                                                IArrangement<?>>
@@ -42,10 +43,10 @@ public class ArrangementXArrangement
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ArrangementXArrangementID")
-	private Long id;
+			name = "ArrangementXArrangementID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ChildArrangementID",
 			referencedColumnName = "ArrangementID",
@@ -70,7 +71,7 @@ public class ArrangementXArrangement
 
 	}
 
-	public ArrangementXArrangement(Long arrangementXArrangementID)
+	public ArrangementXArrangement(UUID arrangementXArrangementID)
 	{
 		this.id = arrangementXArrangementID;
 	}
@@ -82,7 +83,7 @@ public class ArrangementXArrangement
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -102,7 +103,7 @@ public class ArrangementXArrangement
 		return this.securities;
 	}
 
-	public ArrangementXArrangement setId(Long id)
+	public ArrangementXArrangement setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

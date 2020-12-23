@@ -7,8 +7,8 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemSec
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXClassification;
 
 public class ResourceItemQueryBuilder
-		extends QueryBuilderTable<ResourceItemQueryBuilder, ResourceItem, Long, ResourceItemSecurityToken>
-		implements IContainsClassificationsQueryBuilder<ResourceItemQueryBuilder, ResourceItem, Long, ResourceItemXClassification>
+		extends QueryBuilderTable<ResourceItemQueryBuilder, ResourceItem, java.util.UUID, ResourceItemSecurityToken>
+		implements IContainsClassificationsQueryBuilder<ResourceItemQueryBuilder, ResourceItem, java.util.UUID, ResourceItemXClassification>
 {
 
 }

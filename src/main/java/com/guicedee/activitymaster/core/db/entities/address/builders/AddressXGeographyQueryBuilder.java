@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.address.AddressXGeographySec
 import com.guicedee.activitymaster.core.db.entities.address.AddressXGeography_;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class AddressXGeographyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Address, Geography, AddressXGeographyQueryBuilder,
-				                                              AddressXGeography, Long, AddressXGeographySecurityToken>
+				                                              AddressXGeography, java.util.UUID, AddressXGeographySecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

@@ -9,14 +9,17 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IProductType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -28,20 +31,21 @@ import static javax.persistence.AccessType.*;
 @Table(schema = "Product",
        name = "ProductType")
 @XmlRootElement
-
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ProductType
-		extends WarehouseSCDNameDescriptionTable<ProductType, ProductTypeQueryBuilder, Long, ProductTypeSecurityToken>
+		extends WarehouseSCDNameDescriptionTable<ProductType, ProductTypeQueryBuilder, java.util.UUID, ProductTypeSecurityToken>
 		implements IProductType<ProductType>,
 		           IActivityMasterEntity<ProductType>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
 	        name = "ProductTypeID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -77,12 +81,12 @@ public class ProductType
 	
 	}
 	
-	public ProductType(Long productTypeID)
+	public ProductType(UUID productTypeID)
 	{
 		this.id = productTypeID;
 	}
 	
-	public ProductType(Long productTypeID, String productTypName, String productTypeDesc)
+	public ProductType(UUID productTypeID, String productTypName, String productTypeDesc)
 	{
 		this.id = productTypeID;
 		this.name = productTypName;
@@ -146,7 +150,7 @@ public class ProductType
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -166,7 +170,7 @@ public class ProductType
 	}
 	
 	@Override
-	public ProductType setId(Long id)
+	public ProductType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

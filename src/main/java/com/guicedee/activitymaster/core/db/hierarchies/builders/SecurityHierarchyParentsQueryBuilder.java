@@ -5,10 +5,12 @@ import com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyParents;
 import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
+
+import java.util.UUID;
 
 public class SecurityHierarchyParentsQueryBuilder
-		extends QueryBuilder<SecurityHierarchyParentsQueryBuilder, SecurityHierarchyParents, Long>
+		extends QueryBuilder<SecurityHierarchyParentsQueryBuilder, SecurityHierarchyParents, UUID>
 {
 	@Override
 	public EntityManager getEntityManager()

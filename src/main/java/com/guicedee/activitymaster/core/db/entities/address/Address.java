@@ -15,13 +15,14 @@ import com.guicedee.activitymaster.core.services.classifications.resourceitems.I
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -35,7 +36,7 @@ import static javax.persistence.AccessType.*;
 @XmlRootElement
 @Access(FIELD)
 public class Address
-		extends WarehouseTable<Address, AddressQueryBuilder, Long, AddressSecurityToken>
+		extends WarehouseTable<Address, AddressQueryBuilder, java.util.UUID, AddressSecurityToken>
 		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>, IAddress<?>, IClassification<?>, Address>,
 		           IContainsGeographies<Address, Geography, AddressXGeography>,
 		           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IClassificationValue<?>, IAddress<?>, IResourceItem<?>, Address>,
@@ -47,11 +48,11 @@ public class Address
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
 	        name = "AddressID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@OneToMany(
 			mappedBy = "addressID",
@@ -108,19 +109,19 @@ public class Address
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public Address setId(Long id)
+	public Address setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
-	public Address(Long addressID)
+	public Address(UUID addressID)
 	{
 		this.id = addressID;
 	}

@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.core.services.enumtypes.INameType;
 import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import java.util.UUID;
 
 public class InvolvedPartyXInvolvedPartyNameTypeQueryBuilder
@@ -17,7 +17,7 @@ public class InvolvedPartyXInvolvedPartyNameTypeQueryBuilder
 		InvolvedPartyXInvolvedPartyNameTypeQueryBuilder,
 		InvolvedPartyXInvolvedPartyNameType,
 		INameType<?>,
-		Long,
+		java.util.UUID,
 		InvolvedPartyXInvolvedPartyNameTypeSecurityToken>
 {
 	@Override

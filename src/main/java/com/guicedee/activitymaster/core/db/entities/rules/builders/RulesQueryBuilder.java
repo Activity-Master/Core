@@ -7,8 +7,8 @@ import com.guicedee.activitymaster.core.db.entities.rules.RulesSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesXClassification;
 
 public class RulesQueryBuilder
-		extends QueryBuilderSCDNameDescription<RulesQueryBuilder, Rules, Long, RulesSecurityToken>
-		implements IContainsClassificationsQueryBuilder<RulesQueryBuilder,Rules,Long, RulesXClassification>
+		extends QueryBuilderSCDNameDescription<RulesQueryBuilder, Rules, java.util.UUID, RulesSecurityToken>
+		implements IContainsClassificationsQueryBuilder<RulesQueryBuilder,Rules,java.util.UUID, RulesXClassification>
 {
 
 }

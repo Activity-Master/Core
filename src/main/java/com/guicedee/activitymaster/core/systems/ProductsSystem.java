@@ -19,7 +19,6 @@ public class ProductsSystem
 		implements IActivityMasterSystem<ProductsSystem>
 {
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)

@@ -8,12 +8,13 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IEvent;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -30,17 +31,17 @@ public class EventXClassification
 				                                                Classification,
 				                                                EventXClassification,
 				                                                EventXClassificationQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                EventXClassificationSecurityToken,
 				                                                IEvent<?>, IClassification<?>>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "EventXClassificationID")
-	private Long id;
+			name = "EventXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -59,7 +60,7 @@ public class EventXClassification
 
 	}
 
-	public EventXClassification(Long eventXClassificationID)
+	public EventXClassification(UUID eventXClassificationID)
 	{
 		this.id = eventXClassificationID;
 	}
@@ -71,7 +72,7 @@ public class EventXClassification
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -86,7 +87,7 @@ public class EventXClassification
 		return this.eventID;
 	}
 
-	public EventXClassification setId(Long id)
+	public EventXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

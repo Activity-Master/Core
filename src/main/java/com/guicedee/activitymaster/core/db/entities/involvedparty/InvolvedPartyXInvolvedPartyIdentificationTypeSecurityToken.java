@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -21,16 +22,16 @@ import static javax.persistence.AccessType.*;
 @Access(FIELD)
 public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 		extends WarehouseSecurityTable<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken,
-				                              InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder, Long>
+				                              InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID")
-	private Long id;
+			name = "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "InvolvedPartyXInvolvedPartyIdentificationTypeID",
 			referencedColumnName = "InvolvedPartyXInvolvedPartyIdentificationTypeID",
@@ -45,7 +46,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 
 	}
 
-	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken(Long involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID)
+	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken(UUID involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID)
 	{
 		this.id = involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID;
 	}
@@ -55,7 +56,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 		return "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -65,7 +66,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 		return this.base;
 	}
 
-	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken setId(Long id)
+	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

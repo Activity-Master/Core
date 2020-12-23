@@ -8,12 +8,13 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -31,17 +32,17 @@ public class EnterpriseXClassification
 				                                                Classification,
 				                                                EnterpriseXClassification,
 				                                                EnterpriseXClassificationQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                EnterpriseXClassificationSecurityToken,
 				                                                IEnterprise<?>, IClassification<?>>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "EnterpriseXClassificationID")
-	private Long id;
+			name = "EnterpriseXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -53,7 +54,7 @@ public class EnterpriseXClassification
 
 	}
 
-	public EnterpriseXClassification(Long enterpriseXClassificationID)
+	public EnterpriseXClassification(UUID enterpriseXClassificationID)
 	{
 		id = enterpriseXClassificationID;
 	}
@@ -66,7 +67,7 @@ public class EnterpriseXClassification
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -77,7 +78,7 @@ public class EnterpriseXClassification
 	}
 
 	@Override
-	public EnterpriseXClassification setId(Long id)
+	public EnterpriseXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

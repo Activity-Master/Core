@@ -20,16 +20,17 @@ import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -44,7 +45,7 @@ import static javax.persistence.AccessType.*;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class Systems
-		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, Long, SystemsSecurityToken>
+		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.util.UUID, SystemsSecurityToken>
 		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>, ISystems<?>, IClassification<?>, Systems>,
 				           IActivityMasterEntity<Systems>,
 				           INameAndDescription<Systems>,
@@ -53,11 +54,11 @@ public class Systems
 {
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 			name = "SystemID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
 	@NotNull
@@ -114,12 +115,12 @@ public class Systems
 
 	}
 
-	public Systems(Long systemID)
+	public Systems(UUID systemID)
 	{
 		id = systemID;
 	}
 
-	public Systems(Long systemID, String systemName, String systemDesc, String systemHistoryName)
+	public Systems(UUID systemID, String systemName, String systemDesc, String systemHistoryName)
 	{
 		id = systemID;
 		name = systemName;
@@ -191,7 +192,7 @@ public class Systems
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -225,7 +226,7 @@ public class Systems
 	}
 
 	@Override
-	public Systems setId(Long id)
+	public Systems setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

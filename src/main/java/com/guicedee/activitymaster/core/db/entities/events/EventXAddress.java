@@ -13,12 +13,13 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IEvent;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -35,17 +36,17 @@ public class EventXAddress
 				                                                Address,
 				                                                EventXAddress,
 				                                                EventXAddressQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                EventXAddressSecurityToken,
 				                                                IEvent<?>, IAddress<?>>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "EventXAddressID")
-	private Long id;
+			name = "EventXAddressID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -71,7 +72,7 @@ public class EventXAddress
 
 	}
 
-	public EventXAddress(Long eventXAddressID)
+	public EventXAddress(UUID eventXAddressID)
 	{
 		this.id = eventXAddressID;
 	}
@@ -83,7 +84,7 @@ public class EventXAddress
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -103,7 +104,7 @@ public class EventXAddress
 		return this.eventID;
 	}
 
-	public EventXAddress setId(Long id)
+	public EventXAddress setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

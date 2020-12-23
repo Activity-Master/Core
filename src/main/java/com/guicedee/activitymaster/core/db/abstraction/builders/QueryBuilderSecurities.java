@@ -9,8 +9,8 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 
-import javax.persistence.metamodel.Attribute;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 
 import static com.entityassist.enumerations.Operand.*;

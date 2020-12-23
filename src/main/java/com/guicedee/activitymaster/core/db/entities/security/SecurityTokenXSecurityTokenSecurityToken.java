@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.security;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.security.builders.SecurityTokenXSecurityTokenSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -20,16 +21,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class SecurityTokenXSecurityTokenSecurityToken
-		extends WarehouseSecurityTable<SecurityTokenXSecurityTokenSecurityToken, SecurityTokenXSecurityTokenSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<SecurityTokenXSecurityTokenSecurityToken, SecurityTokenXSecurityTokenSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "SecurityTokenXSecurityTokenSecurityTokenID")
-	private Long id;
+			name = "SecurityTokenXSecurityTokenSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "SecurityTokenXSecurityTokenID",
 			referencedColumnName = "SecurityTokenXSecurityTokenID",
@@ -43,7 +44,7 @@ public class SecurityTokenXSecurityTokenSecurityToken
 
 	}
 
-	public SecurityTokenXSecurityTokenSecurityToken(Long resourceItemDataSecurityTokenID)
+	public SecurityTokenXSecurityTokenSecurityToken(UUID resourceItemDataSecurityTokenID)
 	{
 		this.id = resourceItemDataSecurityTokenID;
 	}
@@ -53,7 +54,7 @@ public class SecurityTokenXSecurityTokenSecurityToken
 		return "SecurityTokenXSecurityTokenSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -63,7 +64,7 @@ public class SecurityTokenXSecurityTokenSecurityToken
 		return this.base;
 	}
 
-	public SecurityTokenXSecurityTokenSecurityToken setId(Long id)
+	public SecurityTokenXSecurityTokenSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
 import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import java.util.UUID;
 
 public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
@@ -17,7 +17,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
 		InvolvedPartyXInvolvedPartyIdentificationType,
 		IIdentificationType<?>,
-		Long,
+		java.util.UUID,
 		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken>
 {
 	@Override

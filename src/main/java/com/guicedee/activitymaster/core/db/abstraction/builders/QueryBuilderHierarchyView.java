@@ -6,9 +6,10 @@ import com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyView_;
 import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.io.Serializable;
+import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
 
@@ -51,7 +52,7 @@ public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchy
 
 
 	@SuppressWarnings("unchecked")
-	public J findMyChildren(Long securityTokenID)
+	public J findMyChildren(UUID securityTokenID)
 	{
 		where(SecurityHierarchyView_.parentID, Equals, securityTokenID);
 		return (J) this;

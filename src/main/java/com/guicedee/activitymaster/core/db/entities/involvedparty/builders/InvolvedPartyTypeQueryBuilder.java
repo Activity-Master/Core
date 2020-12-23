@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyT
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyTypeSecurityToken;
 
 public class InvolvedPartyTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<InvolvedPartyTypeQueryBuilder, InvolvedPartyType, Long, InvolvedPartyTypeSecurityToken>
+		extends QueryBuilderSCDNameDescription<InvolvedPartyTypeQueryBuilder, InvolvedPartyType, java.util.UUID, InvolvedPartyTypeSecurityToken>
 {
 
 }

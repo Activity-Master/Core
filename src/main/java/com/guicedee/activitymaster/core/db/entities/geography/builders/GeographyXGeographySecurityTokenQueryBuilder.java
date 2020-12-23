@@ -4,10 +4,10 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.geography.GeographyXGeographySecurityToken;
 import com.guicedee.activitymaster.core.db.entities.geography.GeographyXGeographySecurityToken_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class GeographyXGeographySecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<GeographyXGeographySecurityTokenQueryBuilder, GeographyXGeographySecurityToken, Long>
+		extends QueryBuilderSecurities<GeographyXGeographySecurityTokenQueryBuilder, GeographyXGeographySecurityToken, java.util.UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

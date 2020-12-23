@@ -7,6 +7,6 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConceptSecurityToken;
 
 public class ClassificationDataConceptQueryBuilder
-		extends QueryBuilderSCDNameDescription<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, Long, ClassificationDataConceptSecurityToken>
+		extends QueryBuilderSCDNameDescription<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, java.util.UUID, ClassificationDataConceptSecurityToken>
 {
 }

@@ -18,9 +18,9 @@ import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
 import io.github.classgraph.ClassInfo;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
-import javax.validation.constraints.NotNull;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
+import jakarta.validation.constraints.NotNull;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,12 +62,12 @@ public class EnterpriseService
 	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
 	public List<IEnterprise<?>> findEnterprisesWithClassification(@CacheKey Classification classification)
 	{
-		List<Long> classy = new EnterpriseXClassification().builder()
+		List<UUID> classy = new EnterpriseXClassification().builder()
 		                                                   .withClassification(classification)
 		                                                   .inActiveRange(classification.getEnterpriseID())
 		                                                   .inDateRange()
 		                                                   .selectColumn(EnterpriseXClassification_.enterpriseID)
-		                                                   .getAll(Long.class);
+		                                                   .getAll(UUID.class);
 		
 		EnterpriseQueryBuilder builder = new Enterprise().builder();
 		builder = builder.where(Enterprise_.id, InList, classy);

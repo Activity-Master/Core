@@ -5,8 +5,8 @@ import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -40,9 +40,9 @@ public interface IArrangementsService<J extends IArrangementsService<J>>
 	@CacheResult(cacheName = "ArrangementArrangementTypeString")
 	IArrangementType<?> find(@CacheKey String idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens);
 	
-	IArrangement<?> find(long id, IEnterprise<?> enterprise, UUID... tokens);
+	IArrangement<?> find(UUID id, IEnterprise<?> enterprise, UUID... tokens);
 	
-	IArrangement<?> find(long id);
+	IArrangement<?> find(UUID id);
 	
 	List<IArrangement<?>> findAll(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... tokens);
 }

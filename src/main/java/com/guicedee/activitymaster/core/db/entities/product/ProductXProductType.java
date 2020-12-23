@@ -10,12 +10,13 @@ import com.guicedee.activitymaster.core.services.dto.IProductType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -33,17 +34,17 @@ public class ProductXProductType
 				ProductXProductType,
 				ProductXProductTypeQueryBuilder,
 				IProductTypeValue<?>,
-				Long,
+				java.util.UUID,
 				ProductXProductTypeSecurityToken,
 				IProduct<?>, IProductType<?>>
 {
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-	        name = "ProductXProductTypeID")
-	private Long id;
+	        name = "ProductXProductTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -66,7 +67,7 @@ public class ProductXProductType
 	
 	}
 	
-	public ProductXProductType(Long productXProductTypeID)
+	public ProductXProductType(UUID productXProductTypeID)
 	{
 		this.id = productXProductTypeID;
 	}
@@ -79,7 +80,7 @@ public class ProductXProductType
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -100,7 +101,7 @@ public class ProductXProductType
 	}
 	
 	@Override
-	public ProductXProductType setId(Long id)
+	public ProductXProductType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

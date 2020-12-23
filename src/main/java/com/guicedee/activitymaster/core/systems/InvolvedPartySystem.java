@@ -20,7 +20,6 @@ public class InvolvedPartySystem
 		implements IActivityMasterSystem<InvolvedPartySystem>
 {
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Involved Party System", "Starting Checks for Required Values", progressMonitor);

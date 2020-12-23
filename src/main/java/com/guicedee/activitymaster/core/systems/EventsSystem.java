@@ -22,7 +22,6 @@ public class EventsSystem
 		implements IActivityMasterSystem<EventsSystem>
 {
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Loading Events", "Events creating default types", progressMonitor);
@@ -49,7 +48,6 @@ public class EventsSystem
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createEventInvolvedPartyDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
@@ -79,7 +77,6 @@ public class EventsSystem
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createEventAddressDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
@@ -105,7 +102,6 @@ public class EventsSystem
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createEventArrangementDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
@@ -123,7 +119,6 @@ public class EventsSystem
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createEventEventTypesClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
@@ -138,7 +133,6 @@ public class EventsSystem
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createEventProductsDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
@@ -165,7 +159,6 @@ public class EventsSystem
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void createEventResourceItemDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)

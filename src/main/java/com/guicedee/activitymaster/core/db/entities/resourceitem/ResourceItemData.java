@@ -11,12 +11,13 @@ import com.guicedee.activitymaster.core.services.dto.IResourceData;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -29,17 +30,17 @@ import static javax.persistence.AccessType.*;
 @XmlRootElement
 @Access(FIELD)
 public class ResourceItemData
-		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, Long, ResourceItemDataSecurityToken>
+		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, java.util.UUID, ResourceItemDataSecurityToken>
 		implements IContainsClassifications<ResourceItemData, Classification, ResourceItemDataXClassification, IClassificationValue<?>, IResourceData<?>, IClassification<?>, ResourceItemData>
 				           , IResourceData<ResourceItemData>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "ResourceItemDataID")
-	private Long id;
+			name = "ResourceItemDataID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Lob()
 	@Column(nullable = false,
 			name = "ResourceItemData")
@@ -67,7 +68,7 @@ public class ResourceItemData
 
 	}
 
-	public ResourceItemData(Long resourceItemDataID)
+	public ResourceItemData(UUID resourceItemDataID)
 	{
 		id = resourceItemDataID;
 	}
@@ -135,7 +136,7 @@ public class ResourceItemData
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -151,7 +152,7 @@ public class ResourceItemData
 	}
 
 	@Override
-	public ResourceItemData setId(Long id)
+	public ResourceItemData setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

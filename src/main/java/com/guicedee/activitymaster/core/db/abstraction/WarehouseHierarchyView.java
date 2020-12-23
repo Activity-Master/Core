@@ -5,10 +5,13 @@ import com.entityassist.BaseEntity;
 
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.Type;
+
 import java.io.Serializable;
+import java.util.UUID;
 
 @XmlRootElement
 
@@ -20,7 +23,8 @@ public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J
 	@Column
 	private String name;
 	@Column
-	private Long parentID;
+	@org.hibernate.annotations.Type(type = "uuid-char")
+	private UUID parentID;
 	@Column
 	private String pather;
 	@Column
@@ -35,7 +39,7 @@ public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J
 		return this.name;
 	}
 
-	public Long getParentID()
+	public UUID getParentID()
 	{
 		return this.parentID;
 	}
@@ -70,7 +74,7 @@ public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J
 		return this;
 	}
 
-	public WarehouseHierarchyView<J, Q, I> setParentID(Long parentID)
+	public WarehouseHierarchyView<J, Q, I> setParentID(UUID parentID)
 	{
 		this.parentID = parentID;
 		return this;

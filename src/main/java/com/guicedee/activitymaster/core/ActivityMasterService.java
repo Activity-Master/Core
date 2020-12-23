@@ -28,7 +28,7 @@ import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.logger.LogFactory;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -41,8 +41,6 @@ public class ActivityMasterService
 		implements IProgressable,
 		           IActivityMasterService
 {
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-	               timeout = 6000)
 	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
@@ -74,8 +72,7 @@ public class ActivityMasterService
 				.setSecurityEnabled(true);
 		return enterprise;
 	}
-	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+
 	public void runUpdatesOnEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		get(ActivityMasterConfiguration.class)
@@ -102,14 +99,14 @@ public class ActivityMasterService
 		
 		logProgress("System Configuration", "Starting System Startups", 1, progressMonitor);
 		loadSystems(enterpriseName, progressMonitor);
+		progressMonitor.setCurrentTask(0);
 		logProgress("System Configuration", "Enterprise All Updates. Updating Systems", 1, progressMonitor);
 		loadUpdates(enterpriseName, progressMonitor);
 		logProgress("System Configuration", "Done", 1, progressMonitor);
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(true);
 	}
-	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+
 	protected IInvolvedParty<?> createAdminAndCreatorUserForEnterprise(IEnterpriseName<?> enterpriseName, String adminUserName,
 	                                                                   @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
@@ -170,8 +167,6 @@ public class ActivityMasterService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-	               timeout = 5000)
 	public void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
@@ -196,8 +191,6 @@ public class ActivityMasterService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-	               timeout = 5000)
 	public void loadUpdates(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));

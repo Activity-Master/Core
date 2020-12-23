@@ -38,16 +38,17 @@ import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.logger.LogFactory;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Logger;
 
-import static javax.persistence.AccessType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.AccessType.*;
+import static jakarta.persistence.FetchType.*;
 
 /**
  * @author Marc Magon
@@ -62,7 +63,7 @@ import static javax.persistence.FetchType.*;
 
 @Access(FIELD)
 public class SecurityToken
-		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, Long, SecurityTokensSecurityToken>
+		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, java.util.UUID, SecurityTokensSecurityToken>
 		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IClassificationValue<?>, ISecurityToken<?>, IClassification<?>, SecurityToken>,
 				           IActivityMasterEntity<SecurityToken>,
 				           ISecurityToken<SecurityToken>
@@ -71,11 +72,11 @@ public class SecurityToken
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 			name = "SecurityTokenID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
 	@NotNull
@@ -130,12 +131,12 @@ public class SecurityToken
 
 	}
 
-	public SecurityToken(Long securityTokenID)
+	public SecurityToken(UUID securityTokenID)
 	{
 		this.id = securityTokenID;
 	}
 
-	public SecurityToken(Long securityTokenID, String securityToken, String securityTokenFriendlyName, String securityTokenFriendlyDescription, String originalSourceSystemUniqueID)
+	public SecurityToken(UUID securityTokenID, String securityToken, String securityTokenFriendlyName, String securityTokenFriendlyDescription, String originalSourceSystemUniqueID)
 	{
 		this.id = securityTokenID;
 		this.securityToken = securityToken;
@@ -195,7 +196,7 @@ public class SecurityToken
 		return Objects.hash(getSecurityToken());
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -220,7 +221,7 @@ public class SecurityToken
 		return this.securityTokenClassificationID;
 	}
 
-	public SecurityToken setId(Long id)
+	public SecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

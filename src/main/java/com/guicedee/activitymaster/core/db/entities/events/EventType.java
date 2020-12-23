@@ -9,14 +9,15 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IEventType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -31,17 +32,17 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class EventType
-		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, Long, EventTypesSecurityToken>
+		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, java.util.UUID, EventTypesSecurityToken>
 		implements IEventType<EventType>,
 				           IActivityMasterEntity<EventType>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
 			name = "EventTypeID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -77,12 +78,12 @@ public class EventType
 
 	}
 
-	public EventType(Long eventTypeID)
+	public EventType(UUID eventTypeID)
 	{
 		this.id = eventTypeID;
 	}
 
-	public EventType(Long eventTypeID, String eventTypName, String eventTypeDesc)
+	public EventType(UUID eventTypeID, String eventTypName, String eventTypeDesc)
 	{
 		this.id = eventTypeID;
 		this.name = eventTypName;
@@ -145,7 +146,7 @@ public class EventType
 		return "EventType - " + getName();
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -162,7 +163,7 @@ public class EventType
 		return this.description;
 	}
 
-	public EventType setId(Long id)
+	public EventType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

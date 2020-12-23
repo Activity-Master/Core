@@ -23,9 +23,9 @@ import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.logger.LogFactory;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
-import javax.persistence.criteria.JoinType;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.criteria.JoinType;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,7 +50,7 @@ public class InvolvedPartyService
 	
 	@Override
 	@CacheResult(cacheName = "InvovledPartyByID")
-	public IInvolvedParty<?> findByID(@CacheKey Long id)
+	public IInvolvedParty<?> findByID(@CacheKey UUID id)
 	{
 		return new InvolvedParty().builder()
 		                          .find(id)

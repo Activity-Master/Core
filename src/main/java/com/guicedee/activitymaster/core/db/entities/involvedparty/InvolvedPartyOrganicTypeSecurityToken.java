@@ -8,10 +8,12 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyOrganicTypeSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import static javax.persistence.AccessType.*;
+import java.util.UUID;
+
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -24,15 +26,15 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class InvolvedPartyOrganicTypeSecurityToken
-		extends WarehouseSecurityTable<InvolvedPartyOrganicTypeSecurityToken, InvolvedPartyOrganicTypeSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<InvolvedPartyOrganicTypeSecurityToken, InvolvedPartyOrganicTypeSecurityTokenQueryBuilder, java.util.UUID>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "InvolvedPartyOrganicTypeSecurityTokenID")
-	private Long id;
+			name = "InvolvedPartyOrganicTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "InvolvedPartyOrganicTypeID",
 			referencedColumnName = "InvolvedPartyOrganicTypeID",
@@ -47,7 +49,7 @@ public class InvolvedPartyOrganicTypeSecurityToken
 
 	}
 
-	public InvolvedPartyOrganicTypeSecurityToken(Long involvedPartyOrganicTypeSecurityTokenID)
+	public InvolvedPartyOrganicTypeSecurityToken(UUID involvedPartyOrganicTypeSecurityTokenID)
 	{
 		this.id = involvedPartyOrganicTypeSecurityTokenID;
 	}
@@ -57,7 +59,7 @@ public class InvolvedPartyOrganicTypeSecurityToken
 		return "InvolvedPartyOrganicTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -67,7 +69,7 @@ public class InvolvedPartyOrganicTypeSecurityToken
 		return this.base;
 	}
 
-	public InvolvedPartyOrganicTypeSecurityToken setId(Long id)
+	public InvolvedPartyOrganicTypeSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

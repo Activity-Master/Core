@@ -8,13 +8,14 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -32,7 +33,7 @@ public class SystemXClassification
 				                                                Classification,
 				                                                SystemXClassification,
 				                                                SystemsXClassificationQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                SystemXClassificationSecurityToken,
 				                                                ISystems<?>, IClassification<?>>
 		implements Serializable
@@ -40,10 +41,10 @@ public class SystemXClassification
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "SystemXClassificationID")
-	private Long id;
+			name = "SystemXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -55,7 +56,7 @@ public class SystemXClassification
 
 	}
 
-	public SystemXClassification(Long systemXClassificationID)
+	public SystemXClassification(UUID systemXClassificationID)
 	{
 		id = systemXClassificationID;
 	}
@@ -68,7 +69,7 @@ public class SystemXClassification
 	}
 
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return id;
 	}
@@ -79,7 +80,7 @@ public class SystemXClassification
 	}
 
 	@Override
-	public SystemXClassification setId(Long id)
+	public SystemXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

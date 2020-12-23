@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXGeographySecuri
 import com.guicedee.activitymaster.core.db.entities.events.EventXGeography_;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class EventXGeographyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Geography, EventXGeographyQueryBuilder,
-				                                              EventXGeography, Long, EventXGeographySecurityToken>
+				                                              EventXGeography, java.util.UUID, EventXGeographySecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

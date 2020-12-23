@@ -18,7 +18,6 @@ public class RulesSystem
 		implements IActivityMasterSystem<RulesSystem>
 {
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)

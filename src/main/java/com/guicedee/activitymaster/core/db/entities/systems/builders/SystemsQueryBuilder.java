@@ -10,7 +10,7 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.db.entities.systems.SystemsSecurityToken;
 
 public class SystemsQueryBuilder
-		extends QueryBuilderNameDescription<SystemsQueryBuilder, Systems, Long, SystemsSecurityToken>
-		implements IContainsClassificationsQueryBuilder<SystemsQueryBuilder, Systems, Long, SystemXClassification>
+		extends QueryBuilderNameDescription<SystemsQueryBuilder, Systems, java.util.UUID, SystemsSecurityToken>
+		implements IContainsClassificationsQueryBuilder<SystemsQueryBuilder, Systems, java.util.UUID, SystemXClassification>
 {
 }

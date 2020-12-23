@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyO
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyOrganicTypeSecurityToken;
 
 public class InvolvedPartyOrganicTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<InvolvedPartyOrganicTypeQueryBuilder, InvolvedPartyOrganicType, Long, InvolvedPartyOrganicTypeSecurityToken>
+		extends QueryBuilderSCDNameDescription<InvolvedPartyOrganicTypeQueryBuilder, InvolvedPartyOrganicType, java.util.UUID, InvolvedPartyOrganicTypeSecurityToken>
 {
 
 }

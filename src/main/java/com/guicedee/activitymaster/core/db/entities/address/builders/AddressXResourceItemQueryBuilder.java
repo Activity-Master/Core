@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.address.AddressXResourceItem
 import com.guicedee.activitymaster.core.db.entities.address.AddressXResourceItem_;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class AddressXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<Address, ResourceItem, AddressXResourceItemQueryBuilder,
-				                                              AddressXResourceItem, Long, AddressXResourceItemSecurityToken>
+				                                              AddressXResourceItem, java.util.UUID, AddressXResourceItemSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

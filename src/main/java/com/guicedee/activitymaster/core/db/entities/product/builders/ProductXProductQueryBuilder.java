@@ -6,11 +6,11 @@ import com.guicedee.activitymaster.core.db.entities.product.ProductXProduct;
 import com.guicedee.activitymaster.core.db.entities.product.ProductXProductSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.product.ProductXProduct_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ProductXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Product, Product, ProductXProductQueryBuilder,
-				                                              ProductXProduct, Long, ProductXProductSecurityToken>
+				                                              ProductXProduct, java.util.UUID, ProductXProductSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

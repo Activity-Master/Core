@@ -13,8 +13,8 @@ import java.sql.Date;
 import java.time.ZoneOffset;
 
 public class EventQueryBuilder
-		extends QueryBuilderTable<EventQueryBuilder, Event, Long, EventSecurityToken>
-		implements IContainsClassificationsQueryBuilder<EventQueryBuilder, Event, Long, EventXClassification>
+		extends QueryBuilderTable<EventQueryBuilder, Event, java.util.UUID, EventSecurityToken>
+		implements IContainsClassificationsQueryBuilder<EventQueryBuilder, Event, java.util.UUID, EventXClassification>
 {
 
 	@Override

@@ -23,7 +23,7 @@ import com.guicedee.activitymaster.core.services.system.IAddressService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -33,7 +33,7 @@ import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
-import static javax.persistence.criteria.JoinType.*;
+import static jakarta.persistence.criteria.JoinType.*;
 
 public interface IContainsAddresses<P extends WarehouseCoreTable,
 		S extends WarehouseCoreTable,

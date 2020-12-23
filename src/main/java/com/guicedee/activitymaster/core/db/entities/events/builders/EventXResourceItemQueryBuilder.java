@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXResourceItemSec
 import com.guicedee.activitymaster.core.db.entities.events.EventXResourceItem_;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class EventXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, ResourceItem, EventXResourceItemQueryBuilder,
-				                                              EventXResourceItem, Long, EventXResourceItemSecurityToken>
+				                                              EventXResourceItem, java.util.UUID, EventXResourceItemSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

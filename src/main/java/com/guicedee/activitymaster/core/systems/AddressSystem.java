@@ -19,7 +19,7 @@ public class AddressSystem
 		implements IActivityMasterSystem<AddressSystem>
 {
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Address System", "Starting Address Checks", progressMonitor);

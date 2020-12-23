@@ -13,13 +13,14 @@ import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -36,7 +37,7 @@ public class AddressXClassification
 				                                                Classification,
 				                                                AddressXClassification,
 				                                                AddressXClassificationQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                AddressXClassificationSecurityToken,
 				                                                IAddress<?>, IClassification<?>>
 		implements Serializable
@@ -44,10 +45,10 @@ public class AddressXClassification
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "AddressXClassificationID")
-	private Long id;
+			name = "AddressXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@ManyToOne(optional = false,
 			fetch = FetchType.LAZY)
@@ -66,7 +67,7 @@ public class AddressXClassification
 
 	}
 
-	public AddressXClassification(Long addressXClassificationID)
+	public AddressXClassification(UUID addressXClassificationID)
 	{
 		this.id = addressXClassificationID;
 	}
@@ -78,7 +79,7 @@ public class AddressXClassification
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -93,7 +94,7 @@ public class AddressXClassification
 		return this.securities;
 	}
 
-	public AddressXClassification setId(Long id)
+	public AddressXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

@@ -3,8 +3,8 @@ package com.guicedee.activitymaster.core.db.abstraction;
 import com.entityassist.SCDEntity;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderDefault;
 
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;

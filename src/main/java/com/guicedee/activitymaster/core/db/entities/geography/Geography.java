@@ -19,15 +19,16 @@ import com.guicedee.activitymaster.core.services.classifications.geography.IGeog
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.AccessType.*;
+import static jakarta.persistence.FetchType.*;
 
 /**
  * @author Marc Magon
@@ -42,7 +43,7 @@ import static javax.persistence.FetchType.*;
 
 @Access(FIELD)
 public class Geography
-		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, Long, GeographySecurityToken>
+		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, java.util.UUID, GeographySecurityToken>
 		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, IGeography<?>, IClassification<?>, Geography>,
 		           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IClassificationValue<?>, IGeography<?>, IResourceItem<?>, Geography>,
 		           IActivityMasterEntity<Geography>,
@@ -53,11 +54,11 @@ public class Geography
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
 	        name = "GeographyID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -127,12 +128,12 @@ public class Geography
 	
 	}
 	
-	public Geography(Long geographyID)
+	public Geography(UUID geographyID)
 	{
 		this.id = geographyID;
 	}
 	
-	public Geography(Long geographyID, String geographyName, String geographyDesc)
+	public Geography(UUID geographyID, String geographyName, String geographyDesc)
 	{
 		this.id = geographyID;
 		this.name = geographyName;
@@ -295,13 +296,13 @@ public class Geography
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public Geography setId(Long id)
+	public Geography setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

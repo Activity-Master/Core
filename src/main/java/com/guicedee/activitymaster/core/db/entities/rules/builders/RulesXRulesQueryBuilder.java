@@ -6,11 +6,11 @@ import com.guicedee.activitymaster.core.db.entities.rules.RulesXRules;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesXRulesSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesXRules_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class RulesXRulesQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, Rules, RulesXRulesQueryBuilder,
-				                                              RulesXRules, Long, RulesXRulesSecurityToken>
+				                                              RulesXRules, java.util.UUID, RulesXRulesSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

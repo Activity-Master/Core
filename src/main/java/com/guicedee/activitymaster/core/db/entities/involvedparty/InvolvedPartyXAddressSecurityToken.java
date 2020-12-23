@@ -8,10 +8,12 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXAddressSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import static javax.persistence.AccessType.*;
+import java.util.UUID;
+
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -24,15 +26,15 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class InvolvedPartyXAddressSecurityToken
-		extends WarehouseSecurityTable<InvolvedPartyXAddressSecurityToken, InvolvedPartyXAddressSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<InvolvedPartyXAddressSecurityToken, InvolvedPartyXAddressSecurityTokenQueryBuilder, java.util.UUID>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-			name = "InvolvedPartyXAddressSecurityTokenID")
-	private Long id;
+			name = "InvolvedPartyXAddressSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "InvolvedPartyXAddressID",
 			referencedColumnName = "InvolvedPartyXAddressID",
@@ -47,7 +49,7 @@ public class InvolvedPartyXAddressSecurityToken
 
 	}
 
-	public InvolvedPartyXAddressSecurityToken(Long involvedPartyXAddressSecurityTokenID)
+	public InvolvedPartyXAddressSecurityToken(UUID involvedPartyXAddressSecurityTokenID)
 	{
 		this.id = involvedPartyXAddressSecurityTokenID;
 	}
@@ -57,7 +59,7 @@ public class InvolvedPartyXAddressSecurityToken
 		return "InvolvedPartyXAddressSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -67,7 +69,7 @@ public class InvolvedPartyXAddressSecurityToken
 		return this.base;
 	}
 
-	public InvolvedPartyXAddressSecurityToken setId(Long id)
+	public InvolvedPartyXAddressSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

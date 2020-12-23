@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXArrangement;
 import com.guicedee.activitymaster.core.db.entities.events.EventXArrangement_;
 import com.guicedee.activitymaster.core.db.entities.events.EventXArrangementsSecurityToken;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class EventXArrangementQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Arrangement, EventXArrangementQueryBuilder,
-				                                              EventXArrangement, Long, EventXArrangementsSecurityToken>
+				                                              EventXArrangement, java.util.UUID, EventXArrangementsSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

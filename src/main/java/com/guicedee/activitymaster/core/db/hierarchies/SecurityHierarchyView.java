@@ -9,13 +9,14 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.core.db.hierarchies.builders.SecurityHierarchyViewQueryBuilder;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -26,13 +27,14 @@ import java.util.List;
 @XmlRootElement
 @Immutable
 public class SecurityHierarchyView
-		extends WarehouseHierarchyView<SecurityHierarchyView, SecurityHierarchyViewQueryBuilder, Long>
+		extends WarehouseHierarchyView<SecurityHierarchyView, SecurityHierarchyViewQueryBuilder, UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	private Long id;
+	@org.hibernate.annotations.Type(type = "uuid-char")
+	private UUID id;
 	@OneToMany(mappedBy = "child")
 	private List<SecurityHierarchyParents> parents;
 
@@ -41,7 +43,7 @@ public class SecurityHierarchyView
 	}
 
 	@Override
-	public Long getId()
+	public UUID getId()
 	{
 		return id;
 	}
@@ -52,7 +54,7 @@ public class SecurityHierarchyView
 	}
 
 	@Override
-	public SecurityHierarchyView setId(Long id)
+	public SecurityHierarchyView setId(UUID id)
 	{
 		this.id = id;
 		return this;

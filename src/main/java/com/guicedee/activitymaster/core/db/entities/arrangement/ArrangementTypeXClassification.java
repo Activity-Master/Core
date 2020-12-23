@@ -13,13 +13,14 @@ import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -36,7 +37,7 @@ public class ArrangementTypeXClassification
 		Classification,
 		ArrangementTypeXClassification,
 		ArrangementTypeXClassificationQueryBuilder,
-		Long,
+		java.util.UUID,
 		ArrangementTypeXClassificationSecurityToken,
 		IArrangementType<?>, IClassification<?>>
 		implements Serializable
@@ -44,10 +45,10 @@ public class ArrangementTypeXClassification
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
-	        name = "ArrangementTypeXClassificationID")
-	private Long id;
+	        name = "ArrangementTypeXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
@@ -66,7 +67,7 @@ public class ArrangementTypeXClassification
 	
 	}
 	
-	public ArrangementTypeXClassification(Long arrangementXClassificationID)
+	public ArrangementTypeXClassification(UUID arrangementXClassificationID)
 	{
 		this.id = arrangementXClassificationID;
 	}
@@ -79,7 +80,7 @@ public class ArrangementTypeXClassification
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -95,7 +96,7 @@ public class ArrangementTypeXClassification
 	}
 	
 	@Override
-	public ArrangementTypeXClassification setId(Long id)
+	public ArrangementTypeXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

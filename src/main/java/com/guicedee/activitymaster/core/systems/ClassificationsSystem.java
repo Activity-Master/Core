@@ -32,8 +32,6 @@ public class ClassificationsSystem
 		implements IActivityMasterSystem<ClassificationsSystem>
 {
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-			timeout = 300)
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)

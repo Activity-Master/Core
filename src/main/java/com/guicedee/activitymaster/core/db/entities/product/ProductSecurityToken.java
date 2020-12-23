@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.product;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -20,16 +21,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ProductSecurityToken
-		extends WarehouseSecurityTable<ProductSecurityToken, ProductSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ProductSecurityToken, ProductSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "ProductSecurityTokenID")
-	private Long id;
+			name = "ProductSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@JoinColumn(name = "ProductID",
 			referencedColumnName = "ProductID",
@@ -44,7 +45,7 @@ public class ProductSecurityToken
 
 	}
 
-	public ProductSecurityToken(Long productSecurityTokenID)
+	public ProductSecurityToken(UUID productSecurityTokenID)
 	{
 		this.id = productSecurityTokenID;
 	}
@@ -54,7 +55,7 @@ public class ProductSecurityToken
 		return "ProductSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -64,7 +65,7 @@ public class ProductSecurityToken
 		return this.base;
 	}
 
-	public ProductSecurityToken setId(Long id)
+	public ProductSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

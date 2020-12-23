@@ -10,11 +10,12 @@ import com.guicedee.activitymaster.core.db.hierarchies.builders.InvolvedPartyHie
 
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -25,24 +26,25 @@ import java.io.Serializable;
 
 @Immutable
 public class InvolvedPartyHierarchyView
-		extends WarehouseHierarchyView<InvolvedPartyHierarchyView, InvolvedPartyHierarchyViewQueryBuilder, Long>
+		extends WarehouseHierarchyView<InvolvedPartyHierarchyView, InvolvedPartyHierarchyViewQueryBuilder, UUID>
 		implements Serializable
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	private Long id;
+	@org.hibernate.annotations.Type(type = "uuid-char")
+	private UUID id;
 
 	public InvolvedPartyHierarchyView()
 	{
 	}
 
-	public Long getId()
+	public UUID getId()
 	{
 		return this.id;
 	}
 
-	public InvolvedPartyHierarchyView setId(Long id)
+	public InvolvedPartyHierarchyView setId(UUID id)
 	{
 		this.id = id;
 		return this;

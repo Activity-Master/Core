@@ -18,8 +18,8 @@ import com.guicedee.activitymaster.core.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -82,8 +82,6 @@ public class SystemsService
 	}
 
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class,
-			timeout = transactionTimeout)
 	public UUID registerNewSystem(IEnterprise<?> enterprise, ISystems<?> newSystem)
 	{
 		//Create Security Token for the created system row

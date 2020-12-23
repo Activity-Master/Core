@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXAddress;
 import com.guicedee.activitymaster.core.db.entities.events.EventXAddressSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.events.EventXAddress_;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class EventXAddressQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Address, EventXAddressQueryBuilder,
-				                                              EventXAddress, Long, EventXAddressSecurityToken>
+				                                              EventXAddress, java.util.UUID, EventXAddressSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

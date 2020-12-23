@@ -8,11 +8,12 @@ import com.guicedee.activitymaster.core.services.dto.IEvent;
 import com.guicedee.activitymaster.core.services.dto.IProduct;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -29,17 +30,17 @@ public class EventXProduct
 				                                                Product,
 				                                                EventXProduct,
 				                                                EventXProductQueryBuilder,
-				                                                Long,
+				                                                java.util.UUID,
 				                                                EventXProductSecurityToken,
 				                                                IEvent<?>, IProduct<?>>
 {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "EventXProductID")
-	private Long id;
+			name = "EventXProductID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -64,7 +65,7 @@ public class EventXProduct
 
 	}
 
-	public EventXProduct(Long eventXProductID)
+	public EventXProduct(UUID eventXProductID)
 	{
 		this.id = eventXProductID;
 	}
@@ -75,7 +76,7 @@ public class EventXProduct
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -95,7 +96,7 @@ public class EventXProduct
 		return this.productID;
 	}
 
-	public EventXProduct setId(Long id)
+	public EventXProduct setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

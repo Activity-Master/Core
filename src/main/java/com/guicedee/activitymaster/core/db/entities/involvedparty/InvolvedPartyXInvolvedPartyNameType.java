@@ -13,12 +13,13 @@ import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyNameType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.INameType;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -36,7 +37,7 @@ public class InvolvedPartyXInvolvedPartyNameType
 		InvolvedPartyXInvolvedPartyNameType,
 		InvolvedPartyXInvolvedPartyNameTypeQueryBuilder,
 		INameType<?>,
-		Long,
+		java.util.UUID,
 		InvolvedPartyXInvolvedPartyNameTypeSecurityToken,
 		IInvolvedParty<?>,
 		IInvolvedPartyNameType<?>>
@@ -44,10 +45,10 @@ public class InvolvedPartyXInvolvedPartyNameType
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-	        name = "InvolvedPartyXInvolvedPartyNameTypeID")
-	private Long id;
+	        name = "InvolvedPartyXInvolvedPartyNameTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "InvolvedPartyID",
 	            referencedColumnName = "InvolvedPartyID",
@@ -72,12 +73,12 @@ public class InvolvedPartyXInvolvedPartyNameType
 	
 	}
 	
-	public InvolvedPartyXInvolvedPartyNameType(Long involvedPartyXInvolvedPartyNameTypeID)
+	public InvolvedPartyXInvolvedPartyNameType(UUID involvedPartyXInvolvedPartyNameTypeID)
 	{
 		this.id = involvedPartyXInvolvedPartyNameTypeID;
 	}
 	
-	public InvolvedPartyXInvolvedPartyNameType(Long involvedPartyXInvolvedPartyNameTypeID, String involvedPartyName)
+	public InvolvedPartyXInvolvedPartyNameType(UUID involvedPartyXInvolvedPartyNameTypeID, String involvedPartyName)
 	{
 		this.id = involvedPartyXInvolvedPartyNameTypeID;
 		setValue(involvedPartyName);
@@ -91,7 +92,7 @@ public class InvolvedPartyXInvolvedPartyNameType
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -112,7 +113,7 @@ public class InvolvedPartyXInvolvedPartyNameType
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyNameType setId(Long id)
+	public InvolvedPartyXInvolvedPartyNameType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

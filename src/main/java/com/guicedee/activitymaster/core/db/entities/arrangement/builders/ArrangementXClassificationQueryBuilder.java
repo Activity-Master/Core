@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXClas
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXClassification_;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 public class ArrangementXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Arrangement, Classification, ArrangementXClassificationQueryBuilder,
-						                                              ArrangementXClassification, Long, ArrangementXClassificationSecurityToken>
+						                                              ArrangementXClassification, java.util.UUID, ArrangementXClassificationSecurityToken>
 {
 	@Override
 	public Attribute getPrimaryAttribute()

@@ -3,11 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.arrangement;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementTypeXClassificationSecurityTokenQueryBuilder;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -21,16 +22,16 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class ArrangementTypeXClassificationSecurityToken
-		extends WarehouseSecurityTable<ArrangementTypeXClassificationSecurityToken, ArrangementTypeXClassificationSecurityTokenQueryBuilder, Long>
+		extends WarehouseSecurityTable<ArrangementTypeXClassificationSecurityToken, ArrangementTypeXClassificationSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 	
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-	        name = "ArrangementTypeXClassificationSecurityTokenID")
-	private Long id;
+	        name = "ArrangementTypeXClassificationSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ArrangementTypeXClassificationID",
 	            referencedColumnName = "ArrangementTypeXClassificationID",
@@ -45,7 +46,7 @@ public class ArrangementTypeXClassificationSecurityToken
 	
 	}
 	
-	public ArrangementTypeXClassificationSecurityToken(Long arrangementXClassificationSecurityTokenID)
+	public ArrangementTypeXClassificationSecurityToken(UUID arrangementXClassificationSecurityTokenID)
 	{
 		this.id = arrangementXClassificationSecurityTokenID;
 	}
@@ -57,7 +58,7 @@ public class ArrangementTypeXClassificationSecurityToken
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -68,7 +69,7 @@ public class ArrangementTypeXClassificationSecurityToken
 	}
 	
 	@Override
-	public ArrangementTypeXClassificationSecurityToken setId(Long id)
+	public ArrangementTypeXClassificationSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

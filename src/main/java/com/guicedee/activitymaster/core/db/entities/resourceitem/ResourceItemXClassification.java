@@ -8,13 +8,14 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -31,7 +32,7 @@ public class ResourceItemXClassification
 				                                                Classification,
 						                                                ResourceItemXClassification,
 				                                                ResourceItemXClassificationQueryBuilder,
-						                                                Long,
+						                                                java.util.UUID,
 						                                                ResourceItemXClassificationSecurityToken,
 				                                                IResourceItem<?>, IClassification<?>>
 		implements Serializable
@@ -39,10 +40,10 @@ public class ResourceItemXClassification
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(nullable = false,
-			name = "ResourceItemXClassificationID")
-	private Long id;
+			name = "ResourceItemXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 
 	@OneToMany(
 			mappedBy = "base",
@@ -61,7 +62,7 @@ public class ResourceItemXClassification
 
 	}
 
-	public ResourceItemXClassification(Long resourceItemXClassificationID)
+	public ResourceItemXClassification(UUID resourceItemXClassificationID)
 	{
 		this.id = resourceItemXClassificationID;
 	}
@@ -73,7 +74,7 @@ public class ResourceItemXClassification
 		            .setBase(this);
 	}
 
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
@@ -88,7 +89,7 @@ public class ResourceItemXClassification
 		return this.resourceItemID;
 	}
 
-	public ResourceItemXClassification setId(Long id)
+	public ResourceItemXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

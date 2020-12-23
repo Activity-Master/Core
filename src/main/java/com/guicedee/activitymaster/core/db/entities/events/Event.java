@@ -15,12 +15,13 @@ import com.guicedee.activitymaster.core.services.classifications.events.IEventCl
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-import static javax.persistence.AccessType.*;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -35,7 +36,7 @@ import static javax.persistence.AccessType.*;
 
 @Access(FIELD)
 public class Event
-		extends WarehouseTable<Event, EventQueryBuilder, Long, EventSecurityToken>
+		extends WarehouseTable<Event, EventQueryBuilder, java.util.UUID, EventSecurityToken>
 		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>, IEvent<?>, IClassification<?>, Event>,
 		           IContainsGeographies<Event, Geography, EventXGeography>,
 		           IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IClassificationValue<?>, IEvent<?>, IResourceItem<?>, Event>,
@@ -59,11 +60,11 @@ public class Event
 	private int minuteID;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	
 	@Column(nullable = false,
 	        name = "EventID")
-	@JsonValue
-	private Long id;
+	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	private java.util.UUID id;
 	
 	@OneToMany(
 			mappedBy = "eventID",
@@ -119,7 +120,7 @@ public class Event
 	
 	}
 	
-	public Event(Long eventID)
+	public Event(UUID eventID)
 	{
 		this.id = eventID;
 	}
@@ -332,13 +333,13 @@ public class Event
 	}
 	
 	@Override
-	public Long getId()
+	public java.util.UUID getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public Event setId(Long id)
+	public Event setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;

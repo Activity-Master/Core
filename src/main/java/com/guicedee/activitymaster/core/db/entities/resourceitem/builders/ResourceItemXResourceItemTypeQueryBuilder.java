@@ -17,7 +17,7 @@ import com.guicedee.activitymaster.core.services.system.IArrangementsService;
 import com.guicedee.activitymaster.core.services.system.IResourceItemService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import java.util.UUID;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -28,7 +28,7 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 		ResourceItemXResourceItemTypeQueryBuilder,
 		ResourceItemXResourceItemType,
 		IResourceType<?>,
-		Long,
+		java.util.UUID,
 		ResourceItemXResourceItemTypeSecurityToken>
 {
 	@Override

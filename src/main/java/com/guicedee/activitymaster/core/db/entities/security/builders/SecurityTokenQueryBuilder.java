@@ -18,8 +18,8 @@ import com.guicedee.activitymaster.core.services.classifications.securitytokens.
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import javax.persistence.criteria.JoinType;
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.metamodel.Attribute;
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -29,8 +29,8 @@ import static com.entityassist.enumerations.Operand.*;
  * @since 30 Apr 2017
  */
 public class SecurityTokenQueryBuilder
-		extends QueryBuilderSCDNameDescription<SecurityTokenQueryBuilder, SecurityToken, Long, SecurityTokensSecurityToken>
-		implements IContainsClassificationsQueryBuilder<SecurityTokenQueryBuilder, SecurityToken, Long, SecurityTokenXClassification>
+		extends QueryBuilderSCDNameDescription<SecurityTokenQueryBuilder, SecurityToken, java.util.UUID, SecurityTokensSecurityToken>
+		implements IContainsClassificationsQueryBuilder<SecurityTokenQueryBuilder, SecurityToken, java.util.UUID, SecurityTokenXClassification>
 {
 	public SecurityTokenQueryBuilder findFolder(ISecurityTokenClassification<?> securityTokenClassification, IEnterprise<?> enterprise, UUID... identityToken)
 	{

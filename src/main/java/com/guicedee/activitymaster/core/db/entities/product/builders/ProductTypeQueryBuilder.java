@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.product.ProductType;
 import com.guicedee.activitymaster.core.db.entities.product.ProductTypeSecurityToken;
 
 public class ProductTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<ProductTypeQueryBuilder, ProductType, Long, ProductTypeSecurityToken>
+		extends QueryBuilderSCDNameDescription<ProductTypeQueryBuilder, ProductType, java.util.UUID, ProductTypeSecurityToken>
 {
 
 }
