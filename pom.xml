@@ -124,7 +124,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>15</release>
+                    <release>${jdk.release}</release>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
                             <groupId>com.guicedee.services</groupId>

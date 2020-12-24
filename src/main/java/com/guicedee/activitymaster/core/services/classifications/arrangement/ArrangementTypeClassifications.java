@@ -10,6 +10,8 @@ public enum ArrangementTypeClassifications
 	ArrangementProductTypes("The arrangement is of a product type",Arrangement),
 	ProductPurchase("This arrangement is a product purchase", Arrangement),
 	ProductQuote("This arrangement is a product quote", Arrangement),
+	ProductBid("This arrangement is a product bid", Arrangement),
+	ProductInterest("This arrangement link is interest from the arrangement in the product", Arrangement),
 	ProductLead("This arrangement is a product lead", Arrangement),
 	;
 	private String classificationValue;

@@ -70,11 +70,11 @@ public class ArrangementsSystem
 		
 		service.create(ArrangementTypeClassifications.ArrangementProductTypes, activityMasterSystem);
 		service.create(ArrangementTypeClassifications.ProductPurchase, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
+		service.create(ArrangementTypeClassifications.ProductBid, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
+		service.create(ArrangementTypeClassifications.ProductInterest, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		service.create(ArrangementTypeClassifications.ProductQuote, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		service.create(ArrangementTypeClassifications.ProductLead, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		logProgress("Classifications System", "Loaded Arrangement Type Classifications...", 1, progressMonitor);
-		
-		
 	}
 	
 	@Override
