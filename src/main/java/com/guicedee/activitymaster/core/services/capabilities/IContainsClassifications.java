@@ -22,6 +22,7 @@ import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -85,11 +86,11 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		List<String> cStrings = new ArrayList<>();
 		cStrings.add(value);
 		cStrings.addAll(Arrays.asList(values));
-
+		
 		String classificationValuesInList = listToSqlString(cStrings);
 		String classificationPivotInList = listToPivotString(cStrings);
 		
-		List<IActiveFlag<?>> flags =get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterprise(),identityToken);
+		List<IActiveFlag<?>> flags = get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterprise(), identityToken);
 		List<String> fString = new ArrayList<>();
 		flags.forEach(a -> fString.add(a.toString()));
 		
@@ -98,8 +99,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		RootEntity me = (RootEntity) this;
 		
 		String myTableName = new InsertStatement(me).getTableName();
-		String idColumnName = new InsertStatement(me).getIdPair().getKey();
-		String joinTableName = myTableName +"XClassification";
+		String idColumnName = new InsertStatement(me).getIdPair()
+		                                             .getKey();
+		String joinTableName = myTableName + "XClassification";
 		String targetTableName = "Classification.Classification";
 		
 		String s = "WITH Req(ClassificationName, ID, Value)\n" +
@@ -108,7 +110,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 				"\tselect c.ClassificationName, ri." + idColumnName + ", ric.Value\n" +
 				"\tfrom " + myTableName + "  ri\n" +
 				"\t\tleft join " + joinTableName + " ric\n" +
-				"\t\t\ton ri." + idColumnName + " = ric." +idColumnName + "\n" +
+				"\t\t\ton ri." + idColumnName + " = ric." + idColumnName + "\n" +
 				"\t\tleft join " + targetTableName + " c\n" +
 				"\t\t\ton ric.ClassificationID = c.ClassificationID\n" +
 				"\t\tfull outer join dbo.ActiveFlag af\n" +
@@ -129,10 +131,23 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 				"\tMAX(value)\n" +
 				"\tFOR c.ClassificationName in (" + classificationPivotInList + ")\n" +
 				") AS PivotTable";
-		return me.builder()
-		         .getEntityManager()
-		         .createNativeQuery(s)
-		         .getResultList();
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = me.builder()
+		                              .getEntityManager()
+		                              .createNativeQuery(s)
+		                              .getResultList();
+		for (Object[] objects : resultList)
+		{
+			for (int i = 0; i < objects.length; i++)
+			{
+				Object o = objects[i];
+				if (o == null)
+				{
+					objects[i] = "";
+				}
+			}
+		}
+		return resultList;
 	}
 	
 	/**
@@ -278,15 +293,19 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
-				                   .findLink((P) this,(S) iClassification,searchValue)
+				                   .findLink((P) this, (S) iClassification, searchValue)
 				                   .inActiveRange(enterprise, identityToken)
 				                   .inDateRange()
 				                   .withEnterprise(enterprise)
 				                   .canRead(enterprise, identityToken);
 		if (first)
-		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		{
+			queryBuilderRelationshipClassification.setMaxResults(1);
+		}
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{
+			queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"));
+		}
 		
 		//noinspection rawtypes
 		return (Optional) queryBuilderRelationshipClassification.get();
@@ -367,7 +386,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 				                   .inDateRange()
 				                   .canRead(enterprise, identityToken);
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{
+			queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"));
+		}
 		return (List) queryBuilderRelationshipClassification.getAll();
 	}
 	
@@ -549,13 +570,13 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	
 	void configureForClassification(Q classificationLink, IEnterprise<?> enterprise);
 	
-	default IRelationshipValue<L, R, ?> addOrUpdate(C classificationValue,String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrUpdate(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		return addOrUpdate(classificationValue, null, value, originatingSystem, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> addOrUpdate(C classificationValue,String searchValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrUpdate(C classificationValue, String searchValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
@@ -721,7 +742,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> addOrUpdate(IClassification<?> classification,String searchValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrUpdate(IClassification<?> classification, String searchValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		

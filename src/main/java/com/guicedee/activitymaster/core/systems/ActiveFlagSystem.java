@@ -11,7 +11,7 @@ import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSys
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-@Singleton
+
 public class ActiveFlagSystem
 		extends ActivityMasterDefaultSystem<ActiveFlagSystem>
 		implements IActivityMasterSystem<ActiveFlagSystem>

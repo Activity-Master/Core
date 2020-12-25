@@ -36,7 +36,6 @@ import static com.guicedee.activitymaster.core.services.classifications.classifi
 import static com.guicedee.activitymaster.core.services.types.NameTypes.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
-@Singleton
 public class ActivityMasterService
 		implements IProgressable,
 		           IActivityMasterService
