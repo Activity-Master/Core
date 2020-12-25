@@ -119,7 +119,7 @@ public class SecurityTokenSystem
 
 		system.grantAccessToToken(rootToken, rootToken, false, false, false, false, activityMasterSystem);
 
-		enterprise.addOrUpdate(EnterpriseClassifications.EnterpriseIdentity, rootToken.getSecurityToken(), activityMasterSystem, uuid);
+		enterprise.addOrUpdate(EnterpriseClassifications.EnterpriseIdentity,null, rootToken.getSecurityToken(), activityMasterSystem, uuid);
 
 		logProgress("Security Token Service", "Enterprise Security Validated", 3, progressMonitor);
 

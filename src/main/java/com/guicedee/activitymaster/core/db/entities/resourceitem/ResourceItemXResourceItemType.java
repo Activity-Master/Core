@@ -60,6 +60,7 @@ public class ResourceItemXResourceItemType
 	           fetch = FetchType.LAZY)
 	private ResourceItemType resourceItemTypeID;
 	
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)

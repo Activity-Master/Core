@@ -386,15 +386,15 @@ public class InvolvedPartyService
 		String passEncrypted = encrypt(password, new String(salt));
 		String saltEncrypted = new Passwords().integerEncrypt(salt);
 		
-		involvedParty.addOrUpdate(SecurityPassword, passEncrypted, originatingSystem, token);
-		involvedParty.addOrUpdate(SecurityPasswordSalt, saltEncrypted, originatingSystem, token);
+		involvedParty.addOrUpdate(SecurityPassword,null, passEncrypted, originatingSystem, token);
+		involvedParty.addOrUpdate(SecurityPasswordSalt,null, saltEncrypted, originatingSystem, token);
 		involvedParty.addOrUpdateIdentificationType(IdentificationTypeUserName,NoClassification.classificationName(), new Passwords().integerEncrypt(username.getBytes()), originatingSystem.getEnterprise(), token);
 		
 		
 		if (event != null)
 		{
-			event.addOrUpdate(UpdatedPassword, STRING_EMPTY, originatingSystem, token);
-			event.addOrUpdate(UpdatedUsername, username, originatingSystem, token);
+			event.addOrUpdate(UpdatedPassword,(String)null, STRING_EMPTY, originatingSystem, token);
+			event.addOrUpdate(UpdatedUsername, (String)null,username, originatingSystem, token);
 		}
 		return involvedParty;
 	}

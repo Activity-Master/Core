@@ -23,7 +23,15 @@ public enum ResourceItemClassifications
 	Removed("Removed the ",ResourceItemXClassification),
 	Updated("Updated the ",ResourceItemXClassification),
 	MovedTo("Moved the item to",ResourceItemXClassification),
-
+	
+	Hardware("Specifies a resource item as a Hardware resource",ResourceItemXClassification),
+	Scanner("Specifies a resource item as a Scanner resource",ResourceItemXClassification),
+	Printer("Specifies a resource item as a Printer resource",ResourceItemXClassification),
+	Computer("Specifies a resource item as a Computer resource",ResourceItemXClassification),
+	Phone("Specifies a resource item as a Phone resource",ResourceItemXClassification),
+	Desktop("Specifies a resource item as a Computer/Desktop resource",ResourceItemXClassification),
+	Laptop("Specifies a resource item as a Computer/Laptop resource",ResourceItemXClassification),
+	
 	;
 	private String classificationValue;
 	private IClassificationDataConceptValue<?> dataConceptValue;

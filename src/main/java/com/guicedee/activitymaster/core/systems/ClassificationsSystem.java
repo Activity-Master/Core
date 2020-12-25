@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications.*;
+import static com.guicedee.activitymaster.core.services.classifications.resourceitems.ResourceItemClassifications.*;
 
 @Singleton
 public class ClassificationsSystem
@@ -106,6 +107,21 @@ public class ClassificationsSystem
 			service.create(ISO6392EnglishName, activityMasterSystem, Languages);
 			service.create(ISO6392FrenchName, activityMasterSystem, Languages);
 			service.create(ISO6392GermanName, activityMasterSystem, Languages);
+		}
+		
+		try
+		{
+			service.find(Hardware, enterprise, identityToken);
+		}
+		catch (NoSuchElementException nre)
+		{
+			service.create(Hardware, activityMasterSystem);
+			service.create(Scanner, activityMasterSystem,Hardware);
+			service.create(Printer, activityMasterSystem,Hardware);
+			service.create(Phone, activityMasterSystem,Hardware);
+			service.create(Computer, activityMasterSystem,Hardware);
+			service.create(Desktop, activityMasterSystem,Computer);
+			service.create(Laptop, activityMasterSystem,Computer);
 		}
 	}
 

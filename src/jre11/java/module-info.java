@@ -86,7 +86,7 @@ module com.guicedee.activitymaster.core {
 	provides IActivityMasterSystem with EnterpriseSystem, ActiveFlagSystem, SystemsSystem, ClassificationsDataConceptSystem,
 			ClassificationsSystem, AddressSystem, InvolvedPartySystem, SecurityTokenSystem
 			, ArrangementsSystem, EventsSystem, ResourceItemSystem, ProductsSystem;
-	
+	 
 	provides com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder with ActivityMasterBinder;
 	provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
 	provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;

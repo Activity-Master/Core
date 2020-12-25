@@ -26,6 +26,8 @@ import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ListJoin;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -82,21 +84,21 @@ public class ResourceItemService
 	
 
 	@Override
-	public IResourceItem<?> create(IResourceType<?> identityResourceType, String mimeType,
+	public IResourceItem<?> create(IResourceType<?> identityResourceType, String resourceItemDataValue,
 	                               ISystems<?> system, UUID... identityToken)
 	{
-		return create(identityResourceType.classificationName(), mimeType, system, identityToken);
+		return create(identityResourceType.classificationName(), resourceItemDataValue, system, identityToken);
 	}
 
 	@Override
-	public IResourceItem<?> create(String identityResourceType, String mimeType,
+	public IResourceItem<?> create(String identityResourceType, String resourceItemDataValue,
 	                               ISystems<?> system, UUID... identityToken)
 	{
-		return create(identityResourceType, mimeType, "", LocalDateTime.now(), system, identityToken);
+		return create(identityResourceType, resourceItemDataValue, "", LocalDateTime.now(), system, identityToken);
 	}
 
 	@Override
-	public IResourceItem<?> create(String identityResourceType, String mimeType, String originalSourceSystemUniqueID,
+	public IResourceItem<?> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
 	                               LocalDateTime effectiveFromDate,
 	                               ISystems<?> system, UUID... identityToken)
 	{
@@ -116,8 +118,24 @@ public class ResourceItemService
 				                  .orElseThrow();
 			}
 		}
-		
 		ResourceItem xr = new ResourceItem();
+		
+		boolean exists = xr.builder()
+		                   .withValue(resourceItemDataValue)
+		                   .inActiveRange(system.getEnterprise(), identityToken)
+		                   .inDateRange()
+		                   .withEnterprise(system.getEnterprise())
+		                   .getCount() > 0;
+		if(exists)
+		{
+			return xr.builder()
+			         .withValue(resourceItemDataValue)
+			         .inActiveRange(system.getEnterprise(), identityToken)
+			         .inDateRange()
+			         .withEnterprise(system.getEnterprise())
+			         .get()
+			         .orElseThrow();
+		}
 		xr.setResourceItemUUID(UUID.randomUUID());
 		xr.setOriginalSourceSystemID((Systems) system);
 		xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
@@ -125,7 +143,7 @@ public class ResourceItemService
 		xr.setSystemID((Systems) system);
 		xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		xr.setActiveFlagID(((Systems) system).getActiveFlagID());
-		xr.setResourceItemDataType(mimeType);
+		xr.setResourceItemDataType(resourceItemDataValue);
 		xr.persist();
 		
 		if (get(ActivityMasterConfiguration.class)
@@ -139,7 +157,6 @@ public class ResourceItemService
 		return xr;
 	}
 	
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public IResourceItem<?> findByClassification(@CacheKey IResourceType<?> resourceType,
 	                                             @CacheKey IResourceItemClassification<?> classification,
@@ -159,14 +176,14 @@ public class ResourceItemService
 			builder.where(ResourceItemXClassification_.value, Equals, value);
 		}
 		
-		JoinExpression resourceJoin = new JoinExpression<>();
+		JoinExpression<ResourceItem,ResourceItem,ResourceItemXClassification> resourceJoin = new JoinExpression<>();
 		ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder();
 		builder.join(ResourceItemXClassification_.resourceItemID, itemQueryBuilder, JoinType.INNER, resourceJoin);
 		
-		Join resourceItemTypesJoin = resourceJoin.getGeneratedRoot()
-		                                         .join(ResourceItem_.types, INNER);
+		ListJoin<ResourceItem,ResourceItemXResourceItemType> resourceItemTypesJoin = resourceJoin.getGeneratedRoot()
+		                                                                                       .join(ResourceItem_.types, INNER);
 		
-		Join resourceTypesJoin = resourceItemTypesJoin
+		Join<ResourceItemXResourceItemType,ResourceItemType> resourceTypesJoin = resourceItemTypesJoin
 				.join(ResourceItemXResourceItemType_.resourceItemTypeID, INNER);
 		
 		resourceTypesJoin.on(builder.getCriteriaBuilder()

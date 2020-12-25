@@ -67,6 +67,8 @@ public class ResourceItemSystem
 		classificationService.create(ResourceItemClassifications.Updated, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications);
 		classificationService.create(ResourceItemClassifications.MovedTo, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications);
 		
+		
+		
 	}
 	
 	@Override

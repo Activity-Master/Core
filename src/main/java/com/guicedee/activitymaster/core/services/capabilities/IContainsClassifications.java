@@ -1,6 +1,8 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
+import com.entityassist.RootEntity;
 import com.entityassist.querybuilder.builders.JoinExpression;
+import com.entityassist.querybuilder.statements.InsertStatement;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
@@ -14,10 +16,7 @@ import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
@@ -53,6 +52,87 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			d += D;
 		}
 		return d;
+	}
+	
+	default String listToSqlString(Collection<String> values)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String value : values)
+		{
+			sb.append("'")
+			  .append(value.replace("'", "''"))
+			  .append("',");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		return sb.toString();
+	}
+	
+	default String listToPivotString(Collection<String> values)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (String value : values)
+		{
+			sb.append("[")
+			  .append(value.replace("'", "''"))
+			  .append("],");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		return sb.toString();
+	}
+	
+	default List<Object[]> getValuePivot(String value, String searchValue, ISystems<?> originatingSystem, UUID[] identityToken, String... values)
+	{
+		List<String> cStrings = new ArrayList<>();
+		cStrings.add(value);
+		cStrings.addAll(Arrays.asList(values));
+
+		String classificationValuesInList = listToSqlString(cStrings);
+		String classificationPivotInList = listToPivotString(cStrings);
+		
+		List<IActiveFlag<?>> flags =get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterprise(),identityToken);
+		List<String> fString = new ArrayList<>();
+		flags.forEach(a -> fString.add(a.toString()));
+		
+		String activeFlagsInList = listToSqlString(fString);
+		
+		RootEntity me = (RootEntity) this;
+		
+		String myTableName = new InsertStatement(me).getTableName();
+		String idColumnName = new InsertStatement(me).getIdPair().getKey();
+		String joinTableName = myTableName +"XClassification";
+		String targetTableName = "Classification.Classification";
+		
+		String s = "WITH Req(ClassificationName, ID, Value)\n" +
+				"AS\n" +
+				"(\n" +
+				"\tselect c.ClassificationName, ri." + idColumnName + ", ric.Value\n" +
+				"\tfrom " + myTableName + "  ri\n" +
+				"\t\tleft join " + joinTableName + " ric\n" +
+				"\t\t\ton ri." + idColumnName + " = ric." +idColumnName + "\n" +
+				"\t\tleft join " + targetTableName + " c\n" +
+				"\t\t\ton ric.ClassificationID = c.ClassificationID\n" +
+				"\t\tfull outer join dbo.ActiveFlag af\n" +
+				"\t\t\ton ri.ActiveFlagID = af.ActiveFlagID\n" +
+				"\t\t\tand ric.ActiveFlagID = af.ActiveFlagID\n" +
+				"\t\t\tand c.ActiveFlagID = af.ActiveFlagID\n" +
+				"\t\tWHERE ClassificationName in (" + classificationValuesInList + ")\n" +
+				"\t\tand af.ActiveFlagName in (" + activeFlagsInList + ")\n" +
+				"\t\tand ri.EffectiveFromDate <= getDate()\n" +
+				"\t\tand ri.EffectiveToDate >= getDate()\n" +
+				"\t\tand ric.EffectiveFromDate <= getDate()\n" +
+				"\t\tand ric.EffectiveToDate >= getDate()\n" +
+				"\t\tand c.EffectiveFromDate <= getDate()\n" +
+				"\t\tand c.EffectiveToDate >= getDate()\n" +
+				")\n" +
+				"SELECT PivotTable.* from Req c\n" +
+				"PIVOT (\n" +
+				"\tMAX(value)\n" +
+				"\tFOR c.ClassificationName in (" + classificationPivotInList + ")\n" +
+				") AS PivotTable";
+		return me.builder()
+		         .getEntityManager()
+		         .createNativeQuery(s)
+		         .getResultList();
 	}
 	
 	/**
@@ -103,7 +183,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
 			                                     .get(builder.getPrimaryAttribute()
-			                                                 .getName())), Equals, base.getId());
+			                                                 .getName())), Equals, base);
 			
 			baseTableBuilder.selectColumn(newExpression.getGeneratedRoot()
 			                                           .get("value"));
@@ -469,8 +549,13 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	
 	void configureForClassification(Q classificationLink, IEnterprise<?> enterprise);
 	
+	default IRelationshipValue<L, R, ?> addOrUpdate(C classificationValue,String value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return addOrUpdate(classificationValue, null, value, originatingSystem, identityToken);
+	}
+	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> addOrUpdate(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrUpdate(C classificationValue,String searchValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
@@ -478,7 +563,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classification, value)
+		                                                         .findLink((P) this, (S) classification, searchValue)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canCreate(originatingSystem.getEnterpriseID(), identityToken)
@@ -630,13 +715,18 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 	
-	@SuppressWarnings("unchecked")
 	default IRelationshipValue<L, R, ?> addOrUpdate(IClassification<?> classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return addOrUpdate(classification, null, value, originatingSystem, identityToken);
+	}
+	
+	@SuppressWarnings("unchecked")
+	default IRelationshipValue<L, R, ?> addOrUpdate(IClassification<?> classification,String searchValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classification, null)
+		                                                         .findLink((P) this, (S) classification, searchValue)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)

@@ -19,13 +19,13 @@ public interface IResourceItemService<J extends IResourceItemService<J>>
 	
 	IResourceItemType<?> createType(String value, String description, ISystems<?> system, UUID... identityToken);
 	
-	IResourceItem<?> create(IResourceType<?> identityResourceType, String mimeType,
+	IResourceItem<?> create(IResourceType<?> identityResourceType, String resourceItemDataValue,
 	                        ISystems<?> system, UUID... identityToken);
 	
-	IResourceItem<?> create(String identityResourceType, String mimeType,
+	IResourceItem<?> create(String identityResourceType, String resourceItemDataValue,
 	                        ISystems<?> system, UUID... identityToken);
 	
-	IResourceItem<?> create(String identityResourceType, String mimeType, String originalSourceSystemUniqueID,
+	IResourceItem<?> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
 	                        LocalDateTime effectiveFromDate,
 	                        ISystems<?> system, UUID... identityToken);
 	

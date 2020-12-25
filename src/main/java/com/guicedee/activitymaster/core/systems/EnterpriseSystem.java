@@ -53,8 +53,8 @@ public class EnterpriseSystem
 		UUID securityToken = getSystemToken(enterprise);
 		if (!enterprise.hasClassifications(EnterpriseClassifications.Version, newSystem, securityToken))
 		{
-			enterprise.addOrUpdate(EnterpriseClassifications.Version, ActivityMasterConfiguration.version.toString(), newSystem, securityToken);
-			enterprise.addOrUpdate(EnterpriseClassifications.RequiresUpdate, Boolean.FALSE.toString(), newSystem, securityToken);
+			enterprise.addOrUpdate(EnterpriseClassifications.Version,null, ActivityMasterConfiguration.version.toString(), newSystem, securityToken);
+			enterprise.addOrUpdate(EnterpriseClassifications.RequiresUpdate,null, Boolean.FALSE.toString(), newSystem, securityToken);
 			ActivityMasterConfiguration.requiresUpdate = enterprise.findClassifications(EnterpriseClassifications.RequiresUpdate, enterprise, securityToken)
 			                                                       .orElseThrow()
 			                                                       .getValueAsBoolean();
