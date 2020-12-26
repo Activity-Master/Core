@@ -22,6 +22,7 @@ public enum EventInvolvedPartiesClassifications
 	
 	CreatedBy("The Event was created by this user", EventXInvolvedParty),
 	UpdatedBy("The Event was updated by this user", EventXInvolvedParty),
+	CompletedBy("The Event was completed by this user", EventXInvolvedParty),
 	SecurityCredentialsOf("This Event was updated with the security permissions of", EventXInvolvedParty),
 	MeantFor("Is Meant For", EventXInvolvedParty),
 	Notifies("Creates a Notification For", EventXInvolvedParty),

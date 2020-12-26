@@ -143,7 +143,6 @@ public class EnterpriseService
 	public Set<IEnterpriseName<?>> getIEnterprises()
 	{
 		Set<IEnterpriseName<?>> output = new HashSet<>();
-		
 		for (ClassInfo classInfo : GuiceContext.instance()
 		                                       .getScanResult()
 		                                       .getClassesImplementing(IEnterpriseName.class.getCanonicalName()))

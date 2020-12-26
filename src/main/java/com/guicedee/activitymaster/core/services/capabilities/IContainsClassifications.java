@@ -21,6 +21,7 @@ import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 
+import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import jakarta.validation.constraints.NotNull;
 
 import java.lang.reflect.ParameterizedType;
@@ -81,7 +82,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		return sb.toString();
 	}
 	
-	default List<Object[]> getValuePivot(String value, String searchValue, ISystems<?> originatingSystem, UUID[] identityToken, String... values)
+	default List<Object[]> getClassificationsValuePivot(String value, String searchValue, ISystems<?> system, UUID[] identityToken, String... values)
 	{
 		List<String> cStrings = new ArrayList<>();
 		cStrings.add(value);
@@ -90,12 +91,13 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		String classificationValuesInList = listToSqlString(cStrings);
 		String classificationPivotInList = listToPivotString(cStrings);
 		
-		List<IActiveFlag<?>> flags = get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterprise(), identityToken);
+		List<IActiveFlag<?>> flags = get(IActiveFlagService.class).findActiveRange(system.getEnterprise(), identityToken);
 		List<String> fString = new ArrayList<>();
 		flags.forEach(a -> fString.add(a.toString()));
 		
 		String activeFlagsInList = listToSqlString(fString);
 		
+		@SuppressWarnings("rawtypes")
 		RootEntity me = (RootEntity) this;
 		
 		String myTableName = new InsertStatement(me).getTableName();
@@ -124,8 +126,13 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 				"\t\tand ric.EffectiveFromDate <= getDate()\n" +
 				"\t\tand ric.EffectiveToDate >= getDate()\n" +
 				"\t\tand c.EffectiveFromDate <= getDate()\n" +
-				"\t\tand c.EffectiveToDate >= getDate()\n" +
-				")\n" +
+				"\t\tand c.EffectiveToDate >= getDate()\n";
+		if (!Strings.isNullOrEmpty(searchValue))
+		{
+			s += "\t\tand ric.value = '" + searchValue.replace("'", "''") + "'\n";
+		}
+		
+		s += ")\n" +
 				"SELECT PivotTable.* from Req c\n" +
 				"PIVOT (\n" +
 				"\tMAX(value)\n" +
@@ -158,6 +165,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 	 * @param originatingSystem The system coming from
 	 * @param identityToken     The identity token to use
 	 * @param values            Any additional values to select
+	 *
 	 * @return The result of List&gt;String&lt; or List&gt;Object[]&lt;
 	 */
 	default List<Object[]> getValues(C value, String searchValue, ISystems<?> originatingSystem, UUID[] identityToken, C... values)
