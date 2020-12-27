@@ -41,6 +41,8 @@ module com.guicedee.activitymaster.core {
 	
 	exports com.guicedee.activitymaster.core.threads;
 	
+	exports com.guicedee.activitymaster.core.updates;
+	
 	requires io.github.classgraph;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.annotation;

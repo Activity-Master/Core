@@ -55,7 +55,7 @@ public class ResourceItem
 		           IHasActiveFlags<ResourceItem>,
 		           IContainsEnterprise<ResourceItem>,
 		           IContainsData<ResourceItem>,
-		           IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView,ResourceItem>,
+		           IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView,IResourceItem<?>>,
 		           IContainsResourceItems<ResourceItem,ResourceItem,ResourceItemXResourceItem,IClassificationValue<?>,IResourceItem<?>,IResourceItem<?>,ResourceItem>,
 		           IResourceItem<ResourceItem>
 {
@@ -271,10 +271,10 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(ResourceItemXResourceItem newLink, ResourceItem parent, ResourceItem child, String value)
+	public void configureNewHierarchyItem(ResourceItemXResourceItem newLink, IResourceItem<?> parent, IResourceItem<?> child, String value)
 	{
-		newLink.setParentResourceItemID(parent);
-		newLink.setChildResourceItemID(child);
+		newLink.setParentResourceItemID((ResourceItem) parent);
+		newLink.setChildResourceItemID((ResourceItem) child);
 		newLink.setValue(value);
 	}
 	

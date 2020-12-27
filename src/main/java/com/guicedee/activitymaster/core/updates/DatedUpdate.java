@@ -14,5 +14,6 @@ import java.lang.annotation.*;
 @BindingAnnotation
 public @interface DatedUpdate
 {
-	String updateDate();
+	String date();
+	int taskCount();
 }

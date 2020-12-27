@@ -35,6 +35,12 @@ public interface IResourceItemService<J extends IResourceItemService<J>>
 	                                      ISystems<?> systems,
 	                                      UUID... identityToken);
 	
+	IResourceItem<?> findByClassification(IResourceType<?> resourceType,
+	                                      String classification,
+	                                      String value,
+	                                      ISystems<?> systems,
+	                                      UUID... identityToken);
+	
 	IResourceItem<?> findByUUID(@CacheKey UUID uuid,
 	                            @CacheKey ISystems<?> systems,
 	                            @CacheKey UUID... identityToken);

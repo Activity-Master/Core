@@ -19,10 +19,9 @@ public class ActivityMasterConfiguration
 	private static final ThreadLocal<ISecurityToken<?>> token = ThreadLocal.withInitial(SecurityToken::new);
 	private static final ThreadLocal<Boolean> securities = ThreadLocal.withInitial(() -> true);
 	private static final ThreadLocal<Boolean> async = ThreadLocal.withInitial(() -> false);
-
-	public static Double version = 0.1;
-	public static boolean requiresUpdate = false;
-
+	
+	private static final ThreadLocal<Boolean> creatingNew = ThreadLocal.withInitial(() -> false);
+	
 	public ActivityMasterConfiguration()
 	{
 		JobService.getInstance()
@@ -72,9 +71,14 @@ public class ActivityMasterConfiguration
 
 	public void setDoubleCheckDisabled(boolean securityEnabled)
 	{
-
+	
 	}
-
+	
+	public static ThreadLocal<Boolean> getCreatingNew()
+	{
+		return creatingNew;
+	}
+	
 	public ISecurityToken<?> getToken()
 	{
 		return token.get();

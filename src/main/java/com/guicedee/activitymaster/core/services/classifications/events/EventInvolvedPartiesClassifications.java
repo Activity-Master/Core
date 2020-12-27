@@ -18,6 +18,7 @@ public enum EventInvolvedPartiesClassifications
 	OwnedBy("Defines who owns the event", EventXInvolvedParty),
 	
 	Created("The Event created the Involved Party", EventXInvolvedParty),
+	Added("The Event added the involved party", EventXInvolvedParty),
 	Updated("The Event updated the Involved Party", EventXInvolvedParty),
 	
 	CreatedBy("The Event was created by this user", EventXInvolvedParty),

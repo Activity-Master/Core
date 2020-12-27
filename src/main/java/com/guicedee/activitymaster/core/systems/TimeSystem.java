@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.systems;
 
+import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterService;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.time.*;
@@ -15,6 +16,7 @@ import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,6 +29,7 @@ import static com.guicedee.activitymaster.core.services.types.DateTimeFormats.*;
 import static com.guicedee.activitymaster.core.services.types.NumberFormats.*;
 import static java.time.temporal.ChronoUnit.*;
 
+@Singleton
 public class TimeSystem
 		implements ITimeSystem,
 		           IProgressable
@@ -80,6 +83,7 @@ public class TimeSystem
 		}
 		return year;
 	}
+	
 	private Years createYear(Date date)
 	{
 		Years year = new Years().setId(Short.parseShort(YearIDFormat.getSimpleDateFormat()
@@ -123,6 +127,7 @@ public class TimeSystem
 	
 	/**
 	 * @param date
+	 *
 	 * @return
 	 */
 	
@@ -132,39 +137,39 @@ public class TimeSystem
 		quarter.setLastYearID((short) getLastYearQuarterID(date));
 		quarter.setLastQuarterID((short) getLastQuarterID(date));
 		quarter.setQuarterDescription("Q" +
-				                              getQuarterNumber(date) +
-				                              " " +
-				                              YearIDFormat.getSimpleDateFormat()
-				                                          .format(date));
+				getQuarterNumber(date) +
+				" " +
+				YearIDFormat.getSimpleDateFormat()
+				            .format(date));
 		quarter.setQuarterGraphDescription("Q" +
-				                                   getQuarterNumber(date) +
-				                                   " - " +
-				                                   YearIDFormat.getSimpleDateFormat()
-				                                               .format(date));
+				getQuarterNumber(date) +
+				" - " +
+				YearIDFormat.getSimpleDateFormat()
+				            .format(date));
 		quarter.setQuarterGridDescription("Quarter " +
-				                                  getQuarterNumber(date) +
-				                                  " - " +
-				                                  YearIDFormat.getSimpleDateFormat()
-				                                              .format(date));
+				getQuarterNumber(date) +
+				" - " +
+				YearIDFormat.getSimpleDateFormat()
+				            .format(date));
 		quarter.setId(getQuarterID(date));
 		quarter.setQuarterInYear(getQuarterNumber(date));
 		quarter.setQuarterQQMMDescription("Q" +
-				                                  DoubleDigits.formatter()
-				                                              .format(getQuarterNumber(date)) +
-				                                  " " +
-				                                  MonthNumberFormat.getSimpleDateFormat()
-				                                                   .format(date));
+				DoubleDigits.formatter()
+				            .format(getQuarterNumber(date)) +
+				" " +
+				MonthNumberFormat.getSimpleDateFormat()
+				                 .format(date));
 		quarter.setQuarterSmallDescription("Quart " +
-				                                   getQuarterNumber(date) +
-				                                   " " +
-				                                   YearIDFormat.getSimpleDateFormat()
-				                                               .format(date));
+				getQuarterNumber(date) +
+				" " +
+				YearIDFormat.getSimpleDateFormat()
+				            .format(date));
 		quarter.setQuarterYYMMDescription("'" +
-				                                  YearShortFormat.getSimpleDateFormat()
-				                                                 .format(date) +
-				                                  " Q" +
-				                                  DoubleDigits.formatter()
-				                                              .format(getQuarterNumber(date)));
+				YearShortFormat.getSimpleDateFormat()
+				               .format(date) +
+				" Q" +
+				DoubleDigits.formatter()
+				            .format(getQuarterNumber(date)));
 		quarter.setQuarterYearDescription(quarter.getQuarterDescription());
 		quarter.setYearID(getYear(date));
 		return quarter;
@@ -248,6 +253,7 @@ public class TimeSystem
 	
 	/**
 	 * @param date
+	 *
 	 * @return
 	 */
 	@CacheResult
@@ -355,7 +361,9 @@ public class TimeSystem
 	
 	/**
 	 * @param date
+	 *
 	 * @return
+	 *
 	 * @throws Exception
 	 */
 	@CacheResult
@@ -420,6 +428,7 @@ public class TimeSystem
 	 * Day
 	 *
 	 * @param date
+	 *
 	 * @return
 	 */
 	@CacheResult
@@ -524,14 +533,14 @@ public class TimeSystem
 		newDay.setDayLongDescription(DayLongDescriptionFormat.getSimpleDateFormat()
 		                                                     .format(date));
 		newDay.setDayMMQQDescription("Q" +
-				                             DoubleDigits.formatter()
-				                                         .format(getQuarterNumber(date)) +
-				                             "-" +
-				                             MonthNumberFormat.getSimpleDateFormat()
-				                                              .format(date) +
-				                             "-" +
-				                             DayInMonthFormat.getSimpleDateFormat()
-				                                             .format(date));
+				DoubleDigits.formatter()
+				            .format(getQuarterNumber(date)) +
+				"-" +
+				MonthNumberFormat.getSimpleDateFormat()
+				                 .format(date) +
+				"-" +
+				DayInMonthFormat.getSimpleDateFormat()
+				                .format(date));
 		newDay.setDayMonthDescription(MonthLongDescriptionFormat.getSimpleDateFormat()
 		                                                        .format(date));
 		newDay.setDayNameID(getDayName(gc.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH)));
@@ -759,88 +768,89 @@ public class TimeSystem
 	@Override
 	public void createTime()
 	{
-		System.out.println("Creating Time Table");
-		for (int hr = 0; hr < 24; hr++)
+		if (new Hours().builder()
+		               .getCount() == 0)
 		{
-			Hours hour = new Hours(hr);
-			hour.setAmPmDesc(hr < 13 ? "AM" : "PM");
-			hour.setTwelveHour(hr > 12
-					                   ? "" +
-					DoubleDigits.formatter()
-					            .format(hr - 12) +
-					":" +
-					DoubleDigits.formatter()
-					            .format(0)
-					                   : DoubleDigits.formatter()
-					                                 .format(hr) +
-					":" +
-					DoubleDigits.formatter()
-					            .format(0));
-			hour.setTwentyFourHour(DoubleDigits.formatter()
-			                                   .format(hr) +
-					                       ":" +
-					                       DoubleDigits.formatter()
-					                                   .format(0));
-			hour.setPreviousHourID(hr == 0 ? 23 : hr - 1);
-			
-			List<HalfHours> halfs = new ArrayList<>();
-			for (int min = 0; min < 60; min++)
+			for (int hr = 0; hr < 24; hr++)
 			{
-				TimePK primKey = new TimePK(hr, min);
-				Time time = new Time(primKey);
-				time.setAmPmDesc(hr < 13 ? "AM" : "PM");
-				time.setTwelveHoursDesc(hr > 12
-						                        ? "" +
+				Hours hour = new Hours(hr);
+				
+				hour.setAmPmDesc(hr < 13 ? "AM" : "PM");
+				hour.setTwelveHour(hr > 12
+						? "" +
 						DoubleDigits.formatter()
 						            .format(hr - 12) +
 						":" +
 						DoubleDigits.formatter()
-						            .format(min)
-						                        : DoubleDigits.formatter()
-						                                      .format(hr) +
+						            .format(0)
+						: DoubleDigits.formatter()
+						              .format(hr) +
 						":" +
 						DoubleDigits.formatter()
-						            .format(min));
-				time.setTwentyFourHoursDesc(DoubleDigits.formatter()
-				                                        .format(hr) +
-						                            ":" +
-						                            DoubleDigits.formatter()
-						                                        .format(min));
-				time.setPreviousHourID(hr == 0 ? 23 : hr - 1);
-				time.setPreviousMinuteID(min == 0 ? 59 : min - 1);
-				hour.getTimeList()
-				    .add(time);
+						            .format(0));
+				hour.setTwentyFourHour(DoubleDigits.formatter()
+				                                   .format(hr) +
+						":" +
+						DoubleDigits.formatter()
+						            .format(0));
+				hour.setPreviousHourID(hr == 0 ? 23 : hr - 1);
 				
-				if (min == 30 || min == 0)
+				List<HalfHours> halfs = new ArrayList<>();
+				for (int min = 0; min < 60; min++)
 				{
-					HalfHours halfHours = new HalfHours().setId(new TimePK(hr, min));
-					halfHours.setAmPmDesc(hr < 13 ? "AM" : "PM");
-					halfHours.setTwelveHourClockDesc(
-							hr > 12
-									? "" +
-									DoubleDigits.formatter()
-									            .format(hr - 12) +
-									":" +
-									DoubleDigits.formatter()
-									            .format(min)
-									: DoubleDigits.formatter()
-									              .format(hr) +
-									":" +
-									DoubleDigits.formatter()
-									            .format(min));
-					halfHours.setTwentyFourHourClockDesc(DoubleDigits.formatter()
-					                                                 .format(hr) +
-							                                     ":" +
-							                                     DoubleDigits.formatter()
-							                                                 .format(min));
-					halfHours.setPreviousHourID(hr == 0 ? 23 : hr - 1);
-					halfHours.setPreviousHalfHourMinuteID(min == 0 ? 30 : -0);
-					halfs.add(halfHours);
+					TimePK primKey = new TimePK(hr, min);
+					Time time = new Time(primKey);
+					time.setAmPmDesc(hr < 13 ? "AM" : "PM");
+					time.setTwelveHoursDesc(hr > 12
+							? "" +
+							DoubleDigits.formatter()
+							            .format(hr - 12) +
+							":" +
+							DoubleDigits.formatter()
+							            .format(min)
+							: DoubleDigits.formatter()
+							              .format(hr) +
+							":" +
+							DoubleDigits.formatter()
+							            .format(min));
+					time.setTwentyFourHoursDesc(DoubleDigits.formatter()
+					                                        .format(hr) +
+							":" +
+							DoubleDigits.formatter()
+							            .format(min));
+					time.setPreviousHourID(hr == 0 ? 23 : hr - 1);
+					time.setPreviousMinuteID(min == 0 ? 59 : min - 1);
+					hour.getTimeList()
+					    .add(time);
+					
+					if (min == 30 || min == 0)
+					{
+						HalfHours halfHours = new HalfHours().setId(new TimePK(hr, min));
+						halfHours.setAmPmDesc(hr < 13 ? "AM" : "PM");
+						halfHours.setTwelveHourClockDesc(
+								hr > 12
+										? "" +
+										DoubleDigits.formatter()
+										            .format(hr - 12) +
+										":" +
+										DoubleDigits.formatter()
+										            .format(min)
+										: DoubleDigits.formatter()
+										              .format(hr) +
+										":" +
+										DoubleDigits.formatter()
+										            .format(min));
+						halfHours.setTwentyFourHourClockDesc(DoubleDigits.formatter()
+						                                                 .format(hr) +
+								":" +
+								DoubleDigits.formatter()
+								            .format(min));
+						halfHours.setPreviousHourID(hr == 0 ? 23 : hr - 1);
+						halfHours.setPreviousHalfHourMinuteID(min == 0 ? 30 : -0);
+						halfs.add(halfHours);
+					}
 				}
-			}
-			
-			try
-			{
+				
 				hour.persist();
 				for (Time time : hour.getTimeList())
 				{
@@ -857,16 +867,11 @@ public class TimeSystem
 					TimeService<?> timeService = GuiceContext.get(TimeService.class);
 					halfHourDayParts.setDayPartID(timeService.getDayPart(half.getId()
 					                                                         .getHourID(),
-					                                                     half.getId()
-					                                                         .getMinuteID()));
+							half.getId()
+							    .getMinuteID()));
 					halfHourDayParts.persist();
 				}
 			}
-			catch (Exception sql)
-			{
-				sql.printStackTrace();
-			}
-			
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.core.systems;
 
 import com.google.inject.Singleton;
+import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.implementations.InvolvedPartyService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
@@ -40,6 +41,9 @@ public class SystemsSystem
 
 		GuiceContext.get(SystemsService.class)
 		            .create(enterprise, SystemsService.ActivityMasterWebSystemName, "The Web Administration Application for Activity Master", "Activity Master Web");
+		
+		ActivityMasterConfiguration.getCreatingNew()
+		                           .set(false);
 	}
 
 	@Override

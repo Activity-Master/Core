@@ -25,7 +25,6 @@ public class ClassificationsDataConceptSystem
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		wipeCaches();
 		ISystems<?> activityMaster = GuiceContext.get(SystemsService.class)
 		                                         .getActivityMaster(enterprise);
 		
@@ -130,7 +129,7 @@ public class ClassificationsDataConceptSystem
 	@Override
 	public int totalTasks()
 	{
-		return 45;
+		return 7;
 	}
 	
 	@Override

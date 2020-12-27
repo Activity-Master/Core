@@ -22,6 +22,7 @@ import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
+import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
 
@@ -195,8 +196,8 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 			linkTable.setOriginalSourceSystemID((Systems) activityMasterSystem);
 			linkTable.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			linkTable.setEnterpriseID((Enterprise) enterprise);
-			
-			linkTable.setClassificationID((Classification) classificationValue);
+			IClassification<?> classification = get(IClassificationService.class).find(classificationValue.classificationName(), enterprise, identifyingToken);
+			linkTable.setClassificationID((Classification) classification);
 			
 			linkTable.setValue(Strings.nullToEmpty(hierarchy));
 			configureNewHierarchyItem(linkTable, (T) me, child, hierarchy);
@@ -398,7 +399,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Set<Long> findSecurityChildren(IClassification<?> filter, IEnterpriseName<?> enterpriseName, UUID... identifyingToken)
+	default Set<Long> findSecurityChildren(IClassification<?> filter, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		Class<W> hierarchyView = findHierarchyViewType();
 		W hierarchy = get(hierarchyView);
@@ -433,12 +434,11 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default List<IRelationshipValue<T, T, ?>> findChildren(IClassification<?> filter, IEnterpriseName<?> enterpriseName, UUID... identifyingToken)
+	default List<IRelationshipValue<T, T, ?>> findChildren(IClassification<?> filter, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		Class<Q> relationshipTableClass = findHierarchyTableType();
 		try
 		{
-			IEnterprise<?> enterprise = get(IEnterpriseService.class).getEnterprise(enterpriseName);
 			Q relationshipTable = relationshipTableClass.getDeclaredConstructor()
 			                                            .newInstance();
 			QueryBuilderRelationshipClassification qb = relationshipTable.builder()
@@ -460,12 +460,11 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default List<IRelationshipValue<T, T, ?>> findChildren(IClassification<?> filter, String value, IEnterpriseName<?> enterpriseName, UUID... identifyingToken)
+	default List<IRelationshipValue<T, T, ?>> findChildren(IClassification<?> filter, String value, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		Class<Q> relationshipTableClass = findHierarchyTableType();
 		try
 		{
-			IEnterprise<?> enterprise = get(IEnterpriseService.class).getEnterprise(enterpriseName);
 			Q relationshipTable = relationshipTableClass.getDeclaredConstructor()
 			                                            .newInstance();
 			QueryBuilderRelationshipClassification qb = relationshipTable.builder()
@@ -479,7 +478,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 			}
 			return (List<IRelationshipValue<T, T, ?>>) qb.getAll();
 		}
-		catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

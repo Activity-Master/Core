@@ -27,7 +27,6 @@ import static com.guicedee.activitymaster.core.services.classifications.events.E
 public class ActiveFlagService
 		implements IActiveFlagService
 {
-	
 	public IActiveFlag<?> create(IEnterprise<?> enterprise, String name, String description, UUID... identifyingToken)
 	{
 		ActiveFlag af = new ActiveFlag();
@@ -41,19 +40,22 @@ public class ActiveFlagService
 			af.builder()
 			  .persist(af);
 			
-			ISystems<?> activityMaster = GuiceContext.get(ISystemsService.class)
-			                                         .getActivityMaster(af.getEnterpriseID(), identifyingToken);
-			
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
+			if(!ActivityMasterConfiguration.getCreatingNew().get())
 			{
-				af.createDefaultSecurity(activityMaster, identifyingToken);
-			}
-			
-			if (EventThread.event.get() != null)
-			{
-				EventThread.event.get()
-				                 .add((IEventClassification<?>) Created, "Active Flag - " + name, activityMaster, identifyingToken);
+				ISystems<?> activityMaster = GuiceContext.get(ISystemsService.class)
+				                                         .getActivityMaster(af.getEnterpriseID(), identifyingToken);
+				
+				if (GuiceContext.get(ActivityMasterConfiguration.class)
+				                .isSecurityEnabled())
+				{
+					af.createDefaultSecurity(activityMaster, identifyingToken);
+				}
+				
+				if (EventThread.event.get() != null)
+				{
+					EventThread.event.get()
+					                 .add((IEventClassification<?>) Created, "Active Flag - " + name, activityMaster, identifyingToken);
+				}
 			}
 			return af;
 		}

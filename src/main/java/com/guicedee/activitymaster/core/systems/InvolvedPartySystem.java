@@ -111,7 +111,7 @@ public class InvolvedPartySystem
 	@Override
 	public int totalTasks()
 	{
-		return 40;
+		return 5;
 	}
 	
 	@Override

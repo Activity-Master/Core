@@ -7,11 +7,9 @@ import static com.guicedee.activitymaster.core.services.concepts.EnterpriseClass
 public enum EnterpriseClassifications
 		implements IEnterpriseClassification<EnterpriseClassifications>
 {
-	Version("The version of the current Activity Master database", EnterpriseXClassification),
-	RequiresUpdate("If the enterprise requires an update", EnterpriseXClassification),
+	LastUpdateDate("The assigned date of the last update", EnterpriseXClassification),
 	EnterpriseIdentity("The root UUID of an enterprise", EnterpriseXClassification),
-
-
+	
 	;
 	private String classificationValue;
 	private IClassificationDataConceptValue<?> dataConceptValue;

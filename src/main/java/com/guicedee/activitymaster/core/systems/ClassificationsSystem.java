@@ -55,10 +55,24 @@ public class ClassificationsSystem
 		service.create(InvolvedPartyClassifications.SecurityPassword, activityMasterSystem, Classifications.Security);
 		service.create(InvolvedPartyClassifications.SecurityPasswordSalt, activityMasterSystem, Classifications.Security);
 
-		service.create(EnterpriseClassifications.Version, activityMasterSystem, enterpriseName);
-		service.create(EnterpriseClassifications.RequiresUpdate, activityMasterSystem, enterpriseName);
+		service.create(EnterpriseClassifications.LastUpdateDate, activityMasterSystem, enterpriseName);
 		service.create(EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterpriseName);
-
+		
+		service.create(Languages, activityMasterSystem, Classifications.DefaultClassification);
+		service.create(InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages);
+		service.create(InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages);
+		service.create(ISO6392EnglishName, activityMasterSystem, Languages);
+		service.create(ISO6392FrenchName, activityMasterSystem, Languages);
+		service.create(ISO6392GermanName, activityMasterSystem, Languages);
+		
+		service.create(Hardware, activityMasterSystem);
+		service.create(Scanner, activityMasterSystem,Hardware);
+		service.create(Printer, activityMasterSystem,Hardware);
+		service.create(Phone, activityMasterSystem,Hardware);
+		service.create(Computer, activityMasterSystem,Hardware);
+		service.create(Desktop, activityMasterSystem,Computer);
+		service.create(Laptop, activityMasterSystem,Computer);
+		
 		//Checks
 		List<Classification> output = rootClassification.findChildren();
 		Classification parent = service.find(Classifications.NoClassification, enterprise)
@@ -80,49 +94,6 @@ public class ClassificationsSystem
 	public int totalTasks()
 	{
 		return 50;
-	}
-
-	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
-	{
-		super.loadUpdates(enterprise, progressMonitor);
-		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise);
-		UUID identityToken = GuiceContext.get(SystemsService.class)
-		                                 .getSecurityIdentityToken(activityMasterSystem);
-		ClassificationService service = GuiceContext.get(ClassificationService.class);
-
-		//Create Root Enterprise Name
-		IEnterpriseName<?> enterpriseName = GuiceContext.get(ActivityMasterConfiguration.class)
-		                                                .getEnterpriseName();
-		try
-		{
-			service.find(Languages, enterprise, identityToken);
-		}
-		catch (NoSuchElementException nre)
-		{
-			service.create(Languages, activityMasterSystem, Classifications.DefaultClassification);
-			service.create(InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages);
-			service.create(InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages);
-			service.create(ISO6392EnglishName, activityMasterSystem, Languages);
-			service.create(ISO6392FrenchName, activityMasterSystem, Languages);
-			service.create(ISO6392GermanName, activityMasterSystem, Languages);
-		}
-		
-		try
-		{
-			service.find(Hardware, enterprise, identityToken);
-		}
-		catch (NoSuchElementException nre)
-		{
-			service.create(Hardware, activityMasterSystem);
-			service.create(Scanner, activityMasterSystem,Hardware);
-			service.create(Printer, activityMasterSystem,Hardware);
-			service.create(Phone, activityMasterSystem,Hardware);
-			service.create(Computer, activityMasterSystem,Hardware);
-			service.create(Desktop, activityMasterSystem,Computer);
-			service.create(Laptop, activityMasterSystem,Computer);
-		}
 	}
 
 	@Override

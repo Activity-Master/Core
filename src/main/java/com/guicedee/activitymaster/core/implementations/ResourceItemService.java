@@ -10,7 +10,9 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
@@ -45,7 +47,7 @@ public class ResourceItemService
 	{
 		return createType(value.classificationName(), value.classificationDescription(), system, identityToken);
 	}
-
+	
 	@Override
 	public IResourceItemType<?> createType(String value, String description, ISystems<?> system, UUID... identityToken)
 	{
@@ -72,7 +74,7 @@ public class ResourceItemService
 					.isSecurityEnabled())
 			{
 				xr.createDefaultSecurity(get(ISystemsService.class)
-						                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+						.getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 			}
 		}
 		else
@@ -82,21 +84,21 @@ public class ResourceItemService
 		return xr;
 	}
 	
-
+	
 	@Override
 	public IResourceItem<?> create(IResourceType<?> identityResourceType, String resourceItemDataValue,
 	                               ISystems<?> system, UUID... identityToken)
 	{
 		return create(identityResourceType.classificationName(), resourceItemDataValue, system, identityToken);
 	}
-
+	
 	@Override
 	public IResourceItem<?> create(String identityResourceType, String resourceItemDataValue,
 	                               ISystems<?> system, UUID... identityToken)
 	{
 		return create(identityResourceType, resourceItemDataValue, "", LocalDateTime.now(), system, identityToken);
 	}
-
+	
 	@Override
 	public IResourceItem<?> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
 	                               LocalDateTime effectiveFromDate,
@@ -106,16 +108,18 @@ public class ResourceItemService
 		{
 			if (new ResourceItem().builder()
 			                      .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
+			                      .withValue(resourceItemDataValue)
 			                      .inDateRange()
 			                      .inActiveRange(system.getEnterprise(), identityToken)
 			                      .getCount() > 0)
 			{
 				return new ResourceItem().builder()
-				                  .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
-				                  .inDateRange()
-				                  .inActiveRange(system.getEnterprise(), identityToken)
-				                  .get()
-				                  .orElseThrow();
+				                         .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
+				                         .withValue(resourceItemDataValue)
+				                         .inDateRange()
+				                         .inActiveRange(system.getEnterprise(), identityToken)
+				                         .get()
+				                         .orElseThrow();
 			}
 		}
 		ResourceItem xr = new ResourceItem();
@@ -126,7 +130,7 @@ public class ResourceItemService
 		                   .inDateRange()
 		                   .withEnterprise(system.getEnterprise())
 		                   .getCount() > 0;
-		if(exists)
+		if (exists)
 		{
 			return xr.builder()
 			         .withValue(resourceItemDataValue)
@@ -158,11 +162,21 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public IResourceItem<?> findByClassification(@CacheKey IResourceType<?> resourceType,
-	                                             @CacheKey IResourceItemClassification<?> classification,
-	                                             @CacheKey String value,
-	                                             @CacheKey ISystems<?> systems,
-	                                             @CacheKey UUID... identityToken)
+	public IResourceItem<?> findByClassification(IResourceType<?> resourceType,
+	                                             IResourceItemClassification<?> classification,
+	                                             String value,
+	                                             ISystems<?> systems,
+	                                             UUID... identityToken)
+	{
+		return findByClassification(resourceType, classification.classificationName(), value, systems, identityToken);
+	}
+	
+	@Override
+	public IResourceItem<?> findByClassification(IResourceType<?> resourceType,
+	                                             String classification,
+	                                             String value,
+	                                             ISystems<?> systems,
+	                                             UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
 		ResourceItemXClassificationQueryBuilder builder = res.builder();
@@ -176,14 +190,14 @@ public class ResourceItemService
 			builder.where(ResourceItemXClassification_.value, Equals, value);
 		}
 		
-		JoinExpression<ResourceItem,ResourceItem,ResourceItemXClassification> resourceJoin = new JoinExpression<>();
+		JoinExpression<ResourceItem, ResourceItem, ResourceItemXClassification> resourceJoin = new JoinExpression<>();
 		ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder();
 		builder.join(ResourceItemXClassification_.resourceItemID, itemQueryBuilder, JoinType.INNER, resourceJoin);
 		
-		ListJoin<ResourceItem,ResourceItemXResourceItemType> resourceItemTypesJoin = resourceJoin.getGeneratedRoot()
-		                                                                                       .join(ResourceItem_.types, INNER);
+		ListJoin<ResourceItem, ResourceItemXResourceItemType> resourceItemTypesJoin = resourceJoin.getGeneratedRoot()
+		                                                                                          .join(ResourceItem_.types, INNER);
 		
-		Join<ResourceItemXResourceItemType,ResourceItemType> resourceTypesJoin = resourceItemTypesJoin
+		Join<ResourceItemXResourceItemType, ResourceItemType> resourceTypesJoin = resourceItemTypesJoin
 				.join(ResourceItemXResourceItemType_.resourceItemTypeID, INNER);
 		
 		resourceTypesJoin.on(builder.getCriteriaBuilder()

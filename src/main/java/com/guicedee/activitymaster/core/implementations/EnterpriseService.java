@@ -16,11 +16,14 @@ import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.json.LocalDateDeserializer;
 import io.github.classgraph.ClassInfo;
 
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,42 +102,6 @@ public class EnterpriseService
 		                       .inDateRange()
 		                       .get()
 		                       .orElseThrow();
-	}
-	
-	public IEnterprise<?> checkRequiresUpdate(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
-	{
-		Optional<IEnterprise<?>> exists = findEnterprise(enterpriseName);
-		if (exists.isEmpty())
-		{
-			log.log(Level.INFO, "Enterprise with name [" + enterpriseName + "] does not exist. Create a new Enterprise.");
-			throw new ActivityMasterException("No Enterprise");
-		}
-		Enterprise enterprise = (Enterprise) exists.get();
-		
-		try
-		{
-			ISystems<?> activityMasterSystem = get(SystemsService.class)
-					.getActivityMaster(enterprise);
-			if (enterprise.hasClassifications(Version, activityMasterSystem))
-			{
-				if (ActivityMasterConfiguration.version > enterprise.findClassifications(Version, enterprise)
-				                                                    .get()
-				                                                    .getValueAsDouble())
-				{
-					log.config("New Version Released, Running System Updates");
-					GuiceContext.get(ActivityMasterService.class)
-					            .runUpdatesOnEnterprise(enterpriseName, progressMonitor);
-					ActivityMasterConfiguration.requiresUpdate = true;
-				}
-			}
-		}
-		catch (Throwable T)
-		{
-			log.config("Enterprise has not registered a version, running full update");
-			GuiceContext.get(ActivityMasterService.class)
-			            .runUpdatesOnEnterprise(enterpriseName, progressMonitor);
-		}
-		return enterprise;
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})

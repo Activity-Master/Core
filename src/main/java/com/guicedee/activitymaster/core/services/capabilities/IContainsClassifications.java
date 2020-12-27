@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.entityassist.RootEntity;
+import com.entityassist.enumerations.SelectAggregrate;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.entityassist.querybuilder.statements.InsertStatement;
 import com.google.common.base.Strings;
@@ -22,6 +23,7 @@ import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
+import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.validation.constraints.NotNull;
 
 import java.lang.reflect.ParameterizedType;
@@ -82,7 +84,20 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		return sb.toString();
 	}
 	
+	default List<Object[]> getClassificationsValuePivot(String value, Set<String> searchValue, ISystems<?> system, UUID[] identityToken, String... values)
+	{
+		return getClassificationsValuePivot(SelectAggregrate.Max,value, searchValue, system, identityToken, values);
+	}
+	
 	default List<Object[]> getClassificationsValuePivot(String value, String searchValue, ISystems<?> system, UUID[] identityToken, String... values)
+	{
+		if(searchValue == null)
+			return getClassificationsValuePivot(SelectAggregrate.Max,value, (Set<String>)null, system, identityToken, values);
+		else
+			return getClassificationsValuePivot(SelectAggregrate.Max,value, Set.of(searchValue), system, identityToken, values);
+	}
+	
+	default List<Object[]> getClassificationsValuePivot(SelectAggregrate aggregrate, String value, Set<String> searchValue, ISystems<?> system, UUID[] identityToken, String... values)
 	{
 		List<String> cStrings = new ArrayList<>();
 		cStrings.add(value);
@@ -91,7 +106,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		String classificationValuesInList = listToSqlString(cStrings);
 		String classificationPivotInList = listToPivotString(cStrings);
 		
-		List<IActiveFlag<?>> flags = get(IActiveFlagService.class).findActiveRange(system.getEnterprise(), identityToken);
+		List<IActiveFlag<?>> flags = GuiceContext.get(IActiveFlagService.class).findActiveRange(system.getEnterprise(), identityToken);
 		List<String> fString = new ArrayList<>();
 		flags.forEach(a -> fString.add(a.toString()));
 		
@@ -127,17 +142,25 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 				"\t\tand ric.EffectiveToDate >= getDate()\n" +
 				"\t\tand c.EffectiveFromDate <= getDate()\n" +
 				"\t\tand c.EffectiveToDate >= getDate()\n";
-		if (!Strings.isNullOrEmpty(searchValue))
-		{
-			s += "\t\tand ric.value = '" + searchValue.replace("'", "''") + "'\n";
-		}
-		
 		s += ")\n" +
 				"SELECT PivotTable.* from Req c\n" +
 				"PIVOT (\n" +
-				"\tMAX(value)\n" +
+				"\t" + aggregrate.name()+ "(value)\n" +
 				"\tFOR c.ClassificationName in (" + classificationPivotInList + ")\n" +
-				") AS PivotTable";
+				") AS PivotTable\n ";
+		if(searchValue != null && !searchValue.isEmpty())
+		{
+			StringBuilder searchInClause = new StringBuilder();
+			for (String s1 : searchValue)
+			{
+				searchInClause.append("'")
+				              .append(s1.replace("'", "''"))
+				              .append("',");
+			}
+			searchInClause.deleteCharAt(searchInClause.length() - 1);
+			s += " WHERE ID IN (" + searchInClause + ") ";
+		}
+		
 		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = me.builder()
 		                              .getEntityManager()

@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.core;
 
-import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
@@ -25,7 +24,6 @@ import com.guicedee.activitymaster.core.services.types.IPTypes;
 import com.guicedee.activitymaster.core.services.types.IdentificationTypes;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedinjection.pairing.Pair;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.logger.LogFactory;
 
 import jakarta.validation.constraints.NotNull;
@@ -43,7 +41,6 @@ public class ActivityMasterService
 	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
-		
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		get(ActivityMasterConfiguration.class)
@@ -62,7 +59,9 @@ public class ActivityMasterService
 				.getEnterpriseName()
 				.setEnterprise(enterprise);
 		
-		runUpdatesOnEnterprise(enterpriseName, progressMonitor);
+		ActivityMasterConfiguration.getCreatingNew()
+		                           .set(true);
+		createNewEnterprise(enterpriseName, progressMonitor);
 		
 		//Create Involved Party for Enterprise
 		createAdminAndCreatorUserForEnterprise(enterpriseName, adminUserName, adminPassword, progressMonitor);
@@ -72,7 +71,7 @@ public class ActivityMasterService
 		return enterprise;
 	}
 
-	public void runUpdatesOnEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
+	public void createNewEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
@@ -80,14 +79,10 @@ public class ActivityMasterService
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
 		IEnterprise<?> enterprise = get(IEnterpriseService.class)
 				.getEnterprise(enterpriseName);
-		//Find all systems required for first time installation/updates
-		int total = allSystems.size();
-		int current = 0;
-		//progressMonitor.setCurrentTask(0);
-		//progressMonitor.setTotalTasks(total);
+
 		for (Iterator<IActivityMasterSystem> iterator = allSystems.iterator(); iterator.hasNext(); )
 		{
-			IActivityMasterSystem allSystem = iterator.next();
+			IActivityMasterSystem<?> allSystem = iterator.next();
 			logProgress("Running System", allSystem.getClass()
 			                                       .getSimpleName(), progressMonitor);
 			String nameC = cleanName(allSystem.getClass()
@@ -188,8 +183,7 @@ public class ActivityMasterService
 		
 		}
 	}
-	
-	@Override
+
 	public void loadUpdates(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));

@@ -119,69 +119,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>${jdk.release}</release>
-                    <annotationProcessorPaths>
-                        <annotationProcessorPath>
-                            <groupId>com.guicedee.services</groupId>
-                            <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${jwebmp.version}</version>
-                        </annotationProcessorPath>    <annotationProcessorPath>
-                            <groupId>com.guicedee.services</groupId>
-                            <artifactId>jakarta.xml.bind-api</artifactId>
-                            <version>${jwebmp.version}</version>
-                        </annotationProcessorPath>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>1.4.1.Final</version>
-                        </path>
-                        <!-- other annotation processors -->
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>1.18.16</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <annotationProcessors>
-                        <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
-                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
-                        <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
-                    </annotationProcessors>
-                    <compilerArguments>
-                        <AaddGeneratedAnnotation>false</AaddGeneratedAnnotation>
-                        <Adebug>true</Adebug>
-                    </compilerArguments>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                        <version>9.0</version>
-                        <type>jar</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.guicedee.services</groupId>
-                        <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>${jwebmp.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.projectlombok</groupId>
-                        <artifactId>lombok</artifactId>
-                        <version>1.18.16</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.guicedee.services</groupId>
-                        <artifactId>jakarta.xml.bind-api</artifactId>
-                        <version>${jwebmp.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
         </plugins>
     </build>
 

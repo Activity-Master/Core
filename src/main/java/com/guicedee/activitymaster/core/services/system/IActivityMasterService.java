@@ -13,27 +13,9 @@ import jakarta.cache.CacheManager;
 public interface IActivityMasterService
 {
 	void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor);
-
-	void loadUpdates(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor);
-
+	
     void runScript(String script);
 
 	void updatePartitionBases();
 	
-	/**
-	 * Wipe all caches? Haven't serialVersion'd to incremental yet so probably a good idea
-	 */
-	static void wipeCaches()
-	{
-		LogFactory.getLog("Startup")
-		          .info("Wiping Caches");
-		CacheManager cacheManager = GuiceContext.get(CacheManager.class);
-		HazelcastClientCacheManager hazelcastClientCacheManager = (HazelcastClientCacheManager) cacheManager;
-		for (String cacheName : cacheManager.getCacheNames())
-		{
-			cacheManager.getCache(cacheName)
-			            .clear();
-			hazelcastClientCacheManager.removeCache(cacheName,false);
-		}
-	}
 }

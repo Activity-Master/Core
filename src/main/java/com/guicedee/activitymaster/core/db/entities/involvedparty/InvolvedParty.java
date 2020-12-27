@@ -59,7 +59,6 @@ public class InvolvedParty
 		           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView, IInvolvedParty<?>>,
 		           IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassificationValue<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>
 {
-	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
 	@Id
 

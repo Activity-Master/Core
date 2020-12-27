@@ -28,6 +28,7 @@ import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -81,7 +82,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 	}
 	
 	
-	default IRelationshipValue<L, R, ?> add(S typeAdd,
+	default IRelationshipValue<L, R, ?> add(R typeAdd,
 	                                        String classificationName,
 	                                        String value,
 	                                        String originalSourceSystemUniqueID,
@@ -89,7 +90,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 	                                        LocalDateTime effectiveToDate,
 	                                        ISystems<?> originalSystemID,
 	                                        IEnterprise<?> enterprise,
-	                                        UUID... identityToken )
+	                                        UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddableTableType());
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
@@ -112,8 +113,8 @@ public interface IAddableType<P extends WarehouseSCDTable,
 		tableForClassification.setClassificationID((Classification) classification);
 		
 		configureAddable(tableForClassification, (P) this,
-		                 typeAdd,
-		                 (C) classification,(T)typeAdd, value, originatingSystem.getEnterpriseID());
+				(S) typeAdd,
+				(C) classification, (T) typeAdd, value, originatingSystem.getEnterpriseID());
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
@@ -216,7 +217,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 		tableForClassification.setClassificationID((Classification) classification);
 		
 		configureAddable(tableForClassification, (P) this, stringToSecondary(type, enterprise, identityToken),
-		                 (C) classification, typeToUse, value, originatingSystem.getEnterpriseID());
+				(C) classification, typeToUse, value, originatingSystem.getEnterpriseID());
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
@@ -408,7 +409,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 		return addOrReuse(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addOrReuse(S sType,
+	default IRelationshipValue<L, R, ?> addOrReuse(R sType,
 	                                               String classificationName,
 	                                               String value,
 	                                               String originalSourceSystemUniqueID,
@@ -416,19 +417,19 @@ public interface IAddableType<P extends WarehouseSCDTable,
 	                                               LocalDateTime effectiveToDate,
 	                                               ISystems<?> originalSystemID,
 	                                               IEnterprise<?> enterprise,
-	                                               UUID... identityToken )
+	                                               UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddableTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		Classification classification = (Classification) classificationService.find(classificationName, enterprise, identityToken);
-		boolean exists = findTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		boolean exists = findTypeQuery(value, enterprise, tableForClassification, (S)sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{
 			return add(sType, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
 		}
 		else
 		{
-			tableForClassification = (Q) findTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken)
+			tableForClassification = (Q) findTypeQuery(value, enterprise, tableForClassification, (S)sType, classification, identityToken)
 					.get()
 					.orElseThrow();
 		}
@@ -630,7 +631,9 @@ public interface IAddableType<P extends WarehouseSCDTable,
 		Classification classification = (Classification) classificationService.find(classificationName, enterprise, identityToken);
 		boolean exists = findTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
-		{ return  add(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken); }
+		{
+			return add(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+		}
 		
 		tableForClassification = (Q) findTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken)
 				.get()
@@ -645,7 +648,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 	}
 	
 	
-	default IRelationshipValue<L, R, ?> addOrUpdate(@NotNull S sType,
+	default IRelationshipValue<L, R, ?> addOrUpdate(@NotNull R sType,
 	                                                @NotNull String classificationName,
 	                                                String value,
 	                                                String originalSourceSystemUniqueID,
@@ -658,11 +661,13 @@ public interface IAddableType<P extends WarehouseSCDTable,
 		Q tableForClassification = get(findAddableTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		Classification classification = (Classification) classificationService.find(classificationName, enterprise, identityToken);
-		boolean exists = findTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		boolean exists = findTypeQuery(value, enterprise, tableForClassification, (S)sType, classification, identityToken).getCount() > 0;
 		if (!exists)
-		{ return add(sType, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken); }
+		{
+			return add(sType, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+		}
 		
-		tableForClassification = (Q) findTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken)
+		tableForClassification = (Q) findTypeQuery(value, enterprise, tableForClassification, (S)sType, classification, identityToken)
 				.get()
 				.orElseThrow();
 		
@@ -675,7 +680,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 	}
 	
 	default IRelationshipValue<L, R, ?> update(@NotNull IRelationshipValue<L, R, ?> original,
-	                                           @NotNull S type,
+	                                           @NotNull R type,
 	                                           @NotNull String classificationName,
 	                                           String value,
 	                                           String originalSourceSystemUniqueID,
@@ -689,7 +694,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 		return add(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> update(@NotNull IRelationshipValue<L, R, ?>  original,
+	default IRelationshipValue<L, R, ?> update(@NotNull IRelationshipValue<L, R, ?> original,
 	                                           @NotNull String type,
 	                                           @NotNull String classificationName,
 	                                           String value,
@@ -704,7 +709,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 		return add(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> archive(@NotNull IRelationshipValue<L, R, ?>  original, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> archive(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		IActiveFlagService flagService = get(IActiveFlagService.class);
@@ -713,7 +718,7 @@ public interface IAddableType<P extends WarehouseSCDTable,
 		return original;
 	}
 	
-	default IRelationshipValue<L, R, ?> remove(@NotNull IRelationshipValue<L, R, ?>  original, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> remove(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		IActiveFlagService flagService = get(IActiveFlagService.class);
@@ -723,11 +728,11 @@ public interface IAddableType<P extends WarehouseSCDTable,
 	}
 	
 	@SuppressWarnings("rawtypes")
-	default IRelationshipValue<L, R, ?> expire(@NotNull  IRelationshipValue<L, R, ?>  original, Duration when)
+	default IRelationshipValue<L, R, ?> expire(@NotNull IRelationshipValue<L, R, ?> original, Duration when)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		entity.setEffectiveToDate(entity.getEffectiveToDate()
-		                                    .plus(when));
+		                                .plus(when));
 		QueryBuilderSCD scd = (QueryBuilderSCD) entity.builder();
 		scd.update(entity, when);
 		return original;
