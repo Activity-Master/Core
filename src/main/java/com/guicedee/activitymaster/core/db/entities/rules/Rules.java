@@ -22,6 +22,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -49,7 +51,7 @@ public class Rules
 		           IActivityMasterEntity<Rules>,
 		           IRules<Rules>
 {
-
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	

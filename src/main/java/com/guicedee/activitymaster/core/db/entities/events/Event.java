@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.core.db.entities.events.builders.EventQueryBu
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
@@ -44,7 +45,8 @@ public class Event
 		           IContainsAddresses<Event, Address, EventXAddress, IAddressClassification<?>, IEvent<?>, IAddress<?>, Event>,
 		           IContainsEventTypes<Event, EventType, EventXEventType, IClassificationValue<?>, IEventClassification<?>, IEvent<?>, IEventType<?>, Event>,
 		           IActivityMasterEntity<Event>,
-		           IEvent<Event>
+		           IEvent<Event>,
+		           IContainsRules<Event, Rules,EventXRules,IClassification<?>,IEvent<?>,IRules<?>>
 {
 	
 	private static final long serialVersionUID = 1L;
@@ -114,6 +116,12 @@ public class Event
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<EventXEventType> eventTypes;
+	
+	@OneToMany(
+			mappedBy = "eventID",
+			fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<EventXRules> rules;
 	
 	public Event()
 	{
@@ -350,5 +358,14 @@ public class Event
 	{
 		classificationLink.setEventID(first);
 		classificationLink.setInvolvedPartyID(involvedParty);
+	}
+	
+	@Override
+	public void configureAddableRule(EventXRules linkTable, Event primary, Rules secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setEventID(primary);
+		linkTable.setRulesID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
 	}
 }

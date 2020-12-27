@@ -121,12 +121,6 @@ public class InvolvedPartySystem
 	}
 	
 	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
-	{
-	
-	}
-	
-	@Override
 	public String getSystemName()
 	{
 		return "Involved Party System";

@@ -4,6 +4,7 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.*;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.db.hierarchies.ArrangementsHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
@@ -19,6 +20,7 @@ public interface IArrangement<J extends IArrangement<J>>
 		        IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty, IClassificationValue<?>, IArrangement<?>, IInvolvedParty<?>, Arrangement>,
 		        IHasActiveFlags<Arrangement>,
 		        IContainsHierarchy<Arrangement,ArrangementXArrangement, ArrangementsHierarchyView,IArrangement<J>>,
-		        IContainsEnterprise<Arrangement>
+		        IContainsEnterprise<Arrangement>,
+		        IContainsRules<Arrangement, Rules,ArrangementXRules,IClassification<?>,IArrangement<?>,IRules<?>>
 {
 }

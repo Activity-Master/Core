@@ -95,7 +95,8 @@ public class ActivityMasterService
 		loadSystems(enterpriseName, progressMonitor);
 		progressMonitor.setCurrentTask(0);
 		logProgress("System Configuration", "Enterprise All Updates. Updating Systems", 1, progressMonitor);
-		loadUpdates(enterpriseName, progressMonitor);
+		IEnterpriseService enterpriseService = get(IEnterpriseService.class);
+		enterpriseService.loadUpdates(enterprise, progressMonitor);
 		logProgress("System Configuration", "Done", 1, progressMonitor);
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(true);
@@ -164,7 +165,6 @@ public class ActivityMasterService
 	public void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-		
 		try
 		{
 			IEnterprise<?> enterprise = get(IEnterpriseService.class)
@@ -184,22 +184,10 @@ public class ActivityMasterService
 		}
 	}
 
-	public void loadUpdates(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-		IEnterprise<?> enterprise = get(IEnterpriseService.class)
-				.getEnterprise(enterpriseName);
-		if (progressMonitor != null)
-		{
-			progressMonitor.setTotalTasks(allSystems.size() * 3);
-		}
-		
-		for (IActivityMasterSystem<?> allSystem : allSystems)
-		{
-			logProgress("System Updating", "Updating system " + allSystem.getClass()
-			                                                             .getName(), 1, progressMonitor);
-			allSystem.loadUpdates(enterprise, progressMonitor);
-		}
+		IEnterpriseService enterpriseService = get(IEnterpriseService.class);
+		enterpriseService.loadUpdates(enterprise,progressMonitor);
 		if (progressMonitor != null)
 		{
 			int cur = progressMonitor.getTotalTasks() - progressMonitor.getCurrentTask();

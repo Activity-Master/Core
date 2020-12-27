@@ -23,6 +23,7 @@ public enum EnterpriseClassificationDataConcepts
 	ArrangementXInvolvedParty,
 	ArrangementXProduct,
 	ArrangementXResourceItem,
+	ArrangementXRules,
 	Classification,
 	ClassificationDataConcept,
 	ClassificationDataConceptXClassification,
@@ -43,6 +44,7 @@ public enum EnterpriseClassificationDataConcepts
 	EventXInvolvedParty,
 	EventXProduct,
 	EventXResourceItem,
+	EventXRules,
 	Geography,
 	GeographyXClassification,
 	GeographyXGeography,
@@ -73,6 +75,7 @@ public enum EnterpriseClassificationDataConcepts
 	ResourceItemType,
 	ResourceItemXClassification,
 	ResourceItemXResourceItemType,
+	Rules,
 	SecurityToken,
 	SecurityTokenXClassification,
 	SecurityTokenXSecurityToken,
@@ -80,8 +83,7 @@ public enum EnterpriseClassificationDataConcepts
 	SystemXClassification,
 	YesNo,
 	YesNoXClassification,
-
-
+	
 	;
 
 	private String classificationValue;

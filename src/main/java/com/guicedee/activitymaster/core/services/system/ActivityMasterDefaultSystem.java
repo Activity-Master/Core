@@ -24,12 +24,6 @@ public abstract class ActivityMasterDefaultSystem<J extends ActivityMasterDefaul
 		getSystemToken(enterprise);
 	}
 
-	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
-	{
-
-	}
-
 	public ISystems<?> getSystem(IEnterprise<?> enterprise)
 	{
 		var oSystemsMap = systemsEnterpriseSystems.stream()

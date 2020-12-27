@@ -81,6 +81,8 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationDataConceptXResourceItem, "Resource Items for data concepts", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationXClassification, "The Classification Hierarchy", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.EnterpriseXClassification, "Classifications for an enterprise", activityMaster);
+		service.createDataConcept(ArrangementXRules, "Classifications for an arrangements link to a set of rules", activityMaster);
+		service.createDataConcept(EventXRules, "An events link to a set of rules", activityMaster);
 		service.createDataConcept(EventXEventType, "Classifications for events", activityMaster);
 		service.createDataConcept(InvolvedPartyXAddress, "All involved party identification types", activityMaster);
 		service.createDataConcept(InvolvedPartyXClassification, "All involved party custom classifications", activityMaster);

@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.core.db.entities.events.*;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
@@ -19,6 +20,7 @@ public interface IEvent<J extends IEvent<J>>
 		        IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty, IClassificationValue<?>, IEvent<?>, IInvolvedParty<?>, Event>,
 		        IContainsAddresses<Event, Address, EventXAddress, IAddressClassification<?>, IEvent<?>, IAddress<?>, Event>,
 		        IContainsEventTypes<Event, EventType, EventXEventType, IClassificationValue<?>, IEventClassification<?>, IEvent<?>, IEventType<?>, Event>,
-		        IActivityMasterEntity<Event>
+		        IActivityMasterEntity<Event>,
+		        IContainsRules<Event, Rules,EventXRules,IClassification<?>,IEvent<?>,IRules<?>>
 {
 }

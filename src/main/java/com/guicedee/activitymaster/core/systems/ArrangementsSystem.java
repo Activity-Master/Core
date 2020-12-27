@@ -23,24 +23,6 @@ public class ArrangementsSystem
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-	
-	}
-	
-	@Override
-	public int totalTasks()
-	{
-		return 4;
-	}
-	
-	@Override
-	public Integer sortOrder()
-	{
-		return Integer.MIN_VALUE + 8;
-	}
-	
-	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
-	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                               .getActivityMaster(enterprise);
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
@@ -75,6 +57,18 @@ public class ArrangementsSystem
 		service.create(ArrangementTypeClassifications.ProductQuote, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		service.create(ArrangementTypeClassifications.ProductLead, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		logProgress("Classifications System", "Loaded Arrangement Type Classifications...", 1, progressMonitor);
+	}
+	
+	@Override
+	public int totalTasks()
+	{
+		return 4;
+	}
+	
+	@Override
+	public Integer sortOrder()
+	{
+		return Integer.MIN_VALUE + 8;
 	}
 	
 	@Override

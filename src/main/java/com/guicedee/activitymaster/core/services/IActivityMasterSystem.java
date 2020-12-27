@@ -12,8 +12,5 @@ public interface IActivityMasterSystem<J extends IActivityMasterSystem<J>>
 
 	default void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-
 	}
-
-	void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor);
 }

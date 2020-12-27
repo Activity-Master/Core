@@ -8,13 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassi
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification_;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise_;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IProgressable;
+import com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
+import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
+import com.guicedee.activitymaster.core.systems.EnterpriseSystem;
+import com.guicedee.activitymaster.core.updates.DatedUpdate;
+import com.guicedee.activitymaster.core.updates.ISystemUpdate;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.json.LocalDateDeserializer;
 import io.github.classgraph.ClassInfo;
@@ -24,6 +31,7 @@ import jakarta.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +70,79 @@ public class EnterpriseService
 	}
 	
 	@Override
+	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		EnterpriseSystem es = get(EnterpriseSystem.class);
+		ISystems<?> newSystem = es.getSystem(enterprise);
+		UUID securityToken = es.getSystemToken(enterprise);
+		final LocalDate[] lastUpdateDate = new LocalDate[]{getEnterpriseLastUpdateDate(enterprise)};
+		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = getUpdates(lastUpdateDate[0]);
+		log.config("There are " + availableUpdates.size() + " required...");
+		progressMonitor.setCurrentTask(0);
+		int tasks = 0;
+		for (Map.Entry<LocalDate, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
+		{
+			LocalDate k = entry.getKey();
+			Class<? extends ISystemUpdate> v = entry.getValue();
+			tasks += v.getAnnotation(DatedUpdate.class)
+			 .taskCount();
+		}
+		progressMonitor.setTotalTasks(tasks);
+		availableUpdates.forEach((key, value) -> {
+			ISystemUpdate o = GuiceContext.get(value);
+			o.update(enterprise, progressMonitor);
+			lastUpdateDate[0] = key;
+		});
+		enterprise.addOrUpdate(EnterpriseClassifications.LastUpdateDate, DateTimeFormatter.ofPattern("yyyy/MM/dd")
+		                                                                                  .format(lastUpdateDate[0]), newSystem, securityToken);
+	}
+	
+	@Override
+	public LocalDate getEnterpriseLastUpdateDate(IEnterprise<?> enterprise)
+	{
+		EnterpriseSystem es = get(EnterpriseSystem.class);
+		ISystems<?> newSystem = es.getSystem(enterprise);
+		UUID securityToken = es.getSystemToken(enterprise);
+		if (!enterprise.hasClassifications(EnterpriseClassifications.LastUpdateDate, newSystem, securityToken))
+		{
+			enterprise.addOrReuse(EnterpriseClassifications.LastUpdateDate, "2008/01/01", newSystem, securityToken);
+		}
+		IRelationshipValue<IEnterprise<?>, IClassification<?>, ?> val = enterprise.addOrReuse(EnterpriseClassifications.LastUpdateDate, "2008/01/01", newSystem, securityToken);
+		final LocalDate[] lastUpdateDate = {new LocalDateDeserializer().convert(val.getValue())};
+		return lastUpdateDate[0];
+	}
+	
+	@Override
+	public Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(LocalDate lastUpdateDate)
+	{
+		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
+		for (ClassInfo classInfo : GuiceContext.instance()
+		                                       .getScanResult()
+		                                       .getClassesWithAnnotation(DatedUpdate.class.getCanonicalName()))
+		{
+			if (classInfo.isAbstract() || classInfo.isInterface())
+			{
+				continue;
+			}
+			
+			@SuppressWarnings("unchecked")
+			Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) classInfo.loadClass();
+			DatedUpdate du = clazz.getAnnotation(DatedUpdate.class);
+			LocalDate updateDate = null;
+			updateDate = new LocalDateDeserializer().convert(du.date());
+			availableUpdates.put(updateDate, clazz);
+		}
+		Map<LocalDate, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
+		availableUpdates.forEach((key, value) -> {
+			if (key.isAfter(lastUpdateDate))
+			{
+				applicableUpdates.put(key, value);
+			}
+		});
+		return applicableUpdates;
+	}
+	
+	@Override
 	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
 	public List<IEnterprise<?>> findEnterprisesWithClassification(@CacheKey Classification classification)
 	{
@@ -91,6 +172,7 @@ public class EnterpriseService
 	 * Result is cached
 	 *
 	 * @param name the name of the enterprise
+	 *
 	 * @return The enterprise
 	 */
 	@Override
