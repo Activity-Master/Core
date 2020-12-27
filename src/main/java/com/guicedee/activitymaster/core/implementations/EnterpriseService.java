@@ -24,6 +24,7 @@ import com.guicedee.activitymaster.core.updates.DatedUpdate;
 import com.guicedee.activitymaster.core.updates.ISystemUpdate;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.json.LocalDateDeserializer;
+import com.guicedee.guicedinjection.json.LocalDateSerializer;
 import io.github.classgraph.ClassInfo;
 
 import jakarta.cache.annotation.CacheKey;
@@ -89,12 +90,14 @@ public class EnterpriseService
 		}
 		progressMonitor.setTotalTasks(tasks);
 		availableUpdates.forEach((key, value) -> {
+			logProgress("Update System","Starting updates for " + value.getSimpleName(),progressMonitor);
 			ISystemUpdate o = GuiceContext.get(value);
 			o.update(enterprise, progressMonitor);
 			lastUpdateDate[0] = key;
 		});
 		enterprise.addOrUpdate(EnterpriseClassifications.LastUpdateDate, DateTimeFormatter.ofPattern("yyyy/MM/dd")
 		                                                                                  .format(lastUpdateDate[0]), newSystem, securityToken);
+		logProgress("Update System","Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(lastUpdateDate[0]),progressMonitor);
 	}
 	
 	@Override
