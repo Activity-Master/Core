@@ -105,7 +105,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>com.guicedee.services</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>

@@ -433,6 +433,16 @@ public class ClassificationService
 		                    identityToken);
 	}
 	
+	@CacheResult(cacheName = "GetNoClassification")
+	@Override
+	public IClassification<?> getNoClassification(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	{
+		ClassificationService service = GuiceContext.get(ClassificationService.class);
+		return service.find(NoClassification,
+				enterprise,
+				identityToken);
+	}
+	
 	@CacheResult(cacheName = "IdentityTypeClassification")
 	@Override
 	public IClassification<?> getIdentityType(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)

@@ -168,6 +168,30 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 		return (Optional) queryBuilderRelationshipClassification.get();
 	}
 	
+	@SuppressWarnings("unchecked")
+	default Optional<IRelationshipValue<L, R, ?>> findArrangementTypes(T arrangementType, IClassification<?> classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	{
+		IArrangementsService<?> arrangementsService = get(IArrangementsService.class);
+		S sType = (S) arrangementsService.find(arrangementType, enterprise, identityToken);
+		Q relationshipTable = get(findArrangementTypesQueryRelationshipTableType());
+		var queryBuilderRelationshipClassification
+				= relationshipTable.builder()
+				                   .findParentLink((P) this)
+				                   .findChildLink((S)sType)
+				                   .inActiveRange(enterprise, identityToken)
+				                   .withClassification(classification)
+				                   .withValue(searchValue)
+				                   .inDateRange()
+				                   .withEnterprise(enterprise)
+				                   .canRead(enterprise, identityToken);
+		if (first)
+		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		if (latest)
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		
+		return (Optional) queryBuilderRelationshipClassification.get();
+	}
+	
 	default List<IRelationshipValue<L, R, ?>> findArrangementTypesAll(T classification, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
