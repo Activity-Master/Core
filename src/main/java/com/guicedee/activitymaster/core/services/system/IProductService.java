@@ -14,7 +14,7 @@ public interface IProductService<J extends IProductService<J>>
 	
 	IProduct<?> findProduct(String name, IEnterprise<?> enterprise, UUID... identityToken);
 	
-	IProductType<?> createProductType(String rulesType, ISystems<?> originatingSystem, UUID... identityToken);
+	IProductType<?> createProductType(String rulesType,String description, ISystems<?> originatingSystem, UUID... identityToken);
 	
 	IProductType<?> findProductType(IProductTypeValue<?> rulesType, IEnterprise<?> enterprise, UUID... identityToken);
 	

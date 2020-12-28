@@ -61,7 +61,6 @@ public class ResourceItem
 {
 	private static final long serialVersionUID = 1L;
 	@Id
-
 	@Column(nullable = false,
 	        name = "ResourceItemID")
 	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")

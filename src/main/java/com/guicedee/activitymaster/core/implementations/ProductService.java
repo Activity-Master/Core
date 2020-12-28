@@ -23,7 +23,7 @@ import static com.guicedee.guicedinjection.json.StaticStrings.*;
 public class ProductService<J extends ProductService<J>> implements IProductService<J>
 {
 	@Override
-	public IProduct<?> createProduct(String rulesType,String name, String description, String code, ISystems<?> originatingSystem, UUID... identityToken)
+	public IProduct<?> createProduct(String productType,String name, String description, String code, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		
 		boolean exists = new Product().builder()
@@ -56,15 +56,15 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 		product.persist();
 		product.createDefaultSecurity(originatingSystem, identityToken);
 		
-		IProductType<?> productType = findProductType(rulesType, originatingSystem.getEnterprise(), identityToken);
-		product.add(NoClassification, productType, STRING_EMPTY, originatingSystem, identityToken);
+		IProductType<?> pType = findProductType(productType, originatingSystem.getEnterprise(), identityToken);
+		product.add(NoClassification, pType, STRING_EMPTY, originatingSystem, identityToken);
 		
 		return product;
 	}
 	@Override
 	public IProductType<?> createProductType(IProductTypeValue<?> rulesType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		return createProductType(rulesType.name(), originatingSystem, identityToken);
+		return createProductType(rulesType.name(), rulesType.classificationDescription(), originatingSystem, identityToken);
 	}
 	
 	@Override
@@ -81,37 +81,37 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 	}
 	
 	@Override
-	public IProductType<?> createProductType(String rulesType, ISystems<?> originatingSystem, UUID... identityToken)
+	public IProductType<?> createProductType(String rulesType,String description, ISystems<?> system, UUID... identityToken)
 	{
 		ProductType et = new ProductType();
 		
 		boolean exists = et.builder()
 		                   .withName(rulesType)
-		                   .withEnterprise(originatingSystem.getEnterpriseID())
-		                   .inActiveRange(originatingSystem.getEnterpriseID())
+		                   .withEnterprise(system.getEnterpriseID())
+		                   .inActiveRange(system.getEnterpriseID())
 		                   .inDateRange()
 		                   .getCount() > 0;
 		
 		if (!exists)
 		{
 			et.setName(rulesType);
-			et.setDescription(rulesType);
-			et.setSystemID((Systems) originatingSystem);
-			et.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+			et.setDescription(description);
+			et.setSystemID((Systems) system);
+			et.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			et.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                            .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
-			et.setOriginalSourceSystemID((Systems) originatingSystem);
+			                                            .getActiveFlag(system.getEnterpriseID(), identityToken));
+			et.setOriginalSourceSystemID((Systems) system);
 			et.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				et.createDefaultSecurity(originatingSystem, identityToken);
+				et.createDefaultSecurity(system, identityToken);
 			}
 			return et;
 		}
 		else
 		{
-			return findProductType(rulesType, originatingSystem.getEnterprise(), identityToken);
+			return findProductType(rulesType, system.getEnterprise(), identityToken);
 		}
 	}
 	

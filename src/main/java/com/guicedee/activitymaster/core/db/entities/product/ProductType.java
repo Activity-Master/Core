@@ -3,18 +3,21 @@ package com.guicedee.activitymaster.core.db.entities.product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductTypeQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXClassification;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IProductType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
+import com.guicedee.activitymaster.core.services.dto.*;
 
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -37,8 +40,10 @@ import static jakarta.persistence.AccessType.*;
 public class ProductType
 		extends WarehouseSCDNameDescriptionTable<ProductType, ProductTypeQueryBuilder, java.util.UUID, ProductTypeSecurityToken>
 		implements IProductType<ProductType>,
-		           IActivityMasterEntity<ProductType>
+		           IActivityMasterEntity<ProductType>,
+		           IContainsClassifications<ProductType, Classification, ProductTypeXClassification, IClassificationValue<?>, IProductType<?>,IClassification<?>,ProductType>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
@@ -75,6 +80,14 @@ public class ProductType
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<ProductTypeSecurityToken> securities;
+	
+	
+	@OneToMany(
+			mappedBy = "productTypeID",
+			fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<ProductTypeXClassification> classifications;
+	
 	
 	public ProductType()
 	{
@@ -202,5 +215,12 @@ public class ProductType
 	public String classificationValue()
 	{
 		return getDescription();
+	}
+	
+	
+	@Override
+	public void configureForClassification(ProductTypeXClassification classificationLink, IEnterprise<?> enterprise)
+	{
+		classificationLink.setProductTypeID(this);
 	}
 }

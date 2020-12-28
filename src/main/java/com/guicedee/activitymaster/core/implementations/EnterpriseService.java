@@ -78,7 +78,7 @@ public class EnterpriseService
 		UUID securityToken = es.getSystemToken(enterprise);
 		final LocalDate[] lastUpdateDate = new LocalDate[]{getEnterpriseLastUpdateDate(enterprise)};
 		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = getUpdates(lastUpdateDate[0]);
-		log.config("There are " + availableUpdates.size() + " required...");
+		log.config("There are " + availableUpdates.size() + " required updates");
 		progressMonitor.setCurrentTask(0);
 		int tasks = 0;
 		for (Map.Entry<LocalDate, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
@@ -86,7 +86,7 @@ public class EnterpriseService
 			LocalDate k = entry.getKey();
 			Class<? extends ISystemUpdate> v = entry.getValue();
 			tasks += v.getAnnotation(DatedUpdate.class)
-			 .taskCount();
+			 .taskCount() + 1;
 		}
 		progressMonitor.setTotalTasks(tasks);
 		availableUpdates.forEach((key, value) -> {

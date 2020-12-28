@@ -131,6 +131,8 @@
         <class>com.guicedee.activitymaster.core.db.entities.product.ProductTypeSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.product.ProductXClassification</class>
         <class>com.guicedee.activitymaster.core.db.entities.product.ProductXClassificationSecurityToken</class>
+        <class>com.guicedee.activitymaster.core.db.entities.product.ProductTypeXClassification</class>
+        <class>com.guicedee.activitymaster.core.db.entities.product.ProductTypeXClassificationSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.product.ProductXProduct</class>
         <class>com.guicedee.activitymaster.core.db.entities.product.ProductXProductSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.product.ProductXProductType</class>

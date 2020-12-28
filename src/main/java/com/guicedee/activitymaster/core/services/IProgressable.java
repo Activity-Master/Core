@@ -38,6 +38,7 @@ public interface IProgressable
 		if (progressMonitor != null)
 		{
 			progressMonitor.progressUpdate(source, message);
+			progressMonitor.setCurrentTask(progressMonitor.getCurrentTask() + 1);
 		}
 	}
 
@@ -47,8 +48,8 @@ public interface IProgressable
 		{
 			name = name.substring(0, name.indexOf("$$EnhancerByGuice$$"));
 		}
-		name = name.replaceAll("com\\.armineasy\\.activitymaster\\.activitymaster\\.systems\\.", "");
-		name = name.replaceAll("com\\.armineasy\\.activitymaster\\.activitymaster\\.", "");
+		name = name.replaceAll("com\\.guicedee\\.activitymaster\\.activitymaster\\.systems\\.", "");
+		name = name.replaceAll("com\\.guicedee\\.activitymaster\\.activitymaster\\.", "");
 		return name;
 	}
 }
