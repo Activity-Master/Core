@@ -5,16 +5,21 @@ import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.product.ProductType;
+import com.guicedee.activitymaster.core.db.entities.product.ProductXProductType;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXResourceItemType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
+import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IProductService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -56,11 +61,13 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 		product.persist();
 		product.createDefaultSecurity(originatingSystem, identityToken);
 		
-		IProductType<?> pType = findProductType(productType, originatingSystem.getEnterprise(), identityToken);
+		IProductType<?> pType = createProductType(productType,productType, originatingSystem, identityToken);
+		
 		product.add(NoClassification, pType, STRING_EMPTY, originatingSystem, identityToken);
 		
 		return product;
 	}
+	
 	@Override
 	public IProductType<?> createProductType(IProductTypeValue<?> rulesType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
@@ -68,8 +75,7 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 	}
 	
 	@Override
-	@CacheResult(cacheName = "FindProductByName")
-	public IProduct<?> findProduct(@CacheKey String name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IProduct<?> findProduct(String name, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		return new Product().builder()
 		             .withName(name)
@@ -116,15 +122,13 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 	}
 	
 	@Override
-	@CacheResult(cacheName = "ProductTypes")
-	public IProductType<?> findProductType(@CacheKey IProductTypeValue<?> rulesType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IProductType<?> findProductType(IProductTypeValue<?> rulesType, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		return findProductType(rulesType.classificationValue(), enterprise, identityToken);
 	}
 	
 	@Override
-	@CacheResult(cacheName = "ProductTypesString")
-	public IProductType<?> findProductType(@CacheKey String rulesType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IProductType<?> findProductType(String rulesType, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		return new ProductType().builder()
 		                      .withName(rulesType)
@@ -137,8 +141,7 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 	}
 	
 	@Override
-	@CacheResult(cacheName = "FindProductWithClassification")
-	public IProduct<?> findProduct(@CacheKey String productName,@CacheKey  IClassification<?> classification,@CacheKey  IEnterprise<?> enterprise, UUID... identityToken)
+	public IProduct<?> findProduct(String productName, IClassification<?> classification, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		return new Product().builder()
 		                    .withName(productName)
@@ -148,5 +151,40 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 		                    .withEnterprise(enterprise)
 		                    .get()
 		                    .orElseThrow();
+	}
+	
+	@Override
+	public List<IProductType<?>> findProductTypes(IClassification<?> classification, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> clazz = classificationService.find(classification.getName(), system.getEnterprise(), identityToken);
+		List<IProductType<?>> list = new ArrayList<>();
+		for (IRelationshipValue<IProductType<?>, IClassification<?>, ?> returns : new ProductType().findClassificationsAll((IClassificationValue<?>) clazz, system, identityToken))
+		{
+			IProductType<?> primary = returns.getPrimary();
+			list.add(primary);
+		}
+		return list;
+	}
+	
+	@Override
+	public List<IProduct<?>> findByProductTypes(IProductType<?> type, ISystems<?> system, UUID... identityToken)
+	{
+		return findByProductTypes(type.getName(), system, identityToken);
+	}
+	
+	@Override
+	public List<IProduct<?>> findByProductTypes(String type, ISystems<?> system, UUID... identityToken)
+	{
+		return new ProductXProductType().builder()
+		                                .withEnterprise(system.getEnterprise())
+		                                .inActiveRange(system.getEnterprise(), identityToken)
+		                                .inDateRange()
+		                                .canRead(system.getEnterprise(), identityToken)
+		                                .withType(type, system.getEnterprise(), identityToken)
+		                                .getAll()
+		                                .stream()
+		                                .map(ProductXProductType::getProductID)
+		                                .collect(Collectors.toList());
 	}
 }

@@ -92,7 +92,11 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
 	@jakarta.validation.constraints.NotNull
 	public J findParentLink(P parent, String value)
 	{
-		where(getPrimaryAttribute(), Equals, parent);
+		if(parent != null)
+		{
+			if(parent.getId() != null)
+			where(getPrimaryAttribute(), Equals, parent);
+		}
 		if (value != null)
 		{
 			withValue(value);

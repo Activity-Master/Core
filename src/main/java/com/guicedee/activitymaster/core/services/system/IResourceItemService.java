@@ -10,6 +10,7 @@ import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -55,4 +56,6 @@ public interface IResourceItemService<J extends IResourceItemService<J>>
 	IResourceItemType<?> findResourceItemType(IResourceType<?> type, IEnterprise<?> systems, UUID... identityToken);
 	
 	IResourceItemType<?> findResourceItemType(String type, IEnterprise<?> systems, UUID... identityToken);
+	
+	List<IResourceItem<?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken);
 }

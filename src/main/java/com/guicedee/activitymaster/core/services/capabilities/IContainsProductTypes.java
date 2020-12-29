@@ -509,13 +509,12 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q add(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q add(IClassificationValue<?> classificationValue, T productType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findProductTypeQueryRelationshipTableType());
 		
-		IProductService<?> classificationDataConceptService = get(IProductService.class);
-		ProductType classificationDataConcept = (ProductType) classificationDataConceptService.findProductType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
-		                                                                                                 identityToken);
+		IProductService<?> productService = get(IProductService.class);
+		ProductType classificationDataConcept = (ProductType) productType;
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);

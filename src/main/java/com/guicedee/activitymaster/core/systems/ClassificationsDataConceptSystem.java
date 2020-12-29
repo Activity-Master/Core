@@ -115,6 +115,7 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyOrganicType, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyType, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Product, "Standard Table Based Classification", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.ProductType, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItem, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemData, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemType, "Standard Table Based Classification", activityMaster);

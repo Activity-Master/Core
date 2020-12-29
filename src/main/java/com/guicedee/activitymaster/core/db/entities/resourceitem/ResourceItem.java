@@ -8,11 +8,13 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXReso
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConceptXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXResourceItem;
+import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.EventXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.geography.GeographyXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.product.ProductXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.db.hierarchies.ResourceItemHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
@@ -26,6 +28,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,15 +60,16 @@ public class ResourceItem
 		           IHasActiveFlags<ResourceItem>,
 		           IContainsEnterprise<ResourceItem>,
 		           IContainsData<ResourceItem>,
-		           IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView,IResourceItem<?>>,
-		           IContainsResourceItems<ResourceItem,ResourceItem,ResourceItemXResourceItem,IClassificationValue<?>,IResourceItem<?>,IResourceItem<?>,ResourceItem>,
+		           IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView, IResourceItem<?>>,
+		           IContainsResourceItems<ResourceItem, ResourceItem, ResourceItemXResourceItem, IClassificationValue<?>, IResourceItem<?>, IResourceItem<?>, ResourceItem>,
 		           IResourceItem<ResourceItem>
 {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(nullable = false,
 	        name = "ResourceItemID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -186,7 +192,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void updateData(byte[] data, UUID... identityToken)
+	public void updateData(byte[] data,ISystems<?> system, UUID... identityToken)
 	{
 		Optional<ResourceItemData> d
 				= new ResourceItemData().builder()
@@ -200,6 +206,51 @@ public class ResourceItem
 			rid.setResourceItemData(data);
 			rid.updateNow();
 		}
+		else
+		{
+			ResourceItemData rid = new ResourceItemData();
+			rid.setResource(this);
+			rid.setEffectiveFromDate(LocalDateTime.now());
+			rid.setWarehouseCreatedTimestamp(LocalDateTime.now());
+			rid.setEffectiveToDate(EndOfTime);
+			rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
+			rid.setResourceItemData(data);
+			rid.setSystemID((Systems) system);
+			rid.setActiveFlagID(rid.getSystemID().getActiveFlagID());
+			rid.setOriginalSourceSystemID((Systems) system);
+			rid.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			rid.persist();
+		}
+	}
+	
+	@Override
+	public void updateAndKeepHistoryData(byte[] data,ISystems<?> system, UUID... identityToken)
+	{
+		Optional<ResourceItemData> d
+				= new ResourceItemData().builder()
+				                        .inActiveRange(getEnterprise(), identityToken)
+				                        .inDateRange()
+				                        .where(ResourceItemData_.resource, Equals, this)
+				                        .get();
+		if (d.isPresent())
+		{
+			ResourceItemData resourceItemData = d.get();
+			resourceItemData.expireIn(Duration.ZERO);
+		}
+		
+		ResourceItemData rid = new ResourceItemData();
+		rid.setResource(this);
+		rid.setEffectiveFromDate(LocalDateTime.now());
+		rid.setWarehouseCreatedTimestamp(LocalDateTime.now());
+		rid.setEffectiveToDate(EndOfTime);
+		rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
+		rid.setResourceItemData(data);
+		rid.setActiveFlagID(getActiveFlagID());
+		rid.setOriginalSourceSystemID(getSystemID());
+		rid.setSystemID(getSystemID());
+		rid.setEnterpriseID(getEnterpriseID());
+		rid.persist();
+		
 	}
 	
 	@Override

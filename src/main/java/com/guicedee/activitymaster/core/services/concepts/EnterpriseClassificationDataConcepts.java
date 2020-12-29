@@ -65,6 +65,7 @@ public enum EnterpriseClassificationDataConcepts
 	InvolvedPartyXProduct,
 	InvolvedPartyXResourceItem,
 	Product,
+	ProductType,
 	ProductXClassification,
 	ProductXProduct,
 	ProductXProductType,

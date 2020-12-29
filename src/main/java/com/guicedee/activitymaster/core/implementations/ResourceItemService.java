@@ -2,27 +2,21 @@ package com.guicedee.activitymaster.core.implementations;
 
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
-import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IResourceItemService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
@@ -31,8 +25,10 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.ListJoin;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.Equals;
 import static com.guicedee.guicedinjection.GuiceContext.get;
@@ -156,7 +152,7 @@ public class ResourceItemService
 			xr.createDefaultSecurity(system, identityToken);
 		}
 		IResourceType<?> resourceItemType = (IResourceType<?>) createType(identityResourceType, identityResourceType, system, identityToken);
-		xr.add(resourceItemType, "Created With", system, identityToken);
+		xr.add(resourceItemType, null, system, identityToken);
 		
 		return xr;
 	}
@@ -267,5 +263,18 @@ public class ResourceItemService
 		return exists.orElseThrow();
 	}
 	
-	
+	@Override
+	public List<IResourceItem<?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken)
+	{
+		return new ResourceItemXResourceItemType().builder()
+		                                   .withEnterprise(systems.getEnterprise())
+		                                   .inActiveRange(systems.getEnterprise(), identityToken)
+		                                   .inDateRange()
+		                                   .canRead(systems.getEnterprise(), identityToken)
+		                                   .withType(type, systems.getEnterprise(), identityToken)
+		                                   .getAll()
+		                                   .stream()
+		                                   .map(ResourceItemXResourceItemType::getResourceItemID)
+		                                   .collect(Collectors.toList());
+	}
 }
