@@ -60,4 +60,8 @@ public interface IInvolvedPartyService<J extends IInvolvedPartyService<J>>
 	IInvolvedParty<?> findByIdentificationType(String identificationType, String value);
 	
 	List<IRelationshipValue<IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>, ?>> findAllByIdentificationType(String identificationType, String value);
+	
+	List<IInvolvedParty<?>> findByRulesClassification(String classification, String value, ISystems<?> system, UUID... identityToken);
+	
+	IInvolvedParty<?> findByClassification(String classification, String value, ISystems<?> system, UUID... identityToken);
 }

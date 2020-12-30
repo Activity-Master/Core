@@ -3,16 +3,24 @@ package com.guicedee.activitymaster.core.db.entities.rules;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.core.db.entities.product.ProductTypeXClassification;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
+import com.guicedee.activitymaster.core.services.classifications.rules.IRulesTypeClassification;
+import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IRulesType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
+import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -34,8 +42,10 @@ import static jakarta.persistence.AccessType.*;
 public class RulesType
 		extends WarehouseSCDNameDescriptionTable<RulesType, RulesTypeQueryBuilder, java.util.UUID, RulesTypeSecurityToken>
 		implements IRulesType<RulesType>,
-		           IActivityMasterEntity<RulesType>
+		           IActivityMasterEntity<RulesType>,
+		           IContainsClassifications<RulesType, Classification,RulesTypeXClassification, IRulesTypeClassification<?>,IRulesType<?>, IClassification<?>,RulesType>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
@@ -72,6 +82,14 @@ public class RulesType
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<RulesTypeSecurityToken> securities;
+	
+	
+	@OneToMany(
+			mappedBy = "rulesTypeID",
+			fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<RulesTypeXClassification> classifications;
+	
 	
 	public RulesType()
 	{
@@ -111,6 +129,16 @@ public class RulesType
 	{
 		this.rulesXRulesTypeList = rulesXRulesTypeList;
 		return this;
+	}
+	
+	public List<RulesTypeXClassification> getClassifications()
+	{
+		return classifications;
+	}
+	
+	public void setClassifications(List<RulesTypeXClassification> classifications)
+	{
+		this.classifications = classifications;
 	}
 	
 	public RulesType setSecurities(List<RulesTypeSecurityToken> securities)
@@ -187,5 +215,11 @@ public class RulesType
 	{
 		this.description = description;
 		return this;
+	}
+	
+	@Override
+	public void configureForClassification(RulesTypeXClassification classificationLink, IEnterprise<?> enterprise)
+	{
+		classificationLink.setRulesTypeID(this);
 	}
 }

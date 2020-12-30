@@ -319,7 +319,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q activityMasterIdentity = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> classificationService = get(IRulesService.class);
-		RulesType classification = (RulesType) classificationService.findRulesType(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		RulesType classification = (RulesType) classificationService.findRulesTypes(classificationValue, originatingSystem, identityToken);
 		
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, null)
@@ -335,7 +335,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
 		                                                                             identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
@@ -367,7 +367,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType,originatingSystem,
 		                                                                             identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
@@ -430,7 +430,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
 		                                                                             identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
@@ -476,7 +476,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
 		                                                                             identityToken);
 		
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
@@ -503,7 +503,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
 		                                                                             identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
@@ -543,7 +543,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
 		                                                                             identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
@@ -617,7 +617,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
 		                                                                             identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
@@ -678,7 +678,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
 		                                                                             identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()

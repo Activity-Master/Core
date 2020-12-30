@@ -47,7 +47,7 @@ import static jakarta.persistence.FetchType.*;
 @Access(FIELD)
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.util.UUID, ClassificationSecurityToken>
-		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView, IClassification<?>>,
+		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView,IClassification<?>, IClassification<?>>,
 		           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IClassificationValue<?>, IClassification<?>, IResourceItem<?>, Classification>,
 		           IContainsClassifications<Classification, Classification, ClassificationXClassification, IClassificationValue<?>, IClassification<?>, IClassification<?>, Classification>,
 		           IActivityMasterEntity<Classification>,

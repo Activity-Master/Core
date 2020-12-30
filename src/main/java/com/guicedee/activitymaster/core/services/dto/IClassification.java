@@ -10,7 +10,7 @@ import com.guicedee.activitymaster.core.services.classifications.resourceitems.I
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 public interface IClassification<J extends IClassification<J>>
-		extends IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView, IClassification<?>>,
+		extends IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView,IClassification<?>, IClassification<?>>,
 		        IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IClassificationValue<?>, IClassification<?>, IResourceItem<?>, Classification>,
 		        IContainsClassifications<Classification, Classification, ClassificationXClassification, IClassificationValue<?>, IClassification<?>, IClassification<?>, Classification>,
 		        IActivityMasterEntity<Classification>,

@@ -77,6 +77,10 @@ public enum EnterpriseClassificationDataConcepts
 	ResourceItemXClassification,
 	ResourceItemXResourceItemType,
 	Rules,
+	RulesXProduct,
+	RulesXResourceItem,
+	RulesType,
+	RulesTypeXClassification,
 	SecurityToken,
 	SecurityTokenXClassification,
 	SecurityTokenXSecurityToken,
@@ -85,7 +89,7 @@ public enum EnterpriseClassificationDataConcepts
 	YesNo,
 	YesNoXClassification,
 	
-	;
+	InvolvedPartyXRules;
 
 	private String classificationValue;
 

@@ -767,9 +767,58 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		return tableForClassification;
 	}
 	
+	default IRelationshipValue<L, R, ?> addOrReuse(String classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
+		
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification1 = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		
+		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
+		                                                         .findLink((P) this, (S) classification1, null)
+		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inDateRange()
+		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .get();
+		if (exists.isEmpty())
+		{
+			tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+			tableForClassification.setClassificationID((Classification) classification1);
+			tableForClassification.setValue(value);
+			tableForClassification.setSystemID((Systems) originatingSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
+			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
+			configureForClassification(tableForClassification, originatingSystem.getEnterpriseID());
+			
+			tableForClassification.persist();
+			if (get(ActivityMasterConfiguration.class)
+					.isSecurityEnabled())
+			{
+				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			}
+		}
+		else
+		{
+			tableForClassification = exists.get();
+		}
+		return tableForClassification;
+	}
+	
 	default IRelationshipValue<L, R, ?> addOrUpdate(IClassification<?> classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		return addOrUpdate(classification, null, value, originatingSystem, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrUpdate(String classification,String value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return addOrUpdate(classification, null, value, originatingSystem, identityToken);
+	}
+	default IRelationshipValue<L, R, ?> addOrUpdate(String classification, String searchValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> ic = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		return addOrUpdate(ic, searchValue, value, originatingSystem, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")

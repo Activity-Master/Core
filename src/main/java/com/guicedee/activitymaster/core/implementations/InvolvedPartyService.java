@@ -16,6 +16,7 @@ import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
 import com.guicedee.activitymaster.core.services.security.Passwords;
+import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
@@ -26,11 +27,13 @@ import com.guicedee.logger.LogFactory;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.*;
@@ -92,7 +95,7 @@ public class InvolvedPartyService
 					.isSecurityEnabled())
 			{
 				xr.createDefaultSecurity(get(ISystemsService.class)
-						                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+						.getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 			}
 		}
 		else
@@ -136,7 +139,7 @@ public class InvolvedPartyService
 					.isSecurityEnabled())
 			{
 				xr.createDefaultSecurity(get(ISystemsService.class)
-						                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+						.getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 			}
 		}
 		else
@@ -180,7 +183,7 @@ public class InvolvedPartyService
 					.isSecurityEnabled())
 			{
 				xr.createDefaultSecurity(get(ISystemsService.class)
-						                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+						.getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 			}
 		}
 		else
@@ -218,7 +221,7 @@ public class InvolvedPartyService
 					.isSecurityEnabled())
 			{
 				xr.createDefaultSecurity(get(ISystemsService.class)
-						                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+						.getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 			}
 		}
 		else
@@ -301,7 +304,7 @@ public class InvolvedPartyService
 		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(originatingSystem.getEnterpriseID());
 		InvolvedParty foundPart = new InvolvedParty().builder()
 		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
-		                                                                       identityToken)
+				                                             identityToken)
 		                                             .get()
 		                                             .orElse(null);
 		if (foundPart == null)
@@ -360,7 +363,7 @@ public class InvolvedPartyService
 		IInvolvedParty<?> party = new InvolvedParty().builder()
 		                                             .withEnterprise(enterprise)
 		                                             .findByIdentificationType(enterprise, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
-		                                                                       token)
+				                                             token)
 		                                             .get()
 		                                             .orElseThrow(() -> new SecurityAccessException("Involved Party Does Not Exist"));
 		return party;
@@ -386,15 +389,15 @@ public class InvolvedPartyService
 		String passEncrypted = encrypt(password, new String(salt));
 		String saltEncrypted = new Passwords().integerEncrypt(salt);
 		
-		involvedParty.addOrUpdate(SecurityPassword,null, passEncrypted, originatingSystem, token);
-		involvedParty.addOrUpdate(SecurityPasswordSalt,null, saltEncrypted, originatingSystem, token);
-		involvedParty.addOrUpdateIdentificationType(IdentificationTypeUserName,NoClassification.classificationName(), new Passwords().integerEncrypt(username.getBytes()), originatingSystem.getEnterprise(), token);
+		involvedParty.addOrUpdate(SecurityPassword, null, passEncrypted, originatingSystem, token);
+		involvedParty.addOrUpdate(SecurityPasswordSalt, null, saltEncrypted, originatingSystem, token);
+		involvedParty.addOrUpdateIdentificationType(IdentificationTypeUserName, NoClassification.classificationName(), new Passwords().integerEncrypt(username.getBytes()), originatingSystem.getEnterprise(), token);
 		
 		
 		if (event != null)
 		{
-			event.addOrUpdate(UpdatedPassword,(String)null, STRING_EMPTY, originatingSystem, token);
-			event.addOrUpdate(UpdatedUsername, (String)null,username, originatingSystem, token);
+			event.addOrUpdate(UpdatedPassword, (String) null, STRING_EMPTY, originatingSystem, token);
+			event.addOrUpdate(UpdatedUsername, (String) null, username, originatingSystem, token);
 		}
 		return involvedParty;
 	}
@@ -425,11 +428,11 @@ public class InvolvedPartyService
 					.isSecurityEnabled())
 			{
 				ip.createDefaultSecurity(get(ISystemsService.class)
-						                         .getActivityMaster(ip.getEnterpriseID(), identityToken)
+								.getActivityMaster(ip.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
 			
-			ip.addOrUpdateIdentificationType(idTypes.getKey(),NoClassification.name(), idTypes.getValue(), enterprise, identityToken);
+			ip.addOrUpdateIdentificationType(idTypes.getKey(), NoClassification.name(), idTypes.getValue(), enterprise, identityToken);
 			
 			if (get(ActivityMasterConfiguration.class)
 					.isAsyncEnabled())
@@ -437,7 +440,7 @@ public class InvolvedPartyService
 				final InvolvedParty ipAsync = ip;
 				JobService.getInstance()
 				          .addJob("InvolvedPartyOrganicStorage",
-				                  () -> setupInvolvedPartyOrganicStatus(isOrganic, ipAsync, enterprise, system, identityToken));
+						          () -> setupInvolvedPartyOrganicStatus(isOrganic, ipAsync, enterprise, system, identityToken));
 			}
 			else
 			{
@@ -468,7 +471,7 @@ public class InvolvedPartyService
 					.isSecurityEnabled())
 			{
 				ipo.createDefaultSecurity(get(ISystemsService.class)
-						                          .getActivityMaster(ipo.getEnterpriseID(), identityToken)
+								.getActivityMaster(ipo.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
 		}
@@ -486,7 +489,7 @@ public class InvolvedPartyService
 					.isSecurityEnabled())
 			{
 				ipo.createDefaultSecurity(get(ISystemsService.class)
-						                          .getActivityMaster(ipo.getEnterpriseID(), identityToken)
+								.getActivityMaster(ipo.getEnterpriseID(), identityToken)
 						, identityToken);
 			}
 		}
@@ -632,5 +635,43 @@ public class InvolvedPartyService
 			log.log(Level.FINE, "Unable to find involved party for session", t);
 			return null;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<IInvolvedParty<?>> findByRulesClassification(String classification, String value, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification1 = classificationService.find(classification, system.getEnterprise(), identityToken);
+		
+		@SuppressWarnings("rawtypes")
+		List collect = new InvolvedPartyXRules().builder()
+		                                        .withClassification(classification1)
+		                                        .withValue(value)
+		                                        .inActiveRange(system.getEnterprise(), identityToken)
+		                                        .inDateRange()
+		                                        .getAll()
+		                                        .stream()
+		                                        .map(InvolvedPartyXRules::getInvolvedPartyID)
+		                                        .collect(Collectors.toList());
+		return collect;
+		
+	}
+	
+	@Override
+	public IInvolvedParty<?> findByClassification(String classification, String value, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification1 = classificationService.find(classification, system.getEnterprise(), identityToken);
+		return new InvolvedPartyXClassification().builder()
+		                                         .withClassification(classification1)
+		                                         .withValue(value)
+		                                         .inActiveRange(system.getEnterprise(), identityToken)
+		                                         .inDateRange()
+		                                         .get()
+		                                         .orElse(null)
+		                                         .getPrimary()
+				;
+		
 	}
 }

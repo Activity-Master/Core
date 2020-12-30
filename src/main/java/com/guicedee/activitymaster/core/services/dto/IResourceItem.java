@@ -15,7 +15,7 @@ public interface IResourceItem<J extends IResourceItem<J>>
 		        IActivityMasterEntity<ResourceItem>,
 		        IHasActiveFlags<ResourceItem>,
 		        IContainsData<ResourceItem>,
-		        IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView,IResourceItem<?>>,
+		        IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView,IResourceItem<?>,IResourceItem<?>>,
 		        IContainsResourceItems<ResourceItem,ResourceItem,ResourceItemXResourceItem,IClassificationValue<?>,IResourceItem<?>,IResourceItem<?>,ResourceItem>,
 		        IContainsEnterprise<ResourceItem>
 {

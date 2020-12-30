@@ -45,7 +45,7 @@ public class Arrangement
 		           IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty, IClassificationValue<?>, IArrangement<?>, IInvolvedParty<?>, Arrangement>,
 		           IHasActiveFlags<Arrangement>,
 		           IContainsEnterprise<Arrangement>,
-		           IContainsHierarchy<Arrangement,ArrangementXArrangement, ArrangementsHierarchyView,IArrangement<Arrangement>>,
+		           IContainsHierarchy<Arrangement,ArrangementXArrangement, ArrangementsHierarchyView,IArrangement<?>,IArrangement<Arrangement>>,
 		           IArrangement<Arrangement>,
 		           IContainsRules<Arrangement, Rules,ArrangementXRules,IClassification<?>,IArrangement<?>,IRules<?>>
 {

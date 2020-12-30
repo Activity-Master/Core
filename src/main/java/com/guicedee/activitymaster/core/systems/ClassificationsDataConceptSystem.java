@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.core.systems;
 
 import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.db.entities.rules.RulesXClassification;
 import com.guicedee.activitymaster.core.implementations.ClassificationsDataConceptService;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
@@ -71,6 +72,7 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyIdentificationType,
 		                          "All classifications for identification type and involved party relationships", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXProduct, "All classifications for involved party and product relationships", activityMaster);
+		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXRules, "All classifications for involved party and product relationships", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyXResourceItem, "All classifications for involved party and resource item relationships",
 		                          activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ProductXProduct, "Product Hierarchy", activityMaster);
@@ -120,6 +122,13 @@ public class ClassificationsDataConceptSystem
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemData, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemType, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemXResourceItemType, "Standard Table Based Classification", activityMaster);
+		
+		service.createDataConcept(Rules, "Calculated rules", activityMaster);
+		service.createDataConcept(RulesType, "Calculated rules types", activityMaster);
+		service.createDataConcept(RulesTypeXClassification, "Rule Types Calculations", activityMaster);
+		service.createDataConcept(RulesXProduct, "Rule Types Calculations", activityMaster);
+		service.createDataConcept(RulesXResourceItem, "Rule Types Calculations", activityMaster);
+		
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Systems, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.SystemXClassification, "Standard Table Based Classification", activityMaster);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.YesNo, "Standard Table Based Classification", activityMaster);

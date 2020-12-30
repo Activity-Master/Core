@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasVal
 import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasClassificationQueryBuilder;
 
 import jakarta.persistence.metamodel.Attribute;
+
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
@@ -25,6 +26,7 @@ import static com.entityassist.enumerations.Operand.*;
  * @param <J> the type parameter
  * @param <E> the type parameter
  * @param <I> the type parameter
+ *
  * @author Marc Magon
  */
 public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
@@ -41,8 +43,14 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
 	@jakarta.validation.constraints.NotNull
 	public J findLink(P parent, S child)
 	{
-		where(getPrimaryAttribute(), Equals, parent);
-		where(getSecondaryAttribute(), Equals, child);
+		if (parent != null)
+		{
+			where(getPrimaryAttribute(), Equals, parent);
+		}
+		if (child != null)
+		{
+			where(getSecondaryAttribute(), Equals, child);
+		}
 		return (J) this;
 	}
 	
@@ -54,9 +62,14 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
 	@jakarta.validation.constraints.NotNull
 	public J findLink(P parent, S child, String value)
 	{
-		where(getPrimaryAttribute(), Equals, parent);
+		if (parent != null)
+		{
+			where(getPrimaryAttribute(), Equals, parent);
+		}
 		if (child != null)
-		{ where(getSecondaryAttribute(), Equals, child); }
+		{
+			where(getSecondaryAttribute(), Equals, child);
+		}
 		withValue(value);
 		return (J) this;
 	}
@@ -92,10 +105,12 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
 	@jakarta.validation.constraints.NotNull
 	public J findParentLink(P parent, String value)
 	{
-		if(parent != null)
+		if (parent != null)
 		{
-			if(parent.getId() != null)
-			where(getPrimaryAttribute(), Equals, parent);
+			if (parent.getId() != null)
+			{
+				where(getPrimaryAttribute(), Equals, parent);
+			}
 		}
 		if (value != null)
 		{

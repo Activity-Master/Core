@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXInvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.db.hierarchies.InvolvedPartyHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
@@ -56,8 +57,9 @@ public class InvolvedParty
 		           IActivityMasterEntity<InvolvedParty>,
 		           IContainsEnterprise<InvolvedParty>,
 		           IInvolvedParty<InvolvedParty>,
-		           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView, IInvolvedParty<?>>,
-		           IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassificationValue<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>
+		           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView,IInvolvedParty<?>, IInvolvedParty<?>>,
+		           IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassificationValue<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>,
+		           IContainsRules<InvolvedParty, Rules,InvolvedPartyXRules,IClassification<?>,IInvolvedParty<?>,IRules<?>>
 {
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
 	@Id
@@ -337,6 +339,16 @@ public class InvolvedParty
 	{
 		linkTable.setInvolvedPartyID(primary);
 		linkTable.setProductID(secondary);
+		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setValue(value);
+		linkTable.setClassificationID((Classification) classificationValue);
+	}
+	
+	@Override
+	public void configureAddableRule(InvolvedPartyXRules linkTable, InvolvedParty primary, Rules secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setInvolvedPartyID(primary);
+		linkTable.setRulesID(secondary);
 		linkTable.setEnterpriseID((Enterprise) enterprise);
 		linkTable.setValue(value);
 		linkTable.setClassificationID((Classification) classificationValue);

@@ -235,6 +235,9 @@ public class ActivityMasterService
 		     java.sql.CallableStatement stPar11 = c.prepareCall("{call CreateEventXGeographyPartitions (?)}");
 		     java.sql.CallableStatement stPar12 = c.prepareCall("{call CreateEventXProductPartitions (?)}");
 		     java.sql.CallableStatement stPar13 = c.prepareCall("{call CreateEventXResourceItemPartitions (?)}");
+		     java.sql.CallableStatement stPar14 = c.prepareCall("{call CreateEventXRulesPartitions (?)}");
+		     java.sql.CallableStatement stPar15 = c.prepareCall("{call CreateInvolvedPartyDataPartitions (?)}");
+		     java.sql.CallableStatement stPar16 = c.prepareCall("{call CreateResourceDataPartitions (?)}");
 		)
 		{
 			st.setString(1, "ResourceItemData");
@@ -267,6 +270,12 @@ public class ActivityMasterService
 			stPar12.execute();
 			stPar13.setString(1, "EventXResourceItem");
 			stPar13.execute();
+			stPar14.setString(1, "EventXRules");
+			stPar14.execute();
+			stPar15.setString(1, "InvolvedPartyData");
+			stPar15.execute();
+			stPar16.setString(1, "ResourceData");
+			stPar16.execute();
 		}
 		catch (java.sql.SQLException e)
 		{

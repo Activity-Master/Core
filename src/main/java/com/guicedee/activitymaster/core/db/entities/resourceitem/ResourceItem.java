@@ -60,7 +60,7 @@ public class ResourceItem
 		           IHasActiveFlags<ResourceItem>,
 		           IContainsEnterprise<ResourceItem>,
 		           IContainsData<ResourceItem>,
-		           IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView, IResourceItem<?>>,
+		           IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView, IResourceItem<?>,IResourceItem<?>>,
 		           IContainsResourceItems<ResourceItem, ResourceItem, ResourceItemXResourceItem, IClassificationValue<?>, IResourceItem<?>, IResourceItem<?>, ResourceItem>,
 		           IResourceItem<ResourceItem>
 {

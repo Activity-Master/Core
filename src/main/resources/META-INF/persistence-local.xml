@@ -124,6 +124,8 @@
         <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXProductSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXResourceItem</class>
         <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXResourceItemSecurityToken</class>
+        <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXRules</class>
+        <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXRulesSecurityToken</class>
 
         <class>com.guicedee.activitymaster.core.db.entities.product.Product</class>
         <class>com.guicedee.activitymaster.core.db.entities.product.ProductSecurityToken</class>
@@ -160,6 +162,8 @@
         <class>com.guicedee.activitymaster.core.db.entities.rules.Rules</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesType</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesTypeSecurityToken</class>
+        <class>com.guicedee.activitymaster.core.db.entities.rules.RulesTypeXClassification</class>
+        <class>com.guicedee.activitymaster.core.db.entities.rules.RulesTypeXClassificationSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesXClassification</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesXClassificationSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesXResourceItem</class>

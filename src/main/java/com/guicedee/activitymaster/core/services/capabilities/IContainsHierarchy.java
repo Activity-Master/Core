@@ -42,10 +42,11 @@ import static com.guicedee.guicedinjection.json.StaticStrings.STRING_EMPTY;
  *
  * @param <Q> The type containing the hierarchy
  */
-@SuppressWarnings({"rawtypes", "UnnecessaryLocalVariable"})
+@SuppressWarnings({"rawtypes"})
 public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		Q extends WarehouseClassificationRelationshipTable<J, J, Q, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>,
 		W extends WarehouseHierarchyView<?, ? extends QueryBuilderHierarchyView, ?>,
+		L,
 		T>
 {
 	default J addChild(T child, IEnterprise<?> enterprise, UUID... identifyingToken)
@@ -156,7 +157,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 */
 	@SuppressWarnings({"unchecked", "Duplicates"})
 	@NotNull
-	default J addChild(T child, String hierarchy, IClassificationValue<?> classificationValue, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default L addChild(T child, String hierarchy, IClassificationValue<?> classificationValue, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
@@ -186,7 +187,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 				                          .orElseThrow();
 				configureNewHierarchyItem(existingLink, (T) me, child, null);
 				existingLink.update();
-				return me;
+				return (L) me;
 			}
 			ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 			                                               .getActivityMaster(enterprise, identifyingToken);
@@ -208,7 +209,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 				linkTable.createDefaultSecurity(activityMasterSystem, identifyingToken);
 			}
 		}
-		return (J) child;
+		return (L) child;
 	}
 	
 	/**
@@ -221,7 +222,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 */
 	@SuppressWarnings({"unchecked", "Duplicates"})
 	@NotNull
-	default J removeChild(T child, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default L removeChild(T child, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
@@ -247,7 +248,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		{
 			throw new SecurityAccessException("Cannot delete requested item");
 		}
-		return (J) this;
+		return (L) this;
 	}
 	
 	/**
@@ -259,9 +260,9 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * @param identifyingToken
 	 * @return
 	 */
-	@SuppressWarnings({"unchecked", "Duplicates"})
+	@SuppressWarnings({"Duplicates"})
 	@NotNull
-	default J removeChild(T child, IClassificationValue<?> classificationValue, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default L removeChild(T child, IClassificationValue<?> classificationValue, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		return removeChild(child, STRING_EMPTY, classificationValue, enterprise, identifyingToken);
 	}
@@ -277,7 +278,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 */
 	@SuppressWarnings({"unchecked", "Duplicates"})
 	@NotNull
-	default J removeChild(T child, String hierarchy, IClassificationValue<?> classificationValue, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default L removeChild(T child, String hierarchy, IClassificationValue<?> classificationValue, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
@@ -302,7 +303,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		{
 			throw new SecurityAccessException("Cannot delete requested item");
 		}
-		return (J) this;
+		return (L) this;
 	}
 	
 	/**
@@ -311,8 +312,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * @param identifyingToken
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	default J findParent(UUID... identifyingToken)
+	default L findParent(UUID... identifyingToken)
 	{
 		return findParent(STRING_EMPTY, identifyingToken);
 	}
@@ -324,18 +324,56 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	default J findParent(String hierarchyType, UUID... identifyingToken)
+	default L findParent(String hierarchyType,String classificationName,ISystems<?> system, UUID... identifyingToken)
+	{
+		J me = (J) this;
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationName, system.getEnterprise(), identifyingToken);
+		Class<Q> hierarchyTable = findHierarchyTableType();
+		Q linkTable = get(hierarchyTable);
+		if(Strings.isNullOrEmpty(hierarchyType))
+			hierarchyType = null;
+		Optional<Q> exists = linkTable.builder()
+		                              .findLink(null, (J) this)
+		                              .inActiveRange(system.getEnterprise(), identifyingToken)
+		                              .withClassification(classification)
+		                              .inDateRange()
+		                              .withValue(hierarchyType)
+		                              .canRead(system.getEnterprise(), identifyingToken)
+		                              .withEnterprise(system.getEnterprise())
+		                              .get();
+		if (exists.isPresent())
+		{
+			Q q = exists.get();
+			return (L) q.getPrimary();
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * Finds the direct parent on A Hierarchy Type
+	 *
+	 * @param identifyingToken
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	default L findParent(String hierarchyType, UUID... identifyingToken)
 	{
 		Class<W> hierarchyView = findHierarchyViewType();
 		W hierarchy = get(hierarchyView);
 		J me = (J) this;
 		QueryBuilderHierarchyView<? extends QueryBuilderHierarchyView, ?, ?> builder = hierarchy.builder();
+		if (!Strings.isNullOrEmpty(hierarchyType))
+		{
+			builder.where(builder.getAttribute("value"), Equals, hierarchyType);
+		}
 		UUID iid = builder.where(builder.getAttribute("id"), Equals, me.getId())
 				.selectColumn(builder.getAttribute("parentID"))
 				.get(UUID.class)
 				.orElse(null);
 
-		return me.builder().find(iid).get().orElseThrow();
+		return (L) me.builder().find(iid).get().orElseThrow();
 	}
 	
 	/**
@@ -384,7 +422,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default List<J> findChildren(UUID... identifyingToken)
+	default List<L> findChildren(UUID... identifyingToken)
 	{
 		Class<W> hierarchyView = findHierarchyViewType();
 		W hierarchy = get(hierarchyView);
@@ -395,7 +433,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 				.selectColumn(builder.getAttribute("id"))
 				.getAll(UUID.class);
 		QueryBuilderCore<?, J, UUID, ?> builder1 = me.builder();
-		return builder1.where(builder1.<J,UUID>getAttribute("id"),InList,iids).getAll();
+		return (List<L>) builder1.where(builder1.<J,UUID>getAttribute("id"),InList,iids).getAll();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -519,6 +557,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	
 	default J setParent(T parent, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
+		System.out.println("SET PARENT NOT DONE");
 		return null;
 	}
 	

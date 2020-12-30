@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.core.services.classifications.enterprise.Ente
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications;
 import com.guicedee.activitymaster.core.services.classifications.systems.SystemsClassifications;
+import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
@@ -74,9 +75,9 @@ public class ClassificationsSystem
 		service.create(Laptop, activityMasterSystem,Computer);
 		
 		//Checks
-		List<Classification> output = rootClassification.findChildren();
-		Classification parent = service.find(Classifications.NoClassification, enterprise)
-		                               .findParent();
+		List<IClassification<?>> output = rootClassification.findChildren();
+		Classification parent = (Classification) service.find(Classifications.NoClassification, enterprise)
+		                                                .findParent();
 
 		if (output.isEmpty())
 		{

@@ -34,12 +34,12 @@ public class AsyncAddChild implements Runnable {
         persist();
     }
 
-    public static AsyncAddChild getInstance(IContainsHierarchy<?,?,?,?> parent,IContainsHierarchy<?,?,?,?> child,String hierarchyName, IEnterprise<?> enterprise,UUID[] identityToken,  Consumer<Throwable> throwableConsumer)
+    public static AsyncAddChild getInstance(IContainsHierarchy<?,?,?,?,?> parent,IContainsHierarchy<?,?,?,?,?> child,String hierarchyValue, IEnterprise<?> enterprise,UUID[] identityToken,  Consumer<Throwable> throwableConsumer)
     {
         AsyncAddChild ap = GuiceContext.get(AsyncAddChild.class);
         ap.setParent(parent);
         ap.setChild(child);
-        ap.setValue(hierarchyName);
+        ap.setValue(hierarchyValue);
         ap.setEnterprise(enterprise);
         ap.setIdentityTokens(identityToken);
         ap.setOnException(throwableConsumer);
