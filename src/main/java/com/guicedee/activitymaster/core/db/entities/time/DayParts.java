@@ -17,6 +17,7 @@ import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -35,6 +36,7 @@ import java.util.Set;
 public class DayParts extends BaseEntity<DayParts, DayPartsQueryBuilder, Integer> implements Serializable
 
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

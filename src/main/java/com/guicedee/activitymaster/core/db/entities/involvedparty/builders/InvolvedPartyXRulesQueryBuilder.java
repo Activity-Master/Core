@@ -7,19 +7,20 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyX
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXRules_;
 import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class InvolvedPartyXRulesQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, Rules, InvolvedPartyXRulesQueryBuilder,
 						                                              InvolvedPartyXRules, java.util.UUID, InvolvedPartyXRulesSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<InvolvedPartyXRules, InvolvedParty> getPrimaryAttribute()
 	{
 		return InvolvedPartyXRules_.involvedPartyID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<InvolvedPartyXRules, Rules> getSecondaryAttribute()
 	{
 		return InvolvedPartyXRules_.rulesID;
 	}

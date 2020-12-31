@@ -7,19 +7,20 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXArra
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXArrangement_;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ArrangementXArrangementQueryBuilder
 		extends QueryBuilderRelationshipClassification<Arrangement, Arrangement, ArrangementXArrangementQueryBuilder,
 						                                              ArrangementXArrangement, java.util.UUID, ArrangementXArrangementSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public  SingularAttribute<ArrangementXArrangement, Arrangement> getPrimaryAttribute()
 	{
 		return ArrangementXArrangement_.parentArrangementID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<ArrangementXArrangement, Arrangement> getSecondaryAttribute()
 	{
 		return ArrangementXArrangement_.childArrangementID;
 	}

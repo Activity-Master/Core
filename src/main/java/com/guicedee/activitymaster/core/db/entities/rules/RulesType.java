@@ -15,6 +15,7 @@ import com.guicedee.activitymaster.core.services.dto.IRulesType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
+import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -43,7 +44,8 @@ public class RulesType
 		extends WarehouseSCDNameDescriptionTable<RulesType, RulesTypeQueryBuilder, java.util.UUID, RulesTypeSecurityToken>
 		implements IRulesType<RulesType>,
 		           IActivityMasterEntity<RulesType>,
-		           IContainsClassifications<RulesType, Classification,RulesTypeXClassification, IRulesTypeClassification<?>,IRulesType<?>, IClassification<?>,RulesType>
+		           IContainsClassifications<RulesType, Classification,RulesTypeXClassification, IRulesTypeClassification<?>,IRulesType<?>, IClassification<?>,RulesType>,
+		           IRulesTypeValue
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -221,5 +223,17 @@ public class RulesType
 	public void configureForClassification(RulesTypeXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setRulesTypeID(this);
+	}
+	
+	@Override
+	public String name()
+	{
+		return getName();
+	}
+	
+	@Override
+	public String classificationValue()
+	{
+		return getName();
 	}
 }

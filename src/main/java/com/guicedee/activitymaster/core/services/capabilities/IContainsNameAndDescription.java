@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
-public interface INameAndDescription<J extends INameAndDescription<J>>
+public interface IContainsNameAndDescription<J extends IContainsNameAndDescription<J>>
 {
 	J setName(String name);
 

@@ -7,6 +7,8 @@ import com.guicedee.activitymaster.core.services.dto.IClassificationDataConcept;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -20,83 +22,85 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Classification",name = "ClassificationDataConceptXClassification")
+@Table(schema = "Classification", name = "ClassificationDataConceptXClassification")
 @XmlRootElement
 
 @Access(FIELD)
 public class ClassificationDataConceptXClassification
 		extends WarehouseClassificationRelationshipTable<ClassificationDataConcept,
-						                                                Classification,
-						                                                ClassificationDataConceptXClassification,
-				                                                ClassificationDataConceptXClassificationQueryBuilder,
-						                                                java.util.UUID,
-						                                                ClassificationDataConceptXClassificationSecurityToken,
-				                                                IClassificationDataConcept<?>, IClassification<?>>
+		Classification,
+		ClassificationDataConceptXClassification,
+		ClassificationDataConceptXClassificationQueryBuilder,
+		java.util.UUID,
+		ClassificationDataConceptXClassificationSecurityToken,
+		IClassificationDataConcept<?>, IClassification<?>>
 		implements Serializable
 {
-
+	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "ClassificationDataConceptXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ClassificationDataConceptXClassificationID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<ClassificationDataConceptXClassificationSecurityToken> securities;
-
+	
 	@JoinColumn(name = "ClassificationDataConceptID",
-			referencedColumnName = "ClassificationDataConceptID",
-			nullable = false)
+	            referencedColumnName = "ClassificationDataConceptID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private ClassificationDataConcept classificationDataConceptID;
-
+	
 	public ClassificationDataConceptXClassification()
 	{
-
+	
 	}
-
+	
 	public ClassificationDataConceptXClassification(UUID classificationDataConceptXClassificationID)
 	{
 		this.id = classificationDataConceptXClassificationID;
 	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public List<ClassificationDataConceptXClassificationSecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public ClassificationDataConcept getClassificationDataConceptID()
 	{
 		return this.classificationDataConceptID;
 	}
-
+	
 	public ClassificationDataConceptXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public ClassificationDataConceptXClassification setSecurities(List<ClassificationDataConceptXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	public ClassificationDataConceptXClassification setClassificationDataConceptID(ClassificationDataConcept classificationDataConceptID)
 	{
 		this.classificationDataConceptID = classificationDataConceptID;
 		return this;
 	}
-
-
+	
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -111,19 +115,19 @@ public class ClassificationDataConceptXClassification
 		ClassificationDataConceptXClassification that = (ClassificationDataConceptXClassification) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public IClassificationDataConcept<?> getPrimary()
 	{
 		return getClassificationDataConceptID();
 	}
-
+	
 	@Override
 	public IClassification<?> getSecondary()
 	{

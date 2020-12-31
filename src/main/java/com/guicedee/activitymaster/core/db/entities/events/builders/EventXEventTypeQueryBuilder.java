@@ -5,10 +5,13 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.core.db.entities.events.*;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.IEventService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+
 import java.util.UUID;
 
 public class EventXEventTypeQueryBuilder
@@ -21,24 +24,24 @@ public class EventXEventTypeQueryBuilder
 		EventXEventTypeSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<EventXEventType, Event> getPrimaryAttribute()
 	{
 		return EventXEventType_.eventID;
 	}
 	
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<EventXEventType, EventType> getSecondaryAttribute()
 	{
 		return EventXEventType_.eventTypeID;
 	}
 	
 	@Override
-	public EventXEventTypeQueryBuilder withType(String typeValue, IEnterprise<?> enterprise, UUID... identityToken)
+	public EventXEventTypeQueryBuilder withType(String typeValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{
 			IEventService<?> service = GuiceContext.get(IEventService.class);
-			EventType at = (EventType) service.findEventType(typeValue, enterprise, identityToken);
+			EventType at = (EventType) service.findEventType(typeValue, system.getEnterprise(), identityToken);
 			where(EventXEventType_.eventTypeID, Operand.Equals, at);
 		}
 		return this;

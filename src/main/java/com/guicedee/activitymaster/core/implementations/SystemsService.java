@@ -95,7 +95,7 @@ public class SystemsService
 		                                            .getSecurityIdentityToken(activityMasterSystem);
 		
 		SecurityToken newSystemsSecurityToken = (SecurityToken) securityTokenService.create(UserGroupSecurityTokenClassifications.System,
-				newSystem.getName(), newSystem.getDescription(), newSystem);
+				newSystem.getName(), newSystem.getDescription(), activityMasterSystem);
 		
 		SecurityToken systemsToken = (SecurityToken) securityTokenService.create(UserGroupSecurityTokenClassifications.System,
 				UserGroupSecurityTokenClassifications.System.classificationName(),
@@ -134,6 +134,7 @@ public class SystemsService
 	{
 		IActiveFlag<?> flag = GuiceContext.get(IActiveFlagService.class)
 		                                  .getActiveFlag(enterprise);
+		
 		Systems newSystem = new Systems();
 		Optional<Systems> exists = newSystem.builder()
 		                                    .withEnterprise(enterprise)
@@ -145,7 +146,8 @@ public class SystemsService
 			newSystem.setDescription(systemDesc);
 			newSystem.setSystemHistoryName(historyName);
 			newSystem.setEnterpriseID((Enterprise) enterprise);
-			newSystem.setActiveFlagID((ActiveFlag) flag);
+			ActiveFlag flagg = (ActiveFlag) flag;
+			newSystem.setActiveFlagID(flagg);
 			newSystem.persist();
 			
 			if (!ActivityMasterConfiguration.getCreatingNew()

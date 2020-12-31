@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IHasActiveFlags;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
-import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IResourceItemType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
@@ -19,6 +19,7 @@ import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,13 +42,14 @@ import static jakarta.persistence.FetchType.*;
 public class ResourceItemType
 		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, java.util.UUID, ResourceItemTypeSecurityToken>
 		implements IResourceItemType<ResourceItemType>,
-				           INameAndDescription<ResourceItemType>,
+		           IContainsNameAndDescription<ResourceItemType>,
 				           IContainsEnterprise<ResourceItemType>,
 				           IActivityMasterEntity<ResourceItemType>,
-				   IHasActiveFlags<ResourceItemType>,
+				   IContainsActiveFlags<ResourceItemType>,
 				   IResourceType
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

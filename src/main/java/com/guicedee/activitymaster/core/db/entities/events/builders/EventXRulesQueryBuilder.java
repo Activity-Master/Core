@@ -7,19 +7,20 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXRulesSecurityTo
 import com.guicedee.activitymaster.core.db.entities.events.EventXRules_;
 import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EventXRulesQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Rules, EventXRulesQueryBuilder,
 		EventXRules, java.util.UUID, EventXRulesSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<EventXRules, Event> getPrimaryAttribute()
 	{
 		return EventXRules_.eventID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<EventXRules, Rules> getSecondaryAttribute()
 	{
 		return EventXRules_.rulesID;
 	}

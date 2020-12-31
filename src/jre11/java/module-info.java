@@ -36,6 +36,7 @@ module com.guicedee.activitymaster.core {
 	exports com.guicedee.activitymaster.core.services.classifications.resourceitems;
 	exports com.guicedee.activitymaster.core.services.classifications.securitytokens;
 	exports com.guicedee.activitymaster.core.services.classifications.systems;
+	exports com.guicedee.activitymaster.core.services.classifications.rules;
 	
 	//exports com.guicedee.activitymaster.core.systems;
 	
@@ -170,8 +171,12 @@ module com.guicedee.activitymaster.core {
 	exports com.guicedee.activitymaster.core.db.entities.classifications to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.core.db.entities.classifications.builders to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.core.db.entities.geography to com.guicedee.activitymaster.geography;
+	exports com.guicedee.activitymaster.core.db.entities.rules to com.guicedee.activitymaster.geography;
+	exports com.guicedee.activitymaster.core.db.entities.resourceitem to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.core.implementations to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.core.db.entities.geography.builders to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.core.db;
+	//exports com.guicedee.activitymaster.core.db;
+	
 	
 }

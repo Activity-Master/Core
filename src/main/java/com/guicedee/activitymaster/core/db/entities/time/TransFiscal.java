@@ -8,6 +8,8 @@ import lombok.experimental.Accessors;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -26,6 +28,7 @@ public class TransFiscal
 		extends BaseEntity<TransFiscal, TransFiscalQueryBuilder, Integer>
 		implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Basic(optional = false)

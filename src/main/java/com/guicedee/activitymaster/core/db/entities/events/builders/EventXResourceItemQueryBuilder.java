@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXResourceItem_;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EventXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, ResourceItem, EventXResourceItemQueryBuilder,
 				                                              EventXResourceItem, java.util.UUID, EventXResourceItemSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<EventXResourceItem, Event> getPrimaryAttribute()
 	{
 		return EventXResourceItem_.eventID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public  SingularAttribute<EventXResourceItem, ResourceItem> getSecondaryAttribute()
 	{
 		return EventXResourceItem_.resourceItemID;
 	}

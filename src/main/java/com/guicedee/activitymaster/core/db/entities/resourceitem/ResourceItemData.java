@@ -13,6 +13,8 @@ import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class ResourceItemData
 				           , IResourceData<ResourceItemData>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	

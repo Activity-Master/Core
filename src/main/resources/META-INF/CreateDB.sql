@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [FSDM]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Database [FSDM]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE DATABASE [FSDM]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -110,148 +110,148 @@ ALTER DATABASE [FSDM] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLI
 GO
 USE [FSDM]
 GO
-/****** Object:  Schema [Address]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Address]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Address]
 GO
-/****** Object:  Schema [Arrangement]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Arrangement]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Arrangement]
 GO
-/****** Object:  Schema [Classification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Classification]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Classification]
 GO
-/****** Object:  Schema [Event]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Event]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Event]
 GO
-/****** Object:  Schema [Geography]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Geography]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Geography]
 GO
-/****** Object:  Schema [Party]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Party]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Party]
 GO
-/****** Object:  Schema [Product]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Product]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Product]
 GO
-/****** Object:  Schema [Resource]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Resource]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Resource]
 GO
-/****** Object:  Schema [Rules]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Rules]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Rules]
 GO
-/****** Object:  Schema [Security]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Security]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Security]
 GO
-/****** Object:  Schema [Time]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Schema [Time]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE SCHEMA [Time]
 GO
-/****** Object:  PartitionFunction [AddressDataPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [AddressDataPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [AddressDataPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [AddressXClassificationDataPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [AddressXClassificationDataPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [AddressXClassificationDataPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [AddressXGeographyDataPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [AddressXGeographyDataPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [AddressXGeographyDataPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [AddressXResourceItemDataPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [AddressXResourceItemDataPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [AddressXResourceItemDataPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [ArrangementXClassificationPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [ArrangementXClassificationPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [ArrangementXClassificationPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [ArrangementXProductPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [ArrangementXProductPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [ArrangementXProductPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [ArrangementXResourceItemPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [ArrangementXResourceItemPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [ArrangementXResourceItemPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [ArrangementXRulesPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [ArrangementXRulesPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [ArrangementXRulesPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [EventDataPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [EventDataPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [EventDataPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [EventXAddressPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [EventXAddressPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [EventXAddressPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [EventXArrangementPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [EventXArrangementPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [EventXArrangementPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [EventXClassificationPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [EventXClassificationPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [EventXClassificationPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [EventXGeographyPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [EventXGeographyPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [EventXGeographyPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [EventXProductPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [EventXProductPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [EventXProductPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [EventXResourceItemPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [EventXResourceItemPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [EventXResourceItemPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [EventXRulesPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [EventXRulesPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [EventXRulesPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [InvolvedPartyDataPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [InvolvedPartyDataPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [InvolvedPartyDataPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionFunction [ResourceItemDataPartitionFunction]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionFunction [ResourceItemDataPartitionFunction]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION FUNCTION [ResourceItemDataPartitionFunction](datetime) AS RANGE RIGHT FOR VALUES ()
 GO
-/****** Object:  PartitionScheme [AddressDataScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [AddressDataScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [AddressDataScheme] AS PARTITION [AddressDataPartitionFunction] TO ([Address])
 GO
-/****** Object:  PartitionScheme [AddressXClassificationDataScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [AddressXClassificationDataScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [AddressXClassificationDataScheme] AS PARTITION [AddressXClassificationDataPartitionFunction] TO ([Address])
 GO
-/****** Object:  PartitionScheme [AddressXGeographyDataScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [AddressXGeographyDataScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [AddressXGeographyDataScheme] AS PARTITION [AddressXGeographyDataPartitionFunction] TO ([Address])
 GO
-/****** Object:  PartitionScheme [AddressXResourceItemDataScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [AddressXResourceItemDataScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [AddressXResourceItemDataScheme] AS PARTITION [AddressXResourceItemDataPartitionFunction] TO ([Address])
 GO
-/****** Object:  PartitionScheme [ArrangementXClassificationScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [ArrangementXClassificationScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [ArrangementXClassificationScheme] AS PARTITION [ArrangementXClassificationPartitionFunction] TO ([Agreements])
 GO
-/****** Object:  PartitionScheme [ArrangementXProductScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [ArrangementXProductScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [ArrangementXProductScheme] AS PARTITION [ArrangementXProductPartitionFunction] TO ([Agreements])
 GO
-/****** Object:  PartitionScheme [ArrangementXResourceItemScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [ArrangementXResourceItemScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [ArrangementXResourceItemScheme] AS PARTITION [ArrangementXResourceItemPartitionFunction] TO ([Agreements])
 GO
-/****** Object:  PartitionScheme [ArrangementXRulesScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [ArrangementXRulesScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [ArrangementXRulesScheme] AS PARTITION [ArrangementXRulesPartitionFunction] TO ([Agreements])
 GO
-/****** Object:  PartitionScheme [EventDataScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [EventDataScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [EventDataScheme] AS PARTITION [EventDataPartitionFunction] TO ([Event])
 GO
-/****** Object:  PartitionScheme [EventXAddressScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [EventXAddressScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [EventXAddressScheme] AS PARTITION [EventXAddressPartitionFunction] TO ([Event])
 GO
-/****** Object:  PartitionScheme [EventXArrangementScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [EventXArrangementScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [EventXArrangementScheme] AS PARTITION [EventXArrangementPartitionFunction] TO ([Event])
 GO
-/****** Object:  PartitionScheme [EventXClassificationScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [EventXClassificationScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [EventXClassificationScheme] AS PARTITION [EventXClassificationPartitionFunction] TO ([Event])
 GO
-/****** Object:  PartitionScheme [EventXGeographyScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [EventXGeographyScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [EventXGeographyScheme] AS PARTITION [EventXGeographyPartitionFunction] TO ([Event])
 GO
-/****** Object:  PartitionScheme [EventXProductScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [EventXProductScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [EventXProductScheme] AS PARTITION [EventXProductPartitionFunction] TO ([Event])
 GO
-/****** Object:  PartitionScheme [EventXResourceItemScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [EventXResourceItemScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [EventXResourceItemScheme] AS PARTITION [EventXResourceItemPartitionFunction] TO ([Event])
 GO
-/****** Object:  PartitionScheme [EventXRulesScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [EventXRulesScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [EventXRulesScheme] AS PARTITION [EventXRulesPartitionFunction] TO ([Event])
 GO
-/****** Object:  PartitionScheme [InvolvedPartyDataPartitionScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [InvolvedPartyDataPartitionScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [InvolvedPartyDataPartitionScheme] AS PARTITION [InvolvedPartyDataPartitionFunction] TO ([Party])
 GO
-/****** Object:  PartitionScheme [ResourceItemDataScheme]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  PartitionScheme [ResourceItemDataScheme]    Script Date: 2020/12/31 18:14:39 ******/
 CREATE PARTITION SCHEME [ResourceItemDataScheme] AS PARTITION [ResourceItemDataPartitionFunction] TO ([BinaryStorage])
 GO
-/****** Object:  UserDefinedFunction [dbo].[GetColumnValue]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  UserDefinedFunction [dbo].[GetColumnValue]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -286,7 +286,7 @@ END
 RETURN @String
 END
 GO
-/****** Object:  UserDefinedFunction [dbo].[Split]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  UserDefinedFunction [dbo].[Split]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -318,7 +318,7 @@ end
 return
 end;
 GO
-/****** Object:  Table [Security].[SecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Security].[SecurityToken]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -344,7 +344,7 @@ CREATE TABLE [Security].[SecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Security]
 ) ON [Security] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [Security].[SecurityTokenXSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Security].[SecurityTokenXSecurityToken]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -370,7 +370,7 @@ CREATE TABLE [Security].[SecurityTokenXSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Security]
 ) ON [Security]
 GO
-/****** Object:  View [dbo].[SecurityHierarchyView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[SecurityHierarchyView]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -415,7 +415,7 @@ AS (
 SELECT s.id, s.Name, s.ParentID, s.Pather, s.Path, '1' as 'One'
 FROM SecurityPath s
 GO
-/****** Object:  Table [Classification].[Classification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[Classification]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -446,7 +446,7 @@ CREATE TABLE [Classification].[Classification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationXClassification]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -472,7 +472,7 @@ CREATE TABLE [Classification].[ClassificationXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  View [dbo].[ClassificationHierarchyView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[ClassificationHierarchyView]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -518,7 +518,7 @@ AS (
 SELECT s.id, s.Name, s.ParentID, s.Pather, s.Path, '1' as 'One'
 FROM SecurityPath s
 GO
-/****** Object:  Table [Classification].[ClassificationDataConcept]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationDataConcept]    Script Date: 2020/12/31 18:14:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -542,7 +542,7 @@ CREATE TABLE [Classification].[ClassificationDataConcept](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  View [dbo].[LU_Classifications]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[LU_Classifications]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -585,7 +585,7 @@ on cxc.ChildClassificationID = cDesc.ClassificationID
 
 where chvS.items = c.ClassificationID
 GO
-/****** Object:  Table [Arrangement].[ArrangementXArrangement]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXArrangement]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -612,7 +612,7 @@ CREATE TABLE [Arrangement].[ArrangementXArrangement](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[Arrangement]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[Arrangement]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -634,7 +634,7 @@ CREATE TABLE [Arrangement].[Arrangement](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  View [dbo].[ArrangementHierarchyView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[ArrangementHierarchyView]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -680,7 +680,7 @@ AS (
 SELECT s.id, s.Name, s.ParentID, s.Pather, s.Path, '1' as 'One'
 FROM SecurityPath s
 GO
-/****** Object:  Table [Geography].[GeographyXGeography]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Geography].[GeographyXGeography]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -706,7 +706,7 @@ CREATE TABLE [Geography].[GeographyXGeography](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Geography]
 ) ON [Geography]
 GO
-/****** Object:  Table [Geography].[Geography]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Geography].[Geography]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -731,7 +731,7 @@ CREATE TABLE [Geography].[Geography](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Geography]
 ) ON [Geography]
 GO
-/****** Object:  View [dbo].[GeographyHierarchyView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[GeographyHierarchyView]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -777,7 +777,7 @@ AS (
 SELECT s.id, s.Name, s.ParentID, s.Pather, s.Path, '1' as 'One'
 FROM SecurityPath s
 GO
-/****** Object:  Table [Party].[InvolvedParty]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Party].[InvolvedParty]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -799,7 +799,7 @@ CREATE TABLE [Party].[InvolvedParty](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [InvolvedPartyDataPartitionScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Party].[InvolvedPartyXInvolvedParty]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Party].[InvolvedPartyXInvolvedParty]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -825,7 +825,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedParty](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  View [dbo].[InvolvedPartyHierarchyView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[InvolvedPartyHierarchyView]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -871,7 +871,7 @@ AS (
 SELECT s.id, s.Name, s.ParentID, s.Pather, s.Path, '1' as 'One'
 FROM SecurityPath s
 GO
-/****** Object:  Table [Product].[ProductXProduct]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Product].[ProductXProduct]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -897,7 +897,7 @@ CREATE TABLE [Product].[ProductXProduct](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[Product]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Product].[Product]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -922,7 +922,7 @@ CREATE TABLE [Product].[Product](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  View [dbo].[ProductHierarchyView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[ProductHierarchyView]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -968,7 +968,7 @@ AS (
 SELECT s.id, s.Name, s.ParentID, s.Pather, s.Path, '1' as 'One'
 FROM SecurityPath s
 GO
-/****** Object:  Table [Rules].[Rules]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Rules].[Rules]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -992,7 +992,7 @@ CREATE TABLE [Rules].[Rules](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXRules]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Rules].[RulesXRules]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1018,7 +1018,7 @@ CREATE TABLE [Rules].[RulesXRules](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  View [dbo].[RulesHierarchyView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[RulesHierarchyView]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1060,7 +1060,7 @@ AS (
 SELECT s.id, s.Name, s.ParentID, s.Pather, s.Path, '1' as 'One'
 FROM SecurityPath s
 GO
-/****** Object:  Table [Resource].[ResourceItemXResourceItemType]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Resource].[ResourceItemXResourceItemType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1086,7 +1086,7 @@ CREATE TABLE [Resource].[ResourceItemXResourceItemType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItemData]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Resource].[ResourceItemData]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1110,7 +1110,7 @@ CREATE TABLE [Resource].[ResourceItemData](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [BinaryStorage]
 ) ON [ResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Resource].[ResourceItemType]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Resource].[ResourceItemType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1134,7 +1134,7 @@ CREATE TABLE [Resource].[ResourceItemType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [Resource].[ResourceItemXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Resource].[ResourceItemXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1159,7 +1159,7 @@ CREATE TABLE [Resource].[ResourceItemXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItem]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Resource].[ResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1183,7 +1183,7 @@ CREATE TABLE [Resource].[ResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  View [dbo].[ResourceTypeClassificationsView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[ResourceTypeClassificationsView]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1212,7 +1212,7 @@ from Resource.ResourceItem ri
          left join Resource.ResourceItemData dat
                    on ri.ResourceItemID = dat.ResourceItemID
 GO
-/****** Object:  Table [Resource].[ResourceItemXResourceItem]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Resource].[ResourceItemXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1238,7 +1238,7 @@ CREATE TABLE [Resource].[ResourceItemXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  View [dbo].[ResourceItemHierarchyView]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[ResourceItemHierarchyView]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1282,7 +1282,7 @@ AS (
 SELECT s.id, s.Name, s.ParentID, s.Pather, s.Path, '1' as 'One'
 FROM SecurityPath s
 GO
-/****** Object:  View [dbo].[ClassificationsGroupings]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  View [dbo].[ClassificationsGroupings]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1303,7 +1303,7 @@ from Classification.ClassificationXClassification cxc
                     on cxc.ClassificationID = cType.ClassificationID
 
 GO
-/****** Object:  Table [Address].[Address]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Address].[Address]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1327,7 +1327,7 @@ CREATE TABLE [Address].[Address](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Address]
 ) ON [AddressDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Address].[AddressSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Address].[AddressSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1355,7 +1355,7 @@ CREATE TABLE [Address].[AddressSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Address]
 ) ON [Address]
 GO
-/****** Object:  Table [Address].[AddressXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Address].[AddressXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1380,7 +1380,7 @@ CREATE TABLE [Address].[AddressXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Address]
 ) ON [AddressXClassificationDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Address].[AddressXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Address].[AddressXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1408,7 +1408,7 @@ CREATE TABLE [Address].[AddressXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Address]
 ) ON [Address]
 GO
-/****** Object:  Table [Address].[AddressXGeography]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Address].[AddressXGeography]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1434,7 +1434,7 @@ CREATE TABLE [Address].[AddressXGeography](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Address]
 ) ON [AddressXGeographyDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Address].[AddressXGeographySecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Address].[AddressXGeographySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1462,7 +1462,7 @@ CREATE TABLE [Address].[AddressXGeographySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Address]
 ) ON [Address]
 GO
-/****** Object:  Table [Address].[AddressXResourceItem]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Address].[AddressXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1488,7 +1488,7 @@ CREATE TABLE [Address].[AddressXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Address]
 ) ON [AddressXResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Address].[AddressXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Address].[AddressXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1516,7 +1516,7 @@ CREATE TABLE [Address].[AddressXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Address]
 ) ON [Address]
 GO
-/****** Object:  Table [Arrangement].[ArrangementSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1544,7 +1544,7 @@ CREATE TABLE [Arrangement].[ArrangementSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementType]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1568,7 +1568,7 @@ CREATE TABLE [Arrangement].[ArrangementType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementTypeSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1596,7 +1596,7 @@ CREATE TABLE [Arrangement].[ArrangementTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXArrangementSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXArrangementSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1624,7 +1624,7 @@ CREATE TABLE [Arrangement].[ArrangementXArrangementSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXArrangementType]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXArrangementType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1650,7 +1650,7 @@ CREATE TABLE [Arrangement].[ArrangementXArrangementType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXArrangementTypeSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXArrangementTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1678,7 +1678,7 @@ CREATE TABLE [Arrangement].[ArrangementXArrangementTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1703,7 +1703,7 @@ CREATE TABLE [Arrangement].[ArrangementXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [ArrangementXClassificationScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Arrangement].[ArrangementXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1731,7 +1731,7 @@ CREATE TABLE [Arrangement].[ArrangementXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXInvolvedParty]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXInvolvedParty]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1757,7 +1757,7 @@ CREATE TABLE [Arrangement].[ArrangementXInvolvedParty](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXInvolvedPartySecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXInvolvedPartySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1785,7 +1785,7 @@ CREATE TABLE [Arrangement].[ArrangementXInvolvedPartySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXProduct]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXProduct]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1811,7 +1811,7 @@ CREATE TABLE [Arrangement].[ArrangementXProduct](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [ArrangementXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Arrangement].[ArrangementXProductSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXProductSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1839,7 +1839,7 @@ CREATE TABLE [Arrangement].[ArrangementXProductSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXResourceItem]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1865,7 +1865,7 @@ CREATE TABLE [Arrangement].[ArrangementXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [ArrangementXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Arrangement].[ArrangementXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1893,7 +1893,7 @@ CREATE TABLE [Arrangement].[ArrangementXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Arrangement].[ArrangementXRules]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXRules]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1919,7 +1919,7 @@ CREATE TABLE [Arrangement].[ArrangementXRules](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [ArrangementXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Arrangement].[ArrangementXRulesSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Arrangement].[ArrangementXRulesSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1947,7 +1947,7 @@ CREATE TABLE [Arrangement].[ArrangementXRulesSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Agreements]
 ) ON [Agreements]
 GO
-/****** Object:  Table [Classification].[ClassificationDataConceptSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationDataConceptSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -1975,7 +1975,7 @@ CREATE TABLE [Classification].[ClassificationDataConceptSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationDataConceptXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationDataConceptXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2000,7 +2000,7 @@ CREATE TABLE [Classification].[ClassificationDataConceptXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationDataConceptXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationDataConceptXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2028,7 +2028,7 @@ CREATE TABLE [Classification].[ClassificationDataConceptXClassificationSecurityT
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationDataConceptXResourceItem]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationDataConceptXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2054,7 +2054,7 @@ CREATE TABLE [Classification].[ClassificationDataConceptXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationDataConceptXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationDataConceptXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2082,7 +2082,7 @@ CREATE TABLE [Classification].[ClassificationDataConceptXResourceItemSecurityTok
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2110,7 +2110,7 @@ CREATE TABLE [Classification].[ClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2138,7 +2138,7 @@ CREATE TABLE [Classification].[ClassificationXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationXResourceItem]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2163,7 +2163,7 @@ CREATE TABLE [Classification].[ClassificationXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [Classification].[ClassificationXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Classification].[ClassificationXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2191,7 +2191,7 @@ CREATE TABLE [Classification].[ClassificationXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Classifications]
 ) ON [Classifications]
 GO
-/****** Object:  Table [dbo].[ActiveFlag]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[ActiveFlag]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2212,7 +2212,7 @@ CREATE TABLE [dbo].[ActiveFlag](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ActiveFlagSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[ActiveFlagSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2240,7 +2240,7 @@ CREATE TABLE [dbo].[ActiveFlagSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ActiveFlagXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[ActiveFlagXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2264,7 +2264,7 @@ CREATE TABLE [dbo].[ActiveFlagXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ActiveFlagXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[ActiveFlagXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2292,7 +2292,7 @@ CREATE TABLE [dbo].[ActiveFlagXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Enterprise]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[Enterprise]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2311,7 +2311,7 @@ CREATE TABLE [dbo].[Enterprise](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[EnterpriseSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[EnterpriseSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2338,7 +2338,7 @@ CREATE TABLE [dbo].[EnterpriseSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[EnterpriseXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[EnterpriseXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2362,7 +2362,7 @@ CREATE TABLE [dbo].[EnterpriseXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[EnterpriseXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[EnterpriseXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2390,7 +2390,7 @@ CREATE TABLE [dbo].[EnterpriseXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Systems]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[Systems]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2412,7 +2412,7 @@ CREATE TABLE [dbo].[Systems](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[SystemsSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[SystemsSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2439,7 +2439,7 @@ CREATE TABLE [dbo].[SystemsSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[SystemXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[SystemXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2463,7 +2463,7 @@ CREATE TABLE [dbo].[SystemXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[SystemXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [dbo].[SystemXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2491,7 +2491,7 @@ CREATE TABLE [dbo].[SystemXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [Event].[Event]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[Event]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2516,7 +2516,7 @@ CREATE TABLE [Event].[Event](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [EventDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Event].[EventSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2544,7 +2544,7 @@ CREATE TABLE [Event].[EventSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventType]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2568,7 +2568,7 @@ CREATE TABLE [Event].[EventType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventTypesSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventTypesSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2596,7 +2596,7 @@ CREATE TABLE [Event].[EventTypesSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXAddress]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXAddress]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2622,7 +2622,7 @@ CREATE TABLE [Event].[EventXAddress](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [EventXAddressScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Event].[EventXAddressSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXAddressSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2650,7 +2650,7 @@ CREATE TABLE [Event].[EventXAddressSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXArrangement]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXArrangement]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2676,7 +2676,7 @@ CREATE TABLE [Event].[EventXArrangement](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [EventXArrangementScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Event].[EventXArrangementsSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXArrangementsSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2704,7 +2704,7 @@ CREATE TABLE [Event].[EventXArrangementsSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXClassification]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2729,7 +2729,7 @@ CREATE TABLE [Event].[EventXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [EventXClassificationScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Event].[EventXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2757,7 +2757,7 @@ CREATE TABLE [Event].[EventXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXEventType]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXEventType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2783,7 +2783,7 @@ CREATE TABLE [Event].[EventXEventType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXEventTypeSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXEventTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2811,7 +2811,7 @@ CREATE TABLE [Event].[EventXEventTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXGeography]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXGeography]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2837,7 +2837,7 @@ CREATE TABLE [Event].[EventXGeography](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [EventXGeographyScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Event].[EventXGeographySecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXGeographySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2865,7 +2865,7 @@ CREATE TABLE [Event].[EventXGeographySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXInvolvedParty]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXInvolvedParty]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2891,7 +2891,7 @@ CREATE TABLE [Event].[EventXInvolvedParty](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXInvolvedPartySecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXInvolvedPartySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2919,7 +2919,7 @@ CREATE TABLE [Event].[EventXInvolvedPartySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXProduct]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXProduct]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2945,7 +2945,7 @@ CREATE TABLE [Event].[EventXProduct](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [EventXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Event].[EventXProductSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXProductSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2973,7 +2973,7 @@ CREATE TABLE [Event].[EventXProductSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXResourceItem]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -2999,7 +2999,7 @@ CREATE TABLE [Event].[EventXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [EventXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Event].[EventXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3027,7 +3027,7 @@ CREATE TABLE [Event].[EventXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Event].[EventXRules]    Script Date: 2020/12/30 15:25:34 ******/
+/****** Object:  Table [Event].[EventXRules]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3053,7 +3053,7 @@ CREATE TABLE [Event].[EventXRules](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [EventXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Table [Event].[EventXRulesSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Event].[EventXRulesSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3081,7 +3081,7 @@ CREATE TABLE [Event].[EventXRulesSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Event]
 ) ON [Event]
 GO
-/****** Object:  Table [Geography].[GeographySecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Geography].[GeographySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3109,7 +3109,7 @@ CREATE TABLE [Geography].[GeographySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Geography]
 ) ON [Geography]
 GO
-/****** Object:  Table [Geography].[GeographyXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Geography].[GeographyXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3134,7 +3134,7 @@ CREATE TABLE [Geography].[GeographyXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Geography]
 ) ON [Geography]
 GO
-/****** Object:  Table [Geography].[GeographyXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Geography].[GeographyXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3162,7 +3162,7 @@ CREATE TABLE [Geography].[GeographyXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Geography]
 ) ON [Geography]
 GO
-/****** Object:  Table [Geography].[GeographyXGeographySecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Geography].[GeographyXGeographySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3190,7 +3190,7 @@ CREATE TABLE [Geography].[GeographyXGeographySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Geography]
 ) ON [Geography]
 GO
-/****** Object:  Table [Geography].[GeographyXResourceItem]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Geography].[GeographyXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3216,7 +3216,7 @@ CREATE TABLE [Geography].[GeographyXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Geography]
 ) ON [Geography]
 GO
-/****** Object:  Table [Geography].[GeographyXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Geography].[GeographyXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3244,7 +3244,7 @@ CREATE TABLE [Geography].[GeographyXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Geography]
 ) ON [Geography]
 GO
-/****** Object:  Table [Party].[InvolvedPartyIdentificationType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyIdentificationType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3268,7 +3268,7 @@ CREATE TABLE [Party].[InvolvedPartyIdentificationType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyIdentificationTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyIdentificationTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3296,7 +3296,7 @@ CREATE TABLE [Party].[InvolvedPartyIdentificationTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyNameType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyNameType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3321,7 +3321,7 @@ CREATE TABLE [Party].[InvolvedPartyNameType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyNameTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyNameTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3349,7 +3349,7 @@ CREATE TABLE [Party].[InvolvedPartyNameTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyNonOrganic]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyNonOrganic]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3371,7 +3371,7 @@ CREATE TABLE [Party].[InvolvedPartyNonOrganic](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyNonOrganicSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyNonOrganicSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3399,7 +3399,7 @@ CREATE TABLE [Party].[InvolvedPartyNonOrganicSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyOrganic]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyOrganic]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3421,7 +3421,7 @@ CREATE TABLE [Party].[InvolvedPartyOrganic](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyOrganicSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyOrganicSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3449,7 +3449,7 @@ CREATE TABLE [Party].[InvolvedPartyOrganicSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyOrganicType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyOrganicType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3473,7 +3473,7 @@ CREATE TABLE [Party].[InvolvedPartyOrganicType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyOrganicTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyOrganicTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3501,7 +3501,7 @@ CREATE TABLE [Party].[InvolvedPartyOrganicTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartySecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3529,7 +3529,7 @@ CREATE TABLE [Party].[InvolvedPartySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3553,7 +3553,7 @@ CREATE TABLE [Party].[InvolvedPartyType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [Party].[InvolvedPartyTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3581,7 +3581,7 @@ CREATE TABLE [Party].[InvolvedPartyTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXAddress]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXAddress]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3607,7 +3607,7 @@ CREATE TABLE [Party].[InvolvedPartyXAddress](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXAddressSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXAddressSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3635,7 +3635,7 @@ CREATE TABLE [Party].[InvolvedPartyXAddressSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3660,7 +3660,7 @@ CREATE TABLE [Party].[InvolvedPartyXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3688,7 +3688,7 @@ CREATE TABLE [Party].[InvolvedPartyXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyIdentificationType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyIdentificationType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3714,7 +3714,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedPartyIdentificationType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3742,7 +3742,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyNameType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyNameType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3768,7 +3768,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedPartyNameType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3796,7 +3796,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartySecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3824,7 +3824,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedPartySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3850,7 +3850,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedPartyType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXInvolvedPartyTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3878,7 +3878,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedPartyTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXProduct]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXProduct]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3905,7 +3905,7 @@ CREATE TABLE [Party].[InvolvedPartyXProduct](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXProductSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXProductSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3933,7 +3933,61 @@ CREATE TABLE [Party].[InvolvedPartyXProductSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXResourceItem]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXProductType]    Script Date: 2020/12/31 18:14:40 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Party].[InvolvedPartyXProductType](
+	[InvolvedPartyXProductTypeID] [uniqueidentifier] NOT NULL,
+	[InvolvedPartyID] [uniqueidentifier] NOT NULL,
+	[ProductTypeID] [uniqueidentifier] NOT NULL,
+	[ClassificationID] [uniqueidentifier] NOT NULL,
+	[Value] [varchar](500) NOT NULL,
+	[OriginalSourceSystemID] [uniqueidentifier] NOT NULL,
+	[OriginalSourceSystemUniqueID] [varchar](500) NOT NULL,
+	[WarehouseCreatedTimestamp] [datetime] NOT NULL,
+	[WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+	[EffectiveFromDate] [datetime] NOT NULL,
+	[EffectiveToDate] [datetime] NOT NULL,
+	[ActiveFlagID] [uniqueidentifier] NOT NULL,
+	[EnterpriseID] [uniqueidentifier] NOT NULL,
+	[SystemID] [uniqueidentifier] NOT NULL,
+ CONSTRAINT [PK_InvolvedPartyXProductType] PRIMARY KEY CLUSTERED 
+(
+	[InvolvedPartyXProductTypeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
+) ON [Party]
+GO
+/****** Object:  Table [Party].[InvolvedPartyXProductTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [Party].[InvolvedPartyXProductTypeSecurityToken](
+	[InvolvedPartyXProductTypeSecurityTokenID] [uniqueidentifier] NOT NULL,
+	[InvolvedPartyXProductTypeID] [uniqueidentifier] NOT NULL,
+	[SecurityTokenID] [uniqueidentifier] NOT NULL,
+	[CreateAllowed] [bit] NOT NULL,
+	[UpdateAllowed] [bit] NOT NULL,
+	[DeleteAllowed] [bit] NOT NULL,
+	[ReadAllowed] [bit] NOT NULL,
+	[SystemID] [uniqueidentifier] NOT NULL,
+	[OriginalSourceSystemID] [uniqueidentifier] NOT NULL,
+	[OriginalSourceSystemUniqueID] [varchar](500) NOT NULL,
+	[WarehouseCreatedTimestamp] [datetime] NOT NULL,
+	[WarehouseLastUpdatedTimestamp] [datetime] NOT NULL,
+	[EffectiveFromDate] [datetime] NOT NULL,
+	[EffectiveToDate] [datetime] NOT NULL,
+	[ActiveFlagID] [uniqueidentifier] NOT NULL,
+	[EnterpriseID] [uniqueidentifier] NOT NULL,
+ CONSTRAINT [PK_InvolvedPartyXProductTypeSecurityTokens] PRIMARY KEY CLUSTERED 
+(
+	[InvolvedPartyXProductTypeSecurityTokenID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
+) ON [Party]
+GO
+/****** Object:  Table [Party].[InvolvedPartyXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3959,7 +4013,7 @@ CREATE TABLE [Party].[InvolvedPartyXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -3987,7 +4041,7 @@ CREATE TABLE [Party].[InvolvedPartyXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXRules]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXRules]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4013,7 +4067,7 @@ CREATE TABLE [Party].[InvolvedPartyXRules](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Party].[InvolvedPartyXRulesSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Party].[InvolvedPartyXRulesSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4041,7 +4095,7 @@ CREATE TABLE [Party].[InvolvedPartyXRulesSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 ) ON [Party]
 GO
-/****** Object:  Table [Product].[ProductSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4069,7 +4123,7 @@ CREATE TABLE [Product].[ProductSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4093,7 +4147,7 @@ CREATE TABLE [Product].[ProductType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [Product].[ProductTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4121,7 +4175,7 @@ CREATE TABLE [Product].[ProductTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductTypeXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductTypeXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4146,7 +4200,7 @@ CREATE TABLE [Product].[ProductTypeXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductTypeXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductTypeXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4174,7 +4228,7 @@ CREATE TABLE [Product].[ProductTypeXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4199,7 +4253,7 @@ CREATE TABLE [Product].[ProductXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4227,7 +4281,7 @@ CREATE TABLE [Product].[ProductXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductXProductSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductXProductSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4255,7 +4309,7 @@ CREATE TABLE [Product].[ProductXProductSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductXProductType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductXProductType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4281,7 +4335,7 @@ CREATE TABLE [Product].[ProductXProductType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductXProductTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductXProductTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4309,7 +4363,7 @@ CREATE TABLE [Product].[ProductXProductTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductXResourceItem]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4335,7 +4389,7 @@ CREATE TABLE [Product].[ProductXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Product].[ProductXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Product].[ProductXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4363,7 +4417,7 @@ CREATE TABLE [Product].[ProductXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Product]
 ) ON [Product]
 GO
-/****** Object:  Table [Resource].[ResourceItemDataSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Resource].[ResourceItemDataSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4391,7 +4445,7 @@ CREATE TABLE [Resource].[ResourceItemDataSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItemDataXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Resource].[ResourceItemDataXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4416,7 +4470,7 @@ CREATE TABLE [Resource].[ResourceItemDataXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItemDataXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Resource].[ResourceItemDataXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4444,7 +4498,7 @@ CREATE TABLE [Resource].[ResourceItemDataXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Resource].[ResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4472,7 +4526,7 @@ CREATE TABLE [Resource].[ResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItemTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Resource].[ResourceItemTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4500,7 +4554,7 @@ CREATE TABLE [Resource].[ResourceItemTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItemXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Resource].[ResourceItemXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4528,7 +4582,7 @@ CREATE TABLE [Resource].[ResourceItemXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItemXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Resource].[ResourceItemXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4556,7 +4610,7 @@ CREATE TABLE [Resource].[ResourceItemXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Resource].[ResourceItemXResourceItemTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Resource].[ResourceItemXResourceItemTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4584,7 +4638,7 @@ CREATE TABLE [Resource].[ResourceItemXResourceItemTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Resources]
 ) ON [Resources]
 GO
-/****** Object:  Table [Rules].[RulesSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4612,7 +4666,7 @@ CREATE TABLE [Rules].[RulesSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4636,7 +4690,7 @@ CREATE TABLE [Rules].[RulesType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesTypesSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesTypesSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4664,7 +4718,7 @@ CREATE TABLE [Rules].[RulesTypesSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesTypeXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesTypeXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4689,7 +4743,7 @@ CREATE TABLE [Rules].[RulesTypeXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesTypeXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesTypeXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4717,7 +4771,7 @@ CREATE TABLE [Rules].[RulesTypeXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXArrangement]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXArrangement]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4743,7 +4797,7 @@ CREATE TABLE [Rules].[RulesXArrangement](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXArrangementsSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXArrangementsSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4771,7 +4825,7 @@ CREATE TABLE [Rules].[RulesXArrangementsSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4796,7 +4850,7 @@ CREATE TABLE [Rules].[RulesXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4824,7 +4878,7 @@ CREATE TABLE [Rules].[RulesXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXInvolvedParty]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXInvolvedParty]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4850,7 +4904,7 @@ CREATE TABLE [Rules].[RulesXInvolvedParty](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXInvolvedPartySecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXInvolvedPartySecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4878,7 +4932,7 @@ CREATE TABLE [Rules].[RulesXInvolvedPartySecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXProduct]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXProduct]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4904,7 +4958,7 @@ CREATE TABLE [Rules].[RulesXProduct](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXProductSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXProductSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4932,7 +4986,7 @@ CREATE TABLE [Rules].[RulesXProductSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXResourceItem]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4958,7 +5012,7 @@ CREATE TABLE [Rules].[RulesXResourceItem](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXResourceItemSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXResourceItemSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -4986,7 +5040,7 @@ CREATE TABLE [Rules].[RulesXResourceItemSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXRulesSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXRulesSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5014,7 +5068,7 @@ CREATE TABLE [Rules].[RulesXRulesSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXRulesType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXRulesType]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5040,7 +5094,7 @@ CREATE TABLE [Rules].[RulesXRulesType](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Rules].[RulesXRulesTypeSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Rules].[RulesXRulesTypeSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5068,7 +5122,7 @@ CREATE TABLE [Rules].[RulesXRulesTypeSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 ) ON [Rules]
 GO
-/****** Object:  Table [Security].[SecurityHierarchy]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Security].[SecurityHierarchy]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5085,7 +5139,7 @@ CREATE TABLE [Security].[SecurityHierarchy](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Security]
 ) ON [Security]
 GO
-/****** Object:  Table [Security].[SecurityHierarchyParents]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Security].[SecurityHierarchyParents]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5100,7 +5154,7 @@ CREATE TABLE [Security].[SecurityHierarchyParents](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Security]
 ) ON [Security]
 GO
-/****** Object:  Table [Security].[SecurityTokensSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Security].[SecurityTokensSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5128,7 +5182,7 @@ CREATE TABLE [Security].[SecurityTokensSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Security]
 ) ON [Security]
 GO
-/****** Object:  Table [Security].[SecurityTokenXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Security].[SecurityTokenXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5153,7 +5207,7 @@ CREATE TABLE [Security].[SecurityTokenXClassification](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Security]
 ) ON [Security]
 GO
-/****** Object:  Table [Security].[SecurityTokenXClassificationSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Security].[SecurityTokenXClassificationSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5181,7 +5235,7 @@ CREATE TABLE [Security].[SecurityTokenXClassificationSecurityToken](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Security]
 ) ON [Security]
 GO
-/****** Object:  Table [Time].[DayNames]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[DayNames]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5201,7 +5255,7 @@ CREATE TABLE [Time].[DayNames](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[DayParts]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[DayParts]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5217,7 +5271,7 @@ CREATE TABLE [Time].[DayParts](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Days]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Days]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5252,7 +5306,7 @@ CREATE TABLE [Time].[Days](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[HalfHourDayParts]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[HalfHourDayParts]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5268,7 +5322,7 @@ CREATE TABLE [Time].[HalfHourDayParts](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[HalfHours]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[HalfHours]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5288,7 +5342,7 @@ CREATE TABLE [Time].[HalfHours](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Hours]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Hours]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5305,7 +5359,7 @@ CREATE TABLE [Time].[Hours](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[MonthOfYear]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[MonthOfYear]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5322,7 +5376,7 @@ CREATE TABLE [Time].[MonthOfYear](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Months]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Months]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5348,7 +5402,7 @@ CREATE TABLE [Time].[Months](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[PublicHolidays]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[PublicHolidays]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5364,7 +5418,7 @@ CREATE TABLE [Time].[PublicHolidays](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Quarters]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Quarters]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5388,7 +5442,7 @@ CREATE TABLE [Time].[Quarters](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Time]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Time]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5408,7 +5462,7 @@ CREATE TABLE [Time].[Time](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Trans_Fiscal]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Trans_Fiscal]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5422,7 +5476,7 @@ CREATE TABLE [Time].[Trans_Fiscal](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Trans_Mtd]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Trans_Mtd]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5437,7 +5491,7 @@ CREATE TABLE [Time].[Trans_Mtd](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Trans_Qtd]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Trans_Qtd]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5452,7 +5506,7 @@ CREATE TABLE [Time].[Trans_Qtd](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Trans_Qtm]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Trans_Qtm]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5467,7 +5521,7 @@ CREATE TABLE [Time].[Trans_Qtm](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Trans_Ytd]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Trans_Ytd]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5482,7 +5536,7 @@ CREATE TABLE [Time].[Trans_Ytd](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Weeks]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Weeks]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5502,7 +5556,7 @@ CREATE TABLE [Time].[Weeks](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Table [Time].[Years]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Table [Time].[Years]    Script Date: 2020/12/31 18:14:40 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -5522,2389 +5576,2389 @@ CREATE TABLE [Time].[Years](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Time]
 ) ON [Time]
 GO
-/****** Object:  Index [IX_Address_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Address_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_ActiveFlagId] ON [Address].[Address]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_Address_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Address_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_EffectiveFromDate] ON [Address].[Address]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_Address_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Address_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_EffectiveToDate] ON [Address].[Address]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_Address_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Address_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_EnterpriseId] ON [Address].[Address]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_Address_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Address_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Address_SystemId] ON [Address].[Address]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_ActiveFlagId] ON [Address].[AddressSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_EffectiveFromDate] ON [Address].[AddressSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_EffectiveToDate] ON [Address].[AddressSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressSecurityToken_EnterprizeId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressSecurityToken_EnterprizeId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_EnterprizeId] ON [Address].[AddressSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressSecurityToken_SystemId] ON [Address].[AddressSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification] ON [Address].[AddressXClassification]
 (
 	[AddressXClassificationID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXClassificationDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_ActiveFlagId] ON [Address].[AddressXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXClassificationDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_EffectiveFromDate] ON [Address].[AddressXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXClassificationDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_EffectiveToDate] ON [Address].[AddressXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXClassificationDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_EnterpriseId] ON [Address].[AddressXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXClassificationDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassification_SystemId] ON [Address].[AddressXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXClassificationDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_ActiveFlagId] ON [Address].[AddressXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_EffectiveFromDate] ON [Address].[AddressXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_EffectiveToDate] ON [Address].[AddressXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_EnterpriseId] ON [Address].[AddressXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXClassificationSecurityToken_SystemId] ON [Address].[AddressXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXGeography_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeography_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_ActiveFlagId] ON [Address].[AddressXGeography]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXGeographyDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXGeography_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeography_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_EffectiveFromDate] ON [Address].[AddressXGeography]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXGeographyDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXGeography_effectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeography_effectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_effectiveToDate] ON [Address].[AddressXGeography]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXGeographyDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXGeography_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeography_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_EnterpriseId] ON [Address].[AddressXGeography]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXGeographyDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXGeography_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeography_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeography_SystemId] ON [Address].[AddressXGeography]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXGeographyDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXGeographySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeographySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_ActiveFlagId] ON [Address].[AddressXGeographySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXGeographySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeographySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_EffectiveFromDate] ON [Address].[AddressXGeographySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXGeographySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeographySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_EffectiveToDate] ON [Address].[AddressXGeographySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXGeographySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeographySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_EnterpriseId] ON [Address].[AddressXGeographySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXGeographySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXGeographySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXGeographySecurityToken_SystemId] ON [Address].[AddressXGeographySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_ActiveFlagId] ON [Address].[AddressXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_EffectiveFromDate] ON [Address].[AddressXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_EffectiveToDate] ON [Address].[AddressXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_EnterpriseId] ON [Address].[AddressXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItem_SystemId] ON [Address].[AddressXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [AddressXResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_AddressXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_ActiveFlagId] ON [Address].[AddressXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_EffectiveFromDate] ON [Address].[AddressXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_EffectiveToDate] ON [Address].[AddressXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_EnterpriseId] ON [Address].[AddressXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_AddressXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_AddressXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_AddressXResourceItemSecurityToken_SystemId] ON [Address].[AddressXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Arrangement_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Arrangement_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_ActiveFlagId] ON [Arrangement].[Arrangement]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Arrangement_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Arrangement_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_EffectiveFromDate] ON [Arrangement].[Arrangement]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Arrangement_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Arrangement_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_EffectiveToDate] ON [Arrangement].[Arrangement]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Arrangement_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Arrangement_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_EnterpriseId] ON [Arrangement].[Arrangement]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Arrangement_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Arrangement_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Arrangement_SystemId] ON [Arrangement].[Arrangement]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken] ON [Arrangement].[ArrangementSecurityToken]
 (
 	[ArrangementSecurityTokenID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementSecurityToken_ActiveFlafId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementSecurityToken_ActiveFlafId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_ActiveFlafId] ON [Arrangement].[ArrangementSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_EnterpriseId] ON [Arrangement].[ArrangementSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementSecurityToken_SystemId] ON [Arrangement].[ArrangementSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementType_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_ActiveFlagId] ON [Arrangement].[ArrangementType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_EffectiveFromDate] ON [Arrangement].[ArrangementType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementType_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_EffectiveToDate] ON [Arrangement].[ArrangementType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementType_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_EnterpriseId] ON [Arrangement].[ArrangementType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementType_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementType_SystemId] ON [Arrangement].[ArrangementType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_ActiveFlagId] ON [Arrangement].[ArrangementTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_EnterpriseId] ON [Arrangement].[ArrangementTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementTypeSecurityToken_SystemId] ON [Arrangement].[ArrangementTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangement_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangement_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_ActiveFlagId] ON [Arrangement].[ArrangementXArrangement]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangement_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangement_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_EffectiveFromDate] ON [Arrangement].[ArrangementXArrangement]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangement_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangement_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_EffectiveToDate] ON [Arrangement].[ArrangementXArrangement]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangement_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangement_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_EnterpriseId] ON [Arrangement].[ArrangementXArrangement]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangement_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangement_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangement_SystemId] ON [Arrangement].[ArrangementXArrangement]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_ActiveFlagId] ON [Arrangement].[ArrangementXArrangementSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementXArrangementSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementXArrangementSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_EnterpriseId] ON [Arrangement].[ArrangementXArrangementSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementSecurityToken_SystemId] ON [Arrangement].[ArrangementXArrangementSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementType_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_ActiveFlagId] ON [Arrangement].[ArrangementXArrangementType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_EffectiveFromDate] ON [Arrangement].[ArrangementXArrangementType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementType_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_EffectiveToDate] ON [Arrangement].[ArrangementXArrangementType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementType_EnterpriseID]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementType_EnterpriseID]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_EnterpriseID] ON [Arrangement].[ArrangementXArrangementType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementType_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementType_SystemId] ON [Arrangement].[ArrangementXArrangementType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_ActiveFlagId] ON [Arrangement].[ArrangementXArrangementTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementXArrangementTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementXArrangementTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_EnterpriseId] ON [Arrangement].[ArrangementXArrangementTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXArrangementTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXArrangementTypeSecurityToken_SystemId] ON [Arrangement].[ArrangementXArrangementTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification] ON [Arrangement].[ArrangementXClassification]
 (
 	[ArrangementXClassificationID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_ActiveFlagId] ON [Arrangement].[ArrangementXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_EffectiveFromDate] ON [Arrangement].[ArrangementXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_EffectiveToDate] ON [Arrangement].[ArrangementXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_EnterpriseId] ON [Arrangement].[ArrangementXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassification_SystemId] ON [Arrangement].[ArrangementXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_ActiveFlagId] ON [Arrangement].[ArrangementXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_EnterpriseId] ON [Arrangement].[ArrangementXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXClassificationSecurityToken_SystemId] ON [Arrangement].[ArrangementXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedParty_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedParty_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_ActiveFlagId] ON [Arrangement].[ArrangementXInvolvedParty]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedParty_effectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedParty_effectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_effectiveFromDate] ON [Arrangement].[ArrangementXInvolvedParty]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedParty_effectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedParty_effectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_effectiveToDate] ON [Arrangement].[ArrangementXInvolvedParty]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedParty_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedParty_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_EnterpriseId] ON [Arrangement].[ArrangementXInvolvedParty]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedParty_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedParty_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedParty_SystemId] ON [Arrangement].[ArrangementXInvolvedParty]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_ActiveFlagId] ON [Arrangement].[ArrangementXInvolvedPartySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementXInvolvedPartySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementXInvolvedPartySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_EnterpriseId] ON [Arrangement].[ArrangementXInvolvedPartySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXInvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXInvolvedPartySecurityToken_SystemId] ON [Arrangement].[ArrangementXInvolvedPartySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXProduct_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProduct_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_ActiveFlagId] ON [Arrangement].[ArrangementXProduct]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXProduct_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProduct_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_EffectiveFromDate] ON [Arrangement].[ArrangementXProduct]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXProduct_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProduct_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_EffectiveToDate] ON [Arrangement].[ArrangementXProduct]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXProduct_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProduct_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_EnterpriseId] ON [Arrangement].[ArrangementXProduct]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXProduct_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProduct_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProduct_SystemId] ON [Arrangement].[ArrangementXProduct]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_ActiveFlagId] ON [Arrangement].[ArrangementXProductSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementXProductSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementXProductSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_EnterpriseId] ON [Arrangement].[ArrangementXProductSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXProductSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXProductSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXProductSecurityToken_SystemId] ON [Arrangement].[ArrangementXProductSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_ActiveFlagId] ON [Arrangement].[ArrangementXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_EffectiveFromDate] ON [Arrangement].[ArrangementXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_EffectiveToDate] ON [Arrangement].[ArrangementXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_EnterpriseId] ON [Arrangement].[ArrangementXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItem_SystemId] ON [Arrangement].[ArrangementXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_ActiveFlagId] ON [Arrangement].[ArrangementXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_EnterpriseId] ON [Arrangement].[ArrangementXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXResourceItemSecurityToken_SystemId] ON [Arrangement].[ArrangementXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXRules_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRules_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRules_ActiveFlagId] ON [Arrangement].[ArrangementXRules]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXRules_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRules_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRules_EffectiveFromDate] ON [Arrangement].[ArrangementXRules]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXRules_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRules_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRules_EffectiveToDate] ON [Arrangement].[ArrangementXRules]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXRules_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRules_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRules_EnterpriseId] ON [Arrangement].[ArrangementXRules]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXRules_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRules_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRules_SystemId] ON [Arrangement].[ArrangementXRules]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ArrangementXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ArrangementXRulesSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRulesSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRulesSecurityToken_ActiveFlagId] ON [Arrangement].[ArrangementXRulesSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXRulesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRulesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRulesSecurityToken_EffectiveFromDate] ON [Arrangement].[ArrangementXRulesSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXRulesSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRulesSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRulesSecurityToken_EffectiveToDate] ON [Arrangement].[ArrangementXRulesSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXRulesSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRulesSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRulesSecurityToken_EnterpriseId] ON [Arrangement].[ArrangementXRulesSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ArrangementXRulesSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ArrangementXRulesSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ArrangementXRulesSecurityToken_SystemId] ON [Arrangement].[ArrangementXRulesSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Classification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Classification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_ActiveFlagId] ON [Classification].[Classification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Classification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Classification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_EffectiveFromDate] ON [Classification].[Classification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Classification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Classification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_EffectiveToDate] ON [Classification].[Classification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Classification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Classification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_EnterpriseId] ON [Classification].[Classification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Classification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Classification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Classification_SystemId] ON [Classification].[Classification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConcept_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConcept_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_ActiveFlagId] ON [Classification].[ClassificationDataConcept]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConcept_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConcept_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_EffectiveFromDate] ON [Classification].[ClassificationDataConcept]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConcept_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConcept_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_EffectiveToDate] ON [Classification].[ClassificationDataConcept]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConcept_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConcept_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_EnterpriseId] ON [Classification].[ClassificationDataConcept]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConcept_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConcept_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConcept_SystemId] ON [Classification].[ClassificationDataConcept]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_ActiveFlagId] ON [Classification].[ClassificationDataConceptSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_EffectiveFromDate] ON [Classification].[ClassificationDataConceptSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_EffectiveToDate] ON [Classification].[ClassificationDataConceptSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_EnterpriseId] ON [Classification].[ClassificationDataConceptSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptSecurityToken_SystemId] ON [Classification].[ClassificationDataConceptSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_ActiveFlagId] ON [Classification].[ClassificationDataConceptXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_EffectiveFromDate] ON [Classification].[ClassificationDataConceptXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_EffectiveToDate] ON [Classification].[ClassificationDataConceptXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_EnterpriseId] ON [Classification].[ClassificationDataConceptXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassification_SystemId] ON [Classification].[ClassificationDataConceptXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_ActiveFlagId] ON [Classification].[ClassificationDataConceptXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveFromDate] ON [Classification].[ClassificationDataConceptXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_EffectiveToDate] ON [Classification].[ClassificationDataConceptXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_EnterpriseId] ON [Classification].[ClassificationDataConceptXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXClassificationSecurityToken_SystemId] ON [Classification].[ClassificationDataConceptXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXResourceItem]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem] ON [Classification].[ClassificationDataConceptXResourceItem]
 (
 	[ClassificationID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_ActiveFlagId] ON [Classification].[ClassificationDataConceptXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_EffectiveFromDate] ON [Classification].[ClassificationDataConceptXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_EffectiveToDate] ON [Classification].[ClassificationDataConceptXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_EnterpriseId] ON [Classification].[ClassificationDataConceptXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationDataConceptXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationDataConceptXResourceItem_SystemId] ON [Classification].[ClassificationDataConceptXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_ActiveFlagId] ON [Classification].[ClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_EffectiveFromDate] ON [Classification].[ClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_EffectiveToDate] ON [Classification].[ClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_EnterpriseId] ON [Classification].[ClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationSecurityToken_SystemId] ON [Classification].[ClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_ActiveFlagId] ON [Classification].[ClassificationXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_EffectiveFromDate] ON [Classification].[ClassificationXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_EffectiveToDate] ON [Classification].[ClassificationXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_EnterpriseId] ON [Classification].[ClassificationXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassification_SystemId] ON [Classification].[ClassificationXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_ActiveFlagId] ON [Classification].[ClassificationXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_EffectiveFromDate] ON [Classification].[ClassificationXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_EffectiveToDate] ON [Classification].[ClassificationXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_EnterpriseId] ON [Classification].[ClassificationXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXClassificationSecurityToken_SystemId] ON [Classification].[ClassificationXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_ActiveFlagId] ON [Classification].[ClassificationXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_EffectiveFromDate] ON [Classification].[ClassificationXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_EffectiveToDate] ON [Classification].[ClassificationXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_EnterpriseId] ON [Classification].[ClassificationXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItem_SystemId] ON [Classification].[ClassificationXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_ActiveFlagId] ON [Classification].[ClassificationXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_EffectiveFromDate] ON [Classification].[ClassificationXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_EffectiveToDate] ON [Classification].[ClassificationXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_EnterpriseId] ON [Classification].[ClassificationXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ClassificationXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ClassificationXResourceItemSecurityToken_SystemId] ON [Classification].[ClassificationXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EffectiveFromDate] ON [dbo].[ActiveFlag]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EffectiveToDate] ON [dbo].[ActiveFlag]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseID]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseID]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseID] ON [dbo].[ActiveFlag]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagSecurityToken]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagSecurityToken]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken] ON [dbo].[ActiveFlagSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagSecurityToken_1]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagSecurityToken_1]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_1] ON [dbo].[ActiveFlagSecurityToken]
 (
 	[ActiveFlagSecurityTokenID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_ActiveFlagId] ON [dbo].[ActiveFlagSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_EffectiveFromDate] ON [dbo].[ActiveFlagSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_EffectiveToDate] ON [dbo].[ActiveFlagSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_EnterpriseId] ON [dbo].[ActiveFlagSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagSecurityToken_SystemId] ON [dbo].[ActiveFlagSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassification]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassification]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification] ON [dbo].[ActiveFlagXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassification_1]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassification_1]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_1] ON [dbo].[ActiveFlagXClassification]
 (
 	[ActiveFlagXClassificationID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_ActiveFlagId] ON [dbo].[ActiveFlagXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_EffectiveFromDate] ON [dbo].[ActiveFlagXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_EffectiveToDate] ON [dbo].[ActiveFlagXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_EnterpriseId] ON [dbo].[ActiveFlagXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassification_SystemId] ON [dbo].[ActiveFlagXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_ActiveFlagId] ON [dbo].[ActiveFlagXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[ActiveFlagXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_EffectiveToDate] ON [dbo].[ActiveFlagXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_EnterpriseId] ON [dbo].[ActiveFlagXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ActiveFlagXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_ActiveFlagXClassificationSecurityToken_SystemId] ON [dbo].[ActiveFlagXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Enterprise_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Enterprise_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Enterprise_EffectiveFromDate] ON [dbo].[Enterprise]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Enterprise_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Enterprise_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Enterprise_EffectiveToDate] ON [dbo].[Enterprise]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_ActiveFlagId] ON [dbo].[EnterpriseSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_EffectiveFromDate] ON [dbo].[EnterpriseSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseSecurityToken_EffectiveToId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseSecurityToken_EffectiveToId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_EffectiveToId] ON [dbo].[EnterpriseSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_EnterpriseId] ON [dbo].[EnterpriseSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseSecurityToken_SystemId] ON [dbo].[EnterpriseSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_ActiveFlagId] ON [dbo].[EnterpriseXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_EffectiveFromDate] ON [dbo].[EnterpriseXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_EffectiveToDate] ON [dbo].[EnterpriseXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_EnterpriseId] ON [dbo].[EnterpriseXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EnterpriseXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EnterpriseXClassification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EnterpriseXClassification_SystemId] ON [dbo].[EnterpriseXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Systems_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Systems_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_ActiveFlagId] ON [dbo].[Systems]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Systems_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Systems_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_EffectiveFromDate] ON [dbo].[Systems]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Systems_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Systems_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_EffectiveToDate] ON [dbo].[Systems]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Systems_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Systems_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_EnterpriseId] ON [dbo].[Systems]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Systems_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Systems_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Systems_SystemId] ON [dbo].[Systems]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_ActiveFlagId] ON [dbo].[SystemsSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_EffectiveFromDate] ON [dbo].[SystemsSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_EffectiveToDate] ON [dbo].[SystemsSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_EnterpriseId] ON [dbo].[SystemsSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemSecurityToken_SystemId] ON [dbo].[SystemsSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_ActiveFlagId] ON [dbo].[SystemXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_EffectiveFromDate] ON [dbo].[SystemXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_EffectiveToDate] ON [dbo].[SystemXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_EnterpriseId] ON [dbo].[SystemXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassification_SystemId] ON [dbo].[SystemXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_ActiveFlagId] ON [dbo].[SystemXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_EffectiveFromDate] ON [dbo].[SystemXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_EffectiveToDate] ON [dbo].[SystemXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_EnterpriseId] ON [dbo].[SystemXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SystemXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_SystemXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_SystemXClassificationSecurityToken_SystemId] ON [dbo].[SystemXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Event_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Event_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_ActiveFlagId] ON [Event].[Event]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Event_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Event_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_EffectiveFromDate] ON [Event].[Event]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Event_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Event_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_EffectiveToDate] ON [Event].[Event]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Event_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Event_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_EnterpriseId] ON [Event].[Event]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Event_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Event_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_Event_SystemId] ON [Event].[Event]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_ActiveFlagId] ON [Event].[EventSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_EffectiveFromDate] ON [Event].[EventSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_EffectiveToDate] ON [Event].[EventSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_EnterpriseId] ON [Event].[EventSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventSecurityToken_SystemId] ON [Event].[EventSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventType_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_ActiveFlagId] ON [Event].[EventType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_EffectiveFromDate] ON [Event].[EventType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventType_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_EffectiveToDate] ON [Event].[EventType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventType_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_EnterpriseId] ON [Event].[EventType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventType_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventType_SystemId] ON [Event].[EventType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventTypesSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventTypesSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_ActiveFlagId] ON [Event].[EventTypesSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventTypesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventTypesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_EffectiveFromDate] ON [Event].[EventTypesSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventTypesSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventTypesSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_EffectiveToDate] ON [Event].[EventTypesSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventTypesSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventTypesSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_EnterpriseId] ON [Event].[EventTypesSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventTypesSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventTypesSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventTypesSecurityToken_SystemId] ON [Event].[EventTypesSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXAddress_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddress_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_ActiveFlagId] ON [Event].[EventXAddress]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXAddressScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXAddress_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddress_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_EffectiveFromDate] ON [Event].[EventXAddress]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXAddressScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXAddress_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddress_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_EffectiveToDate] ON [Event].[EventXAddress]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXAddressScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXAddress_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddress_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_EnterpriseId] ON [Event].[EventXAddress]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXAddressScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXAddress_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddress_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddress_SystemId] ON [Event].[EventXAddress]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXAddressScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXAddressSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddressSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_ActiveFlagId] ON [Event].[EventXAddressSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXAddressSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddressSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_EffectiveFromDate] ON [Event].[EventXAddressSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXAddressSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddressSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_EffectiveToDate] ON [Event].[EventXAddressSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXAddressSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddressSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_EnterpriseId] ON [Event].[EventXAddressSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXAddressSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXAddressSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXAddressSecurityToken_SystemId] ON [Event].[EventXAddressSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXArrangement_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangement_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_ActiveFlagId] ON [Event].[EventXArrangement]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXArrangementScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXArrangement_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangement_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_EffectiveFromDate] ON [Event].[EventXArrangement]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXArrangementScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXArrangement_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangement_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_EffectiveToDate] ON [Event].[EventXArrangement]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXArrangementScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXArrangement_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangement_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_EnterpriseId] ON [Event].[EventXArrangement]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXArrangementScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXArrangement_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangement_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangement_SystemId] ON [Event].[EventXArrangement]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXArrangementScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXArrangementsSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_ActiveFlagId] ON [Event].[EventXArrangementsSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXArrangementsSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_EffectiveFromDate] ON [Event].[EventXArrangementsSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXArrangementsSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_EffectiveToDate] ON [Event].[EventXArrangementsSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXArrangementsSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_EnterpriseId] ON [Event].[EventXArrangementsSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXArrangementsSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXArrangementsSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXArrangementsSecurityToken_SystemId] ON [Event].[EventXArrangementsSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_ActiveFlagId] ON [Event].[EventXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXClassificationScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_EffectiveFromDate] ON [Event].[EventXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXClassificationScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_EffectiveToDate] ON [Event].[EventXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXClassificationScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_EnterpriseId] ON [Event].[EventXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXClassificationScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassification_SystemId]    Script Date: 2020/12/31 18:14:40 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassification_SystemId] ON [Event].[EventXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXClassificationScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_ActiveFlagId] ON [Event].[EventXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_EffectiveFromDate] ON [Event].[EventXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_EffectiveToDate] ON [Event].[EventXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_EnterpriseId] ON [Event].[EventXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXClassificationSecurityToken_SystemId] ON [Event].[EventXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_ActiveFlagId] ON [Event].[EventXEventType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_EffectiveFromDate] ON [Event].[EventXEventType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_EffectiveToDate] ON [Event].[EventXEventType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_EnterpriseId] ON [Event].[EventXEventType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventType_SystemId] ON [Event].[EventXEventType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_ActiveFlagId] ON [Event].[EventXEventTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_EffectiveFromDate] ON [Event].[EventXEventTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_EffectiveToDate] ON [Event].[EventXEventTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_EnterpriseId] ON [Event].[EventXEventTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXEventTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXEventTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXEventTypeSecurityToken_SystemId] ON [Event].[EventXEventTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXGeography_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeography_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_ActiveFlagId] ON [Event].[EventXGeography]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXGeographyScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXGeography_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeography_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_EffectiveFromDate] ON [Event].[EventXGeography]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXGeographyScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXGeography_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeography_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_EffectiveToDate] ON [Event].[EventXGeography]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXGeographyScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXGeography_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeography_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_EnterpriseId] ON [Event].[EventXGeography]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXGeographyScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXGeography_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeography_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeography_SystemId] ON [Event].[EventXGeography]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXGeographyScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXGeographySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeographySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_ActiveFlagId] ON [Event].[EventXGeographySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXGeographySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeographySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_EffectiveFromDate] ON [Event].[EventXGeographySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXGeographySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeographySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_EffectiveToDate] ON [Event].[EventXGeographySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXGeographySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeographySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_EnterpriseId] ON [Event].[EventXGeographySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXGeographySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXGeographySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXGeographySecurityToken_SystemId] ON [Event].[EventXGeographySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedParty_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedParty_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_ActiveFlagId] ON [Event].[EventXInvolvedParty]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedParty_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedParty_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_EffectiveFromDate] ON [Event].[EventXInvolvedParty]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedParty_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedParty_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_EffectiveToDate] ON [Event].[EventXInvolvedParty]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedParty_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedParty_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_EnterpriseId] ON [Event].[EventXInvolvedParty]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedParty_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedParty_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedParty_SystemId] ON [Event].[EventXInvolvedParty]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_ActiveFlagId] ON [Event].[EventXInvolvedPartySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_EffectiveFromDate] ON [Event].[EventXInvolvedPartySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_EffectiveToDate] ON [Event].[EventXInvolvedPartySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_EnterpriseId] ON [Event].[EventXInvolvedPartySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXInvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXInvolvedPartySecurityToken_SystemId] ON [Event].[EventXInvolvedPartySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXProduct_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProduct_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_ActiveFlagId] ON [Event].[EventXProduct]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXProduct_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProduct_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_EffectiveFromDate] ON [Event].[EventXProduct]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXProduct_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProduct_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_EffectiveToDate] ON [Event].[EventXProduct]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXProduct_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProduct_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_EnterpriseId] ON [Event].[EventXProduct]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXProduct_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProduct_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProduct_SystemId] ON [Event].[EventXProduct]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXProductScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_ActiveFlagId] ON [Event].[EventXProductSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_EffectiveFromDate] ON [Event].[EventXProductSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_EffectiveToDate] ON [Event].[EventXProductSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_EnterpriseId] ON [Event].[EventXProductSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXProductSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXProductSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXProductSecurityToken_SystemId] ON [Event].[EventXProductSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_ActiveFlagId] ON [Event].[EventXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_EffectiveFromDate] ON [Event].[EventXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_EffectiveToDate] ON [Event].[EventXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_EnterpriseId] ON [Event].[EventXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItem_SystemId] ON [Event].[EventXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXResourceItemScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_ActiveFlagId] ON [Event].[EventXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_EffectiveFromDate] ON [Event].[EventXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_EffectiveToDate] ON [Event].[EventXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_EnterpriseId] ON [Event].[EventXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXResourceItemSecurityToken_SystemId] ON [Event].[EventXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXRules_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRules_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRules_ActiveFlagId] ON [Event].[EventXRules]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXRules_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRules_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRules_EffectiveFromDate] ON [Event].[EventXRules]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXRules_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRules_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRules_EffectiveToDate] ON [Event].[EventXRules]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXRules_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRules_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRules_EnterpriseId] ON [Event].[EventXRules]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXRules_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRules_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRules_SystemId] ON [Event].[EventXRules]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [EventXRulesScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_EventXRulesSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRulesSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRulesSecurityToken_ActiveFlagId] ON [Event].[EventXRulesSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXRulesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRulesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRulesSecurityToken_EffectiveFromDate] ON [Event].[EventXRulesSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXRulesSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRulesSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRulesSecurityToken_EffectiveToDate] ON [Event].[EventXRulesSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXRulesSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRulesSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRulesSecurityToken_EnterpriseId] ON [Event].[EventXRulesSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_EventXRulesSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_EventXRulesSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_EventXRulesSecurityToken_SystemId] ON [Event].[EventXRulesSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Geography_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Geography_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_ActiveFlagId] ON [Geography].[Geography]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Geography_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Geography_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_EffectiveFromDate] ON [Geography].[Geography]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Geography_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Geography_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_EffectiveToDate] ON [Geography].[Geography]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Geography_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Geography_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_EnterpriseId] ON [Geography].[Geography]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Geography_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Geography_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Geography_SystemId] ON [Geography].[Geography]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_ActiveFlagId] ON [Geography].[GeographySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_EffectiveFromDate] ON [Geography].[GeographySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_EffectiveToDate] ON [Geography].[GeographySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_EnterpriseId] ON [Geography].[GeographySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographySecurityToken_SystemId] ON [Geography].[GeographySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_ActiveFlagId] ON [Geography].[GeographyXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_EffectiveFromDate] ON [Geography].[GeographyXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_EffectiveToDate] ON [Geography].[GeographyXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_EnterpriseId] ON [Geography].[GeographyXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassification_SystemId] ON [Geography].[GeographyXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_ActiveFlagId] ON [Geography].[GeographyXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_EffectiveFromDate] ON [Geography].[GeographyXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_EffectiveToDate] ON [Geography].[GeographyXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_EnterpriseId] ON [Geography].[GeographyXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXClassificationSecurityToken_SystemId] ON [Geography].[GeographyXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeography_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeography_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_ActiveFlagId] ON [Geography].[GeographyXGeography]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeography_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeography_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_EffectiveFromDate] ON [Geography].[GeographyXGeography]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeography_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeography_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_EffectiveToDate] ON [Geography].[GeographyXGeography]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeography_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeography_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_EnterpriseId] ON [Geography].[GeographyXGeography]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeography_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeography_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeography_SystemId] ON [Geography].[GeographyXGeography]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeographySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_ActiveFlagId] ON [Geography].[GeographyXGeographySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeographySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_EffectiveFromDate] ON [Geography].[GeographyXGeographySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeographySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_EffectiveToDate] ON [Geography].[GeographyXGeographySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeographySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_EnterpriseId] ON [Geography].[GeographyXGeographySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXGeographySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXGeographySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXGeographySecurityToken_SystemId] ON [Geography].[GeographyXGeographySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_ActiveFlagId] ON [Geography].[GeographyXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_EffectiveFromDate] ON [Geography].[GeographyXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_EffectiveToDate] ON [Geography].[GeographyXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_EnterpriseId] ON [Geography].[GeographyXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItem_SystemId] ON [Geography].[GeographyXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_ActiveFlagId] ON [Geography].[GeographyXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_EffectiveFromDate] ON [Geography].[GeographyXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_EffectiveToDate] ON [Geography].[GeographyXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_EnterpriseId] ON [Geography].[GeographyXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_GeographyXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_GeographyXResourceItemSecurityToken_SystemId] ON [Geography].[GeographyXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedParty_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedParty_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_ActiveFlagId] ON [Party].[InvolvedParty]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [InvolvedPartyDataPartitionScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_InvolvedParty_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedParty_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_EffectiveFromDate] ON [Party].[InvolvedParty]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [InvolvedPartyDataPartitionScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_InvolvedParty_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedParty_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_EffectiveToDate] ON [Party].[InvolvedParty]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [InvolvedPartyDataPartitionScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_InvolvedParty_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedParty_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_EnterpriseId] ON [Party].[InvolvedParty]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [InvolvedPartyDataPartitionScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_InvolvedParty_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedParty_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedParty_SystemId] ON [Party].[InvolvedParty]
 (
 	[SystemID] ASC
@@ -7912,2144 +7966,2204 @@ CREATE NONCLUSTERED INDEX [IX_InvolvedParty_SystemId] ON [Party].[InvolvedParty]
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationType]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationType]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType] ON [Party].[InvolvedPartyIdentificationType]
 (
 	[InvolvedPartyIdentificationName] ASC,
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_ActiveFlagId] ON [Party].[InvolvedPartyIdentificationType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_EffectiveFromDate] ON [Party].[InvolvedPartyIdentificationType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_EffectiveToDate] ON [Party].[InvolvedPartyIdentificationType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_EnterpriseId] ON [Party].[InvolvedPartyIdentificationType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationType_SystemId] ON [Party].[InvolvedPartyIdentificationType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyIdentificationTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyIdentificationTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyIdentificationTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyIdentificationTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyIdentificationTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyIdentificationTypeSecurityToken_SystemId] ON [Party].[InvolvedPartyIdentificationTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_ActiveFlagId] ON [Party].[InvolvedPartyNameType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_EffectiveFromDate] ON [Party].[InvolvedPartyNameType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_EffectiveToDate] ON [Party].[InvolvedPartyNameType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_EnterpriseId] ON [Party].[InvolvedPartyNameType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameType_SystemId] ON [Party].[InvolvedPartyNameType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyNameTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyNameTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyNameTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyNameTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNameTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNameTypeSecurityToken_SystemId] ON [Party].[InvolvedPartyNameTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganic_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_ActiveFlagId] ON [Party].[InvolvedPartyNonOrganic]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganic_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_EffectiveFromDate] ON [Party].[InvolvedPartyNonOrganic]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganic_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_EffectiveToDate] ON [Party].[InvolvedPartyNonOrganic]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganic_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_EnterpriseId] ON [Party].[InvolvedPartyNonOrganic]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganic_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganic_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganic_SystemId] ON [Party].[InvolvedPartyNonOrganic]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyNonOrganicSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyNonOrganicSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyNonOrganicSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyNonOrganicSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyNonOrganicSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyNonOrganicSecurityToken_SystemId] ON [Party].[InvolvedPartyNonOrganicSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganic_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganic_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_ActiveFlagId] ON [Party].[InvolvedPartyOrganic]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganic_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganic_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_EffectiveFromDate] ON [Party].[InvolvedPartyOrganic]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganic_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganic_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_EffectiveToDate] ON [Party].[InvolvedPartyOrganic]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganic_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganic_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_EnterpriseId] ON [Party].[InvolvedPartyOrganic]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganic_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganic_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganic_SystemId] ON [Party].[InvolvedPartyOrganic]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyOrganicSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyOrganicSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyOrganicSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyOrganicSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicSecurityToken_SystemId] ON [Party].[InvolvedPartyOrganicSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_ActiveFlagId] ON [Party].[InvolvedPartyOrganicType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_EffectiveFromDate] ON [Party].[InvolvedPartyOrganicType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_EffectiveToDate] ON [Party].[InvolvedPartyOrganicType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_EnterpriseId] ON [Party].[InvolvedPartyOrganicType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicType_SystemId] ON [Party].[InvolvedPartyOrganicType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyOrganicTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyOrganicTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyOrganicTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyOrganicTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyOrganicTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyOrganicTypeSecurityToken_SystemId] ON [Party].[InvolvedPartyOrganicTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_ActiveFlagId] ON [Party].[InvolvedPartySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_EffectiveToDate] ON [Party].[InvolvedPartySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_EnterpriseId] ON [Party].[InvolvedPartySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartySecurityToken_SystemId] ON [Party].[InvolvedPartySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_ActiveFlagId] ON [Party].[InvolvedPartyType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_EffectiveFromDate] ON [Party].[InvolvedPartyType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_EffectiveToDate] ON [Party].[InvolvedPartyType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_EnterpriseId] ON [Party].[InvolvedPartyType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyType_SystemId] ON [Party].[InvolvedPartyType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyTypeSecurityToken_SystemId] ON [Party].[InvolvedPartyTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddress_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddress_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_ActiveFlagId] ON [Party].[InvolvedPartyXAddress]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddress_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddress_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_EffectiveFromDate] ON [Party].[InvolvedPartyXAddress]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddress_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddress_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_EffectiveToDate] ON [Party].[InvolvedPartyXAddress]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddress_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddress_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_EnterpriseId] ON [Party].[InvolvedPartyXAddress]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddress_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddress_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddress_SystemId] ON [Party].[InvolvedPartyXAddress]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXAddressSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXAddressSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXAddressSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXAddressSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXAddressSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXAddressSecurityToken_SystemId] ON [Party].[InvolvedPartyXAddressSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_ActiveFlagId] ON [Party].[InvolvedPartyXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_EffectiveFromDate] ON [Party].[InvolvedPartyXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_EffectiveToDate] ON [Party].[InvolvedPartyXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_EnterpriseId] ON [Party].[InvolvedPartyXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassification_SystemId] ON [Party].[InvolvedPartyXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXClassificationSecurityToken_SystemId] ON [Party].[InvolvedPartyXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_ActiveFlagId] ON [Party].[InvolvedPartyXInvolvedParty]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_EffectiveFromDate] ON [Party].[InvolvedPartyXInvolvedParty]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_EffectiveToDate] ON [Party].[InvolvedPartyXInvolvedParty]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_EnterpriseId] ON [Party].[InvolvedPartyXInvolvedParty]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedParty_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedParty_SystemId] ON [Party].[InvolvedPartyXInvolvedParty]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_ActiveFlagId] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveFromDate] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_EffectiveToDate] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_EnterpriseId] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationType_SystemId] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken_SystemId] ON [Party].[InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_ActiveFlagId] ON [Party].[InvolvedPartyXInvolvedPartyNameType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveFromDate] ON [Party].[InvolvedPartyXInvolvedPartyNameType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_EffectiveToDate] ON [Party].[InvolvedPartyXInvolvedPartyNameType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_EnterpriseId] ON [Party].[InvolvedPartyXInvolvedPartyNameType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameType_SystemId] ON [Party].[InvolvedPartyXInvolvedPartyNameType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyNameTypeSecurityToken_SystemId] ON [Party].[InvolvedPartyXInvolvedPartyNameTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXInvolvedPartySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXInvolvedPartySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXInvolvedPartySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXInvolvedPartySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartySecurityToken_SystemId] ON [Party].[InvolvedPartyXInvolvedPartySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_ActiveFlagId] ON [Party].[InvolvedPartyXInvolvedPartyType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_EffectiveFromDate] ON [Party].[InvolvedPartyXInvolvedPartyType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_EffectiveToDate] ON [Party].[InvolvedPartyXInvolvedPartyType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_EnterpriseId] ON [Party].[InvolvedPartyXInvolvedPartyType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyType_SystemId] ON [Party].[InvolvedPartyXInvolvedPartyType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXInvolvedPartyTypeSecurityToken_SystemId] ON [Party].[InvolvedPartyXInvolvedPartyTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProduct_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProduct_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_ActiveFlagId] ON [Party].[InvolvedPartyXProduct]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProduct_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProduct_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_EffectiveFromDate] ON [Party].[InvolvedPartyXProduct]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProduct_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProduct_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_EffectiveToDate] ON [Party].[InvolvedPartyXProduct]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProduct_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProduct_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_EnterpriseId] ON [Party].[InvolvedPartyXProduct]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProduct_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProduct_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProduct_SystemId] ON [Party].[InvolvedPartyXProduct]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXProductSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXProductSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXProductSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXProductSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProductSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductSecurityToken_SystemId] ON [Party].[InvolvedPartyXProductSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXProductType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductType_ActiveFlagId] ON [Party].[InvolvedPartyXProductType]
+(
+	[ActiveFlagID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductType_EffectiveFromDate] ON [Party].[InvolvedPartyXProductType]
+(
+	[EffectiveFromDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductType_EffectiveToDate] ON [Party].[InvolvedPartyXProductType]
+(
+	[EffectiveToDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductType_EnterpriseId] ON [Party].[InvolvedPartyXProductType]
+(
+	[EnterpriseID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductType_SystemId] ON [Party].[InvolvedPartyXProductType]
+(
+	[SystemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductTypeSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXProductTypeSecurityToken]
+(
+	[ActiveFlagID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductTypeSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXProductTypeSecurityToken]
+(
+	[EffectiveFromDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductTypeSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXProductTypeSecurityToken]
+(
+	[EffectiveToDate] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductTypeSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXProductTypeSecurityToken]
+(
+	[EnterpriseID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXProductTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
+CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXProductTypeSecurityToken_SystemId] ON [Party].[InvolvedPartyXProductTypeSecurityToken]
+(
+	[SystemID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_ActiveFlagId] ON [Party].[InvolvedPartyXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_EffectiveFromDate] ON [Party].[InvolvedPartyXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_EffectiveToDate] ON [Party].[InvolvedPartyXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_EnterpriseId] ON [Party].[InvolvedPartyXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItem_SystemId] ON [Party].[InvolvedPartyXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXResourceItemSecurityToken_SystemId] ON [Party].[InvolvedPartyXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRules_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRules_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRules_ActiveFlagId] ON [Party].[InvolvedPartyXRules]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRules_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRules_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRules_EffectiveFromDate] ON [Party].[InvolvedPartyXRules]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRules_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRules_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRules_EffectiveToDate] ON [Party].[InvolvedPartyXRules]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRules_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRules_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRules_EnterpriseId] ON [Party].[InvolvedPartyXRules]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRules_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRules_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRules_SystemId] ON [Party].[InvolvedPartyXRules]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRulesSecurityToken_ActiveFlagId] ON [Party].[InvolvedPartyXRulesSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRulesSecurityToken_EffectiveFromDate] ON [Party].[InvolvedPartyXRulesSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRulesSecurityToken_EffectiveToDate] ON [Party].[InvolvedPartyXRulesSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRulesSecurityToken_EnterpriseId] ON [Party].[InvolvedPartyXRulesSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_InvolvedPartyXRulesSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_InvolvedPartyXRulesSecurityToken_SystemId] ON [Party].[InvolvedPartyXRulesSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Party]
 GO
-/****** Object:  Index [IX_Product_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Product_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_ActiveFlagId] ON [Product].[Product]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Product_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Product_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_EffectiveFromDate] ON [Product].[Product]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Product_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Product_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_EffectiveToDate] ON [Product].[Product]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Product_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Product_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_EnterpriseId] ON [Product].[Product]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Product_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_Product_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Product_SystemId] ON [Product].[Product]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_ActiveFlagId] ON [Product].[ProductSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_EffectiveFromDate] ON [Product].[ProductSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_EffectiveToDate] ON [Product].[ProductSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_EnterpriseId] ON [Product].[ProductSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductSecurityToken_SystemId] ON [Product].[ProductSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassification_ActiveFlagId] ON [Product].[ProductTypeXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassification_EffectiveFromDate] ON [Product].[ProductTypeXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassification_EffectiveToDate] ON [Product].[ProductTypeXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassification_EnterpriseId] ON [Product].[ProductTypeXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassification_SystemId] ON [Product].[ProductTypeXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassificationSecurityToken_ActiveFlagId] ON [Product].[ProductTypeXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassificationSecurityToken_EffectiveFromDate] ON [Product].[ProductTypeXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassificationSecurityToken_EffectiveToDate] ON [Product].[ProductTypeXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassificationSecurityToken_EnterpriseId] ON [Product].[ProductTypeXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductTypeXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductTypeXClassificationSecurityToken_SystemId] ON [Product].[ProductTypeXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_ActiveFlagId] ON [Product].[ProductXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_EffectiveFromDate] ON [Product].[ProductXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_EffectiveToDate] ON [Product].[ProductXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_EnterpriseId] ON [Product].[ProductXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassification_SystemId] ON [Product].[ProductXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_ActiveFlagId] ON [Product].[ProductXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_EffectiveFromDate] ON [Product].[ProductXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_EffectiveToDate] ON [Product].[ProductXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_EnterpriseId] ON [Product].[ProductXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXClassificationSecurityToken_SystemId] ON [Product].[ProductXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProduct_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProduct_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_ActiveFlagId] ON [Product].[ProductXProduct]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProduct_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProduct_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_EffectiveFromDate] ON [Product].[ProductXProduct]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProduct_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProduct_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_EffectiveToDate] ON [Product].[ProductXProduct]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProduct_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProduct_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_EnterpriseId] ON [Product].[ProductXProduct]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProduct_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProduct_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProduct_SystemId] ON [Product].[ProductXProduct]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_ActiveFlagId] ON [Product].[ProductXProductSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_EffectiveFromDate] ON [Product].[ProductXProductSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_EffectiveToDate] ON [Product].[ProductXProductSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_EnterpriseId] ON [Product].[ProductXProductSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXProductSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXProductSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXProductSecurityToken_SystemId] ON [Product].[ProductXProductSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_ActiveFlagId] ON [Product].[ProductXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_EffectiveFromDate] ON [Product].[ProductXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_EffectiveToDate] ON [Product].[ProductXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_EnterpriseId] ON [Product].[ProductXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItem_SystemId] ON [Product].[ProductXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_ActiveFlagId] ON [Product].[ProductXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_EffectiveFromDate] ON [Product].[ProductXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_EffectiveToDate] ON [Product].[ProductXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_EnterpriseId] ON [Product].[ProductXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ProductXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ProductXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ProductXResourceItemSecurityToken_SystemId] ON [Product].[ProductXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_ActiveFlagId] ON [Resource].[ResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_EffectiveFromDate] ON [Resource].[ResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_EffectiveToDate] ON [Resource].[ResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_EnterpriseId] ON [Resource].[ResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItem_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItem_SystemId] ON [Resource].[ResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemData_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemData_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_ActiveFlagId] ON [Resource].[ResourceItemData]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ResourceItemData_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemData_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_EffectiveFromDate] ON [Resource].[ResourceItemData]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ResourceItemData_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemData_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_EffectiveToDate] ON [Resource].[ResourceItemData]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ResourceItemData_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemData_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_EnterpriseId] ON [Resource].[ResourceItemData]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ResourceItemData_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemData_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemData_SystemId] ON [Resource].[ResourceItemData]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [ResourceItemDataScheme]([EffectiveFromDate])
 GO
-/****** Object:  Index [IX_ResourceItemDataSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_ActiveFlagId] ON [Resource].[ResourceItemDataSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_EffectiveFromDate] ON [Resource].[ResourceItemDataSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_EffectiveToDate] ON [Resource].[ResourceItemDataSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_EnterpriseId] ON [Resource].[ResourceItemDataSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataSecurityToken_SystemId] ON [Resource].[ResourceItemDataSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_ActiveFlagId] ON [Resource].[ResourceItemDataXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_EffectiveFromDate] ON [Resource].[ResourceItemDataXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_EffectiveToDate] ON [Resource].[ResourceItemDataXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_EnterpriseId] ON [Resource].[ResourceItemDataXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassification_SystemId] ON [Resource].[ResourceItemDataXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_ActiveFlagId] ON [Resource].[ResourceItemDataXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_EffectiveFromDate] ON [Resource].[ResourceItemDataXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_EffectiveToDate] ON [Resource].[ResourceItemDataXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_EnterpriseId] ON [Resource].[ResourceItemDataXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemDataXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemDataXClassificationSecurityToken_SystemId] ON [Resource].[ResourceItemDataXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_ActiveFlagId] ON [Resource].[ResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_EffectiveFromDate] ON [Resource].[ResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_EffectiveToDate] ON [Resource].[ResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_EnterpriseId] ON [Resource].[ResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemSecurityToken_SystemId] ON [Resource].[ResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_ActiveFlagId] ON [Resource].[ResourceItemXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_EffectiveFromDate] ON [Resource].[ResourceItemXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_EffectiveToDate] ON [Resource].[ResourceItemXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_EnterpriseId] ON [Resource].[ResourceItemXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassification_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassification_SystemId] ON [Resource].[ResourceItemXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_ActiveFlagId] ON [Resource].[ResourceItemXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_EffectiveFromDate] ON [Resource].[ResourceItemXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_EffectiveToDate] ON [Resource].[ResourceItemXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_EnterpriseId] ON [Resource].[ResourceItemXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXClassificationSecurityToken_SystemId] ON [Resource].[ResourceItemXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItem_ActiveFlagId] ON [Resource].[ResourceItemXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItem_EffectiveFromDate] ON [Resource].[ResourceItemXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItem_EffectiveToDate] ON [Resource].[ResourceItemXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItem_EnterpriseId] ON [Resource].[ResourceItemXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItem_SystemId] ON [Resource].[ResourceItemXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:35 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItemSecurityToken_ActiveFlagId] ON [Resource].[ResourceItemXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItemSecurityToken_EffectiveFromDate] ON [Resource].[ResourceItemXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItemSecurityToken_EffectiveToDate] ON [Resource].[ResourceItemXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItemSecurityToken_EnterpriseId] ON [Resource].[ResourceItemXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_ResourceItemXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_ResourceItemXResourceItemSecurityToken_SystemId] ON [Resource].[ResourceItemXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Rules_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_Rules_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Rules_ActiveFlagId] ON [Rules].[Rules]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Rules_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_Rules_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Rules_EffectiveFromDate] ON [Rules].[Rules]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Rules_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_Rules_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Rules_EffectiveToDate] ON [Rules].[Rules]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Rules_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_Rules_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Rules_EnterpriseId] ON [Rules].[Rules]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_Rules_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_Rules_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_Rules_SystemId] ON [Rules].[Rules]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleSecurityToken_ActiveFlagId] ON [Rules].[RulesSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleSecurityToken_EffectiveFromDate] ON [Rules].[RulesSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleSecurityToken_EffectiveToDate] ON [Rules].[RulesSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleSecurityToken_EnterpriseId] ON [Rules].[RulesSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleSecurityToken_SystemId] ON [Rules].[RulesSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleType_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleType_ActiveFlagId] ON [Rules].[RulesType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleType_EffectiveFromDate] ON [Rules].[RulesType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleType_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleType_EffectiveToDate] ON [Rules].[RulesType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleType_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleType_EnterpriseId] ON [Rules].[RulesType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleType_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleType_SystemId] ON [Rules].[RulesType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleTypesSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleTypesSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleTypesSecurityToken_ActiveFlagId] ON [Rules].[RulesTypesSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleTypesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleTypesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleTypesSecurityToken_EffectiveFromDate] ON [Rules].[RulesTypesSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleTypesSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleTypesSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleTypesSecurityToken_EffectiveToDate] ON [Rules].[RulesTypesSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleTypesSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleTypesSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleTypesSecurityToken_EnterpriseId] ON [Rules].[RulesTypesSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RuleTypesSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RuleTypesSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RuleTypesSecurityToken_SystemId] ON [Rules].[RulesTypesSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesTypeXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassification_ActiveFlagId] ON [Rules].[RulesTypeXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassification_EffectiveFromDate] ON [Rules].[RulesTypeXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassification_EffectiveToDate] ON [Rules].[RulesTypeXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassification_EnterpriseId] ON [Rules].[RulesTypeXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassification_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassification_SystemId] ON [Rules].[RulesTypeXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassificationSecurityToken_ActiveFlagId] ON [Rules].[RulesTypeXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassificationSecurityToken_EffectiveFromDate] ON [Rules].[RulesTypeXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassificationSecurityToken_EffectiveToDate] ON [Rules].[RulesTypeXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassificationSecurityToken_EnterpriseId] ON [Rules].[RulesTypeXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesTypeXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesTypeXClassificationSecurityToken_SystemId] ON [Rules].[RulesTypeXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [Rules]
 GO
-/****** Object:  Index [IX_RulesXArrangement_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangement_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangement_ActiveFlagId] ON [Rules].[RulesXArrangement]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangement_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangement_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangement_EffectiveFromDate] ON [Rules].[RulesXArrangement]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangement_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangement_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangement_EffectiveToDate] ON [Rules].[RulesXArrangement]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangement_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangement_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangement_EnterpriseId] ON [Rules].[RulesXArrangement]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangement_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangement_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangement_SystemId] ON [Rules].[RulesXArrangement]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangementsSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangementsSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangementsSecurityToken_ActiveFlagId] ON [Rules].[RulesXArrangementsSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangementsSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangementsSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangementsSecurityToken_EffectiveFromDate] ON [Rules].[RulesXArrangementsSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangementsSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangementsSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangementsSecurityToken_EffectiveToDate] ON [Rules].[RulesXArrangementsSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangementsSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangementsSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangementsSecurityToken_EnterpriseId] ON [Rules].[RulesXArrangementsSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXArrangementsSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXArrangementsSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXArrangementsSecurityToken_SystemId] ON [Rules].[RulesXArrangementsSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassification_ActiveFlagId] ON [Rules].[RulesXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassification_EffectiveFromDate] ON [Rules].[RulesXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassification_EffectiveToDate] ON [Rules].[RulesXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassification_EnterpriseId] ON [Rules].[RulesXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassification_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassification_SystemId] ON [Rules].[RulesXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassificationSecurityToken_ActiveFlagId] ON [Rules].[RulesXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassificationSecurityToken_EffectiveFromDate] ON [Rules].[RulesXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassificationSecurityToken_EffectiveToDate] ON [Rules].[RulesXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassificationSecurityToken_EnterpriseId] ON [Rules].[RulesXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXClassificationSecurityToken_SystemId] ON [Rules].[RulesXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedParty_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedParty_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedParty_ActiveFlagId] ON [Rules].[RulesXInvolvedParty]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedParty_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedParty_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedParty_EffectiveFromDate] ON [Rules].[RulesXInvolvedParty]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedParty_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedParty_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedParty_EffectiveToDate] ON [Rules].[RulesXInvolvedParty]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedParty_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedParty_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedParty_EnterpriseId] ON [Rules].[RulesXInvolvedParty]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedParty_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedParty_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedParty_SystemId] ON [Rules].[RulesXInvolvedParty]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedPartySecurityToken_ActiveFlagId] ON [Rules].[RulesXInvolvedPartySecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedPartySecurityToken_EffectiveFromDate] ON [Rules].[RulesXInvolvedPartySecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedPartySecurityToken_EffectiveToDate] ON [Rules].[RulesXInvolvedPartySecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedPartySecurityToken_EnterpriseId] ON [Rules].[RulesXInvolvedPartySecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXInvolvedPartySecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXInvolvedPartySecurityToken_SystemId] ON [Rules].[RulesXInvolvedPartySecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProduct_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProduct_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProduct_ActiveFlagId] ON [Rules].[RulesXProduct]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProduct_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProduct_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProduct_EffectiveFromDate] ON [Rules].[RulesXProduct]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProduct_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProduct_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProduct_EffectiveToDate] ON [Rules].[RulesXProduct]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProduct_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProduct_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProduct_EnterpriseId] ON [Rules].[RulesXProduct]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProduct_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProduct_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProduct_SystemId] ON [Rules].[RulesXProduct]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProductSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProductSecurityToken_ActiveFlagId] ON [Rules].[RulesXProductSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProductSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProductSecurityToken_EffectiveFromDate] ON [Rules].[RulesXProductSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProductSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProductSecurityToken_EffectiveToDate] ON [Rules].[RulesXProductSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProductSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProductSecurityToken_EnterpriseId] ON [Rules].[RulesXProductSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXProductSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXProductSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXProductSecurityToken_SystemId] ON [Rules].[RulesXProductSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItem_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItem_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItem_ActiveFlagId] ON [Rules].[RulesXResourceItem]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItem_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItem_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItem_EffectiveFromDate] ON [Rules].[RulesXResourceItem]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItem_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItem_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItem_EffectiveToDate] ON [Rules].[RulesXResourceItem]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItem_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItem_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItem_EnterpriseId] ON [Rules].[RulesXResourceItem]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItem_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItem_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItem_SystemId] ON [Rules].[RulesXResourceItem]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItemSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItemSecurityToken_ActiveFlagId] ON [Rules].[RulesXResourceItemSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItemSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItemSecurityToken_EffectiveFromDate] ON [Rules].[RulesXResourceItemSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItemSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItemSecurityToken_EffectiveToDate] ON [Rules].[RulesXResourceItemSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItemSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItemSecurityToken_EnterpriseId] ON [Rules].[RulesXResourceItemSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXResourceItemSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXResourceItemSecurityToken_SystemId] ON [Rules].[RulesXResourceItemSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRules_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRules_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRules_ActiveFlagId] ON [Rules].[RulesXRules]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRules_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRules_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRules_EffectiveFromDate] ON [Rules].[RulesXRules]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRules_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRules_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRules_EffectiveToDate] ON [Rules].[RulesXRules]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRules_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRules_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRules_EnterpriseId] ON [Rules].[RulesXRules]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRules_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRules_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRules_SystemId] ON [Rules].[RulesXRules]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesSecurityToken_ActiveFlagId] ON [Rules].[RulesXRulesSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesSecurityToken_EffectiveFromDate] ON [Rules].[RulesXRulesSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesSecurityToken_EffectiveToDate] ON [Rules].[RulesXRulesSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesSecurityToken_EnterpriseId] ON [Rules].[RulesXRulesSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesSecurityToken_SystemId] ON [Rules].[RulesXRulesSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesType_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesType_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesType_ActiveFlagId] ON [Rules].[RulesXRulesType]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesType_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesType_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesType_EffectiveFromDate] ON [Rules].[RulesXRulesType]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesType_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesType_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesType_EffectiveToDate] ON [Rules].[RulesXRulesType]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesType_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesType_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesType_EnterpriseId] ON [Rules].[RulesXRulesType]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesType_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesType_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesType_SystemId] ON [Rules].[RulesXRulesType]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesTypeSecurityToken_ActiveFlagId] ON [Rules].[RulesXRulesTypeSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesTypeSecurityToken_EffectiveFromDate] ON [Rules].[RulesXRulesTypeSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesTypeSecurityToken_EffectiveToDate] ON [Rules].[RulesXRulesTypeSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesTypeSecurityToken_EnterpriseId] ON [Rules].[RulesXRulesTypeSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_RulesXRulesTypeSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_RulesXRulesTypeSecurityToken_SystemId] ON [Rules].[RulesXRulesTypeSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityHierarchy_ParentID]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityHierarchy_ParentID]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityHierarchy_ParentID] ON [Security].[SecurityHierarchy]
 (
 	[ParentID] ASC
@@ -10057,176 +10171,176 @@ CREATE NONCLUSTERED INDEX [IX_SecurityHierarchy_ParentID] ON [Security].[Securit
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [IX_SecurityHierarchyName]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityHierarchyName]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityHierarchyName] ON [Security].[SecurityHierarchy]
 (
 	[Name] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityHierarchyParents]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityHierarchyParents]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityHierarchyParents] ON [Security].[SecurityHierarchyParents]
 (
 	[id] DESC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [UX_SecurityHierarchyParents]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [UX_SecurityHierarchyParents]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [UX_SecurityHierarchyParents] ON [Security].[SecurityHierarchyParents]
 (
 	[id] DESC,
 	[value] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_ActiveFlagId] ON [Security].[SecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_EffectiveFromDate] ON [Security].[SecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_EffectiveToDate] ON [Security].[SecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_EnterpriseId] ON [Security].[SecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityToken_SystemId] ON [Security].[SecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenAccess_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenAccess_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_ActiveFlagId] ON [Security].[SecurityTokensSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenAccess_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenAccess_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_EffectiveFromDate] ON [Security].[SecurityTokensSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenAccess_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenAccess_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_EffectiveToDate] ON [Security].[SecurityTokensSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenAccess_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenAccess_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_EnterpriseId] ON [Security].[SecurityTokensSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenAccess_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenAccess_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenAccess_SystemId] ON [Security].[SecurityTokensSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassification_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassification_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_ActiveFlagId] ON [Security].[SecurityTokenXClassification]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassification_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassification_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_EffectiveFromDate] ON [Security].[SecurityTokenXClassification]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassification_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassification_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_EffectiveToDate] ON [Security].[SecurityTokenXClassification]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassification_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassification_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_EnterpriseId] ON [Security].[SecurityTokenXClassification]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassification_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassification_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassification_SystemId] ON [Security].[SecurityTokenXClassification]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_ActiveFlagId] ON [Security].[SecurityTokenXClassificationSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_EffectiveFromDate] ON [Security].[SecurityTokenXClassificationSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_EffectiveToDate] ON [Security].[SecurityTokenXClassificationSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_EnterpriseId] ON [Security].[SecurityTokenXClassificationSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXClassificationSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXClassificationSecurityToken_SystemId] ON [Security].[SecurityTokenXClassificationSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXSecurityToken_ActiveFlagId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_ActiveFlagId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_ActiveFlagId] ON [Security].[SecurityTokenXSecurityToken]
 (
 	[ActiveFlagID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXSecurityToken_EffectiveFromDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_EffectiveFromDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_EffectiveFromDate] ON [Security].[SecurityTokenXSecurityToken]
 (
 	[EffectiveFromDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXSecurityToken_EffectiveToDate]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_EffectiveToDate]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_EffectiveToDate] ON [Security].[SecurityTokenXSecurityToken]
 (
 	[EffectiveToDate] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXSecurityToken_EnterpriseId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_EnterpriseId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_EnterpriseId] ON [Security].[SecurityTokenXSecurityToken]
 (
 	[EnterpriseID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_SecurityTokenXSecurityToken_SystemId]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_SecurityTokenXSecurityToken_SystemId]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE NONCLUSTERED INDEX [IX_SecurityTokenXSecurityToken_SystemId] ON [Security].[SecurityTokenXSecurityToken]
 (
 	[SystemID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [UX_SecurityTokenXSecurityToken]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [UX_SecurityTokenXSecurityToken]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [UX_SecurityTokenXSecurityToken] ON [Security].[SecurityTokenXSecurityToken]
 (
 	[ClassificationID] ASC,
@@ -10234,7 +10348,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [UX_SecurityTokenXSecurityToken] ON [Security].
 	[ChildSecurityTokenID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_HalfHourDayParts]    Script Date: 2020/12/30 15:25:36 ******/
+/****** Object:  Index [IX_HalfHourDayParts]    Script Date: 2020/12/31 18:14:41 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [IX_HalfHourDayParts] ON [Time].[HalfHourDayParts]
 (
 	[HourID] ASC,
@@ -11842,6 +11956,36 @@ GO
 ALTER TABLE [Party].[InvolvedPartyXProductSecurityToken] ADD  CONSTRAINT [DF_InvolvedPartyXProductSecurityTokens_EffectiveFromDate]  DEFAULT (getdate()) FOR [EffectiveFromDate]
 GO
 ALTER TABLE [Party].[InvolvedPartyXProductSecurityToken] ADD  CONSTRAINT [DF_InvolvedPartyXProductSecurityTokens_EffectiveToDate]  DEFAULT ('2999/12/31 11:59:59.999') FOR [EffectiveToDate]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] ADD  DEFAULT (newid()) FOR [InvolvedPartyXProductTypeID]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] ADD  CONSTRAINT [DF_InvolvedPartyXProductType_OriginalSourceSystemUniqueID]  DEFAULT ('-') FOR [OriginalSourceSystemUniqueID]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] ADD  CONSTRAINT [DF_InvolvedPartyXProductType_WarehouseCreatedTimestamp]  DEFAULT (getdate()) FOR [WarehouseCreatedTimestamp]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] ADD  CONSTRAINT [DF_InvolvedPartyXProductType_WarehouseLastUpdatedTimestamp]  DEFAULT (getdate()) FOR [WarehouseLastUpdatedTimestamp]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] ADD  CONSTRAINT [DF_InvolvedPartyXProductType_EffectiveFromDate]  DEFAULT (getdate()) FOR [EffectiveFromDate]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] ADD  CONSTRAINT [DF_InvolvedPartyXProductType_EffectiveToDate]  DEFAULT ('2999/12/31 11:59:59.999') FOR [EffectiveToDate]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  DEFAULT (newid()) FOR [InvolvedPartyXProductTypeSecurityTokenID]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  CONSTRAINT [DF__InvolvedPTypeartyXProductTypeSe__Create]  DEFAULT ((1)) FOR [CreateAllowed]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  CONSTRAINT [DF__InvolvedPTypeartyXProductTypeSe__Update]  DEFAULT ((1)) FOR [UpdateAllowed]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  CONSTRAINT [DF__InvolvedPTypeartyXProductTypeSe__Delete]  DEFAULT ((1)) FOR [DeleteAllowed]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  CONSTRAINT [DF_InvolvedPartyXProductTypeSecurityTokens_OriginalSourceSystemUniqueID]  DEFAULT ('-') FOR [OriginalSourceSystemUniqueID]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  CONSTRAINT [DF_InvolvedPartyXProductTypeSecurityTokens_WarehouseCreatedTimestamp]  DEFAULT (getdate()) FOR [WarehouseCreatedTimestamp]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  CONSTRAINT [DF_InvolvedPartyXProductTypeSecurityTokens_WarehouseLastUpdatedTimestamp]  DEFAULT (getdate()) FOR [WarehouseLastUpdatedTimestamp]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  CONSTRAINT [DF_InvolvedPartyXProductTypeSecurityTokens_EffectiveFromDate]  DEFAULT (getdate()) FOR [EffectiveFromDate]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] ADD  CONSTRAINT [DF_InvolvedPartyXProductTypeSecurityTokens_EffectiveToDate]  DEFAULT ('2999/12/31 11:59:59.999') FOR [EffectiveToDate]
 GO
 ALTER TABLE [Party].[InvolvedPartyXResourceItem] ADD  DEFAULT (newid()) FOR [InvolvedPartyXResourceItemID]
 GO
@@ -16149,6 +16293,71 @@ REFERENCES [dbo].[Systems] ([SystemID])
 GO
 ALTER TABLE [Party].[InvolvedPartyXProductSecurityToken] CHECK CONSTRAINT [FK_InvolvedPartyXProductSecurityTokens_Systems]
 GO
+ALTER TABLE [Party].[InvolvedPartyXProductType]  WITH CHECK ADD  CONSTRAINT [FK__InvolvedPType__Enter__1A3FCC1E] FOREIGN KEY([EnterpriseID])
+REFERENCES [dbo].[Enterprise] ([EnterpriseID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] CHECK CONSTRAINT [FK__InvolvedPType__Enter__1A3FCC1E]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType]  WITH CHECK ADD  CONSTRAINT [FK__InvolvedPType__Syste__1B33F057] FOREIGN KEY([SystemID])
+REFERENCES [dbo].[Systems] ([SystemID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] CHECK CONSTRAINT [FK__InvolvedPType__Syste__1B33F057]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductType_ActiveFlags] FOREIGN KEY([ActiveFlagID])
+REFERENCES [dbo].[ActiveFlag] ([ActiveFlagID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] CHECK CONSTRAINT [FK_InvolvedPartyXProductType_ActiveFlags]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductType_Classification] FOREIGN KEY([ClassificationID])
+REFERENCES [Classification].[Classification] ([ClassificationID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] CHECK CONSTRAINT [FK_InvolvedPartyXProductType_Classification]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductType_ProductType] FOREIGN KEY([InvolvedPartyID])
+REFERENCES [Party].[InvolvedParty] ([InvolvedPartyID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] CHECK CONSTRAINT [FK_InvolvedPartyXProductType_ProductType]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductType_ProductType1] FOREIGN KEY([ProductTypeID])
+REFERENCES [Product].[ProductType] ([ProductTypeID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] CHECK CONSTRAINT [FK_InvolvedPartyXProductType_ProductType1]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductType_Systems] FOREIGN KEY([OriginalSourceSystemID])
+REFERENCES [dbo].[Systems] ([SystemID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductType] CHECK CONSTRAINT [FK_InvolvedPartyXProductType_Systems]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken]  WITH CHECK ADD  CONSTRAINT [FK__InvolvedPTypeartyXProductTypeSecurity__ActiveFlag] FOREIGN KEY([ActiveFlagID])
+REFERENCES [dbo].[ActiveFlag] ([ActiveFlagID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] CHECK CONSTRAINT [FK__InvolvedPTypeartyXProductTypeSecurity__ActiveFlag]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityToken_Enterprise] FOREIGN KEY([EnterpriseID])
+REFERENCES [dbo].[Enterprise] ([EnterpriseID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] CHECK CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityToken_Enterprise]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityTokens_InvolvedPartyXProductType] FOREIGN KEY([InvolvedPartyXProductTypeID])
+REFERENCES [Party].[InvolvedPartyXProductType] ([InvolvedPartyXProductTypeID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] CHECK CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityTokens_InvolvedPartyXProductType]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityTokens_OriginalSystems] FOREIGN KEY([SystemID])
+REFERENCES [dbo].[Systems] ([SystemID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] CHECK CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityTokens_OriginalSystems]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityTokens_SecurityTokens] FOREIGN KEY([SecurityTokenID])
+REFERENCES [Security].[SecurityToken] ([SecurityTokenID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] CHECK CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityTokens_SecurityTokens]
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityTokens_Systems] FOREIGN KEY([OriginalSourceSystemID])
+REFERENCES [dbo].[Systems] ([SystemID])
+GO
+ALTER TABLE [Party].[InvolvedPartyXProductTypeSecurityToken] CHECK CONSTRAINT [FK_InvolvedPartyXProductTypeSecurityTokens_Systems]
+GO
 ALTER TABLE [Party].[InvolvedPartyXResourceItem]  WITH CHECK ADD  CONSTRAINT [FK_InvolvedPartyXResourceItem_ActiveFlags] FOREIGN KEY([ActiveFlagID])
 REFERENCES [dbo].[ActiveFlag] ([ActiveFlagID])
 GO
@@ -18070,7 +18279,7 @@ REFERENCES [Time].[Years] ([YearID])
 GO
 ALTER TABLE [Time].[Quarters] CHECK CONSTRAINT [FK_Quarters_YearID]
 GO
-/****** Object:  StoredProcedure [dbo].[CreateAddressDataPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateAddressDataPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18157,7 +18366,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateAddressXClassificationDataPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateAddressXClassificationDataPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18244,7 +18453,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateAddressXGeographyDataPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateAddressXGeographyDataPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18331,7 +18540,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateAddressXResourceItemDataPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateAddressXResourceItemDataPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18418,7 +18627,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateArrangementXClassificationPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateArrangementXClassificationPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18505,7 +18714,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateArrangementXProductPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateArrangementXProductPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18592,7 +18801,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateArrangementXResourceItemPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateArrangementXResourceItemPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18679,7 +18888,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateArrangementXRulesPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateArrangementXRulesPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18767,7 +18976,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateEventDataPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateEventDataPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18854,7 +19063,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateEventXAddressPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateEventXAddressPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18941,7 +19150,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateEventXArrangementPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateEventXArrangementPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19028,7 +19237,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateEventXClassificationPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateEventXClassificationPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19115,7 +19324,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateEventXGeographyPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateEventXGeographyPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19202,7 +19411,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateEventXProductPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateEventXProductPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19289,7 +19498,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateEventXResourceItemPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateEventXResourceItemPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19376,7 +19585,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateEventXRulesPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateEventXRulesPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19464,7 +19673,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateInvolvedPartyDataPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateInvolvedPartyDataPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19552,7 +19761,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[CreateResourceDataPartitions]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[CreateResourceDataPartitions]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19629,7 +19838,7 @@ CLOSE db_cursor
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionary]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionary]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19689,7 +19898,7 @@ END
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionaryForAllTables]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionaryForAllTables]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19720,7 +19929,7 @@ END
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionaryForTable]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[GetDatabaseDictionaryForTable]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19751,7 +19960,7 @@ END
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[LoadInitialTimeData]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[LoadInitialTimeData]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -20060,7 +20269,7 @@ SET IDENTITY_INSERT [Time].[DayParts] OFF
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[UpdateHierarchyAll]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[UpdateHierarchyAll]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -20083,7 +20292,7 @@ on sh.id = v.id
 where sh.Path <> v.Path
 END
 GO
-/****** Object:  StoredProcedure [dbo].[UpdateSecurityHierarchyAll]    Script Date: 2020/12/30 15:25:37 ******/
+/****** Object:  StoredProcedure [dbo].[UpdateSecurityHierarchyAll]    Script Date: 2020/12/31 18:14:43 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -23058,6 +23267,60 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to activ
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to enterprise' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductSecurityToken', @level2type=N'COLUMN',@level2name=N'EnterpriseID'
 GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The unique identifier assigned to an Involved Party.' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'InvolvedPartyID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to the involved party type ID' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'ProductTypeID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The classification of the arrangement type between Involved Party and the Arrangement' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'ClassificationID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The physical value amount of the relationship between an Arrangement and an Involved Party' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'Value'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The application or system that is considered to be the primary source for the creation of the instance. ' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'OriginalSourceSystemID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'this is the identifier of the original source system' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'OriginalSourceSystemUniqueID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time at which the instance of the entity was first created in the warehouse. ' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'WarehouseCreatedTimestamp'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time at which the instance of the entity was most recently updated in the warehouse. ' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'WarehouseLastUpdatedTimestamp'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date from which an instance of the entity is valid. ' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'EffectiveFromDate'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The Calendar date after which an instance of the entity is no longer valid. ' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'EffectiveToDate'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to active flag' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'ActiveFlagID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to enterprise' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'EnterpriseID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to systems' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductType', @level2type=N'COLUMN',@level2name=N'SystemID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to the security token' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'SecurityTokenID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'can user create copy' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'CreateAllowed'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'can user update copy' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'UpdateAllowed'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'can user delete copy' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'DeleteAllowed'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'can user read copy' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'ReadAllowed'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to the systems' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'SystemID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The application or system that is considered to be the primary source for the creation of the instance.' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'OriginalSourceSystemID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'this is the identifier of the original source system' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'OriginalSourceSystemUniqueID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time at which the instance of the entity was first created in the warehouse. ' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'WarehouseCreatedTimestamp'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date and time at which the instance of the entity was most recently updated in the warehouse' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'WarehouseLastUpdatedTimestamp'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date from which an instance of the entity is valid. ' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'EffectiveFromDate'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date from which an instance of the entity is void' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'EffectiveToDate'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to active flag' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'ActiveFlagID'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'links to enterprise' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXProductTypeSecurityToken', @level2type=N'COLUMN',@level2name=N'EnterpriseID'
+GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The unique identifier assigned to an Involved Party. ' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXResourceItem', @level2type=N'COLUMN',@level2name=N'InvolvedPartyID'
 GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The classification of the arrangement type between Involved Party and the Arrangement' , @level0type=N'SCHEMA',@level0name=N'Party', @level1type=N'TABLE',@level1name=N'InvolvedPartyXResourceItem', @level2type=N'COLUMN',@level2name=N'ClassificationID'
@@ -24542,6 +24805,7 @@ USE [master]
 GO
 ALTER DATABASE [FSDM] SET  READ_WRITE 
 GO
+
 
 
 

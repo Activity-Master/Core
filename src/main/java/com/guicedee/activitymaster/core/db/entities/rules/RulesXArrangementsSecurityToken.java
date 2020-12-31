@@ -5,6 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesXArrange
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serial;
 import java.util.UUID;
 
 import static jakarta.persistence.AccessType.FIELD;
@@ -23,6 +24,7 @@ public class RulesXArrangementsSecurityToken
 		extends WarehouseSecurityTable<RulesXArrangementsSecurityToken, RulesXArrangementSecurityTokenQueryBuilder, java.util.UUID>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	

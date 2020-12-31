@@ -12,6 +12,8 @@ import org.hibernate.annotations.JoinFormula;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -29,6 +31,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 		extends WarehouseBaseTable<J, Q, I>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Basic(optional = false)
 	@NotNull

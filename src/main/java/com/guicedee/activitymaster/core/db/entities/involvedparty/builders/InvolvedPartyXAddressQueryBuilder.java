@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyX
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXAddress_;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class InvolvedPartyXAddressQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, Address, InvolvedPartyXAddressQueryBuilder,
 						                                              InvolvedPartyXAddress, java.util.UUID, InvolvedPartyXAddressSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<InvolvedPartyXAddress, InvolvedParty> getPrimaryAttribute()
 	{
 		return InvolvedPartyXAddress_.involvedPartyID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<InvolvedPartyXAddress, Address> getSecondaryAttribute()
 	{
 		return InvolvedPartyXAddress_.addressID;
 	}

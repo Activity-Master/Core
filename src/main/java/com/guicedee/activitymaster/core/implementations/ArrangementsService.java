@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.core.implementations;
 import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
-import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.arrangement.*;
@@ -12,8 +11,6 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXClassificationQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.geography.*;
-import com.guicedee.activitymaster.core.db.entities.geography.builders.GeographyXGeographyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
@@ -30,6 +27,8 @@ import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,7 @@ public class ArrangementsService
 	                              LocalDateTime createdDate,
 	                              UUID... identityToken)
 	{
-		return create(type, arrangementTypeClassification, arrangementTypeValue, system, createdDate,EndOfTime, identityToken);
+		return create(type, arrangementTypeClassification, arrangementTypeValue, system, createdDate, EndOfTime, identityToken);
 	}
 	
 	@Override
@@ -105,8 +104,8 @@ public class ArrangementsService
 			xr.createDefaultSecurity(system, identityToken);
 		}
 		
-		ArrangementXArrangementType xarxr = xr.addOrUpdate(arrangementTypeClassification, type,
-		                                                   arrangementTypeValue, system, identityToken);
+		ArrangementXArrangementType xarxr = xr.addOrUpdateArrangementTypes(arrangementTypeClassification, type,
+				arrangementTypeValue, system, identityToken);
 		
 		if (ActivityMasterConfiguration.get()
 		                               .isSecurityEnabled())
@@ -144,7 +143,7 @@ public class ArrangementsService
 			{
 				
 				xr.createDefaultSecurity(get(ISystemsService.class)
-						                         .getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+						.getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
 			}
 		}
 		else
@@ -184,7 +183,7 @@ public class ArrangementsService
 		aqb.withEnterprise(systems.getEnterprise())
 		   .inActiveRange(systems.getEnterpriseID(), identityToken)
 		   .inDateRange();
-		JoinExpression<Arrangement,Classification,?> aje = new JoinExpression<>();
+		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
@@ -213,7 +212,7 @@ public class ArrangementsService
 		aqb.withEnterprise(systems.getEnterprise())
 		   .inActiveRange(systems.getEnterpriseID(), identityToken)
 		   .inDateRange();
-		JoinExpression<Arrangement,Classification,?> aje = new JoinExpression<>();
+		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
@@ -225,9 +224,9 @@ public class ArrangementsService
 		
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 		
-		if(withParent != null)
+		if (withParent != null)
 		{
-			JoinExpression<Arrangement,Arrangement,?> joinExpression = new JoinExpression<>();
+			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
 							.builder()
@@ -240,15 +239,15 @@ public class ArrangementsService
 			}
 			
 			aqb.join(Arrangement_.arrangementXArrangementList,
-			         builder,
-			         JoinType.INNER, joinExpression);
+					builder,
+					JoinType.INNER, joinExpression);
 		}
 		
 		aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
-	
+		
 		List<Arrangement> arrangementList = aqb.getAll();
 		//noinspection unchecked
-		return (List)arrangementList;
+		return (List) arrangementList;
 	}
 	
 	@CacheResult(cacheName = "ArrangementArrangementType")
@@ -321,5 +320,13 @@ public class ArrangementsService
 		}
 		
 		return arrOut;
+	}
+	
+	@Override
+	public IArrangement<?> completeArrangement(IArrangement<?> arrangement, ISystems<?> system, UUID... identityToken)
+	{
+		Arrangement arr = (Arrangement) arrangement;
+		arr.expireIn(Duration.ZERO);
+		return arr;
 	}
 }

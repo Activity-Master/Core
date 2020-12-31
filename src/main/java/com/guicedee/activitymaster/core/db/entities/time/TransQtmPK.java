@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -26,6 +28,7 @@ import java.util.Objects;
 public class TransQtmPK
 		implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Basic(optional = false)
 	@Column(name = "MonthID",

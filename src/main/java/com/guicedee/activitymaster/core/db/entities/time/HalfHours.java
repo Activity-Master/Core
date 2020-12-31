@@ -16,6 +16,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -35,6 +36,7 @@ public class HalfHours
 		extends BaseEntity<HalfHours, HalfHoursQueryBuilder, TimePK>
 		implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@EmbeddedId
 	private TimePK id;

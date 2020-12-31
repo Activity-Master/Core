@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.db.hierarchies.ArrangementsHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
@@ -18,7 +17,7 @@ public interface IArrangement<J extends IArrangement<J>>
 		        IActivityMasterEntity<Arrangement>,
 		        IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, IArrangement<?>, IArrangementType<?>, Arrangement>,
 		        IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty, IClassificationValue<?>, IArrangement<?>, IInvolvedParty<?>, Arrangement>,
-		        IHasActiveFlags<Arrangement>,
+		        IContainsActiveFlags<Arrangement>,
 		        IContainsHierarchy<Arrangement,ArrangementXArrangement, ArrangementsHierarchyView,IArrangement<?>,IArrangement<Arrangement>>,
 		        IContainsEnterprise<Arrangement>,
 		        IContainsRules<Arrangement, Rules,ArrangementXRules,IClassification<?>,IArrangement<?>,IRules<?>>

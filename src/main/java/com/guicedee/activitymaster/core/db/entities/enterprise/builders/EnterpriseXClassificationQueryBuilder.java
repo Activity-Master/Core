@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.enterprise.builders;
 
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
@@ -8,19 +10,20 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassi
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification_;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EnterpriseXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Enterprise, Classification, EnterpriseXClassificationQueryBuilder,
 						                                              EnterpriseXClassification, java.util.UUID, EnterpriseXClassificationSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public  SingularAttribute<WarehouseSCDTable, Enterprise> getPrimaryAttribute()
 	{
 		return EnterpriseXClassification_.enterpriseID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
 	{
 		return EnterpriseXClassification_.classificationID;
 	}

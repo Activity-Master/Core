@@ -11,6 +11,7 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasClassificationQueryBuilder;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 
 import java.io.Serializable;
@@ -35,17 +36,12 @@ public abstract class QueryBuilderRelationshipClassificationTypes<
 		extends QueryBuilderRelationshipClassification<P, S, J, E, I, ST>
 		implements IHasClassificationQueryBuilder<J, E, I>
 {
-	public J withType(T typeValue, IEnterpriseName<?> enterprise, UUID... identityToken)
+	public J withType(T typeValue,  ISystems<?> system, UUID... identityToken)
 	{
-		return withType(typeValue, enterprise.getEnterprise(), identityToken);
+		return withType(typeValue.toString(), system, identityToken);
 	}
 	
-	public J withType(T typeValue, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return withType(typeValue.toString(), enterprise, identityToken);
-	}
-	
-	public abstract J withType(String typeValue, IEnterprise<?> enterprise, UUID... identityToken);
+	public abstract J withType(String typeValue, ISystems<?> system, UUID... identityToken);
 	
 	@Override
 	public Class<ST> findSecurityClass()

@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyX
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class InvolvedPartyXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, ResourceItem, InvolvedPartyXResourceItemQueryBuilder,
 						                                              InvolvedPartyXResourceItem, java.util.UUID, InvolvedPartyXResourceItemSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<InvolvedPartyXResourceItem, InvolvedParty> getPrimaryAttribute()
 	{
 		return InvolvedPartyXResourceItem_.involvedPartyID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<InvolvedPartyXResourceItem, ResourceItem> getSecondaryAttribute()
 	{
 		return InvolvedPartyXResourceItem_.resourceItemID;
 	}

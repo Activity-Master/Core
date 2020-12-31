@@ -11,10 +11,7 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyX
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductXProductTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsProductTypes;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
+import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.product.IProductClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
@@ -27,6 +24,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -55,6 +54,7 @@ public class Product
 		           IActivityMasterEntity<Product>,
 		           IProduct<Product>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
@@ -346,12 +346,12 @@ public class Product
 	}
 	
 	@Override
-	public void configureProductTypeLinkValue(ProductXProductType linkTable, Product primary, ProductType secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureProductTypeLinkValue(ProductXProductType linkTable, Product primary, ProductType secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setProductID(primary);
 		linkTable.setProductTypeID(secondary);
 		IClassificationService<?> service = GuiceContext.get(IClassificationService.class);
-		linkTable.setClassificationID((Classification) service.find(classificationValue.classificationName(), enterprise));
+		linkTable.setClassificationID((Classification) service.find(classificationValue.classificationName(), system.getEnterprise()));
 		linkTable.setValue(Strings.nullToEmpty(value));
 	}
 }

@@ -7,19 +7,20 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXClassification_;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ClassificationXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Classification, Classification, ClassificationXClassificationQueryBuilder,
 						                                              ClassificationXClassification, java.util.UUID, ClassificationXClassificationSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public  SingularAttribute<ClassificationXClassification, Classification> getPrimaryAttribute()
 	{
 		return ClassificationXClassification_.parentClassificationID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<ClassificationXClassification, Classification> getSecondaryAttribute()
 	{
 		return ClassificationXClassification_.childClassificationID;
 	}

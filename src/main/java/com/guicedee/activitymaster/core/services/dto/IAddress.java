@@ -9,7 +9,6 @@ import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 public interface IAddress<J extends IAddress<?>>
@@ -17,7 +16,7 @@ public interface IAddress<J extends IAddress<?>>
 		        IContainsGeographies<Address, Geography, AddressXGeography>,
 		        IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IClassificationValue<?>, IAddress<?>, IResourceItem<?>, Address>,
 		        IContainsEnterprise<Address>,
-		        IHasActiveFlags<Address>,
+		        IContainsActiveFlags<Address>,
 		        IActivityMasterEntity<Address>
 {
 }

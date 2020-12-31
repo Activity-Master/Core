@@ -112,8 +112,8 @@ public class ActivityMasterService
 		
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1, progressMonitor);
 		
-		ISystems<?> activityMasterSystem = get(SystemsService.class).getActivityMaster(enterprise);
-		UUID token = get(SystemsService.class).getSecurityIdentityToken(activityMasterSystem);
+		ISystems<?> system = get(SystemsService.class).getActivityMaster(enterprise);
+		UUID token = get(SystemsService.class).getSecurityIdentityToken(system);
 		SecurityToken administratorsGroup = (SecurityToken) get(SecurityTokenService.class).getAdministratorsFolder(enterprise);
 		
 		InvolvedPartyService service = get(InvolvedPartyService.class);
@@ -130,26 +130,28 @@ public class ActivityMasterService
 		IInvolvedParty<?> administratorUser;
 		if (exists.isEmpty())
 		{
-			IInvolvedParty<?> adminUser = service.create(activityMasterSystem, pair, true);
+			IInvolvedParty<?> adminUser = service.create(system, pair, true);
 			
-			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUserName, NoClassification.classificationName(),new Passwords().integerEncrypt(adminUserName.getBytes()), enterprise, token);
+			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUserName, NoClassification.classificationName(),
+					new Passwords().integerEncrypt(adminUserName.getBytes()), system, token);
 			
-			adminUser.addOrReuseType(IPTypes.TypeIndividual, NoClassification.classificationName(),"Creator Individual", enterprise, token);
-			adminUser.addOrReuseNameType(PreferredNameType, NoClassification.name(),"Enterprise Creator", enterprise, token);
-			adminUser.addOrReuseNameType(CommonNameType, NoClassification.name(),"Enterprise Creator", enterprise, token);
-			adminUser.addOrReuseNameType(FullNameType, NoClassification.name(),"Enterprise Creator", enterprise, token);
-			adminUser.addOrReuseNameType(FirstNameType,NoClassification.name(), "Administrator", enterprise, token);
+			adminUser.addOrReuseType(IPTypes.TypeIndividual, NoClassification.classificationName(),"Creator Individual", system, token);
+			adminUser.addOrReuseNameType(PreferredNameType, NoClassification.name(),"Enterprise Creator", system, token);
+			adminUser.addOrReuseNameType(CommonNameType, NoClassification.name(),"Enterprise Creator", system, token);
+			adminUser.addOrReuseNameType(FullNameType, NoClassification.name(),"Enterprise Creator", system, token);
+			adminUser.addOrReuseNameType(FirstNameType,NoClassification.name(), "Administrator", system, token);
 			
 			SecurityToken myToken = (SecurityToken) get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity,
 			                                                                               adminUserName,
-			                                                                               "The creator of the enterprise", activityMasterSystem, administratorsGroup, token);
+			                                                                               "The creator of the enterprise", system, administratorsGroup, token);
 			
-			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,NoClassification.classificationName(), new Passwords().integerEncrypt(adminUserName.getBytes()), enterprise,
+			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,NoClassification.classificationName(),
+					new Passwords().integerEncrypt(adminUserName.getBytes()), system,
 			                     token);
-			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUUID, NoClassification.classificationName(),myToken.getSecurityToken(), enterprise, token);
+			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUUID, NoClassification.classificationName(),myToken.getSecurityToken(), system, token);
 			
-			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, activityMasterSystem, token);
-			adminUser.createDefaultSecurity(activityMasterSystem, token);
+			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, system, token);
+			adminUser.createDefaultSecurity(system, token);
 			administratorUser = adminUser;
 		}
 		else

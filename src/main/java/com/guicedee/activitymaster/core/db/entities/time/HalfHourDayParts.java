@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -30,6 +32,7 @@ import java.io.Serializable;
 public class HalfHourDayParts
 		extends BaseEntity<HalfHourDayParts, HalfHourDayPartsQueryBuilder, Integer> implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

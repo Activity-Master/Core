@@ -7,19 +7,20 @@ import com.guicedee.activitymaster.core.db.entities.product.ProductXProductSecur
 import com.guicedee.activitymaster.core.db.entities.product.ProductXProduct_;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ProductXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Product, Product, ProductXProductQueryBuilder,
 				                                              ProductXProduct, java.util.UUID, ProductXProductSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<ProductXProduct, Product> getPrimaryAttribute()
 	{
 		return ProductXProduct_.parentProductID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<ProductXProduct, Product> getSecondaryAttribute()
 	{
 		return ProductXProduct_.childProductID;
 	}

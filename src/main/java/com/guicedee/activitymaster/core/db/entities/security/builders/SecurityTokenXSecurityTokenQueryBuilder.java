@@ -7,19 +7,20 @@ import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXSecur
 import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXSecurityToken_;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class SecurityTokenXSecurityTokenQueryBuilder
 		extends QueryBuilderRelationshipClassification<SecurityToken, SecurityToken, SecurityTokenXSecurityTokenQueryBuilder,
 				                                              SecurityTokenXSecurityToken, java.util.UUID, SecurityTokenXSecurityTokenSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<SecurityTokenXSecurityToken, SecurityToken> getPrimaryAttribute()
 	{
 		return SecurityTokenXSecurityToken_.parentSecurityTokenID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<SecurityTokenXSecurityToken, SecurityToken> getSecondaryAttribute()
 	{
 		return SecurityTokenXSecurityToken_.childSecurityTokenID;
 	}

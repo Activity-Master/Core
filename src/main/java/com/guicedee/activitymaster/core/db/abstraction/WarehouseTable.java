@@ -3,13 +3,15 @@ package com.guicedee.activitymaster.core.db.abstraction;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.capabilities.IHasActiveFlags;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -30,8 +32,9 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		                                    I extends Serializable,
 		                                    S extends WarehouseSecurityTable>
 		extends WarehouseSCDTable<J, Q, I, S>
-		implements IHasActiveFlags<J>
+		implements IContainsActiveFlags<J>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Basic(optional = false)

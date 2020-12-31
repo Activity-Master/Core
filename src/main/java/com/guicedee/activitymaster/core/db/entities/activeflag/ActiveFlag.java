@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
-import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
 import com.guicedee.activitymaster.core.services.classifications.activeflag.IActiveFlagClassification;
 import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
@@ -20,8 +20,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import org.hibernate.annotations.Type;
 
+import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,59 +36,59 @@ import static jakarta.persistence.AccessType.*;
  */
 @Entity
 @Table(name = "ActiveFlag",
-		schema = "dbo")
+       schema = "dbo")
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 public class ActiveFlag
 		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.util.UUID, ActiveFlagSecurityToken>
-		implements INameAndDescription<ActiveFlag>,
-				           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>, IActiveFlag<?>, IClassification<?>, IActiveFlag<ActiveFlag>>,
-				           IActivityMasterEntity<ActiveFlag>,
-				           IContainsEnterprise<ActiveFlag>,
-				           IActiveFlag<ActiveFlag>
+		implements IContainsNameAndDescription<ActiveFlag>,
+		           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>, IActiveFlag<?>, IClassification<?>, IActiveFlag<ActiveFlag>>,
+		           IActivityMasterEntity<ActiveFlag>,
+		           IContainsEnterprise<ActiveFlag>,
+		           IActiveFlag<ActiveFlag>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-	
 	@Column(nullable = false,
-			name = "ActiveFlagID")
-@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ActiveFlagID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
-
+	
 	@JoinColumn(name = "EnterpriseID",
-			referencedColumnName = "EnterpriseID",
-			nullable = false)
+	            referencedColumnName = "EnterpriseID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private Enterprise enterpriseID;
-
+	
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
-			max = 100)
+	      max = 100)
 	@Column(nullable = false,
-			length = 100,
-			name = "ActiveFlagName")
+	        length = 100,
+	        name = "ActiveFlagName")
 	private String name;
-
+	
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
-			max = 100)
+	      max = 100)
 	@Column(nullable = false,
-			length = 100,
-			name = "ActiveFlagDescription")
+	        length = 100,
+	        name = "ActiveFlagDescription")
 	private String description;
-
+	
 	@Basic(optional = false,
-			fetch = FetchType.LAZY)
+	       fetch = FetchType.LAZY)
 	@NotNull
 	@Column(nullable = false,
-			name = "AllowAccess")
+	        name = "AllowAccess")
 	private boolean allowAccess;
-
+	
 	@SuppressWarnings("unused")
 	@OneToMany(
 			mappedBy = "base",
@@ -562,24 +562,24 @@ public class ActiveFlag
 			fetch = FetchType.LAZY)
 	private List<ClassificationSecurityToken> classificationSecurityTokenList;
 */
-
+	
 	public ActiveFlag()
 	{
-
+	
 	}
-
+	
 	public ActiveFlag(java.util.UUID id)
 	{
 		this.id = id;
 	}
-
+	
 	public ActiveFlag(java.util.UUID id, String activeFlagName, boolean allowAccess)
 	{
 		this.id = id;
 		name = activeFlagName;
 		this.allowAccess = allowAccess;
 	}
-
+	
 	@Override
 	public ActiveFlag archive()
 	{
@@ -587,7 +587,7 @@ public class ActiveFlag
 		updateNow();
 		return this;
 	}
-
+	
 	@Override
 	public ActiveFlag remove()
 	{
@@ -595,14 +595,14 @@ public class ActiveFlag
 		updateNow();
 		return this;
 	}
-
+	
 	@Override
 	@NotNull
 	protected Class<ActiveFlagSecurityToken> findPersistentSecurityClass()
 	{
 		return (Class<ActiveFlagSecurityToken>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
 	}
-
+	
 	@Override
 	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
 	{
@@ -614,19 +614,19 @@ public class ActiveFlag
 		stAdmin.setEnterpriseID((Enterprise) enterprise);
 		return stAdmin;
 	}
-
+	
 	@Override
 	public void configureForClassification(ActiveFlagXClassification classificationLink, IEnterprise<?> enterprise)
 	{
 		classificationLink.setActiveFlagID(this);
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getName());
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -641,72 +641,75 @@ public class ActiveFlag
 		ActiveFlag that = (ActiveFlag) o;
 		return getName().equals(that.getName());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return getName();
 	}
-
+	
 	@Override
 	public java.util.UUID getId()
 	{
 		return id;
 	}
-
+	
 	@Override
 	public ActiveFlag setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	@Override
 	public Enterprise getEnterpriseID()
 	{
 		return enterpriseID;
-	}	@Override
+	}
+	
+	@Override
 	public String getName()
 	{
 		return name;
 	}
-
+	
 	public ActiveFlag setEnterpriseID(Enterprise enterpriseID)
 	{
 		this.enterpriseID = enterpriseID;
 		return this;
-	}	@Override
+	}
+	
+	@Override
 	public String getDescription()
 	{
 		return description;
 	}
-
+	
 	public boolean isAllowAccess()
 	{
 		return allowAccess;
 	}
-
+	
 	public ActiveFlag setAllowAccess(boolean allowAccess)
 	{
 		this.allowAccess = allowAccess;
 		return this;
 	}
-
-
-
+	
+	
 	@Override
 	public ActiveFlag setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
 	@Override
 	public ActiveFlag setDescription(String description)
 	{
 		this.description = description;
 		return this;
 	}
-
-
+	
+	
 }

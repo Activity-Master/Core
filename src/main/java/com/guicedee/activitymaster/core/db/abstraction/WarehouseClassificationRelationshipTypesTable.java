@@ -5,6 +5,8 @@ import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
@@ -29,6 +31,7 @@ public abstract class WarehouseClassificationRelationshipTypesTable<
 		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST, L, R>
 {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	public WarehouseClassificationRelationshipTypesTable()

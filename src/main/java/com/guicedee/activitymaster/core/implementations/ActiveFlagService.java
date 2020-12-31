@@ -66,7 +66,7 @@ public class ActiveFlagService
 		}
 	}
 	
-	@CacheResult(cacheName = "ActiveFlagFindFlagByNameRaw")
+	@CacheResult(cacheName = "FindActiveByName")
 	private Optional<ActiveFlag> findFlagByName(@CacheKey String flag, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
 	{
 		return new ActiveFlag().builder()
@@ -84,8 +84,7 @@ public class ActiveFlagService
 		return (List) find(getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
 	}
 	
-	@CacheResult(cacheName = "findActiveFlags")
-	private List<ActiveFlag> find(@CacheKey String[] name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identifyingToken)
+	private List<ActiveFlag> find(String[] name, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		ActiveFlag search = new ActiveFlag();
 		return search.builder()

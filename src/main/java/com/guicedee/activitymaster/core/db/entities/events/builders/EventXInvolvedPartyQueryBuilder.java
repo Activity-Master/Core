@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXInvolvedParty_;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EventXInvolvedPartyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, InvolvedParty, EventXInvolvedPartyQueryBuilder,
 				                                              EventXInvolvedParty, java.util.UUID, EventXInvolvedPartySecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<EventXInvolvedParty, Event> getPrimaryAttribute()
 	{
 		return EventXInvolvedParty_.eventID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public  SingularAttribute<EventXInvolvedParty, InvolvedParty> getSecondaryAttribute()
 	{
 		return EventXInvolvedParty_.involvedPartyID;
 	}

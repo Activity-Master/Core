@@ -5,19 +5,20 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.rules.*;
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class RulesXInvolvedPartyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, InvolvedParty, RulesXInvolvedPartyQueryBuilder,
 		RulesXInvolvedParty, java.util.UUID, RulesXInvolvedPartySecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<RulesXInvolvedParty, Rules> getPrimaryAttribute()
 	{
 		return RulesXInvolvedParty_.rulesID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<RulesXInvolvedParty, InvolvedParty> getSecondaryAttribute()
 	{
 		return RulesXInvolvedParty_.involvedPartyID;
 	}

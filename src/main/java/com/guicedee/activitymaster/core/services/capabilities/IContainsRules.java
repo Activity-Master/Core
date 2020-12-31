@@ -29,6 +29,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.entityassist.SCDEntity.EndOfTime;
@@ -375,6 +377,196 @@ public interface IContainsRules<P extends WarehouseCoreTable,
 		                             .canCreate(system.getEnterprise(), identityToken);
 	}
 	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findRule(classification, null, enterprise, identityToken);
+	}
 	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findRule(classification.getName(), value, enterprise, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification, null, enterprise, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification, searchValue, enterprise, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification.getName(), value, enterprise, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification, null, enterprise, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification, searchValue, enterprise, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification.getName(), value, enterprise, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification, null, enterprise, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification, searchValue, enterprise, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRuleFirst(C classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRule(classification.getName(), searchValue, enterprise, true, false, identityToken);
+	}
+	
+	
+	default Optional<IRelationshipValue<L, R, ?>> findRuleFirst(C classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findRule(classification.getName(), searchValue, enterprise, true, latest, identityToken);
+	}
+	
+	@SuppressWarnings("unchecked")
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	{
+		Q relationshipTable = get(findQueryRelationshipTableTypeRules());
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		var queryBuilderRelationshipClassification
+				= relationshipTable.builder()
+				                   .findParentLink((P) this)
+				                   .inActiveRange(enterprise, identityToken)
+				                   .withClassification(iClassification)
+				                   .withValue(searchValue)
+				                   .inDateRange()
+				                   .withEnterprise(enterprise)
+				                   .canRead(enterprise, identityToken);
+		if (first)
+		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		if (latest)
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		
+		//noinspection rawtypes
+		return (Optional) queryBuilderRelationshipClassification.get();
+	}
+	
+	
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(C classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRulesAll(classification.getName(), null, enterprise, latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(C classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	{
+		return findRulesAll(classification.getName(), value, originatingSystem.getEnterprise(), latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(C classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findRulesAll(classification.getName(), value, enterprise, latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		
+		return findRulesAll(classification, null, enterprise, latest, identityToken);
+	}
+	
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return findRulesAll(classification, value, enterprise, latest, identityToken);
+	}
+	
+	@SuppressWarnings("unchecked")
+	default @NotNull List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, String searchValue, IEnterprise<?> enterprise, boolean latest, UUID... identityToken)
+	{
+		Q relationshipTable = get(findQueryRelationshipTableTypeRules());
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		var queryBuilderRelationshipClassification
+				= relationshipTable.builder()
+				                   .findParentLink((P) this)
+				                   .inActiveRange(enterprise, identityToken)
+				                   .withValue(searchValue)
+				                   .withClassification(iClassification)
+				                   .inDateRange()
+				                   .canRead(enterprise, identityToken);
+		if (latest)
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		return (List) queryBuilderRelationshipClassification.getAll();
+	}
+	
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<Q> findQueryRelationshipTableTypeRules()
+	{
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
+		{
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsRules.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<Q>) genericTypes[2];
+			}
+		}
+		return null;
+	}
+	
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<P> findPrimaryTableTypeRules()
+	{
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
+		{
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsRules.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<P>) genericTypes[0];
+			}
+		}
+		return null;
+	}
+	
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<S> findSecondaryTableTypeRules()
+	{
+		Type[] genericInterfaces = getClass().getGenericInterfaces();
+		for (Type genericInterface : genericInterfaces)
+		{
+			String clazz = genericInterface.getTypeName();
+			if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsRules.class.getCanonicalName()))
+			{
+				Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+				return (Class<S>) genericTypes[1];
+			}
+		}
+		return null;
+	}
 }
 

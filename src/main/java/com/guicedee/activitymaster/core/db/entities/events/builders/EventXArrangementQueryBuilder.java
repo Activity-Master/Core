@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXArrangement_;
 import com.guicedee.activitymaster.core.db.entities.events.EventXArrangementsSecurityToken;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EventXArrangementQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Arrangement, EventXArrangementQueryBuilder,
 				                                              EventXArrangement, java.util.UUID, EventXArrangementsSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<EventXArrangement, Event> getPrimaryAttribute()
 	{
 		return EventXArrangement_.eventID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<EventXArrangement, Arrangement> getSecondaryAttribute()
 	{
 		return EventXArrangement_.arrangementID;
 	}

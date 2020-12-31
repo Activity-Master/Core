@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.address.AddressXGeography_;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class AddressXGeographyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Address, Geography, AddressXGeographyQueryBuilder,
 				                                              AddressXGeography, java.util.UUID, AddressXGeographySecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<AddressXGeography, Address> getPrimaryAttribute()
 	{
 		return AddressXGeography_.addressID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public  SingularAttribute<AddressXGeography, Geography> getSecondaryAttribute()
 	{
 		return AddressXGeography_.geographyID;
 	}

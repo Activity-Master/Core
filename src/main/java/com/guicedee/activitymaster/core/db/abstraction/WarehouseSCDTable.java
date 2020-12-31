@@ -12,6 +12,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -29,6 +31,7 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 		I extends Serializable, S extends WarehouseSecurityTable>
 		extends WarehouseCoreTable<J, Q, I, S>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@JoinColumn(name = "ActiveFlagID",

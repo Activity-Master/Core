@@ -319,7 +319,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q add(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
+	default Q addInvolvedParty(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
 	{
 		ISystems<?> activityMasterSystem = get(ISystemsService.class)
 				.getActivityMaster(originatingSystem.getEnterpriseID(), identifyingToken);
@@ -383,7 +383,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	
 	
 	@SuppressWarnings("unchecked")
-	default Q add(IInvolvedParty<?> addy, IInvolvedPartyClassification<?> iclassification, String value, ISystems<?> originatingSystem, UUID... identifyingToken)
+	default Q addInvolvedParty(IInvolvedParty<?> addy, IInvolvedPartyClassification<?> iclassification, String value, ISystems<?> originatingSystem, UUID... identifyingToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()

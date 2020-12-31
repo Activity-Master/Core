@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.entityassist.SCDEntity;
+import com.entityassist.enumerations.OrderByType;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
@@ -12,7 +13,6 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
@@ -46,81 +46,129 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		L, R,
 		J extends IContainsProducts<P, S, Q, C, L, R, J>>
 {
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return findProduct(classification, null, enterprise, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return findProduct(((IClassification)classification).getName(), value, enterprise, false, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(classification, null, enterprise, false, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(classification, searchValue, enterprise, false, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(((IClassification)classification).getName(), value, enterprise, first, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(classification, null, enterprise, first, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, String searchValue, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(classification, searchValue, enterprise, first, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(((IClassification)classification).getName(), value, enterprise, first, latest, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(classification, null, enterprise, first, latest, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, String searchValue, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(classification, searchValue, enterprise, first, latest, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProductFirst(C classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		
-		return findProduct(((IClassification)classification).getName(), searchValue, enterprise, true, false, identityToken);
-	}
-	
-	
-	default Optional<IRelationshipValue<L, R, ?>> findProductFirst(C classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return findProduct(((IClassification)classification).getName(), searchValue, enterprise, true, latest, identityToken);
-	}
-	
-	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findByProduct(R byType, String classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		Q relationshipTable = get(findProductQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
+		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		var queryBuilderRelationshipClassification
+				= relationshipTable.builder()
+				                   .findLink(null,(S) byType)
+				                   .inActiveRange(enterprise, identityToken)
+				                   .withClassification(iClassification)
+				                   .withValue(value)
+				                   .inDateRange()
+				                   .withEnterprise(enterprise)
+				                   .canRead(enterprise, identityToken);
+		if (first)
+		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		if (latest)
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"), OrderByType.DESC); }
+		
+		//noinspection rawtypes,unchecked
+		return (Optional) queryBuilderRelationshipClassification.get();
+	}
+	default List<IRelationshipValue<L, R, ?>> findAllByProduct(R byType, String classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
+	{
+		Q relationshipTable = get(findProductQueryRelationshipTableType());
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
+		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		var queryBuilderRelationshipClassification
+				= relationshipTable.builder()
+				                   .findLink(null,(S) byType)
+				                   .inActiveRange(enterprise, identityToken)
+				                   .withClassification(iClassification)
+				                   .withValue(value)
+				                   .inDateRange()
+				                   .withEnterprise(enterprise)
+				                   .canRead(enterprise, identityToken);
+		if (first)
+		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		if (latest)
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"), OrderByType.DESC); }
+		
+		//noinspection rawtypes,unchecked
+		return (List) queryBuilderRelationshipClassification.getAll();
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, ISystems<?> system, UUID... identityToken)
+	{
+		return findProduct(classification, null, system, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, ISystems<?> system, UUID... identityToken)
+	{
+		return findProduct(((IClassification)classification).getName(), value, system, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(classification, null, system, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, String searchValue, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(classification, searchValue, system, false, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(((IClassification)classification).getName(), value, system, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, boolean first, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(classification, null, system, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, String searchValue, boolean first, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(classification, searchValue, system, first, false, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(C classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(((IClassification)classification).getName(), value, system, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(classification, null, system, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, String searchValue, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(classification, searchValue, system, first, latest, identityToken);
+	}
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProductFirst(C classification, String searchValue, ISystems<?> system, UUID... identityToken)
+	{
+		
+		return findProduct(((IClassification)classification).getName(), searchValue, system, true, false, identityToken);
+	}
+	
+	
+	default Optional<IRelationshipValue<L, R, ?>> findProductFirst(C classification, String searchValue, boolean latest, ISystems<?> system, UUID... identityToken)
+	{
+		return findProduct(((IClassification)classification).getName(), searchValue, system, true, latest, identityToken);
+	}
+	
+	@SuppressWarnings("unchecked")
+	default Optional<IRelationshipValue<L, R, ?>> findProduct(String classification, String searchValue, ISystems<?> system, boolean first, boolean latest, UUID... identityToken)
+	{
+		Q relationshipTable = get(findProductQueryRelationshipTableType());
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
 		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
@@ -134,46 +182,41 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"), OrderByType.DESC); }
 		
 		//noinspection rawtypes
 		return (Optional) queryBuilderRelationshipClassification.get();
 	}
 	
 	
-	default List<IRelationshipValue<L, R, ?>> findProductsAll(C classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findProductsAll(C classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findProductsAll(((IClassification)classification).getName(), null, enterprise, latest, identityToken);
+		return findProductsAll(((IClassification)classification).getName(), null, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductsAll(C classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		return findProductsAll(((IClassification)classification).getName(), value, originatingSystem.getEnterprise(), latest, identityToken);
+		return findProductsAll(((IClassification)classification).getName(), value, originatingSystem, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findProductsAll(C classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findProductsAll(String classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findProductsAll(((IClassification)classification).getName(), value, enterprise, latest, identityToken);
+		return findProductsAll(classification, null, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findProductsAll(String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findProductsAll(String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		
-		return findProductsAll(classification, null, enterprise, latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findProductsAll(String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return findProductsAll(classification, value, enterprise, latest, identityToken);
+		return findProductsAll(classification, value, system, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default @NotNull List<IRelationshipValue<L, R, ?>> findProductsAll(String classification, String searchValue, IEnterprise<?> enterprise, boolean latest, UUID... identityToken)
+	default @NotNull List<IRelationshipValue<L, R, ?>> findProductsAll(String classification, String searchValue, ISystems<?> system, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findProductQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
 		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
@@ -184,7 +227,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 				                   .inDateRange()
 				                   .canRead(enterprise, identityToken);
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"), OrderByType.DESC); }
 		return (List) queryBuilderRelationshipClassification.getAll();
 	}
 	
@@ -222,52 +265,43 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		return null;
 	}
 	
-	default boolean hasProductsBefore(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasProductsBefore(C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProductsAll(((IClassification)classificationValue).getName(), enterprise, identityToken) > 0;
+		return numberOfProductsAll(((IClassification)classificationValue).getName(), system, identityToken) > 0;
 	}
 	
-	default boolean hasProductsBefore(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasProductsBefore(C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProductsAll(((IClassification)classificationValue).getName(), value, enterprise, identityToken) > 0;
+		return numberOfProductsAll(((IClassification)classificationValue).getName(), value, system, identityToken) > 0;
 	}
 	
-	default boolean hasProductsBefore(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasProductsBefore(String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProductsAll(classificationValue, value, enterprise, identityToken) > 0;
+		return numberOfProductsAll(classificationValue, value, system, identityToken) > 0;
 	}
 	
-	default boolean hasProducts(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasProducts(C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProducts(((IClassification)classificationValue).getName(), enterprise, identityToken) > 0;
+		return numberOfProducts(((IClassification)classificationValue).getName(), system, identityToken) > 0;
 	}
 	
-	default boolean hasProducts(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasProducts(C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProducts(classificationValue, value, enterprise, identityToken) > 0;
+		return numberOfProducts(classificationValue, value, system, identityToken) > 0;
 	}
 	
-	default boolean hasProducts(C classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default long numberOfProducts(String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProducts(((IClassification)classificationValue).getName(), originatingSystem.getEnterprise(), identityToken) > 0;
-	}
-	
-	default boolean hasProducts(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		return numberOfProducts(classificationValue, value, originatingSystem.getEnterprise(), identityToken) > 0;
-	}
-	
-	default long numberOfProducts(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return numberOfProducts(classificationValue, null, enterprise, identityToken);
+		return numberOfProducts(classificationValue, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOfProducts(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfProducts(String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findProductsCountableQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
 		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
@@ -277,26 +311,27 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		                             .getCount();
 	}
 	
-	default long numberOfProducts(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfProducts(C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProducts(((IClassification)classificationValue).getName(), value, enterprise, identityToken);
+		return numberOfProducts(((IClassification)classificationValue).getName(), value, system, identityToken);
 	}
 	
-	default long numberOfProductsAll(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfProductsAll(C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProductsAll(((IClassification)classificationValue).getName(), null, enterprise, identityToken);
+		return numberOfProductsAll(((IClassification)classificationValue).getName(), null, system, identityToken);
 	}
 	
-	default long numberOfProductsAll(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfProductsAll(String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfProductsAll(classificationValue, null, enterprise, identityToken);
+		return numberOfProductsAll(classificationValue, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOfProductsAll(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfProductsAll(String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findProductsCountableQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
 		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
@@ -320,13 +355,13 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		return null;
 	}
 	
-	default S stringToSecondaryProduct(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
+	default S stringToSecondaryProduct(String productName, ISystems<?> system, UUID... identityToken)
 	{
 		IProductService<?> service = GuiceContext.get(IProductService.class);
-		return (S) service.findProduct(typeName, enterprise, identityToken);
+		return (S) service.findProduct(productName, system, identityToken);
 	}
 	
-	void configureAddableProduct(Q linkTable, P primary, S secondary, C classificationValue, String value, IEnterprise<?> enterprise);
+	void configureAddableProduct(Q linkTable, P primary, S secondary, C classificationValue, String value, ISystems<?> system);
 	
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -351,105 +386,99 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		return null;
 	}
 	
-	default IRelationshipValue<L, R, ?> addProduct(String typeName, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addProduct(String productName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return addProduct(typeName, Classifications.NoClassification.classificationName(), value, enterprise, identityToken);
+		return addProduct(productName, Classifications.NoClassification.classificationName(), value, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addProduct(String typeName, String classificationName, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addProduct(String productName, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return addProduct(typeName, classificationName, value, STRING_EMPTY, enterprise, identityToken);
+		return addProduct(productName, classificationName, value, STRING_EMPTY, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addProduct(String typeName, String classificationName, String value, String originalSourceSystemUniqueID, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addProduct(String productName, String classificationName, String value, String originalSourceSystemUniqueID, ISystems<?> system, UUID... identityToken)
 	{
-		return addProduct(typeName, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
+		return addProduct(productName, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addProduct(String secondaryName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addProduct(String productName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, ISystems<?> system, UUID... identityToken)
 	{
-		return addProduct(secondaryName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, SCDEntity.EndOfTime, enterprise, identityToken);
+		return addProduct(productName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, SCDEntity.EndOfTime, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addProduct(String secondaryName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, LocalDateTime effectiveToDate, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addProduct(String productName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, LocalDateTime effectiveToDate, ISystems<?> system, UUID... identityToken)
 	{
-		return addProduct(secondaryName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addProduct(productName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addProduct(@NotNull String secondaryName,
+	default IRelationshipValue<L, R, ?> addProduct(@NotNull String productName,
 	                                               @NotNull String classificationName,
 	                                               String value,
 	                                               String originalSourceSystemUniqueID,
 	                                               LocalDateTime effectiveFromDate,
 	                                               LocalDateTime effectiveToDate,
 	                                               ISystems<?> originalSystemID,
-	                                               @NotNull IEnterprise<?> enterprise,
+	                                               @NotNull ISystems<?> system,
 	                                               UUID... identityToken)
 	{
+		IEnterprise<?> enterprise = system.getEnterprise();
 		Q tableForClassification = get(findAddableProductTableType());
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationName, enterprise, identityToken);
 		
-		ISystems<?> originatingSystem = GuiceContext.get(SystemsService.class)
-		                                            .getActivityMaster(enterprise);
-		if (originalSystemID != null)
-		{
-			originatingSystem = originalSystemID;
-		}
-		
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(Strings.nullToEmpty(value));
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID(((Systems) (originalSystemID == null ? system : originalSystemID)));
 		tableForClassification.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		tableForClassification.setEffectiveFromDate(effectiveFromDate);
 		tableForClassification.setEffectiveToDate(effectiveToDate);
-		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
+		tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
 		tableForClassification.setClassificationID((Classification) classification);
 		
 		configureAddableProduct(tableForClassification, (P) this,
-		                        stringToSecondaryProduct(secondaryName, enterprise, identityToken),
-		                        (C) classification, value, originatingSystem.getEnterpriseID());
+		                        stringToSecondaryProduct(productName, system, identityToken),
+		                        (C) classification, value, system);
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
 				.isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			tableForClassification.createDefaultSecurity(system, identityToken);
 		}
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
-			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, originatingSystem, identityToken);
+			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, system, identityToken);
 		}
 		return (IRelationshipValue<L, R, ?>) tableForClassification;
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrReuseProduct(@NotNull String type,
 	                            @NotNull String classificationName,
-	                            @NotNull IEnterprise<?> enterprise,
+	                            @NotNull ISystems<?> system,
 	                            UUID... identityToken)
 	{
-		return addOrReuseProduct(type, classificationName, null, null, LocalDateTime.now(), enterprise, identityToken);
+		return addOrReuseProduct(type, classificationName, null, null, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrReuseProduct(@NotNull String type,
 	                            @NotNull String classificationName,
 	                            String value,
-	                            @NotNull IEnterprise<?> enterprise,
+	                            @NotNull ISystems<?> system,
 	                            UUID... identityToken)
 	{
-		return addOrReuseProduct(type, classificationName, value, null, LocalDateTime.now(), enterprise, identityToken);
+		return addOrReuseProduct(type, classificationName, value, null, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrReuseProduct(@NotNull String type,
 	                            @NotNull String classificationName,
 	                            String value,
 	                            String originalSourceSystemUniqueID,
-	                            @NotNull IEnterprise<?> enterprise,
+	                            @NotNull ISystems<?> system,
 	                            UUID... identityToken)
 	{
-		return addOrReuseProduct(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
+		return addOrReuseProduct(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrReuseProduct(@NotNull String type,
@@ -457,10 +486,10 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	                            String value,
 	                            String originalSourceSystemUniqueID,
 	                            LocalDateTime effectiveFromDate,
-	                            @NotNull IEnterprise<?> enterprise,
+	                            @NotNull ISystems<?> system,
 	                            UUID... identityToken)
 	{
-		return addOrReuseProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
+		return addOrReuseProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrReuseProduct(@NotNull String type,
@@ -469,10 +498,10 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	                            String originalSourceSystemUniqueID,
 	                            LocalDateTime effectiveFromDate,
 	                            LocalDateTime effectiveToDate,
-	                            @NotNull IEnterprise<?> enterprise,
+	                            @NotNull ISystems<?> system,
 	                            UUID... identityToken)
 	{
-		return addOrReuseProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addOrReuseProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -483,21 +512,22 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	                            LocalDateTime effectiveFromDate,
 	                            LocalDateTime effectiveToDate,
 	                            ISystems<?> originalSystemID,
-	                            @NotNull IEnterprise<?> enterprise,
+	                            @NotNull ISystems<?> system,
 	                            UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddableProductTableType());
-		S sType = stringToSecondaryProduct(type, enterprise, identityToken);
+		S sType = stringToSecondaryProduct(type, system, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
 		Classification classification = (Classification) classificationService.find(classificationName, enterprise, identityToken);
-		boolean exists = findProductTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		boolean exists = findProductTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{
-			return addProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+			return addProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 		}
 		else
 		{
-			tableForClassification = (Q) findProductTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken)
+			tableForClassification = (Q) findProductTypeQuery(value, system, tableForClassification, sType, classification, identityToken)
 					.get()
 					.orElseThrow();
 		}
@@ -510,37 +540,37 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	                             String originalSourceSystemUniqueID,
 	                             LocalDateTime effectiveFromDate,
 	                             LocalDateTime effectiveToDate,
-	                             @NotNull IEnterprise<?> enterprise,
+	                             @NotNull ISystems<?> system,
 	                             UUID... identityToken)
 	{
-		return addOrUpdateProduct(type, ((IClassification)classificationName).getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addOrUpdateProduct(type, ((IClassification)classificationName).getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrUpdateProduct(@NotNull String type,
 	                             @NotNull String classificationName,
-	                             @NotNull IEnterprise<?> enterprise,
+	                             @NotNull ISystems<?> system,
 	                             UUID... identityToken)
 	{
-		return addOrUpdateProduct(type, classificationName, null, enterprise, identityToken);
+		return addOrUpdateProduct(type, classificationName, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrUpdateProduct(@NotNull String type,
 	                             @NotNull String classificationName,
 	                             String value,
-	                             @NotNull IEnterprise<?> enterprise,
+	                             @NotNull ISystems<?> system,
 	                             UUID... identityToken)
 	{
-		return addOrUpdateProduct(type, classificationName, value, null, enterprise, identityToken);
+		return addOrUpdateProduct(type, classificationName, value, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrUpdateProduct(@NotNull String type,
 	                             @NotNull String classificationName,
 	                             String value,
 	                             String originalSourceSystemUniqueID,
-	                             @NotNull IEnterprise<?> enterprise,
+	                             @NotNull ISystems<?> system,
 	                             UUID... identityToken)
 	{
-		return addOrUpdateProduct(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
+		return addOrUpdateProduct(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrUpdateProduct(@NotNull String type,
@@ -548,10 +578,10 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	                             String value,
 	                             String originalSourceSystemUniqueID,
 	                             LocalDateTime effectiveFromDate,
-	                             @NotNull IEnterprise<?> enterprise,
+	                             @NotNull ISystems<?> system,
 	                             UUID... identityToken)
 	{
-		return addOrUpdateProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
+		return addOrUpdateProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrUpdateProduct(@NotNull String type,
@@ -560,10 +590,10 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	                             String originalSourceSystemUniqueID,
 	                             LocalDateTime effectiveFromDate,
 	                             LocalDateTime effectiveToDate,
-	                             @NotNull IEnterprise<?> enterprise,
+	                             @NotNull ISystems<?> system,
 	                             UUID... identityToken)
 	{
-		return addOrUpdateProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addOrUpdateProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrUpdateProduct(@NotNull String type,
@@ -573,18 +603,19 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	                             LocalDateTime effectiveFromDate,
 	                             LocalDateTime effectiveToDate,
 	                             ISystems<?> originalSystemID,
-	                             @NotNull IEnterprise<?> enterprise,
+	                             @NotNull ISystems<?> system,
 	                             UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddableProductTableType());
-		S sType = stringToSecondaryProduct(type, enterprise, identityToken);
+		S sType = stringToSecondaryProduct(type, system, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
 		Classification classification = (Classification) classificationService.find(classificationName, enterprise, identityToken);
-		boolean exists = findProductTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		boolean exists = findProductTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
-		{ return addProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken); }
+		{ return addProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken); }
 		
-		tableForClassification = (Q) findProductTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken)
+		tableForClassification = (Q) findProductTypeQuery(value, system, tableForClassification, sType, classification, identityToken)
 				.get()
 				.orElseThrow();
 		
@@ -593,25 +624,25 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		{
 			return (IRelationshipValue<L, R, ?>) tableForClassification;
 		}
-		return update((IRelationshipValue<L, R, ?>)tableForClassification, type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+		return updateProduct((IRelationshipValue<L, R, ?>)tableForClassification, type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> update(@NotNull IRelationshipValue<L, R, ?> original,
-	                                           @NotNull String type,
-	                                           @NotNull String classificationName,
-	                                           String value,
-	                                           String originalSourceSystemUniqueID,
-	                                           LocalDateTime effectiveFromDate,
-	                                           LocalDateTime effectiveToDate,
-	                                           ISystems<?> originalSystemID,
-	                                           @NotNull IEnterprise<?> enterprise,
-	                                           UUID... identityToken)
+	default IRelationshipValue<L, R, ?> updateProduct(@NotNull IRelationshipValue<L, R, ?> original,
+	                                                  @NotNull String type,
+	                                                  @NotNull String classificationName,
+	                                                  String value,
+	                                                  String originalSourceSystemUniqueID,
+	                                                  LocalDateTime effectiveFromDate,
+	                                                  LocalDateTime effectiveToDate,
+	                                                  ISystems<?> originalSystemID,
+	                                                  @NotNull ISystems<?> system,
+	                                                  UUID... identityToken)
 	{
-		archive((IRelationshipValue<L, R, ?>)original, identityToken);
-		return addProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+		archiveProduct((IRelationshipValue<L, R, ?>)original, identityToken);
+		return addProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> archive(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> archiveProduct(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		IActiveFlagService flagService = get(IActiveFlagService.class);
@@ -620,7 +651,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		return original;
 	}
 	
-	default IRelationshipValue<L, R, ?> remove(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> removeProduct(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		IActiveFlagService flagService = get(IActiveFlagService.class);
@@ -630,7 +661,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("rawtypes")
-	default IRelationshipValue<L, R, ?> expire(@NotNull IRelationshipValue<L, R, ?> original, Duration when)
+	default IRelationshipValue<L, R, ?> expireProduct(@NotNull IRelationshipValue<L, R, ?> original, Duration when)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		entity.setEffectiveToDate(entity.getEffectiveToDate()
@@ -640,8 +671,9 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		return original;
 	}
 	
-	private QueryBuilderRelationship<?, ?, ?, ?, ?, ?> findProductTypeQuery(String value, IEnterprise<?> enterprise, Q tableForClassification, S sType, Classification classification, UUID... identityToken)
+	private QueryBuilderRelationship<?, ?, ?, ?, ?, ?> findProductTypeQuery(String value, ISystems<?> system, Q tableForClassification, S sType, Classification classification, UUID... identityToken)
 	{
+		IEnterprise<?> enterprise = system.getEnterprise();
 		return tableForClassification.builder()
 		                             .findLink((P) this, sType, value)
 		                             .inActiveRange(enterprise)

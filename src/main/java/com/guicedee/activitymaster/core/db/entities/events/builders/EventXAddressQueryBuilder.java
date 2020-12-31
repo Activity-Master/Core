@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXAddressSecurity
 import com.guicedee.activitymaster.core.db.entities.events.EventXAddress_;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EventXAddressQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Address, EventXAddressQueryBuilder,
 				                                              EventXAddress, java.util.UUID, EventXAddressSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<EventXAddress, Event> getPrimaryAttribute()
 	{
 		return EventXAddress_.eventID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public  SingularAttribute<EventXAddress, Address> getSecondaryAttribute()
 	{
 		return EventXAddress_.addressID;
 	}

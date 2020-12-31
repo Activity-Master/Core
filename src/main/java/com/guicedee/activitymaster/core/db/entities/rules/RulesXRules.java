@@ -9,6 +9,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +39,7 @@ public class RulesXRules
 		implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

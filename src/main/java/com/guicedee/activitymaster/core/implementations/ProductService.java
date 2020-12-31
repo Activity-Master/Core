@@ -6,7 +6,6 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.product.ProductType;
 import com.guicedee.activitymaster.core.db.entities.product.ProductXProductType;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXResourceItemType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
@@ -25,25 +24,26 @@ import static com.guicedee.activitymaster.core.services.classifications.classifi
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
-public class ProductService<J extends ProductService<J>> implements IProductService<J>
+public class ProductService<J extends ProductService<J>>
+		implements IProductService<J>
 {
 	@Override
-	public IProduct<?> createProduct(String productType,String name, String description, String code, ISystems<?> originatingSystem, UUID... identityToken)
+	public IProduct<?> createProduct(String productType, String name, String description, String code, ISystems<?> system, UUID... identityToken)
 	{
 		
 		boolean exists = new Product().builder()
-				.withName(name)
-				.inActiveRange(originatingSystem.getEnterprise(),identityToken)
-				.inDateRange()
-				.withEnterprise(originatingSystem.getEnterprise())
-				.getCount() > 0;
-		if(exists)
+		                              .withName(name)
+		                              .inActiveRange(system.getEnterprise(), identityToken)
+		                              .inDateRange()
+		                              .withEnterprise(system.getEnterprise())
+		                              .getCount() > 0;
+		if (exists)
 		{
 			return new Product().builder()
 			                    .withName(name)
-			                    .inActiveRange(originatingSystem.getEnterprise(), identityToken)
+			                    .inActiveRange(system.getEnterprise(), identityToken)
 			                    .inDateRange()
-			                    .withEnterprise(originatingSystem.getEnterprise())
+			                    .withEnterprise(system.getEnterprise())
 			                    .get()
 			                    .orElseThrow();
 		}
@@ -53,41 +53,42 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 		product.setProductCode(code);
 		product.setDescription(description);
 		
-		product.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-		product.setSystemID((Systems) originatingSystem);
-		product.setOriginalSourceSystemID((Systems) originatingSystem);
+		product.setEnterpriseID((Enterprise) system.getEnterpriseID());
+		product.setSystemID((Systems) system);
+		product.setOriginalSourceSystemID((Systems) system);
 		product.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				.getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+				.getActiveFlag(system.getEnterpriseID(), identityToken));
 		product.persist();
-		product.createDefaultSecurity(originatingSystem, identityToken);
+		product.createDefaultSecurity(system, identityToken);
 		
-		IProductType<?> pType = createProductType(productType,productType, originatingSystem, identityToken);
+		IProductType<?> pType = createProductType(productType, productType, system, identityToken);
 		
-		product.add(NoClassification, pType, STRING_EMPTY, originatingSystem, identityToken);
+		product.addProductType(NoClassification, pType, STRING_EMPTY, system, identityToken);
 		
 		return product;
 	}
 	
 	@Override
-	public IProductType<?> createProductType(IProductTypeValue<?> rulesType, ISystems<?> originatingSystem, UUID... identityToken)
+	public IProductType<?> createProductType(IProductTypeValue<?> rulesType, ISystems<?> system, UUID... identityToken)
 	{
-		return createProductType(rulesType.name(), rulesType.classificationDescription(), originatingSystem, identityToken);
+		return createProductType(rulesType.name(), rulesType.classificationDescription(), system, identityToken);
 	}
 	
 	@Override
-	public IProduct<?> findProduct(String name, IEnterprise<?> enterprise, UUID... identityToken)
+	public IProduct<?> findProduct(String name, ISystems<?> system, UUID... identityToken)
 	{
+		IEnterprise<?> enterprise = system.getEnterprise();
 		return new Product().builder()
-		             .withName(name)
-		             .inActiveRange(enterprise, identityToken)
-		             .inDateRange()
-		             .withEnterprise(enterprise)
-		             .get()
-		             .orElseThrow();
+		                    .withName(name)
+		                    .inActiveRange(enterprise, identityToken)
+		                    .inDateRange()
+		                    .withEnterprise(enterprise)
+		                    .get()
+		                    .orElseThrow();
 	}
 	
 	@Override
-	public IProductType<?> createProductType(String rulesType,String description, ISystems<?> system, UUID... identityToken)
+	public IProductType<?> createProductType(String rulesType, String description, ISystems<?> system, UUID... identityToken)
 	{
 		ProductType et = new ProductType();
 		
@@ -117,32 +118,34 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 		}
 		else
 		{
-			return findProductType(rulesType, system.getEnterprise(), identityToken);
+			return findProductType(rulesType, system, identityToken);
 		}
 	}
 	
 	@Override
-	public IProductType<?> findProductType(IProductTypeValue<?> rulesType, IEnterprise<?> enterprise, UUID... identityToken)
+	public IProductType<?> findProductType(IProductTypeValue<?> rulesType, ISystems<?> system, UUID... identityToken)
 	{
-		return findProductType(rulesType.classificationValue(), enterprise, identityToken);
+		return findProductType(rulesType.classificationValue(), system, identityToken);
 	}
 	
 	@Override
-	public IProductType<?> findProductType(String rulesType, IEnterprise<?> enterprise, UUID... identityToken)
+	public IProductType<?> findProductType(String rulesType, ISystems<?> system, UUID... identityToken)
 	{
+		IEnterprise<?> enterprise = system.getEnterprise();
 		return new ProductType().builder()
-		                      .withName(rulesType)
-		                      .withEnterprise(enterprise)
-		                      .inActiveRange(enterprise, identityToken)
-		                      .inDateRange()
-		                      .canRead(enterprise, identityToken)
-		                      .get()
-		                      .orElseThrow();
+		                        .withName(rulesType)
+		                        .withEnterprise(enterprise)
+		                        .inActiveRange(enterprise, identityToken)
+		                        .inDateRange()
+		                        .canRead(enterprise, identityToken)
+		                        .get()
+		                        .orElseThrow();
 	}
 	
 	@Override
-	public IProduct<?> findProduct(String productName, IClassification<?> classification, IEnterprise<?> enterprise, UUID... identityToken)
+	public IProduct<?> findProduct(String productName, IClassification<?> classification, ISystems<?> system, UUID... identityToken)
 	{
+		IEnterprise<?> enterprise = system.getEnterprise();
 		return new Product().builder()
 		                    .withName(productName)
 		                    .withClassification(classification)
@@ -151,6 +154,28 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 		                    .withEnterprise(enterprise)
 		                    .get()
 		                    .orElseThrow();
+	}
+	@Override
+	public IProductType<?> findProductType(IProduct<?> product, IClassification<?> classification, ISystems<?> system, UUID... identityToken)
+	{
+		return findProductType(product, classification.getName(), system, identityToken);
+	}
+	
+	@Override
+	public IProductType<?> findProductType(IProduct<?> product, String classification, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IEnterprise<?> enterprise = system.getEnterprise();
+		IClassification<?> classification1 = classificationService.find(classification, enterprise, identityToken);
+		return new ProductXProductType().builder()
+		                                .findLink((Product) product, null)
+		                                .withClassification(classification1)
+		                                .inActiveRange(enterprise, identityToken)
+		                                .inDateRange()
+		                                .withEnterprise(enterprise)
+		                                .get()
+		                                .orElseThrow()
+		                                .getSecondary();
 	}
 	
 	@Override
@@ -181,7 +206,7 @@ public class ProductService<J extends ProductService<J>> implements IProductServ
 		                                .inActiveRange(system.getEnterprise(), identityToken)
 		                                .inDateRange()
 		                                .canRead(system.getEnterprise(), identityToken)
-		                                .withType(type, system.getEnterprise(), identityToken)
+		                                .withType(type, system, identityToken)
 		                                .getAll()
 		                                .stream()
 		                                .map(ProductXProductType::getProductID)

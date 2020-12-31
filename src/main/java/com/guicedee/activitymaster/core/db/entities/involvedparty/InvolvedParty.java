@@ -11,6 +11,7 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.EventXInvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
+import com.guicedee.activitymaster.core.db.entities.product.ProductType;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.db.hierarchies.InvolvedPartyHierarchyView;
@@ -59,7 +60,8 @@ public class InvolvedParty
 		           IInvolvedParty<InvolvedParty>,
 		           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView,IInvolvedParty<?>, IInvolvedParty<?>>,
 		           IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassificationValue<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>,
-		           IContainsRules<InvolvedParty, Rules,InvolvedPartyXRules,IClassification<?>,IInvolvedParty<?>,IRules<?>>
+		           IContainsRules<InvolvedParty, Rules,InvolvedPartyXRules,IClassification<?>,IInvolvedParty<?>,IRules<?>>,
+		           IContainsProductTypes<InvolvedParty, ProductType,InvolvedPartyXProductType,IClassificationValue<?>,IProductTypeValue<?>,IInvolvedParty<?>,IProductType<?>,InvolvedParty>
 {
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
 	@Id
@@ -176,14 +178,14 @@ public class InvolvedParty
 		{
 			identificationTypeWebClientUUID.expire();
 		}
-		destination.addIdentificationType(partyType, newUUID.toString(), destination.getEnterprise(), identityToken);
+		destination.addIdentificationType(partyType, newUUID.toString(), dest.getSystemID(), identityToken);
 		return dest;
 	}
 	
 	@Override
 	public UUID getSecurityIdentity()
 	{
-		String value = this.findIdentificationType(IdentificationTypes.IdentificationTypeUUID, Classifications.NoClassification.classificationName(),true,true, getEnterprise(),
+		String value = this.findIdentificationType(IdentificationTypes.IdentificationTypeUUID, Classifications.NoClassification.classificationName(),true,true,getSystemID(),
 		                                           get(InvolvedPartySystem.class).getSystemToken(getEnterprise()))
 		                   .orElseThrow()
 		                   .getValue();
@@ -238,61 +240,61 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public IIdentificationType<?> stringToIdentificationType(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
+	public IIdentificationType<?> stringToIdentificationType(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (IIdentificationType<?>) service.findIdentificationType(typeName, enterprise, identityToken);
+		return (IIdentificationType<?>) service.findIdentificationType(typeName, system.getEnterprise(), identityToken);
 	}
 	
 	@Override
-	public void configureAddableIdentificationType(InvolvedPartyXInvolvedPartyIdentificationType linkTable, InvolvedParty primary, InvolvedPartyIdentificationType secondary, IClassification<?> classificationValue, IIdentificationType<?> type, String value, IEnterprise<?> enterprise)
+	public void configureAddableIdentificationType(InvolvedPartyXInvolvedPartyIdentificationType linkTable, InvolvedParty primary, InvolvedPartyIdentificationType secondary, IClassification<?> classificationValue, IIdentificationType<?> type, String value, ISystems<?> system)
 	{
 		linkTable.setInvolvedPartyID(primary);
 		linkTable.setInvolvedPartyIdentificationTypeID(secondary);
 		linkTable.setClassificationID((Classification) classificationValue);
 		linkTable.setValue(value);
-		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
 	}
 	
 	@Override
-	public INameType<?> stringToNameType(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
+	public INameType<?> stringToNameType(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (INameType<?>) service.findNameType(typeName, enterprise, identityToken);
+		return (INameType<?>) service.findNameType(typeName, system.getEnterprise(), identityToken);
 	}
 	
 	@Override
-	public void configureIPNameTypesAddable(InvolvedPartyXInvolvedPartyNameType linkTable, InvolvedParty primary, InvolvedPartyNameType secondary, IClassification<?> classificationValue, INameType<?> type, String value, IEnterprise<?> enterprise)
+	public void configureIPNameTypesAddable(InvolvedPartyXInvolvedPartyNameType linkTable, InvolvedParty primary, InvolvedPartyNameType secondary, IClassification<?> classificationValue, INameType<?> type, String value, ISystems<?> system)
 	{
 		linkTable.setInvolvedPartyID(primary);
 		linkTable.setInvolvedPartyNameTypeID(secondary);
 		linkTable.setClassificationID((Classification) classificationValue);
 		linkTable.setValue(value);
-		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
 	}
 	
 	@Override
-	public ITypeValue<?> stringToIPTypesType(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
+	public ITypeValue<?> stringToIPTypesType(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (ITypeValue<?>) service.findType(typeName, enterprise, identityToken);
+		return (ITypeValue<?>) service.findType(typeName, system.getEnterprise(), identityToken);
 	}
 	
 	@Override
-	public InvolvedPartyType stringToIPTypesSecondary(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
+	public InvolvedPartyType stringToIPTypesSecondary(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (InvolvedPartyType) service.findType(typeName, enterprise, identityToken);
+		return (InvolvedPartyType) service.findType(typeName, system.getEnterprise(), identityToken);
 	}
 	
 	@Override
-	public void configureIPTypesAddable(InvolvedPartyXInvolvedPartyType linkTable, InvolvedParty primary, InvolvedPartyType secondary, IClassification<?> classificationValue, ITypeValue<?> type, String value, IEnterprise<?> enterprise)
+	public void configureIPTypesAddable(InvolvedPartyXInvolvedPartyType linkTable, InvolvedParty primary, InvolvedPartyType secondary, IClassification<?> classificationValue, ITypeValue<?> type, String value, ISystems<?> system)
 	{
 		linkTable.setInvolvedPartyID(primary);
 		linkTable.setInvolvedPartyTypeID(secondary);
 		linkTable.setClassificationID((Classification) classificationValue);
 		linkTable.setValue(value);
-		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
 	}
 	
 	@Override
@@ -335,11 +337,11 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureAddableProduct(InvolvedPartyXProduct linkTable, InvolvedParty primary, Product secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureAddableProduct(InvolvedPartyXProduct linkTable, InvolvedParty primary, Product secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setInvolvedPartyID(primary);
 		linkTable.setProductID(secondary);
-		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
 		linkTable.setValue(value);
 		linkTable.setClassificationID((Classification) classificationValue);
 	}
@@ -350,6 +352,16 @@ public class InvolvedParty
 		linkTable.setInvolvedPartyID(primary);
 		linkTable.setRulesID(secondary);
 		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setValue(value);
+		linkTable.setClassificationID((Classification) classificationValue);
+	}
+	
+	@Override
+	public void configureProductTypeLinkValue(InvolvedPartyXProductType linkTable, InvolvedParty primary, ProductType secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
+	{
+		linkTable.setInvolvedPartyID(primary);
+		linkTable.setProductTypeID(secondary);
+		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
 		linkTable.setValue(value);
 		linkTable.setClassificationID((Classification) classificationValue);
 	}

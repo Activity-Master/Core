@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyView;
 import com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyView_;
 import com.guicedee.activitymaster.core.implementations.SecurityTokenService;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
 import com.guicedee.guicedinjection.GuiceContext;
 
@@ -29,6 +30,12 @@ public interface ISecurityEnabledQueryBuilder<J extends QueryBuilderDefault<J, E
 		, S extends WarehouseSecurityTable>
 		extends IQueryBuilderDefault<J, E, I>
 {
+	
+	@NotNull
+	default J canRead(ISystems<?> system, UUID... identityToken) throws SecurityAccessException
+	{
+		return getSecurityBuilderConfig(system.getEnterprise(), "readAllowed", identityToken);
+	}
 	
 	@NotNull
 	default J canRead(IEnterprise<?> enterprise, UUID... identityToken) throws SecurityAccessException
@@ -139,6 +146,14 @@ public interface ISecurityEnabledQueryBuilder<J extends QueryBuilderDefault<J, E
 	@SuppressWarnings("unchecked")
 	default J canCreate(IEnterprise<?> enterprise, UUID... identityToken)
 	{
+		//System.out.println("Can Create Not Done Yet");
+		return (J) this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	default J canCreate(ISystems<?> system, UUID... identityToken)
+	{
+		//System.out.println("Can Create Not Done Yet");
 		return (J) this;
 	}
 	

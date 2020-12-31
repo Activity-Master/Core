@@ -328,6 +328,11 @@ public class ClassificationService
 		return rootCl;
 	}
 	
+	@Override
+	public IClassification<?> find(@CacheKey IClassificationValue<?> name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	{
+		return find(name, system.getEnterpriseID(), identityToken);
+	}
 	@SuppressWarnings("Duplicates")
 	@CacheResult(cacheName = "ClassificationFindWithIClassificationStringConceptValue")
 	@Override
@@ -345,6 +350,12 @@ public class ClassificationService
 		               .get()
 		               .orElseThrow();
 		return search;
+	}
+	
+	@Override
+	public IClassification<?> find(@CacheKey String name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	{
+		return find(name, system.getEnterpriseID(), identityToken);
 	}
 	
 	@CacheResult(cacheName = "ClassificationFindWithSimpleString")

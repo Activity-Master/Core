@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.address.builders;
 
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXClassification;
@@ -8,19 +9,20 @@ import com.guicedee.activitymaster.core.db.entities.address.AddressXClassificati
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class AddressXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Address, Classification, AddressXClassificationQueryBuilder,
 				                                              AddressXClassification, java.util.UUID, AddressXClassificationSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<AddressXClassification, Address> getPrimaryAttribute()
 	{
 		return AddressXClassification_.addressID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public  SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
 	{
 		return AddressXClassification_.classificationID;
 	}

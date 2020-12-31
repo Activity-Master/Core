@@ -126,6 +126,8 @@
         <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXResourceItemSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXRules</class>
         <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXRulesSecurityToken</class>
+        <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXProductType</class>
+        <class>com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXProductTypeSecurityToken</class>
 
         <class>com.guicedee.activitymaster.core.db.entities.product.Product</class>
         <class>com.guicedee.activitymaster.core.db.entities.product.ProductSecurityToken</class>
@@ -215,6 +217,7 @@
         <class>com.guicedee.activitymaster.core.db.hierarchies.GeographyHierarchyView</class>
         <class>com.guicedee.activitymaster.core.db.hierarchies.InvolvedPartyHierarchyView</class>
         <class>com.guicedee.activitymaster.core.db.hierarchies.ProductHierarchyView</class>
+        <class>com.guicedee.activitymaster.core.db.hierarchies.RulesHierarchyView</class>
         <class>com.guicedee.activitymaster.core.db.hierarchies.ResourceItemHierarchyView</class>
         <class>com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyView</class>
         <class>com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyParents</class>

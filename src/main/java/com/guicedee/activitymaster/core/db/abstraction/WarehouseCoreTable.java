@@ -15,6 +15,8 @@ import com.guicedee.guicedinjection.interfaces.JobService;
 
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                                        S extends WarehouseSecurityTable>
 		extends WarehouseBaseTable<J, Q, I>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public WarehouseCoreTable()

@@ -12,6 +12,8 @@ import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -39,6 +41,7 @@ public class ProductXProductType
 				IProduct<?>, IProductType<?>>
 {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXRule
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXRules_;
 import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ArrangementXRulesQueryBuilder
 		extends QueryBuilderRelationshipClassification<Arrangement, Rules, ArrangementXRulesQueryBuilder,
 						                                              ArrangementXRules, java.util.UUID, ArrangementXRulesSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<ArrangementXRules, Arrangement> getPrimaryAttribute()
 	{
 		return ArrangementXRules_.arrangement;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<ArrangementXRules, Rules> getSecondaryAttribute()
 	{
 		return ArrangementXRules_.rulesID;
 	}

@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXProd
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ArrangementXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Arrangement, Product, ArrangementXProductQueryBuilder,
 						                                              ArrangementXProduct, java.util.UUID, ArrangementXProductSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<ArrangementXProduct, Arrangement> getPrimaryAttribute()
 	{
 		return ArrangementXProduct_.arrangementID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<ArrangementXProduct, Product> getSecondaryAttribute()
 	{
 		return ArrangementXProduct_.productID;
 	}

@@ -15,6 +15,8 @@ import lombok.experimental.Accessors;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,7 @@ public class Hours
 		extends BaseEntity<Hours, HoursQueryBuilder, Integer>
 		implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@OneToMany(mappedBy = "Hours")
 	private List<Time> TimeList;

@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.geography.GeographyXResource
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class GeographyXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<Geography, ResourceItem, GeographyXResourceItemQueryBuilder,
 				                                              GeographyXResourceItem, java.util.UUID, GeographyXResourceItemSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<GeographyXResourceItem, Geography> getPrimaryAttribute()
 	{
 		return GeographyXResourceItem_.geographyID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<GeographyXResourceItem, ResourceItem> getSecondaryAttribute()
 	{
 		return GeographyXResourceItem_.resourceItemID;
 	}

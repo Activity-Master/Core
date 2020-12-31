@@ -22,8 +22,6 @@ import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
 import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.ResourceItemClassifications;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
@@ -320,86 +318,86 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	}
 	
 	
-	default boolean hasBefore(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasBeforeResourceItem(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
 			                                      .find(Classifications.NoClassification, enterprise, identityToken);
 		}
-		return numberOfAll(classificationValue.classificationName(), enterprise, identityToken) > 0;
+		return numberOfAllResourceItems(classificationValue.classificationName(), enterprise, identityToken) > 0;
 	}
 	
-	default boolean hasBefore(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasBeforeResourceItem(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
 			                                      .find(Classifications.NoClassification,enterprise, identityToken);
 		}
-		return numberOfAll(classificationValue.classificationName(), value, enterprise, identityToken) > 0;
+		return numberOfAllResourceItems(classificationValue.classificationName(), value, enterprise, identityToken) > 0;
 	}
 	
-	default boolean hasBefore(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasBeforeResourceItem(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOfAll(classificationValue, value, enterprise, identityToken) > 0;
+		return numberOfAllResourceItems(classificationValue, value, enterprise, identityToken) > 0;
 	}
 	
-	default boolean has(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasResourceItems(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
 			                                      .find(Classifications.NoClassification,enterprise, identityToken);
 		}
-		return numberOf(classificationValue.classificationName(), enterprise, identityToken) > 0;
+		return numberOfResourceItems(classificationValue.classificationName(), enterprise, identityToken) > 0;
 	}
 	
-	default boolean has(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasResourceItems(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
 			                                      .find(Classifications.NoClassification,enterprise, identityToken);
 		}
-		return numberOf(classificationValue, value, enterprise, identityToken) > 0;
+		return numberOfResourceItems(classificationValue, value, enterprise, identityToken) > 0;
 	}
 	
-	default boolean has(C classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default boolean hasResourceItems(C classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
 			                                      .find(Classifications.NoClassification, originatingSystem.getEnterprise(), identityToken);
 		}
-		return numberOf(classificationValue.classificationName(), originatingSystem.getEnterprise(), identityToken) > 0;
+		return numberOfResourceItems(classificationValue.classificationName(), originatingSystem.getEnterprise(), identityToken) > 0;
 	}
 	
-	default boolean has(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default boolean hasResourceItems(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
 			                                      .find(Classifications.NoClassification, originatingSystem.getEnterprise(), identityToken);
 		}
-		return numberOf(classificationValue, value, originatingSystem.getEnterprise(), identityToken) > 0;
+		return numberOfResourceItems(classificationValue, value, originatingSystem.getEnterprise(), identityToken) > 0;
 	}
 	
-	default long numberOf(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfResourceItems(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOf(classificationValue, null, enterprise, identityToken);
+		return numberOfResourceItems(classificationValue, null, enterprise, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOf(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfResourceItems(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemCountableQueryRelationshipTableType());
 		
@@ -417,37 +415,37 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		                             .getCount();
 	}
 	
-	default long numberOf(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfResourceItems(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
 			                                      .find(Classifications.NoClassification,enterprise, identityToken);
 		}
-		return numberOf(classificationValue.classificationName(), value, enterprise, identityToken);
+		return numberOfResourceItems(classificationValue.classificationName(), value, enterprise, identityToken);
 	}
 	
-	default long numberOfAll(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfAllResourceItems(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
 			                                      .find(Classifications.NoClassification,enterprise, identityToken);
 		}
-		return numberOfAll(classificationValue.classificationName(), null, enterprise, identityToken);
+		return numberOfAllResourceItems(classificationValue.classificationName(), null, enterprise, identityToken);
 	}
 	
-	default long numberOfAll(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfAllResourceItems(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOfAll(classificationValue, null, enterprise, identityToken);
+		return numberOfAllResourceItems(classificationValue, null, enterprise, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOfAll(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfAllResourceItems(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemCountableQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);

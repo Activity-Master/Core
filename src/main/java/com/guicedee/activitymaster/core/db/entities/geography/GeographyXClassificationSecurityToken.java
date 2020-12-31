@@ -11,6 +11,8 @@ import com.guicedee.activitymaster.core.db.entities.geography.builders.Geography
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -31,6 +33,7 @@ public class GeographyXClassificationSecurityToken
 		implements Serializable
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

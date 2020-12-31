@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class DayNames
 		extends BaseEntity<DayNames, DayNamesQueryBuilder, Integer>
 		implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	

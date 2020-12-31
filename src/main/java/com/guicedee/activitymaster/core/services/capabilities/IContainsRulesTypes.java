@@ -330,7 +330,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q add(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addRulesType(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		
@@ -363,7 +363,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	void configureRulesTypeLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrUpdate(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrUpdateRulesType(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
@@ -382,7 +382,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			tableForClassification = addOrReuse(classificationValue, classificationDataConceptType, value, originatingSystem, identityToken);
+			tableForClassification = addOrReuseRulesType(classificationValue, classificationDataConceptType, value, originatingSystem, identityToken);
 		}
 		else
 		{
@@ -426,7 +426,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrReuse(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrReuseRulesType(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
@@ -472,7 +472,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q add(IClassification<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addRulesType(IClassification<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
@@ -499,7 +499,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrReuse(IClassification<?> classification, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrReuseRulesType(IClassification<?> classification, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
@@ -539,7 +539,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrUpdate(IClassification<?> classification, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrUpdateRulesType(IClassification<?> classification, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
@@ -613,7 +613,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q update(IClassification<?> classification, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q updateRulesType(IClassification<?> classification, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
@@ -674,7 +674,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	
 	
 	@SuppressWarnings("unchecked")
-	default Q archive(IClassification<?> classification, T classificationDataConceptType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q archiveRulesType(IClassification<?> classification, T classificationDataConceptType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
@@ -705,16 +705,18 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q remove(IClassification<?> classification, T identificationType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q removeRulesType(String classificationName, R rulesType,String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) identificationType, null)
+		                                                         .findLink((P) this, (S) rulesType, value)
 		                                                         .withClassification(classification)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(system.getEnterpriseID(), identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -723,7 +725,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getDeletedFlag(system.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 		}

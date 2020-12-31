@@ -16,6 +16,8 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -33,6 +35,7 @@ public class TransQtm
 		extends BaseEntity<TransQtm, TransQtmQueryBuilder, TransQtmPK>
 		implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@EmbeddedId
 	protected TransQtmPK id;

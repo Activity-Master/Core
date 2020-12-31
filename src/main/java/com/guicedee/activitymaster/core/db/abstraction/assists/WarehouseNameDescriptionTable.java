@@ -3,13 +3,14 @@ package com.guicedee.activitymaster.core.db.abstraction.assists;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.assists.QueryBuilderNameDescription;
-import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
 
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 /**
  * @param <S>
@@ -25,8 +26,9 @@ public abstract class WarehouseNameDescriptionTable<J extends WarehouseNameDescr
 		                                                   I extends Serializable,
 		                                                   S extends WarehouseSecurityTable>
 		extends WarehouseCoreTable<J, Q, I, S>
-		implements INameAndDescription<J>
+		implements IContainsNameAndDescription<J>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public WarehouseNameDescriptionTable()

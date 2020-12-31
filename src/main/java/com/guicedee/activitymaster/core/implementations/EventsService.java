@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.core.implementations;
 
-import com.google.inject.Singleton;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
@@ -41,7 +40,7 @@ public class EventsService
 				.getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
 		event.persist();
 		event.createDefaultSecurity(originatingSystem, identityToken);
-		event.add(NoClassification, eventType, STRING_EMPTY, originatingSystem, identityToken);
+		event.addEventType(NoClassification, eventType, STRING_EMPTY, originatingSystem, identityToken);
 		EventThread.event.set(event);
 		return event;
 	}

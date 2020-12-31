@@ -152,7 +152,7 @@ public class ResourceItemService
 			xr.createDefaultSecurity(system, identityToken);
 		}
 		IResourceType<?> resourceItemType = (IResourceType<?>) createType(identityResourceType, identityResourceType, system, identityToken);
-		xr.add(resourceItemType, null, system, identityToken);
+		xr.addResourceItemTypes(resourceItemType, null, system, identityToken);
 		
 		return xr;
 	}
@@ -271,7 +271,7 @@ public class ResourceItemService
 		                                   .inActiveRange(systems.getEnterprise(), identityToken)
 		                                   .inDateRange()
 		                                   .canRead(systems.getEnterprise(), identityToken)
-		                                   .withType(type, systems.getEnterprise(), identityToken)
+		                                   .withType(type, systems, identityToken)
 		                                   .getAll()
 		                                   .stream()
 		                                   .map(ResourceItemXResourceItemType::getResourceItemID)

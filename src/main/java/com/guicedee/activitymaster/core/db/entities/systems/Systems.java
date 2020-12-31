@@ -10,7 +10,7 @@ import com.guicedee.activitymaster.core.db.entities.systems.builders.SystemsQuer
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
-import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
 import com.guicedee.activitymaster.core.services.classifications.systems.ISystemsClassification;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
@@ -24,6 +24,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -48,10 +50,11 @@ public class Systems
 		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.util.UUID, SystemsSecurityToken>
 		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>, ISystems<?>, IClassification<?>, Systems>,
 				           IActivityMasterEntity<Systems>,
-				           INameAndDescription<Systems>,
+				   IContainsNameAndDescription<Systems>,
 				           IContainsEnterprise<Systems>,
 				           ISystems<Systems>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 
@@ -100,7 +103,7 @@ public class Systems
 			referencedColumnName = "ActiveFlagID",
 			nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+			fetch = FetchType.EAGER)
 	@JsonIgnore
 	private ActiveFlag activeFlagID;
 

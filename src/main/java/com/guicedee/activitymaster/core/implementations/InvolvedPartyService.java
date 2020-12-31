@@ -370,12 +370,12 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	public IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> originatingSystem, UUID... token)
+	public IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> system, UUID... token)
 	{
 		byte[] salt;
-		if (involvedParty.hasClassifications(SecurityPasswordSalt, originatingSystem, token))
+		if (involvedParty.hasClassifications(SecurityPasswordSalt, system, token))
 		{
-			salt = involvedParty.findClassifications(SecurityPasswordSalt, originatingSystem.getEnterprise(), token)
+			salt = involvedParty.findClassifications(SecurityPasswordSalt, system.getEnterprise(), token)
 			                    .get()
 			                    .getValue()
 			                    .getBytes();
@@ -389,15 +389,16 @@ public class InvolvedPartyService
 		String passEncrypted = encrypt(password, new String(salt));
 		String saltEncrypted = new Passwords().integerEncrypt(salt);
 		
-		involvedParty.addOrUpdate(SecurityPassword, null, passEncrypted, originatingSystem, token);
-		involvedParty.addOrUpdate(SecurityPasswordSalt, null, saltEncrypted, originatingSystem, token);
-		involvedParty.addOrUpdateIdentificationType(IdentificationTypeUserName, NoClassification.classificationName(), new Passwords().integerEncrypt(username.getBytes()), originatingSystem.getEnterprise(), token);
+		involvedParty.addOrUpdate(SecurityPassword, null, passEncrypted, system, token);
+		involvedParty.addOrUpdate(SecurityPasswordSalt, null, saltEncrypted, system, token);
+		involvedParty.addOrUpdateIdentificationType(IdentificationTypeUserName, NoClassification.classificationName(),
+				new Passwords().integerEncrypt(username.getBytes()), system, token);
 		
 		
 		if (event != null)
 		{
-			event.addOrUpdate(UpdatedPassword, (String) null, STRING_EMPTY, originatingSystem, token);
-			event.addOrUpdate(UpdatedUsername, (String) null, username, originatingSystem, token);
+			event.addOrUpdate(UpdatedPassword, (String) null, STRING_EMPTY, system, token);
+			event.addOrUpdate(UpdatedUsername, (String) null, username, system, token);
 		}
 		return involvedParty;
 	}
@@ -432,7 +433,7 @@ public class InvolvedPartyService
 						, identityToken);
 			}
 			
-			ip.addOrUpdateIdentificationType(idTypes.getKey(), NoClassification.name(), idTypes.getValue(), enterprise, identityToken);
+			ip.addOrUpdateIdentificationType(idTypes.getKey(), NoClassification.name(), idTypes.getValue(), system, identityToken);
 			
 			if (get(ActivityMasterConfiguration.class)
 					.isAsyncEnabled())

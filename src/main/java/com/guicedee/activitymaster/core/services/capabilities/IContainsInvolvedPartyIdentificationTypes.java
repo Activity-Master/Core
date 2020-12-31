@@ -49,107 +49,107 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		L, R,
 		J extends IContainsInvolvedPartyIdentificationTypes<P, S, Q,C, T, L, R, J>>
 {
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, C classification, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, C classification, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue, classification, null, enterprise, identityToken);
+		return findIdentificationType(typeValue, classification, null, system, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue, NoClassification.classificationName(), null, enterprise, identityToken);
+		return findIdentificationType(typeValue, NoClassification.classificationName(), null, system, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(String typeValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(String typeValue, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue, NoClassification.classificationName(), value, enterprise, false, false, identityToken);
+		return findIdentificationType(typeValue, NoClassification.classificationName(), value, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(String typeValue, String classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(String typeValue, String classification, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue, classification, value, enterprise, false, false, identityToken);
+		return findIdentificationType(typeValue, classification, value, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, C classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, C classification, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification.getName(), value, enterprise, false, false, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification.getName(), value, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification, null, enterprise, false, false, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification, null, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification, searchValue, enterprise, false, false, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification, searchValue, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, C classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, C classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification.getName(), value, enterprise, first, false, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification.getName(), value, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, boolean first, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification, null, enterprise, first, false, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification, null, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, String searchValue, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, String searchValue, boolean first, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification, searchValue, enterprise, first, false, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification, searchValue, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, C classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, C classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification.getName(), value, enterprise, first, latest, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification.getName(), value, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification, null, enterprise, first, latest, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification, null, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, String searchValue, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(T typeValue, String classification, String searchValue, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification, searchValue, enterprise, first, latest, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification, searchValue, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationTypeFirst(T typeValue, String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationTypeFirst(T typeValue, String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification, searchValue, enterprise, true, false, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification, searchValue, system, true, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationTypeFirst(String typeValue, String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationTypeFirst(String typeValue, String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue, classification, searchValue, enterprise, true, false, identityToken);
+		return findIdentificationType(typeValue, classification, searchValue, system, true, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationTypeFirst(T typeValue, C classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationTypeFirst(T typeValue, C classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification.getName(), searchValue, enterprise, true, false, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification.getName(), searchValue, system, true, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationTypeFirst(T typeValue, C classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationTypeFirst(T typeValue, C classification, String searchValue, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationType(typeValue.classificationValue(), classification.getName(), searchValue, enterprise, true, latest, identityToken);
+		return findIdentificationType(typeValue.classificationValue(), classification.getName(), searchValue, system, true, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(String typeValue, String classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findIdentificationType(String typeValue, String classification, String searchValue, ISystems<?> system, boolean first, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system.getEnterprise(), identityToken)
 				                   .withClassification(iClassification)
 				                   .withValue(searchValue)
-				                   .withType(typeValue, enterprise, identityToken)
+				                   .withType(typeValue, system, identityToken)
 				                   .inDateRange()
-				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .withEnterprise(system.getEnterprise())
+				                   .canRead(system.getEnterprise(), identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -159,61 +159,61 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		return (Optional) queryBuilderRelationshipClassification.get();
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(T typeValue, C classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(T typeValue, C classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationTypesAll(typeValue.classificationValue(), classification.getName(), null, enterprise, latest, identityToken);
+		return findIdentificationTypesAll(typeValue.classificationValue(), classification.getName(), null, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(T typeValue, C classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(T typeValue, C classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationTypesAll(typeValue.classificationValue(), classification.getName(), value, enterprise, latest, identityToken);
+		return findIdentificationTypesAll(typeValue.classificationValue(), classification.getName(), value, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(T typeValue, String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(T typeValue, String classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationTypesAll(typeValue.classificationValue(), classification, null, enterprise, latest, identityToken);
+		return findIdentificationTypesAll(typeValue.classificationValue(), classification, null, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(T typeValue, String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(T typeValue, String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationTypesAll(typeValue.classificationValue(), classification, value, enterprise, latest, identityToken);
+		return findIdentificationTypesAll(typeValue.classificationValue(), classification, value, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationTypesAll(typeValue, classification, value, enterprise, latest, identityToken);
+		return findIdentificationTypesAll(typeValue, classification, value, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, String classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, String classification, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationTypesAll(typeValue, classification, value, false, enterprise, identityToken);
+		return findIdentificationTypesAll(typeValue, classification, value, false, system, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, String classification, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, String classification, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationTypesAll(typeValue, classification, null, enterprise, identityToken);
+		return findIdentificationTypesAll(typeValue, classification, null, system, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, ISystems<?> system, UUID... identityToken)
 	{
-		return findIdentificationTypesAll(typeValue, NoClassification.classificationName(), null, enterprise, false, identityToken);
+		return findIdentificationTypesAll(typeValue, NoClassification.classificationName(), null, system, false, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default @NotNull List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, String classification, String searchValue, IEnterprise<?> enterprise, boolean latest, UUID... identityToken)
+	default @NotNull List<IRelationshipValue<L, R, ?>> findIdentificationTypesAll(String typeValue, String classification, String searchValue, ISystems<?> system, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
-				                   .withType(typeValue, enterprise, identityToken)
+				                   .inActiveRange(system.getEnterprise(), identityToken)
+				                   .withType(typeValue, system, identityToken)
 				                   .withValue(searchValue)
 				                   .withClassification(iClassification)
 				                   .inDateRange()
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system.getEnterprise(), identityToken);
 		if (latest)
 		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
 		return (List) queryBuilderRelationshipClassification.getAll();
@@ -258,86 +258,71 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		return null;
 	}
 	
-	default boolean hasIdentificationTypeBefore(T typeValue, C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasIdentificationTypeBefore(T typeValue, C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
 		}
-		return numberOfIdentificationTypesAll(typeValue, classificationValue.getName(), enterprise, identityToken) > 0;
+		return numberOfIdentificationTypesAll(typeValue, classificationValue.getName(), system, identityToken) > 0;
 	}
 	
-	default boolean hasIdentificationTypeBefore(T typeValue, C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasIdentificationTypeBefore(T typeValue, C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
 		}
-		return numberOfIdentificationTypesAll(typeValue.classificationValue(), classificationValue.getName(), value, enterprise, identityToken) > 0;
+		return numberOfIdentificationTypesAll(typeValue.classificationValue(), classificationValue.getName(), value, system, identityToken) > 0;
 	}
 	
-	default boolean hasIdentificationTypeBefore(T typeValue, String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasIdentificationTypeBefore(T typeValue, String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOfIdentificationTypesAll(typeValue.classificationValue(), classificationValue, value, enterprise, identityToken) > 0;
+		return numberOfIdentificationTypesAll(typeValue.classificationValue(), classificationValue, value, system, identityToken) > 0;
 	}
 	
-	default boolean hasIdentificationType(T typeValue, C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasIdentificationType(T typeValue, C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
 		}
-		return numberOfIdentificationTypes(typeValue, classificationValue.getName(), enterprise, identityToken) > 0;
+		return numberOfIdentificationTypes(typeValue, classificationValue.getName(), system, identityToken) > 0;
 	}
 	
-	default boolean hasIdentificationType(T typeValue, C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasIdentificationType(T typeValue, C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
 		}
-		return numberOfIdentificationTypes(typeValue, classificationValue, value, enterprise, identityToken) > 0;
+		return numberOfIdentificationTypes(typeValue, classificationValue, value, system, identityToken) > 0;
 	}
 	
-	default boolean hasIdentificationType(T typeValue, C classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		if (classificationValue == null)
-		{
-			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,originatingSystem.getEnterprise(), identityToken);
-		}
-		return numberOfIdentificationTypes(typeValue, classificationValue.getName(), originatingSystem.getEnterprise(), identityToken) > 0;
-	}
-	
-	default boolean hasIdentificationType(T typeValue, C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		return numberOfIdentificationTypes(typeValue, classificationValue, value, originatingSystem.getEnterprise(), identityToken) > 0;
-	}
-	
-	default long numberOfIdentificationTypes(String typeValue, String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfIdentificationTypes(String typeValue, String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOfIdentificationTypes(typeValue, classificationValue, null, enterprise, identityToken);
+		return numberOfIdentificationTypes(typeValue, classificationValue, null, system, identityToken);
 	}
 	
-	default long numberOfIdentificationTypes(T typeValue, String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfIdentificationTypes(T typeValue, String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOfIdentificationTypes(typeValue.classificationValue(), classificationValue, null, enterprise, identityToken);
+		return numberOfIdentificationTypes(typeValue.classificationValue(), classificationValue, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOfIdentificationTypes(String typeValue, String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfIdentificationTypes(String typeValue, String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findInvolvedPartyIdentificationTypesCountableQueryRelationshipTableType());
 		
@@ -346,57 +331,57 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterprise(), identityToken);
 		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) stringToIdentificationType(typeValue, enterprise, identityToken), value)
+		                             .findLink((P) this, (S) stringToIdentificationType(typeValue, system, identityToken), value)
 		                             .withClassification(classification)
-		                             .withType(typeValue, enterprise, identityToken)
-		                             .inActiveRange(enterprise)
+		                             .withType(typeValue, system, identityToken)
+		                             .inActiveRange(system.getEnterprise(),identityToken)
 		                             .inDateRange()
-		                             .canRead(enterprise, identityToken)
+		                             .canRead(system.getEnterprise(), identityToken)
 		                             .getCount();
 	}
 	
-	default long numberOfIdentificationTypes(T typeValue, C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfIdentificationTypes(T typeValue, C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
 		}
-		return numberOfIdentificationTypes(typeValue.classificationValue(), classificationValue.getName(), value, enterprise, identityToken);
+		return numberOfIdentificationTypes(typeValue.classificationValue(), classificationValue.getName(), value, system, identityToken);
 	}
 	
-	default long numberOfIdentificationTypesAll(T typeValue, C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfIdentificationTypesAll(T typeValue, C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
 		}
-		return numberOfIdentificationTypesAll(typeValue.classificationValue(), classificationValue.getName(), null, enterprise, identityToken);
+		return numberOfIdentificationTypesAll(typeValue.classificationValue(), classificationValue.getName(), null, system, identityToken);
 	}
 	
-	default long numberOfIdentificationTypesAll(String typeValue, String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfIdentificationTypesAll(String typeValue, String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOfIdentificationTypesAll(typeValue, classificationValue, null, enterprise, identityToken);
+		return numberOfIdentificationTypesAll(typeValue, classificationValue, null, system, identityToken);
 	}
 	
-	default long numberOfIdentificationTypesAll(T typeValue, String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfIdentificationTypesAll(T typeValue, String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOfIdentificationTypesAll(typeValue.classificationValue(), classificationValue, null, enterprise, identityToken);
+		return numberOfIdentificationTypesAll(typeValue.classificationValue(), classificationValue, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOfIdentificationTypesAll(String typeValue, String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfIdentificationTypesAll(String typeValue, String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findInvolvedPartyIdentificationTypesCountableQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
@@ -404,11 +389,11 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterprise(), identityToken);
 		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) stringToIdentificationType(typeValue, enterprise, identityToken), value)
+		                             .findLink((P) this, (S) stringToIdentificationType(typeValue, system, identityToken), value)
 		                             .withClassification(classification)
-		                             .withType(typeValue, enterprise, identityToken)
+		                             .withType(typeValue, system, identityToken)
 		                             .getCount();
 	}
 	
@@ -429,15 +414,15 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		return null;
 	}
 	
-	T stringToIdentificationType(String typeName, IEnterprise<?> enterprise, UUID... identityToken);
+	T stringToIdentificationType(String typeName, ISystems<?> system, UUID... identityToken);
 	
-	default S stringToSecondaryIdentificationType(String typeName, IEnterprise<?> enterprise, UUID... identityToken)
+	default S stringToSecondaryIdentificationType(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (S) service.findIdentificationType(typeName, enterprise, identityToken);
+		return (S) service.findIdentificationType(typeName, system.getEnterprise(), identityToken);
 	}
 	
-	void configureAddableIdentificationType(Q linkTable, P primary, S secondary, C classificationValue, T type, String value, IEnterprise<?> enterprise);
+	void configureAddableIdentificationType(Q linkTable, P primary, S secondary, C classificationValue, T type, String value, ISystems<?> system);
 	
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -462,57 +447,53 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		return null;
 	}
 	
-	default IRelationshipValue<L, R, ?> addIdentificationType(T typeName, C classificationName, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addIdentificationType(T typeName, C classificationName, ISystems<?> system, UUID... identityToken)
 	{
-		return addIdentificationType(typeName.classificationValue(), classificationName.getName(), null, enterprise, identityToken);
+		return addIdentificationType(typeName.classificationValue(), classificationName.getName(), null, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addIdentificationType(T typeName, C classificationName, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addIdentificationType(T typeName, C classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return addIdentificationType(typeName.classificationValue(), classificationName.getName(), value, enterprise, identityToken);
+		return addIdentificationType(typeName.classificationValue(), classificationName.getName(), value, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addIdentificationType(T typeName, String classificationName, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addIdentificationType(T typeName, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return addIdentificationType(typeName.classificationValue(), classificationName, value, enterprise, identityToken);
+		return addIdentificationType(typeName.classificationValue(), classificationName, value, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addIdentificationType(T typeName, String value, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return addIdentificationType(typeName.classificationValue(), Classifications.NoClassification.classificationName(), value, enterprise, identityToken);
-	}
 	
 	default IRelationshipValue<L, R, ?> addIdentificationType(T typeName, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		return addIdentificationType(typeName.classificationValue(), Classifications.NoClassification.classificationName(), value, originatingSystem.getEnterprise(), identityToken);
+		return addIdentificationType(typeName.classificationValue(), Classifications.NoClassification.classificationName(), value, originatingSystem, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return addIdentificationType(typeName, Classifications.NoClassification.classificationName(), value, enterprise, identityToken);
-	}
-	
-	
-	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String classificationName, String value, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return addIdentificationType(typeName, classificationName, value, STRING_EMPTY, enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String classificationName, String value, String originalSourceSystemUniqueID, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return addIdentificationType(typeName, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
+		return addIdentificationType(typeName, Classifications.NoClassification.classificationName(), value, system, identityToken);
 	}
 	
 	
-	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return addIdentificationType(typeName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
+		return addIdentificationType(typeName, classificationName, value, STRING_EMPTY, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String classificationName, String value, String originalSourceSystemUniqueID, ISystems<?> system, UUID... identityToken)
+	{
+		return addIdentificationType(typeName, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
 	}
 	
 	
-	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, LocalDateTime effectiveToDate, IEnterprise<?> enterprise, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, ISystems<?> system, UUID... identityToken)
 	{
-		return addIdentificationType(typeName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addIdentificationType(typeName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
+	}
+	
+	
+	default IRelationshipValue<L, R, ?> addIdentificationType(String typeName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, LocalDateTime effectiveToDate, ISystems<?> system, UUID... identityToken)
+	{
+		return addIdentificationType(typeName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, system, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> addIdentificationType(@NotNull String type,
@@ -522,85 +503,68 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                                          LocalDateTime effectiveFromDate,
 	                                                          LocalDateTime effectiveToDate,
 	                                                          ISystems<?> originalSystemID,
-	                                                          @NotNull IEnterprise<?> enterprise,
+	                                                          @NotNull ISystems<?> system,
 	                                                          UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddableIdentificationTypeTableType());
-		T typeToUse = stringToIdentificationType(type, enterprise, identityToken);
+		T typeToUse = stringToIdentificationType(type, system, identityToken);
 		
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
-		IClassification<?> classification = classificationService.findOrCreate(classificationName, enterprise, identityToken);
+		IClassification<?> classification = classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+
 		
-		ISystems<?> originatingSystem = GuiceContext.get(SystemsService.class)
-		                                            .getActivityMaster(enterprise);
-		if (originalSystemID != null)
-		{
-			originatingSystem = originalSystemID;
-		}
-		
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(Strings.nullToEmpty(value));
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID((Systems) system);
 		tableForClassification.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		tableForClassification.setEffectiveFromDate(effectiveFromDate);
 		tableForClassification.setEffectiveToDate(effectiveToDate);
-		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
+		tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
 		tableForClassification.setClassificationID((Classification) classification);
 		
-		configureAddableIdentificationType(tableForClassification, (P) this, stringToSecondaryIdentificationType(type, enterprise, identityToken),
-		                                   (C) classification, typeToUse, value, originatingSystem.getEnterpriseID());
+		configureAddableIdentificationType(tableForClassification, (P) this, stringToSecondaryIdentificationType(type, system, identityToken),
+		                                   (C) classification, typeToUse, value, system);
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
 				.isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			tableForClassification.createDefaultSecurity(system, identityToken);
 		}
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
-			                 .add((IEventClassification<?>) Created, type + " - " + classificationName + " - " + value, originatingSystem, identityToken);
+			                 .add((IEventClassification<?>) Created, type + " - " + classificationName + " - " + value, system, identityToken);
 		}
 		return (IRelationshipValue<L, R, ?>) tableForClassification;
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
 	                                       @NotNull C classificationName,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type, classificationName, null, null, LocalDateTime.now(), enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, null, null, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
 	                                       @NotNull C classificationName,
 	                                       String value,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type, classificationName, value, null, LocalDateTime.now(), enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
-	                                       @NotNull C classificationName,
-	                                       String value,
-	                                       String originalSourceSystemUniqueID,
-	                                       @NotNull IEnterprise<?> enterprise,
-	                                       UUID... identityToken)
-	{
-		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, value, null, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
 	                                       @NotNull C classificationName,
 	                                       String value,
 	                                       String originalSourceSystemUniqueID,
-	                                       LocalDateTime effectiveFromDate,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
@@ -608,11 +572,10 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                       String value,
 	                                       String originalSourceSystemUniqueID,
 	                                       LocalDateTime effectiveFromDate,
-	                                       LocalDateTime effectiveToDate,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type.classificationValue(), classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
@@ -621,101 +584,113 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                       String originalSourceSystemUniqueID,
 	                                       LocalDateTime effectiveFromDate,
 	                                       LocalDateTime effectiveToDate,
-	                                       ISystems<?> originalSystemID,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type.classificationValue(), classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+		return addOrReuseIdentificationType(type.classificationValue(), classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
-	                                       @NotNull String classificationName,
-	                                       @NotNull IEnterprise<?> enterprise,
-	                                       UUID... identityToken)
-	{
-		return addOrReuseIdentificationType(type, classificationName, null, null, LocalDateTime.now(), enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
-	                                       @NotNull String classificationName,
-	                                       String value,
-	                                       @NotNull IEnterprise<?> enterprise,
-	                                       UUID... identityToken)
-	{
-		return addOrReuseIdentificationType(type, classificationName, value, null, LocalDateTime.now(), enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
-	                                       @NotNull String classificationName,
-	                                       String value,
-	                                       String originalSourceSystemUniqueID,
-	                                       @NotNull IEnterprise<?> enterprise,
-	                                       UUID... identityToken)
-	{
-		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
-	                                       @NotNull String classificationName,
-	                                       String value,
-	                                       String originalSourceSystemUniqueID,
-	                                       LocalDateTime effectiveFromDate,
-	                                       @NotNull IEnterprise<?> enterprise,
-	                                       UUID... identityToken)
-	{
-		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
-	                                       @NotNull String classificationName,
-	                                       String value,
-	                                       String originalSourceSystemUniqueID,
-	                                       LocalDateTime effectiveFromDate,
-	                                       LocalDateTime effectiveToDate,
-	                                       @NotNull IEnterprise<?> enterprise,
-	                                       UUID... identityToken)
-	{
-		return addOrReuseIdentificationType(type.classificationValue(), classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
-	                                       @NotNull String classificationName,
+	                                       @NotNull C classificationName,
 	                                       String value,
 	                                       String originalSourceSystemUniqueID,
 	                                       LocalDateTime effectiveFromDate,
 	                                       LocalDateTime effectiveToDate,
 	                                       ISystems<?> originalSystemID,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type.classificationValue(), classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+		return addOrReuseIdentificationType(type.classificationValue(), classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
+	                                       @NotNull String classificationName,
+	                                       @NotNull ISystems<?> system,
+	                                       UUID... identityToken)
+	{
+		return addOrReuseIdentificationType(type, classificationName, null, null, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
+	                                       @NotNull String classificationName,
+	                                       String value,
+	                                       @NotNull ISystems<?> system,
+	                                       UUID... identityToken)
+	{
+		return addOrReuseIdentificationType(type, classificationName, value, null, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
+	                                       @NotNull String classificationName,
+	                                       String value,
+	                                       String originalSourceSystemUniqueID,
+	                                       @NotNull ISystems<?> system,
+	                                       UUID... identityToken)
+	{
+		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
+	                                       @NotNull String classificationName,
+	                                       String value,
+	                                       String originalSourceSystemUniqueID,
+	                                       LocalDateTime effectiveFromDate,
+	                                       @NotNull ISystems<?> system,
+	                                       UUID... identityToken)
+	{
+		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
+	                                       @NotNull String classificationName,
+	                                       String value,
+	                                       String originalSourceSystemUniqueID,
+	                                       LocalDateTime effectiveFromDate,
+	                                       LocalDateTime effectiveToDate,
+	                                       @NotNull ISystems<?> system,
+	                                       UUID... identityToken)
+	{
+		return addOrReuseIdentificationType(type.classificationValue(), classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull T type,
+	                                       @NotNull String classificationName,
+	                                       String value,
+	                                       String originalSourceSystemUniqueID,
+	                                       LocalDateTime effectiveFromDate,
+	                                       LocalDateTime effectiveToDate,
+	                                       ISystems<?> originalSystemID,
+	                                       @NotNull ISystems<?> system,
+	                                       UUID... identityToken)
+	{
+		return addOrReuseIdentificationType(type.classificationValue(), classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull String type,
 	                                       @NotNull String classificationName,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type, classificationName, null, null, LocalDateTime.now(), enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, null, null, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull String type,
 	                                       @NotNull String classificationName,
 	                                       String value,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type, classificationName, value, null, LocalDateTime.now(), enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, value, null, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull String type,
 	                                       @NotNull String classificationName,
 	                                       String value,
 	                                       String originalSourceSystemUniqueID,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull String type,
@@ -723,10 +698,10 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                       String value,
 	                                       String originalSourceSystemUniqueID,
 	                                       LocalDateTime effectiveFromDate,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrReuseIdentificationType(@NotNull String type,
@@ -735,10 +710,10 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                       String originalSourceSystemUniqueID,
 	                                       LocalDateTime effectiveFromDate,
 	                                       LocalDateTime effectiveToDate,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
-		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addOrReuseIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -749,21 +724,21 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                       LocalDateTime effectiveFromDate,
 	                                       LocalDateTime effectiveToDate,
 	                                       ISystems<?> originalSystemID,
-	                                       @NotNull IEnterprise<?> enterprise,
+	                                       @NotNull ISystems<?> system,
 	                                       UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddableIdentificationTypeTableType());
-		S sType = stringToSecondaryIdentificationType(type, enterprise, identityToken);
+		S sType = stringToSecondaryIdentificationType(type, system, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.findOrCreate(classificationName, enterprise, identityToken);
-		boolean exists = findIdentificationTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		Classification classification = (Classification) classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+		boolean exists = findIdentificationTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{
-			return addIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+			return addIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 		}
 		else
 		{
-			tableForClassification = (Q) findIdentificationTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken)
+			tableForClassification = (Q) findIdentificationTypeQuery(value, system, tableForClassification, sType, classification, identityToken)
 					.get()
 					.orElseThrow();
 		}
@@ -772,29 +747,29 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
 	                                        @NotNull String classificationName,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type, classificationName, null, enterprise, identityToken);
+		return addOrUpdateIdentificationType(type, classificationName, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
 	                                        @NotNull String classificationName,
 	                                        String value,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type, classificationName, value, null, enterprise, identityToken);
+		return addOrUpdateIdentificationType(type, classificationName, value, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
 	                                        @NotNull String classificationName,
 	                                        String value,
 	                                        String originalSourceSystemUniqueID,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
+		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
@@ -802,10 +777,10 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                        String value,
 	                                        String originalSourceSystemUniqueID,
 	                                        LocalDateTime effectiveFromDate,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type.classificationValue(), classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
+		return addOrUpdateIdentificationType(type.classificationValue(), classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
@@ -814,37 +789,37 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                        String originalSourceSystemUniqueID,
 	                                        LocalDateTime effectiveFromDate,
 	                                        LocalDateTime effectiveToDate,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type.classificationValue(), classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addOrUpdateIdentificationType(type.classificationValue(), classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
 	                                        @NotNull C classificationName,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type, classificationName, null, enterprise, identityToken);
+		return addOrUpdateIdentificationType(type, classificationName, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
 	                                        @NotNull C classificationName,
 	                                        String value,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type, classificationName, value, null, enterprise, identityToken);
+		return addOrUpdateIdentificationType(type, classificationName, value, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
 	                                        @NotNull C classificationName,
 	                                        String value,
 	                                        String originalSourceSystemUniqueID,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
+		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull T type,
@@ -852,72 +827,72 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                        String value,
 	                                        String originalSourceSystemUniqueID,
 	                                        LocalDateTime effectiveFromDate,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
+		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
 	                                        @NotNull C classificationName,
-	                                        String value,
-	                                        String originalSourceSystemUniqueID,
-	                                        LocalDateTime effectiveFromDate,
-	                                        LocalDateTime effectiveToDate,
-	                                        @NotNull IEnterprise<?> enterprise,
-	                                        UUID... identityToken)
-	{
-		return addOrUpdateIdentificationType(type, classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
-	                                        @NotNull String classificationName,
-	                                        @NotNull IEnterprise<?> enterprise,
-	                                        UUID... identityToken)
-	{
-		return addOrUpdateIdentificationType(type, classificationName, null, enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
-	                                        @NotNull String classificationName,
-	                                        String value,
-	                                        @NotNull IEnterprise<?> enterprise,
-	                                        UUID... identityToken)
-	{
-		return addOrUpdateIdentificationType(type, classificationName, value, null, enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
-	                                        @NotNull String classificationName,
-	                                        String value,
-	                                        String originalSourceSystemUniqueID,
-	                                        @NotNull IEnterprise<?> enterprise,
-	                                        UUID... identityToken)
-	{
-		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
-	                                        @NotNull String classificationName,
-	                                        String value,
-	                                        String originalSourceSystemUniqueID,
-	                                        LocalDateTime effectiveFromDate,
-	                                        @NotNull IEnterprise<?> enterprise,
-	                                        UUID... identityToken)
-	{
-		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, enterprise, identityToken);
-	}
-	
-	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
-	                                        @NotNull String classificationName,
 	                                        String value,
 	                                        String originalSourceSystemUniqueID,
 	                                        LocalDateTime effectiveFromDate,
 	                                        LocalDateTime effectiveToDate,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
-		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, enterprise, identityToken);
+		return addOrUpdateIdentificationType(type, classificationName.getName(), value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
+	                                        @NotNull String classificationName,
+	                                        @NotNull ISystems<?> system,
+	                                        UUID... identityToken)
+	{
+		return addOrUpdateIdentificationType(type, classificationName, null, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
+	                                        @NotNull String classificationName,
+	                                        String value,
+	                                        @NotNull ISystems<?> system,
+	                                        UUID... identityToken)
+	{
+		return addOrUpdateIdentificationType(type, classificationName, value, null, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
+	                                        @NotNull String classificationName,
+	                                        String value,
+	                                        String originalSourceSystemUniqueID,
+	                                        @NotNull ISystems<?> system,
+	                                        UUID... identityToken)
+	{
+		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
+	                                        @NotNull String classificationName,
+	                                        String value,
+	                                        String originalSourceSystemUniqueID,
+	                                        LocalDateTime effectiveFromDate,
+	                                        @NotNull ISystems<?> system,
+	                                        UUID... identityToken)
+	{
+		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
+	                                        @NotNull String classificationName,
+	                                        String value,
+	                                        String originalSourceSystemUniqueID,
+	                                        LocalDateTime effectiveFromDate,
+	                                        LocalDateTime effectiveToDate,
+	                                        @NotNull ISystems<?> system,
+	                                        UUID... identityToken)
+	{
+		return addOrUpdateIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?>addOrUpdateIdentificationType(@NotNull String type,
@@ -927,18 +902,18 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                        LocalDateTime effectiveFromDate,
 	                                        LocalDateTime effectiveToDate,
 	                                        ISystems<?> originalSystemID,
-	                                        @NotNull IEnterprise<?> enterprise,
+	                                        @NotNull ISystems<?> system,
 	                                        UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddableIdentificationTypeTableType());
-		S sType = stringToSecondaryIdentificationType(type, enterprise, identityToken);
+		S sType = stringToSecondaryIdentificationType(type, system, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.findOrCreate(classificationName, enterprise, identityToken);
-		boolean exists = findIdentificationTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		Classification classification = (Classification) classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+		boolean exists = findIdentificationTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
-		{ return  addIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken); }
+		{ return  addIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken); }
 		
-		tableForClassification = (Q) findIdentificationTypeQuery(value, enterprise, tableForClassification, sType, classification, identityToken)
+		tableForClassification = (Q) findIdentificationTypeQuery(value, system, tableForClassification, sType, classification, identityToken)
 				.get()
 				.orElseThrow();
 		
@@ -947,7 +922,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		{
 			return tableForClassification;
 		}
-		return updateIdentificationType(tableForClassification, type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+		return updateIdentificationType(tableForClassification, type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> updateIdentificationType(@NotNull IRelationshipValue<L, R, ?>  original,
@@ -958,11 +933,11 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 	                                                             LocalDateTime effectiveFromDate,
 	                                                             LocalDateTime effectiveToDate,
 	                                                             ISystems<?> originalSystemID,
-	                                                             @NotNull IEnterprise<?> enterprise,
+	                                                             @NotNull ISystems<?> system,
 	                                                             UUID... identityToken)
 	{
 		archiveIdentificationType(original, identityToken);
-		return addIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, enterprise, identityToken);
+		return addIdentificationType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> archiveIdentificationType(@NotNull IRelationshipValue<L, R, ?>  original, UUID... identityToken)
@@ -994,15 +969,15 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		return original;
 	}
 	
-	private QueryBuilderRelationship<?, ?, ?, ?, ?, ?> findIdentificationTypeQuery(String value, IEnterprise<?> enterprise, Q tableForClassification, S sType, Classification classification, UUID... identityToken)
+	private QueryBuilderRelationship<?, ?, ?, ?, ?, ?> findIdentificationTypeQuery(String value, ISystems<?> system, Q tableForClassification, S sType, Classification classification, UUID... identityToken)
 	{
 		return tableForClassification.builder()
 		                             .findLink((P) this, sType, value)
-		                             .inActiveRange(enterprise)
+		                             .inActiveRange(system.getEnterprise(),identityToken)
 		                             .inDateRange()
 		                             .withClassification(classification)
-		                             .withEnterprise(enterprise)
-		                             .canCreate(enterprise, identityToken);
+		                             .withEnterprise(system.getEnterprise())
+		                             .canCreate(system.getEnterprise(), identityToken);
 	}
 	
 }

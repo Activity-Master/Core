@@ -18,6 +18,8 @@ import com.guicedee.activitymaster.core.services.system.IResourceItemService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+
 import java.util.UUID;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -32,24 +34,24 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 		ResourceItemXResourceItemTypeSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<ResourceItemXResourceItemType, ResourceItem> getPrimaryAttribute()
 	{
 		return ResourceItemXResourceItemType_.resourceItemID;
 	}
 	
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<ResourceItemXResourceItemType, ResourceItemType> getSecondaryAttribute()
 	{
 		return ResourceItemXResourceItemType_.resourceItemTypeID;
 	}
 	
 	@Override
-	public ResourceItemXResourceItemTypeQueryBuilder withType(String typeValue, IEnterprise<?> enterprise, UUID... identityToken)
+	public ResourceItemXResourceItemTypeQueryBuilder withType(String typeValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{
 			IResourceItemService<?> service = GuiceContext.get(IResourceItemService.class);
-			ResourceItemType at = (ResourceItemType) service.findResourceItemType(typeValue, enterprise, identityToken);
+			ResourceItemType at = (ResourceItemType) service.findResourceItemType(typeValue, system.getEnterprise(), identityToken);
 			where(ResourceItemXResourceItemType_.resourceItemTypeID, Operand.Equals, at);
 		}
 		return this;

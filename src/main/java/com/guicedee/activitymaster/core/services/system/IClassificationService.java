@@ -49,10 +49,15 @@ public interface IClassificationService<J extends IClassificationService<J>>
 	IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
 							  ISystems<?> system,
 							  Short sequenceNumber, UUID... identityToken);
-
+	
+	IClassification<?> find(IClassificationValue<?> name, ISystems<?> system, UUID... identityToken);
+	
 	@SuppressWarnings("Duplicates")
     IClassification<?> find(IClassificationValue<?> name, IEnterprise<?> enterprise, UUID... identityToken);
-
+	
+	//@CacheResult(cacheName = "ClassificationFindWithSimpleString")
+	IClassification<?> find( String name, ISystems<?> system, UUID... identityToken);
+	
 	IClassification<?> find(String name, IEnterprise<?> enterprise, UUID... identityToken);
 	
 	IClassification<?> findOrCreate( String name, IEnterprise<?> enterprise, UUID... identityToken);

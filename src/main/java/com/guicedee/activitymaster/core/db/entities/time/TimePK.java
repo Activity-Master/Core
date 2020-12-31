@@ -13,6 +13,8 @@ import lombok.experimental.Accessors;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -25,6 +27,7 @@ import java.io.Serializable;
 public class TimePK
 		implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Basic(optional = false)
 	@Column(nullable = false)

@@ -11,6 +11,7 @@ import com.guicedee.activitymaster.core.db.entities.product.builders.ProductType
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serial;
 import java.util.UUID;
 
 import static jakarta.persistence.AccessType.*;
@@ -30,6 +31,7 @@ public class ProductTypeSecurityToken
 		extends WarehouseSecurityTable<ProductTypeSecurityToken, ProductTypeSecurityTokenQueryBuilder, java.util.UUID>
 {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

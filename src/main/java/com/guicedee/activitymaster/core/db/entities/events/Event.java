@@ -18,6 +18,8 @@ import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -49,6 +51,7 @@ public class Event
 		           IContainsRules<Event, Rules,EventXRules,IClassification<?>,IEvent<?>,IRules<?>>
 {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@Basic(optional = false)
@@ -175,7 +178,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureEventTypeLinkValue(EventXEventType linkTable, Event primary, EventType secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureEventTypeLinkValue(EventXEventType linkTable, Event primary, EventType secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setEventID(primary);
 		linkTable.setEventTypeID(secondary);

@@ -1,8 +1,11 @@
 package com.guicedee.activitymaster.core.services.exceptions;
 
+import java.io.Serial;
+
 public class ProductException
 		extends ActivityMasterException
 {
+	@Serial
 	private static final long serialVersionUID = -6675371806272654345L;
 	
 	public ProductException()

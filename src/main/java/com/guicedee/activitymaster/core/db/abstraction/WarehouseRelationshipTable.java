@@ -13,6 +13,8 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
@@ -40,6 +42,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 		implements IRelationshipValue<L, R, J>
 {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@Basic(optional = false)

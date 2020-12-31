@@ -13,6 +13,8 @@ import com.guicedee.activitymaster.core.services.dto.ISystems;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -39,6 +41,7 @@ public class InvolvedPartyXInvolvedParty
 				                                                IInvolvedParty<?>,IInvolvedParty<?>>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

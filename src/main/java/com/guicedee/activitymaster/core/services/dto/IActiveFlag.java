@@ -6,14 +6,14 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
-import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
 import com.guicedee.activitymaster.core.services.classifications.activeflag.IActiveFlagClassification;
 
 import java.io.Serializable;
 
 public interface IActiveFlag<J extends IActiveFlag<J>>
 		extends Serializable,
-				        INameAndDescription<J>,
+		        IContainsNameAndDescription<J>,
 				        IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>,IActiveFlag<?>, IClassification<?>,  IActiveFlag<ActiveFlag>>,
 				        IActivityMasterEntity<J>,
 				        IContainsEnterprise<J>

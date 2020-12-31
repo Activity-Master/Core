@@ -8,6 +8,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
@@ -30,6 +32,7 @@ public abstract class WarehouseClassificationRelationshipTable<P extends Warehou
 		extends WarehouseRelationshipTable<P, S, J, Q, I, ST, L, R>
 {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@JoinColumn(name = "ClassificationID",

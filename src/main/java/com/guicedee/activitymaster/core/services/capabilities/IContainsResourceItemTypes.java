@@ -4,8 +4,6 @@ import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseRelationshipTable;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
@@ -35,9 +33,8 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		                                           T extends IResourceType<?>,
 		                                           J extends IContainsResourceItemTypes<P, S, Q, T, J>>
 {
-
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<P, S, ?>> find(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<P, S, ?>> findResourceItemTypes(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> involvedPartyIdentificationTypeService = get(IResourceItemService.class);
@@ -68,7 +65,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Optional<Q> findFirst(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<Q> findResourceItemTypesFirst(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> involvedPartyIdentificationTypeService = get(IResourceItemService.class);
@@ -84,7 +81,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default List<Q> findAll(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<Q> findResourceItemTypesAll(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> involvedPartyIdentificationTypeService = get(IResourceItemService.class);
@@ -97,13 +94,13 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		                                       .getAll();
 	}
 
-	default boolean has(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default boolean hasResourceItemTypes(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		return numberOf(classificationValue, originatingSystem, identityToken) > 0;
+		return numberOfResourceItemTypes(classificationValue, originatingSystem, identityToken) > 0;
 	}
 
 	@SuppressWarnings("unchecked")
-	default long numberOf(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default long numberOfResourceItemTypes(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> involvedPartyIdentificationTypeService = get(IResourceItemService.class);
@@ -118,7 +115,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q add(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addResourceItemTypes(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
 
@@ -147,7 +144,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	void configureResourceItemTypeLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
 
 	@SuppressWarnings("unchecked")
-	default Q addOrReuse(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrReuseResourceItemTypes(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
@@ -184,7 +181,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q addOrUpdate(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrUpdateResourceItemTypes(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
@@ -252,7 +249,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q update(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q updateResourceItemTypes(T resourceType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
@@ -307,7 +304,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q expire(T resourceType, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q expireResourceItemTypes(T resourceType, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
@@ -334,7 +331,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q archive(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q archiveResourceItemTypes(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);
@@ -361,7 +358,7 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 	}
 
 	@SuppressWarnings("unchecked")
-	default Q remove(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q removeResourceItemTypes(T resourceType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemTypeQueryRelationshipTableType());
 		IResourceItemService<?> classificationDataConceptService = get(IResourceItemService.class);

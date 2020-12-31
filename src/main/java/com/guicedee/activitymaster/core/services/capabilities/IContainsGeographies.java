@@ -70,7 +70,7 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default J add(IGeography<?> geography, IClassification<?> classification, String value, UUID... identifyingToken)
+	default J addGeography(IGeography<?> geography, IClassification<?> classification, String value, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()

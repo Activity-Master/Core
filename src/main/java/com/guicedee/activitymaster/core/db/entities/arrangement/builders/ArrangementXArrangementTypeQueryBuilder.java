@@ -4,11 +4,14 @@ import com.entityassist.enumerations.Operand;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.arrangement.*;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.system.IArrangementsService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+
 import java.util.UUID;
 
 public class ArrangementXArrangementTypeQueryBuilder
@@ -21,24 +24,24 @@ public class ArrangementXArrangementTypeQueryBuilder
 		ArrangementXArrangementTypeSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public  SingularAttribute<ArrangementXArrangementType, Arrangement> getPrimaryAttribute()
 	{
 		return ArrangementXArrangementType_.arrangement;
 	}
 	
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<ArrangementXArrangementType, ArrangementType> getSecondaryAttribute()
 	{
 		return ArrangementXArrangementType_.type;
 	}
 	
 	@Override
-	public ArrangementXArrangementTypeQueryBuilder withType(String typeValue, IEnterprise<?> enterprise, UUID... identityToken)
+	public ArrangementXArrangementTypeQueryBuilder withType(String typeValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{
 			IArrangementsService<?> service = GuiceContext.get(IArrangementsService.class);
-			ArrangementType at = (ArrangementType) service.find(typeValue, enterprise, identityToken);
+			ArrangementType at = (ArrangementType) service.find(typeValue, system.getEnterprise(), identityToken);
 			where(ArrangementXArrangementType_.type, Operand.Equals, at);
 		}
 		return this;

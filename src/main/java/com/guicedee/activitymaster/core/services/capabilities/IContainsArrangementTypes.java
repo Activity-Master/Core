@@ -327,13 +327,13 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 		return null;
 	}
 	
-	default boolean has(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default boolean hasArrangementTypes(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
-		return numberOf(classificationValue, originatingSystem, identityToken) > 0;
+		return numberOfArrangementTypes(classificationValue, originatingSystem, identityToken) > 0;
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOf(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default long numberOfArrangementTypes(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> arrangementTypeService = get(IArrangementsService.class);
@@ -348,7 +348,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q add(IClassificationValue<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addArrangementTypes(IClassificationValue<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		
@@ -381,7 +381,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	void configureArrangementType(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrUpdate(IClassificationValue<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrUpdateArrangementTypes(IClassificationValue<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> classificationDataConceptService = get(IArrangementsService.class);
@@ -400,7 +400,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			tableForClassification = addOrReuse(classificationValue, arrangementType, value, originatingSystem, identityToken);
+			tableForClassification = addOrReuseArrangementTypes(classificationValue, arrangementType, value, originatingSystem, identityToken);
 		}
 		else
 		{
@@ -444,7 +444,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrReuse(IClassificationValue<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrReuseArrangementTypes(IClassificationValue<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> classificationDataConceptService = get(IArrangementsService.class);
@@ -489,7 +489,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q add(IClassification<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addArrangementTypes(IClassification<?> classificationValue, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> classificationDataConceptService = get(IArrangementsService.class);
@@ -516,7 +516,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrReuse(IClassification<?> classification, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrReuseArrangementTypes(IClassification<?> classification, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> classificationDataConceptService = get(IArrangementsService.class);
@@ -556,7 +556,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrUpdate(IClassification<?> classification, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrUpdateArrangementTypes(IClassification<?> classification, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> classificationDataConceptService = get(IArrangementsService.class);
@@ -630,7 +630,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q update(IClassification<?> classification, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q updateArrangementTypes(IClassification<?> classification, T arrangementType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> classificationDataConceptService = get(IArrangementsService.class);
@@ -690,7 +690,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q expire(T arrangementType, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q expireArrangementTypes(T arrangementType, Duration duration, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> classificationDataConceptService = get(IArrangementsService.class);
@@ -718,7 +718,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q archive(IClassification<?> classification, T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q archiveArrangementTypes(IClassification<?> classification, T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		IArrangementsService<?> classificationDataConceptService = get(IArrangementsService.class);
@@ -749,7 +749,7 @@ public interface IContainsArrangementTypes<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q remove(IClassification<?> classification, T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q removeArrangementTypes(IClassification<?> classification, T arrangementType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Q tableForClassification = get(findArrangementTypesQueryRelationshipTableType());
 		

@@ -1,9 +1,6 @@
 package com.guicedee.activitymaster.core.services.system;
 
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IRules;
-import com.guicedee.activitymaster.core.services.dto.IRulesType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
 
 import jakarta.cache.annotation.CacheKey;
@@ -14,7 +11,11 @@ import java.util.UUID;
 
 public interface IRulesService<J extends IRulesService<J>>
 {
-	IRules<?> createRules(IRulesTypeValue<?> rulesType, ISystems<?> system, UUID... identityToken);
+	IRules<?> createRules(String rulesType, String name, String description, ISystems<?> system, UUID... identityToken);
+	
+	IRules<?> findRules(String name, IEnterprise<?> enterprise, UUID... identityToken);
+	
+	IRules<?> findRules(String productName, IClassification<?> classification, IEnterprise<?> enterprise, UUID... identityToken);
 	
 	IRulesType<?> createRulesType(IRulesTypeValue<?> rulesType, ISystems<?> system, UUID... identityToken);
 	
@@ -25,4 +26,10 @@ public interface IRulesService<J extends IRulesService<J>>
 	IRulesType<?> findRulesTypes(String rulesType, ISystems<?> system, UUID... identityToken);
 	
 	List<IRulesType<?>> findRulesTypes(String classifications, String value, ISystems<?> system, UUID... identityToken);
+	
+	List<IRules<?>> findByRulesTypes(IRulesType<?> rulesType, String classificationName, String value, ISystems<?> system, UUID... identityToken);
+	
+	List<IRulesType<?>> findRuleTypesByRules(IRules<?> rulesType, String classificationName, String value, ISystems<?> system, UUID... identityToken);
+	
+	List<IRules<?>> findRulesByProduct(IProduct<?> product, String classificationName, String value, ISystems<?> system, UUID... identityToken);
 }

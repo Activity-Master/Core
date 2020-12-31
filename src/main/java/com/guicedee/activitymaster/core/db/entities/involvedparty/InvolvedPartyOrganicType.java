@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyOrganicTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IHasActiveFlags;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
-import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyOrganicType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
@@ -17,6 +17,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -40,12 +42,13 @@ import static jakarta.persistence.FetchType.*;
 public class InvolvedPartyOrganicType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, java.util.UUID, InvolvedPartyOrganicTypeSecurityToken>
 		implements IInvolvedPartyOrganicType<InvolvedPartyOrganicType>,
-				           INameAndDescription<InvolvedPartyOrganicType>,
+		           IContainsNameAndDescription<InvolvedPartyOrganicType>,
 				           IContainsEnterprise<InvolvedPartyOrganicType>,
 				           IActivityMasterEntity<InvolvedPartyOrganicType>,
-				   IHasActiveFlags<InvolvedPartyOrganicType>
+				   IContainsActiveFlags<InvolvedPartyOrganicType>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

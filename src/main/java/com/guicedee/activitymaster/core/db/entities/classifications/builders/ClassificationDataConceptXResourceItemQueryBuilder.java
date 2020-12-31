@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ClassificationDataConceptXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItemQueryBuilder,
 								                                ClassificationDataConceptXResourceItem, java.util.UUID, ClassificationDataConceptXResourceItemSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<ClassificationDataConceptXResourceItem, ClassificationDataConcept> getPrimaryAttribute()
 	{
 		return ClassificationDataConceptXResourceItem_.classificationDataConceptID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public  SingularAttribute<ClassificationDataConceptXResourceItem, ResourceItem> getSecondaryAttribute()
 	{
 		return ClassificationDataConceptXResourceItem_.resourceItemID;
 	}

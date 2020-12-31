@@ -27,6 +27,7 @@ import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -49,23 +50,30 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		L,
 		T>
 {
-	default J addChild(T child, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default J addChild(L child, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		return addChild(child, STRING_EMPTY, enterprise, identifyingToken);
+	}
+	
+	@NotNull
+	default J addChild(L child, String classificationName, IEnterprise<?> enterprise, UUID... identifyingToken)
+	{
+		return addChild(child, classificationName, null, enterprise, identifyingToken);
 	}
 	
 	/**
 	 * Adds a child with the default hierarchy type classification
 	 *
 	 * @param child
-	 * @param hierarchyName
+	 * @param classificationName
 	 * @param enterprise
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	@SuppressWarnings({"unchecked", "Duplicates"})
 	@NotNull
-	default J addChild(T child, String hierarchyName, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default J addChild(L child, String classificationName, String value, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		Class<Q> hierarchyTable = findHierarchyTableType();
@@ -82,12 +90,12 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		                              .canCreate(enterprise, identifyingToken)
 		                              .withClassification(hierarchyType)
 		                              .withEnterprise(enterprise)
-		                              .withValue(hierarchyName)
+		                              .withValue(classificationName)
 		                              .get();
 		if (exists.isEmpty())
 		{
 			if (linkTable.builder()
-			             .findChildLink((J) child, hierarchyName)
+			             .findChildLink((J) child, classificationName)
 			             .inActiveRange(enterprise, identifyingToken)
 			             .inDateRange()
 			             .getCount() > 0
@@ -99,7 +107,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 				                          .inDateRange()
 				                          .get()
 				                          .orElseThrow();
-				configureNewHierarchyItem(existingLink, (T) me, child, hierarchyName);
+				configureNewHierarchyItem(existingLink, (T) me, (T) child, classificationName);
 				existingLink.update();
 				return me;
 			}
@@ -114,8 +122,8 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 			
 			linkTable.setClassificationID(hierarchyType);
 			
-			linkTable.setValue(Strings.nullToEmpty(hierarchyName));
-			configureNewHierarchyItem(linkTable, (T) me, child, hierarchyName);
+			linkTable.setValue(Strings.nullToEmpty(value));
+			configureNewHierarchyItem(linkTable, (T) me, (T) child, value);
 			linkTable.persist();
 			if (get(ActivityMasterConfiguration.class)
 					.isSecurityEnabled())
@@ -153,6 +161,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * @param classificationValue A custom hierarchy type - try not to specify
 	 * @param enterprise
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	@SuppressWarnings({"unchecked", "Duplicates"})
@@ -218,6 +227,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * @param child
 	 * @param enterprise
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	@SuppressWarnings({"unchecked", "Duplicates"})
@@ -258,6 +268,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * @param classificationValue
 	 * @param enterprise
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	@SuppressWarnings({"Duplicates"})
@@ -274,6 +285,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * @param classificationValue
 	 * @param enterprise
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	@SuppressWarnings({"unchecked", "Duplicates"})
@@ -310,6 +322,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * Finds the direct parent on the default Hierarchy Type
 	 *
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	default L findParent(UUID... identifyingToken)
@@ -321,18 +334,21 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * Finds the direct parent on A Hierarchy Type
 	 *
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	default L findParent(String hierarchyType,String classificationName,ISystems<?> system, UUID... identifyingToken)
+	default L findParent(String hierarchyType, String classificationName, ISystems<?> system, UUID... identifyingToken)
 	{
 		J me = (J) this;
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationName, system.getEnterprise(), identifyingToken);
 		Class<Q> hierarchyTable = findHierarchyTableType();
 		Q linkTable = get(hierarchyTable);
-		if(Strings.isNullOrEmpty(hierarchyType))
+		if (Strings.isNullOrEmpty(hierarchyType))
+		{
 			hierarchyType = null;
+		}
 		Optional<Q> exists = linkTable.builder()
 		                              .findLink(null, (J) this)
 		                              .inActiveRange(system.getEnterprise(), identifyingToken)
@@ -350,11 +366,42 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		return null;
 	}
 	
+	/**
+	 * Finds the direct parent on A Hierarchy Type
+	 *
+	 * @param identifyingToken
+	 *
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	default List<L> findParents(String hierarchyType, String classificationName, ISystems<?> system, UUID... identifyingToken)
+	{
+		J me = (J) this;
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationName, system.getEnterprise(), identifyingToken);
+		Class<Q> hierarchyTable = findHierarchyTableType();
+		Q linkTable = get(hierarchyTable);
+		if (Strings.isNullOrEmpty(hierarchyType))
+		{
+			hierarchyType = null;
+		}
+		List exists = linkTable.builder()
+		                       .findLink(null, (J) this)
+		                       .inActiveRange(system.getEnterprise(), identifyingToken)
+		                       .withClassification(classification)
+		                       .inDateRange()
+		                       .withValue(hierarchyType)
+		                       .canRead(system.getEnterprise(), identifyingToken)
+		                       .withEnterprise(system.getEnterprise())
+		                       .getAll();
+		return exists;
+	}
 	
 	/**
 	 * Finds the direct parent on A Hierarchy Type
 	 *
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -369,11 +416,14 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 			builder.where(builder.getAttribute("value"), Equals, hierarchyType);
 		}
 		UUID iid = builder.where(builder.getAttribute("id"), Equals, me.getId())
-				.selectColumn(builder.getAttribute("parentID"))
-				.get(UUID.class)
-				.orElse(null);
-
-		return (L) me.builder().find(iid).get().orElseThrow();
+		                  .selectColumn(builder.getAttribute("parentID"))
+		                  .get(UUID.class)
+		                  .orElse(null);
+		
+		return (L) me.builder()
+		             .find(iid)
+		             .get()
+		             .orElseThrow();
 	}
 	
 	/**
@@ -390,6 +440,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * Returns if this type has a parent in the given hierarchy
 	 *
 	 * @param hierarchyType The name of the hierarchy
+	 *
 	 * @return if a parent was found
 	 */
 	default boolean hasParent(String hierarchyType)
@@ -427,13 +478,14 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		Class<W> hierarchyView = findHierarchyViewType();
 		W hierarchy = get(hierarchyView);
 		J me = (J) this;
-
+		
 		QueryBuilderHierarchyView<? extends QueryBuilderHierarchyView, ?, ?> builder = hierarchy.builder();
 		Collection<UUID> iids = builder.where(builder.getAttribute("parentID"), Equals, me.getId())
-				.selectColumn(builder.getAttribute("id"))
-				.getAll(UUID.class);
+		                               .selectColumn(builder.getAttribute("id"))
+		                               .getAll(UUID.class);
 		QueryBuilderCore<?, J, UUID, ?> builder1 = me.builder();
-		return (List<L>) builder1.where(builder1.<J,UUID>getAttribute("id"),InList,iids).getAll();
+		return (List<L>) builder1.where(builder1.<J, UUID>getAttribute("id"), InList, iids)
+		                         .getAll();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -471,8 +523,13 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		return search;
 	}
 	
+	default List<IRelationshipValue<L, L, ?>> findChildren(IClassificationValue<?> classificationFilter, ISystems<?> system, UUID... identifyingToken)
+	{
+		return findChildren(classificationFilter.toString(), system, identifyingToken);
+	}
+	
 	@SuppressWarnings("unchecked")
-	default List<IRelationshipValue<T, T, ?>> findChildren(IClassification<?> filter, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default List<IRelationshipValue<L, L, ?>> findChildren(String classificationFilter, ISystems<?> system, UUID... identifyingToken)
 	{
 		Class<Q> relationshipTableClass = findHierarchyTableType();
 		try
@@ -481,14 +538,15 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 			                                            .newInstance();
 			QueryBuilderRelationshipClassification qb = relationshipTable.builder()
 			                                                             .findParentLink((J) this)
-			
-			                                                             .inActiveRange(enterprise, identifyingToken)
+			                                                             .inActiveRange(system, identifyingToken)
 			                                                             .inDateRange();
-			if (filter != null)
+			if (classificationFilter != null)
 			{
-				qb.withClassification(filter);
+				IClassificationService<?> service = get(IClassificationService.class);
+				IClassification<?> classification = service.find(classificationFilter, system, identifyingToken);
+				qb.withClassification(classification);
 			}
-			return (List<IRelationshipValue<T, T, ?>>) qb.getAll();
+			return (List<IRelationshipValue<L, L, ?>>) qb.getAll();
 		}
 		catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
 		{
@@ -498,7 +556,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default List<IRelationshipValue<T, T, ?>> findChildren(IClassification<?> filter, String value, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default List<IRelationshipValue<L, L, ?>> findChildren(IClassification<?> filter, String value, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		Class<Q> relationshipTableClass = findHierarchyTableType();
 		try
@@ -514,7 +572,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 			{
 				qb.withClassification(filter);
 			}
-			return (List<IRelationshipValue<T, T, ?>>) qb.getAll();
+			return (List<IRelationshipValue<L, L, ?>>) qb.getAll();
 		}
 		catch (Exception e)
 		{
@@ -535,6 +593,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 	 * @param enterprise
 	 * @param value
 	 * @param identifyingToken
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -555,7 +614,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		                .orElse(null);
 	}
 	
-	default J setParent(T parent, IEnterprise<?> enterprise, UUID... identifyingToken)
+	default J setParent(L parent, IEnterprise<?> enterprise, UUID... identifyingToken)
 	{
 		System.out.println("SET PARENT NOT DONE");
 		return null;

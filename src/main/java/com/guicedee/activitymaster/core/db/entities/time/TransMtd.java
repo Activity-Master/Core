@@ -10,6 +10,8 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -29,6 +31,7 @@ public class TransMtd
 		extends BaseEntity<TransMtd, TransMtdQueryBuilder, TransMtdPK>
 		implements Serializable
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@EmbeddedId
 	protected TransMtdPK id;

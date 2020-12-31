@@ -4,8 +4,12 @@ import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
+
+import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
+import com.guicedee.activitymaster.core.db.entities.rules.RulesXProduct;
+import com.guicedee.activitymaster.core.db.entities.rules.RulesXRulesType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
@@ -19,18 +23,41 @@ import jakarta.cache.annotation.CacheResult;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 
-public class RulesService<J extends RulesService<J>> implements IRulesService<J>
+public class RulesService<J extends RulesService<J>>
+		implements IRulesService<J>
 {
 	@Override
-	public IRules<?> createRules(IRulesTypeValue<?> rulesType, ISystems<?> system, UUID... identityToken)
+	public IRules<?> createRules(String rulesType, String name, String description, ISystems<?> system, UUID... identityToken)
 	{
+		
+		boolean exists = new Rules().builder()
+		                            .withName(name)
+		                            .inActiveRange(system.getEnterprise(), identityToken)
+		                            .inDateRange()
+		                            .withEnterprise(system.getEnterprise())
+		                            .getCount() > 0;
+		if (exists)
+		{
+			return new Rules().builder()
+			                  .withName(name)
+			                  .inActiveRange(system.getEnterprise(), identityToken)
+			                  .inDateRange()
+			                  .withEnterprise(system.getEnterprise())
+			                  .get()
+			                  .orElseThrow();
+		}
+		
 		Rules rules = new Rules();
+		rules.setName(name);
+		rules.setDescription(description);
+		
 		rules.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		rules.setSystemID((Systems) system);
 		rules.setOriginalSourceSystemID((Systems) system);
@@ -38,8 +65,37 @@ public class RulesService<J extends RulesService<J>> implements IRulesService<J>
 				.getActiveFlag(system.getEnterpriseID(), identityToken));
 		rules.persist();
 		rules.createDefaultSecurity(system, identityToken);
-		rules.add(NoClassification, rulesType, STRING_EMPTY, system, identityToken);
+		
+		IRulesType<?> pType = createRulesType(rulesType, rulesType, system, identityToken);
+		
+		rules.addRulesType(NoClassification, (IRulesTypeValue<?>) pType, STRING_EMPTY, system, identityToken);
+		
 		return rules;
+	}
+	
+	@Override
+	public IRules<?> findRules(String name, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return new Rules().builder()
+		                  .withName(name)
+		                  .inActiveRange(enterprise, identityToken)
+		                  .inDateRange()
+		                  .withEnterprise(enterprise)
+		                  .get()
+		                  .orElse(null);
+	}
+	
+	@Override
+	public IRules<?> findRules(String productName, IClassification<?> classification, IEnterprise<?> enterprise, UUID... identityToken)
+	{
+		return new Rules().builder()
+		                  .withName(productName)
+		                  .withClassification(classification)
+		                  .inActiveRange(enterprise, identityToken)
+		                  .inDateRange()
+		                  .withEnterprise(enterprise)
+		                  .get()
+		                  .orElse(null);
 	}
 	
 	@Override
@@ -121,5 +177,56 @@ public class RulesService<J extends RulesService<J>> implements IRulesService<J>
 		                          .getAll();
 		//noinspection unchecked
 		return all;
+	}
+	
+	@Override
+	public List<IRules<?>> findByRulesTypes(IRulesType<?> rulesType, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		List res = new RulesXRulesType().builder()
+		                                .withClassification(classificationName, value, system, identityToken)
+		                                .findChildLink((RulesType) rulesType, value)
+		                                .withEnterprise(system.getEnterpriseID())
+		                                .inActiveRange(system, identityToken)
+		                                .inDateRange()
+		                                .canRead(system.getEnterpriseID(), identityToken)
+		                                .getAll()
+		                                .stream()
+		                                .map(RulesXRulesType::getRulesID)
+		                                .collect(Collectors.toList());
+		return res;
+	}
+	
+	@Override
+	public List<IRulesType<?>> findRuleTypesByRules(IRules<?> rulesType, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		List res = new RulesXRulesType().builder()
+		                                .withClassification(classificationName, value, system, identityToken)
+		                                .findParentLink((Rules) rulesType, value)
+		                                .withEnterprise(system.getEnterpriseID())
+		                                .inActiveRange(system, identityToken)
+		                                .inDateRange()
+		                                .canRead(system.getEnterpriseID(), identityToken)
+		                                .getAll()
+		                                .stream()
+		                                .map(RulesXRulesType::getRulesTypeID)
+		                                .collect(Collectors.toList());
+		return res;
+	}
+	
+	@Override
+	public List<IRules<?>> findRulesByProduct(IProduct<?> product, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		List res = new RulesXProduct().builder()
+		                              .withClassification(classificationName, value, system, identityToken)
+		                              .findChildLink((Product) product, value)
+		                              .withEnterprise(system.getEnterpriseID())
+		                              .inActiveRange(system, identityToken)
+		                              .inDateRange()
+		                              .canRead(system.getEnterpriseID(), identityToken)
+		                              .getAll()
+		                              .stream()
+		                              .map(RulesXProduct::getRulesID)
+		                              .collect(Collectors.toList());
+		return res;
 	}
 }

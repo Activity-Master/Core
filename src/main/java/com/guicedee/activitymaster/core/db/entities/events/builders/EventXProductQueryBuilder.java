@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXProduct_;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EventXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Product, EventXProductQueryBuilder,
 				                                              EventXProduct, java.util.UUID, EventXProductSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<EventXProduct, Event> getPrimaryAttribute()
 	{
 		return EventXProduct_.eventID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<EventXProduct, Product> getSecondaryAttribute()
 	{
 		return EventXProduct_.productID;
 	}

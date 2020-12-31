@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.core.db.entities.events.builders.EventSecurit
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serial;
 import java.util.UUID;
 
 import static jakarta.persistence.AccessType.*;
@@ -24,6 +25,7 @@ public class EventSecurityToken
 		extends WarehouseSecurityTable<EventSecurityToken, EventSecurityTokenQueryBuilder, java.util.UUID>
 {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	

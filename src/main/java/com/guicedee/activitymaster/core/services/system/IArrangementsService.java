@@ -45,4 +45,6 @@ public interface IArrangementsService<J extends IArrangementsService<J>>
 	IArrangement<?> find(UUID id);
 	
 	List<IArrangement<?>> findAll(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+	
+	IArrangement<?> completeArrangement(IArrangement<?> arrangement, ISystems<?> system, UUID... identityToken);
 }

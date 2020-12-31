@@ -18,6 +18,8 @@ import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -43,12 +45,13 @@ public class Arrangement
 		           IActivityMasterEntity<Arrangement>,
 		           IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, IArrangement<?>, IArrangementType<?>, Arrangement>,
 		           IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty, IClassificationValue<?>, IArrangement<?>, IInvolvedParty<?>, Arrangement>,
-		           IHasActiveFlags<Arrangement>,
+		           IContainsActiveFlags<Arrangement>,
 		           IContainsEnterprise<Arrangement>,
 		           IContainsHierarchy<Arrangement,ArrangementXArrangement, ArrangementsHierarchyView,IArrangement<?>,IArrangement<Arrangement>>,
 		           IArrangement<Arrangement>,
 		           IContainsRules<Arrangement, Rules,ArrangementXRules,IClassification<?>,IArrangement<?>,IRules<?>>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 

@@ -7,19 +7,20 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXRe
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXResourceItem_;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ResourceItemXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<ResourceItem, ResourceItem, ResourceItemXResourceItemQueryBuilder,
 		ResourceItemXResourceItem, java.util.UUID, ResourceItemXResourceItemSecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<ResourceItemXResourceItem, ResourceItem> getPrimaryAttribute()
 	{
 		return ResourceItemXResourceItem_.parentResourceItemID;
 	}
 	
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<ResourceItemXResourceItem, ResourceItem> getSecondaryAttribute()
 	{
 		return ResourceItemXResourceItem_.childResourceItemID;
 	}

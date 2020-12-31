@@ -8,19 +8,20 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXGeography_;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 
 import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EventXGeographyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Geography, EventXGeographyQueryBuilder,
 				                                              EventXGeography, java.util.UUID, EventXGeographySecurityToken>
 {
 	@Override
-	public Attribute getPrimaryAttribute()
+	public SingularAttribute<EventXGeography, Event> getPrimaryAttribute()
 	{
 		return EventXGeography_.eventID;
 	}
 
 	@Override
-	public Attribute getSecondaryAttribute()
+	public SingularAttribute<EventXGeography, Geography> getSecondaryAttribute()
 	{
 		return EventXGeography_.geographyID;
 	}

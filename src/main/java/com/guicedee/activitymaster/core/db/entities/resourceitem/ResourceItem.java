@@ -29,6 +29,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serial;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,13 +58,14 @@ public class ResourceItem
 		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IClassificationValue<?>, IResourceItem<?>, IClassification<?>, ResourceItem>,
 		           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType, IResourceType<?>, ResourceItem>,
 		           IActivityMasterEntity<ResourceItem>,
-		           IHasActiveFlags<ResourceItem>,
+		           IContainsActiveFlags<ResourceItem>,
 		           IContainsEnterprise<ResourceItem>,
 		           IContainsData<ResourceItem>,
 		           IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView, IResourceItem<?>,IResourceItem<?>>,
 		           IContainsResourceItems<ResourceItem, ResourceItem, ResourceItemXResourceItem, IClassificationValue<?>, IResourceItem<?>, IResourceItem<?>, ResourceItem>,
 		           IResourceItem<ResourceItem>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(nullable = false,

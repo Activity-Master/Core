@@ -7,19 +7,20 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.capabilities.INameAndDescription;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseClassification;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
-import io.github.classgraph.ClassInfo;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -42,9 +43,10 @@ public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.util.UUID, EnterpriseSecurityToken>
 		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise<?>, IClassification<?>, Enterprise>,
 				           IActivityMasterEntity<Enterprise>,
-				           INameAndDescription<Enterprise>,
+				   IContainsNameAndDescription<Enterprise>,
 				           IEnterprise<Enterprise>
 {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
