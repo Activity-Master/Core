@@ -42,20 +42,20 @@ public interface IResourceItemService<J extends IResourceItemService<J>>
 	                                      ISystems<?> systems,
 	                                      UUID... identityToken);
 	
-	IResourceItem<?> findByUUID(@CacheKey UUID uuid,
-	                            @CacheKey ISystems<?> systems,
-	                            @CacheKey UUID... identityToken);
+	IResourceItem<?> findByUUID(UUID uuid,
+	                            ISystems<?> systems,
+	                            UUID... identityToken);
 	
-	IResourceItem<?> findByOriginalSourceUniqueID(@CacheKey String originalSourceUniqueID,
-	                                              @CacheKey ISystems<?> systems,
-	                                              @CacheKey UUID... identityToken);
+	IResourceItem<?> findByOriginalSourceUniqueID(String originalSourceUniqueID,
+	                                              ISystems<?> systems,
+	                                              UUID... identityToken);
 	
 	byte[] getDataForResourceItemValue(IRelationshipValue<IResourceItem<?>, IResourceData<?>, ?> data);
 	
 
-	IResourceItemType<?> findResourceItemType(IResourceType<?> type, IEnterprise<?> systems, UUID... identityToken);
+	IResourceItemType<?> findResourceItemType(IResourceType<?> type, ISystems<?> system, UUID... identityToken);
 	
-	IResourceItemType<?> findResourceItemType(String type, IEnterprise<?> systems, UUID... identityToken);
+	IResourceItemType<?> findResourceItemType(String type, ISystems<?> system, UUID... identityToken);
 	
-	List<IResourceItem<?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken);
+	List<IResourceItem<?>> findByResourceItemType(String type, ISystems<?> systems, UUID... identityToken);
 }

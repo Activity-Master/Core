@@ -61,7 +61,7 @@ public abstract class RequestScopedThreadOriginal
 		UUID identityToken = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
 		SecurityToken token = (SecurityToken) GuiceContext.get(ISecurityTokenService.class)
-		                                                  .getSecurityToken(identityToken, enterprise);
+		                                                  .getSecurityToken(identityToken, systems);
 		securityConfiguration.setToken(token);
 		ISecurityToken<?> inToken = securityConfiguration.getToken();
 

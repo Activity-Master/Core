@@ -75,7 +75,7 @@ public class EventXInvolvedParty
 	}
 
 	@Override
-	protected EventXInvolvedPartySecurityToken configureDefaultsForNewToken(EventXInvolvedPartySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected EventXInvolvedPartySecurityToken configureDefaultsForNewToken(EventXInvolvedPartySecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

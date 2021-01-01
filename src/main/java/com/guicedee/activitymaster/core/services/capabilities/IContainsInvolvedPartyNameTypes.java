@@ -140,7 +140,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 	{
 		Q relationshipTable = get(findInvolvedPartyNameTypeQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
@@ -150,7 +150,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 				                   .withType(typeValue, system, identityToken)
 				                   .inDateRange()
 				                   .withEnterprise(system.getEnterprise())
-				                   .canRead(system.getEnterprise(), identityToken);
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -205,7 +205,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 	{
 		Q relationshipTable = get(findInvolvedPartyNameTypeQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
@@ -214,7 +214,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 				                   .withValue(searchValue)
 				                   .withClassification(iClassification)
 				                   .inDateRange()
-				                   .canRead(system.getEnterprise(), identityToken);
+				                   .canRead(system, identityToken);
 		if (latest)
 		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
 		return (List) queryBuilderRelationshipClassification.getAll();
@@ -259,7 +259,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
 		return numberOfAllNameTypes(typeValue, classificationValue.getName(), system, identityToken) > 0;
 	}
@@ -269,7 +269,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
 		return numberOfAllNameTypes(typeValue.classificationValue(), classificationValue.getName(), value, system, identityToken) > 0;
 	}
@@ -288,7 +288,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
 		return numberOfNameType(typeValue, classificationValue.getName(), system, identityToken) > 0;
 	}
@@ -298,7 +298,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
 		return numberOfNameType(typeValue, classificationValue, value, system, identityToken) > 0;
 	}
@@ -331,13 +331,13 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) stringToNameType(typeValue,system,identityToken), value)
 		                             .withType(typeValue, system, identityToken)
 		                             .inActiveRange(system.getEnterprise())
 		                             .inDateRange()
-		                             .canRead(system.getEnterprise(), identityToken)
+		                             .canRead(system, identityToken)
 		                             .getCount();
 	}
 	
@@ -346,7 +346,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
 		return numberOfNameType(typeValue.classificationValue(), classificationValue.getName(), value, system, identityToken);
 	}
@@ -356,7 +356,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
 		return numberOfAllNameTypes(typeValue.classificationValue(), classificationValue.getName(), null, system, identityToken);
 	}
@@ -388,7 +388,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) stringToNameType(typeValue,system,identityToken), value)
 		                             .withClassification(classification)
@@ -441,7 +441,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 	default S stringToNameTypeSecondary(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> iInvolvedPartyService = get(IInvolvedPartyService.class);
-		return (S) iInvolvedPartyService.createNameType(typeName, typeName,system.getEnterprise(), identityToken);
+		return (S) iInvolvedPartyService.createNameType(typeName, typeName,system, identityToken);
 	}
 	
 	void configureIPNameTypesAddable(Q linkTable, P primary, S secondary, C classificationValue, T type, String value, ISystems<?> system);
@@ -508,7 +508,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		T typeToUse = this.stringToNameType(type, system, identityToken);
 		
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
-		IClassification<?> classification = classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		
 		
 		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
@@ -728,7 +728,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		Q tableForClassification = get(this.findIPNameTypesAddableTableType());
 		S sType = this.stringToNameTypeSecondary(type, system, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findIPNameTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{
@@ -906,7 +906,7 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		Q tableForClassification = get(this.findIPNameTypesAddableTableType());
 		S sType = this.stringToNameTypeSecondary(type, system, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findIPNameTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{ return  addNameType(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken); }

@@ -71,9 +71,9 @@ public class ActiveFlagXClassification
 	}
 
 	@Override
-	protected ActiveFlagXClassificationSecurityToken configureDefaultsForNewToken(ActiveFlagXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ActiveFlagXClassificationSecurityToken configureDefaultsForNewToken(ActiveFlagXClassificationSecurityToken stAdmin, ISystems<?> system, ISystems<?> activityMasterSystem)
 	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
+		return super.configureDefaultsForNewToken(stAdmin, system, activityMasterSystem)
 		            .setBase(this);
 	}
 

@@ -41,7 +41,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 		if (typeValue != null)
 		{
 			IArrangementsService<?> service = GuiceContext.get(IArrangementsService.class);
-			ArrangementType at = (ArrangementType) service.find(typeValue, system.getEnterprise(), identityToken);
+			ArrangementType at = (ArrangementType) service.find(typeValue, system, identityToken);
 			where(ArrangementXArrangementType_.type, Operand.Equals, at);
 		}
 		return this;

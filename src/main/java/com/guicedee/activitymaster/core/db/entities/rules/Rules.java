@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.events.EventXArrangement;
-import com.guicedee.activitymaster.core.db.entities.events.EventXInvolvedParty;
-import com.guicedee.activitymaster.core.db.entities.events.EventXProduct;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
@@ -18,8 +15,6 @@ import com.guicedee.activitymaster.core.services.classifications.rules.IRulesCla
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -146,27 +141,27 @@ public class Rules
 	}
 	
 	@Override
-	protected RulesSecurityToken configureDefaultsForNewToken(RulesSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected RulesSecurityToken configureDefaultsForNewToken(RulesSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 	
 	@Override
-	public void configureForClassification(RulesXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(RulesXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setRulesID(this);
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(RulesXResourceItem linkTable, Rules primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(RulesXResourceItem linkTable, Rules primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setResourceItemID(secondary);
 		linkTable.setRulesID(this);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(RulesXResourceItem linkTable, Rules primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(RulesXResourceItem linkTable, Rules primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setResourceItemID(secondary);
 		linkTable.setRulesID(this);
@@ -291,17 +286,17 @@ public class Rules
 	}
 	
 	@Override
-	public void configureRulesTypeLinkValue(RulesXRulesType linkTable, Rules primary, RulesType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureRulesTypeLinkValue(RulesXRulesType linkTable, Rules primary, RulesType secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setRulesID(primary);
 		linkTable.setRulesTypeID(secondary);
 		linkTable.setClassificationID((Classification) classificationValue);
 		linkTable.setValue(value);
-		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
 	}
 	
 	@Override
-	public void setMyInvolvedPartyLinkValue(RulesXInvolvedParty classificationLink, Rules first, InvolvedParty involvedParty, IEnterprise<?> enterprise)
+	public void setMyInvolvedPartyLinkValue(RulesXInvolvedParty classificationLink, Rules first, InvolvedParty involvedParty, ISystems<?> enterprise)
 	{
 		classificationLink.setRulesID(first);
 		classificationLink.setInvolvedPartyID(involvedParty);

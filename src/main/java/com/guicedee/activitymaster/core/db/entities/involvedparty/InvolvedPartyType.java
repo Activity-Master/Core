@@ -105,7 +105,7 @@ public class InvolvedPartyType
 	}
 	
 	@Override
-	protected InvolvedPartyTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected InvolvedPartyTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

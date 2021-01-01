@@ -125,27 +125,27 @@ public class Arrangement
 	}
 	
 	@Override
-	protected ArrangementSecurityToken configureDefaultsForNewToken(ArrangementSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ArrangementSecurityToken configureDefaultsForNewToken(ArrangementSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 	
 	@Override
-	public void configureForClassification(ArrangementXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(ArrangementXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setArrangementID(this);
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setArrangementID(this);
 		linkTable.setResourceItemID(secondary);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setArrangementID(this);
 		linkTable.setResourceItemID(secondary);
@@ -158,7 +158,7 @@ public class Arrangement
 	}
 	
 	@Override
-	public void configureArrangementType(ArrangementXArrangementType linkTable, Arrangement primary, ArrangementType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureArrangementType(ArrangementXArrangementType linkTable, Arrangement primary, ArrangementType secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setArrangement(primary);
 		linkTable.setType(secondary);
@@ -352,7 +352,7 @@ public class Arrangement
 	}
 	
 	@Override
-	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, Arrangement first, InvolvedParty involvedParty, IEnterprise<?> enterprise)
+	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, Arrangement first, InvolvedParty involvedParty, ISystems<?> enterprise)
 	{
 		classificationLink.setArrangementID(first);
 		classificationLink.setInvolvedPartyID(involvedParty);
@@ -367,7 +367,7 @@ public class Arrangement
 	}
 	
 	@Override
-	public void configureAddableRule(ArrangementXRules linkTable, Arrangement primary, Rules secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureAddableRule(ArrangementXRules linkTable, Arrangement primary, Rules secondary, IClassification<?> classificationValue, String value, ISystems<?> enterprise)
 	{
 		linkTable.setArrangement(primary);
 		linkTable.setRulesID(secondary);

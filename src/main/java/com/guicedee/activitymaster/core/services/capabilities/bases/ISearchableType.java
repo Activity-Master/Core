@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -119,7 +120,7 @@ public interface ISearchableType<P extends WarehouseCoreTable,
 	{
 		Q relationshipTable = get(findQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
@@ -129,11 +130,15 @@ public interface ISearchableType<P extends WarehouseCoreTable,
 				                   .withType(typeValue, system, identityToken)
 				                   .inDateRange()
 				                   .withEnterprise(system.getEnterprise())
-				                   .canRead(system.getEnterprise(), identityToken);
+				                   .canRead(system, identityToken);
 		if (first)
-		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		{
+			queryBuilderRelationshipClassification.setMaxResults(1);
+		}
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{
+			queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"));
+		}
 		
 		//noinspection rawtypes
 		return (Optional) queryBuilderRelationshipClassification.get();
@@ -161,12 +166,12 @@ public interface ISearchableType<P extends WarehouseCoreTable,
 	
 	default List<IRelationshipValue<L, R, ?>> findAll(String typeValue, String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findAll(typeValue, classification, value, system,latest,identityToken);
+		return findAll(typeValue, classification, value, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findAll(String typeValue, String classification, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return findAll(typeValue, classification, value,false, system, identityToken);
+		return findAll(typeValue, classification, value, false, system, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findAll(String typeValue, String classification, ISystems<?> system, UUID... identityToken)
@@ -184,7 +189,7 @@ public interface ISearchableType<P extends WarehouseCoreTable,
 	{
 		Q relationshipTable = get(findQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
@@ -193,9 +198,11 @@ public interface ISearchableType<P extends WarehouseCoreTable,
 				                   .withValue(searchValue)
 				                   .withClassification(iClassification)
 				                   .inDateRange()
-				                   .canRead(system.getEnterprise(), identityToken);
+				                   .canRead(system, identityToken);
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{
+			queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"));
+		}
 		return (List) queryBuilderRelationshipClassification.getAll();
 	}
 	

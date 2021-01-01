@@ -80,38 +80,31 @@ public interface IAddable<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findAddableTableType());
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
-		IClassification<?> classification = classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
-		
-		ISystems<?> originatingSystem = GuiceContext.get(SystemsService.class)
-		                                            .getActivityMaster(system.getEnterprise());
-		if (originalSystemID != null)
-		{
-			originatingSystem = originalSystemID;
-		}
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(Strings.nullToEmpty(value));
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID((Systems) originalSystemID);
 		tableForClassification.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		tableForClassification.setEffectiveFromDate(effectiveFromDate);
 		tableForClassification.setEffectiveToDate(effectiveToDate);
-		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
+		tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
 		tableForClassification.setClassificationID((Classification) classification);
 		
 		configureAddable(tableForClassification, (P) this,
 				(S)typeAdd,
-				(C) classification, value, originatingSystem.getEnterpriseID());
+				(C) classification, value, system.getEnterpriseID());
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
 				.isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			tableForClassification.createDefaultSecurity(system, identityToken);
 		}
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
-			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, originatingSystem, identityToken);
+			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, system, identityToken);
 		}
 		return tableForClassification;
 	}
@@ -205,7 +198,7 @@ public interface IAddable<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findAddableTableType());
 		S sType = (S) type;
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationName, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{
@@ -301,7 +294,7 @@ public interface IAddable<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findAddableTableType());
 		S sType = (S) type;
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findTypeQuery(searchValue, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{

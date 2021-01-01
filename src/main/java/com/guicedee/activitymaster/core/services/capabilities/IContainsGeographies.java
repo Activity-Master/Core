@@ -10,6 +10,7 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IGeography;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
 
@@ -34,7 +35,7 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 		                                                         .findLink((P) this, (S) classification, null)
 		                                                         .inActiveRange(((Geography) classification).getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(((Geography) classification).getEnterpriseID(), identityToken)
+		                                                         .canRead(((Geography) classification).getSystemID(), identityToken)
 		                                                         .get();
 		return exists;
 	}
@@ -65,12 +66,12 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(((Geography) classification).getEnterpriseID())
 		                             .inDateRange()
-		                             .canRead(((Geography) classification).getEnterpriseID(), identityToken)
+		                             .canRead(((Geography) classification).getSystemID(), identityToken)
 		                             .getCount() > 0;
 	}
 	
 	@SuppressWarnings("unchecked")
-	default J addGeography(IGeography<?> geography, IClassification<?> classification, String value, UUID... identifyingToken)
+	default J addGeography(IGeography<?> geography, IClassification<?> classification, String value, ISystems<?> system, UUID... identifyingToken)
 	{
 		J tableForClassification = GuiceContext.get(findGeographyQueryRelationshipTableType());
 		Optional<J> exists = (Optional<J>) tableForClassification.builder()
@@ -81,13 +82,11 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			Systems activityMasterSystem = (Systems) GuiceContext.get(ISystemsService.class)
-			                                                     .getActivityMaster(classification.getEnterpriseID());
 			tableForClassification.setEnterpriseID(((Classification) classification).getEnterpriseID());
 			tableForClassification.setClassificationID(((Classification) classification));
 			tableForClassification.setValue(value);
-			tableForClassification.setSystemID(activityMasterSystem);
-			tableForClassification.setOriginalSourceSystemID(activityMasterSystem);
+			tableForClassification.setSystemID((Systems) system);
+			tableForClassification.setOriginalSourceSystemID((Systems) system);
 			tableForClassification.setActiveFlagID(((Classification) classification).getActiveFlagID());
 			setMyGeographyLinkValue(tableForClassification, (S) geography, classification.getEnterpriseID());
 			
@@ -95,7 +94,7 @@ public interface IContainsGeographies<P extends WarehouseCoreTable,
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem, identifyingToken);
+				tableForClassification.createDefaultSecurity(system, identifyingToken);
 			}
 		}
 		else

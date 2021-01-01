@@ -90,7 +90,7 @@ public class Classification
 	        name = "ClassificationSequenceNumber")
 	@JsonIgnore
 	@OrderBy
-	private Short classificationSequenceNumber;
+	private int classificationSequenceNumber;
 	@JoinColumn(name = "ClassificationDataConceptID",
 	            referencedColumnName = "ClassificationDataConceptID",
 	            nullable = false)
@@ -115,7 +115,7 @@ public class Classification
 		id = classificationID;
 	}
 	
-	public Classification(UUID classificationID, String classificationName, String classificationDesc, short classificationSequenceNumber)
+	public Classification(UUID classificationID, String classificationName, String classificationDesc, int classificationSequenceNumber)
 	{
 		id = classificationID;
 		name = classificationName;
@@ -124,17 +124,17 @@ public class Classification
 	}
 	
 	@Override
-	protected ClassificationSecurityToken configureDefaultsForNewToken(ClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ClassificationSecurityToken configureDefaultsForNewToken(ClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		ClassificationSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		token.setBase(this);
 		return token;
 	}
 	
-	public void configureForClassification(ClassificationXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(ClassificationXClassification classificationLink, ISystems<?> system)
 	{
 		Classification hierarchyClassification = (Classification) GuiceContext.get(ClassificationService.class)
-		                                                                      .getHierarchyType(classificationLink.getEnterpriseID());
+		                                                                      .getHierarchyType(system);
 		Classification incomingClassification = classificationLink.getClassificationID();
 		
 		classificationLink.setChildClassificationID(incomingClassification);
@@ -190,7 +190,7 @@ public class Classification
 		return this;
 	}
 	
-	public @NotNull Short getClassificationSequenceNumber()
+	public @NotNull Integer getClassificationSequenceNumber()
 	{
 		return classificationSequenceNumber;
 	}
@@ -201,7 +201,7 @@ public class Classification
 		return name;
 	}
 	
-	public Classification setClassificationSequenceNumber(@NotNull Short classificationSequenceNumber)
+	public Classification setClassificationSequenceNumber(@NotNull Integer classificationSequenceNumber)
 	{
 		this.classificationSequenceNumber = classificationSequenceNumber;
 		return this;
@@ -225,14 +225,14 @@ public class Classification
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setClassificationID(this);
 		linkTable.setResourceItemID(secondary);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setClassificationID(this);
 		linkTable.setResourceItemID(secondary);

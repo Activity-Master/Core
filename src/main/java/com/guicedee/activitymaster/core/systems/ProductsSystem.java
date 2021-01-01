@@ -27,7 +27,7 @@ public class ProductsSystem
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
 
 		service.create(ProductClassifications.Products, activityMasterSystem);
-		service.create(ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.ProductGroup);
+		service.create(ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products);
 		service.create(ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup);
 		service.create(ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup);
 		service.create(ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup);

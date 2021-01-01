@@ -51,7 +51,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		Q relationshipTable = get(findProductQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findLink(null,(S) byType)
@@ -60,7 +60,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 				                   .withValue(value)
 				                   .inDateRange()
 				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -74,7 +74,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		Q relationshipTable = get(findProductQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findLink(null,(S) byType)
@@ -83,7 +83,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 				                   .withValue(value)
 				                   .inDateRange()
 				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -169,7 +169,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		Q relationshipTable = get(findProductQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
@@ -178,7 +178,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 				                   .withValue(searchValue)
 				                   .inDateRange()
 				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -217,7 +217,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		Q relationshipTable = get(findProductQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
@@ -225,7 +225,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 				                   .withValue(searchValue)
 				                   .withClassification(iClassification)
 				                   .inDateRange()
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (latest)
 		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"), OrderByType.DESC); }
 		return (List) queryBuilderRelationshipClassification.getAll();
@@ -302,12 +302,12 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
 		                             .inActiveRange(enterprise)
 		                             .inDateRange()
-		                             .canRead(enterprise, identityToken)
+		                             .canRead(system, identityToken)
 		                             .getCount();
 	}
 	
@@ -332,7 +332,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		Q activityMasterIdentity = get(findProductsCountableQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
 		                             .getCount();
@@ -424,7 +424,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		IEnterprise<?> enterprise = system.getEnterprise();
 		Q tableForClassification = get(findAddableProductTableType());
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationName, enterprise, identityToken);
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		
 		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(Strings.nullToEmpty(value));
@@ -519,7 +519,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		S sType = stringToSecondaryProduct(type, system, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		Classification classification = (Classification) classificationService.find(classificationName, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findProductTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{
@@ -610,7 +610,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		S sType = stringToSecondaryProduct(type, system, identityToken);
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		Classification classification = (Classification) classificationService.find(classificationName, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findProductTypeQuery(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{ return addProduct(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken); }

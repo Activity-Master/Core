@@ -77,7 +77,7 @@ public class GeographyXClassification
 	}
 
 	@Override
-	protected GeographyXClassificationSecurityToken configureDefaultsForNewToken(GeographyXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected GeographyXClassificationSecurityToken configureDefaultsForNewToken(GeographyXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

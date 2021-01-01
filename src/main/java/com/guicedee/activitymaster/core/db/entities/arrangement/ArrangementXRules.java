@@ -83,7 +83,7 @@ public class ArrangementXRules
 	}
 	
 	@Override
-	protected ArrangementXRulesSecurityToken configureDefaultsForNewToken(ArrangementXRulesSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ArrangementXRulesSecurityToken configureDefaultsForNewToken(ArrangementXRulesSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

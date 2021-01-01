@@ -74,7 +74,7 @@ public class RulesXProduct
 	}
 	
 	@Override
-	protected RulesXProductSecurityToken configureDefaultsForNewToken(RulesXProductSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected RulesXProductSecurityToken configureDefaultsForNewToken(RulesXProductSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

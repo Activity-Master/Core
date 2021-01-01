@@ -73,20 +73,6 @@ public class ClassificationsSystem
 		service.create(Computer, activityMasterSystem,Hardware);
 		service.create(Desktop, activityMasterSystem,Computer);
 		service.create(Laptop, activityMasterSystem,Computer);
-		
-		//Checks
-		List<IClassification<?>> output = rootClassification.findChildren();
-		Classification parent = (Classification) service.find(Classifications.NoClassification, enterprise)
-		                                                .findParent();
-
-		if (output.isEmpty())
-		{
-			throw new ActivityMasterException("Hierarchy Children is not working");
-		}
-		if (parent == null)
-		{
-			throw new ActivityMasterException("Hierarchy Parent is not working");
-		}
 
 		logProgress("Classifications System", "Loaded Global Classifications...", 2, progressMonitor);
 	}

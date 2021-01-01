@@ -99,8 +99,9 @@ public class DefaultTestConfig
 		                                  .getActivityMaster(enterprise);
 		UUID identityToken = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
+		
 		ISecurityToken<?> token = GuiceContext.get(ISecurityTokenService.class)
-		                                      .getSecurityToken(identityToken, enterprise);
+		                                      .getSecurityToken(identityToken, systems);
 
 		GuiceContext.get(ActivityMasterService.class)
 		            .loadSystems(TestEnterprise, null);

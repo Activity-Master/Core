@@ -80,7 +80,7 @@ public class ResourceItemXResourceItemType
 	}
 	
 	@Override
-	protected ResourceItemXResourceItemTypeSecurityToken configureDefaultsForNewToken(ResourceItemXResourceItemTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ResourceItemXResourceItemTypeSecurityToken configureDefaultsForNewToken(ResourceItemXResourceItemTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

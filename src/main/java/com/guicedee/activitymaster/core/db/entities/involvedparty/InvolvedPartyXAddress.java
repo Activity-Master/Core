@@ -83,7 +83,7 @@ public class InvolvedPartyXAddress
 	}
 
 	@Override
-	protected InvolvedPartyXAddressSecurityToken configureDefaultsForNewToken(InvolvedPartyXAddressSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected InvolvedPartyXAddressSecurityToken configureDefaultsForNewToken(InvolvedPartyXAddressSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -4,6 +4,7 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
+import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -20,6 +21,7 @@ import java.io.Serializable;
  * @param <S>
  * @param <J>
  * @param <S>
+ *
  * @author Marc Magon
  * @version 1.0
  * @since 06 Dec 2016
@@ -89,21 +91,27 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 		return this.systemID;
 	}
 	
-	public WarehouseSCDTable<J, Q, I, S> setActiveFlagID(ActiveFlag activeFlagID)
+	public J setActiveFlagID(IActiveFlag<?> activeFlagID)
+	{
+		this.activeFlagID = (ActiveFlag) activeFlagID;
+		return (J) this;
+	}
+	
+	public J setActiveFlagID(ActiveFlag activeFlagID)
 	{
 		this.activeFlagID = activeFlagID;
-		return this;
+		return (J) this;
 	}
 	
-	public WarehouseSCDTable<J, Q, I, S> setEnterpriseID(Enterprise enterpriseID)
+	public J setEnterpriseID(Enterprise enterpriseID)
 	{
 		this.enterpriseID = enterpriseID;
-		return this;
+		return (J) this;
 	}
 	
-	public WarehouseSCDTable<J, Q, I, S> setSystemID(Systems systemID)
+	public J setSystemID(Systems systemID)
 	{
 		this.systemID = systemID;
-		return this;
+		return (J) this;
 	}
 }

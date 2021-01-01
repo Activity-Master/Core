@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.implementations;
 
+import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept;
@@ -7,16 +8,14 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IClassificationDataConcept;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
@@ -26,7 +25,7 @@ import static com.guicedee.activitymaster.core.services.classifications.security
 public class ClassificationService
 		implements IClassificationService<ClassificationService>
 {
-	@Override
+	/*@Override
 	public IClassification<?> create(IClassificationValue<?> concept,
 	                                 ISystems<?> system, IClassificationValue<?> parent,
 	                                 UUID... identityToken)
@@ -70,7 +69,7 @@ public class ClassificationService
 		{
 			rootCl.setName(classificationValue.classificationName());
 			rootCl.setDescription(classificationValue.classificationDescription());
-			rootCl.setClassificationSequenceNumber(sequenceNumber == null ? Short.valueOf("1") : sequenceNumber);
+			rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
 			rootCl.setSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemUniqueID("");
@@ -88,7 +87,7 @@ public class ClassificationService
 			if (parent != null)
 			{
 				IClassification<?> parentClassification = find(parent, system.getEnterpriseID(), identityToken);
-				parentClassification.addChild(rootCl, system.getEnterpriseID(), identityToken);
+				parentClassification.addChild(rootCl, system, identityToken);
 			}
 		}
 		else
@@ -136,7 +135,7 @@ public class ClassificationService
 			if (parent != null)
 			{
 				IClassification<?> parentClassification = find(parent.name(), system.getEnterpriseID(), identityToken);
-				parentClassification.addChild(rootCl, system.getEnterpriseID(), identityToken);
+				parentClassification.addChild(rootCl, system, identityToken);
 			}
 		}
 		else
@@ -183,7 +182,7 @@ public class ClassificationService
 			if (parent != null)
 			{
 				Classification parentClassification = (Classification) find(parent, system.getEnterpriseID(), identityToken);
-				parentClassification.addChild(rootCl, system.getEnterpriseID(), identityToken);
+				parentClassification.addChild(rootCl, system, identityToken);
 			}
 		}
 		else
@@ -192,15 +191,117 @@ public class ClassificationService
 		}
 		
 		return rootCl;
+	}*/
+	
+	@Override
+	public IClassification<?> create(IClassificationValue<?> name,
+	                                 ISystems<?> system, UUID... identityToken)
+	{
+		return create(name.classificationName(), name.classificationDescription(),
+				name.concept()
+				    .classificationValue(), system, 0, identityToken);
 	}
 	
 	@Override
-	public IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
-	                                 ISystems<?> system,
-	                                 Short sequenceNumber, IClassification<?> parent, UUID... identityToken)
+	public IClassification<?> create(IClassificationValue<?> name,
+	                                 ISystems<?> system, IClassificationValue<?> parentName, UUID... identityToken)
 	{
-		ClassificationsDataConceptService dataConceptService = GuiceContext.get(ClassificationsDataConceptService.class);
-		ClassificationDataConcept dataConcept = dataConceptService.find(conceptName, system.getEnterpriseID(), identityToken);
+		IClassification<?> classification = find(parentName, system, identityToken);
+		return create(name.classificationName(), name.classificationDescription(),
+				name.concept()
+				    .classificationValue(), system, 0, classification, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(String name, String description, String concept,
+	                                 ISystems<?> system, Integer sequenceOrder, String parentName, UUID... identityToken)
+	{
+		IClassification<?> classification = find(parentName, system, identityToken);
+		return create(name, description, concept, system, sequenceOrder, classification, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(IClassificationValue<?> name,
+	                                 ISystems<?> system, Integer sequenceOrder, IClassificationValue<?> parentName, UUID... identityToken)
+	{
+		IClassification<?> classification = find(parentName, system, identityToken);
+		return create(name.classificationName(), name.classificationDescription(),
+				name.concept()
+				    .classificationValue(), system, sequenceOrder, classification, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(IClassificationValue<?> name,
+	                                 ISystems<?> system, String parentName, UUID... identityToken)
+	{
+		IClassification<?> classification = find(parentName, system, identityToken);
+		return create(name.classificationName(), name.classificationDescription(),
+				name.concept()
+				    .classificationValue(), system, 0, classification, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(IClassificationValue<?> name,
+	                                 ISystems<?> system, Integer sequenceNumber, UUID... identityToken)
+	{
+		return create(name.classificationName(), name.classificationDescription(),
+				name.concept()
+				    .classificationValue(), system, sequenceNumber, (IClassification<?>) null, identityToken);
+	}
+	
+	
+	@Override
+	public IClassification<?> create(String name,
+	                                 ISystems<?> system, UUID... identityToken)
+	{
+		return create(name, name, null, system, 0, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(String name, String description,
+	                                 ISystems<?> system, UUID... identityToken)
+	{
+		return create(name, description, null, system, 0, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(String name, String description, String conceptName,
+	                                 ISystems<?> system, UUID... identityToken)
+	{
+		return create(name, description, conceptName, system, 0, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(String classificationName, String classificationDescription, String conceptName, ISystems<?> system, Integer sequenceNumber, IClassificationValue<?> parentClass, UUID... identityToken)
+	{
+		IClassification<?> classification = find(parentClass.classificationName(), system, identityToken);
+		return create(classificationName, classificationDescription, conceptName, system, sequenceNumber, classification, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(String name, String description, String conceptName,
+	                                 ISystems<?> system,
+	                                 Integer sequenceNumber, UUID... identityToken)
+	{
+		return create(name, description, conceptName, system, sequenceNumber, (IClassification<?>) null, identityToken);
+	}
+	
+	@Override
+	public IClassification<?> create(String name, String description, String conceptName,
+	                                 ISystems<?> system,
+	                                 Integer sequenceNumber, IClassification<?> parent, UUID... identityToken)
+	{
+		ClassificationDataConcept dataConcept;
+		if (!Strings.isNullOrEmpty(conceptName))
+		{
+			ClassificationsDataConceptService dataConceptService = GuiceContext.get(ClassificationsDataConceptService.class);
+			dataConcept = dataConceptService.find(conceptName, system, identityToken);
+		}
+		else
+		{
+			dataConcept = null;
+		}
+		
 		Classification rootCl = new Classification();
 		
 		boolean exists = rootCl.builder()
@@ -214,7 +315,7 @@ public class ClassificationService
 		{
 			rootCl.setName(name);
 			rootCl.setDescription(description);
-			rootCl.setClassificationSequenceNumber(sequenceNumber == null ? Short.valueOf("1") : sequenceNumber);
+			rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
 			rootCl.setSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemUniqueID("");
@@ -225,25 +326,24 @@ public class ClassificationService
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				rootCl.createDefaultSecurity(GuiceContext.get(ISystemsService.class)
-				                                         .getActivityMaster(rootCl.getEnterpriseID(), identityToken), identityToken);
+				rootCl.createDefaultSecurity(system, identityToken);
 			}
 			
 			if (parent != null)
 			{
-				parent.addChild(rootCl, system.getEnterpriseID(), identityToken);
+				parent.addChild(rootCl, system, identityToken);
 			}
 		}
 		else
 		{
-			return find(name, conceptName, system.getEnterprise(), identityToken);
+			return find(name, conceptName, system, identityToken);
 		}
 		return rootCl;
 	}
 	
-	@Override
+/*	@Override
 	public IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
-	                                 IEnterprise<?> enterprise,
+	                                 ISystems<?> system,
 	                                 Short sequenceNumber, IClassification<?> parent, UUID... identityToken)
 	{
 		ClassificationsDataConceptService dataConceptService = GuiceContext.get(ClassificationsDataConceptService.class);
@@ -252,8 +352,8 @@ public class ClassificationService
 		
 		boolean exists = rootCl.builder()
 		                       .findByNameAndConcept(name, dataConcept)
-		                       .withEnterprise(enterprise)
-		                       .inActiveRange(enterprise, identityToken)
+		                       .withEnterprise(system.getEnterprise())
+		                       .inActiveRange(system, identityToken)
 		                       .inDateRange()
 		                       .getCount() > 0;
 		
@@ -284,9 +384,9 @@ public class ClassificationService
 			return find(name, conceptName, enterprise, identityToken);
 		}
 		return rootCl;
-	}
+	}*/
 	
-	@Override
+	/*@Override
 	public IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
 	                                 ISystems<?> system,
 	                                 Short sequenceNumber, UUID... identityToken)
@@ -326,141 +426,70 @@ public class ClassificationService
 			return find(name, conceptName, system.getEnterprise(), identityToken);
 		}
 		return rootCl;
-	}
+	}*/
 	
-	@Override
-	public IClassification<?> find(@CacheKey IClassificationValue<?> name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
-	{
-		return find(name, system.getEnterpriseID(), identityToken);
-	}
-	@SuppressWarnings("Duplicates")
-	@CacheResult(cacheName = "ClassificationFindWithIClassificationStringConceptValue")
-	@Override
-	public IClassification<?> find(@CacheKey IClassificationValue<?> name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
-	{
-		Classification search = new Classification();
-		ClassificationsDataConceptService cb = GuiceContext.get(ClassificationsDataConceptService.class);
-		ClassificationDataConcept concept = cb.find(name.concept(), enterprise, identityToken);
-		search = search.builder()
-		               .findByNameAndConcept(name.classificationName(), concept)
-		               .inActiveRange(enterprise, identityToken)
-		               .inDateRange()
-		               .canRead(enterprise, identityToken)
-		               .withEnterprise(enterprise)
-		               .get()
-		               .orElseThrow();
-		return search;
-	}
-	
+	@CacheResult(cacheName = "ClassificationFindWithSimpleString")
 	@Override
 	public IClassification<?> find(@CacheKey String name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		return find(name, system.getEnterpriseID(), identityToken);
+		return find(name, (String) null, system, identityToken);
 	}
 	
 	@CacheResult(cacheName = "ClassificationFindWithSimpleString")
 	@Override
-	public IClassification<?> find(@CacheKey String name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> find(@CacheKey IClassificationValue<?> name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		Classification search = new Classification();
-		ClassificationsDataConceptService cb = GuiceContext.get(ClassificationsDataConceptService.class);
-		search = search.builder()
-		               .withName(name)
-		               .inActiveRange(enterprise, identityToken)
-		               .inDateRange()
-		               .canRead(enterprise, identityToken)
-		               .withEnterprise(enterprise)
-		               .get()
-		               .orElseThrow();
-		return search;
-	}
-	
-	@CacheResult(cacheName = "ClassificationFindWithSimpleString")
-	@Override
-	public IClassification<?> findOrCreate(@CacheKey String name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
-	{
-		Classification search = new Classification();
-		ClassificationsDataConceptService cb = GuiceContext.get(ClassificationsDataConceptService.class);
-		
-		search = search.builder()
-		               .withName(name)
-		               .inActiveRange(enterprise, identityToken)
-		               .inDateRange()
-		               .canRead(enterprise, identityToken)
-		               .withEnterprise(enterprise)
-		               .get()
-		               .orElse(null);
-		if(search != null)
-		return search;
-		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise);
-		cb.getNoConcept(enterprise, identityToken);
-		return create(name, name, cb.getNoConcept(enterprise, identityToken), activityMasterSystem, (short) 0, identityToken);
+		return find(name.classificationName(), (String) null, system, identityToken);
 	}
 	
 	@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConcept")
 	@Override
-	public IClassification<?> find(@CacheKey String name, @CacheKey IClassificationDataConcept<?> concept, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> find(@CacheKey String name, @CacheKey IClassificationDataConcept<?> concept, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		Classification search = new Classification();
-		ClassificationsDataConceptService cb = GuiceContext.get(ClassificationsDataConceptService.class);
-		search = search.builder()
-		               .findByNameAndConcept(name, (ClassificationDataConcept) concept)
-		               .inActiveRange(enterprise, identityToken)
-		               .inDateRange()
-		               .canRead(enterprise, identityToken)
-		               .withEnterprise(enterprise)
-		               .get()
-		               .orElseThrow();
-		return search;
+		return find(name, concept.getName(), system, identityToken);
 	}
 	
 	
 	@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
 	@Override
-	public IClassification<?> find(@CacheKey String name, @CacheKey IClassificationDataConceptValue<?> concept, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> find(@CacheKey String name, @CacheKey String concept, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		Classification search = new Classification();
-		ClassificationsDataConceptService cb = GuiceContext.get(ClassificationsDataConceptService.class);
-		ClassificationDataConcept cdc = cb.find(concept, enterprise, identityToken);
 		search = search.builder()
-		               .findByNameAndConcept(name, cdc)
-		               .inActiveRange(enterprise, identityToken)
+		               .findByNameAndConcept(name, concept, system, identityToken)
+		               .inActiveRange(system, identityToken)
 		               .inDateRange()
-		               .canRead(enterprise, identityToken)
-		               .withEnterprise(enterprise)
+		               .canRead(system, identityToken)
+		               .withEnterprise(system.getEnterprise())
 		               .get()
-		               .orElseThrow();
+		               .orElseThrow(()-> new NoSuchElementException("Cannot find Classification with name - " + name + " - and concept - " + concept));
 		return search;
 	}
 	
 	@CacheResult(cacheName = "GetHierarchyTypeClassification")
 	@Override
-	public IClassification<?> getHierarchyType(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> getHierarchyType(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		ClassificationService service = GuiceContext.get(ClassificationService.class);
-		return service.find(HierarchyTypeClassification,
-		                    enterprise,
-		                    identityToken);
+		return find(HierarchyTypeClassification.classificationName(),
+				system,
+				identityToken);
 	}
 	
 	@CacheResult(cacheName = "GetNoClassification")
 	@Override
-	public IClassification<?> getNoClassification(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> getNoClassification(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		ClassificationService service = GuiceContext.get(ClassificationService.class);
-		return service.find(NoClassification,
-				enterprise,
+		return find(NoClassification.classificationName(),
+				system,
 				identityToken);
 	}
 	
 	@CacheResult(cacheName = "IdentityTypeClassification")
 	@Override
-	public IClassification<?> getIdentityType(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IClassification<?> getIdentityType(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		ClassificationService service = GuiceContext.get(ClassificationService.class);
-		return service.find(Identity,
-		                    enterprise,
-		                    identityToken);
+		return find(Identity.classificationName(),
+				system,
+				identityToken);
 	}
 }

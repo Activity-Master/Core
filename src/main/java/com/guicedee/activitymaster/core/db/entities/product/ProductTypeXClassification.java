@@ -68,7 +68,7 @@ public class ProductTypeXClassification
 	}
 	
 	@Override
-	protected ProductTypeXClassificationSecurityToken configureDefaultsForNewToken(ProductTypeXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ProductTypeXClassificationSecurityToken configureDefaultsForNewToken(ProductTypeXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

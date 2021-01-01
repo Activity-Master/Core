@@ -86,7 +86,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	}
 	
 	@Override
-	protected InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

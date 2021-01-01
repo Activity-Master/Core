@@ -40,7 +40,7 @@ public class InvolvedPartyXInvolvedPartyTypeQueryBuilder
 		if (typeValue != null)
 		{
 			IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-			InvolvedPartyType at = (InvolvedPartyType) service.findType(typeValue, system.getEnterprise(), identityToken);
+			InvolvedPartyType at = (InvolvedPartyType) service.findType(typeValue, system, identityToken);
 			where(InvolvedPartyXInvolvedPartyType_.involvedPartyTypeID, Operand.Equals, at);
 		}
 		return this;

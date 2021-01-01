@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnt
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -101,7 +102,7 @@ public class Enterprise
 	}
 
 	@Override
-	public void configureForClassification(EnterpriseXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(EnterpriseXClassification classificationLink, ISystems<?> system)
 	{
 
 	}

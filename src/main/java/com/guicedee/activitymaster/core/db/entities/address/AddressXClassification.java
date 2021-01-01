@@ -76,7 +76,7 @@ public class AddressXClassification
 	}
 
 	@Override
-	protected AddressXClassificationSecurityToken configureDefaultsForNewToken(AddressXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected AddressXClassificationSecurityToken configureDefaultsForNewToken(AddressXClassificationSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

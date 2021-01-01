@@ -15,7 +15,7 @@ public interface IEventService<J extends IEventService<J>>
 	
 	IEventType<?> createEventType(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken);
 	
-	IEventType<?> findEventType(IEventTypeValue<?> eventType, IEnterprise<?> enterprise, UUID... identityToken);
+	IEventType<?> findEventType(IEventTypeValue<?> eventType, ISystems<?> system, UUID... identityToken);
 	
-	IEventType<?> findEventType(String eventType, IEnterprise<?> enterprise, UUID... identityToken);
+	IEventType<?> findEventType(String eventType, ISystems<?> system, UUID... identityToken);
 }

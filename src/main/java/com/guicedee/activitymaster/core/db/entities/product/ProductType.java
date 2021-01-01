@@ -107,7 +107,7 @@ public class ProductType
 	}
 	
 	@Override
-	protected ProductTypeSecurityToken configureDefaultsForNewToken(ProductTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ProductTypeSecurityToken configureDefaultsForNewToken(ProductTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
@@ -219,7 +219,7 @@ public class ProductType
 	
 	
 	@Override
-	public void configureForClassification(ProductTypeXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(ProductTypeXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setProductTypeID(this);
 	}

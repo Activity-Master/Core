@@ -70,7 +70,7 @@ public class InvolvedPartyNonOrganic
 	}
 
 	@Override
-	protected InvolvedPartyNonOrganicSecurityToken configureDefaultsForNewToken(InvolvedPartyNonOrganicSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected InvolvedPartyNonOrganicSecurityToken configureDefaultsForNewToken(InvolvedPartyNonOrganicSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

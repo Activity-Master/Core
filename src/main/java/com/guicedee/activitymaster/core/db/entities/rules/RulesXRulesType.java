@@ -73,7 +73,7 @@ public class RulesXRulesType
 	}
 	
 	@Override
-	protected RulesXRulesTypeSecurityToken configureDefaultsForNewToken(RulesXRulesTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected RulesXRulesTypeSecurityToken configureDefaultsForNewToken(RulesXRulesTypeSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

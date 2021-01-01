@@ -34,30 +34,19 @@ public interface ISecurityEnabledQueryBuilder<J extends QueryBuilderDefault<J, E
 	@NotNull
 	default J canRead(ISystems<?> system, UUID... identityToken) throws SecurityAccessException
 	{
-		return getSecurityBuilderConfig(system.getEnterprise(), "readAllowed", identityToken);
+		return getSecurityBuilderConfig(system, "readAllowed",false, identityToken);
 	}
 	
 	@NotNull
-	default J canRead(IEnterprise<?> enterprise, UUID... identityToken) throws SecurityAccessException
+	default J canRead(ISystems<?> system,boolean overrideActiveFlag, UUID... identityToken) throws SecurityAccessException
 	{
-		return getSecurityBuilderConfig(enterprise, "readAllowed", identityToken);
+		return getSecurityBuilderConfig(system, "readAllowed",overrideActiveFlag, identityToken);
 	}
 	
-	@NotNull
-	default J canRead(IEnterprise<?> enterprise, boolean overrideActiveFlag, UUID... identityToken) throws SecurityAccessException
-	{
-		return getSecurityBuilderConfig(enterprise, "readAllowed", identityToken);
-	}
-	
-	@NotNull
-	default J getSecurityBuilderConfig(IEnterprise<?> enterprise, String fieldCheck, UUID[] identityToken)
-	{
-		return getSecurityBuilderConfig(enterprise, fieldCheck, false, identityToken);
-	}
 	
 	@SuppressWarnings("unchecked")
 	@NotNull
-	default J getSecurityBuilderConfig(IEnterprise<?> enterprise, String fieldToCheck, boolean overrideActiveFlag, UUID[] identityToken)
+	default J getSecurityBuilderConfig(ISystems<?> system, String fieldToCheck, boolean overrideActiveFlag, UUID[] identityToken)
 	{
 		if (!GuiceContext.get(ActivityMasterConfiguration.class)
 		                 .isSecurityEnabled() || true)
@@ -65,6 +54,7 @@ public interface ISecurityEnabledQueryBuilder<J extends QueryBuilderDefault<J, E
 			return (J) this;
 		}
 		
+		IEnterprise<?> enterprise = system.getEnterprise();
 		if (identityToken == null || identityToken.length == 0)
 		{
 			SecurityToken systemToken = (SecurityToken) GuiceContext.get(ActivityMasterConfiguration.class)
@@ -78,7 +68,7 @@ public interface ISecurityEnabledQueryBuilder<J extends QueryBuilderDefault<J, E
 		}
 		
 		SecurityToken myToken = (SecurityToken) GuiceContext.get(SecurityTokenService.class)
-		                                                    .getSecurityToken(identityToken[0], overrideActiveFlag, enterprise);
+		                                                    .getSecurityToken(identityToken[0], overrideActiveFlag, system);
 		
 		if (myToken == null)
 		{
@@ -158,14 +148,14 @@ public interface ISecurityEnabledQueryBuilder<J extends QueryBuilderDefault<J, E
 	}
 	
 	@NotNull
-	default J canUpdate(IEnterprise<?> enterprise, UUID... identityToken)
+	default J canUpdate(ISystems<?> system, UUID... identityToken)
 	{
-		return getSecurityBuilderConfig(enterprise, "updateAllowed", identityToken);
+		return getSecurityBuilderConfig(system, "updateAllowed",false, identityToken);
 	}
 	
 	@NotNull
-	default J canDelete(IEnterprise<?> enterprise, UUID... identityToken)
+	default J canDelete(ISystems<?> system, UUID... identityToken)
 	{
-		return getSecurityBuilderConfig(enterprise, "deleteAllowed", identityToken);
+		return getSecurityBuilderConfig(system, "deleteAllowed",false, identityToken);
 	}
 }

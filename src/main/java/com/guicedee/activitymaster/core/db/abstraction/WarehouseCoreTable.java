@@ -37,19 +37,19 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
 @SuppressWarnings({"Duplicates", "unchecked"})
 @MappedSuperclass()
 public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S>,
-		                                        Q extends QueryBuilderCore<Q, J, I, S>,
-		                                        I extends Serializable,
-		                                        S extends WarehouseSecurityTable>
+		Q extends QueryBuilderCore<Q, J, I, S>,
+		I extends Serializable,
+		S extends WarehouseSecurityTable>
 		extends WarehouseBaseTable<J, Q, I>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
-
+	
 	public WarehouseCoreTable()
 	{
-
+	
 	}
-
+	
 	@SuppressWarnings("ConstantConditions")
 	public void createDefaultSecurity(ISystems<?> system, UUID... identity)
 	{
@@ -60,105 +60,105 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		boolean securityEnabled = ActivityMasterConfiguration.get()
 		                                                     .isSecurityEnabled();
 		securityEnabled = false;
-
+		
 		if (async)
 		{
 			JobService.getInstance()
 			          .addJob("SecurityTokenStore",
-			                  () -> createDefaultAdministratorSecurityAccess(system.getEnterpriseID(), identity));
+					          () -> createDefaultAdministratorSecurityAccess(system, identity));
 		}
 		else
 		{
 			if (securityEnabled)
 			{
-				createDefaultAdministratorSecurityAccess(system.getEnterpriseID(), identity);
+				createDefaultAdministratorSecurityAccess(system, identity);
 			}
 		}
-
+		
 		if (async)
 		{
 			JobService.getInstance()
 			          .addJob("SecurityTokenStore",
-			                  () -> createDefaultEveryoneSecurityAccess(system.getEnterpriseID(), identity));
+					          () -> createDefaultEveryoneSecurityAccess(system, identity));
 		}
 		else
 		{
 			if (securityEnabled)
 			{
-				createDefaultEveryoneSecurityAccess(system.getEnterpriseID(), identity);
+				createDefaultEveryoneSecurityAccess(system, identity);
 			}
 		}
-
+		
 		if (async)
 		{
 			JobService.getInstance()
 			          .addJob("SecurityTokenStore",
-			                  () -> createDefaultEverywhereSecurityAccess(system.getEnterpriseID(), identity));
+					          () -> createDefaultEverywhereSecurityAccess(system, identity));
 		}
 		else
 		{
 			if (securityEnabled)
 			{
-				createDefaultEverywhereSecurityAccess(system.getEnterpriseID(), identity);
+				createDefaultEverywhereSecurityAccess(system, identity);
 			}
 		}
-
+		
 		if (async)
 		{
 			JobService.getInstance()
 			          .addJob("SecurityTokenStore",
-			                  () -> createDefaultSystemsSecurityAccess(system.getEnterpriseID(), identity));
+					          () -> createDefaultSystemsSecurityAccess(system, identity));
 		}
 		else
 		{
 			if (securityEnabled)
 			{
-				createDefaultSystemsSecurityAccess(system.getEnterpriseID(), identity);
+				createDefaultSystemsSecurityAccess(system, identity);
 			}
 		}
-
+		
 		if (async)
 		{
 			JobService.getInstance()
 			          .addJob("SecurityTokenStore",
-			                  () -> createDefaultApplicationsSecurityAccess(system.getEnterpriseID(), identity));
+					          () -> createDefaultApplicationsSecurityAccess(system, identity));
 		}
 		else
 		{
 			if (securityEnabled)
 			{
-				createDefaultApplicationsSecurityAccess(system.getEnterpriseID(), identity);
+				createDefaultApplicationsSecurityAccess(system, identity);
 			}
 		}
-
+		
 		if (async)
 		{
 			JobService.getInstance()
 			          .addJob("SecurityTokenStore",
-			                  () -> createDefaultPluginsSecurityAccess(system.getEnterpriseID(), identity));
+					          () -> createDefaultPluginsSecurityAccess(system, identity));
 		}
 		else
 		{
 			if (securityEnabled)
 			{
-				createDefaultPluginsSecurityAccess(system.getEnterpriseID(), identity);
+				createDefaultPluginsSecurityAccess(system, identity);
 			}
 		}
 		if (async)
 		{
 			JobService.getInstance()
 			          .addJob("SecurityTokenStore",
-			                  () -> createDefaultGuestReadSecurityAccess(system.getEnterpriseID(), identity));
+					          () -> createDefaultGuestReadSecurityAccess(system, identity));
 		}
 		else
 		{
 			if (securityEnabled)
 			{
-				createDefaultGuestReadSecurityAccess(system.getEnterpriseID(), identity);
+				createDefaultGuestReadSecurityAccess(system, identity);
 			}
 		}
 	}
-
+	
 	public void updateSecurity(J newCoreTable, Systems system)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
@@ -169,42 +169,42 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                           .inDateRange()
 		                           .getAll();
 		List<S> persistNewTokens = new ArrayList<>();
-
+		
 		for (S exist : exists)
 		{
 			exist.setId(null);
-			configureDefaultsForNewToken(exist, system.getEnterpriseID(), system);
+			configureDefaultsForNewToken(exist, system, system);
 		}
-
-		createDefaultAdministratorSecurityAccess(system.getEnterpriseID());
-		createDefaultEveryoneSecurityAccess(system.getEnterpriseID());
-		createDefaultEverywhereSecurityAccess(system.getEnterpriseID());
-		createDefaultSystemsSecurityAccess(system.getEnterpriseID());
-		createDefaultApplicationsSecurityAccess(system.getEnterpriseID());
-		createDefaultPluginsSecurityAccess(system.getEnterpriseID());
-		createDefaultGuestReadSecurityAccess(system.getEnterpriseID());
+		
+		createDefaultAdministratorSecurityAccess(system);
+		createDefaultEveryoneSecurityAccess(system);
+		createDefaultEverywhereSecurityAccess(system);
+		createDefaultSystemsSecurityAccess(system);
+		createDefaultApplicationsSecurityAccess(system);
+		createDefaultPluginsSecurityAccess(system);
+		createDefaultGuestReadSecurityAccess(system);
 	}
-
-	private S createDefaultAdministratorSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
+	
+	private S createDefaultAdministratorSecurityAccess(ISystems<?> system, UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) GuiceContext.get(SecurityTokenService.class)
-		                                                           .getAdministratorsFolder(enterprise, identity);
+		                                                           .getAdministratorsFolder(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
 		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-		                     securities.findLinkedSecurityToken(administrators, this)
-		                               //.inActiveRange(enterprise)
-		                               .inDateRange()
-		                               .setReturnFirst(true)
-		                               .get();
-
+				securities.findLinkedSecurityToken(administrators, this)
+				          //.inActiveRange(enterprise)
+				          .inDateRange()
+				          .setReturnFirst(true)
+				          .get();
+		
 		if (exists.isEmpty())
 		{
 			ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-			                                               .getActivityMaster(enterprise, identity);
-			stAdmin = configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
+			                                               .getActivityMaster(system, identity);
+			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
 			stAdmin.setSecurityTokenID(administrators);
 			stAdmin.setCreateAllowed(true);
 			stAdmin.setUpdateAllowed(true);
@@ -218,28 +218,28 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		}
 		return stAdmin;
 	}
-
-	private S createDefaultEveryoneSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
+	
+	private S createDefaultEveryoneSecurityAccess(ISystems<?> system, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
-				                                               .getEveryoneGroup(enterprise, identity);
-
+				.getEveryoneGroup(system, identity);
+		
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise, identity);
+		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
 		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-		                     (Optional<S>) securities.findLinkedSecurityToken(administrators, this)
-		                                             //.inActiveRange(enterprise)
-		                                             .inDateRange()
-		                                             .setReturnFirst(true)
-		                                             .get();
+				(Optional<S>) securities.findLinkedSecurityToken(administrators, this)
+				                        //.inActiveRange(enterprise)
+				                        .inDateRange()
+				                        .setReturnFirst(true)
+				                        .get();
 		if (exists.isEmpty())
 		{
 			stAdmin.setSecurityTokenID(administrators);
-			stAdmin = configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
+			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
 			stAdmin.setCreateAllowed(false);
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
@@ -252,28 +252,28 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		}
 		return stAdmin;
 	}
-
-	private S createDefaultEverywhereSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
+	
+	private S createDefaultEverywhereSecurityAccess(ISystems<?> system, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
-				                                               .getEverywhereGroup(enterprise, identity);
+				.getEverywhereGroup(system, identity);
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise, identity);
+		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
 		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-		                     securities.findLinkedSecurityToken(administrators, this)
-		                               //.inActiveRange(enterprise)
-		                               .inDateRange()
-		                               .setReturnFirst(true)
-		                               .get();
+				securities.findLinkedSecurityToken(administrators, this)
+				          //.inActiveRange(enterprise)
+				          .inDateRange()
+				          .setReturnFirst(true)
+				          .get();
 		if (exists.isEmpty())
 		{
 			stAdmin.setSecurityTokenID(administrators);
-			stAdmin = configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
-
+			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
+			
 			stAdmin.setCreateAllowed(false);
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
@@ -284,33 +284,33 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		{
 			stAdmin = exists.get();
 		}
-
+		
 		return stAdmin;
 	}
-
-	private S createDefaultSystemsSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
+	
+	private S createDefaultSystemsSecurityAccess(ISystems<?> system, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
-				                                               .getSystemsFolder(enterprise, identity);
-
+				.getSystemsFolder(system, identity);
+		
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise, identity);
+		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
 		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-		                     securities.findLinkedSecurityToken(administrators, this)
-		                               //.inActiveRange(enterprise)
-		                               .inDateRange()
-		                               .setReturnFirst(true)
-		                               .get();
+				securities.findLinkedSecurityToken(administrators, this)
+				          //.inActiveRange(enterprise)
+				          .inDateRange()
+				          .setReturnFirst(true)
+				          .get();
 		if (exists.isEmpty())
 		{
-
+			
 			stAdmin.setSecurityTokenID(administrators);
-			stAdmin = configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
-
+			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
+			
 			stAdmin.setCreateAllowed(true);
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
@@ -323,30 +323,30 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		}
 		return stAdmin;
 	}
-
-	private S createDefaultApplicationsSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
+	
+	private S createDefaultApplicationsSecurityAccess(ISystems<?> system, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
-				                                               .getApplicationsFolder(enterprise, identity);
-
+				.getApplicationsFolder(system, identity);
+		
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise, identity);
+		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
 		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-		                     securities.findLinkedSecurityToken(administrators, this)
-		                               //.inActiveRange(enterprise)
-		                               .inDateRange()
-		                               .setReturnFirst(true)
-		                               .get();
+				securities.findLinkedSecurityToken(administrators, this)
+				          //.inActiveRange(enterprise)
+				          .inDateRange()
+				          .setReturnFirst(true)
+				          .get();
 		if (exists.isEmpty())
 		{
-
+			
 			stAdmin.setSecurityTokenID(administrators);
-			stAdmin = configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
-
+			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
+			
 			stAdmin.setCreateAllowed(true);
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
@@ -359,29 +359,29 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		}
 		return stAdmin;
 	}
-
-	private S createDefaultPluginsSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
+	
+	private S createDefaultPluginsSecurityAccess(ISystems<?> system, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
-				                                               .getPluginsFolder(enterprise, identity);
-
+				.getPluginsFolder(system, identity);
+		
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise, identity);
+		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
 		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-		                     securities.findLinkedSecurityToken(administrators, this)
-		                               //.inActiveRange(enterprise)
-		                               .inDateRange()
-		                               .setReturnFirst(true)
-		                               .get();
+				securities.findLinkedSecurityToken(administrators, this)
+				          //.inActiveRange(enterprise)
+				          .inDateRange()
+				          .setReturnFirst(true)
+				          .get();
 		if (exists.isEmpty())
 		{
 			stAdmin.setSecurityTokenID(administrators);
-			stAdmin = configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
-
+			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
+			
 			stAdmin.setCreateAllowed(true);
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
@@ -394,29 +394,29 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		}
 		return stAdmin;
 	}
-
-	private S createDefaultGuestReadSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
+	
+	private S createDefaultGuestReadSecurityAccess(ISystems<?> system, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
-				                                               .getGuestsFolder(enterprise, identity);
-
+				.getGuestsFolder(system, identity);
+		
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise, identity);
+		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
 		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-		                     securities.findLinkedSecurityToken(administrators, this)
-		                               //.inActiveRange(enterprise)
-		                               .inDateRange()
-		                               .setReturnFirst(true)
-		                               .get();
+				securities.findLinkedSecurityToken(administrators, this)
+				          //.inActiveRange(enterprise)
+				          .inDateRange()
+				          .setReturnFirst(true)
+				          .get();
 		if (exists.isEmpty())
 		{
 			stAdmin.setSecurityTokenID(administrators);
-			stAdmin = configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
-
+			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
+			
 			stAdmin.setCreateAllowed(false);
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
@@ -427,50 +427,50 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		{
 			stAdmin = exists.get();
 		}
-
+		
 		return stAdmin;
 	}
-
+	
 	@NotNull
 	@SuppressWarnings("unchecked")
 	protected Class<S> findPersistentSecurityClass()
 	{
 		return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
 	}
-
-	protected S configureDefaultsForNewToken(S stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	
+	protected S configureDefaultsForNewToken(S stAdmin, ISystems<?> system, ISystems<?> activityMasterSystem)
 	{
 		stAdmin.setSystemID((Systems) activityMasterSystem);
 		stAdmin.setActiveFlagID(((Systems) activityMasterSystem).getActiveFlagID());
 		stAdmin.setOriginalSourceSystemID((Systems) activityMasterSystem);
 		stAdmin.setOriginalSourceSystemUniqueID("");
-		stAdmin.setEnterpriseID((Enterprise) enterprise);
-
+		stAdmin.setEnterpriseID((Enterprise) system.getEnterprise());
+		
 		return stAdmin;
 	}
-
-	public S createDefaultGuestNoSecurityAccess(IEnterprise<?> enterprise, UUID... identity)
+	
+	public S createDefaultGuestNoSecurityAccess(ISystems<?> system, UUID... identity)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
-				                                               .getGuestsFolder(enterprise, identity);
-
+				.getGuestsFolder(system, identity);
+		
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise, identity);
-
+		                                               .getActivityMaster(system, identity);
+		
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
 		                                                .isSecurityEnabled() ? Optional.empty() :
-		                     securities.findLinkedSecurityToken(administrators, this)
-		                               //.inActiveRange(enterprise)
-		                               .inDateRange()
-		                               .get();
+				securities.findLinkedSecurityToken(administrators, this)
+				          //.inActiveRange(enterprise)
+				          .inDateRange()
+				          .get();
 		if (exists.isEmpty())
 		{
 			stAdmin.setSecurityTokenID(administrators);
-			stAdmin = configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
-
+			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
+			
 			stAdmin.setCreateAllowed(false);
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
@@ -481,7 +481,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		{
 			stAdmin = exists.get();
 		}
-
+		
 		return stAdmin;
 	}
 }

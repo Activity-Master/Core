@@ -137,21 +137,21 @@ public class Event
 	}
 	
 	@Override
-	public void configureAddressLinkValue(EventXAddress linkTable, Event primary, Address secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureAddressLinkValue(EventXAddress linkTable, Event primary, Address secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setEventID(primary);
 		linkTable.setAddressID(secondary);
 	}
 	
 	@Override
-	protected EventSecurityToken configureDefaultsForNewToken(EventSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected EventSecurityToken configureDefaultsForNewToken(EventSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 	
 	@Override
-	public void configureForClassification(EventXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(EventXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setEventID(this);
 	}
@@ -164,14 +164,14 @@ public class Event
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(EventXResourceItem linkTable, Event primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(EventXResourceItem linkTable, Event primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setEventID(this);
 		linkTable.setResourceItemID(secondary);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(EventXResourceItem linkTable, Event primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(EventXResourceItem linkTable, Event primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setEventID(this);
 		linkTable.setResourceItemID(secondary);
@@ -357,14 +357,14 @@ public class Event
 	}
 	
 	@Override
-	public void setMyInvolvedPartyLinkValue(EventXInvolvedParty classificationLink, Event first, InvolvedParty involvedParty, IEnterprise<?> enterprise)
+	public void setMyInvolvedPartyLinkValue(EventXInvolvedParty classificationLink, Event first, InvolvedParty involvedParty, ISystems<?> enterprise)
 	{
 		classificationLink.setEventID(first);
 		classificationLink.setInvolvedPartyID(involvedParty);
 	}
 	
 	@Override
-	public void configureAddableRule(EventXRules linkTable, Event primary, Rules secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureAddableRule(EventXRules linkTable, Event primary, Rules secondary, IClassification<?> classificationValue, String value, ISystems<?> enterprise)
 	{
 		linkTable.setEventID(primary);
 		linkTable.setRulesID(secondary);

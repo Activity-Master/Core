@@ -82,7 +82,7 @@ public class AddressXResourceItem
 	}
 
 	@Override
-	protected AddressXResourceItemSecurityToken configureDefaultsForNewToken(AddressXResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected AddressXResourceItemSecurityToken configureDefaultsForNewToken(AddressXResourceItemSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

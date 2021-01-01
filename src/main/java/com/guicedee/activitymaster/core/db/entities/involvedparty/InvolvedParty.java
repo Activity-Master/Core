@@ -29,6 +29,7 @@ import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -51,24 +52,25 @@ public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, java.util.UUID, InvolvedPartySecurityToken>
 		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, IInvolvedParty<?>, IClassification<?>, InvolvedParty>,
 		           IContainsResourceItems<InvolvedParty, ResourceItem, InvolvedPartyXResourceItem, IClassificationValue<?>, IInvolvedParty<?>, IResourceItem<?>, InvolvedParty>,
-		           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType,IClassification<?>, IIdentificationType<?>, IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>, InvolvedParty>,
-		           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType,IClassification<?>, INameType<?>, IInvolvedParty<?>, IInvolvedPartyNameType<?>, InvolvedParty>,
-		           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType,IClassification<?>, ITypeValue<?>, IInvolvedParty<?>, IInvolvedPartyType<?>, InvolvedParty>,
+		           IContainsInvolvedPartyIdentificationTypes<InvolvedParty, InvolvedPartyIdentificationType, InvolvedPartyXInvolvedPartyIdentificationType, IClassification<?>, IIdentificationType<?>, IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>, InvolvedParty>,
+		           IContainsInvolvedPartyNameTypes<InvolvedParty, InvolvedPartyNameType, InvolvedPartyXInvolvedPartyNameType, IClassification<?>, INameType<?>, IInvolvedParty<?>, IInvolvedPartyNameType<?>, InvolvedParty>,
+		           IContainsInvolvedPartyTypes<InvolvedParty, InvolvedPartyType, InvolvedPartyXInvolvedPartyType, IClassification<?>, ITypeValue<?>, IInvolvedParty<?>, IInvolvedPartyType<?>, InvolvedParty>,
 		           IContainsAddresses<InvolvedParty, Address, InvolvedPartyXAddress, IAddressClassification<?>, IInvolvedParty<?>, IAddress<?>, InvolvedParty>,
 		           IActivityMasterEntity<InvolvedParty>,
 		           IContainsEnterprise<InvolvedParty>,
 		           IInvolvedParty<InvolvedParty>,
-		           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView,IInvolvedParty<?>, IInvolvedParty<?>>,
-		           IContainsProducts<InvolvedParty, Product,InvolvedPartyXProduct, IClassificationValue<?>,IInvolvedParty<?>,IProduct<?>,InvolvedParty>,
-		           IContainsRules<InvolvedParty, Rules,InvolvedPartyXRules,IClassification<?>,IInvolvedParty<?>,IRules<?>>,
-		           IContainsProductTypes<InvolvedParty, ProductType,InvolvedPartyXProductType,IClassificationValue<?>,IProductTypeValue<?>,IInvolvedParty<?>,IProductType<?>,InvolvedParty>
+		           IContainsHierarchy<InvolvedParty, InvolvedPartyXInvolvedParty, InvolvedPartyHierarchyView, IInvolvedParty<?>, IInvolvedParty<?>>,
+		           IContainsProducts<InvolvedParty, Product, InvolvedPartyXProduct, IClassificationValue<?>, IInvolvedParty<?>, IProduct<?>, InvolvedParty>,
+		           IContainsRules<InvolvedParty, Rules, InvolvedPartyXRules, IClassification<?>, IInvolvedParty<?>, IRules<?>>,
+		           IContainsProductTypes<InvolvedParty, ProductType, InvolvedPartyXProductType, IClassificationValue<?>, IProductTypeValue<?>, IInvolvedParty<?>, IProductType<?>, InvolvedParty>
 {
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
 	@Id
-
+	
 	@Column(nullable = false,
 	        name = "InvolvedPartyID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	
 	@OneToMany(
@@ -101,22 +103,6 @@ public class InvolvedParty
 			fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<InvolvedPartySecurityToken> securities;
-/*
-
-	@OneToOne(
-			mappedBy = "involvedParty",
-			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private InvolvedPartyOrganic involvedPartyOrganic;
-
-
-	@OneToOne(
-			mappedBy = "involvedParty",
-			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private InvolvedPartyNonOrganic involvedPartyNonOrganic;
-*/
-	
 	@OneToMany(
 			mappedBy = "childInvolvedPartyID",
 			fetch = FetchType.LAZY)
@@ -173,7 +159,7 @@ public class InvolvedParty
 		                            .orElseThrow();
 		
 		IInvolvedPartyService<?> partyService = get(IInvolvedPartyService.class);
-		IIdentificationType<?> partyType = (IIdentificationType<?>) partyService.findIdentificationType("IdentificationTypeWebClientUUID", getEnterprise(), identityToken);
+		IIdentificationType<?> partyType = (IIdentificationType<?>) partyService.findIdentificationType("IdentificationTypeWebClientUUID", getSystemID(), identityToken);
 		for (var identificationTypeWebClientUUID : partyService.findAllByIdentificationType("IdentificationTypeWebClientUUID", newUUID.toString()))
 		{
 			identificationTypeWebClientUUID.expire();
@@ -185,8 +171,8 @@ public class InvolvedParty
 	@Override
 	public UUID getSecurityIdentity()
 	{
-		String value = this.findIdentificationType(IdentificationTypes.IdentificationTypeUUID, Classifications.NoClassification.classificationName(),true,true,getSystemID(),
-		                                           get(InvolvedPartySystem.class).getSystemToken(getEnterprise()))
+		String value = this.findIdentificationType(IdentificationTypes.IdentificationTypeUUID, Classifications.NoClassification.classificationName(), true, true, getSystemID(),
+				get(InvolvedPartySystem.class).getSystemToken(getEnterprise()))
 		                   .orElseThrow()
 		                   .getValue();
 		return UUID.fromString(value);
@@ -206,34 +192,34 @@ public class InvolvedParty
 	}
 	
 	@Override
-	protected InvolvedPartySecurityToken configureDefaultsForNewToken(InvolvedPartySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected InvolvedPartySecurityToken configureDefaultsForNewToken(InvolvedPartySecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 	
 	@Override
-	public void configureForClassification(InvolvedPartyXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(InvolvedPartyXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setInvolvedPartyID(this);
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setResourceItemID(secondary);
 		linkTable.setInvolvedPartyID(this);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(InvolvedPartyXResourceItem linkTable, InvolvedParty primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setResourceItemID(secondary);
 		linkTable.setInvolvedPartyID(this);
 	}
 	
 	@Override
-	public void configureAddressLinkValue(InvolvedPartyXAddress linkTable, InvolvedParty primary, Address secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureAddressLinkValue(InvolvedPartyXAddress linkTable, InvolvedParty primary, Address secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setInvolvedPartyID(this);
 		linkTable.setAddressID(secondary);
@@ -243,7 +229,7 @@ public class InvolvedParty
 	public IIdentificationType<?> stringToIdentificationType(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (IIdentificationType<?>) service.findIdentificationType(typeName, system.getEnterprise(), identityToken);
+		return (IIdentificationType<?>) service.findIdentificationType(typeName, system, identityToken);
 	}
 	
 	@Override
@@ -260,7 +246,7 @@ public class InvolvedParty
 	public INameType<?> stringToNameType(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (INameType<?>) service.findNameType(typeName, system.getEnterprise(), identityToken);
+		return (INameType<?>) service.findNameType(typeName, system, identityToken);
 	}
 	
 	@Override
@@ -277,14 +263,14 @@ public class InvolvedParty
 	public ITypeValue<?> stringToIPTypesType(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (ITypeValue<?>) service.findType(typeName, system.getEnterprise(), identityToken);
+		return (ITypeValue<?>) service.findType(typeName, system, identityToken);
 	}
 	
 	@Override
 	public InvolvedPartyType stringToIPTypesSecondary(String typeName, ISystems<?> system, UUID... identityToken)
 	{
 		IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-		return (InvolvedPartyType) service.findType(typeName, system.getEnterprise(), identityToken);
+		return (InvolvedPartyType) service.findType(typeName, system, identityToken);
 	}
 	
 	@Override
@@ -347,11 +333,11 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureAddableRule(InvolvedPartyXRules linkTable, InvolvedParty primary, Rules secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureAddableRule(InvolvedPartyXRules linkTable, InvolvedParty primary, Rules secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setInvolvedPartyID(primary);
 		linkTable.setRulesID(secondary);
-		linkTable.setEnterpriseID((Enterprise) enterprise);
+		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
 		linkTable.setValue(value);
 		linkTable.setClassificationID((Classification) classificationValue);
 	}

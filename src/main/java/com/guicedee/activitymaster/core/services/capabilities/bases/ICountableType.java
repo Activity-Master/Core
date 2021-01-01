@@ -15,6 +15,7 @@ import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public interface ICountableType<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification, system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOfAll(typeValue, classificationValue.getName(), system, identityToken) > 0;
 	}
@@ -43,7 +44,7 @@ public interface ICountableType<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification, system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOfAll(typeValue.classificationValue(), classificationValue.getName(), value, system, identityToken) > 0;
 	}
@@ -62,7 +63,7 @@ public interface ICountableType<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification, system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOf(typeValue, classificationValue.getName(), system, identityToken) > 0;
 	}
@@ -72,11 +73,11 @@ public interface ICountableType<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOf(typeValue, classificationValue, value, system, identityToken) > 0;
 	}
-
+	
 	
 	default long numberOf(String typeValue, String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
@@ -106,14 +107,14 @@ public interface ICountableType<P extends WarehouseCoreTable,
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) null, value)
 		                             .withClassification(classification)
 		                             .withType(typeValue, system, identityToken)
-		                             .inActiveRange(system.getEnterprise(),identityToken)
+		                             .inActiveRange(system.getEnterprise(), identityToken)
 		                             .inDateRange()
-		                             .canRead(system.getEnterprise(), identityToken)
+		                             .canRead(system, identityToken)
 		                             .getCount();
 	}
 	
@@ -122,7 +123,7 @@ public interface ICountableType<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification, system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOf(typeValue.classificationValue(), classificationValue.getName(), value, system, identityToken);
 	}
@@ -132,7 +133,7 @@ public interface ICountableType<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification, system.getEnterprise(), identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOfAll(typeValue.classificationValue(), classificationValue.getName(), null, system, identityToken);
 	}
@@ -147,10 +148,11 @@ public interface ICountableType<P extends WarehouseCoreTable,
 	}
 	
 	default long numberOfAll(T typeValue, String classificationValue, ISystems<?> system, UUID... identityToken)
-	{if (classificationValue == null)
 	{
-		classificationValue = Classifications.NoClassification.classificationValue();
-	}
+		if (classificationValue == null)
+		{
+			classificationValue = Classifications.NoClassification.classificationValue();
+		}
 		return numberOfAll(typeValue.classificationValue(), classificationValue, null, system, identityToken);
 	}
 	
@@ -163,7 +165,7 @@ public interface ICountableType<P extends WarehouseCoreTable,
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) null, value)
 		                             .withClassification(classification)

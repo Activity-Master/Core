@@ -74,7 +74,7 @@ public class EventXResourceItem
 	}
 
 	@Override
-	protected EventXResourceItemSecurityToken configureDefaultsForNewToken(EventXResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected EventXResourceItemSecurityToken configureDefaultsForNewToken(EventXResourceItemSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -10,65 +10,99 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+
 import java.util.UUID;
 
 public interface IClassificationService<J extends IClassificationService<J>>
 {
-	IClassification<?> create(IClassificationValue<?> concept,
-	                          ISystems<?> system, IClassificationValue<?> parent,
-	                          UUID... identityToken);
-
-	IClassification<?> create(IClassificationValue<?> concept,
-	                          ISystems<?> system,
-	                          UUID... identityToken);
-
-	IClassification<?> create(IClassificationValue<?> concept,
-	                          ISystems<?> system,
-	                          Short sequenceNumber, UUID... identityToken);
-
-	IClassification<?> create(IClassificationValue<?> concept,
-	                          ISystems<?> system,
-	                          Short sequenceNumber, IClassificationValue<?> parent, UUID... identityToken);
-
-	IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
-	                          ISystems<?> system,
-	                          Short sequenceNumber, IClassificationValue<?> parent, UUID... identityToken);
-
-	IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
-							  ISystems<?> system,
-							  Short sequenceNumber, String parent, UUID... identityToken);
-
-	IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
-							  ISystems<?> system,
-							  Short sequenceNumber, IClassification<?> parent, UUID... identityToken);
+	IClassification<?> create(IClassificationValue<?> name,
+	                          ISystems<?> system, UUID... identityToken);
 	
+	IClassification<?> create(IClassificationValue<?> name,
+	                          ISystems<?> system, IClassificationValue<?> parentName, UUID... identityToken);
+	
+	IClassification<?> create(String name, String description, String concept,
+	                          ISystems<?> system, Integer sequenceOrder, String parentName, UUID... identityToken);
+	
+	IClassification<?> create(IClassificationValue<?> name,
+	                          ISystems<?> system, Integer sequenceOrder, IClassificationValue<?> parentName, UUID... identityToken);
+	
+	IClassification<?> create(IClassificationValue<?> name,
+	                          ISystems<?> system, String parentName, UUID... identityToken);
+	
+	IClassification<?> create(IClassificationValue<?> name,
+	                          ISystems<?> system, Integer sequenceNumber, UUID... identityToken);
+	
+	IClassification<?> create(String name,
+	                          ISystems<?> system, UUID... identityToken);
+	
+	IClassification<?> create(String name, String description,
+	                          ISystems<?> system, UUID... identityToken);
+	
+	IClassification<?> create(String name, String description, String conceptName,
+	                          ISystems<?> system, UUID... identityToken);
+	
+	IClassification<?> create(String classificationName, String classificationDescription, String conceptName, ISystems<?> system, Integer sequenceNumber, IClassificationValue<?> parentClass, UUID... identityToken);
+	
+	IClassification<?> create(String name, String description, String conceptName,
+	                          ISystems<?> system,
+	                          Integer sequenceNumber, UUID... identityToken);
+	
+	/*IClassification<?> create(IClassificationValue<?> concept,
+								  ISystems<?> system, IClassificationValue<?> parent,
+								  UUID... identityToken);
+	
+		IClassification<?> create(IClassificationValue<?> concept,
+								  ISystems<?> system,
+								  UUID... identityToken);
+	
+		IClassification<?> create(IClassificationValue<?> concept,
+								  ISystems<?> system,
+								  Short sequenceNumber, UUID... identityToken);
+	
+		IClassification<?> create(IClassificationValue<?> concept,
+								  ISystems<?> system,
+								  Short sequenceNumber, IClassificationValue<?> parent, UUID... identityToken);
+	
+		IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
+								  ISystems<?> system,
+								  Short sequenceNumber, IClassificationValue<?> parent, UUID... identityToken);
+	
+		IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
+								  ISystems<?> system,
+								  Short sequenceNumber, String parent, UUID... identityToken);
+	*/
+	IClassification<?> create(String name, String description, String conceptName,
+	                          ISystems<?> system,
+	                          Integer sequenceNumber, IClassification<?> parent, UUID... identityToken);
+
+	
+/*
 	IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
 	                          IEnterprise<?> system,
 	                          Short sequenceNumber, IClassification<?> parent, UUID... identityToken);
+*/
 
-	IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
+/*	IClassification<?> create(String name, String description, IClassificationDataConceptValue<?> conceptName,
 							  ISystems<?> system,
 							  Short sequenceNumber, UUID... identityToken);
-	
-	IClassification<?> find(IClassificationValue<?> name, ISystems<?> system, UUID... identityToken);
-	
-	@SuppressWarnings("Duplicates")
-    IClassification<?> find(IClassificationValue<?> name, IEnterprise<?> enterprise, UUID... identityToken);
-	
-	//@CacheResult(cacheName = "ClassificationFindWithSimpleString")
-	IClassification<?> find( String name, ISystems<?> system, UUID... identityToken);
-	
-	IClassification<?> find(String name, IEnterprise<?> enterprise, UUID... identityToken);
-	
-	IClassification<?> findOrCreate( String name, IEnterprise<?> enterprise, UUID... identityToken);
-	
-	IClassification<?> find(String name, IClassificationDataConcept<?> concept, IEnterprise<?> enterprise, UUID... identityToken);
+	*/
 
-    IClassification<?> find(String name, IClassificationDataConceptValue<?> concept, IEnterprise<?> enterprise, UUID... identityToken);
-
-    IClassification<?> getHierarchyType(IEnterprise<?> enterprise, UUID... identityToken);
+//	IClassification<?> findOrCreate( String name, ISystems<?> system, UUID... identityToken);
 	
-	IClassification<?> getNoClassification(IEnterprise<?> enterprise, UUID... identityToken);
+	@CacheResult(cacheName = "ClassificationFindWithSimpleString")
+	IClassification<?> find(@CacheKey String name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken);
 	
-	IClassification<?> getIdentityType(IEnterprise<?> enterprise, UUID... identityToken);
+	@CacheResult(cacheName = "ClassificationFindWithSimpleString")
+	IClassification<?> find(@CacheKey IClassificationValue<?> name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken);
+	
+	IClassification<?> find(String name, IClassificationDataConcept<?> concept, ISystems<?> system, UUID... identityToken);
+	
+	IClassification<?> find(String name, String concept, ISystems<?> system, UUID... identityToken);
+	
+	IClassification<?> getHierarchyType(ISystems<?> system, UUID... identityToken);
+	
+	IClassification<?> getNoClassification(ISystems<?> system, UUID... identityToken);
+	
+	IClassification<?> getIdentityType(ISystems<?> system, UUID... identityToken);
 }

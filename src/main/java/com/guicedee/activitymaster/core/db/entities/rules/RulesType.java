@@ -111,7 +111,7 @@ public class RulesType
 	}
 	
 	@Override
-	protected RulesTypeSecurityToken configureDefaultsForNewToken(RulesTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected RulesTypeSecurityToken configureDefaultsForNewToken(RulesTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
@@ -220,7 +220,7 @@ public class RulesType
 	}
 	
 	@Override
-	public void configureForClassification(RulesTypeXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(RulesTypeXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setRulesTypeID(this);
 	}

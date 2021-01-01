@@ -77,7 +77,7 @@ public class InvolvedPartyXProductType
 	}
 	
 	@Override
-	protected InvolvedPartyXProductTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXProductTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected InvolvedPartyXProductTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXProductTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

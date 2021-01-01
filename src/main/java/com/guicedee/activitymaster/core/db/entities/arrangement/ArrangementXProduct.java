@@ -80,7 +80,7 @@ public class ArrangementXProduct
 	}
 
 	@Override
-	protected ArrangementXProductSecurityToken configureDefaultsForNewToken(ArrangementXProductSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ArrangementXProductSecurityToken configureDefaultsForNewToken(ArrangementXProductSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

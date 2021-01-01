@@ -108,7 +108,7 @@ public class ArrangementType
 	}
 	
 	@Override
-	protected ArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementTypeSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
@@ -200,7 +200,7 @@ public class ArrangementType
 	}
 	
 	@Override
-	public void configureForClassification(ArrangementTypeXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(ArrangementTypeXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setArrangementTypeID(this);
 	}

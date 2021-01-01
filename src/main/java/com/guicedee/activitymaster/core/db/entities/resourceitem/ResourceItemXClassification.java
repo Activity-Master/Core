@@ -71,7 +71,7 @@ public class ResourceItemXClassification
 	}
 
 	@Override
-	protected ResourceItemXClassificationSecurityToken configureDefaultsForNewToken(ResourceItemXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ResourceItemXClassificationSecurityToken configureDefaultsForNewToken(ResourceItemXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

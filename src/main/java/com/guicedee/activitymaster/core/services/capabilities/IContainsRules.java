@@ -45,7 +45,7 @@ public interface IContainsRules<P extends WarehouseCoreTable,
 		L, R>
 
 {
-	void configureAddableRule(Q linkTable, P primary, S secondary, C classificationValue, String value, IEnterprise<?> enterprise);
+	void configureAddableRule(Q linkTable, P primary, S secondary, C classificationValue, String value, ISystems<?> system);
 	
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -82,38 +82,32 @@ public interface IContainsRules<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findAddableTableTypeRule());
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
-		IClassification<?> classification = classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		
-		ISystems<?> originatingSystem = GuiceContext.get(SystemsService.class)
-		                                            .getActivityMaster(system.getEnterprise());
-		if (originalSystemID != null)
-		{
-			originatingSystem = originalSystemID;
-		}
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(Strings.nullToEmpty(value));
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID((Systems) system);
 		tableForClassification.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		tableForClassification.setEffectiveFromDate(effectiveFromDate);
 		tableForClassification.setEffectiveToDate(effectiveToDate);
-		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
+		tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
 		tableForClassification.setClassificationID((Classification) classification);
 		
 		configureAddableRule(tableForClassification, (P) this,
 				(S)typeAdd,
-				(C) classification, value, originatingSystem.getEnterpriseID());
+				(C) classification, value, system);
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
 				.isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			tableForClassification.createDefaultSecurity(system, identityToken);
 		}
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
-			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, originatingSystem, identityToken);
+			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, system, identityToken);
 		}
 		return tableForClassification;
 	}
@@ -207,7 +201,7 @@ public interface IContainsRules<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findAddableTableTypeRule());
 		S sType = (S) type;
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationName, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findTypeQueryRule(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{
@@ -303,7 +297,7 @@ public interface IContainsRules<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findAddableTableTypeRule());
 		S sType = (S) type;
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.findOrCreate(classificationName, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findTypeQueryRule(searchValue, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
 		if (!exists)
 		{
@@ -377,91 +371,91 @@ public interface IContainsRules<P extends WarehouseCoreTable,
 		                             .canCreate(system.getEnterprise(), identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, ISystems<?> system, UUID... identityToken)
 	{
-		return findRule(classification, null, enterprise, identityToken);
+		return findRule(classification, null, system, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, ISystems<?> system, UUID... identityToken)
 	{
-		return findRule(classification.getName(), value, enterprise, false, false, identityToken);
+		return findRule(classification.getName(), value, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification, null, enterprise, false, false, identityToken);
+		return findRule(classification, null, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification, searchValue, enterprise, false, false, identityToken);
+		return findRule(classification, searchValue, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification.getName(), value, enterprise, first, false, identityToken);
+		return findRule(classification.getName(), value, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification, null, enterprise, first, false, identityToken);
+		return findRule(classification, null, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification, searchValue, enterprise, first, false, identityToken);
+		return findRule(classification, searchValue, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(C classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification.getName(), value, enterprise, first, latest, identityToken);
+		return findRule(classification.getName(), value, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification, null, enterprise, first, latest, identityToken);
+		return findRule(classification, null, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification, searchValue, enterprise, first, latest, identityToken);
+		return findRule(classification, searchValue, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRuleFirst(C classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRuleFirst(C classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRule(classification.getName(), searchValue, enterprise, true, false, identityToken);
+		return findRule(classification.getName(), searchValue, system, true, false, identityToken);
 	}
 	
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRuleFirst(C classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRuleFirst(C classification, String searchValue, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findRule(classification.getName(), searchValue, enterprise, true, latest, identityToken);
+		return findRule(classification.getName(), searchValue, system, true, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRule(String classification, String searchValue, ISystems<?> system, boolean first, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findQueryRelationshipTableTypeRules());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system, identityToken)
 				                   .withClassification(iClassification)
 				                   .withValue(searchValue)
 				                   .inDateRange()
-				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .withEnterprise(system)
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -472,47 +466,43 @@ public interface IContainsRules<P extends WarehouseCoreTable,
 	}
 	
 	
-	default List<IRelationshipValue<L, R, ?>> findRulesAll(C classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(C classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRulesAll(classification.getName(), null, enterprise, latest, identityToken);
+		return findRulesAll(classification.getName(), null, system, latest, identityToken);
 	}
+
 	
-	default List<IRelationshipValue<L, R, ?>> findRulesAll(C classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(C classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findRulesAll(classification.getName(), value, originatingSystem.getEnterprise(), latest, identityToken);
+		return findRulesAll(classification.getName(), value, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findRulesAll(C classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return findRulesAll(classification.getName(), value, enterprise, latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		
-		return findRulesAll(classification, null, enterprise, latest, identityToken);
+		return findRulesAll(classification, null, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
-		return findRulesAll(classification, value, enterprise, latest, identityToken);
+		return findRulesAll(classification, value, system, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default @NotNull List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, String searchValue, IEnterprise<?> enterprise, boolean latest, UUID... identityToken)
+	default @NotNull List<IRelationshipValue<L, R, ?>> findRulesAll(String classification, String searchValue, ISystems<?> system, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findQueryRelationshipTableTypeRules());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system, identityToken)
 				                   .withValue(searchValue)
 				                   .withClassification(iClassification)
 				                   .inDateRange()
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (latest)
 		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
 		return (List) queryBuilderRelationshipClassification.getAll();

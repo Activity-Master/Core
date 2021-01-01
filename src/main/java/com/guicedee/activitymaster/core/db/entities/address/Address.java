@@ -129,14 +129,14 @@ public class Address
 	}
 	
 	@Override
-	protected AddressSecurityToken configureDefaultsForNewToken(AddressSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected AddressSecurityToken configureDefaultsForNewToken(AddressSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 	
 	@Override
-	public void configureForClassification(AddressXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(AddressXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setAddressID(this);
 	}
@@ -149,14 +149,14 @@ public class Address
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(AddressXResourceItem linkTable, Address primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(AddressXResourceItem linkTable, Address primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setAddressID(this);
 		linkTable.setResourceItemID(secondary);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(AddressXResourceItem linkTable, Address primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(AddressXResourceItem linkTable, Address primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setAddressID(this);
 		linkTable.setResourceItemID(secondary);

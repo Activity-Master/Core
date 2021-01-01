@@ -5,6 +5,7 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderDefa
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -43,20 +44,20 @@ public interface IHasClassificationQueryBuilder<J extends QueryBuilderDefault<J,
 		return (J) this;
 	}
 	
-	default J withClassification(IClassificationValue<?> classification, IEnterprise<?> enterprise)
+	default J withClassification(IClassificationValue<?> classification, ISystems<?> system)
 	{
 		IClassificationService<?> service = GuiceContext.get(IClassificationService.class);
-		IClassification<?> classy = service.find(classification, enterprise);
+		IClassification<?> classy = service.find(classification, system);
 		if (classification != null)
 		{ where(this.<E, Classification>getAttribute("classificationID"), Equals, (Classification) classy); }
 		//noinspection unchecked
 		return (J) this;
 	}
 	
-	default J withClassification(String classification, IEnterprise<?> enterprise)
+	default J withClassification(String classification, ISystems<?> system)
 	{
 		IClassificationService<?> service = GuiceContext.get(IClassificationService.class);
-		IClassification<?> classy = service.find(classification, enterprise);
+		IClassification<?> classy = service.find(classification, system);
 		if (classification != null)
 		{ where(this.<E, Classification>getAttribute("classificationID"), Equals, (Classification) classy); }
 		//noinspection unchecked

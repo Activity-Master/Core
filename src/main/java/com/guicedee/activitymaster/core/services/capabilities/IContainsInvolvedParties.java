@@ -34,128 +34,101 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		J extends IContainsInvolvedParties<P, S, Q, T, L, R, J>>
 {
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T addressClassification, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, ISystems<?> system, UUID... identityToken)
 	{
-		return findInvolvedParty(addressClassification, null, originatingSystem, identityToken);
+		return findInvolvedParty(classification, null, system, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return findInvolvedParty(classification, null, enterprise, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, value, enterprise, false, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, value, system, false, false, identityToken);
 	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		
-		return findInvolvedParty(iClassification, searchValue, iClassification.getEnterprise(), false, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, null, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, null, enterprise, false, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, searchValue, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, searchValue, enterprise, false, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, value, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, value, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, null, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, String searchValue, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, null, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, searchValue, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, String searchValue, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, searchValue, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, value, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, value, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, null, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, String searchValue, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, null, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, searchValue, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(String classification, String searchValue, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(T classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, searchValue, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, searchValue, system, true, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(T classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(T classification, String searchValue, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedParty(iClassification, searchValue, originatingSystem.getEnterprise(), true, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(T classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, searchValue, enterprise, true, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(T classification, String searchValue, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedParty(iClassification, searchValue, originatingSystem.getEnterprise(), true, latest, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(T classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedParty(iClassification, searchValue, enterprise, true, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedParty(iClassification, searchValue, system, true, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(IClassification<?> classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(IClassification<?> classification, String searchValue, ISystems<?> system, boolean first, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(this.findInvolvedPartyQueryRelationshipTableType());
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system, identityToken)
 				                   .withClassification(classification)
 				                   .withValue(searchValue)
 				                   .inDateRange()
-				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .withEnterprise(system)
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -165,102 +138,74 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		return (Optional) queryBuilderRelationshipClassification.get();
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedPartyAll(iClassification, null, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedPartyAll(iClassification, null, system, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedPartyAll(iClassification, null, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedPartyAll(iClassification, null, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedPartyAll(iClassification, null, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedPartyAll(iClassification, value, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
+		return findInvolvedPartyAll(iClassification, value, originatingSystem, false, identityToken);
 	}
-	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedPartyAll(iClassification, value, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedPartyAll(iClassification, value, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedPartyAll(iClassification, value, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(String classification, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedPartyAll(iClassification, null, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
+		return findInvolvedPartyAll(iClassification, null, originatingSystem, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(String classification, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(String classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedPartyAll(iClassification, null, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedPartyAll(iClassification, null, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedPartyAll(iClassification, null, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(String classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedPartyAll(iClassification, value, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
+		return findInvolvedPartyAll(iClassification, value, originatingSystem, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(String classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findInvolvedPartyAll(iClassification, value, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findInvolvedPartyAll(iClassification, value, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findInvolvedPartyAll(iClassification, value, system, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default @NotNull List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(IClassification<?> classification, String searchValue, IEnterprise<?> enterprise, boolean latest, UUID... identityToken)
+	default @NotNull List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(IClassification<?> classification, String searchValue, ISystems<?> system, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(this.findInvolvedPartyQueryRelationshipTableType());
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system, identityToken)
 				                   .withValue(searchValue)
 				                   .withClassification(classification)
 				                   .inDateRange()
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (latest)
 		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
 		return (List) queryBuilderRelationshipClassification.getAll();
@@ -302,49 +247,44 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	
 	
 	@SuppressWarnings("unchecked")
-	default boolean hasInvolvedParty(IInvolvedPartyClassification<?> InvolvedPartyClassification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasInvolvedParty(IInvolvedPartyClassification<?> InvolvedPartyClassification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findInvolvedPartyQueryRelationshipTableType());
-		ISystems<?> activityMasterSystem = get(ISystemsService.class)
-				.getActivityMaster(enterprise);
 		Classification classification = (Classification) GuiceContext.get(ClassificationService.class)
 		                                                             .find(InvolvedPartyClassification,
-		                                                                   activityMasterSystem.getEnterpriseID(), identityToken);
+				                                                             system, identityToken);
 		return activityMasterIdentity.builder()
-		                             .findLink((P) this, (S) classification, null)
+		                             .findLink((P) this, (S) classification, value)
 		                             .inActiveRange(classification.getEnterpriseID())
 		                             .inDateRange()
-		                             .canRead(classification.getEnterpriseID(), identityToken)
+		                             .canRead(system, identityToken)
 		                             .getCount() > 0;
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q addInvolvedParty(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken)
+	default Q addInvolvedParty(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems<?> system, String value, UUID... identifyingToken)
 	{
-		ISystems<?> activityMasterSystem = get(ISystemsService.class)
-				.getActivityMaster(originatingSystem.getEnterpriseID(), identifyingToken);
-		
 		Classification classification = (Classification) get(ClassificationService.class).find(involvedPartyClassification,
-		                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
+		                                                                                       system, identifyingToken);
 		
 		InvolvedParty addy = new InvolvedParty();
 		Optional<InvolvedParty> InvolvedPartyExists = addy.builder()
 		                                                  .hasClassification(classification, value)
-		                                                  .withEnterprise(originatingSystem.getEnterpriseID())
+		                                                  .withEnterprise(system.getEnterpriseID())
 		                                                  .inDateRange()
 		                                                  .get();
 		if (InvolvedPartyExists.isEmpty())
 		{
 			addy.setEnterpriseID(classification.getEnterpriseID());
-			addy.setSystemID((Systems) activityMasterSystem);
-			addy.setOriginalSourceSystemID((Systems) activityMasterSystem);
+			addy.setSystemID((Systems) system);
+			addy.setOriginalSourceSystemID((Systems) system);
 			addy.setActiveFlagID(classification.getActiveFlagID());
 			addy.persist();
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				addy.createDefaultSecurity(activityMasterSystem, identifyingToken);
+				addy.createDefaultSecurity(system, identifyingToken);
 			}
-			addy.add(involvedPartyClassification, value, originatingSystem, identifyingToken);
+			addy.add(involvedPartyClassification, value, system, identifyingToken);
 		}
 		else
 		{
@@ -362,16 +302,16 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 			tableForClassification.setEnterpriseID(classification.getEnterpriseID());
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue(value);
-			tableForClassification.setSystemID((Systems) activityMasterSystem);
-			tableForClassification.setOriginalSourceSystemID((Systems) activityMasterSystem);
+			tableForClassification.setSystemID((Systems) system);
+			tableForClassification.setOriginalSourceSystemID((Systems) system);
 			tableForClassification.setActiveFlagID(classification.getActiveFlagID());
 			
-			setMyInvolvedPartyLinkValue(tableForClassification, (P) this, (S) addy, classification.getEnterpriseID());
+			setMyInvolvedPartyLinkValue(tableForClassification, (P) this, (S) addy, system);
 			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(activityMasterSystem, identifyingToken);
+				tableForClassification.createDefaultSecurity(system, identifyingToken);
 			}
 		}
 		else
@@ -383,32 +323,32 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	
 	
 	@SuppressWarnings("unchecked")
-	default Q addInvolvedParty(IInvolvedParty<?> addy, IInvolvedPartyClassification<?> iclassification, String value, ISystems<?> originatingSystem, UUID... identifyingToken)
+	default Q addInvolvedParty(IInvolvedParty<?> addy, IInvolvedPartyClassification<?> iclassification, String value, ISystems<?> system, UUID... identifyingToken)
 	{
 		Q tableForClassification = get(findInvolvedPartyQueryRelationshipTableType());
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) addy, value)
 		                                                         .inActiveRange(addy.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identifyingToken)
+		                                                         .canRead(system, identifyingToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
 			Classification classification = (Classification) get(ClassificationService.class).find(iclassification,
-			                                                                                       originatingSystem.getEnterpriseID(), identifyingToken);
+			                                                                                       system, identifyingToken);
 			
 			tableForClassification.setEnterpriseID((Enterprise) addy.getEnterpriseID());
-			tableForClassification.setSystemID((Systems) originatingSystem);
+			tableForClassification.setSystemID((Systems) system);
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue(value);
-			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+			tableForClassification.setOriginalSourceSystemID((Systems) system);
 			tableForClassification.setActiveFlagID((ActiveFlag) addy.getActiveFlagID());
-			setMyInvolvedPartyLinkValue(tableForClassification, (P) this, (S) addy, addy.getEnterpriseID());
+			setMyInvolvedPartyLinkValue(tableForClassification, (P) this, (S) addy, system);
 			tableForClassification.persist();
 			
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originatingSystem, identifyingToken);
+				tableForClassification.createDefaultSecurity(system, identifyingToken);
 			}
 		}
 		else
@@ -419,5 +359,5 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	}
 	
 	
-	void setMyInvolvedPartyLinkValue(Q classificationLink, P first, S involvedParty, IEnterprise<?> enterprise);
+	void setMyInvolvedPartyLinkValue(Q classificationLink, P first, S involvedParty, ISystems<?> system);
 }

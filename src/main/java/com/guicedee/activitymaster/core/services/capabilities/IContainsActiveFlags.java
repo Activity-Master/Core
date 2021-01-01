@@ -8,6 +8,5 @@ public interface IContainsActiveFlags<J extends IContainsActiveFlags<J>>
 {
 	IActiveFlag<?> getActiveFlagID();
 	
-	@NotNull String getOriginalSourceSystemUniqueID();
-	
+	J setActiveFlagID(IActiveFlag<?> activeFlagID);
 }

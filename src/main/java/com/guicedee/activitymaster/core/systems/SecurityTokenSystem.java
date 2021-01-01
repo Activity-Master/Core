@@ -84,22 +84,21 @@ public class SecurityTokenSystem
 		            .setDoubleCheckDisabled(true);
 	}
 
-	void createSecurityDefaults(IEnterpriseName<?> enterpriseName, ISystems<?> originatingSystem, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)
+	void createSecurityDefaults(IEnterpriseName<?> enterpriseName, ISystems<?> system, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)
 	{
 		ClassificationService service = GuiceContext.get(ClassificationService.class);
 
-		service.create(enterpriseName, originatingSystem, (short) 0, identityToken);
+		service.create(enterpriseName, system,  0, identityToken);
+		service.create(SecurityTokenClassifications.UserGroup, system,  1, Classifications.Security, identityToken);
+		service.create(SecurityTokenClassifications.User, system,  2, Classifications.Security, identityToken);
+		service.create(SecurityTokenClassifications.Guests, system,  2, Classifications.Security, identityToken);
+		service.create(SecurityTokenClassifications.Visitors, system,  2, Classifications.Security, identityToken);
+		service.create(SecurityTokenClassifications.Registered, system,  2, Classifications.Security, identityToken);
+		service.create(SecurityTokenClassifications.Application, system,  3, Classifications.Security, identityToken);
+		service.create(UserGroupSecurityTokenClassifications.System, system,  4, Classifications.Security, identityToken);
+		service.create(SecurityTokenClassifications.Plugin, system,  5, Classifications.Security, identityToken);
 
-		service.create(SecurityTokenClassifications.UserGroup, originatingSystem, (short) 1, Classifications.Security, identityToken);
-		service.create(SecurityTokenClassifications.User, originatingSystem, (short) 2, Classifications.Security, identityToken);
-		service.create(SecurityTokenClassifications.Guests, originatingSystem, (short) 2, Classifications.Security, identityToken);
-		service.create(SecurityTokenClassifications.Visitors, originatingSystem, (short) 2, Classifications.Security, identityToken);
-		service.create(SecurityTokenClassifications.Registered, originatingSystem, (short) 2, Classifications.Security, identityToken);
-		service.create(SecurityTokenClassifications.Application, originatingSystem, (short) 3, Classifications.Security, identityToken);
-		service.create(UserGroupSecurityTokenClassifications.System, originatingSystem, (short) 4, Classifications.Security, identityToken);
-		service.create(SecurityTokenClassifications.Plugin, originatingSystem, (short) 5, Classifications.Security, identityToken);
-
-		service.create(SecurityTokenClassifications.Identity, originatingSystem, Classifications.Security);
+		service.create(SecurityTokenClassifications.Identity, system, Classifications.Security);
 
 		logProgress("Security Token Service", "Security Classifications Installed", 11, progressMonitor);
 	}
@@ -131,191 +130,191 @@ public class SecurityTokenSystem
 	{
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
 
-		SecurityTokenService system = GuiceContext.get(SecurityTokenService.class);
-		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		SecurityTokenService systemService = GuiceContext.get(SecurityTokenService.class);
+		ISystems<?> system = GuiceContext.get(SystemsService.class)
 		                                               .getActivityMaster(enterprise);
 
-		SecurityToken everyoneToken = (SecurityToken) system.create(
+		SecurityToken everyoneToken = (SecurityToken) systemService.create(
 				SecurityTokenClassifications.UserGroup,
 				UserGroupSecurityTokenClassifications.Everyone.classificationName(),
 				UserGroupSecurityTokenClassifications.Everyone.classificationDescription(),
-				activityMasterSystem);
-		SecurityToken everywhereToken = (SecurityToken) system.create(
+				system);
+		SecurityToken everywhereToken = (SecurityToken) systemService.create(
 				SecurityTokenClassifications.UserGroup,
 				UserGroupSecurityTokenClassifications.Everywhere.classificationName(),
 				UserGroupSecurityTokenClassifications.Everywhere.classificationDescription(),
-				activityMasterSystem);
-		SecurityToken administratorsToken = (SecurityToken) system.create(
+				system);
+		SecurityToken administratorsToken = (SecurityToken) systemService.create(
 				SecurityTokenClassifications.UserGroup,
 				UserGroupSecurityTokenClassifications.Administrators.classificationName(),
 				UserGroupSecurityTokenClassifications.Administrators.classificationDescription(),
-				activityMasterSystem);
-		SecurityToken usersGuestsToken = (SecurityToken) system.create(
+				system);
+		SecurityToken usersGuestsToken = (SecurityToken) systemService.create(
 				SecurityTokenClassifications.UserGroup,
 				SecurityTokenClassifications.Guests.classificationName(),
 				SecurityTokenClassifications.Guests.classificationDescription(),
-				activityMasterSystem);
-		SecurityToken usersGuestsVisitorsToken = (SecurityToken) system.create(
+				system);
+		SecurityToken usersGuestsVisitorsToken = (SecurityToken) systemService.create(
 				SecurityTokenClassifications.UserGroup,
 				SecurityTokenClassifications.Visitors.classificationName(),
 				SecurityTokenClassifications.Visitors.classificationDescription(),
-				activityMasterSystem);
-		SecurityToken usersGuestsRegisteredToken = (SecurityToken) system.create(
+				system);
+		SecurityToken usersGuestsRegisteredToken = (SecurityToken) systemService.create(
 				SecurityTokenClassifications.UserGroup,
 				SecurityTokenClassifications.Registered.classificationName(),
 				SecurityTokenClassifications.Registered.classificationDescription(),
-				activityMasterSystem);
+				system);
 
-		SecurityToken applicationToken = (SecurityToken) system.create(
+		SecurityToken applicationToken = (SecurityToken) systemService.create(
 				SecurityTokenClassifications.Application,
 				UserGroupSecurityTokenClassifications.Applications.classificationName(),
 				UserGroupSecurityTokenClassifications.Applications.classificationDescription(),
-				activityMasterSystem);
-		SecurityToken systemsToken = (SecurityToken) system.create(
+				system);
+		SecurityToken systemsToken = (SecurityToken) systemService.create(
 				UserGroupSecurityTokenClassifications.System,
 				UserGroupSecurityTokenClassifications.System.classificationName(),
 				UserGroupSecurityTokenClassifications.System.classificationDescription(),
-				activityMasterSystem);
+				system);
 
-		SecurityToken pluginToken = (SecurityToken) system.create(
+		SecurityToken pluginToken = (SecurityToken) systemService.create(
 				SecurityTokenClassifications.Plugin,
 				UserGroupSecurityTokenClassifications.Plugins.classificationName(),
 				UserGroupSecurityTokenClassifications.Plugins.classificationDescription(),
-				activityMasterSystem);
+				system);
 
-		SecurityToken activityMasterToken = (SecurityToken) system.create(
+		SecurityToken activityMasterToken = (SecurityToken) systemService.create(
 				UserGroupSecurityTokenClassifications.System,
-				"Activity Master System", "Defines the activity master as a system", activityMasterSystem);
+				"Activity Master System", "Defines the activity master as a system", system);
 
 		logProgress("Security Token Service", "Base Security Tokens", 11, progressMonitor);
 
-		activityMasterSystem.addOrReuse(SystemsClassifications.SystemIdentity,
+		system.addOrReuse(SystemsClassifications.SystemIdentity,
 		                                activityMasterToken.getSecurityToken(),
-		                                activityMasterSystem);
+		                                system);
 
-		system.link(rootToken, everyoneToken,
-		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
-		system.link(rootToken, everywhereToken,
-		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
-		system.link(everyoneToken, administratorsToken,
-		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
+		systemService.link(rootToken, everyoneToken,
+		            classificationService.find(SecurityTokenClassifications.UserGroup, system));
+		systemService.link(rootToken, everywhereToken,
+		            classificationService.find(SecurityTokenClassifications.UserGroup, system));
+		systemService.link(everyoneToken, administratorsToken,
+		            classificationService.find(SecurityTokenClassifications.UserGroup, system));
 	/*	link(everyoneToken, usersToken,
 		     classificationService.find(UserGroup, SecurityTokenXSecurityToken.class, activityMasterSystem));
 */
-		system.link(everyoneToken, usersGuestsToken,
-		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
-		system.link(usersGuestsToken, usersGuestsRegisteredToken,
-		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
-		system.link(usersGuestsToken, usersGuestsVisitorsToken,
-		            classificationService.find(SecurityTokenClassifications.UserGroup, enterprise));
+		systemService.link(everyoneToken, usersGuestsToken,
+		            classificationService.find(SecurityTokenClassifications.UserGroup, system));
+		systemService.link(usersGuestsToken, usersGuestsRegisteredToken,
+		            classificationService.find(SecurityTokenClassifications.UserGroup, system));
+		systemService.link(usersGuestsToken, usersGuestsVisitorsToken,
+		            classificationService.find(SecurityTokenClassifications.UserGroup, system));
 
-		system.link(rootToken, applicationToken,
-		            classificationService.find(SecurityTokenClassifications.Application, enterprise));
-		system.link(rootToken, systemsToken,
-		            classificationService.find(UserGroupSecurityTokenClassifications.System, enterprise));
-		system.link(rootToken, pluginToken,
-		            classificationService.find(SecurityTokenClassifications.Plugin, enterprise));
+		systemService.link(rootToken, applicationToken,
+		            classificationService.find(SecurityTokenClassifications.Application, system));
+		systemService.link(rootToken, systemsToken,
+		            classificationService.find(UserGroupSecurityTokenClassifications.System, system));
+		systemService.link(rootToken, pluginToken,
+		            classificationService.find(SecurityTokenClassifications.Plugin, system));
 
-		system.link(systemsToken, activityMasterToken,
-		            classificationService.find(UserGroupSecurityTokenClassifications.System, enterprise));
+		systemService.link(systemsToken, activityMasterToken,
+		            classificationService.find(UserGroupSecurityTokenClassifications.System, system));
 
 		logProgress("Security Token Service", "Security Hierarchy Confirmed", 11, progressMonitor);
 
 		//mark folders as unable to be deleted by anyone including administrators
-		system.grantAccessToToken(administratorsToken, rootToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(administratorsToken, everyoneToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(administratorsToken, administratorsToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(administratorsToken, applicationToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(administratorsToken, everywhereToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(administratorsToken, usersGuestsToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(administratorsToken, systemsToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(administratorsToken, pluginToken, true, true, false, true, activityMasterSystem);
+		systemService.grantAccessToToken(administratorsToken, rootToken, true, true, true, true, system);
+		systemService.grantAccessToToken(administratorsToken, everyoneToken, true, true, false, true, system);
+		systemService.grantAccessToToken(administratorsToken, administratorsToken, true, true, false, true, system);
+		systemService.grantAccessToToken(administratorsToken, applicationToken, true, true, false, true, system);
+		systemService.grantAccessToToken(administratorsToken, everywhereToken, true, true, true, true, system);
+		systemService.grantAccessToToken(administratorsToken, usersGuestsToken, true, true, true, true, system);
+		systemService.grantAccessToToken(administratorsToken, systemsToken, true, true, false, true, system);
+		systemService.grantAccessToToken(administratorsToken, pluginToken, true, true, false, true, system);
 
 		//Allow default access to everyone
-		system.grantAccessToToken(usersGuestsToken, rootToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsToken, everyoneToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsToken, administratorsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsToken, applicationToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsToken, everywhereToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsToken, usersGuestsToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsToken, systemsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsToken, pluginToken, false, false, false, false, activityMasterSystem);
+		systemService.grantAccessToToken(usersGuestsToken, rootToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsToken, everyoneToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsToken, administratorsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsToken, applicationToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsToken, everywhereToken, false, false, false, true, system);
+		systemService.grantAccessToToken(usersGuestsToken, usersGuestsToken, false, false, false, true, system);
+		systemService.grantAccessToToken(usersGuestsToken, systemsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsToken, pluginToken, false, false, false, false, system);
 
 		//Allow default access to everyone
-		system.grantAccessToToken(usersGuestsRegisteredToken, rootToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsRegisteredToken, everyoneToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsRegisteredToken, administratorsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsRegisteredToken, applicationToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsRegisteredToken, everywhereToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsRegisteredToken, usersGuestsToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsRegisteredToken, systemsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsRegisteredToken, pluginToken, false, false, false, false, activityMasterSystem);
+		systemService.grantAccessToToken(usersGuestsRegisteredToken, rootToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsRegisteredToken, everyoneToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsRegisteredToken, administratorsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsRegisteredToken, applicationToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsRegisteredToken, everywhereToken, false, false, false, true, system);
+		systemService.grantAccessToToken(usersGuestsRegisteredToken, usersGuestsToken, false, false, false, true, system);
+		systemService.grantAccessToToken(usersGuestsRegisteredToken, systemsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsRegisteredToken, pluginToken, false, false, false, false, system);
 
-		system.grantAccessToToken(usersGuestsVisitorsToken, rootToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsVisitorsToken, everyoneToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsVisitorsToken, administratorsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsVisitorsToken, applicationToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsVisitorsToken, everywhereToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsVisitorsToken, usersGuestsToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsVisitorsToken, systemsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(usersGuestsVisitorsToken, pluginToken, false, false, false, false, activityMasterSystem);
+		systemService.grantAccessToToken(usersGuestsVisitorsToken, rootToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsVisitorsToken, everyoneToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsVisitorsToken, administratorsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsVisitorsToken, applicationToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsVisitorsToken, everywhereToken, false, false, false, true, system);
+		systemService.grantAccessToToken(usersGuestsVisitorsToken, usersGuestsToken, false, false, false, true, system);
+		systemService.grantAccessToToken(usersGuestsVisitorsToken, systemsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(usersGuestsVisitorsToken, pluginToken, false, false, false, false, system);
 
 		//Apply default guest access right
-		system.grantAccessToToken(everyoneToken, rootToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, everyoneToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, administratorsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, applicationToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, everywhereToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, systemsToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, pluginToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, usersGuestsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, usersGuestsRegisteredToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everyoneToken, usersGuestsVisitorsToken, false, false, false, false, activityMasterSystem);
+		systemService.grantAccessToToken(everyoneToken, rootToken, false, false, false, true, system);
+		systemService.grantAccessToToken(everyoneToken, everyoneToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everyoneToken, administratorsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everyoneToken, applicationToken, false, false, false, true, system);
+		systemService.grantAccessToToken(everyoneToken, everywhereToken, true, true, false, true, system);
+		systemService.grantAccessToToken(everyoneToken, systemsToken, false, false, false, true, system);
+		systemService.grantAccessToToken(everyoneToken, pluginToken, false, false, false, true, system);
+		systemService.grantAccessToToken(everyoneToken, usersGuestsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everyoneToken, usersGuestsRegisteredToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everyoneToken, usersGuestsVisitorsToken, false, false, false, false, system);
 
-		system.grantAccessToToken(everywhereToken, rootToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, everyoneToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, administratorsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, applicationToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, systemsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, everywhereToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, pluginToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, usersGuestsToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, usersGuestsRegisteredToken, false, false, false, false, activityMasterSystem);
-		system.grantAccessToToken(everywhereToken, usersGuestsVisitorsToken, false, false, false, false, activityMasterSystem);
+		systemService.grantAccessToToken(everywhereToken, rootToken, false, false, false, true, system);
+		systemService.grantAccessToToken(everywhereToken, everyoneToken, false, false, false, true, system);
+		systemService.grantAccessToToken(everywhereToken, administratorsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everywhereToken, applicationToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everywhereToken, systemsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everywhereToken, everywhereToken, false, false, false, true, system);
+		systemService.grantAccessToToken(everywhereToken, pluginToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everywhereToken, usersGuestsToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everywhereToken, usersGuestsRegisteredToken, false, false, false, false, system);
+		systemService.grantAccessToToken(everywhereToken, usersGuestsVisitorsToken, false, false, false, false, system);
 
 		//Apply default application access right
-		system.grantAccessToToken(applicationToken, rootToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, everyoneToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, administratorsToken, true, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, applicationToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, everywhereToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, systemsToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, pluginToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, usersGuestsToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, usersGuestsRegisteredToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(applicationToken, usersGuestsVisitorsToken, true, true, true, true, activityMasterSystem);
+		systemService.grantAccessToToken(applicationToken, rootToken, false, false, false, true, system);
+		systemService.grantAccessToToken(applicationToken, everyoneToken, true, true, false, true, system);
+		systemService.grantAccessToToken(applicationToken, administratorsToken, true, false, false, true, system);
+		systemService.grantAccessToToken(applicationToken, applicationToken, true, true, false, true, system);
+		systemService.grantAccessToToken(applicationToken, everywhereToken, true, true, false, true, system);
+		systemService.grantAccessToToken(applicationToken, systemsToken, true, true, true, true, system);
+		systemService.grantAccessToToken(applicationToken, pluginToken, true, true, true, true, system);
+		systemService.grantAccessToToken(applicationToken, usersGuestsToken, true, true, true, true, system);
+		systemService.grantAccessToToken(applicationToken, usersGuestsRegisteredToken, true, true, true, true, system);
+		systemService.grantAccessToToken(applicationToken, usersGuestsVisitorsToken, true, true, true, true, system);
 		//Apply default systems access right
-		system.grantAccessToToken(systemsToken, rootToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, everyoneToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, administratorsToken, true, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, applicationToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, everywhereToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, systemsToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, pluginToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, usersGuestsToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, usersGuestsRegisteredToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, usersGuestsVisitorsToken, true, true, true, true, activityMasterSystem);
+		systemService.grantAccessToToken(systemsToken, rootToken, false, false, false, true, system);
+		systemService.grantAccessToToken(systemsToken, everyoneToken, true, true, false, true, system);
+		systemService.grantAccessToToken(systemsToken, administratorsToken, true, false, false, true, system);
+		systemService.grantAccessToToken(systemsToken, applicationToken, true, true, false, true, system);
+		systemService.grantAccessToToken(systemsToken, everywhereToken, true, true, false, true, system);
+		systemService.grantAccessToToken(systemsToken, systemsToken, true, true, true, true, system);
+		systemService.grantAccessToToken(systemsToken, pluginToken, true, true, true, true, system);
+		systemService.grantAccessToToken(systemsToken, usersGuestsToken, true, true, true, true, system);
+		systemService.grantAccessToToken(systemsToken, usersGuestsRegisteredToken, true, true, true, true, system);
+		systemService.grantAccessToToken(systemsToken, usersGuestsVisitorsToken, true, true, true, true, system);
 		//Apply default plugins access right
-		system.grantAccessToToken(pluginToken, rootToken, false, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(pluginToken, everyoneToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(pluginToken, administratorsToken, true, false, false, true, activityMasterSystem);
-		system.grantAccessToToken(pluginToken, applicationToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(systemsToken, everywhereToken, true, true, false, true, activityMasterSystem);
-		system.grantAccessToToken(pluginToken, systemsToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(pluginToken, pluginToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(pluginToken, usersGuestsToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(pluginToken, usersGuestsRegisteredToken, true, true, true, true, activityMasterSystem);
-		system.grantAccessToToken(pluginToken, usersGuestsVisitorsToken, true, true, true, true, activityMasterSystem);
+		systemService.grantAccessToToken(pluginToken, rootToken, false, false, false, true, system);
+		systemService.grantAccessToToken(pluginToken, everyoneToken, true, true, false, true, system);
+		systemService.grantAccessToToken(pluginToken, administratorsToken, true, false, false, true, system);
+		systemService.grantAccessToToken(pluginToken, applicationToken, true, true, false, true, system);
+		systemService.grantAccessToToken(systemsToken, everywhereToken, true, true, false, true, system);
+		systemService.grantAccessToToken(pluginToken, systemsToken, true, true, true, true, system);
+		systemService.grantAccessToToken(pluginToken, pluginToken, true, true, true, true, system);
+		systemService.grantAccessToToken(pluginToken, usersGuestsToken, true, true, true, true, system);
+		systemService.grantAccessToToken(pluginToken, usersGuestsRegisteredToken, true, true, true, true, system);
+		systemService.grantAccessToToken(pluginToken, usersGuestsVisitorsToken, true, true, true, true, system);
 
 		logProgress("Security Token Service", "Default Security Confirmed", 37, progressMonitor);
 	}
@@ -412,7 +411,7 @@ public class SecurityTokenSystem
 		{
 			logProgress("Security Token Service", "Checking - " +
 			                                      next.getClass()
-			                                          .getSimpleName(), progressMonitor);
+			                                          .getSimpleName(),0, progressMonitor);
 			next.createDefaultSecurity(system, identityToken);
 		}
 	}

@@ -16,14 +16,13 @@ public interface IClassificationDataConceptService<J extends IClassificationData
 	                                            String description,
 	                                            ISystems<?> system, UUID... identityToken);
 
-	IClassificationDataConcept<?> getGlobalConcept(IEnterprise<?> enterprise, UUID... identityToken);
+	IClassificationDataConcept<?> getGlobalConcept(ISystems<?> system, UUID... identityToken);
 
-	IClassificationDataConcept<?> find(IClassificationDataConceptValue<?> name, IEnterprise<?> enterprise, UUID... identityToken);
-	
-	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
-	ClassificationDataConcept find(@CacheKey String name, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken);
-	
-	IClassificationDataConcept<?> getNoConcept(IEnterprise<?> enterprise, UUID... identityToken);
+	IClassificationDataConcept<?> find(IClassificationDataConceptValue<?> name, ISystems<?> system, UUID... identityToken);
 
-	IClassificationDataConcept<?> getSecurityHierarchyConcept(IEnterprise<?> enterprise, UUID... identityToken);
+	ClassificationDataConcept find(String name, ISystems<?> system,UUID... identityToken);
+	
+	IClassificationDataConcept<?> getNoConcept(ISystems<?> system, UUID... identityToken);
+
+	IClassificationDataConcept<?> getSecurityHierarchyConcept(ISystems<?> system, UUID... identityToken);
 }

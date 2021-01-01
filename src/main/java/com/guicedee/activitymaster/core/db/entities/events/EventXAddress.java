@@ -81,7 +81,7 @@ public class EventXAddress
 	}
 
 	@Override
-	protected EventXAddressSecurityToken configureDefaultsForNewToken(EventXAddressSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected EventXAddressSecurityToken configureDefaultsForNewToken(EventXAddressSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -69,7 +69,7 @@ public class ArrangementXArrangementType
 	}
 	
 	@Override
-	protected ArrangementXArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementXArrangementTypeSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ArrangementXArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementXArrangementTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

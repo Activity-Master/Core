@@ -50,7 +50,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		Q relationshipTable = get(findProductTypeQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findLink(null,(S) byType)
@@ -59,7 +59,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 				                   .withValue(value)
 				                   .inDateRange()
 				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -77,35 +77,35 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> service = get(IClassificationService.class);
-		IClassification<?> classification = service.find(Classifications.NoClassification, system.getEnterprise(), identityToken);
+		IClassification<?> classification = service.find(Classifications.NoClassification, system, identityToken);
 		return findProductType(typeValue, (C) classification, null, system, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> service = get(IClassificationService.class);
-		IClassification<?> classification = service.find(Classifications.NoClassification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> classification = service.find(Classifications.NoClassification, originatingSystem, identityToken);
 		return findProductType(typeValue, (C) classification, value, originatingSystem, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(String typeValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> service = get(IClassificationService.class);
-		IClassification<?> classification = service.find(Classifications.NoClassification, system.getEnterprise(), identityToken);
+		IClassification<?> classification = service.find(Classifications.NoClassification, system, identityToken);
 		return findProductType(typeValue, classification, value, system, false, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(String typeValue, String classification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue, iClassification, value, system, false, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, C classification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, value, system, false, false, identityToken);
 	}
 	
@@ -113,49 +113,49 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, searchValue, system, false, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, C classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, value, system, first, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, String classification, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, null, system, first, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, String classification, String searchValue, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, searchValue, system, first, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, C classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, value, system, first, latest, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, String classification, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, null, system, first, latest, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductType(T typeValue, String classification, String searchValue, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, searchValue, system, first, latest, identityToken);
 	}
 	
@@ -163,14 +163,14 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findProductTypeFirst(String typeValue, String classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
 		return findProductType(typeValue, iClassification, searchValue, originatingSystem, true, false, identityToken);
 	}
 	
 	default Optional<IRelationshipValue<L, R, ?>> findProductTypeFirst(T typeValue, String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, searchValue, system, true, false, identityToken);
 	}
 	
@@ -178,7 +178,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findProductTypeFirst(T typeValue, C classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, searchValue, originatingSystem, true, false, identityToken);
 	}
 	
@@ -186,7 +186,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	default Optional<IRelationshipValue<L, R, ?>> findProductTypeFirst(T typeValue, C classification, String searchValue, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
 		return findProductType(typeValue.classificationValue(), iClassification, searchValue, originatingSystem, true, latest, identityToken);
 	}
 	
@@ -206,7 +206,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 				                   .withType(typeValue, system, identityToken)
 				                   .inDateRange()
 				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -219,49 +219,49 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(T typeValue, C classification, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
 		return findProductTypesAll(typeValue.classificationValue(), iClassification, null, originatingSystem, false, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(T typeValue, C classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductTypesAll(typeValue.classificationValue(), iClassification, null, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(T typeValue, C classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
 		return findProductTypesAll(typeValue.classificationValue(), iClassification, value, originatingSystem, false, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(T typeValue, C classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductTypesAll(typeValue.classificationValue(), iClassification, value, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(T typeValue, String classification, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
 		return findProductTypesAll(typeValue.classificationValue(), iClassification, null, originatingSystem, false, identityToken);
 	}
 
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(T typeValue, String classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductTypesAll(typeValue.classificationValue(), iClassification, null, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(T typeValue, String classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
 		return findProductTypesAll(typeValue.classificationValue(), iClassification, value, originatingSystem, false, identityToken);
 	}
 	
@@ -269,35 +269,35 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(T typeValue, String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductTypesAll(typeValue.classificationValue(), iClassification, value, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(String typeValue, String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductTypesAll(typeValue, iClassification, value, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(String typeValue, String classification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductTypesAll(typeValue, iClassification, value, system, false, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(String typeValue, String classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findProductTypesAll(typeValue, iClassification, null, system, false, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findProductTypesAll(String typeValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(Classifications.NoClassification, system.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(Classifications.NoClassification, system, identityToken);
 		return findProductTypesAll(typeValue, iClassification, null, system, false, identityToken);
 	}
 	
@@ -314,7 +314,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 				                   .withValue(searchValue)
 				                   .withClassification(classification)
 				                   .inDateRange()
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (latest)
 		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
 		return (List) queryBuilderRelationshipClassification.getAll();
@@ -396,13 +396,13 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		Q activityMasterIdentity = get(findProductTypesCountableQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
 		                             .withType(typeValue, system, identityToken)
 		                             .inActiveRange(enterprise)
 		                             .inDateRange()
-		                             .canRead(enterprise, identityToken)
+		                             .canRead(system, identityToken)
 		                             .getCount();
 	}
 	
@@ -431,7 +431,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	{
 		Q activityMasterIdentity = get(findProductTypesCountableQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterprise(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
 		                             .withType(typeValue, system, identityToken)
@@ -464,7 +464,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		ProductType classificationDataConcept = (ProductType) productType;
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem, identityToken);
 		
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		tableForClassification.setClassificationID(classification);
@@ -496,7 +496,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		                                                                                                 identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -553,16 +553,21 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 	@SuppressWarnings("unchecked")
 	default Q addOrReuseProductType(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
+		return addOrReuseProductType(classificationValue.classificationName(), classificationDataConceptType, value, originatingSystem, identityToken);
+	}
+	@SuppressWarnings("unchecked")
+	default Q addOrReuseProductType(String classificationValue, T classificationDataConceptType, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	{
 		Q tableForClassification = get(findProductTypeQueryRelationshipTableType());
 		IProductService<?> classificationDataConceptService = get(IProductService.class);
-		ProductType classificationDataConcept = (ProductType) classificationDataConceptService.findProductType(classificationDataConceptType, originatingSystem,
+		ProductType classificationDataConcept = (ProductType) classificationDataConceptService.findProductType(classificationDataConceptType.classificationName(), originatingSystem,
 		                                                                                                 identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classificationDataConcept, null)
+		                                                         .findLink((P) this, (S) classificationDataConcept, searchValue)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
@@ -574,13 +579,12 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		{
 			tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 			tableForClassification.setClassificationID(classification);
-			tableForClassification.setValue(value);
+			tableForClassification.setValue(searchValue);
 			tableForClassification.setSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-			//			configureInvolvedPartyIdentificationType(tableForClassification,(C) classification, (Q) classificationDataConcept, originatingSystem.getEnterpriseID());
-			configureProductTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, (C) classification, value, originatingSystem);
+			configureProductTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, (C) classification, searchValue, originatingSystem);
 			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -636,7 +640,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -676,7 +680,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -750,7 +754,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -811,7 +815,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -839,7 +843,7 @@ public interface IContainsProductTypes<P extends WarehouseCoreTable,
 		                                                         .withClassification(classification)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{

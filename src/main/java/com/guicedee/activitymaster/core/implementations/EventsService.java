@@ -19,6 +19,7 @@ import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
@@ -76,34 +77,34 @@ public class EventsService
 		}
 		else
 		{
-			return findEventType(eventType, originatingSystem.getEnterprise(), identityToken);
+			return findEventType(eventType, originatingSystem, identityToken);
 		}
 	}
 	
 	@Override
 	@CacheResult(cacheName = "EventTypes")
-	public IEventType<?> findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IEventType<?> findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		return new EventType().builder()
 		                      .withName(eventType.name())
-		                      .withEnterprise(enterprise)
-		                      .inActiveRange(enterprise, identityToken)
+		                      .withEnterprise(system)
+		                      .inActiveRange(system, identityToken)
 		                      .inDateRange()
-		                      .canRead(enterprise, identityToken)
+		                      .canRead(system, identityToken)
 		                      .get()
 		                      .orElseThrow();
 	}
 	
 	@Override
 	@CacheResult(cacheName = "EventTypesStrings")
-	public IEventType<?> findEventType(@CacheKey String eventType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public IEventType<?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		return new EventType().builder()
 		                      .withName(eventType)
-		                      .withEnterprise(enterprise)
-		                      .inActiveRange(enterprise, identityToken)
+		                      .withEnterprise(system)
+		                      .inActiveRange(system, identityToken)
 		                      .inDateRange()
-		                      .canRead(enterprise, identityToken)
+		                      .canRead(system, identityToken)
 		                      .get()
 		                      .orElseThrow();
 	}

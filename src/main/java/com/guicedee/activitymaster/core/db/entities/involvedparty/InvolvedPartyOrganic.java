@@ -67,7 +67,7 @@ public class InvolvedPartyOrganic
 	}
 
 	@Override
-	protected InvolvedPartyOrganicSecurityToken configureDefaultsForNewToken(InvolvedPartyOrganicSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected InvolvedPartyOrganicSecurityToken configureDefaultsForNewToken(InvolvedPartyOrganicSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -94,7 +94,7 @@ public class EventType
 	}
 
 	@Override
-	protected EventTypesSecurityToken configureDefaultsForNewToken(EventTypesSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected EventTypesSecurityToken configureDefaultsForNewToken(EventTypesSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -603,20 +603,21 @@ public class ActiveFlag
 		return (Class<ActiveFlagSecurityToken>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
 	}
 	
+	
 	@Override
-	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, ISystems<?> system, ISystems<?> originalSourceSystem)
 	{
-		stAdmin.setSystemID((Systems) activityMasterSystem);
-		stAdmin.setActiveFlagID(((Systems) activityMasterSystem).getActiveFlagID());
+		stAdmin.setSystemID((Systems) originalSourceSystem);
+		stAdmin.setActiveFlagID(((Systems) originalSourceSystem).getActiveFlagID());
 		stAdmin.setBase(this);
-		stAdmin.setOriginalSourceSystemID((Systems) activityMasterSystem);
+		stAdmin.setOriginalSourceSystemID((Systems) originalSourceSystem);
 		stAdmin.setOriginalSourceSystemUniqueID("");
-		stAdmin.setEnterpriseID((Enterprise) enterprise);
+		stAdmin.setEnterpriseID((Enterprise) system.getEnterprise());
 		return stAdmin;
 	}
 	
 	@Override
-	public void configureForClassification(ActiveFlagXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(ActiveFlagXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setActiveFlagID(this);
 	}

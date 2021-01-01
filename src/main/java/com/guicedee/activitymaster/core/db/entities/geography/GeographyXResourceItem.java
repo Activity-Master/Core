@@ -83,7 +83,7 @@ public class GeographyXResourceItem
 	}
 
 	@Override
-	protected GeographyXResourceItemSecurityToken configureDefaultsForNewToken(GeographyXResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected GeographyXResourceItemSecurityToken configureDefaultsForNewToken(GeographyXResourceItemSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

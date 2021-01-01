@@ -154,13 +154,13 @@ public class SecurityToken
 	}
 
 	@Override
-	public void configureForClassification(SecurityTokenXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(SecurityTokenXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setSecurityTokenID(this);
 	}
 
 	@Override
-	protected SecurityTokensSecurityToken configureDefaultsForNewToken(SecurityTokensSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected SecurityTokensSecurityToken configureDefaultsForNewToken(SecurityTokensSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		stAdmin.setBase(this);

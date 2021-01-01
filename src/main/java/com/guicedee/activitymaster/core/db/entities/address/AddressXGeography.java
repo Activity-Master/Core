@@ -77,7 +77,7 @@ public class AddressXGeography
 	}
 
 	@Override
-	protected AddressXGeographySecurityToken configureDefaultsForNewToken(AddressXGeographySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected AddressXGeographySecurityToken configureDefaultsForNewToken(AddressXGeographySecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -143,7 +143,7 @@ public class RulesService<J extends RulesService<J>>
 	@CacheResult(cacheName = "RulesTypes")
 	public IRulesType<?> findRulesTypes(@CacheKey IRulesTypeValue<?> rulesType, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		return findRulesTypes(rulesType.classificationValue(), system, identityToken);
+		return findRulesTypes(rulesType.classificationName(), system, identityToken);
 	}
 	
 	@Override
@@ -156,7 +156,7 @@ public class RulesService<J extends RulesService<J>>
 		                      .withEnterprise(enterprise)
 		                      .inActiveRange(enterprise, identityToken)
 		                      .inDateRange()
-		                      .canRead(enterprise, identityToken)
+		                      .canRead(system, identityToken)
 		                      .get()
 		                      .orElseThrow();
 	}
@@ -166,14 +166,14 @@ public class RulesService<J extends RulesService<J>>
 	{
 		Enterprise enterprise = (Enterprise) system.getEnterprise();
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classifications, enterprise, identityToken);
+		IClassification<?> classification = classificationService.find(classifications, system, identityToken);
 		@SuppressWarnings({"UnnecessaryLocalVariable", "rawtypes"})
 		List all = new RulesType().builder()
 		                          .withClassification((Classification) classification, value)
 		                          .withEnterprise(enterprise)
 		                          .inActiveRange(enterprise, identityToken)
 		                          .inDateRange()
-		                          .canRead(enterprise, identityToken)
+		                          .canRead(system, identityToken)
 		                          .getAll();
 		//noinspection unchecked
 		return all;
@@ -188,7 +188,7 @@ public class RulesService<J extends RulesService<J>>
 		                                .withEnterprise(system.getEnterpriseID())
 		                                .inActiveRange(system, identityToken)
 		                                .inDateRange()
-		                                .canRead(system.getEnterpriseID(), identityToken)
+		                                .canRead(system, identityToken)
 		                                .getAll()
 		                                .stream()
 		                                .map(RulesXRulesType::getRulesID)
@@ -205,7 +205,7 @@ public class RulesService<J extends RulesService<J>>
 		                                .withEnterprise(system.getEnterpriseID())
 		                                .inActiveRange(system, identityToken)
 		                                .inDateRange()
-		                                .canRead(system.getEnterpriseID(), identityToken)
+		                                .canRead(system, identityToken)
 		                                .getAll()
 		                                .stream()
 		                                .map(RulesXRulesType::getRulesTypeID)
@@ -222,7 +222,7 @@ public class RulesService<J extends RulesService<J>>
 		                              .withEnterprise(system.getEnterpriseID())
 		                              .inActiveRange(system, identityToken)
 		                              .inDateRange()
-		                              .canRead(system.getEnterpriseID(), identityToken)
+		                              .canRead(system, identityToken)
 		                              .getAll()
 		                              .stream()
 		                              .map(RulesXProduct::getRulesID)

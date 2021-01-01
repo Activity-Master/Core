@@ -35,16 +35,15 @@ public interface IArrangementsService<J extends IArrangementsService<J>>
 	
 	List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken);
 	
-	IArrangementType<?> find(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+	IArrangementType<?> find(IArrangementTypes<?> idType, ISystems<?> system, UUID... tokens);
+
+	IArrangementType<?> find(String idType, ISystems<?> system, UUID... tokens);
 	
-	@CacheResult(cacheName = "ArrangementArrangementTypeString")
-	IArrangementType<?> find(@CacheKey String idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens);
-	
-	IArrangement<?> find(UUID id, IEnterprise<?> enterprise, UUID... tokens);
+	IArrangement<?> find(UUID id, ISystems<?> system, UUID... tokens);
 	
 	IArrangement<?> find(UUID id);
 	
-	List<IArrangement<?>> findAll(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+	List<IArrangement<?>> findAll(IArrangementTypes<?> idType, ISystems<?> system, UUID... tokens);
 	
 	IArrangement<?> completeArrangement(IArrangement<?> arrangement, ISystems<?> system, UUID... identityToken);
 }

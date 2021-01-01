@@ -24,25 +24,6 @@ public abstract class QueryBuilderTable<J extends QueryBuilderTable<J, E, I, S>,
 	{
 		if (entity.getOriginalSourceSystemUniqueID() == null)
 		{ entity.setOriginalSourceSystemUniqueID(STRING_EMPTY); }
-		if (entity.getOriginalSourceSystemID() != null && entity.getEnterpriseID() == null)
-		{
-			entity.setEnterpriseID(entity.getOriginalSourceSystemID()
-			                             .getEnterpriseID());
-		}
-		if (entity.getEnterpriseID() != null)
-		{
-			IEnterprise<?> enterprise = entity.getEnterpriseID();
-			if (entity.getOriginalSourceSystemID() == null)
-			{
-				entity.setOriginalSourceSystemID((Systems) GuiceContext.get(SystemsService.class)
-				                                         .getActivityMaster(enterprise));
-			}
-			if (entity.getSystemID() == null)
-			{
-				entity.setSystemID((Systems) GuiceContext.get(SystemsService.class)
-				                                         .getActivityMaster(enterprise));
-			}
-		}
 		return super.onCreate(entity);
 	}
 }

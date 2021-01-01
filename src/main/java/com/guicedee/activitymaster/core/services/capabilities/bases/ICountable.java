@@ -25,86 +25,66 @@ public interface ICountable<P extends WarehouseCoreTable,
 		C extends IClassificationValue<?>,
 		L, R>
 {
-	default boolean hasBefore(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasBefore(C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
-		return numberOfAll(classificationValue.classificationName(), enterprise, identityToken) > 0;
+		return numberOfAll(classificationValue.classificationName(), system, identityToken) > 0;
 	}
 	
-	default boolean hasBefore(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasBefore(C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
-		return numberOfAll(classificationValue.classificationName(), value, enterprise, identityToken) > 0;
+		return numberOfAll(classificationValue.classificationName(), value, system, identityToken) > 0;
 	}
 	
-	default boolean hasBefore(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean hasBefore(String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOfAll(classificationValue, value, enterprise, identityToken) > 0;
+		return numberOfAll(classificationValue, value, system, identityToken) > 0;
 	}
 	
-	default boolean has(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean has(C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
-		return numberOf(classificationValue.classificationName(), enterprise, identityToken) > 0;
+		return numberOf(classificationValue.classificationName(), system, identityToken) > 0;
 	}
 	
-	default boolean has(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default boolean has(C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
-		return numberOf(classificationValue, value, enterprise, identityToken) > 0;
+		return numberOf(classificationValue, value, system, identityToken) > 0;
 	}
-	
-	default boolean has(C classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		if (classificationValue == null)
-		{
-			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification, originatingSystem.getEnterprise(), identityToken);
-		}
-		return numberOf(classificationValue.classificationName(), originatingSystem.getEnterprise(), identityToken) > 0;
-	}
-	
-	default boolean has(C classificationValue, String value, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		if (classificationValue == null)
-		{
-			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification, originatingSystem.getEnterprise(), identityToken);
-		}
-		return numberOf(classificationValue, value, originatingSystem.getEnterprise(), identityToken) > 0;
-	}
-	
-	default long numberOf(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+
+	default long numberOf(String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOf(classificationValue, null, enterprise, identityToken);
+		return numberOf(classificationValue, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOf(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOf(String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findCountableQueryRelationshipTableType());
 		
@@ -113,46 +93,46 @@ public interface ICountable<P extends WarehouseCoreTable,
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
-		                             .inActiveRange(enterprise)
+		                             .inActiveRange(system)
 		                             .inDateRange()
-		                             .canRead(enterprise, identityToken)
+		                             .canRead(system, identityToken)
 		                             .getCount();
 	}
 	
-	default long numberOf(C classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOf(C classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
-		return numberOf(classificationValue.classificationName(), value, enterprise, identityToken);
+		return numberOf(classificationValue.classificationName(), value, system, identityToken);
 	}
 	
-	default long numberOfAll(C classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfAll(C classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,enterprise, identityToken);
+			                                      .find(Classifications.NoClassification,system, identityToken);
 		}
-		return numberOfAll(classificationValue.classificationName(), null, enterprise, identityToken);
+		return numberOfAll(classificationValue.classificationName(), null, system, identityToken);
 	}
 	
-	default long numberOfAll(String classificationValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfAll(String classificationValue, ISystems<?> system, UUID... identityToken)
 	{
 		if (classificationValue == null)
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		return numberOfAll(classificationValue, null, enterprise, identityToken);
+		return numberOfAll(classificationValue, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOfAll(String classificationValue, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default long numberOfAll(String classificationValue, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findCountableQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
@@ -160,7 +140,7 @@ public interface ICountable<P extends WarehouseCoreTable,
 		{
 			classificationValue = Classifications.NoClassification.classificationValue();
 		}
-		Classification classification = (Classification) classificationService.find(classificationValue, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
 		                             .getCount();

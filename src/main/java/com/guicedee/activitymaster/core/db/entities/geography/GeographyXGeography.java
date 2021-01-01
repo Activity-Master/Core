@@ -80,7 +80,7 @@ public class GeographyXGeography
 	}
 
 	@Override
-	protected GeographyXGeographySecurityToken configureDefaultsForNewToken(GeographyXGeographySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected GeographyXGeographySecurityToken configureDefaultsForNewToken(GeographyXGeographySecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

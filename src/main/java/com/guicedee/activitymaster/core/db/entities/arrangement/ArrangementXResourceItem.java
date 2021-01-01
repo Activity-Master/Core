@@ -83,7 +83,7 @@ public class ArrangementXResourceItem
 	}
 
 	@Override
-	protected ArrangementXResourceItemSecurityToken configureDefaultsForNewToken(ArrangementXResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ArrangementXResourceItemSecurityToken configureDefaultsForNewToken(ArrangementXResourceItemSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

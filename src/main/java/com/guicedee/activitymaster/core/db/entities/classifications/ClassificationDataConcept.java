@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameD
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationDataConceptQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
@@ -44,7 +45,8 @@ public class ClassificationDataConcept
 		IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, IClassificationValue<?>, IClassificationDataConcept<?>, IResourceItem<?>, ClassificationDataConcept>,
 		IActivityMasterEntity<ClassificationDataConcept>,
 		IClassificationDataConcept<ClassificationDataConcept>,
-		IClassificationDataConceptValue
+		IClassificationDataConceptValue,
+		IContainsNameAndDescription<ClassificationDataConcept>
 {
 	
 	@Serial
@@ -126,27 +128,27 @@ public class ClassificationDataConcept
 	}
 	
 	@Override
-	protected ClassificationDataConceptSecurityToken configureDefaultsForNewToken(ClassificationDataConceptSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ClassificationDataConceptSecurityToken configureDefaultsForNewToken(ClassificationDataConceptSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		ClassificationDataConceptSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
 		token.setBase(this);
 		return token;
 	}
 	
-	public void configureForClassification(ClassificationDataConceptXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(ClassificationDataConceptXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setClassificationDataConceptID(this);
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(ClassificationDataConceptXResourceItem linkTable, ClassificationDataConcept primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(ClassificationDataConceptXResourceItem linkTable, ClassificationDataConcept primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setClassificationDataConceptID(this);
 		linkTable.setResourceItemID(secondary);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(ClassificationDataConceptXResourceItem linkTable, ClassificationDataConcept primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(ClassificationDataConceptXResourceItem linkTable, ClassificationDataConcept primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setClassificationDataConceptID(this);
 		linkTable.setResourceItemID(secondary);

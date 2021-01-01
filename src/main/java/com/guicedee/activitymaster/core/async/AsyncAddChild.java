@@ -2,7 +2,7 @@ package com.guicedee.activitymaster.core.async;
 
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsHierarchy;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class AsyncAddChild implements Runnable {
     @Getter@Setter
     private String value;
     @Getter@Setter
-    private IEnterprise<?> enterprise;
+    private ISystems<?> system;
     @Getter@Setter
     private UUID[] identityTokens;
 
@@ -34,13 +34,13 @@ public class AsyncAddChild implements Runnable {
         persist();
     }
 
-    public static AsyncAddChild getInstance(IContainsHierarchy<?,?,?,?,?> parent,IContainsHierarchy<?,?,?,?,?> child,String hierarchyValue, IEnterprise<?> enterprise,UUID[] identityToken,  Consumer<Throwable> throwableConsumer)
+    public static AsyncAddChild getInstance(IContainsHierarchy<?,?,?,?,?> parent, IContainsHierarchy<?,?,?,?,?> child, String hierarchyValue, ISystems<?> system, UUID[] identityToken, Consumer<Throwable> throwableConsumer)
     {
         AsyncAddChild ap = GuiceContext.get(AsyncAddChild.class);
         ap.setParent(parent);
         ap.setChild(child);
         ap.setValue(hierarchyValue);
-        ap.setEnterprise(enterprise);
+        ap.setSystem(system);
         ap.setIdentityTokens(identityToken);
         ap.setOnException(throwableConsumer);
         return ap;
@@ -51,7 +51,7 @@ public class AsyncAddChild implements Runnable {
     void persist()
     {
         try {
-            parent.addChild(child,value,enterprise,identityTokens);
+            parent.addChild(child,value, system,identityTokens);
         }catch (Throwable T)
         {
             if(onException != null)

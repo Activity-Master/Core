@@ -145,14 +145,14 @@ public class Geography
 	}
 	
 	@Override
-	protected GeographySecurityToken configureDefaultsForNewToken(GeographySecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected GeographySecurityToken configureDefaultsForNewToken(GeographySecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 	
 	@Override
-	public void configureForClassification(GeographyXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(GeographyXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setGeographyID(this);
 	}
@@ -169,14 +169,14 @@ public class Geography
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setGeographyID(this);
 		linkTable.setResourceItemID(secondary);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setGeographyID(this);
 		linkTable.setResourceItemID(secondary);

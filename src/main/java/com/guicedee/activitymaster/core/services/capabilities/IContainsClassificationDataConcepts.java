@@ -47,13 +47,13 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationService = get(IClassificationDataConceptService.class);
-		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationDataConceptType, originatingSystem,
 		                                                                                                  identityToken);
 		return (Optional<IRelationshipValue<P, S, ?>>) activityMasterIdentity.builder()
 		                                                                     .findLink((P) this, (S) classification, null)
 		                                                                     .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                                     .inDateRange()
-		                                                                     .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                     .canRead(originatingSystem, identityToken)
 		                                                                     .get();
 	}
 
@@ -79,14 +79,14 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationService = get(IClassificationDataConceptService.class);
-		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationDataConceptType, originatingSystem,
 		                                                                                                  identityToken);
 
 		return (Optional<Q>) activityMasterIdentity.builder()
 		                                           .findLink((P) this, (S) classification, null)
 		                                           .inActiveRange(originatingSystem.getEnterpriseID())
 		                                           .inDateRange()
-		                                           .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                           .canRead(originatingSystem, identityToken)
 		                                           .setReturnFirst(true)
 		                                           .get();
 	}
@@ -96,13 +96,13 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationService = get(IClassificationDataConceptService.class);
-		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationDataConceptType, originatingSystem,
 		                                                                                                  identityToken);
 		return (List<Q>) activityMasterIdentity.builder()
 		                                       .findLink((P) this, (S) classification, null)
 		                                       .inActiveRange(originatingSystem.getEnterpriseID())
 		                                       .inDateRange()
-		                                       .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                       .canRead(originatingSystem, identityToken)
 		                                       .getAll();
 	}
 
@@ -116,13 +116,13 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 	{
 		Q activityMasterIdentity = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationService = get(IClassificationDataConceptService.class);
-		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		ClassificationDataConcept classification = (ClassificationDataConcept) classificationService.find(classificationValue, originatingSystem, identityToken);
 
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(originatingSystem.getEnterpriseID())
 		                             .inDateRange()
-		                             .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                             .canRead(originatingSystem, identityToken)
 		                             .getCount();
 	}
 
@@ -133,10 +133,10 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem, identityToken);
 
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		tableForClassification.setClassificationID(classification);
@@ -165,10 +165,10 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem, identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -226,10 +226,10 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem, identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -272,7 +272,7 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
 		tableForClassification.setClassificationID((Classification) classificationValue);
@@ -299,14 +299,14 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -339,14 +339,14 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -411,14 +411,14 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -469,14 +469,14 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .withClassification(classification)
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -501,14 +501,14 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		IClassificationDataConceptService<?> classificationDataConceptService = get(IClassificationDataConceptService.class);
 		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) classificationDataConceptService.find(classificationDataConceptType,
-		                                                                                                                        originatingSystem.getEnterpriseID(), identityToken);
+		                                                                                                                        originatingSystem, identityToken);
 
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .withClassification(classification)
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -536,7 +536,7 @@ public interface IContainsClassificationDataConcepts<P extends WarehouseCoreTabl
 		                                                         .withClassification(classification)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{

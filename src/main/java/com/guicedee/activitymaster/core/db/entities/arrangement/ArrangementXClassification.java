@@ -76,7 +76,7 @@ public class ArrangementXClassification
 	}
 
 	@Override
-	protected ArrangementXClassificationSecurityToken configureDefaultsForNewToken(ArrangementXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ArrangementXClassificationSecurityToken configureDefaultsForNewToken(ArrangementXClassificationSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

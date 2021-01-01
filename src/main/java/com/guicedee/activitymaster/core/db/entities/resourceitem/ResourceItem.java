@@ -164,14 +164,14 @@ public class ResourceItem
 	}
 	
 	@Override
-	protected ResourceItemSecurityToken configureDefaultsForNewToken(ResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ResourceItemSecurityToken configureDefaultsForNewToken(ResourceItemSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 	
 	@Override
-	public void configureForClassification(ResourceItemXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(ResourceItemXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setResourceItemID(this);
 	}
@@ -320,6 +320,7 @@ public class ResourceItem
 	{
 		linkTable.setResourceItemID(this);
 		linkTable.setResourceItemTypeID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
 	}
 	
 	@Override
@@ -331,7 +332,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(ResourceItemXResourceItem linkTable, ResourceItem primary, ResourceItem secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemLinkValue(ResourceItemXResourceItem linkTable, ResourceItem primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setParentResourceItemID(primary);
 		linkTable.setChildResourceItemID(secondary);
@@ -341,7 +342,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void configureResourceItemAddable(ResourceItemXResourceItem linkTable, ResourceItem primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureResourceItemAddable(ResourceItemXResourceItem linkTable, ResourceItem primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setParentResourceItemID(primary);
 		linkTable.setChildResourceItemID(secondary);

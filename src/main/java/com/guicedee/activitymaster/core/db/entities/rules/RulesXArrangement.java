@@ -75,7 +75,7 @@ public class RulesXArrangement
 	}
 
 	@Override
-	protected RulesXArrangementsSecurityToken configureDefaultsForNewToken(RulesXArrangementsSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected RulesXArrangementsSecurityToken configureDefaultsForNewToken(RulesXArrangementsSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

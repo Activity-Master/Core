@@ -74,7 +74,7 @@ public class EventXRules
 	}
 	
 	@Override
-	protected EventXRulesSecurityToken configureDefaultsForNewToken(EventXRulesSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected EventXRulesSecurityToken configureDefaultsForNewToken(EventXRulesSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

@@ -76,7 +76,7 @@ public class ProductXResourceItem
 	}
 
 	@Override
-	protected ProductXResourceItemSecurityToken configureDefaultsForNewToken(ProductXResourceItemSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ProductXResourceItemSecurityToken configureDefaultsForNewToken(ProductXResourceItemSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

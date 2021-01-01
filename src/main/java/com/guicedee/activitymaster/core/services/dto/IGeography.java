@@ -15,8 +15,9 @@ public interface IGeography<J extends IGeography<J>>
 		extends IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, IGeography<?>, IClassification<?>, Geography>,
 		        IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IClassificationValue<?>, IGeography<?>, IResourceItem<?>, Geography>,
 		        IActivityMasterEntity<Geography>,
-		        IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView,IGeography<?>, IGeography<?>>,
+		        IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView, IGeography<?>, IGeography<?>>,
 		        IContainsActiveFlags<Geography>,
-		        IContainsNameAndDescription<Geography>
+		        IContainsNameAndDescription<Geography>,
+		        IContainsOriginalSystemIds<Geography>
 {
 }

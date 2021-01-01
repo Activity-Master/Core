@@ -63,14 +63,14 @@ public class ArrangementsService
 	                              LocalDateTime endCompletionDate,
 	                              UUID... identityToken)
 	{
-		ArrangementType tt = (ArrangementType) find(type, system.getEnterprise());
+		ArrangementType tt = (ArrangementType) find(type, system);
 		boolean exists = new ArrangementXArrangementType().builder()
 		                                                  .withValue(arrangementTypeValue)
 		                                                  .inActiveRange(system.getEnterpriseID(), identityToken)
 		                                                  .inDateRange()
 		                                                  .where(ArrangementXArrangementType_.type, Equals, tt)
 		                                                  .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
-		                                                  .withClassification(arrangementTypeClassification, system.getEnterprise())
+		                                                  .withClassification(arrangementTypeClassification, system)
 		                                                  .withEnterprise(system.getEnterprise())
 		                                                  .getCount() > 0;
 		if (exists)
@@ -81,7 +81,7 @@ public class ArrangementsService
 			                                        .inDateRange()
 			                                        .where(ArrangementXArrangementType_.type, Equals, tt)
 			                                        .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
-			                                        .withClassification(arrangementTypeClassification, system.getEnterprise())
+			                                        .withClassification(arrangementTypeClassification, system)
 			                                        .withEnterprise(system.getEnterprise())
 			                                        .get()
 			                                        .orElseThrow()
@@ -142,13 +142,12 @@ public class ArrangementsService
 			                .isSecurityEnabled())
 			{
 				
-				xr.createDefaultSecurity(get(ISystemsService.class)
-						.getActivityMaster(xr.getEnterpriseID(), identityToken), identityToken);
+				xr.createDefaultSecurity(system, identityToken);
 			}
 		}
 		else
 		{
-			return find(type, system.getEnterprise(), identityToken);
+			return find(type, system, identityToken);
 		}
 		return xr;
 	}
@@ -177,7 +176,7 @@ public class ArrangementsService
 	public List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, String value, ISystems<?> systems, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(arrType, systems.getEnterpriseID(), identityToken);
+		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
 		aqb.withEnterprise(systems.getEnterprise())
@@ -206,7 +205,7 @@ public class ArrangementsService
 	public List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(arrType, systems.getEnterpriseID(), identityToken);
+		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
 		aqb.withEnterprise(systems.getEnterprise())
@@ -252,43 +251,43 @@ public class ArrangementsService
 	
 	@CacheResult(cacheName = "ArrangementArrangementType")
 	@Override
-	public IArrangementType<?> find(@CacheKey IArrangementTypes<?> idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
+	public IArrangementType<?> find(@CacheKey IArrangementTypes<?> idType, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
 	{
 		ArrangementType xr = new ArrangementType();
 		return xr.builder()
 		         .withName(idType.classificationValue())
-		         .inActiveRange(enterprise, tokens)
+		         .inActiveRange(system, tokens)
 		         .inDateRange()
-		         .withEnterprise(enterprise)
-		         .canRead(enterprise, tokens)
+		         .withEnterprise(system)
+		         .canRead(system, tokens)
 		         .get()
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement type - " + idType.classificationValue()));
 	}
 	
 	@CacheResult(cacheName = "ArrangementArrangementTypeString")
 	@Override
-	public IArrangementType<?> find(@CacheKey String idType, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... tokens)
+	public IArrangementType<?> find(@CacheKey String idType, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
 	{
 		ArrangementType xr = new ArrangementType();
 		return xr.builder()
 		         .withName(idType)
-		         .inActiveRange(enterprise, tokens)
+		         .inActiveRange(system, tokens)
 		         .inDateRange()
-		         .withEnterprise(enterprise)
-		         .canRead(enterprise, tokens)
+		         .withEnterprise(system)
+		         .canRead(system, tokens)
 		         .get()
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement type - " + idType));
 	}
 	
 	@Override
-	public IArrangement<?> find(UUID id, IEnterprise<?> enterprise, UUID... tokens)
+	public IArrangement<?> find(UUID id, ISystems<?> system, UUID... tokens)
 	{
 		Arrangement xr = new Arrangement();
 		return xr.builder()
 		         .where(Arrangement_.id, Equals, id)
-		         .inActiveRange(enterprise, tokens)
+		         .inActiveRange(system, tokens)
 		         .inDateRange()
-		         .canRead(enterprise, tokens)
+		         .canRead(system, tokens)
 		         .get()
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement with ID " + id));
 	}
@@ -304,13 +303,13 @@ public class ArrangementsService
 	}
 	
 	@Override
-	public List<IArrangement<?>> findAll(IArrangementTypes<?> idType, IEnterprise<?> enterprise, UUID... identityToken)
+	public List<IArrangement<?>> findAll(IArrangementTypes<?> idType, ISystems<?> system, UUID... identityToken)
 	{
-		IArrangementType<?> type = find(idType, enterprise, identityToken);
+		IArrangementType<?> type = find(idType, system, identityToken);
 		List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder()
-		                                                                          .inActiveRange(enterprise)
+		                                                                          .inActiveRange(system)
 		                                                                          .inDateRange()
-		                                                                          .canRead(enterprise, identityToken)
+		                                                                          .canRead(system, identityToken)
 		                                                                          .findChildLink((ArrangementType) type)
 		                                                                          .getAll();
 		List<IArrangement<?>> arrOut = new ArrayList<>();

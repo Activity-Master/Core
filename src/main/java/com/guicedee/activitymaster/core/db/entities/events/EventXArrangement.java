@@ -76,7 +76,7 @@ public class EventXArrangement
 	}
 
 	@Override
-	protected EventXArrangementsSecurityToken configureDefaultsForNewToken(EventXArrangementsSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected EventXArrangementsSecurityToken configureDefaultsForNewToken(EventXArrangementsSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

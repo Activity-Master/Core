@@ -69,7 +69,7 @@ public class EventXClassification
 	}
 
 	@Override
-	protected EventXClassificationSecurityToken configureDefaultsForNewToken(EventXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected EventXClassificationSecurityToken configureDefaultsForNewToken(EventXClassificationSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

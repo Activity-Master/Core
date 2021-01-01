@@ -42,129 +42,106 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		L, R,
 		J extends IContainsRulesTypes<P, S, Q, C, T, L, R, J>>
 {
-	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T addressClassification, ISystems<?> originatingSystem, UUID... identityToken)
+
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, ISystems<?> system, UUID... identityToken)
 	{
-		return findRulesTypes(addressClassification, null, originatingSystem, identityToken);
+		return findRulesTypes(classification, null, system, identityToken);
 	}
+
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return findRulesTypes(classification, null, enterprise, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, value, enterprise, false, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		
-		return findRulesTypes(iClassification, searchValue, iClassification.getEnterprise(), false, false, identityToken);
+		return findRulesTypes(iClassification, searchValue, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, null, enterprise, false, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, null, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, searchValue, enterprise, false, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, searchValue, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, value, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, value, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, null, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, null, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, String searchValue, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, String searchValue, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, searchValue, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, searchValue, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(T classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, value, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, value, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, null, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, null, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, String searchValue, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(String classification, String searchValue, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, searchValue, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, searchValue, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypesFirst(T classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypesFirst(T classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypes(iClassification, searchValue, originatingSystem.getEnterprise(), true, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, searchValue, system, true, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypesFirst(T classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypesFirst(T classification, String searchValue, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, searchValue, enterprise, true, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypesFirst(T classification, String searchValue, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypes(iClassification, searchValue, originatingSystem.getEnterprise(), true, latest, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypesFirst(T classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypes(iClassification, searchValue, enterprise, true, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypes(iClassification, searchValue, system, true, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(IClassification<?> classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findRulesTypes(IClassification<?> classification, String searchValue, ISystems<?> system, boolean first, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findRulesTypeQueryRelationshipTableType());
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system, identityToken)
 				                   .withClassification(classification)
 				                   .withValue(searchValue)
 				                   .inDateRange()
-				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .withEnterprise(system)
+				                   .canRead(system, identityToken);
 		if (first)
 		{ queryBuilderRelationshipClassification.setMaxResults(1); }
 		if (latest)
@@ -177,99 +154,72 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(T classification, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypesAll(iClassification, null, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
+		return findRulesTypesAll(iClassification, null, originatingSystem, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(T classification, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(T classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypesAll(iClassification, null, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(T classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypesAll(iClassification, null, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypesAll(iClassification, null, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(T classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypesAll(iClassification, value, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
+		return findRulesTypesAll(iClassification, value, originatingSystem, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(T classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(T classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypesAll(iClassification, value, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(T classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypesAll(iClassification, value, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypesAll(iClassification, value, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(String classification, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypesAll(iClassification, null, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
+		return findRulesTypesAll(iClassification, null, originatingSystem, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(String classification, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(String classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypesAll(iClassification, null, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypesAll(iClassification, null, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypesAll(iClassification, null, system, latest, identityToken);
 	}
 	
 	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(String classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypesAll(iClassification, value, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
+		return findRulesTypesAll(iClassification, value, originatingSystem, false, identityToken);
 	}
+
 	
-	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(String classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findRulesTypesAll(iClassification, value, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findRulesTypesAll(String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findRulesTypesAll(iClassification, value, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findRulesTypesAll(iClassification, value, system, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default @NotNull List<IRelationshipValue<L, R, ?>> findRulesTypesAll(IClassification<?> classification, String searchValue, IEnterprise<?> enterprise, boolean latest, UUID... identityToken)
+	default @NotNull List<IRelationshipValue<L, R, ?>> findRulesTypesAll(IClassification<?> classification, String searchValue, ISystems<?> system, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findRulesTypeQueryRelationshipTableType());
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system, identityToken)
 				                   .withValue(searchValue)
 				                   .withClassification(classification)
 				                   .inDateRange()
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (latest)
 		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
 		return (List) queryBuilderRelationshipClassification.getAll();
@@ -319,70 +269,70 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q activityMasterIdentity = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> classificationService = get(IRulesService.class);
-		RulesType classification = (RulesType) classificationService.findRulesTypes(classificationValue, originatingSystem, identityToken);
+		RulesType classification = (RulesType) classificationService.findRulesTypes(classificationValue.classificationName(), originatingSystem, identityToken);
 		
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(originatingSystem.getEnterpriseID())
 		                             .inDateRange()
-		                             .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                             .canRead(originatingSystem, identityToken)
 		                             .getCount();
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Q addRulesType(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addRulesType(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType.classificationName(), system,
 		                                                                             identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setClassificationID(classification);
 		tableForClassification.setValue(value);
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID((Systems) system);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
-		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-		configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
+		tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
+		configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, system);
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
 				.isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			tableForClassification.createDefaultSecurity(system, identityToken);
 		}
 		
 		return tableForClassification;
 	}
 	
-	void configureRulesTypeLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
+	void configureRulesTypeLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, ISystems<?> system);
 	
 	@SuppressWarnings("unchecked")
-	default Q addOrUpdateRulesType(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default Q addOrUpdateRulesType(IClassificationValue<?> classificationValue, T classificationDataConceptType, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType,originatingSystem,
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType.classificationName(),system,
 		                                                                             identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canCreate(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canCreate(system.getEnterpriseID(), identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			tableForClassification = addOrReuseRulesType(classificationValue, classificationDataConceptType, value, originatingSystem, identityToken);
+			tableForClassification = addOrReuseRulesType(classificationValue, classificationDataConceptType, value, system, identityToken);
 		}
 		else
 		{
@@ -396,14 +346,14 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 			
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(system.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 			
 			Q newTableForClassification = get(findRulesTypeQueryRelationshipTableType());
 			newTableForClassification.setId(null);
 			newTableForClassification.setClassificationID(tableForClassification.getClassificationID());
-			newTableForClassification.setSystemID((Systems) originatingSystem);
+			newTableForClassification.setSystemID((Systems) system);
 			newTableForClassification.setOriginalSourceSystemID(originalSystem);
 			newTableForClassification.setOriginalSourceSystemUniqueID(tableForClassification.getId() + "");
 			newTableForClassification.setWarehouseCreatedTimestamp(LocalDateTime.now());
@@ -412,8 +362,8 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setEffectiveToDate(EndOfTime);
 			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
-			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureRulesTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
+			newTableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			configureRulesTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, system);
 			newTableForClassification.persist();
 			
 			if (get(ActivityMasterConfiguration.class)
@@ -430,14 +380,14 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType.classificationName(), originatingSystem,
 		                                                                             identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classificationDataConcept, null)
+		                                                         .findLink((P) this, (S) classificationDataConcept, value)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
@@ -455,7 +405,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 			//			configureInvolvedPartyIdentificationType(tableForClassification, classification, (Q) classificationDataConcept, originatingSystem.getEnterpriseID());
-			configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
+			configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem);
 			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -476,7 +426,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType.classificationName(), originatingSystem,
 		                                                                             identityToken);
 		
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
@@ -486,7 +436,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-		configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classificationValue, value, originatingSystem.getEnterpriseID());
+		configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classificationValue, value, originatingSystem);
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
@@ -503,15 +453,15 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType.classificationName(), originatingSystem,
 		                                                                             identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classificationDataConcept, null)
+		                                                         .findLink((P) this, (S) classificationDataConcept, value)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -522,7 +472,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-			configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
+			configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem);
 			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -543,15 +493,15 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findRulesTypeQueryRelationshipTableType());
 		IRulesService<?> rulesService = get(IRulesService.class);
-		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType, originatingSystem,
+		RulesType classificationDataConcept = (RulesType) rulesService.findRulesTypes(classificationDataConceptType.classificationName(), originatingSystem,
 		                                                                             identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classificationDataConcept, null)
+		                                                         .findLink((P) this, (S) classificationDataConcept, value)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -562,7 +512,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
-			configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
+			configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem);
 			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
@@ -600,7 +550,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureRulesTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
+			configureRulesTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem);
 			newTableForClassification.persist();
 			
 			if (get(ActivityMasterConfiguration.class)
@@ -621,11 +571,11 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		                                                                             identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
-		                                                         .findLink((P) this, (S) classificationDataConcept, null)
+		                                                         .findLink((P) this, (S) classificationDataConcept, value)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -660,7 +610,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(value);
 			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			configureRulesTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem.getEnterpriseID());
+			configureRulesTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem);
 			newTableForClassification.persist();
 			
 			if (get(ActivityMasterConfiguration.class)
@@ -686,7 +636,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -716,7 +666,7 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		                                                         .withClassification(classification)
 		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(system.getEnterpriseID(), identityToken)
+		                                                         .canRead(system, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{

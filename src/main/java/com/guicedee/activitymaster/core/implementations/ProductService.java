@@ -17,6 +17,7 @@ import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -129,17 +130,17 @@ public class ProductService<J extends ProductService<J>>
 	}
 	
 	@Override
-	public IProductType<?> findProductType(String rulesType, ISystems<?> system, UUID... identityToken)
+	public IProductType<?> findProductType(String productType, ISystems<?> system, UUID... identityToken)
 	{
 		IEnterprise<?> enterprise = system.getEnterprise();
 		return new ProductType().builder()
-		                        .withName(rulesType)
+		                        .withName(productType)
 		                        .withEnterprise(enterprise)
 		                        .inActiveRange(enterprise, identityToken)
 		                        .inDateRange()
-		                        .canRead(enterprise, identityToken)
+		                        .canRead(system, identityToken)
 		                        .get()
-		                        .orElseThrow();
+		                        .orElseThrow(() -> new NoSuchElementException("Product Type - " + productType + " not found"));
 	}
 	
 	@Override
@@ -155,6 +156,7 @@ public class ProductService<J extends ProductService<J>>
 		                    .get()
 		                    .orElseThrow();
 	}
+	
 	@Override
 	public IProductType<?> findProductType(IProduct<?> product, IClassification<?> classification, ISystems<?> system, UUID... identityToken)
 	{
@@ -166,7 +168,7 @@ public class ProductService<J extends ProductService<J>>
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IEnterprise<?> enterprise = system.getEnterprise();
-		IClassification<?> classification1 = classificationService.find(classification, enterprise, identityToken);
+		IClassification<?> classification1 = classificationService.find(classification, system, identityToken);
 		return new ProductXProductType().builder()
 		                                .findLink((Product) product, null)
 		                                .withClassification(classification1)
@@ -182,7 +184,7 @@ public class ProductService<J extends ProductService<J>>
 	public List<IProductType<?>> findProductTypes(IClassification<?> classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> clazz = classificationService.find(classification.getName(), system.getEnterprise(), identityToken);
+		IClassification<?> clazz = classificationService.find(classification.getName(), system, identityToken);
 		List<IProductType<?>> list = new ArrayList<>();
 		for (IRelationshipValue<IProductType<?>, IClassification<?>, ?> returns : new ProductType().findClassificationsAll((IClassificationValue<?>) clazz, system, identityToken))
 		{
@@ -205,7 +207,7 @@ public class ProductService<J extends ProductService<J>>
 		                                .withEnterprise(system.getEnterprise())
 		                                .inActiveRange(system.getEnterprise(), identityToken)
 		                                .inDateRange()
-		                                .canRead(system.getEnterprise(), identityToken)
+		                                .canRead(system, identityToken)
 		                                .withType(type, system, identityToken)
 		                                .getAll()
 		                                .stream()

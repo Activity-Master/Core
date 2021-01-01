@@ -24,6 +24,7 @@ import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
+
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,13 +41,13 @@ public class SecurityTokenService
 		implements ISecurityTokenService<SecurityTokenService>
 {
 	private static final Logger log = Logger.getLogger(SecurityTokenService.class.getName());
-
+	
 	public SecurityTokensSecurityToken grantAccessToToken(SecurityToken fromToken, SecurityToken toToken,
 	                                                      boolean create, boolean update, boolean delete, boolean read, ISystems<?> system)
 	{
 		return grantAccessToToken(fromToken, toToken, create, update, delete, read, system, null, null, null);
 	}
-
+	
 	public SecurityTokensSecurityToken grantAccessToToken(@NotNull SecurityToken fromToken, @NotNull SecurityToken toToken,
 	                                                      boolean create, boolean update, boolean delete, boolean read,
 	                                                      ISystems<?> system, String originalId,
@@ -64,7 +65,8 @@ public class SecurityTokenService
 			sta.setSystemID((Systems) system);
 			sta.setOriginalSourceSystemID((Systems) system);
 			sta.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			sta.setActiveFlagID((ActiveFlag)GuiceContext.get(IActiveFlagService.class).getActiveFlag(sta.getEnterpriseID()));
+			sta.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+			                                             .getActiveFlag(sta.getEnterpriseID()));
 			sta.setSecurityTokenID(fromToken);
 			sta.setBase(toToken);
 			sta.setCreateAllowed(create);
@@ -76,24 +78,24 @@ public class SecurityTokenService
 		else
 		{
 			sta = exists.get();
-
-
+			
+			
 		}
 		return sta;
 	}
-
+	
 	@Override
 	public ISecurityToken<?> create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems<?> system)
 	{
 		return create(classificationValue, name, description, system, null);
 	}
-
+	
 	@Override
 	public ISecurityToken<?> create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems<?> system, ISecurityToken<?> parent, UUID... identityToken)
 	{
 		ClassificationService classificationService = get(ClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterpriseID(), identityToken);
-
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
+		
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
 		                                   .withEnterprise(system.getEnterprise())
@@ -109,7 +111,7 @@ public class SecurityTokenService
 			           .inActiveRange(classification.getEnterpriseID())
 			           .inDateRange()
 			           .get();
-
+			
 			if (exists.isEmpty())
 			{
 				st.setName(name);
@@ -124,10 +126,9 @@ public class SecurityTokenService
 				st.setSecurityTokenClassificationID(classification);
 				st.persist();
 				if (get(ActivityMasterConfiguration.class)
-						    .isSecurityEnabled())
+						.isSecurityEnabled())
 				{
-					st.createDefaultSecurity(get(ISystemsService.class)
-							                         .getActivityMaster(st.getEnterpriseID(), identityToken), identityToken);
+					st.createDefaultSecurity(system, identityToken);
 				}
 			}
 			else
@@ -143,12 +144,12 @@ public class SecurityTokenService
 		{
 			return st;
 		}
-
+		
 		link((SecurityToken) parent, st, classification);
-
+		
 		return st;
 	}
-
+	
 	public SecurityTokenXSecurityToken link(SecurityToken parent, SecurityToken child, IClassification<?> classification, UUID... identifyingToken)
 	{
 		SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
@@ -178,10 +179,10 @@ public class SecurityTokenService
 		}
 		return root;
 	}
-
+	
 	private void updateSecurityHierarchy(UUID securityTokenID)
 	{
-
+		
 		//TODO hierarchy updates? i wonder
 		/*javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
 
@@ -200,182 +201,182 @@ public class SecurityTokenService
 			log.log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}*/
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	@Override
-	public ISecurityToken<?> getEveryoneGroup(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getEveryoneGroup(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, enterprise, identityToken)
+		                                   .findFolder(UserGroup, system, identityToken)
 		                                   .withName(Everyone)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   //   .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
 	@Override
-	public ISecurityToken<?> getEverywhereGroup(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getEverywhereGroup(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, enterprise, identityToken)
+		                                   .findFolder(UserGroup, system, identityToken)
 		                                   .withName(Everywhere)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   //      .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
 	@Override
-	public ISecurityToken<?> getGuestsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getGuestsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, enterprise, identityToken)
+		                                   .findFolder(UserGroup, system, identityToken)
 		                                   .withName(Guests)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   //     .canRead(enterprise,identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
 	@Override
-	public ISecurityToken<?> getRegisteredGuestsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getRegisteredGuestsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, enterprise, identityToken)
+		                                   .findFolder(UserGroup, system, identityToken)
 		                                   .withName(Registered)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   //    .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
 	@Override
-	public ISecurityToken<?> getVisitorsGuestsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getVisitorsGuestsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, enterprise, identityToken)
+		                                   .findFolder(UserGroup, system, identityToken)
 		                                   .withName(Visitors)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   //     .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
 	@Override
-	public ISecurityToken<?> getAdministratorsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getAdministratorsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, enterprise, identityToken)
+		                                   .findFolder(UserGroup, system, identityToken)
 		                                   .withName(Administrators)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   //  .canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
 	@Override
-	public ISecurityToken<?> getSystemsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getSystemsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroupSecurityTokenClassifications.System, enterprise, identityToken)
+		                                   .findFolder(UserGroupSecurityTokenClassifications.System, system, identityToken)
 		                                   .withName(System)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   //.canRead(enterprise, identityToken)
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
 	@Override
-	public ISecurityToken<?> getPluginsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getPluginsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(Plugin, enterprise, identityToken)
+		                                   .findFolder(Plugin, system, identityToken)
 		                                   .withName(Plugins)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   //  .canRead(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
 	@Override
-	public ISecurityToken<?> getApplicationsFolder(@CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getApplicationsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(Application, enterprise, identityToken)
+		                                   .findFolder(Application, system, identityToken)
 		                                   .withName(Applications)
-		                                   .inActiveRange(enterprise, identityToken)
+		                                   .inActiveRange(system, identityToken)
 		                                   //   .canRead(enterprise, identityToken)
 		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
+		                                   .withEnterprise(system.getEnterprise())
 		                                   .get();
 		return exists.orElseThrow();
 	}
-
+	
 	@CacheResult(cacheName = "SecurityGetSecurityToken")
 	@Override
-	public ISecurityToken<?> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken view = new SecurityToken().builder()
 		                                        .findBySecurityToken(identifyingToken.toString())
-		                                        .withEnterprise(enterprise)
-		                                        .inActiveRange(enterprise, identityToken)
+		                                        .withEnterprise(system)
+		                                        .inActiveRange(system, identityToken)
 		                                        .inDateRange()
-		                                        .withEnterprise(enterprise)
+		                                        .withEnterprise(system.getEnterprise())
 		                                        // .canRead(enterprise, identityToken)
 		                                        .get()
 		                                        .orElse(null);
 		return view;
 	}
-
+	
 	@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
-	public ISecurityToken<?> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey IEnterprise<?> enterprise, @CacheKey UUID... identityToken)
+	public ISecurityToken<?> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityTokenQueryBuilder builder = new SecurityToken().builder();
 		builder = builder.findBySecurityToken(identifyingToken.toString())
-		                 .withEnterprise(enterprise)
+		                 .withEnterprise(system.getEnterprise())
 		                 .inDateRange();
 		if (overrideActiveFlag)
 		{
-			builder.inActiveRange(enterprise, identityToken);
+			builder.inActiveRange(system, identityToken);
 		}
-
+		
 		SecurityToken view = builder
-				                     .get()
-				                     .orElse(null);
+				.get()
+				.orElse(null);
 		return view;
 	}
 }

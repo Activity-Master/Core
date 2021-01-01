@@ -401,11 +401,11 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		
 		IEventService<?> classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, system.getEnterpriseID(),
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, system,
 		                                                                                                 identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
 		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setClassificationID(classification);
@@ -433,11 +433,11 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService<?> classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, system.getEnterpriseID(),
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, system,
 		                                                                                                 identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, system.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -496,11 +496,11 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService<?> classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem,
 		                                                                                                 identityToken);
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classificationDataConcept, null)
@@ -542,7 +542,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService<?> classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem,
 		                                                                                                 identityToken);
 		
 		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
@@ -569,7 +569,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService<?> classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem,
 		                                                                                                 identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
@@ -577,7 +577,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -609,7 +609,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService<?> classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem,
 		                                                                                                 identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
@@ -617,7 +617,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -683,7 +683,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService<?> classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem,
 		                                                                                                 identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
@@ -691,7 +691,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -744,7 +744,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findEventTypeQueryRelationshipTableType());
 		IEventService<?> classificationDataConceptService = get(IEventService.class);
-		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem.getEnterpriseID(),
+		EventType classificationDataConcept = (EventType) classificationDataConceptService.findEventType(classificationDataConceptType, originatingSystem,
 		                                                                                                 identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
@@ -752,7 +752,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -780,7 +780,7 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		                                                         .withClassification(classification)
 		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(originatingSystem, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{

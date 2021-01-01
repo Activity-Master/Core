@@ -77,14 +77,14 @@ public class ResourceItemData
 	}
 
 	@Override
-	protected ResourceItemDataSecurityToken configureDefaultsForNewToken(ResourceItemDataSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected ResourceItemDataSecurityToken configureDefaultsForNewToken(ResourceItemDataSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 
 	@Override
-	public void configureForClassification(ResourceItemDataXClassification classificationLink, IEnterprise<?> enterprise)
+	public void configureForClassification(ResourceItemDataXClassification classificationLink, ISystems<?> system)
 	{
 		classificationLink.setResourceItemDataID(this);
 	}

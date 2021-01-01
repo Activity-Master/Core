@@ -39,7 +39,7 @@ public class ActiveFlagService
 			af.setEnterpriseID((Enterprise) enterprise);
 			af.builder()
 			  .persist(af);
-			
+			/*
 			if(!ActivityMasterConfiguration.getCreatingNew().get())
 			{
 				ISystems<?> activityMaster = GuiceContext.get(ISystemsService.class)
@@ -56,7 +56,7 @@ public class ActiveFlagService
 					EventThread.event.get()
 					                 .add((IEventClassification<?>) Created, "Active Flag - " + name, activityMaster, identifyingToken);
 				}
-			}
+			}*/
 			return af;
 		}
 		else
@@ -72,7 +72,7 @@ public class ActiveFlagService
 		return new ActiveFlag().builder()
 		                       .withName(flag)
 		                       .inDateRange()
-		                       .canRead(enterprise, identifyingToken)
+		                   //    .canRead(enterprise, identifyingToken)
 		                       .withEnterprise(enterprise)
 		                       .get();
 	}
@@ -90,7 +90,7 @@ public class ActiveFlagService
 		return search.builder()
 		             .withName(name)
 		             .inDateRange()
-		             .canRead(enterprise, true, identifyingToken)
+		        //     .canRead(enterprise, true, identifyingToken)
 		             .withEnterprise(enterprise)
 		             .getAll();
 	}

@@ -16,6 +16,7 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.services.classifications.securitytokens.ISecurityTokenClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.persistence.criteria.JoinType;
@@ -32,13 +33,13 @@ public class SecurityTokenQueryBuilder
 		extends QueryBuilderSCDNameDescription<SecurityTokenQueryBuilder, SecurityToken, java.util.UUID, SecurityTokensSecurityToken>
 		implements IContainsClassificationsQueryBuilder<SecurityTokenQueryBuilder, SecurityToken, java.util.UUID, SecurityTokenXClassification>
 {
-	public SecurityTokenQueryBuilder findFolder(ISecurityTokenClassification<?> securityTokenClassification, IEnterprise<?> enterprise, UUID... identityToken)
+	public SecurityTokenQueryBuilder findFolder(ISecurityTokenClassification<?> securityTokenClassification, ISystems<?> system, UUID... identityToken)
 	{
 		SecurityTokenXSecurityToken hierarchySystem = new SecurityTokenXSecurityToken();
 		SecurityTokenXSecurityTokenQueryBuilder hierarchyBuilder = hierarchySystem.builder();
 
 		ClassificationService classificationService = GuiceContext.get(ClassificationService.class);
-		Classification classification = (Classification) classificationService.find(securityTokenClassification, enterprise, identityToken);
+		Classification classification = (Classification) classificationService.find(securityTokenClassification, system, identityToken);
 
 		hierarchyBuilder.withClassification(classification);
 		hierarchyBuilder.inActiveRange(classification.getEnterpriseID());

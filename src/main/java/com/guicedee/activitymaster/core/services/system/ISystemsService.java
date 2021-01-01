@@ -13,11 +13,17 @@ import static com.guicedee.activitymaster.core.ActivityMasterStatics.*;
 
 public interface ISystemsService
 {
-	ISystems<?> getActivityMaster(IEnterprise<?> enterprise, UUID... token);
+	ISystems<?> getActivityMaster(ISystems<?> system, UUID... token);
+	
+	@CacheResult(cacheName = "GetActivityMasterEnterprise")
+	ISystems<?> getActivityMaster(@CacheKey IEnterprise<?> requestingSystem, @CacheKey UUID... token);
+	
+	@CacheResult(cacheName = "FindSystemEnterpriseLevel")
+	ISystems<?> findSystem(@CacheKey IEnterprise<?> enterprise, @CacheKey String systemName, @CacheKey UUID... token);
+	
+	ISystems<?> findSystem(ISystems<?> system, String systemName, UUID... token);
 
-	ISystems<?> findSystem(IEnterprise<?> enterprise, String systemName, UUID... token);
-
-	ISystems<?> findSystem(IEnterprise<?> enterprise, UUID token, UUID... identityToken);
+	ISystems<?> findSystem(ISystems<?> system, UUID token, UUID... identityToken);
 
 	UUID registerNewSystem(IEnterprise<?> enterprise, ISystems<?> newSystem);
 

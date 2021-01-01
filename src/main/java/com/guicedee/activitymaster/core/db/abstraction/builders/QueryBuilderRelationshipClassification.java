@@ -44,15 +44,4 @@ public abstract class QueryBuilderRelationshipClassification<P extends Warehouse
 		implements IHasClassificationQueryBuilder<J, E, I>,
 		           IHasValueQueryBuilder<J,E,I>
 {
-	@Override
-	public boolean onCreate(E entity)
-	{
-		if (entity.getClassificationID() == null)
-		{
-			IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
-			entity.setClassificationID((Classification) classificationService.find(Classifications.NoClassification, entity.getEnterpriseID()));
-		}
-		return super.onCreate(entity);
-	}
-
 }

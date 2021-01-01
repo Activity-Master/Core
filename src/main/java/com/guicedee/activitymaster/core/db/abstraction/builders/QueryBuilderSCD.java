@@ -19,30 +19,5 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I, S>,
 		extends QueryBuilderCore<J, E, I, S>
 		implements ISecurityEnabledQueryBuilder<J, E, I, S>
 {
-	@Override
-	public boolean onCreate(E entity)
-	{
-		if (entity.getSystemID() != null && entity.getEnterpriseID() == null)
-		{
-			entity.setEnterpriseID(entity.getSystemID()
-			                             .getEnterpriseID());
-		}
-		if (entity.getEnterpriseID() != null)
-		{
-			IEnterprise<?> enterprise = entity.getEnterpriseID();
-			if (entity.getSystemID() == null)
-			{
-				entity.setSystemID((Systems) GuiceContext.get(SystemsService.class)
-				                                         .getActivityMaster(enterprise));
-			}
-			if (entity.getActiveFlagID() == null)
-			{
-				entity.setActiveFlagID((ActiveFlag) GuiceContext.get(ActiveFlagService.class)
-				                                                .getActiveFlag(enterprise));
-			}
-		}
-		return super.onCreate(entity);
-	}
-	
 	
 }

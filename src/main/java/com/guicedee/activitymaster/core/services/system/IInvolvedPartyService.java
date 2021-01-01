@@ -14,48 +14,48 @@ public interface IInvolvedPartyService<J extends IInvolvedPartyService<J>>
 	
 	IInvolvedParty<?> findByID(UUID id);
 	
-	IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, IEnterprise<?> enterprise);
+	IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, ISystems<?> system);
 	
-	IInvolvedPartyNameType<?> createNameType(String name, String description, IEnterprise<?> enterprise, UUID... identityToken);
+	IInvolvedPartyNameType<?> createNameType(String name, String description, ISystems<?> system, UUID... identityToken);
 	
-	IInvolvedPartyIdentificationType<?> createIdentificationType(IEnterprise<?> enterprise, ITypeValue<?> name, String description, UUID... identityToken);
+	IInvolvedPartyIdentificationType<?> createIdentificationType(ISystems<?> system, ITypeValue<?> name, String description, UUID... identityToken);
 	
-	IInvolvedPartyIdentificationType<?> createIdentificationType(IEnterprise<?> enterprise, String name, String description, UUID... identityToken);
+	IInvolvedPartyIdentificationType<?> createIdentificationType(ISystems<?> system, String name, String description, UUID... identityToken);
 	
-	IInvolvedPartyType<?> createType(IEnterprise<?> enterprise, ITypeValue<?> name, String description);
+	IInvolvedPartyType<?> createType(ISystems<?> system, ITypeValue<?> name, String description);
 	
-	IInvolvedPartyType<?> createType(IEnterprise<?> enterprise, String name, String description, UUID... identityToken);
+	IInvolvedPartyType<?> createType(ISystems<?> system, String name, String description, UUID... identityToken);
 	
-	IInvolvedPartyOrganicType<?> createOrganicType(IEnterprise<?> enterprise, ITypeValue<?> name, String description, UUID... identityToken);
+	IInvolvedPartyOrganicType<?> createOrganicType(ISystems<?> system, ITypeValue<?> name, String description, UUID... identityToken);
 	
-	IInvolvedPartyIdentificationType<?> findIdentificationType(IIdentificationType<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+	IInvolvedPartyIdentificationType<?> findIdentificationType(IIdentificationType<?> idType, ISystems<?> system, UUID... tokens);
 	
-	IInvolvedPartyIdentificationType<?> findIdentificationType(String idType, IEnterprise<?> enterprise, UUID... tokens);
+	IInvolvedPartyIdentificationType<?> findIdentificationType(String idType, ISystems<?> system, UUID... tokens);
 	
 	IInvolvedParty<?> findByIdentificationType(IIdentificationType<?> idType, String value, ISystems<?> system, UUID... tokens);
 	
 	IInvolvedParty<?> findByUsernameAndPassword(String username, String password, ISystems<?> originatingSystem, boolean throwForNoUser, UUID... token);
 	
-	boolean doesUsernameExist(String username, IEnterprise<?> enterprise, UUID... token);
+	boolean doesUsernameExist(String username, ISystems<?> system, UUID... token);
 	
-	IInvolvedParty<?> findByUsername(String username, IEnterprise<?> enterprise, UUID... token);
+	IInvolvedParty<?> findByUsername(String username, ISystems<?> system, UUID... token);
 	
 	IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> originatingSystem, UUID... token);
 	
 	IInvolvedParty<?> create(ISystems<?> originatingSystem, Pair<IIdentificationType<?>, String> idTypes,
 	                         boolean isOrganic, UUID... identityToken);
 	
-	IInvolvedPartyType<?> findType(ITypeValue<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+	IInvolvedPartyType<?> findType(ITypeValue<?> idType, ISystems<?> system, UUID... tokens);
 	
-	IInvolvedPartyType<?> findType(String nameType, IEnterprise<?> enterprise, UUID... tokens);
+	IInvolvedPartyType<?> findType(String nameType, ISystems<?> system, UUID... tokens);
 	
-	IInvolvedPartyNameType<?> findNameType(INameType<?> idType, IEnterprise<?> enterprise, UUID... tokens);
+	IInvolvedPartyNameType<?> findNameType(INameType<?> idType, ISystems<?> system, UUID... tokens);
 	
-	IInvolvedPartyNameType<?> findNameType(String nameType, IEnterprise<?> enterprise, UUID... tokens);
+	IInvolvedPartyNameType<?> findNameType(String nameType, ISystems<?> system, UUID... tokens);
 	
 	IInvolvedParty<?> findByToken(ISecurityToken<?> token, UUID... tokens);
 	
-	IInvolvedParty<?> findByUUID(UUID token, IEnterprise<?> enterprise, UUID... tokens);
+	IInvolvedParty<?> findByUUID(UUID token, ISystems<?> system, UUID... tokens);
 	
 	IInvolvedParty<?> findByIdentificationType(String identificationType, String value);
 	

@@ -86,18 +86,18 @@ public class EnterpriseService
 			LocalDate k = entry.getKey();
 			Class<? extends ISystemUpdate> v = entry.getValue();
 			tasks += v.getAnnotation(DatedUpdate.class)
-			 .taskCount() + 1;
+			          .taskCount() + 1;
 		}
 		progressMonitor.setTotalTasks(tasks);
 		availableUpdates.forEach((key, value) -> {
-			logProgress("Update System","Starting updates for " + value.getSimpleName(),progressMonitor);
+			logProgress("Update System", "Starting updates for " + value.getSimpleName(), progressMonitor);
 			ISystemUpdate o = GuiceContext.get(value);
 			o.update(enterprise, progressMonitor);
 			lastUpdateDate[0] = key;
 		});
 		enterprise.addOrUpdate(EnterpriseClassifications.LastUpdateDate, DateTimeFormatter.ofPattern("yyyy/MM/dd")
 		                                                                                  .format(lastUpdateDate[0]), newSystem, securityToken);
-		logProgress("Update System","Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(lastUpdateDate[0]),progressMonitor);
+		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(lastUpdateDate[0]), progressMonitor);
 	}
 	
 	@Override
@@ -169,6 +169,18 @@ public class EnterpriseService
 		                                  .get();
 	}
 	
+	@Override
+	@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
+	public IEnterprise<?> getEnterprise(@CacheKey String name)
+	{
+		return new Enterprise().builder()
+		                       .withName(name)
+		                       .inDateRange()
+		                       .get()
+		                       .orElseThrow();
+	}
+	
+	
 	/**
 	 * Gets an enterprise or throws an exception.
 	 * <p>
@@ -182,11 +194,7 @@ public class EnterpriseService
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseName")
 	public IEnterprise<?> getEnterprise(@CacheKey IEnterpriseName<?> name)
 	{
-		return new Enterprise().builder()
-		                       .withName(name.classificationName())
-		                       .inDateRange()
-		                       .get()
-		                       .orElseThrow();
+		return getEnterprise(name.classificationName());
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})

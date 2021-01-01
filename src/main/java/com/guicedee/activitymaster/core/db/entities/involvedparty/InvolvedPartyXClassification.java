@@ -70,7 +70,7 @@ public class InvolvedPartyXClassification
 	}
 
 	@Override
-	protected InvolvedPartyXClassificationSecurityToken configureDefaultsForNewToken(InvolvedPartyXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected InvolvedPartyXClassificationSecurityToken configureDefaultsForNewToken(InvolvedPartyXClassificationSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);

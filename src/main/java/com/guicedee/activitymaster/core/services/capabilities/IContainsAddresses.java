@@ -24,6 +24,7 @@ import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -42,9 +43,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		L, R,
 		J extends IContainsAddresses<P, S, Q, T, L, R, J>>
 {
-	default double sumAll(T reesourceItemType, ISystems<?> originatingSystem, UUID identityToken)
+	default double sumAll(T reesourceItemType, ISystems<?> system, UUID identityToken)
 	{
-		List<String> results = getValues(reesourceItemType, null, originatingSystem, identityToken);
+		List<String> results = getValues(reesourceItemType, null, system, identityToken);
 		double d = 0.0d;
 		for (String result : results)
 		{
@@ -57,13 +58,14 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	/**
 	 * Returns either a List with Strings, or a List with Object[] for each row and values returned
 	 *
-	 * @param addressType       The value to apply
-	 * @param originatingSystem The system coming from
-	 * @param identityToken     The identity token to use
-	 * @param values            Any additional values to select
+	 * @param addressType   The value to apply
+	 * @param system        The system coming from
+	 * @param identityToken The identity token to use
+	 * @param values        Any additional values to select
+	 *
 	 * @return The result of List&gt;String&lt; or List&gt;Object[]&lt;
 	 */
-	default List getValues(T addressType, String searchValue, ISystems<?> originatingSystem, UUID identityToken, T... values)
+	default List getValues(T addressType, String searchValue, ISystems<?> system, UUID identityToken, T... values)
 	{
 		Q activityMasterIdentity = get(findAddressQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
@@ -82,7 +84,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		
 		for (T valuesToGet : fetching)
 		{
-			IClassification<?> classification = classificationService.find(valuesToGet, originatingSystem.getEnterpriseID(), identityToken);
+			IClassification<?> classification = classificationService.find(valuesToGet, system, identityToken);
 			
 			JoinExpression newExpression = new JoinExpression();
 			baseTableBuilder.join(baseTableBuilder.getAttribute("classifications"), LEFT, newExpression);
@@ -90,9 +92,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			                                     .get("classificationID")), Equals, classification);
 			
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get("activeFlagID")), InList, get(IActiveFlagService.class).findActiveRange(originatingSystem.getEnterpriseID(), identityToken));
+			                                     .get("activeFlagID")), InList, get(IActiveFlagService.class).findActiveRange(system.getEnterpriseID(), identityToken));
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
-			                                     .get("enterpriseID")), Equals, originatingSystem.getEnterpriseID());
+			                                     .get("enterpriseID")), Equals, system.getEnterpriseID());
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
 			                                     .get("effectiveFromDate")), LessThanEqualTo, LocalDateTime.now());
 			baseTableBuilder.where((newExpression.getGeneratedRoot()
@@ -115,235 +117,189 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		return list;
 	}
 	
-	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T addressClassification, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, ISystems<?> system, UUID... identityToken)
 	{
-		return findAddresses(addressClassification, null, originatingSystem, identityToken);
+		return findAddresses(classification, null, system, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		return findAddresses(classification, null, enterprise, identityToken);
-	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, String value, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, value, enterprise, false, false, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		
-		return findAddresses(iClassification, searchValue, iClassification.getEnterprise(), false, false, identityToken);
+		return findAddresses(iClassification, searchValue, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, null, enterprise, false, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, null, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, searchValue, enterprise, false, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, searchValue, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, String value, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, value, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, value, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, null, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, null, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, String searchValue, boolean first, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, String searchValue, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, searchValue, enterprise, first, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, searchValue, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, String value, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(T classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, value, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, value, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, null, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, null, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, String searchValue, boolean first, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(String classification, String searchValue, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, searchValue, enterprise, first, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, searchValue, system, first, latest, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddressesFirst(T classification, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddressesFirst(T classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddresses(iClassification, searchValue, originatingSystem.getEnterprise(), true, false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, searchValue, system, true, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddressesFirst(T classification, String searchValue, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, searchValue, enterprise, true, false, identityToken);
-	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findAddressesFirst(T classification, String searchValue, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddressesFirst(T classification, String searchValue, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddresses(iClassification, searchValue, originatingSystem.getEnterprise(), true, latest, identityToken);
-	}
-	
-	default Optional<IRelationshipValue<L, R, ?>> findAddressesFirst(T classification, String searchValue, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddresses(iClassification, searchValue, enterprise, true, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddresses(iClassification, searchValue, system, true, latest, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Optional<IRelationshipValue<L, R, ?>> findAddresses(IClassification<?> classification, String searchValue, IEnterprise<?> enterprise, boolean first, boolean latest, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findAddresses(IClassification<?> classification, String searchValue, ISystems<?> system, boolean first, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findAddressQueryRelationshipTableType());
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system, identityToken)
 				                   .withClassification(classification)
 				                   .withValue(searchValue)
 				                   .inDateRange()
-				                   .withEnterprise(enterprise)
-				                   .canRead(enterprise, identityToken);
+				                   .withEnterprise(system.getEnterprise())
+				                   .canRead(system, identityToken);
 		if (first)
-		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		{
+			queryBuilderRelationshipClassification.setMaxResults(1);
+		}
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{
+			queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"));
+		}
 		
 		return (Optional) queryBuilderRelationshipClassification.get();
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddressesAll(iClassification, null, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddressesAll(iClassification, null, system, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddressesAll(iClassification, null, originatingSystem.getEnterprise(), latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddressesAll(iClassification, null, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddressesAll(iClassification, null, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddressesAll(iClassification, value, system, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddressesAll(iClassification, value, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddressesAll(iClassification, value, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddressesAll(iClassification, value, originatingSystem.getEnterprise(), latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddressesAll(iClassification, null, system, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(T classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddressesAll(iClassification, value, enterprise, latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddressesAll(iClassification, null, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddressesAll(iClassification, null, originatingSystem.getEnterprise(), false, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddressesAll(iClassification, value, system, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddressesAll(iClassification, null, originatingSystem.getEnterprise(), latest, identityToken);
+		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		return findAddressesAll(iClassification, value, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddressesAll(iClassification, null, enterprise, latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddressesAll(iClassification, value, originatingSystem.getEnterprise(), false, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, String value, boolean latest, ISystems<?> originatingSystem, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, originatingSystem.getEnterprise(), identityToken);
-		return findAddressesAll(iClassification, value, originatingSystem.getEnterprise(), latest, identityToken);
-	}
-	
-	default List<IRelationshipValue<L, R, ?>> findAddressesAll(String classification, String value, boolean latest, IEnterprise<?> enterprise, UUID... identityToken)
-	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> iClassification = classificationService.find(classification, enterprise, identityToken);
-		return findAddressesAll(iClassification, value, enterprise, latest, identityToken);
-	}
 	
 	@SuppressWarnings("unchecked")
-	default @NotNull List<IRelationshipValue<L, R, ?>> findAddressesAll(IClassification<?> classification, String searchValue, IEnterprise<?> enterprise, boolean latest, UUID... identityToken)
+	default @NotNull List<IRelationshipValue<L, R, ?>> findAddressesAll(IClassification<?> classification, String searchValue, ISystems<?> system, boolean latest, UUID... identityToken)
 	{
 		Q relationshipTable = get(findAddressQueryRelationshipTableType());
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
-				                   .inActiveRange(enterprise, identityToken)
+				                   .inActiveRange(system, identityToken)
 				                   .withValue(searchValue)
 				                   .withClassification(classification)
 				                   .inDateRange()
-				                   .canRead(enterprise, identityToken);
+				                   .canRead(system, identityToken);
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{
+			queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"));
+		}
 		return (List) queryBuilderRelationshipClassification.getAll();
 	}
 	
@@ -382,108 +338,108 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default List<IRelationshipValue<L, R, ?>> findAllAddresses(ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findAllAddresses(ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findAddressQueryRelationshipTableType());
 		return (List<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
 		                                                                 .findParentLink((P) this, null)
-		                                                                 .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                                 .inActiveRange(system.getEnterpriseID())
 		                                                                 .inDateRange()
-		                                                                 .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                                 .canRead(system, identityToken)
 		                                                                 .getAll();
 	}
 	
-	default boolean has(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default boolean has(T classificationValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOf(classificationValue, originatingSystem, identityToken) > 0;
+		return numberOf(classificationValue, system, identityToken) > 0;
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOf(T classificationValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default long numberOf(T classificationValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOf(classificationValue, null, originatingSystem, identityToken);
+		return numberOf(classificationValue, null, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default long numberOf(T classificationValue, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default long numberOf(T classificationValue, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		Q activityMasterIdentity = get(findAddressQueryRelationshipTableType());
 		IClassificationService<?> addressService = get(IClassificationService.class);
-		IClassification<?> classification = addressService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		IClassification<?> classification = addressService.find(classificationValue, system, identityToken);
 		
 		return activityMasterIdentity.builder()
 		                             .findParentLink((P) this)
 		                             .withValue(searchValue)
 		                             .withClassification(classification)
-		                             .inActiveRange(originatingSystem.getEnterpriseID())
+		                             .inActiveRange(system.getEnterpriseID())
 		                             .inDateRange()
-		                             .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                             .canRead(system, identityToken)
 		                             .getCount();
 	}
 	
-	default boolean has(T classificationValue, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default boolean has(T classificationValue, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
-		return numberOf(classificationValue, searchValue, originatingSystem, identityToken) > 0;
+		return numberOf(classificationValue, searchValue, system, identityToken) > 0;
 	}
 	
-	default IRelationshipValue<L, R, ?> add(R secondary, T addressClassification, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> add(R secondary, T addressClassification, ISystems<?> system, UUID... identityToken)
 	{
-		return add(secondary, addressClassification, STRING_EMPTY, originatingSystem, identityToken);
+		return add(secondary, addressClassification, STRING_EMPTY, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> add(R secondary, T addressClassification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> add(R secondary, T addressClassification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = GuiceContext.get(findAddressQueryRelationshipTableType());
 		Address item = (Address) secondary;
 		
 		IClassificationService<?> addressService = get(IClassificationService.class);
-		Classification classification = (Classification) addressService.find(addressClassification, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) addressService.find(addressClassification, system, identityToken);
 		
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(value);
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID((Systems) system);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setClassificationID(classification);
 		tableForClassification.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                                                .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
-		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), originatingSystem.getEnterpriseID());
+		                                                                .getActiveFlag(system.getEnterpriseID(), identityToken));
+		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), system);
 		
 		tableForClassification.persist();
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			tableForClassification.createDefaultSecurity(system, identityToken);
 		}
 		
 		return tableForClassification;
 	}
 	
-	void configureAddressLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise);
+	void configureAddressLinkValue(Q linkTable, P primary, S secondary, IClassification<?> classificationValue, String value, ISystems<?> system);
 	
 	@SuppressWarnings("unchecked")
 	default IRelationshipValue<L, R, ?> addOrUpdate(T classificationValue,
 	                                                String searchValue,
 	                                                String storeValue,
-	                                                ISystems<?> originatingSystem,
+	                                                ISystems<?> system,
 	                                                UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddressQueryRelationshipTableType());
 		
 		IClassificationService addressService = get(IClassificationService.class);
-		Classification classification = (Classification) addressService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) addressService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findParentLink((P) this)
 		                                                         .withValue(searchValue)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
-		                                                         .canCreate(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canCreate(system.getEnterpriseID(), identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			tableForClassification = (Q) add(classificationValue, storeValue, originatingSystem, identityToken);
+			tableForClassification = (Q) add(classificationValue, storeValue, system, identityToken);
 		}
 		else
 		{
@@ -494,32 +450,32 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 				return tableForClassification;
 			}
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(system.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 			
 			Q newTableForClassification = get(findAddressQueryRelationshipTableType());
 			newTableForClassification.setId(null);
 			newTableForClassification.setClassificationID(tableForClassification.getClassificationID());
-			newTableForClassification.setSystemID((Systems) originatingSystem);
+			newTableForClassification.setSystemID((Systems) system);
 			newTableForClassification.setOriginalSourceSystemID(tableForClassification.getSystemID());
 			newTableForClassification.setOriginalSourceSystemUniqueID(tableForClassification.getId() + "");
 			newTableForClassification.setWarehouseCreatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
 			newTableForClassification.setEffectiveToDate(EndOfTime);
-			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(system.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(Strings.nullToEmpty(storeValue));
-			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+			newTableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			configureAddressLinkValue(newTableForClassification, (P) tableForClassification.getPrimary(), (S) tableForClassification.getSecondary(),
-			                          classification, storeValue,
-			                          originatingSystem.getEnterpriseID());
+					classification, storeValue,
+					system);
 			newTableForClassification.persist();
 			
 			if (get(ActivityMasterConfiguration.class)
 					.isSecurityEnabled())
 			{
-				newTableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+				newTableForClassification.createDefaultSecurity(system, identityToken);
 			}
 		}
 		return tableForClassification;
@@ -528,32 +484,32 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	@SuppressWarnings("unchecked")
 	default IRelationshipValue<L, R, ?> add(T addressClassification,
 	                                        String storeValue,
-	                                        ISystems<?> originatingSystem, UUID... identityToken)
+	                                        ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = GuiceContext.get(findAddressQueryRelationshipTableType());
 		
 		IAddressService<?> service = GuiceContext.get(IAddressService.class);
-		Address item = (Address) service.create(addressClassification, originatingSystem, storeValue, identityToken);
+		Address item = (Address) service.create(addressClassification, system, storeValue, identityToken);
 		
 		IClassificationService<?> addressService = get(IClassificationService.class);
-		Classification classification = (Classification) addressService.find(addressClassification, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) addressService.find(addressClassification, system, identityToken);
 		
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID((Systems) system);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		tableForClassification.setClassificationID(classification);
 		tableForClassification.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                                                .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+		                                                                .getActiveFlag(system.getEnterpriseID(), identityToken));
 		
-		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), originatingSystem.getEnterpriseID());
+		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), system);
 		
 		tableForClassification.persist();
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			tableForClassification.createDefaultSecurity(system, identityToken);
 		}
 		
 		return tableForClassification;
@@ -564,27 +520,27 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	                                               IResourceType<?> type,
 	                                               String searchValue,
 	                                               String storeValue,
-	                                               ISystems<?> originatingSystem,
+	                                               ISystems<?> system,
 	                                               UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddressQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findParentLink((P) this)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
 		                                                         .withValue(searchValue)
-		                                                         .withEnterprise(originatingSystem.getEnterpriseID())
-		                                                         .canCreate(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .withEnterprise(system.getEnterpriseID())
+		                                                         .canCreate(system.getEnterpriseID(), identityToken)
 		                                                         .get();
 		
 		if (exists.isEmpty())
 		{
-			tableForClassification = (Q) add(classificationValue, storeValue, originatingSystem, identityToken);
+			tableForClassification = (Q) add(classificationValue, storeValue, system, identityToken);
 		}
 		else
 		{
@@ -594,67 +550,67 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> add(T classificationValue, IAddress<?> item, String storeValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> add(T classificationValue, IAddress<?> item, String storeValue, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddressQueryRelationshipTableType());
 		
 		IClassificationService classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
-		tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setClassificationID(classification);
 		tableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
-		tableForClassification.setSystemID((Systems) originatingSystem);
-		tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+		tableForClassification.setSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID((Systems) system);
 		tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
-		tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
+		tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
 		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, storeValue,
-		                          originatingSystem.getEnterpriseID());
+				system);
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
 				.isSecurityEnabled())
 		{
-			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+			tableForClassification.createDefaultSecurity(system, identityToken);
 		}
 		
 		return tableForClassification;
 	}
 	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> addOrReuse(T classificationValue, IAddress<?> item, String searchValue, String storeValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrReuse(T classificationValue, IAddress<?> item, String searchValue, String storeValue, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddressQueryRelationshipTableType());
 		
 		IClassificationService classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findParentLink((P) this)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
 		                                                         .withValue(searchValue)
-		                                                         .withEnterprise(originatingSystem.getEnterpriseID())
-		                                                         .canCreate(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .withEnterprise(system.getEnterpriseID())
+		                                                         .canCreate(system.getEnterpriseID(), identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+			tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue(storeValue);
-			tableForClassification.setSystemID((Systems) originatingSystem);
-			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+			tableForClassification.setSystemID((Systems) system);
+			tableForClassification.setOriginalSourceSystemID((Systems) system);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
-			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
+			tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
 			configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, storeValue,
-			                          originatingSystem.getEnterpriseID());
+					system);
 			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
 					.isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+				tableForClassification.createDefaultSecurity(system, identityToken);
 			}
 		}
 		else
@@ -665,38 +621,38 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> addOrUpdate(T classificationValue, IAddress<?> item, String searchValue, String storeValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> addOrUpdate(T classificationValue, IAddress<?> item, String searchValue, String storeValue, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddressQueryRelationshipTableType());
 		IClassificationService classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findParentLink((P) this)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withClassification(classification)
 		                                                         .withValue(searchValue)
-		                                                         .withEnterprise(originatingSystem.getEnterpriseID())
-		                                                         .canCreate(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .withEnterprise(system.getEnterpriseID())
+		                                                         .canCreate(system.getEnterpriseID(), identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
-			tableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+			tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			tableForClassification.setClassificationID(classification);
 			tableForClassification.setValue(storeValue);
-			tableForClassification.setSystemID((Systems) originatingSystem);
-			tableForClassification.setOriginalSourceSystemID((Systems) originatingSystem);
+			tableForClassification.setSystemID((Systems) system);
+			tableForClassification.setOriginalSourceSystemID((Systems) system);
 			tableForClassification.setOriginalSourceSystemUniqueID(STRING_EMPTY);
-			tableForClassification.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
+			tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
 			configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, storeValue,
-			                          originatingSystem.getEnterpriseID());
+					system);
 			
 			tableForClassification.persist();
 			if (get(ActivityMasterConfiguration.class)
 					.isSecurityEnabled())
 			{
-				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
+				tableForClassification.createDefaultSecurity(system, identityToken);
 			}
 		}
 		else
@@ -711,14 +667,14 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 			
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(system.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 			
 			Q newTableForClassification = get(findAddressQueryRelationshipTableType());
 			newTableForClassification.setId(null);
 			newTableForClassification.setClassificationID(tableForClassification.getClassificationID());
-			newTableForClassification.setSystemID((Systems) originatingSystem);
+			newTableForClassification.setSystemID((Systems) system);
 			newTableForClassification.setOriginalSourceSystemID(originalSystem);
 			newTableForClassification.setOriginalSourceSystemUniqueID(tableForClassification.getId()
 			                                                                                .toString());
@@ -728,9 +684,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			newTableForClassification.setEffectiveToDate(EndOfTime);
 			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(storeValue);
-			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+			newTableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			configureAddressLinkValue(newTableForClassification, (P) this, (S) tableForClassification.getSecondary(), classification, storeValue,
-			                          originatingSystem.getEnterpriseID());
+					system);
 			newTableForClassification.persist();
 			
 			if (get(ActivityMasterConfiguration.class)
@@ -743,19 +699,19 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> update(T classificationValue, String searchValue, String storeValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> update(T classificationValue, String searchValue, String storeValue, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddressQueryRelationshipTableType());
 		IClassificationService classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findParentLink((P) this)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withValue(searchValue)
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(system, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -773,14 +729,14 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			Systems originalSystem = tableForClassification.getOriginalSourceSystemID();
 			
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(system.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 			
 			Q newTableForClassification = get(findAddressQueryRelationshipTableType());
 			newTableForClassification.setId(null);
 			newTableForClassification.setClassificationID(tableForClassification.getClassificationID());
-			newTableForClassification.setSystemID((Systems) originatingSystem);
+			newTableForClassification.setSystemID((Systems) system);
 			newTableForClassification.setOriginalSourceSystemID(originalSystem);
 			newTableForClassification.setOriginalSourceSystemUniqueID(tableForClassification.getId()
 			                                                                                .toString());
@@ -790,9 +746,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 			newTableForClassification.setEffectiveToDate(EndOfTime);
 			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(originalSystem.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
-			newTableForClassification.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+			newTableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			configureAddressLinkValue(newTableForClassification, (P) this, (S) tableForClassification.getSecondary(), classification, storeValue,
-			                          originatingSystem.getEnterpriseID());
+					system);
 			newTableForClassification.persist();
 			
 			if (get(ActivityMasterConfiguration.class)
@@ -805,20 +761,20 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> archive(T classificationValue, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> archive(T classificationValue, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddressQueryRelationshipTableType());
 		
 		IClassificationService addressService = get(IClassificationService.class);
-		Classification classification = (Classification) addressService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) addressService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findParentLink((P) this)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
 		                                                         .withValue(searchValue)
 		                                                         .withClassification(classification)
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(system, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -828,7 +784,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(system.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 		}
@@ -836,20 +792,20 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("unchecked")
-	default IRelationshipValue<L, R, ?> remove(T classificationValue, String searchValue, ISystems<?> originatingSystem, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> remove(T classificationValue, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		Q tableForClassification = get(findAddressQueryRelationshipTableType());
 		
 		IClassificationService<?> addressService = get(IClassificationService.class);
-		Classification classification = (Classification) addressService.find(classificationValue, originatingSystem.getEnterpriseID(), identityToken);
+		Classification classification = (Classification) addressService.find(classificationValue, system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findParentLink((P) this)
 		                                                         .withClassification(classification)
 		                                                         .withValue(searchValue)
-		                                                         .inActiveRange(originatingSystem.getEnterpriseID())
+		                                                         .inActiveRange(system.getEnterpriseID())
 		                                                         .inDateRange()
-		                                                         .canRead(originatingSystem.getEnterpriseID(), identityToken)
+		                                                         .canRead(system, identityToken)
 		                                                         .get();
 		if (exists.isEmpty())
 		{
@@ -858,7 +814,7 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		{
 			tableForClassification = exists.get();
 			IActiveFlagService flagService = get(IActiveFlagService.class);
-			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getDeletedFlag(originatingSystem.getEnterpriseID(), identityToken));
+			tableForClassification.setActiveFlagID((ActiveFlag) flagService.getDeletedFlag(system.getEnterpriseID(), identityToken));
 			tableForClassification.setEffectiveToDate(LocalDateTime.now());
 			tableForClassification.updateNow();
 		}

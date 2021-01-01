@@ -87,16 +87,15 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		return (J) this;
 	}
 	
-	@Override
 	public @NotNull String getOriginalSourceSystemUniqueID()
 	{
 		return this.originalSourceSystemUniqueID;
 	}
 
-	public WarehouseTable<J, Q, I, S> setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
+	public J setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
 	{
 		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
-		return this;
+		return (J) this;
 	}
 
 	public Systems getOriginalSourceSystemID()
@@ -104,9 +103,9 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 		return this.originalSourceSystemID;
 	}
 
-	public WarehouseTable<J, Q, I, S> setOriginalSourceSystemID(Systems originalSourceSystemID)
+	public J setOriginalSourceSystemID(Systems originalSourceSystemID)
 	{
 		this.originalSourceSystemID = originalSourceSystemID;
-		return this;
+		return (J) this;
 	}
 }

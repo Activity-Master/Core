@@ -23,6 +23,10 @@ public interface IEnterpriseService
 	Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(LocalDate lastUpdateDate);
 	
 	List<IEnterprise<?>> findEnterprisesWithClassification(Classification classification);
+	
+	@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
+	IEnterprise<?> getEnterprise(@CacheKey String name);
+	
 	/**
 	 * Gets an enterprise or throws an exception.
 	 *

@@ -71,7 +71,7 @@ public class SecurityTokenXClassification
 	}
 
 	@Override
-	protected SecurityTokenXClassificationSecurityToken configureDefaultsForNewToken(SecurityTokenXClassificationSecurityToken stAdmin, IEnterprise<?> enterprise, ISystems<?> activityMasterSystem)
+	protected SecurityTokenXClassificationSecurityToken configureDefaultsForNewToken(SecurityTokenXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
