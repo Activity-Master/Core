@@ -1,14 +1,11 @@
 package com.guicedee.activitymaster.core.implementations;
 
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.ActivityMasterService;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification_;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise_;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IProgressable;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications;
@@ -17,7 +14,6 @@ import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.activitymaster.core.systems.EnterpriseSystem;
 import com.guicedee.activitymaster.core.updates.DatedUpdate;
@@ -26,7 +22,6 @@ import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.json.LocalDateDeserializer;
 import com.guicedee.guicedinjection.json.LocalDateSerializer;
 import io.github.classgraph.ClassInfo;
-
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +29,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -76,15 +70,22 @@ public class EnterpriseService
 		EnterpriseSystem es = get(EnterpriseSystem.class);
 		ISystems<?> newSystem = es.getSystem(enterprise);
 		UUID securityToken = es.getSystemToken(enterprise);
-		final LocalDate[] lastUpdateDate = new LocalDate[]{getEnterpriseLastUpdateDate(enterprise)};
-		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = getUpdates(lastUpdateDate[0]);
+		
+		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = getUpdates(enterprise);
+		
 		log.config("There are " + availableUpdates.size() + " required updates");
+		
 		progressMonitor.setCurrentTask(0);
 		int tasks = 0;
-		for (Map.Entry<LocalDate, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
+		List<LocalDate> toSort = new ArrayList<>();
+		for (LocalDate a : availableUpdates.keySet())
 		{
-			LocalDate k = entry.getKey();
-			Class<? extends ISystemUpdate> v = entry.getValue();
+			toSort.add(a);
+		}
+		toSort.sort(null);
+		for (LocalDate a : toSort)
+		{
+			Class<? extends ISystemUpdate> v = availableUpdates.get(a);
 			tasks += v.getAnnotation(DatedUpdate.class)
 			          .taskCount() + 1;
 		}
@@ -93,30 +94,30 @@ public class EnterpriseService
 			logProgress("Update System", "Starting updates for " + value.getSimpleName(), progressMonitor);
 			ISystemUpdate o = GuiceContext.get(value);
 			o.update(enterprise, progressMonitor);
-			lastUpdateDate[0] = key;
+			enterprise.add(UpdateClass, o.getClass().getCanonicalName(), newSystem, securityToken);
 		});
 		enterprise.addOrUpdate(EnterpriseClassifications.LastUpdateDate, DateTimeFormatter.ofPattern("yyyy/MM/dd")
-		                                                                                  .format(lastUpdateDate[0]), newSystem, securityToken);
-		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(lastUpdateDate[0]), progressMonitor);
+		                                                                                  .format(LocalDate.now()), newSystem, securityToken);
+		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(LocalDate.now()), progressMonitor);
 	}
 	
 	@Override
-	public LocalDate getEnterpriseLastUpdateDate(IEnterprise<?> enterprise)
+	public Set<String> getEnterpriseAppliedUpdates(IEnterprise<?> enterprise)
 	{
+		Set<String> set = new LinkedHashSet<>();
 		EnterpriseSystem es = get(EnterpriseSystem.class);
 		ISystems<?> newSystem = es.getSystem(enterprise);
-		UUID securityToken = es.getSystemToken(enterprise);
-		if (!enterprise.hasClassifications(EnterpriseClassifications.LastUpdateDate, newSystem, securityToken))
+		UUID identityToken = es.getSystemToken(enterprise);
+		List<IRelationshipValue<IEnterprise<?>, IClassification<?>, ?>> classificationsAll = enterprise.findClassificationsAll(UpdateClass, newSystem, identityToken);
+		for (IRelationshipValue<IEnterprise<?>, IClassification<?>, ?> rel : classificationsAll)
 		{
-			enterprise.addOrReuse(EnterpriseClassifications.LastUpdateDate, "2008/01/01", newSystem, securityToken);
+			set.add(rel.getValue());
 		}
-		IRelationshipValue<IEnterprise<?>, IClassification<?>, ?> val = enterprise.addOrReuse(EnterpriseClassifications.LastUpdateDate, "2008/01/01", newSystem, securityToken);
-		final LocalDate[] lastUpdateDate = {new LocalDateDeserializer().convert(val.getValue())};
-		return lastUpdateDate[0];
+		return set;
 	}
 	
 	@Override
-	public Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(LocalDate lastUpdateDate)
+	public Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?> enterprise)
 	{
 		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
 		for (ClassInfo classInfo : GuiceContext.instance()
@@ -135,9 +136,12 @@ public class EnterpriseService
 			updateDate = new LocalDateDeserializer().convert(du.date());
 			availableUpdates.put(updateDate, clazz);
 		}
+		
+		Set<String> enterpriseAppliedUpdates = getEnterpriseAppliedUpdates(enterprise);
 		Map<LocalDate, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
+		
 		availableUpdates.forEach((key, value) -> {
-			if (key.isAfter(lastUpdateDate))
+			if (!enterpriseAppliedUpdates.contains(value.getCanonicalName()))
 			{
 				applicableUpdates.put(key, value);
 			}

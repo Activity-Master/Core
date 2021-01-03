@@ -18,9 +18,13 @@ public interface IEnterpriseService
 {
 	void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor);
 	
-	LocalDate getEnterpriseLastUpdateDate(IEnterprise<?> enterprise);
+//	LocalDate getEnterpriseLastUpdateDate(IEnterprise<?> enterprise);
 	
-	Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(LocalDate lastUpdateDate);
+	//Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(LocalDate lastUpdateDate);
+	
+	Set<String> getEnterpriseAppliedUpdates(IEnterprise<?> enterprise);
+	
+	Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?> enterprise);
 	
 	List<IEnterprise<?>> findEnterprisesWithClassification(Classification classification);
 	

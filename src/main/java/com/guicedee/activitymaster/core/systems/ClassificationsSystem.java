@@ -57,6 +57,7 @@ public class ClassificationsSystem
 		service.create(InvolvedPartyClassifications.SecurityPasswordSalt, activityMasterSystem, Classifications.Security);
 
 		service.create(EnterpriseClassifications.LastUpdateDate, activityMasterSystem, enterpriseName);
+		service.create(EnterpriseClassifications.UpdateClass, activityMasterSystem, enterpriseName);
 		service.create(EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterpriseName);
 		
 		service.create(Languages, activityMasterSystem, Classifications.DefaultClassification);

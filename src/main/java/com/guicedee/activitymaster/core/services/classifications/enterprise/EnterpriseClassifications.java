@@ -8,6 +8,7 @@ public enum EnterpriseClassifications
 		implements IEnterpriseClassification<EnterpriseClassifications>
 {
 	LastUpdateDate("The assigned date of the last update", EnterpriseXClassification),
+	UpdateClass("The class file for an update", EnterpriseXClassification),
 	EnterpriseIdentity("The root UUID of an enterprise", EnterpriseXClassification),
 	
 	;
