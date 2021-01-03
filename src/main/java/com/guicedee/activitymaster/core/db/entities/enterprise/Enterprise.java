@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.enterprise;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
@@ -26,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -40,6 +40,12 @@ import static jakarta.persistence.AccessType.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.util.UUID, EnterpriseSecurityToken>
 		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise<?>, IClassification<?>, Enterprise>,
@@ -62,21 +68,18 @@ public class Enterprise
 	@NotNull
 	@Column(nullable = false,
 			name = "EnterpriseName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
 	@NotNull
 	@Column(nullable = false,
 			name = "EnterpriseDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 
 	@OneToMany(
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EnterpriseSecurityToken> securities;
+		private List<EnterpriseSecurityToken> securities;
 
 	public Enterprise()
 	{

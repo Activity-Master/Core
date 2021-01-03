@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.rules;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -38,7 +38,12 @@ import static jakarta.persistence.FetchType.*;
 @Table(schema = "Rules",
        name = "Rules")
 @XmlRootElement
-@Access(FIELD)
+@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Rules
 		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, java.util.UUID, RulesSecurityToken>
 		implements IContainsClassifications<Rules, Classification, RulesXClassification, IRulesClassification<?>, IRules<?>, IClassification<?>, Rules>,
@@ -67,8 +72,7 @@ public class Rules
 	@Column(nullable = false,
 	        length = 150,
 	        name = "RuleSetName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -77,51 +81,42 @@ public class Rules
 	@Column(nullable = false,
 	        length = 250,
 	        name = "RuleSetDescription")
-	@JsonIgnore
-	private String description;
+		private String description;
 
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesXClassification> classifications;
+		private List<RulesXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesSecurityToken> securities;
+		private List<RulesSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesXResourceItem> resources;
+		private List<RulesXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "childRulesID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesXRules> rulesXRulesList;
+		private List<RulesXRules> rulesXRulesList;
 	@OneToMany(
 			mappedBy = "parentRulesID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesXRules> rulesXRulesList1;
+		private List<RulesXRules> rulesXRulesList1;
 	
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesXInvolvedParty> parties;
+		private List<RulesXInvolvedParty> parties;
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesXArrangement> arrangements;
+		private List<RulesXArrangement> arrangements;
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesXProduct> products;
+		private List<RulesXProduct> products;
 	
 	public Rules()
 	{

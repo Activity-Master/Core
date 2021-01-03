@@ -22,6 +22,7 @@ import static jakarta.persistence.AccessType.*;
 @XmlRootElement
 
 @Access(FIELD)
+
 public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 		extends WarehouseSecurityTable<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken,
 				                              InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder, java.util.UUID>

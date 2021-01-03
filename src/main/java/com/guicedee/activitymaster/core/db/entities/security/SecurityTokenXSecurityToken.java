@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.security;
 
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.security.builders.SecurityTokenXSecurityTokenQueryBuilder;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -25,7 +27,12 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema="Security",name = "SecurityTokenXSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class SecurityTokenXSecurityToken
 		extends WarehouseClassificationRelationshipTable<SecurityToken,
 				                                                SecurityToken,

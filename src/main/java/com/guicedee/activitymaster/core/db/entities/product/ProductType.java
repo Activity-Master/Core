@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.product;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductTypeQueryBuilder;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -37,6 +37,12 @@ import static jakarta.persistence.AccessType.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class ProductType
 		extends WarehouseSCDNameDescriptionTable<ProductType, ProductTypeQueryBuilder, java.util.UUID, ProductTypeSecurityToken>
 		implements IProductType<ProductType>,
@@ -58,8 +64,7 @@ public class ProductType
 	@Column(nullable = false,
 	        length = 200,
 	        name = "ProductTypeName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -67,26 +72,22 @@ public class ProductType
 	@Column(nullable = false,
 	        length = 200,
 	        name = "ProductTypeDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 	
 	@OneToMany(
 			mappedBy = "productTypeID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductXProductType> productXProductTypeList;
+		private List<ProductXProductType> productXProductTypeList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductTypeSecurityToken> securities;
+		private List<ProductTypeSecurityToken> securities;
 	
 	
 	@OneToMany(
 			mappedBy = "productTypeID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductTypeXClassification> classifications;
+		private List<ProductTypeXClassification> classifications;
 	
 	
 	public ProductType()

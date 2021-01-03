@@ -31,5 +31,7 @@ public interface IRulesService<J extends IRulesService<J>>
 	
 	List<IRulesType<?>> findRuleTypesByRules(IRules<?> rulesType, String classificationName, String value, ISystems<?> system, UUID... identityToken);
 	
+	List<IRelationshipValue<IRules<?>,IRulesType<?>,?>> findRuleTypeValuesByRules(IRules<?> rulesType, String classificationName, String value, ISystems<?> system, UUID... identityToken);
+	
 	List<IRules<?>> findRulesByProduct(IProduct<?> product, String classificationName, String value, ISystems<?> system, UUID... identityToken);
 }

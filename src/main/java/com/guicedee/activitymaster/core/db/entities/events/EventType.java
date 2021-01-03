@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.events;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -33,6 +33,12 @@ import static jakarta.persistence.AccessType.*;
 @XmlRootElement
 
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class EventType
 		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, java.util.UUID, EventTypesSecurityToken>
 		implements IEventType<EventType>,
@@ -53,8 +59,7 @@ public class EventType
 	@Column(nullable = false,
 			length = 200,
 			name = "EventTypeName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -62,19 +67,16 @@ public class EventType
 	@Column(nullable = false,
 			length = 200,
 			name = "EventTypeDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 
 	@OneToMany(
 			mappedBy = "eventTypeID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXEventType> eventXEventTypeList;
+		private List<EventXEventType> eventXEventTypeList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventTypesSecurityToken> securities;
+		private List<EventTypesSecurityToken> securities;
 
 	public EventType()
 	{

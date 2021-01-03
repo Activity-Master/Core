@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyOrganicTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -39,6 +39,12 @@ import static jakarta.persistence.FetchType.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class InvolvedPartyOrganicType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, java.util.UUID, InvolvedPartyOrganicTypeSecurityToken>
 		implements IInvolvedPartyOrganicType<InvolvedPartyOrganicType>,
@@ -64,8 +70,7 @@ public class InvolvedPartyOrganicType
 	@Column(nullable = false,
 			length = 200,
 			name = "InvolvedPartyTypeName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 			fetch = EAGER)
 	@NotNull
@@ -74,8 +79,7 @@ public class InvolvedPartyOrganicType
 	@Column(nullable = false,
 			length = 500,
 			name = "InvolvedPartyTypeDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 
 	@OneToMany(
 			mappedBy = "base",

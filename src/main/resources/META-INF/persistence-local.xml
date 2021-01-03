@@ -166,6 +166,8 @@
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesTypeSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesTypeXClassification</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesTypeXClassificationSecurityToken</class>
+        <class>com.guicedee.activitymaster.core.db.entities.rules.RulesTypeXResourceItem</class>
+        <class>com.guicedee.activitymaster.core.db.entities.rules.RulesTypeXResourceItemSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesXClassification</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesXClassificationSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.rules.RulesXResourceItem</class>

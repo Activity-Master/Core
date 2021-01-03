@@ -193,6 +193,7 @@ public class ActivityMasterService
 		}
 	}
 	
+	@Override
 	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		IEnterpriseService enterpriseService = get(IEnterpriseService.class);
@@ -210,8 +211,7 @@ public class ActivityMasterService
 	public void runScript(String script)
 	{
 		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
-		try (java.sql.Connection c = ds.getConnection();
-		     java.sql.Statement st = c.createStatement())
+		try (java.sql.Statement st = ds.getConnection().createStatement())
 		{
 			st.executeUpdate(script);
 		}

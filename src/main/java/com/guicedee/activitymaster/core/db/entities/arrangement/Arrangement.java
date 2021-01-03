@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.arrangement;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -36,8 +36,13 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Arrangement",
        name = "Arrangement")
 @XmlRootElement
-
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, java.util.UUID, ArrangementSecurityToken>
 		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, IArrangement<?>, IClassification<?>, Arrangement>,
@@ -63,56 +68,46 @@ public class Arrangement
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXClassification> classifications;
+		private List<ArrangementXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXInvolvedParty> parties;
+		private List<ArrangementXInvolvedParty> parties;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXResourceItem> resources;
+		private List<ArrangementXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXArrangement> events;
+		private List<EventXArrangement> events;
 	
 	@OneToMany(
 			mappedBy = "childArrangementID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXArrangement> arrangementXArrangementList;
+		private List<ArrangementXArrangement> arrangementXArrangementList;
 	@OneToMany(
 			mappedBy = "parentArrangementID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXArrangement> arrangementXArrangementList1;
+		private List<ArrangementXArrangement> arrangementXArrangementList1;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXProduct> products;
+		private List<ArrangementXProduct> products;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementSecurityToken> securities;
+		private List<ArrangementSecurityToken> securities;
 	
 	@OneToMany(
 			fetch = FetchType.LAZY,
 			mappedBy = "arrangement")
-	@JsonIgnore
-	private List<ArrangementXArrangementType> types;
+		private List<ArrangementXArrangementType> types;
 	@OneToMany(
 			fetch = FetchType.LAZY,
 			mappedBy = "arrangement")
-	@JsonIgnore
-	private List<ArrangementXRules> rules;
+		private List<ArrangementXRules> rules;
 	
 	public Arrangement()
 	{

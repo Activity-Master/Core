@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.systems;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static jakarta.persistence.AccessType.*;
 
@@ -41,7 +41,12 @@ import static jakarta.persistence.AccessType.*;
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Access(FIELD)
+@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Systems
 		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.util.UUID, SystemsSecurityToken>
 		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>, ISystems<?>, IClassification<?>, Systems>,
@@ -68,8 +73,7 @@ public class Systems
 	@Column(nullable = false,
 	        length = 150,
 	        name = "SystemName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -77,8 +81,7 @@ public class Systems
 	@Column(nullable = false,
 	        length = 250,
 	        name = "SystemDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -87,29 +90,25 @@ public class Systems
 	@Column(nullable = false,
 	        length = 250,
 	        name = "SystemHistoryName")
-	@JsonIgnore
-	private String systemHistoryName;
+		private String systemHistoryName;
 	
 	@JoinColumn(name = "EnterpriseID",
 	            referencedColumnName = "EnterpriseID",
 	            nullable = false)
 	@ManyToOne(optional = false)
-	@JsonIgnore
-	private Enterprise enterpriseID;
+		private Enterprise enterpriseID;
 	
 	@JoinColumn(name = "ActiveFlagID",
 	            referencedColumnName = "ActiveFlagID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.EAGER)
-	@JsonIgnore
-	private ActiveFlag activeFlagID;
+		private ActiveFlag activeFlagID;
 	
 	@OneToMany(
 			mappedBy = "systemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<SystemsSecurityToken> securities;
+		private List<SystemsSecurityToken> securities;
 	
 	public Systems()
 	{

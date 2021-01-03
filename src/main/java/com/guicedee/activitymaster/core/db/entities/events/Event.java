@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.events;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -38,6 +38,12 @@ import static jakarta.persistence.AccessType.*;
 @XmlRootElement
 
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, java.util.UUID, EventSecurityToken>
 		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>, IEvent<?>, IClassification<?>, Event>,
@@ -74,57 +80,47 @@ public class Event
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXClassification> classifications;
+		private List<EventXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXInvolvedParty> parties;
+		private List<EventXInvolvedParty> parties;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXArrangement> arrangements;
+		private List<EventXArrangement> arrangements;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXResourceItem> resources;
+		private List<EventXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXAddress> addresses;
+		private List<EventXAddress> addresses;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventSecurityToken> securities;
+		private List<EventSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXProduct> products;
+		private List<EventXProduct> products;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXGeography> geographies;
+		private List<EventXGeography> geographies;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXEventType> eventTypes;
+		private List<EventXEventType> eventTypes;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXRules> rules;
+		private List<EventXRules> rules;
 	
 	public Event()
 	{

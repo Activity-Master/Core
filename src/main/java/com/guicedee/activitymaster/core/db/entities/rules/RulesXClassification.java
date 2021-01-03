@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.rules;
 
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesXClassificationQueryBuilder;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -28,7 +30,12 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema="Rules",name = "RulesXClassification")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class RulesXClassification
 		extends WarehouseClassificationRelationshipTable<Rules,
 				                                                Classification,

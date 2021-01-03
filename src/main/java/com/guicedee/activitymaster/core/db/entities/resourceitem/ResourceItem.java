@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.resourceitem;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXResourceItem;
@@ -38,6 +37,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -53,6 +53,12 @@ import static jakarta.persistence.FetchType.*;
 @XmlRootElement
 
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.util.UUID, ResourceItemSecurityToken>
 		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IClassificationValue<?>, IResourceItem<?>, IClassification<?>, ResourceItem>,
@@ -81,82 +87,68 @@ public class ResourceItem
 	@Column(nullable = false,
 	        length = 128,
 	        name = "ResourceItemUUID")
-	@JsonIgnore
-	private UUID resourceItemUUID;
+		private UUID resourceItemUUID;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@Column(nullable = false,
 	        name = "ResourceItemDataType",
 	        length = 150)
 	@Size(max = 150)
-	@JsonIgnore
-	private String resourceItemDataType;
+		private String resourceItemDataType;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ResourceItemXClassification> classifications;
+		private List<ResourceItemXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ResourceItemXResourceItemType> types;
+		private List<ResourceItemXResourceItemType> types;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXResourceItem> parties;
+		private List<InvolvedPartyXResourceItem> parties;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXResourceItem> arrangements;
+		private List<ArrangementXResourceItem> arrangements;
 	
 	@OneToMany(
 			mappedBy = "resource",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ResourceItemData> data;
+		private List<ResourceItemData> data;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<AddressXResourceItem> addresses;
+		private List<AddressXResourceItem> addresses;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXResourceItem> events;
+		private List<EventXResourceItem> events;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductXResourceItem> products;
+		private List<ProductXResourceItem> products;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ClassificationDataConceptXResourceItem> concept;
+		private List<ClassificationDataConceptXResourceItem> concept;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ClassificationXResourceItem> classificationXResourceItemList;
+		private List<ClassificationXResourceItem> classificationXResourceItemList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ResourceItemSecurityToken> securities;
+		private List<ResourceItemSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<GeographyXResourceItem> geographies;
+		private List<GeographyXResourceItem> geographies;
 	
 	public ResourceItem()
 	{

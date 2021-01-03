@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.address;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.builders.AddressQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -36,6 +36,12 @@ import static jakarta.persistence.AccessType.*;
        name = "Address")
 @XmlRootElement
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, java.util.UUID, AddressSecurityToken>
 		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>, IAddress<?>, IClassification<?>, Address>,
@@ -59,51 +65,43 @@ public class Address
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<AddressXClassification> classifications;
+		private List<AddressXClassification> classifications;
 	
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 	        name = "Value")
-	@JsonIgnore
-	private String value;
+		private String value;
 	
 	@JoinColumn(name = "ClassificationID",
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
-	@JsonIgnore
-	private Classification classificationID;
+		private Classification classificationID;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<AddressSecurityToken> securities;
+		private List<AddressSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<AddressXGeography> geographies;
+		private List<AddressXGeography> geographies;
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<AddressXResourceItem> resources;
+		private List<AddressXResourceItem> resources;
 	
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXAddress> events;
+		private List<EventXAddress> events;
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXAddress> addresses;
+		private List<InvolvedPartyXAddress> addresses;
 	
 	public Address()
 	{

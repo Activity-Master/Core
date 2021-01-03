@@ -5,8 +5,7 @@
  */
 package com.guicedee.activitymaster.core.db.entities.geography;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXGeography;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -44,6 +44,12 @@ import static jakarta.persistence.FetchType.*;
 @XmlRootElement
 
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Geography
 		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, java.util.UUID, GeographySecurityToken>
 		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, IGeography<?>, IClassification<?>, Geography>,
@@ -71,8 +77,7 @@ public class Geography
 	@Column(nullable = false,
 	        length = 500,
 	        name = "GeographyName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -81,50 +86,42 @@ public class Geography
 	@Column(nullable = false,
 	        length = 500,
 	        name = "GeographyDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<GeographyXClassification> classifications;
+		private List<GeographyXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<AddressXGeography> addresses;
+		private List<AddressXGeography> addresses;
 	
 	@JoinColumn(name = "ClassificationID",
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
-	@JsonIgnore
-	private Classification classificationID;
+		private Classification classificationID;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<GeographySecurityToken> securities;
+		private List<GeographySecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<GeographyXResourceItem> resources;
+		private List<GeographyXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "parentGeographyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<GeographyXGeography> geographyXGeographyList;
+		private List<GeographyXGeography> geographyXGeographyList;
 	@OneToMany(
 			mappedBy = "childGeographyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<GeographyXGeography> geographyXGeographyList1;
+		private List<GeographyXGeography> geographyXGeographyList1;
 	
 	public Geography()
 	{

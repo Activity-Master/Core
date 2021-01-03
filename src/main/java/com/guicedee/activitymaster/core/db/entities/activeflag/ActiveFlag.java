@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.activeflag;
 
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.builders.ActiveFlagQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -41,6 +43,12 @@ import static jakarta.persistence.AccessType.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class ActiveFlag
 		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.util.UUID, ActiveFlagSecurityToken>
 		implements IContainsNameAndDescription<ActiveFlag>,

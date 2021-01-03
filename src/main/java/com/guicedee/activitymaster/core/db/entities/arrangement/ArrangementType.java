@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.arrangement;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -40,6 +40,12 @@ import static jakarta.persistence.AccessType.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class ArrangementType
 		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, java.util.UUID, ArrangementTypeSecurityToken>
 		implements IContainsClassifications<ArrangementType, Classification, ArrangementTypeXClassification, IArrangementClassification<?>, IArrangementType<?>, IClassification<?>, ArrangementType>,
@@ -74,20 +80,17 @@ public class ArrangementType
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementTypeSecurityToken> securities;
+		private List<ArrangementTypeSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementTypeXClassification> classifications;
+		private List<ArrangementTypeXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "type",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXArrangementType> arrangementsList;
+		private List<ArrangementXArrangementType> arrangementsList;
 	
 	
 	public ArrangementType()

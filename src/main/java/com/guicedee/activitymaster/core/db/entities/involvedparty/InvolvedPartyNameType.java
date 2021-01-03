@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyNameTypeQueryBuilder;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
@@ -23,6 +22,7 @@ import java.io.Serial;
 import java.util.List;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -38,6 +38,12 @@ import static jakarta.persistence.FetchType.*;
 @Access(FIELD)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class InvolvedPartyNameType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, java.util.UUID, InvolvedPartyNameTypeSecurityToken>
 		implements IContainsNameAndDescription<InvolvedPartyNameType>,
@@ -64,8 +70,7 @@ public class InvolvedPartyNameType
 	@Column(nullable = false,
 	        length = 500,
 	        name = "InvolvedPartyNameTypeName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -74,20 +79,17 @@ public class InvolvedPartyNameType
 	@Column(nullable = false,
 	        length = 500,
 	        name = "InvolvedPartyNameTypeDescr")
-	@JsonIgnore
-	private String description;
+		private String description;
 	
 	@OneToMany(
 			mappedBy = "involvedPartyNameTypeID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList;
+		private List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyNameTypeSecurityToken> securities;
+		private List<InvolvedPartyNameTypeSecurityToken> securities;
 	
 	public InvolvedPartyNameType()
 	{

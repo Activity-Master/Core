@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.security;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagSecurityToken;
 import com.guicedee.activitymaster.core.db.entities.address.AddressSecurityToken;
@@ -49,6 +48,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -63,7 +63,12 @@ import static jakarta.persistence.FetchType.*;
 		name = "SecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class SecurityToken
 		extends WarehouseSCDNameDescriptionTable<SecurityToken, SecurityTokenQueryBuilder, java.util.UUID, SecurityTokensSecurityToken>
 		implements IContainsClassifications<SecurityToken, Classification, SecurityTokenXClassification, IClassificationValue<?>, ISecurityToken<?>, IClassification<?>, SecurityToken>,
@@ -88,46 +93,39 @@ public class SecurityToken
 	@Column(nullable = false,
 			length = 128,
 			name = "SecurityToken")
-	@JsonIgnore
-	private String securityToken;
+		private String securityToken;
 	@Basic(optional = false,
 			fetch = EAGER)
 	@NotNull
 	@Column(nullable = false,
 			name = "SecurityTokenFriendlyName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 			fetch = FetchType.EAGER)
 	@NotNull
 	@Column(nullable = false,
 			name = "SecurityTokenFriendlyDescription")
-	@JsonIgnore
-	private String description;
+		private String description;
 	@JoinColumn(name = "SecurityTokenClassificationID",
 			referencedColumnName = "ClassificationID",
 			nullable = false)
 	@ManyToOne(optional = false,
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private Classification securityTokenClassificationID;
+		private Classification securityTokenClassificationID;
 
 	@OneToMany(
 			mappedBy = "securityTokenID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<SecurityTokenXClassification> classifications;
+		private List<SecurityTokenXClassification> classifications;
 	@OneToMany(
 			mappedBy = "securityTokenID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<SecurityTokensSecurityToken> securities;
+		private List<SecurityTokensSecurityToken> securities;
 
 	@OneToMany(
 			mappedBy = "childSecurityTokenID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenChildList;
+		private List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenChildList;
 
 	public SecurityToken()
 	{

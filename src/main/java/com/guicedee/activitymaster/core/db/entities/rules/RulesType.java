@@ -1,18 +1,17 @@
 package com.guicedee.activitymaster.core.db.entities.rules;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.product.ProductTypeXClassification;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesTypeQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
+import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
 import com.guicedee.activitymaster.core.services.classifications.rules.IRulesTypeClassification;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IRulesType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 
 /**
@@ -39,13 +39,19 @@ import static jakarta.persistence.AccessType.*;
        name = "RulesType")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class RulesType
 		extends WarehouseSCDNameDescriptionTable<RulesType, RulesTypeQueryBuilder, java.util.UUID, RulesTypeSecurityToken>
 		implements IRulesType<RulesType>,
 		           IActivityMasterEntity<RulesType>,
 		           IContainsClassifications<RulesType, Classification,RulesTypeXClassification, IRulesTypeClassification<?>,IRulesType<?>, IClassification<?>,RulesType>,
-		           IRulesTypeValue
+		           IRulesTypeValue,
+		           IContainsResourceItems<RulesType, ResourceItem, RulesTypeXResourceItem, IClassificationValue<?>,IRulesType<?>, IResourceItem<?>,RulesType>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -62,8 +68,7 @@ public class RulesType
 	@Column(nullable = false,
 	        length = 200,
 	        name = "RulesTypeName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -71,26 +76,25 @@ public class RulesType
 	@Column(nullable = false,
 	        length = 200,
 	        name = "RulesTypeDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 	
 	@OneToMany(
 			mappedBy = "rulesTypeID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesXRulesType> rulesXRulesTypeList;
+		private List<RulesXRulesType> rulesXRulesTypeList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesTypeSecurityToken> securities;
-	
+		private List<RulesTypeSecurityToken> securities;
+	@OneToMany(
+			mappedBy = "rulesTypeID",
+			fetch = FetchType.LAZY)
+		private List<RulesTypeXResourceItem> resources;
 	
 	@OneToMany(
 			mappedBy = "rulesTypeID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<RulesTypeXClassification> classifications;
+		private List<RulesTypeXClassification> classifications;
 	
 	
 	public RulesType()
@@ -235,5 +239,25 @@ public class RulesType
 	public String classificationValue()
 	{
 		return getName();
+	}
+	
+	@Override
+	public void configureResourceItemLinkValue(RulesTypeXResourceItem linkTable, RulesType primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
+	{
+		linkTable.setRulesTypeID(primary);
+		linkTable.setResourceItemID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+		linkTable.setSystemID((Systems) system);
+	}
+	
+	@Override
+	public void configureResourceItemAddable(RulesTypeXResourceItem linkTable, RulesType primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
+	{
+		linkTable.setRulesTypeID(primary);
+		linkTable.setResourceItemID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+		linkTable.setSystemID((Systems) system);
 	}
 }

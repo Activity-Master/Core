@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -45,6 +45,12 @@ import static jakarta.persistence.FetchType.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Classification
 		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.util.UUID, ClassificationSecurityToken>
 		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView,IClassification<?>, IClassification<?>>,
@@ -71,8 +77,7 @@ public class Classification
 	@Column(nullable = false,
 	        length = 100,
 	        name = "ClassificationName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -81,29 +86,25 @@ public class Classification
 	@Column(nullable = false,
 	        length = 500,
 	        name = "ClassificationDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
 	@Column(nullable = false,
 	        name = "ClassificationSequenceNumber")
-	@JsonIgnore
-	@OrderBy
+		@OrderBy
 	private int classificationSequenceNumber;
 	@JoinColumn(name = "ClassificationDataConceptID",
 	            referencedColumnName = "ClassificationDataConceptID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.EAGER)
-	@JsonIgnore
-	private ClassificationDataConcept concept;
+		private ClassificationDataConcept concept;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ClassificationSecurityToken> securities;
+		private List<ClassificationSecurityToken> securities;
 	
 	public Classification()
 	{

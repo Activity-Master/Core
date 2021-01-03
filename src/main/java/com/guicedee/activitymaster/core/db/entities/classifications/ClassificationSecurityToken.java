@@ -19,8 +19,8 @@ import static jakarta.persistence.AccessType.*;
 @Entity
 @Table(schema="Classification",name = "ClassificationSecurityToken")
 @XmlRootElement
-
 @Access(FIELD)
+
 public class ClassificationSecurityToken
 		extends WarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, java.util.UUID>
 {

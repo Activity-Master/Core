@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
@@ -33,6 +32,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 import static jakarta.persistence.AccessType.*;
@@ -48,6 +48,12 @@ import static jakarta.persistence.AccessType.*;
        name = "InvolvedParty")
 @XmlRootElement
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, java.util.UUID, InvolvedPartySecurityToken>
 		implements IContainsClassifications<InvolvedParty, Classification, InvolvedPartyXClassification, IInvolvedPartyClassification<?>, IInvolvedParty<?>, IClassification<?>, InvolvedParty>,
@@ -76,63 +82,51 @@ public class InvolvedParty
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXClassification> classifications;
+		private List<InvolvedPartyXClassification> classifications;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXInvolvedPartyNameType> names;
+		private List<InvolvedPartyXInvolvedPartyNameType> names;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXResourceItem> resources;
+		private List<InvolvedPartyXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXInvolvedParty> arrangements;
+		private List<ArrangementXInvolvedParty> arrangements;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXInvolvedParty> events;
+		private List<EventXInvolvedParty> events;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartySecurityToken> securities;
+		private List<InvolvedPartySecurityToken> securities;
 	@OneToMany(
 			mappedBy = "childInvolvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList;
+		private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList;
 	@OneToMany(
 			mappedBy = "parentInvolvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList1;
+		private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList1;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXInvolvedPartyType> types;
+		private List<InvolvedPartyXInvolvedPartyType> types;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXProduct> products;
+		private List<InvolvedPartyXProduct> products;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXAddress> addresses;
+		private List<InvolvedPartyXAddress> addresses;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
+		private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
 	
 	public InvolvedParty()
 	{

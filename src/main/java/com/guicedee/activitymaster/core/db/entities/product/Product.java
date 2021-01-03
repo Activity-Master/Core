@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.product;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXProduct;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -47,6 +47,12 @@ import static jakarta.persistence.FetchType.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Product
 		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, java.util.UUID, ProductSecurityToken>
 		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>, IProduct<?>, IClassification<?>, Product>,
@@ -72,8 +78,7 @@ public class Product
 	@Column(nullable = false,
 	        length = 150,
 	        name = "ProductName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -82,8 +87,7 @@ public class Product
 	@Column(nullable = false,
 	        length = 250,
 	        name = "ProductDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -92,51 +96,42 @@ public class Product
 	@Column(nullable = false,
 	        length = 10,
 	        name = "ProductCode")
-	@JsonIgnore
-	private String productCode;
+		private String productCode;
 	
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductXClassification> classifications;
+		private List<ProductXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductSecurityToken> securities;
+		private List<ProductSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ArrangementXProduct> arrangements;
+		private List<ArrangementXProduct> arrangements;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductXResourceItem> resources;
+		private List<ProductXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<InvolvedPartyXProduct> parties;
+		private List<InvolvedPartyXProduct> parties;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<EventXProduct> events;
+		private List<EventXProduct> events;
 	@OneToMany(
 			mappedBy = "childProductID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductXProduct> productXProductList;
+		private List<ProductXProduct> productXProductList;
 	@OneToMany(
 			mappedBy = "parentProductID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ProductXProduct> productXProductList1;
+		private List<ProductXProduct> productXProductList1;
 	
 	public Product()
 	{

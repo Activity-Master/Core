@@ -2,11 +2,9 @@ package com.guicedee.activitymaster.core.db.entities.rules;
 
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
-import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesTypeXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesTypeXResourceItemQueryBuilder;
+import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.IRulesType;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import jakarta.persistence.*;
@@ -27,96 +25,112 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema = "Rules", name = "RulesTypeXClassification")
+@Table(schema = "Rules",
+       name = "RulesTypeXResourceItem")
 @XmlRootElement
-
 @Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-public class RulesTypeXClassification
+public class RulesTypeXResourceItem
 		extends WarehouseClassificationRelationshipTable<RulesType,
-		Classification,
-		RulesTypeXClassification,
-		RulesTypeXClassificationQueryBuilder,
+		ResourceItem,
+		RulesTypeXResourceItem,
+		RulesTypeXResourceItemQueryBuilder,
 		UUID,
-		RulesTypeXClassificationSecurityToken,
-		IRulesType<?>, IClassification<?>>
+		RulesTypeXResourceItemSecurityToken,
+		IRulesType<?>, IResourceItem<?>>
 		implements Serializable
 {
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-	
 	@Column(nullable = false,
-	        name = "RulesTypeXClassificationID")
+	        name = "RulesTypeXResourceItemID")
 	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-	
+	@OneToMany(
+			mappedBy = "base",
+			fetch = FetchType.LAZY)
+	private List<RulesTypeXResourceItemSecurityToken> securities;
 	@JoinColumn(name = "RulesTypeID",
 	            referencedColumnName = "RulesTypeID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
 	private RulesType rulesTypeID;
+	@JoinColumn(name = "ResourceItemID",
+	            referencedColumnName = "ResourceItemID",
+	            nullable = false)
+	@ManyToOne(optional = false,
+	           fetch = FetchType.LAZY)
+	private ResourceItem resourceItemID;
 	
-	@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY)
-	private List<RulesTypeXClassificationSecurityToken> securities;
-	
-	public RulesTypeXClassification()
+	public RulesTypeXResourceItem()
 	{
 	
 	}
 	
-	public RulesTypeXClassification(UUID rulesXClassificationID)
+	public RulesTypeXResourceItem(UUID rulesXResourceItemID)
 	{
-		this.id = rulesXClassificationID;
+		id = rulesXResourceItemID;
 	}
 	
 	@Override
-	protected RulesTypeXClassificationSecurityToken configureDefaultsForNewToken(RulesTypeXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
+	protected RulesTypeXResourceItemSecurityToken configureDefaultsForNewToken(RulesTypeXResourceItemSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
 	{
 		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
 		            .setBase(this);
 	}
 	
+	@Override
 	public UUID getId()
 	{
-		return this.id;
+		return id;
+	}
+	
+	public List<RulesTypeXResourceItemSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public RulesType getRulesTypeID()
 	{
-		return this.rulesTypeID;
+		return rulesTypeID;
 	}
 	
-	public List<RulesTypeXClassificationSecurityToken> getSecurities()
+	public ResourceItem getResourceItemID()
 	{
-		return this.securities;
+		return resourceItemID;
 	}
 	
-	public RulesTypeXClassification setId(UUID id)
+	@Override
+	public RulesTypeXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
-	public RulesTypeXClassification setRulesTypeID(RulesType rulesTypeID)
-	{
-		this.rulesTypeID = rulesTypeID;
-		return this;
-	}
-	
-	public RulesTypeXClassification setSecurities(List<RulesTypeXClassificationSecurityToken> securities)
+	public RulesTypeXResourceItem setSecurities(List<RulesTypeXResourceItemSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
 	
+	public RulesTypeXResourceItem setRulesTypeID(RulesType rulesTypeID)
+	{
+		this.rulesTypeID = rulesTypeID;
+		return this;
+	}
+	
+	public RulesTypeXResourceItem setResourceItemID(ResourceItem resourceItemID)
+	{
+		this.resourceItemID = resourceItemID;
+		return this;
+	}
 	
 	@Override
 	public boolean equals(Object o)
@@ -129,7 +143,7 @@ public class RulesTypeXClassification
 		{
 			return false;
 		}
-		RulesTypeXClassification that = (RulesTypeXClassification) o;
+		RulesTypeXResourceItem that = (RulesTypeXResourceItem) o;
 		return Objects.equals(getId(), that.getId());
 	}
 	
@@ -146,8 +160,8 @@ public class RulesTypeXClassification
 	}
 	
 	@Override
-	public IClassification<?> getSecondary()
+	public IResourceItem<?> getSecondary()
 	{
-		return getSecondary();
+		return getResourceItemID();
 	}
 }

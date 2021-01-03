@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationDataConceptQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -39,6 +39,12 @@ import static jakarta.persistence.FetchType.*;
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class ClassificationDataConcept
 		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, java.util.UUID, ClassificationDataConceptSecurityToken>
 		implements// IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
@@ -66,8 +72,7 @@ public class ClassificationDataConcept
 	@Column(nullable = false,
 	        length = 100,
 	        name = "classificationDataConceptName")
-	@JsonIgnore
-	private String name;
+		private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -76,32 +81,27 @@ public class ClassificationDataConcept
 	@Column(nullable = false,
 	        length = 1500,
 	        name = "ClassificationDataConceptDesc")
-	@JsonIgnore
-	private String description;
+		private String description;
 	
 	@OneToMany(
 			mappedBy = "concept",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<Classification> classificationList;
+		private List<Classification> classificationList;
 	
 	@OneToMany(
 			mappedBy = "classificationDataConceptID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ClassificationDataConceptXClassification> classifications;
+		private List<ClassificationDataConceptXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ClassificationDataConceptSecurityToken> securities;
+		private List<ClassificationDataConceptSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "classificationDataConceptID",
 			fetch = FetchType.LAZY)
-	@JsonIgnore
-	private List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList;
+		private List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList;
 	
 	public ClassificationDataConcept()
 	{

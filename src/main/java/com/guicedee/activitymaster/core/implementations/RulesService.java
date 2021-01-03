@@ -214,6 +214,20 @@ public class RulesService<J extends RulesService<J>>
 	}
 	
 	@Override
+	public List<IRelationshipValue<IRules<?>,IRulesType<?>,?>> findRuleTypeValuesByRules(IRules<?> rulesType, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		List res = new RulesXRulesType().builder()
+		                                .withClassification(classificationName, value, system, identityToken)
+		                                .findParentLink((Rules) rulesType, value)
+		                                .withEnterprise(system.getEnterpriseID())
+		                                .inActiveRange(system, identityToken)
+		                                .inDateRange()
+		                                .canRead(system, identityToken)
+		                                .getAll();
+		return res;
+	}
+	
+	@Override
 	public List<IRules<?>> findRulesByProduct(IProduct<?> product, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
 		List res = new RulesXProduct().builder()
