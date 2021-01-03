@@ -38,24 +38,11 @@ public class RulesXRulesTypeQueryBuilder
 	{
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
 		IClassification<?> classification1 = classificationService.find(classification, system, identityToken);
-		
-		JoinExpression joinExpression = new JoinExpression();
-		RulesXRulesTypeQueryBuilder builder =
-				new RulesXRulesType()
-						.builder()
-						.inActiveRange(system.getEnterpriseID(),identityToken)
-						.inDateRange()
-						.withEnterprise(system.getEnterpriseID())
-						.where(RulesXRulesType_.classificationID, Equals, (Classification)classification1);
-		
+		where(RulesXRulesType_.classificationID, Equals, (Classification)classification1);
 		if (!Strings.isNullOrEmpty(value))
 		{
-			builder.where(RulesXRulesType_.value, Equals, value);
+			where(RulesXRulesType_.value, Equals, value);
 		}
-		
-		join(Rules_.classifications,
-				builder,
-				JoinType.INNER, joinExpression);
 		return this;
 	}
 }

@@ -9,11 +9,14 @@ import com.guicedee.activitymaster.core.db.entities.arrangement.*;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXArrangementQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXClassificationQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXResourceItemQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
+import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
@@ -32,11 +35,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 
@@ -69,7 +74,7 @@ public class ArrangementsService
 		                                                  .inActiveRange(system.getEnterpriseID(), identityToken)
 		                                                  .inDateRange()
 		                                                  .where(ArrangementXArrangementType_.type, Equals, tt)
-		                                                  .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
+		                                                //  .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
 		                                                  .withClassification(arrangementTypeClassification, system)
 		                                                  .withEnterprise(system.getEnterprise())
 		                                                  .getCount() > 0;
@@ -80,7 +85,7 @@ public class ArrangementsService
 			                                        .inActiveRange(system.getEnterpriseID(), identityToken)
 			                                        .inDateRange()
 			                                        .where(ArrangementXArrangementType_.type, Equals, tt)
-			                                        .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
+			                                        //.where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
 			                                        .withClassification(arrangementTypeClassification, system)
 			                                        .withEnterprise(system.getEnterprise())
 			                                        .get()
@@ -247,6 +252,86 @@ public class ArrangementsService
 		List<Arrangement> arrangementList = aqb.getAll();
 		//noinspection unchecked
 		return (List) arrangementList;
+	}
+	
+	@Override
+	public IArrangement<?> findArrangementByResourceItem(IResourceItem<?> resourceItem, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		if (Strings.isNullOrEmpty(classificationName))
+		{
+			classificationName = NoClassification.classificationName();
+		}
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		Optional<ArrangementXResourceItem> arrangementXResourceItem = new ArrangementXResourceItem().builder()
+		                                                                                            .inActiveRange(system, identityToken)
+		                                                                                            .inDateRange()
+		                                                                                            .withEnterprise(system)
+		                                                                                            .withClassification(classification)
+		                                                                                            .withValue(value)
+		                                                                                            .where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
+		                                                                                            .get();
+		return arrangementXResourceItem.<IArrangement<?>>map(ArrangementXResourceItem::getArrangementID).orElse(null);
+	}
+	
+	@Override
+	public IArrangement<?> findArrangementByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		if (Strings.isNullOrEmpty(classificationName))
+		{
+			classificationName = NoClassification.classificationName();
+		}
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		Optional<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
+		                                                                           .inActiveRange(system, identityToken)
+		                                                                           .inDateRange()
+		                                                                           .withEnterprise(system)
+		                                                                           .withClassification(classification)
+		                                                                           .withValue(value)
+		                                                                           .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+		                                                                           .get();
+		return arxip.<IArrangement<?>>map(ArrangementXInvolvedParty::getArrangementID).orElse(null);
+	}
+	
+	@Override
+	public List<IArrangement<?>> findArrangementsByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		if (Strings.isNullOrEmpty(classificationName))
+		{
+			classificationName = NoClassification.classificationName();
+		}
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		List<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
+		                                                                       .inActiveRange(system, identityToken)
+		                                                                       .inDateRange()
+		                                                                       .withEnterprise(system)
+		                                                                       .withClassification(classification)
+		                                                                       .withValue(value)
+		                                                                       .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+		                                                                       .getAll();
+		return arxip.stream().<IArrangement<?>>map(ArrangementXInvolvedParty::getArrangementID).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<IInvolvedParty<?>> findArrangementInvolvedParties(IArrangement<?> arrangement, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		if (Strings.isNullOrEmpty(classificationName))
+		{
+			classificationName = NoClassification.classificationName();
+		}
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		List<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
+		                                                                       .inActiveRange(system, identityToken)
+		                                                                       .inDateRange()
+		                                                                       .withEnterprise(system)
+		                                                                       .withClassification(classification)
+		                                                                       .withValue(value)
+		                                                                       .where(ArrangementXInvolvedParty_.arrangementID, Equals, (Arrangement) arrangement)
+		                                                                       .getAll();
+		return arxip.stream().<IInvolvedParty<?>>map(ArrangementXInvolvedParty::getInvolvedPartyID).collect(Collectors.toList());
 	}
 	
 	@CacheResult(cacheName = "ArrangementArrangementType")

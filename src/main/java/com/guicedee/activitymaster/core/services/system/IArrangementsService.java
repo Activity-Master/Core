@@ -35,6 +35,14 @@ public interface IArrangementsService<J extends IArrangementsService<J>>
 	
 	List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken);
 	
+	IArrangement<?> findArrangementByResourceItem(IResourceItem<?> resourceItem, String classificationName, String value, ISystems<?> system, UUID... identityToken);
+	
+	IArrangement<?> findArrangementByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, ISystems<?> system, UUID... identityToken);
+	
+	List<IArrangement<?>> findArrangementsByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, ISystems<?> system, UUID... identityToken);
+	
+	List<IInvolvedParty<?>> findArrangementInvolvedParties(IArrangement<?> arrangement, String classificationName, String value, ISystems<?> system, UUID... identityToken);
+	
 	IArrangementType<?> find(IArrangementTypes<?> idType, ISystems<?> system, UUID... tokens);
 
 	IArrangementType<?> find(String idType, ISystems<?> system, UUID... tokens);

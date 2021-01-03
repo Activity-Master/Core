@@ -311,6 +311,21 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		                                                                 .getAll();
 	}
 	
+	@SuppressWarnings("unchecked")
+	default List<IRelationshipValue<L, R, ?>> findAllResourceItems(String classificationName, ISystems<?> system, UUID... identityToken)
+	{
+		Q activityMasterIdentity = get(findQueryRelationshipTableType());
+		IClassificationService<?> service = get(IClassificationService.class);
+		IClassification<?> classification = service.find(classificationName, system, identityToken);
+		return (List<IRelationshipValue<L, R, ?>>) activityMasterIdentity.builder()
+		                                                                 .findParentLink((P) this, null)
+		                                                                 .inActiveRange(system.getEnterpriseID())
+		                                                                 .inDateRange()
+		                                                                 .withClassification(classification)
+		                                                                 .canRead(system, identityToken)
+		                                                                 .getAll();
+	}
+	
 	
 	default boolean hasBeforeResourceItem(C classificationValue, ISystems<?> system, UUID... identityToken)
 	{

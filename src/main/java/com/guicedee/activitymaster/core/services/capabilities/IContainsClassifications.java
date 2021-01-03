@@ -462,7 +462,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q activityMasterIdentity = get(findClassificationCountableQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue.classificationName(), system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, null)
 		                             .inActiveRange(system)
@@ -477,7 +477,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q activityMasterIdentity = get(findClassificationCountableQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue.classificationName(), system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
 		                             .inActiveRange(system)
@@ -492,7 +492,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q activityMasterIdentity = get(findClassificationCountableQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue.classificationName(), system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, null)
 		                             .getCount();
@@ -504,7 +504,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q activityMasterIdentity = get(findClassificationCountableQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
+		Classification classification = (Classification) classificationService.find(classificationValue.classificationName(), system, identityToken);
 		return activityMasterIdentity.builder()
 		                             .findLink((P) this, (S) classification, value)
 		                             .getCount();
@@ -537,7 +537,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, system, identityToken);
+		IClassification<?> classification = classificationService.find(classificationValue.classificationName(), system, identityToken);
 		
 		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setClassificationID((Classification) classification);
@@ -571,7 +571,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, system, identityToken);
+		IClassification<?> classification = classificationService.find(classificationValue.classificationName(), system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, searchValue)
@@ -632,7 +632,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, system, identityToken);
+		IClassification<?> classification = classificationService.find(classificationValue.classificationName(), system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
@@ -856,7 +856,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, system, identityToken);
+		IClassification<?> classification = classificationService.find(classificationValue.classificationName(), system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
@@ -915,7 +915,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
 		IClassificationService classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem, identityToken);
+		IClassification<?> classification = classificationService.find(classificationValue.classificationName(), originatingSystem, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)
@@ -943,7 +943,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, originatingSystem, identityToken);
+		IClassification<?> classification = classificationService.find(classificationValue.classificationName(), originatingSystem, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, value)
@@ -973,7 +973,7 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		Q tableForClassification = get(findClassificationQueryRelationshipTableType());
 		
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		IClassification<?> classification = classificationService.find(classificationValue, system, identityToken);
+		IClassification<?> classification = classificationService.find(classificationValue.classificationName(), system, identityToken);
 		
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) classification, null)

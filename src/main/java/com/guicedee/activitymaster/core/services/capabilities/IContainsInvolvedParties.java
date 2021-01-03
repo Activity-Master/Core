@@ -34,6 +34,23 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		J extends IContainsInvolvedParties<P, S, Q, T, L, R, J>>
 {
 	
+	default List<IRelationshipValue<L, R, ?>> findByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		Q relationshipTable = get(this.findInvolvedPartyQueryRelationshipTableType());
+		var queryBuilderRelationshipClassification
+				= relationshipTable.builder()
+				                   .findChildLink((S) involvedParty)
+				                   .inActiveRange(system, identityToken)
+				                   .withValue(value)
+				                   .withClassification(classification)
+				                   .inDateRange()
+				                   .canRead(system, identityToken);
+		return (List) queryBuilderRelationshipClassification.getAll();
+		
+	}
+	
 	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, ISystems<?> system, UUID... identityToken)
 	{
 		return findInvolvedParty(classification, null, system, identityToken);
