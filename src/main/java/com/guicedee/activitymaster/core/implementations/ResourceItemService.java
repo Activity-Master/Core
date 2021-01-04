@@ -99,11 +99,12 @@ public class ResourceItemService
 	                               LocalDateTime effectiveFromDate,
 	                               ISystems<?> system, UUID... identityToken)
 	{
-		if (originalSourceSystemUniqueID != null)
+		if (!Strings.isNullOrEmpty(originalSourceSystemUniqueID))
 		{
 			if (new ResourceItem().builder()
 			                      .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
 			                      .withValue(resourceItemDataValue)
+			                      .withType(identityResourceType,null,system,identityToken)
 			                      .inDateRange()
 			                      .inActiveRange(system.getEnterprise(), identityToken)
 			                      .getCount() > 0)
@@ -112,6 +113,7 @@ public class ResourceItemService
 				                         .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
 				                         .withValue(resourceItemDataValue)
 				                         .inDateRange()
+				                         .withType(identityResourceType,null,system,identityToken)
 				                         .inActiveRange(system.getEnterprise(), identityToken)
 				                         .get()
 				                         .orElseThrow();
@@ -122,6 +124,7 @@ public class ResourceItemService
 		boolean exists = xr.builder()
 		                   .withValue(resourceItemDataValue)
 		                   .inActiveRange(system.getEnterprise(), identityToken)
+		                   .withType(identityResourceType,null,system,identityToken)
 		                   .inDateRange()
 		                   .withEnterprise(system.getEnterprise())
 		                   .getCount() > 0;
@@ -131,6 +134,7 @@ public class ResourceItemService
 			         .withValue(resourceItemDataValue)
 			         .inActiveRange(system.getEnterprise(), identityToken)
 			         .inDateRange()
+			         .withType(identityResourceType,null,system,identityToken)
 			         .withEnterprise(system.getEnterprise())
 			         .get()
 			         .orElseThrow();
@@ -151,6 +155,8 @@ public class ResourceItemService
 			xr.createDefaultSecurity(system, identityToken);
 		}
 		IResourceType<?> resourceItemType = (IResourceType<?>) createType(identityResourceType, identityResourceType, system, identityToken);
+		
+		
 		xr.addResourceItemTypes(resourceItemType, null, Classifications.NoClassification.classificationName() , system, identityToken);
 		
 		return xr;
