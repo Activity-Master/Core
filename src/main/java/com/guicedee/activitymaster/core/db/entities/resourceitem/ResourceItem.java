@@ -204,7 +204,7 @@ public class ResourceItem
 		{
 			ResourceItemData rid = new ResourceItemData();
 			rid.setResource(this);
-			rid.setEffectiveFromDate(LocalDateTime.now());
+			rid.setEffectiveFromDate(StartOfTime);
 			rid.setWarehouseCreatedTimestamp(LocalDateTime.now());
 			rid.setEffectiveToDate(EndOfTime);
 			rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
@@ -234,7 +234,7 @@ public class ResourceItem
 		
 		ResourceItemData rid = new ResourceItemData();
 		rid.setResource(this);
-		rid.setEffectiveFromDate(LocalDateTime.now());
+		rid.setEffectiveFromDate(StartOfTime);
 		rid.setWarehouseCreatedTimestamp(LocalDateTime.now());
 		rid.setEffectiveToDate(EndOfTime);
 		rid.setWarehouseLastUpdatedTimestamp(EndOfTime);

@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.EventXArrangement;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.rules.Rules;
+import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
 import com.guicedee.activitymaster.core.db.hierarchies.ArrangementsHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
@@ -15,6 +17,7 @@ import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
+import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -54,7 +57,8 @@ public class Arrangement
 		           IContainsEnterprise<Arrangement>,
 		           IContainsHierarchy<Arrangement,ArrangementXArrangement, ArrangementsHierarchyView,IArrangement<?>,IArrangement<Arrangement>>,
 		           IArrangement<Arrangement>,
-		           IContainsRules<Arrangement, Rules,ArrangementXRules,IClassification<?>,IArrangement<?>,IRules<?>>
+		           IContainsRules<Arrangement, Rules,ArrangementXRules,IClassification<?>,IArrangement<?>,IRules<?>>,
+		           IContainsRulesTypes<Arrangement, RulesType,ArrangementXRulesType,IClassificationValue<?>, IRulesTypeValue<?>,IArrangement<?>,IRulesType<?>,Arrangement>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -108,6 +112,11 @@ public class Arrangement
 			fetch = FetchType.LAZY,
 			mappedBy = "arrangement")
 		private List<ArrangementXRules> rules;
+	
+	@OneToMany(
+			fetch = FetchType.LAZY,
+			mappedBy = "arrangement")
+	private List<ArrangementXRulesType> ruleTypes;
 	
 	public Arrangement()
 	{
@@ -354,6 +363,16 @@ public class Arrangement
 	}
 	
 	@Override
+	public void configureAddable(ArrangementXInvolvedParty newLink, Arrangement primary, InvolvedParty secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		newLink.setArrangementID(primary);
+		newLink.setInvolvedPartyID(secondary);
+		newLink.setClassificationID((Classification) classificationValue);
+		newLink.setValue(value);
+		newLink.setEnterpriseID((Enterprise) enterprise);
+	}
+	
+	@Override
 	public void configureNewHierarchyItem(ArrangementXArrangement newLink, IArrangement<Arrangement> parent, IArrangement<Arrangement> child, String value)
 	{
 		newLink.setParentArrangementID((Arrangement) parent);
@@ -366,6 +385,15 @@ public class Arrangement
 	{
 		linkTable.setArrangement(primary);
 		linkTable.setRulesID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+	}
+	
+	@Override
+	public void configureRulesTypeLinkValue(ArrangementXRulesType linkTable, Arrangement primary, RulesType secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
+	{
+		linkTable.setArrangement(primary);
+		linkTable.setRulesTypeID(secondary);
 		linkTable.setClassificationID((Classification) classificationValue);
 		linkTable.setValue(value);
 	}

@@ -74,6 +74,15 @@ public class RulesService<J extends RulesService<J>>
 	}
 	
 	@Override
+	public IRules<?> find(UUID identity)
+	{
+		return new Rules().builder()
+		                  .find(identity)
+		                  .get()
+		                  .orElse(null);
+	}
+	
+	@Override
 	public IRules<?> findRules(String name, IEnterprise<?> enterprise, UUID... identityToken)
 	{
 		return new Rules().builder()

@@ -487,7 +487,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		tableForClassification.setSystemID((Systems) system);
 		tableForClassification.setOriginalSourceSystemID((Systems) system);
 		tableForClassification.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
-		tableForClassification.setEffectiveFromDate(effectiveFromDate);
+		tableForClassification.setEffectiveFromDate(StartOfTime);
 		tableForClassification.setEffectiveToDate(effectiveToDate);
 		tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
 		tableForClassification.setClassificationID((Classification) classification);
@@ -560,7 +560,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			newTableForClassification.setOriginalSourceSystemUniqueID(tableForClassification.getId() + "");
 			newTableForClassification.setWarehouseCreatedTimestamp(LocalDateTime.now());
 			newTableForClassification.setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
-			newTableForClassification.setEffectiveFromDate(LocalDateTime.now());
+			newTableForClassification.setEffectiveFromDate(StartOfTime);
 			newTableForClassification.setEffectiveToDate(EndOfTime);
 			newTableForClassification.setActiveFlagID((ActiveFlag) flagService.getActiveFlag(system.getEnterpriseID(), identityToken));
 			newTableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);

@@ -84,6 +84,10 @@ public interface IAddable<P extends WarehouseCoreTable,
 		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(Strings.nullToEmpty(value));
 		tableForClassification.setSystemID((Systems) system);
+		if (originalSystemID == null)
+		{
+			originalSystemID = system;
+		}
 		tableForClassification.setOriginalSourceSystemID((Systems) originalSystemID);
 		tableForClassification.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		tableForClassification.setEffectiveFromDate(effectiveFromDate);
@@ -106,7 +110,7 @@ public interface IAddable<P extends WarehouseCoreTable,
 			EventThread.event.get()
 			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, system, identityToken);
 		}
-		return tableForClassification;
+		return (IRelationshipValue<L, R, ?>)tableForClassification;
 	}
 	
 	default IRelationshipValue<L, R, ?> add(R typeName, String value, @NotNull ISystems<?> system, UUID... identityToken)
@@ -210,7 +214,8 @@ public interface IAddable<P extends WarehouseCoreTable,
 					.get()
 					.orElseThrow();
 		}
-		return tableForClassification;
+		//noinspection RedundantCast
+		return (IRelationshipValue<L, R, ?>)tableForClassification;
 	}
 	
 	default IRelationshipValue<L, R, ?> addOrUpdate(@NotNull R type,
@@ -308,9 +313,11 @@ public interface IAddable<P extends WarehouseCoreTable,
 		if (tableForClassification.getValue()
 		                          .equals(value))
 		{
-			return tableForClassification;
+			//noinspection RedundantCast
+			return (IRelationshipValue<L, R, ?>) tableForClassification;
 		}
-		return update(tableForClassification, type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+		//noinspection RedundantCast
+		return (IRelationshipValue<L, R, ?>) update((IRelationshipValue<L, R, ?>)tableForClassification, type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> update(@NotNull IRelationshipValue<L, R, ?> original,

@@ -1,37 +1,50 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
+import com.entityassist.SCDEntity;
+import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
+import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.implementations.ClassificationService;
+import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
+import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
+import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
 import com.guicedee.activitymaster.core.services.classifications.involvedparty.IInvolvedPartyClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
+import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.entityassist.SCDEntity.*;
+import static com.guicedee.activitymaster.core.services.classifications.events.EventInvolvedPartiesClassifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		S extends WarehouseCoreTable,
 		Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, ?, ?>,
-		T extends IClassificationValue<?>,
+		C extends IClassificationValue<?>,
 		L, R,
-		J extends IContainsInvolvedParties<P, S, Q, T, L, R, J>>
+		J extends IContainsInvolvedParties<P, S, Q, C, L, R, J>>
 {
 	
 	default List<IRelationshipValue<L, R, ?>> findByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, ISystems<?> system, UUID... identityToken)
@@ -51,12 +64,12 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, ISystems<?> system, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(C classification, ISystems<?> system, UUID... identityToken)
 	{
 		return findInvolvedParty(classification, null, system, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, ISystems<?> system, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(C classification, String value, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
@@ -76,7 +89,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		return findInvolvedParty(iClassification, searchValue, system, false, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(C classification, String value, boolean first, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
@@ -97,7 +110,7 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		return findInvolvedParty(iClassification, searchValue, system, first, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(T classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedParty(C classification, String value, boolean first, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
@@ -119,14 +132,14 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	}
 	
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(T classification, String searchValue, ISystems<?> system, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(C classification, String searchValue, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findInvolvedParty(iClassification, searchValue, system, true, false, identityToken);
 	}
 	
-	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(T classification, String searchValue, boolean latest, ISystems<?> system, UUID... identityToken)
+	default Optional<IRelationshipValue<L, R, ?>> findInvolvedPartyFirst(C classification, String searchValue, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
@@ -155,28 +168,28 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		return (Optional) queryBuilderRelationshipClassification.get();
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, ISystems<?> system, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(C classification, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findInvolvedPartyAll(iClassification, null, system, false, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, boolean latest, ISystems<?> system, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(C classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
 		return findInvolvedPartyAll(iClassification, null, system, latest, identityToken);
 	}
 	
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(C classification, String value, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, originatingSystem, identityToken);
 		return findInvolvedPartyAll(iClassification, value, originatingSystem, false, identityToken);
 	}
 
-	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(T classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
+	default List<IRelationshipValue<L, R, ?>> findInvolvedPartyAll(C classification, String value, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
@@ -278,6 +291,78 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		                             .getCount() > 0;
 	}
 	
+	default IRelationshipValue<L, R, ?> addInvolvedParty(R typeAdd,
+	                                                     String classificationName,
+	                                                     String value,
+	                                                     String originalSourceSystemUniqueID,
+	                                                     LocalDateTime effectiveFromDate,
+	                                                     LocalDateTime effectiveToDate,
+	                                                     ISystems<?> originalSystemID,
+	                                                     @NotNull ISystems<?> system,
+	                                                     UUID... identityToken)
+	{
+		Q tableForClassification = get(findInvolvedPartyAddableTableType());
+		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
+		tableForClassification.setValue(Strings.nullToEmpty(value));
+		tableForClassification.setSystemID((Systems) system);
+		if (originalSystemID == null)
+		{
+			originalSystemID = system;
+		}
+		tableForClassification.setOriginalSourceSystemID((Systems) originalSystemID);
+		tableForClassification.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
+		tableForClassification.setEffectiveFromDate(effectiveFromDate);
+		tableForClassification.setEffectiveToDate(effectiveToDate);
+		tableForClassification.setActiveFlagID(((Systems) system).getActiveFlagID());
+		tableForClassification.setClassificationID((Classification) classification);
+		
+		configureAddable(tableForClassification, (P) this,
+				(S)typeAdd,
+				(C) classification, value, system.getEnterpriseID());
+		
+		tableForClassification.persist();
+		if (get(ActivityMasterConfiguration.class)
+				.isSecurityEnabled())
+		{
+			tableForClassification.createDefaultSecurity(system, identityToken);
+		}
+		if (EventThread.event.get() != null)
+		{
+			EventThread.event.get()
+			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, system, identityToken);
+		}
+		return (IRelationshipValue<L, R, ?> )tableForClassification;
+	}
+	
+	default IRelationshipValue<L, R, ?> addInvolvedParty(R typeName, String value, @NotNull ISystems<?> system, UUID... identityToken)
+	{
+		return addInvolvedParty(typeName, Classifications.NoClassification.classificationName(), value, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addInvolvedParty(R typeName, String classificationName, String value, @NotNull ISystems<?> system, UUID... identityToken)
+	{
+		return addInvolvedParty(typeName, classificationName, value, STRING_EMPTY, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addInvolvedParty(R typeName, String classificationName, String value, String originalSourceSystemUniqueID, @NotNull ISystems<?> system, UUID... identityToken)
+	{
+		return addInvolvedParty(typeName, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addInvolvedParty(R secondaryName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, @NotNull ISystems<?> system, UUID... identityToken)
+	{
+		return addInvolvedParty(secondaryName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, SCDEntity.EndOfTime, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addInvolvedParty(R secondaryName, String classificationName, String value, String originalSourceSystemUniqueID, LocalDateTime effectiveFromDate, LocalDateTime effectiveToDate, @NotNull ISystems<?> system, UUID... identityToken)
+	{
+		return addInvolvedParty(secondaryName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
+	}
+	
+	
+	
 	@SuppressWarnings("unchecked")
 	default Q addInvolvedParty(IInvolvedPartyClassification<?> involvedPartyClassification, ISystems<?> system, String value, UUID... identifyingToken)
 	{
@@ -346,6 +431,8 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 		Optional<Q> exists = (Optional<Q>) tableForClassification.builder()
 		                                                         .findLink((P) this, (S) addy, value)
 		                                                         .inActiveRange(addy.getEnterpriseID())
+		                                                         .withClassification(iclassification,system)
+		                                                         .withValue(value)
 		                                                         .inDateRange()
 		                                                         .canRead(system, identifyingToken)
 		                                                         .get();
@@ -377,4 +464,296 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 	
 	
 	void setMyInvolvedPartyLinkValue(Q classificationLink, P first, S involvedParty, ISystems<?> system);
+	
+	default IRelationshipValue<L, R, ?> addOrReuseInvolvedParty(@NotNull R type,
+	                                                            @NotNull String classificationName,
+	                                                            @NotNull ISystems<?> system,
+	                                                            UUID... identityToken)
+	{
+		return addOrReuseInvolvedParty(type, classificationName, null, null, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrReuseInvolvedParty(@NotNull R type,
+	                                                            @NotNull String classificationName,
+	                                                            String value,
+	                                                            @NotNull ISystems<?> system,
+	                                                            UUID... identityToken)
+	{
+		return addOrReuseInvolvedParty(type, classificationName, value, null, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrReuseInvolvedParty(@NotNull R type,
+	                                                            @NotNull String classificationName,
+	                                                            String value,
+	                                                            String originalSourceSystemUniqueID,
+	                                                            @NotNull ISystems<?> system,
+	                                                            UUID... identityToken)
+	{
+		return addOrReuseInvolvedParty(type, classificationName, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrReuseInvolvedParty(@NotNull R type,
+	                                                            @NotNull String classificationName,
+	                                                            String value,
+	                                                            String originalSourceSystemUniqueID,
+	                                                            LocalDateTime effectiveFromDate,
+	                                                            @NotNull ISystems<?> system,
+	                                                            UUID... identityToken)
+	{
+		return addOrReuseInvolvedParty(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrReuseInvolvedParty(@NotNull R type,
+	                                                            @NotNull String classificationName,
+	                                                            String value,
+	                                                            String originalSourceSystemUniqueID,
+	                                                            LocalDateTime effectiveFromDate,
+	                                                            LocalDateTime effectiveToDate,
+	                                                            @NotNull ISystems<?> system,
+	                                                            UUID... identityToken)
+	{
+		return addOrReuseInvolvedParty(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
+	}
+	
+	@SuppressWarnings("unchecked")
+	default IRelationshipValue<L, R, ?> addOrReuseInvolvedParty(@NotNull R type,
+	                                                            @NotNull String classificationName,
+	                                                            String value,
+	                                                            String originalSourceSystemUniqueID,
+	                                                            LocalDateTime effectiveFromDate,
+	                                                            LocalDateTime effectiveToDate,
+	                                                            ISystems<?> originalSystemID,
+	                                                            @NotNull ISystems<?> system,
+	                                                            UUID... identityToken)
+	{
+		Q tableForClassification = get(findInvolvedPartyAddableTableType());
+		S sType = (S) type;
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
+		boolean exists = findTypeQueryInvolvedParties(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		if (!exists)
+		{
+			return addInvolvedParty(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+		}
+		else
+		{
+			tableForClassification = (Q) findTypeQueryInvolvedParties(value, system, tableForClassification, sType, classification, identityToken)
+					.get()
+					.orElseThrow();
+		}
+		return (IRelationshipValue<L, R, ?>)tableForClassification;
+	}
+	
+	void configureAddable(Q linkTable, P primary, S secondary, C classificationValue, String value, IEnterprise<?> enterprise);
+	
+	@NotNull
+	@SuppressWarnings("unchecked")
+	default Class<Q> findInvolvedPartyAddableTableType()
+	{
+		Type[] genericInterfaces;
+		Class<?> currentClass = getClass();
+		while (currentClass != Object.class)
+		{
+			genericInterfaces = currentClass.getGenericInterfaces();
+			for (Type genericInterface : genericInterfaces)
+			{
+				String clazz = genericInterface.getTypeName();
+				if (genericInterface instanceof ParameterizedType && clazz.contains(IContainsInvolvedParties.class.getCanonicalName()))
+				{
+					Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
+					return (Class<Q>) genericTypes[2];
+				}
+			}
+			currentClass = currentClass.getSuperclass();
+		}
+		return null;
+	}
+	
+	private QueryBuilderRelationship<?, ?, ?, ?, ?, ?> findTypeQueryInvolvedParties(String value, @NotNull ISystems<?> system, Q tableForClassification, S sType, Classification classification, UUID... identityToken)
+	{
+		return tableForClassification.builder()
+		                             .findLink((P) this, sType, value)
+		                             .inActiveRange(system.getEnterprise())
+		                             .inDateRange()
+		                             .withClassification(classification)
+		                             .withEnterprise(system.getEnterprise())
+		                             .canCreate(system.getEnterprise(), identityToken);
+	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	default IRelationshipValue<L, R, ?> addOrReuse(@NotNull R type,
+	                                               @NotNull String classificationName,
+	                                               String value,
+	                                               String originalSourceSystemUniqueID,
+	                                               LocalDateTime effectiveFromDate,
+	                                               LocalDateTime effectiveToDate,
+	                                               ISystems<?> originalSystemID,
+	                                               @NotNull ISystems<?> system,
+	                                               UUID... identityToken)
+	{
+		Q tableForClassification = get(findInvolvedPartyAddableTableType());
+		S sType = (S) type;
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
+		boolean exists = findTypeQueryInvolvedParties(value, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		if (!exists)
+		{
+			return addInvolvedParty(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+		}
+		else
+		{
+			tableForClassification = (Q) findTypeQueryInvolvedParties(value, system, tableForClassification, sType, classification, identityToken)
+					.get()
+					.orElseThrow();
+		}
+		return (IRelationshipValue<L, R, ?>)tableForClassification;
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrUpdateInvolvedParty(@NotNull R type,
+	                                                             @NotNull C classificationName,
+	                                                             String searchValue,
+	                                                             String value,
+	                                                             String originalSourceSystemUniqueID,
+	                                                             LocalDateTime effectiveFromDate,
+	                                                             LocalDateTime effectiveToDate,
+	                                                             @NotNull ISystems<?> system,
+	                                                             UUID... identityToken)
+	{
+		return addOrUpdateInvolvedParty(type, classificationName.classificationName(),searchValue, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, system, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrUpdateInvolvedParty(@NotNull R type,
+	                                                             @NotNull String classificationName,
+	                                                             @NotNull ISystems<?> system,
+	                                                             UUID... identityToken)
+	{
+		return addOrUpdateInvolvedParty(type, classificationName,null, null, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrUpdateInvolvedParty(@NotNull R type,
+	                                                             @NotNull String classificationName,
+	                                                             String searchValue,
+	                                                             String value,
+	                                                             @NotNull ISystems<?> system,
+	                                                             UUID... identityToken)
+	{
+		return addOrUpdateInvolvedParty(type, classificationName, searchValue, value,"", system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrUpdateInvolvedParty(@NotNull R type,
+	                                                             @NotNull String classificationName,
+	                                                             String searchValue,
+	                                                             String value,
+	                                                             String originalSourceSystemUniqueID,
+	                                                             @NotNull ISystems<?> system,
+	                                                             UUID... identityToken)
+	{
+		return addOrUpdateInvolvedParty(type, classificationName,searchValue, value, originalSourceSystemUniqueID, LocalDateTime.now(), system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrUpdateInvolvedParty(@NotNull R type,
+	                                                             @NotNull String classificationName,
+	                                                             String searchValue,
+	                                                             String value,
+	                                                             String originalSourceSystemUniqueID,
+	                                                             LocalDateTime effectiveFromDate,
+	                                                             @NotNull ISystems<?> system,
+	                                                             UUID... identityToken)
+	{
+		return addOrUpdateInvolvedParty(type, classificationName,searchValue, value, originalSourceSystemUniqueID, effectiveFromDate, EndOfTime, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrUpdateInvolvedParty(@NotNull R type,
+	                                                             @NotNull String classificationName,
+	                                                             String searchValue,
+	                                                             String value,
+	                                                             String originalSourceSystemUniqueID,
+	                                                             LocalDateTime effectiveFromDate,
+	                                                             LocalDateTime effectiveToDate,
+	                                                             @NotNull ISystems<?> system,
+	                                                             UUID... identityToken)
+	{
+		return addOrUpdateInvolvedParty(type, classificationName,searchValue, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, system, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> addOrUpdateInvolvedParty(@NotNull R type,
+	                                                             @NotNull String classificationName,
+	                                                             String searchValue,
+	                                                             String value,
+	                                                             String originalSourceSystemUniqueID,
+	                                                             LocalDateTime effectiveFromDate,
+	                                                             LocalDateTime effectiveToDate,
+	                                                             ISystems<?> originalSystemID,
+	                                                             @NotNull ISystems<?> system,
+	                                                             UUID... identityToken)
+	{
+		Q tableForClassification = get(findInvolvedPartyAddableTableType());
+		S sType = (S) type;
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
+		boolean exists = findTypeQueryInvolvedParties(searchValue, system, tableForClassification, sType, classification, identityToken).getCount() > 0;
+		if (!exists)
+		{
+			return addInvolvedParty(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+		}
+		
+		tableForClassification = (Q) findTypeQueryInvolvedParties(value, system, tableForClassification, sType, classification, identityToken)
+				.get()
+				.orElseThrow();
+		
+		if (tableForClassification.getValue()
+		                          .equals(value))
+		{
+			return (IRelationshipValue<L, R, ?>)tableForClassification;
+		}
+		return (IRelationshipValue<L, R, ?>)update((IRelationshipValue<L, R, ?>)tableForClassification, type, classificationName, value, originalSourceSystemUniqueID,
+				effectiveFromDate, effectiveToDate, originalSystemID,
+				system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> update(@NotNull IRelationshipValue<L, R, ?> original,
+	                                           @NotNull R type,
+	                                           @NotNull String classificationName,
+	                                           String value,
+	                                           String originalSourceSystemUniqueID,
+	                                           LocalDateTime effectiveFromDate,
+	                                           LocalDateTime effectiveToDate,
+	                                           ISystems<?> originalSystemID,
+	                                           @NotNull ISystems<?> system,
+	                                           UUID... identityToken)
+	{
+		archive(original, identityToken);
+		return addInvolvedParty(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+	}
+	
+	default IRelationshipValue<L, R, ?> archive(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
+	{
+		WarehouseSCDTable entity = (WarehouseSCDTable) original;
+		IActiveFlagService flagService = get(IActiveFlagService.class);
+		entity.setActiveFlagID((ActiveFlag) flagService.getArchivedFlag(entity.getEnterpriseID(), identityToken));
+		entity.update();
+		return original;
+	}
+	
+	default IRelationshipValue<L, R, ?> remove(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
+	{
+		WarehouseSCDTable entity = (WarehouseSCDTable) original;
+		IActiveFlagService flagService = get(IActiveFlagService.class);
+		entity.setActiveFlagID((ActiveFlag) flagService.getDeletedFlag(entity.getEnterpriseID(), identityToken));
+		entity.update();
+		return original;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	default IRelationshipValue<L, R, ?> expire(@NotNull IRelationshipValue<L, R, ?> original, Duration when)
+	{
+		WarehouseSCDTable entity = (WarehouseSCDTable) original;
+		entity.setEffectiveToDate(entity.getEffectiveToDate()
+		                                .plus(when));
+		QueryBuilderSCD scd = (QueryBuilderSCD) entity.builder();
+		scd.update(entity, when);
+		return original;
+	}
 }

@@ -43,6 +43,8 @@
         <class>com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXResourceItemSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXRules</class>
         <class>com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXRulesSecurityToken</class>
+        <class>com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXRulesType</class>
+        <class>com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXRulesTypeSecurityToken</class>
 
         <class>com.guicedee.activitymaster.core.db.entities.classifications.Classification</class>
         <class>com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept</class>

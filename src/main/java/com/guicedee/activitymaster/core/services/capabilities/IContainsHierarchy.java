@@ -83,18 +83,18 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		ClassificationService service = get(ClassificationService.class);
 		if(Strings.isNullOrEmpty(classificationName))
 			classificationName = HierarchyTypeClassification.classificationName();
+		
 		IEnterprise<?> enterprise = system.getEnterprise();
 		
-		Classification hierarchyType = (Classification) service.find(classificationName, system, identifyingToken);
+		Classification classification = (Classification) service.find(classificationName, system, identifyingToken);
 		
 		Optional<Q> exists = linkTable.builder()
-		                              .findLink(me, (J) child, null)
+		                              .findLink(me, (J) child, value)
 		                              .inActiveRange(enterprise, identifyingToken)
 		                              .inDateRange()
 		                              .canCreate(enterprise, identifyingToken)
-		                              .withClassification(hierarchyType)
+		                              .withClassification(classification)
 		                              .withEnterprise(enterprise)
-		                              .withValue(classificationName)
 		                              .get();
 		if (exists.isEmpty())
 		{
@@ -122,7 +122,7 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 			linkTable.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 			linkTable.setEnterpriseID((Enterprise) enterprise);
 			
-			linkTable.setClassificationID(hierarchyType);
+			linkTable.setClassificationID(classification);
 			
 			linkTable.setValue(Strings.nullToEmpty(value));
 			configureNewHierarchyItem(linkTable, (T) me, (T) child, value);

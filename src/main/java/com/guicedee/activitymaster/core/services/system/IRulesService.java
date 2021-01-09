@@ -13,6 +13,8 @@ public interface IRulesService<J extends IRulesService<J>>
 {
 	IRules<?> createRules(String rulesType, String name, String description, ISystems<?> system, UUID... identityToken);
 	
+	IRules<?> find(UUID identity);
+	
 	IRules<?> findRules(String name, IEnterprise<?> enterprise, UUID... identityToken);
 	
 	IRules<?> findRules(String productName, IClassification<?> classification, IEnterprise<?> enterprise, UUID... identityToken);

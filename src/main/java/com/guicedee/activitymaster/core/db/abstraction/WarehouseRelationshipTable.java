@@ -138,7 +138,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 		
 		setId(null);
 		setValue(newValue);
-		setEffectiveFromDate(LocalDateTime.now());
+		setEffectiveFromDate(StartOfTime);
 		setEffectiveToDate(EndOfTime);
 		setWarehouseCreatedTimestamp(LocalDateTime.now());
 		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());

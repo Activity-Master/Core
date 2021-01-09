@@ -38,4 +38,14 @@ public interface IClassificationValue<J extends Enum<J> & IClassificationValue<J
 	 * @return
 	 */
 	IClassificationDataConceptValue<?> concept();
+	
+	/**
+	 * If this value is encrypted or not
+	 *
+	 * @return default false
+	 */
+	default boolean encrypted()
+	{
+		return false;
+	}
 }

@@ -360,6 +360,16 @@ public class Event
 	}
 	
 	@Override
+	public void configureAddable(EventXInvolvedParty linkTable, Event primary, InvolvedParty secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setEventID(primary);
+		linkTable.setInvolvedPartyID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+		
+	}
+	
+	@Override
 	public void configureAddableRule(EventXRules linkTable, Event primary, Rules secondary, IClassification<?> classificationValue, String value, ISystems<?> enterprise)
 	{
 		linkTable.setEventID(primary);

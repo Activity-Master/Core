@@ -298,6 +298,16 @@ public class Rules
 	}
 	
 	@Override
+	public void configureAddable(RulesXInvolvedParty linkTable, Rules primary, InvolvedParty secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	{
+		linkTable.setRulesID(primary);
+		linkTable.setInvolvedPartyID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+		linkTable.setEnterpriseID((Enterprise) enterprise);
+	}
+	
+	@Override
 	public void configureAddableProduct(RulesXProduct linkTable, Rules primary, Product secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
 	{
 		linkTable.setRulesID(primary);

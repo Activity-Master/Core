@@ -19,4 +19,41 @@ public interface IHasValueQueryBuilder<J extends QueryBuilderDefault<J, E, I>, E
 		//noinspection unchecked
 		return (J) this;
 	}
+	
+	@jakarta.validation.constraints.NotNull
+	default J withValueGT(String value)
+	{
+		if (value != null)
+		{ where(this.<E, String>getAttribute("value"), GreaterThan, value); }
+		//noinspection unchecked
+		return (J) this;
+	}
+	
+	@jakarta.validation.constraints.NotNull
+	default J withValueGTE(String value)
+	{
+		if (value != null)
+		{ where(this.<E, String>getAttribute("value"), GreaterThanEqualTo, value); }
+		//noinspection unchecked
+		return (J) this;
+	}
+	
+	@jakarta.validation.constraints.NotNull
+	default J withValueLT(String value)
+	{
+		if (value != null)
+		{ where(this.<E, String>getAttribute("value"), LessThan, value); }
+		//noinspection unchecked
+		return (J) this;
+	}
+	
+	@jakarta.validation.constraints.NotNull
+	default J withValueLTE(String value)
+	{
+		if (value != null)
+		{ where(this.<E, String>getAttribute("value"), LessThanEqualTo, value); }
+		//noinspection unchecked
+		return (J) this;
+	}
+	
 }

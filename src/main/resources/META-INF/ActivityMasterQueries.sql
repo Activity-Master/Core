@@ -5,10 +5,10 @@ select * from Classification.Classification where ClassificationName = 'Grader'
 select * from Classification.ClassificationDataConcept
 
 
-select * from Classification.Classification where ClassificationName = 'ComPortNumber'
+select * from Classification.Classification where ClassificationName = 'Title'
 select * from Classification.Classification where ClassificationID =  '943CF5D0-12DC-411A-890D-3CFCB75C50AC'
 
-select * from Classification.Classification where ClassificationID =  'AE0F749A-07DD-45EC-8442-F7E92E911582'
+select * from Classification.Classification where ClassificationID =  'ABA1F0C4-DC3A-480F-8936-12BFFCF60E1A'
 
 
 select * from Product.Product
@@ -75,9 +75,11 @@ select * from Resource.ResourceItemXResourceItem
 select * from Arrangement.Arrangement
 
 
+select * from Arrangement.ArrangementXArrangementType
 
 select * from Arrangement.ArrangementType
 select * from Arrangement.ArrangementXArrangement
+select * from Arrangement.ArrangementXClassification
 select * from Arrangement.ArrangementXArrangementType
 select * from Arrangement.ArrangementXInvolvedParty
 select * from Arrangement.ArrangementXResourceItem
@@ -88,6 +90,35 @@ select * from Arrangement.ArrangementXResourceItem
 select * from Arrangement.ArrangementXClassification;
 
 
+
+select * 
+from Arrangement.ArrangementXClassification a
+
+
+select at.ArrangementTypeName, c.ClassificationName,a.value,atx.value,* 
+from Arrangement.ArrangementXResourceItem a
+	inner join Classification.Classification c
+		on a.ClassificationID = c.ClassificationID
+	inner join Arrangement.Arrangement ar
+		on a.ArrangementID = ar.ArrangementID
+	inner join Arrangement.ArrangementXArrangementType atx
+		on ar.ArrangementID = atx.ArrangementID
+	inner join Arrangement.ArrangementType at
+		on atx.ArrangementTypeID = at.ArrangementTypeID
+		
+
+
+
+select at.ArrangementTypeName, c.ClassificationName,a.value,atx.value,* 
+from Arrangement.ArrangementXArrangement a
+	inner join Classification.Classification c
+		on a.ClassificationID = c.ClassificationID
+	inner join Arrangement.Arrangement ar
+		on a.ParentArrangementID = ar.ArrangementID
+	inner join Arrangement.ArrangementXArrangementType atx
+		on ar.ArrangementID = atx.ArrangementID
+	inner join Arrangement.ArrangementType at
+		on atx.ArrangementTypeID = at.ArrangementTypeID
 
 
 

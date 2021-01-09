@@ -38,6 +38,8 @@ module com.guicedee.activitymaster.core {
 	exports com.guicedee.activitymaster.core.services.classifications.systems;
 	exports com.guicedee.activitymaster.core.services.classifications.rules;
 	
+	exports com.guicedee.activitymaster.core.db.entities.time;
+	
 	//exports com.guicedee.activitymaster.core.systems;
 	
 	exports com.guicedee.activitymaster.core.threads;

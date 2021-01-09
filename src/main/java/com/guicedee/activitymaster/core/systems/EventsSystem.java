@@ -36,7 +36,9 @@ public class EventsSystem
 		
 		GuiceContext.get(ITimeSystem.class)
 		            .getDay(new Date());
+		
 		logProgress("Loading Time", "Creating Hours and Minutes", progressMonitor);
+		
 		GuiceContext.get(ITimeSystem.class)
 		            .createTime();
 	}

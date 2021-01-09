@@ -238,6 +238,8 @@ public class ActivityMasterService
 		     java.sql.CallableStatement stPar5 = c.prepareCall("{call CreateArrangementXClassificationPartitions (?)}");
 		     java.sql.CallableStatement stPar6 = c.prepareCall("{call CreateArrangementXProductPartitions (?)}");
 		     java.sql.CallableStatement stPar7 = c.prepareCall("{call CreateArrangementXResourceItemPartitions (?)}");
+		     java.sql.CallableStatement stPar71 = c.prepareCall("{call CreateArrangementXRulesPartitions (?)}");
+		     java.sql.CallableStatement stPar72 = c.prepareCall("{call CreateArrangementXRulesTypePartitions (?)}");
 		     java.sql.CallableStatement stPar8 = c.prepareCall("{call CreateEventXAddressPartitions (?)}");
 		     java.sql.CallableStatement stPar9 = c.prepareCall("{call CreateEventXArrangementPartitions (?)}");
 		     java.sql.CallableStatement stPar10 = c.prepareCall("{call CreateEventXClassificationPartitions (?)}");
@@ -267,6 +269,10 @@ public class ActivityMasterService
 			stPar6.execute();
 			stPar7.setString(1, "ArrangementXResourceItem");
 			stPar7.execute();
+			stPar71.setString(1, "ArrangementXRules");
+			stPar71.execute();
+			stPar72.setString(1, "ArrangementXRulesType");
+			stPar72.execute();
 			stPar8.setString(1, "EventXAddress");
 			stPar8.execute();
 			stPar9.setString(1, "EventXArrangement");

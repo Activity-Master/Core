@@ -419,7 +419,7 @@ public class SecurityTokenSystem
 	@Override
 	public int totalTasks()
 	{
-		return 108;
+		return 190;
 	}
 
 	@Override

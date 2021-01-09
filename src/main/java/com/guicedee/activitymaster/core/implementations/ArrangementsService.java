@@ -6,17 +6,15 @@ import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXArrangementQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXResourceItemQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.arrangement.builders.*;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
-import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
+import com.guicedee.activitymaster.core.services.classifications.involvedparty.IInvolvedPartyClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
@@ -24,9 +22,7 @@ import com.guicedee.activitymaster.core.services.exceptions.ArrangementException
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IArrangementsService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
@@ -53,19 +49,6 @@ public class ArrangementsService
 	                              IClassificationValue<?> arrangementTypeClassification,
 	                              String arrangementTypeValue,
 	                              ISystems<?> system,
-	                              LocalDateTime createdDate,
-	                              UUID... identityToken)
-	{
-		return create(type, arrangementTypeClassification, arrangementTypeValue, system, createdDate, EndOfTime, identityToken);
-	}
-	
-	@Override
-	public IArrangement<?> create(IArrangementTypes<?> type,
-	                              IClassificationValue<?> arrangementTypeClassification,
-	                              String arrangementTypeValue,
-	                              ISystems<?> system,
-	                              LocalDateTime createdDate,
-	                              LocalDateTime endCompletionDate,
 	                              UUID... identityToken)
 	{
 		ArrangementType tt = (ArrangementType) find(type, system);
@@ -74,7 +57,7 @@ public class ArrangementsService
 		                                                  .inActiveRange(system.getEnterpriseID(), identityToken)
 		                                                  .inDateRange()
 		                                                  .where(ArrangementXArrangementType_.type, Equals, tt)
-		                                                //  .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
+		                                                  //  .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
 		                                                  .withClassification(arrangementTypeClassification, system)
 		                                                  .withEnterprise(system.getEnterprise())
 		                                                  .getCount() > 0;
@@ -94,9 +77,6 @@ public class ArrangementsService
 		}
 		
 		Arrangement xr = new Arrangement();
-		xr.setEffectiveFromDate(createdDate);
-		xr.setWarehouseCreatedTimestamp(createdDate);
-		xr.setWarehouseLastUpdatedTimestamp(endCompletionDate);
 		xr.setSystemID((Systems) system);
 		xr.setOriginalSourceSystemID((Systems) system);
 		xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
@@ -111,7 +91,6 @@ public class ArrangementsService
 		
 		ArrangementXArrangementType xarxr = xr.addOrUpdateArrangementTypes(arrangementTypeClassification, type,
 				arrangementTypeValue, system, identityToken);
-		
 		if (ActivityMasterConfiguration.get()
 		                               .isSecurityEnabled())
 		{
@@ -146,7 +125,6 @@ public class ArrangementsService
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
 			{
-				
 				xr.createDefaultSecurity(system, identityToken);
 			}
 		}
@@ -178,7 +156,35 @@ public class ArrangementsService
 	}
 	
 	@Override
-	public List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, String value, ISystems<?> systems, UUID... identityToken)
+	public List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> classificationName, String value, ISystems<?> systems, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationName, systems, identityToken);
+		
+		ArrangementQueryBuilder aqb = new Arrangement().builder();
+		aqb.withEnterprise(systems.getEnterprise())
+		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		   .inDateRange();
+		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
+		
+		
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
+		qb.withEnterprise(systems.getEnterprise())
+		  .withClassification((Classification) classification)
+		  .withValue(value)
+		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inDateRange();
+		
+		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
+		
+		aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
+		
+		List<Arrangement> arrangementList = aqb.getAll();
+		return (List) arrangementList;
+	}
+	
+	@Override
+	public List<IArrangement<?>> findArrangementsByClassificationGT(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
 	{
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
@@ -192,19 +198,271 @@ public class ArrangementsService
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
 		qb.withEnterprise(systems.getEnterprise())
-		  .findChildLink((Classification) classification)
-		  .withValue(value)
+		  .withClassification((Classification) classification)
+		  .withValueGT(value)
 		  .inActiveRange(systems.getEnterpriseID(), identityToken)
 		  .inDateRange();
 		
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 		
+		if (withParent != null)
+		{
+			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
+			ArrangementXArrangementQueryBuilder builder =
+					new ArrangementXArrangement()
+							.builder()
+							.inActiveRange(classification.getEnterprise())
+							.inDateRange()
+							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
+			aqb.join(Arrangement_.arrangementXArrangementList,
+					builder,
+					JoinType.INNER, joinExpression);
+		}
+		
 		aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
 		
 		List<Arrangement> arrangementList = aqb.getAll();
+		//noinspection unchecked
 		return (List) arrangementList;
 	}
 	
+	@Override
+	public List<IArrangement<?>> findArrangementsByClassificationGTE(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
+		
+		ArrangementQueryBuilder aqb = new Arrangement().builder();
+		aqb.withEnterprise(systems.getEnterprise())
+		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		   .inDateRange();
+		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
+		
+		
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
+		qb.withEnterprise(systems.getEnterprise())
+		  .withClassification((Classification) classification)
+		  .withValueGTE(value)
+		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inDateRange();
+		
+		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
+		
+		if (withParent != null)
+		{
+			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
+			ArrangementXArrangementQueryBuilder builder =
+					new ArrangementXArrangement()
+							.builder()
+							.inActiveRange(classification.getEnterprise())
+							.inDateRange()
+							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
+			aqb.join(Arrangement_.arrangementXArrangementList,
+					builder,
+					JoinType.INNER, joinExpression);
+		}
+		
+		aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
+		
+		List<Arrangement> arrangementList = aqb.getAll();
+		//noinspection unchecked
+		return (List) arrangementList;
+	}
+	
+	@Override
+	public List<IArrangement<?>> findArrangementsByClassificationGTEWithIP(String arrangementType, IArrangementClassification<?> classificationName,
+	                                                                       IInvolvedParty<?> withInvolvedParty,
+	                                                                       String ipClassification,
+	                                                                       IArrangement<?> withParent,
+	                                                                       IResourceItem<?> resourceItem,
+	                                                                       String resourceItemClassification,
+	                                                                       String value, ISystems<?> system,
+	                                                                       UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		
+		ArrangementQueryBuilder aqb = new Arrangement().builder();
+		aqb.withEnterprise(system.getEnterprise())
+		   .inActiveRange(system.getEnterpriseID(), identityToken)
+		   .inDateRange();
+		
+		if (classificationName != null)
+		{
+			JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
+			
+			ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
+			qb.withEnterprise(system.getEnterprise())
+			  .withClassification((Classification) classification)
+			  .withValueGTE(value)
+			  .inActiveRange(system.getEnterpriseID(), identityToken)
+			  .inDateRange();
+			aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
+		}
+		
+		if (withInvolvedParty != null)
+		{
+			JoinExpression<Arrangement, InvolvedParty, ?> joinExpression = new JoinExpression<>();
+			if (Strings.isNullOrEmpty(ipClassification))
+			{
+				ipClassification = NoClassification.classificationName();
+			}
+			ArrangementXInvolvedPartyQueryBuilder builder =
+					new ArrangementXInvolvedParty()
+							.builder()
+							.inActiveRange(classification.getEnterprise())
+							.withClassification(ipClassification, system)
+							.inDateRange()
+							.where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) withInvolvedParty);
+			aqb.join(Arrangement_.parties,
+					builder,
+					JoinType.INNER, joinExpression);
+			
+		}
+		
+		if (resourceItem != null)
+		{
+			JoinExpression<Arrangement, ResourceItem, ?> joinExpression = new JoinExpression<>();
+			if (Strings.isNullOrEmpty(resourceItemClassification))
+			{
+				resourceItemClassification = NoClassification.classificationName();
+			}
+			ArrangementXResourceItemQueryBuilder builder =
+					new ArrangementXResourceItem()
+							.builder()
+							.inActiveRange(classification.getEnterprise())
+							.withClassification(resourceItemClassification, system)
+							.inDateRange()
+							.where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem);
+			aqb.join(Arrangement_.resources,
+					builder,
+					JoinType.INNER, joinExpression);
+			
+		}
+		
+		if (!Strings.isNullOrEmpty(arrangementType))
+		{
+			JoinExpression<Arrangement, ArrangementType, ?> joinExpressionAt = new JoinExpression<>();
+			ArrangementXArrangementTypeQueryBuilder builderAT =
+					new ArrangementXArrangementType()
+							.builder()
+							.inActiveRange(classification.getEnterprise())
+							.withType(arrangementType, system, identityToken)
+							.inDateRange();
+			aqb.join(Arrangement_.types,
+					builderAT,
+					JoinType.INNER, joinExpressionAt);
+			
+			
+		}
+		
+		if (withParent != null)
+		{
+			JoinExpression<Arrangement, Arrangement, ?> joinExpressionParentJoin = new JoinExpression<>();
+			ArrangementXArrangementQueryBuilder builderParent =
+					new ArrangementXArrangement()
+							.builder()
+							.inActiveRange(classification.getEnterprise())
+							.inDateRange()
+							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
+			aqb.join(Arrangement_.arrangementXArrangementList,
+					builderParent,
+					JoinType.INNER, joinExpressionParentJoin);
+		}
+		
+		
+		aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
+		
+		List<Arrangement> arrangementList = aqb.getAll();
+		//noinspection unchecked
+		return (List) arrangementList;
+	}
+	
+	@Override
+	public List<IArrangement<?>> findArrangementsByClassificationLT(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
+		
+		ArrangementQueryBuilder aqb = new Arrangement().builder();
+		aqb.withEnterprise(systems.getEnterprise())
+		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		   .inDateRange();
+		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
+		
+		
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
+		qb.withEnterprise(systems.getEnterprise())
+		  .withClassification((Classification) classification)
+		  .withValueLT(value)
+		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inDateRange();
+		
+		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
+		
+		if (withParent != null)
+		{
+			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
+			ArrangementXArrangementQueryBuilder builder =
+					new ArrangementXArrangement()
+							.builder()
+							.inActiveRange(classification.getEnterprise())
+							.inDateRange()
+							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
+			aqb.join(Arrangement_.arrangementXArrangementList,
+					builder,
+					JoinType.INNER, joinExpression);
+		}
+		
+		aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
+		
+		List<Arrangement> arrangementList = aqb.getAll();
+		//noinspection unchecked
+		return (List) arrangementList;
+	}
+	
+	@Override
+	public List<IArrangement<?>> findArrangementsByClassificationLTE(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
+		
+		ArrangementQueryBuilder aqb = new Arrangement().builder();
+		aqb.withEnterprise(systems.getEnterprise())
+		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		   .inDateRange();
+		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
+		
+		
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
+		qb.withEnterprise(systems.getEnterprise())
+		  .withClassification((Classification) classification)
+		  .withValueLTE(value)
+		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inDateRange();
+		
+		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
+		
+		if (withParent != null)
+		{
+			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
+			ArrangementXArrangementQueryBuilder builder =
+					new ArrangementXArrangement()
+							.builder()
+							.inActiveRange(classification.getEnterprise())
+							.inDateRange()
+							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
+			aqb.join(Arrangement_.arrangementXArrangementList,
+					builder,
+					JoinType.INNER, joinExpression);
+		}
+		
+		aqb.orderBy(Arrangement_.effectiveFromDate, OrderByType.DESC);
+		
+		List<Arrangement> arrangementList = aqb.getAll();
+		//noinspection unchecked
+		return (List) arrangementList;
+	}
 	
 	@Override
 	public List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
@@ -221,7 +479,7 @@ public class ArrangementsService
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
 		qb.withEnterprise(systems.getEnterprise())
-		  .findChildLink((Classification) classification)
+		  .withClassification((Classification) classification)
 		  .withValue(value)
 		  .inActiveRange(systems.getEnterpriseID(), identityToken)
 		  .inDateRange();
@@ -292,6 +550,73 @@ public class ArrangementsService
 		                                                                           .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
 		                                                                           .get();
 		return arxip.<IArrangement<?>>map(ArrangementXInvolvedParty::getArrangementID).orElse(null);
+	}
+	
+	@Override
+	public List<IArrangement<?>> findArrangementsByRulesType(IRulesType<?> ruleType, String classificationName, String value, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		if (Strings.isNullOrEmpty(classificationName))
+		{
+			classificationName = NoClassification.classificationName();
+		}
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		List collect = new ArrangementXRulesType().builder()
+		                                                       .inActiveRange(system, identityToken)
+		                                                       .inDateRange()
+		                                                       .withEnterprise(system)
+		                                                       .withClassification(classification)
+		                                                       .withValue(value)
+		                                                       .where(ArrangementXRulesType_.rulesTypeID, Equals, (RulesType) ruleType)
+		                                                       .get()
+		                                                       .map(ArrangementXRulesType::getArrangement)
+		                                                       .stream()
+		                                                       .collect(Collectors.toList());
+		return collect;
+	}
+	
+	@Override
+	public List<IArrangement<?>> findArrangementsByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		if (Strings.isNullOrEmpty(classificationName))
+		{
+			classificationName = NoClassification.classificationName();
+		}
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		List<ArrangementXInvolvedParty> all = new ArrangementXInvolvedParty().builder()
+		                                                                     .inActiveRange(system, identityToken)
+		                                                                     .inDateRange(startDate, EndOfTime)
+		                                                                     .withEnterprise(system)
+		                                                                     .withClassification(classification)
+		                                                                     .withValue(value)
+		                                                                     .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+		                                                                     .getAll();
+		return all.stream()
+		          .map(ArrangementXInvolvedParty::getArrangementID)
+		          .collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<IArrangement<?>> findArrangementsByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?> system, UUID... identityToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		if (Strings.isNullOrEmpty(classificationName))
+		{
+			classificationName = NoClassification.classificationName();
+		}
+		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
+		List<ArrangementXInvolvedParty> all = new ArrangementXInvolvedParty().builder()
+		                                                                     .inActiveRange(system, identityToken)
+		                                                                     .inDateRange(startDate, endDate)
+		                                                                     .withEnterprise(system)
+		                                                                     .withClassification(classification)
+		                                                                     .withValue(value)
+		                                                                     .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+		                                                                     .getAll();
+		return all.stream()
+		          .map(ArrangementXInvolvedParty::getArrangementID)
+		          .collect(Collectors.toList());
 	}
 	
 	@Override
