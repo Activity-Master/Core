@@ -109,6 +109,7 @@ from Arrangement.ArrangementXResourceItem a
 
 
 
+
 select at.ArrangementTypeName, c.ClassificationName,a.value,atx.value,* 
 from Arrangement.ArrangementXArrangement a
 	inner join Classification.Classification c
@@ -119,6 +120,20 @@ from Arrangement.ArrangementXArrangement a
 		on ar.ArrangementID = atx.ArrangementID
 	inner join Arrangement.ArrangementType at
 		on atx.ArrangementTypeID = at.ArrangementTypeID
+
+
+
+select at.ArrangementTypeName, c.ClassificationName,a.value,atx.value,* 
+from Arrangement.ArrangementXClassification a
+	inner join Classification.Classification c
+		on a.ClassificationID = c.ClassificationID
+	inner join Arrangement.Arrangement ar
+		on a.ArrangementID = ar.ArrangementID
+	inner join Arrangement.ArrangementXArrangementType atx
+		on ar.ArrangementID = atx.ArrangementID
+	inner join Arrangement.ArrangementType at
+		on atx.ArrangementTypeID = at.ArrangementTypeID
+
 
 
 
