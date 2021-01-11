@@ -271,12 +271,19 @@ public class ResourceItemService
 	@Override
 	public List<IResourceItem<?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken)
 	{
+		return findByResourceItemType(type,null, systems, identityToken);
+	}
+	
+	@Override
+	public List<IResourceItem<?>> findByResourceItemType(@CacheKey String type,String value, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken)
+	{
 		return new ResourceItemXResourceItemType().builder()
 		                                          .withEnterprise(systems.getEnterprise())
 		                                          .inActiveRange(systems.getEnterprise(), identityToken)
 		                                          .inDateRange()
 		                                          .canRead(systems, identityToken)
 		                                          .withType(type, systems, identityToken)
+		                                          .withValue(value)
 		                                          .getAll()
 		                                          .stream()
 		                                          .map(ResourceItemXResourceItemType::getResourceItemID)

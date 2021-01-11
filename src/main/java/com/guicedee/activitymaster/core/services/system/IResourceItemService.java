@@ -58,4 +58,6 @@ public interface IResourceItemService<J extends IResourceItemService<J>>
 	IResourceItemType<?> findResourceItemType(String type, ISystems<?> system, UUID... identityToken);
 	
 	List<IResourceItem<?>> findByResourceItemType(String type, ISystems<?> systems, UUID... identityToken);
+	
+	List<IResourceItem<?>> findByResourceItemType(@CacheKey String type, String value, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken);
 }
