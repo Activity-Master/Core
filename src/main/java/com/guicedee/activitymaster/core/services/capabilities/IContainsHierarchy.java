@@ -273,6 +273,37 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 		return null;
 	}
 	
+	
+	/**
+	 * Finds the direct parent on A Hierarchy Type
+	 *
+	 * @param identifyingToken
+	 *
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	default String findParentValue(String classificationName, ISystems<?> system, UUID... identifyingToken)
+	{
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		IClassification<?> classification = classificationService.find(classificationName, system, identifyingToken);
+		Class<Q> hierarchyTable = findHierarchyTableType();
+		Q linkTable = get(hierarchyTable);
+		Optional<Q> exists = linkTable.builder()
+		                              .findLink(null, (J) this)
+		                              .inActiveRange(system.getEnterprise(), identifyingToken)
+		                              .withClassification(classification)
+		                              .inDateRange()
+		                              .canRead(system, identifyingToken)
+		                              .withEnterprise(system.getEnterprise())
+		                              .get();
+		if (exists.isPresent())
+		{
+			Q q = exists.get();
+			return q.getValue();
+		}
+		return null;
+	}
+	
 	/**
 	 * Finds the direct parent on A Hierarchy Type
 	 *

@@ -123,7 +123,9 @@ from Arrangement.ArrangementXArrangement a
 
 
 
-select at.ArrangementTypeName, c.ClassificationName,a.value,atx.value,* 
+
+
+select at.ArrangementTypeName, c.ClassificationName,a.value,atx.value,  a.EffectiveFromDate , a.EffectiveToDate ,  * 
 from Arrangement.ArrangementXClassification a
 	inner join Classification.Classification c
 		on a.ClassificationID = c.ClassificationID
@@ -133,6 +135,17 @@ from Arrangement.ArrangementXClassification a
 		on ar.ArrangementID = atx.ArrangementID
 	inner join Arrangement.ArrangementType at
 		on atx.ArrangementTypeID = at.ArrangementTypeID
+where
+c.ClassificationName = 'SessionMeasurementP1'
+
+
+and a.EffectiveToDate >= getDate()
+
+--at.ArrangementTypeName = 'PackingSessionGrader'
+--and
+a.ArrangementID = 'f4548bfd-1e2b-41d6-be7d-0e44404ca551'
+
+
 
 
 
