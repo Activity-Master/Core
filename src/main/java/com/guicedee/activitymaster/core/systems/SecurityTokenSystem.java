@@ -31,6 +31,7 @@ import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
@@ -107,7 +108,7 @@ public class SecurityTokenSystem
 	{
 		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                               .getActivityMaster(enterprise);
-		UUID uuid = getSystemToken(enterpriseName);
+		UUID uuid = getSystemToken(enterprise);
 
 		SecurityTokenService system = GuiceContext.get(SecurityTokenService.class);
 

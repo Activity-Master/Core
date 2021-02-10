@@ -5,6 +5,8 @@ import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
 import com.guicedee.activitymaster.core.services.enumtypes.INameType;
 import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 import com.guicedee.guicedinjection.pairing.Pair;
+import jakarta.cache.annotation.CacheKey;
+import jakarta.cache.annotation.CacheResult;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +35,9 @@ public interface IInvolvedPartyService<J extends IInvolvedPartyService<J>>
 	IInvolvedPartyIdentificationType<?> findIdentificationType(String idType, ISystems<?> system, UUID... tokens);
 	
 	IInvolvedParty<?> findByIdentificationType(IIdentificationType<?> idType, String value, ISystems<?> system, UUID... tokens);
+	
+	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
+	IInvolvedParty<?> findByResourceItem(@CacheKey IResourceItem<?> idType, @CacheKey String value, ISystems<?> system, @CacheKey UUID... tokens);
 	
 	IInvolvedParty<?> findByUsernameAndPassword(String username, String password, ISystems<?> originatingSystem, boolean throwForNoUser, UUID... token);
 	

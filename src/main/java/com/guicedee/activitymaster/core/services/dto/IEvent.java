@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.core.services.dto;
 
 import com.guicedee.activitymaster.core.db.entities.address.Address;
+import com.guicedee.activitymaster.core.db.entities.arrangement.Arrangement;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.events.*;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
@@ -21,6 +22,7 @@ public interface IEvent<J extends IEvent<J>>
 		        IContainsAddresses<Event, Address, EventXAddress, IAddressClassification<?>, IEvent<?>, IAddress<?>, Event>,
 		        IContainsEventTypes<Event, EventType, EventXEventType, IClassificationValue<?>, IEventClassification<?>, IEvent<?>, IEventType<?>, Event>,
 		        IActivityMasterEntity<Event>,
-		        IContainsRules<Event, Rules,EventXRules,IClassification<?>,IEvent<?>,IRules<?>>
+		        IContainsRules<Event, Rules,EventXRules,IClassification<?>,IEvent<?>,IRules<?>>,
+		        IContainsArrangements<Event, Arrangement, EventXArrangement,IArrangement<?>,IEvent<?>,IArrangement<?>,Event>
 {
 }

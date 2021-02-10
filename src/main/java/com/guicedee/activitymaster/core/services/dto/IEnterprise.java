@@ -15,8 +15,8 @@ public interface IEnterprise<J extends IEnterprise<J>>
 		extends Serializable,
 		        IContainsNameAndDescription<J>,
 		        IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>,IEnterprise<?>, IClassification<?>, Enterprise>,
-		        IActivityMasterEntity<J>
+		        IActivityMasterEntity<J>,
+		        IEnterpriseName
 {
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	IEnterpriseName<?> getIEnterprise();
 }

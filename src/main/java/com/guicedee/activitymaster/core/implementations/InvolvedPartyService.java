@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
@@ -269,6 +270,25 @@ public class InvolvedPartyService
 				.setReturnFirst(true)
 				.get();
 		return builder.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
+		              .orElse(null);
+	}
+	
+	
+	@Override
+	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
+	public IInvolvedParty<?> findByResourceItem(@CacheKey IResourceItem<?> idType, @CacheKey String value, ISystems<?> system, @CacheKey UUID... tokens)
+	{
+		Optional<InvolvedPartyXResourceItem> builder = new InvolvedPartyXResourceItem()
+				.builder()
+				.canRead(system, tokens)
+				.inActiveRange(system, tokens)
+				.inDateRange()
+				.findChildLink(
+						(ResourceItem) idType,
+						value)
+				.setReturnFirst(true)
+				.get();
+		return builder.map(InvolvedPartyXResourceItem::getInvolvedPartyID)
 		              .orElse(null);
 	}
 	

@@ -10,6 +10,7 @@ import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.systems.ISystemsClassification;
 import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
 import com.guicedee.activitymaster.core.services.dto.IClassification;
+import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
@@ -153,7 +154,7 @@ public class Systems
 	public Systems remove()
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
+		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken((IEnterprise<?>) getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;
@@ -164,7 +165,7 @@ public class Systems
 	public Systems archive()
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
+		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken((IEnterprise<?>) getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;

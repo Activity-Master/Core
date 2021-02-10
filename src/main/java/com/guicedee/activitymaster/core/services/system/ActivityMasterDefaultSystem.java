@@ -88,20 +88,6 @@ public abstract class ActivityMasterDefaultSystem<J extends ActivityMasterDefaul
 		                                        .getEnterprise(enterpriseName);
 		return getSystem(enterprise);
 	}
-
-	public ISystems<?> getSystem(IEnterpriseName<?> enterpriseName)
-	{
-		IEnterprise<?> enterprise = GuiceContext.get(IEnterpriseService.class)
-		                                        .getEnterprise(enterpriseName);
-		return getSystem(enterprise);
-	}
-
-	public UUID getSystemToken(IEnterpriseName<?> enterpriseName)
-	{
-		IEnterprise<?> enterprise = GuiceContext.get(IEnterpriseService.class)
-		                                        .getEnterprise(enterpriseName);
-		return getSystemToken(enterprise);
-	}
 	
 	
 	public UUID getSystemToken(String enterpriseName)

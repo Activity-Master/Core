@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public interface IEnterpriseService
 {
@@ -49,4 +50,7 @@ public interface IEnterpriseService
 
 	@CacheResult
 	IEnterprise<?> getIEnterpriseFromName(@CacheKey IEnterpriseName<?> enterprise);
+	
+	@CacheResult
+	IEnterprise<?> getIEnterpriseFromID(@CacheKey UUID enterprise);
 }

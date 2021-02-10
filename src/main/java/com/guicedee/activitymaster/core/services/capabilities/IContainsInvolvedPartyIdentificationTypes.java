@@ -20,6 +20,7 @@ import com.guicedee.activitymaster.core.services.classifications.events.EventThr
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
+import com.guicedee.activitymaster.core.services.security.Passwords;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
@@ -28,6 +29,7 @@ import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -145,7 +147,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 				                   .findParentLink((P) this)
 				                   .inActiveRange(system.getEnterprise(), identityToken)
 				                   .withClassification(iClassification)
-				                   .withValue(searchValue)
+				                   .withValue(new Passwords().integerEncrypt(searchValue.getBytes(StandardCharsets.UTF_8)))
 				                   .withType(typeValue, system, identityToken)
 				                   .inDateRange()
 				                   .withEnterprise(system.getEnterprise())

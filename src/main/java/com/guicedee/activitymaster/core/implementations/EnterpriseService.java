@@ -181,7 +181,7 @@ public class EnterpriseService
 		                       .withName(name)
 		                       .inDateRange()
 		                       .get()
-		                       .orElseThrow();
+		                       .orElse(null);
 	}
 	
 	
@@ -242,6 +242,16 @@ public class EnterpriseService
 	{
 		return new Enterprise().builder()
 		                       .withName(enterprise.classificationName())
+		                       .get()
+		                       .get();
+	}
+	
+	@CacheResult
+	@Override
+	public IEnterprise<?> getIEnterpriseFromID(@CacheKey UUID enterprise)
+	{
+		return new Enterprise().builder()
+		                       .find(enterprise)
 		                       .get()
 		                       .get();
 	}

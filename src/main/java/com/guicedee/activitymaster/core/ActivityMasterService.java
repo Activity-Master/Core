@@ -44,6 +44,12 @@ public class ActivityMasterService
 	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
+		return startNewEnterprise(enterpriseName, adminUserName, adminPassword, null, progressMonitor);
+	}
+	
+	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
+	                                         @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier, IActivityMasterProgressMonitor progressMonitor)
+	{
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		get(ActivityMasterConfiguration.class)
@@ -70,13 +76,14 @@ public class ActivityMasterService
 		
 		//Create Involved Party for Enterprise
 		ISystems<?> activityMasterSystem = get(ISystemsService.class).getActivityMaster(enterprise);
-		createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, progressMonitor);
+		createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, uuidIdentifier, progressMonitor);
 		
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(true);
 		return enterprise;
 	}
 	
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void createNewEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		get(ActivityMasterConfiguration.class)
@@ -111,7 +118,7 @@ public class ActivityMasterService
 	}
 	
 	protected IInvolvedParty<?> createAdminAndCreatorUserForEnterprise(ISystems<?> system, String adminUserName,
-	                                                                   @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
+	                                                                   @NotNull String adminPassword, UUID existingLocalKey, IActivityMasterProgressMonitor progressMonitor)
 	{
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
@@ -155,7 +162,6 @@ public class ActivityMasterService
 			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeEnterpriseCreatorRole, NoClassification.classificationName(),
 					new Passwords().integerEncrypt(adminUserName.getBytes()), system,
 					token);
-			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUUID, NoClassification.classificationName(), myToken.getSecurityToken(), system, token);
 			
 			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, system, token);
 			adminUser.createDefaultSecurity(system, token);
@@ -211,7 +217,8 @@ public class ActivityMasterService
 	public void runScript(String script)
 	{
 		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
-		try (java.sql.Statement st = ds.getConnection().createStatement())
+		try (java.sql.Statement st = ds.getConnection()
+		                               .createStatement())
 		{
 			st.executeUpdate(script);
 		}

@@ -181,8 +181,9 @@ public class ResourceItem
 				                        .where(ResourceItemData_.resource, Equals, this)
 				                        .get();
 		
-		return d.orElseThrow()
-		        .getResourceItemData();
+		ResourceItemData resourceItemData = d.get();
+		byte[] resourceItemData1 = resourceItemData.getResourceItemData();
+		return resourceItemData1;
 	}
 	
 	@Override

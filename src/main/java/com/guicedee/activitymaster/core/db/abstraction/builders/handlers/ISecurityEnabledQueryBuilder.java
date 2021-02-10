@@ -53,7 +53,6 @@ public interface ISecurityEnabledQueryBuilder<J extends QueryBuilderDefault<J, E
 		{
 			return (J) this;
 		}
-		
 		IEnterprise<?> enterprise = system.getEnterprise();
 		if (identityToken == null || identityToken.length == 0)
 		{

@@ -1,7 +1,9 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
+import com.google.inject.Key;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.db.ActivityMasterDBModule;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXInvolvedParty;
@@ -29,6 +31,9 @@ import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -82,51 +87,51 @@ public class InvolvedParty
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXClassification> classifications;
+	private List<InvolvedPartyXClassification> classifications;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXInvolvedPartyNameType> names;
+	private List<InvolvedPartyXInvolvedPartyNameType> names;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXResourceItem> resources;
+	private List<InvolvedPartyXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXInvolvedParty> arrangements;
+	private List<ArrangementXInvolvedParty> arrangements;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<EventXInvolvedParty> events;
+	private List<EventXInvolvedParty> events;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartySecurityToken> securities;
+	private List<InvolvedPartySecurityToken> securities;
 	@OneToMany(
 			mappedBy = "childInvolvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList;
+	private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList;
 	@OneToMany(
 			mappedBy = "parentInvolvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList1;
+	private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList1;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXInvolvedPartyType> types;
+	private List<InvolvedPartyXInvolvedPartyType> types;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXProduct> products;
+	private List<InvolvedPartyXProduct> products;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXAddress> addresses;
+	private List<InvolvedPartyXAddress> addresses;
 	@OneToMany(
 			mappedBy = "involvedPartyID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
+	private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
 	
 	public InvolvedParty()
 	{
@@ -142,8 +147,28 @@ public class InvolvedParty
 	@Override
 	public InvolvedParty moveWebClientUUIDToNewInvolvedParty(IInvolvedParty<?> destination, UUID newUUID)
 	{
+		
+		//DataSource ds = GuiceContext.get(Key.get(DataSource.class, ActivityMasterDB.class));
 		InvolvedParty dest = (InvolvedParty) destination;
-		dest.setOriginalSourceSystemUniqueID(getId().toString());
+		
+	/*	InvolvedParty dest = (InvolvedParty) destination;
+		try
+		{
+			Connection connection = ds.getConnection();
+			java.sql.CallableStatement cs = connection.prepareCall("exec MoveToExistingInvolvedParty '" + getId().toString() + "','" + dest.getId()
+                                                                                                                   .toString() + "'");
+			cs.execute();
+			cs.close();
+		}
+		catch (SQLException throwables)
+		{
+			throwables.printStackTrace();
+		}
+		
+		remove();*/
+		//new InvolvedPartyOrganic(getId()).remove();
+	//	new InvolvedPartyNonOrganic(getId()).remove();
+		
 		
 		ISystems<?> originatingSystem = get(InvolvedPartySystem.class).getSystem(dest.getEnterprise());
 		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(dest.getEnterprise());
@@ -159,6 +184,7 @@ public class InvolvedParty
 			identificationTypeWebClientUUID.expire();
 		}
 		destination.addIdentificationType(partyType, newUUID.toString(), dest.getSystemID(), identityToken);
+		
 		return dest;
 	}
 	

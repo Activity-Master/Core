@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.core.db.entities.events;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
+import com.guicedee.activitymaster.core.db.entities.arrangement.Arrangement;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
@@ -54,7 +55,8 @@ public class Event
 		           IContainsEventTypes<Event, EventType, EventXEventType, IClassificationValue<?>, IEventClassification<?>, IEvent<?>, IEventType<?>, Event>,
 		           IActivityMasterEntity<Event>,
 		           IEvent<Event>,
-		           IContainsRules<Event, Rules,EventXRules,IClassification<?>,IEvent<?>,IRules<?>>
+		           IContainsRules<Event, Rules,EventXRules,IClassification<?>,IEvent<?>,IRules<?>>,
+		           IContainsArrangements<Event, Arrangement, EventXArrangement,IArrangement<?>,IEvent<?>,IArrangement<?>,Event>
 {
 	
 	@Serial
@@ -374,6 +376,15 @@ public class Event
 	{
 		linkTable.setEventID(primary);
 		linkTable.setRulesID(secondary);
+		linkTable.setClassificationID((Classification) classificationValue);
+		linkTable.setValue(value);
+	}
+	
+	@Override
+	public void configureArrangementType(EventXArrangement linkTable, Event primary, Arrangement secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
+	{
+		linkTable.setEventID(primary);
+		linkTable.setArrangementID(secondary);
 		linkTable.setClassificationID((Classification) classificationValue);
 		linkTable.setValue(value);
 	}

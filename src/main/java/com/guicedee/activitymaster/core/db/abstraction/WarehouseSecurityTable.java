@@ -5,6 +5,7 @@ import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
+import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -105,7 +106,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	{
 		setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
-		                                                                                            .getSystemToken(getEnterpriseID())));
+		                                                                                            .getSystemToken((IEnterprise<?>) getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return (J) this;

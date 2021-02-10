@@ -4,6 +4,7 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTabl
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
+import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -69,7 +70,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	public J remove()
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
+		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken((IEnterprise<?>) getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return (J) this;
@@ -81,7 +82,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I, S>,
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
 		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
-				                                                                             .getSystemToken(getEnterpriseID())));
+				                                                                             .getSystemToken((IEnterprise<?>) getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return (J) this;

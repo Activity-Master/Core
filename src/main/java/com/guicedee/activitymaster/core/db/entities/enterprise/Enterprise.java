@@ -49,67 +49,69 @@ import static jakarta.persistence.AccessType.*;
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.util.UUID, EnterpriseSecurityToken>
 		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise<?>, IClassification<?>, Enterprise>,
-				           IActivityMasterEntity<Enterprise>,
-				   IContainsNameAndDescription<Enterprise>,
-				           IEnterprise<Enterprise>
+		           IActivityMasterEntity<Enterprise>,
+		           IContainsNameAndDescription<Enterprise>,
+		           IEnterprise<Enterprise>,
+		           IEnterpriseName
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "EnterpriseID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EnterpriseID")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
-
+	
 	@Basic(optional = false,
-			fetch = FetchType.EAGER)
+	       fetch = FetchType.EAGER)
 	@NotNull
 	@Column(nullable = false,
-			name = "EnterpriseName")
-		private String name;
+	        name = "EnterpriseName")
+	private String name;
 	@Basic(optional = false,
-			fetch = FetchType.EAGER)
+	       fetch = FetchType.EAGER)
 	@NotNull
 	@Column(nullable = false,
-			name = "EnterpriseDesc")
-		private String description;
-
+	        name = "EnterpriseDesc")
+	private String description;
+	
 	@OneToMany(
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
-		private List<EnterpriseSecurityToken> securities;
-
+	private List<EnterpriseSecurityToken> securities;
+	
 	public Enterprise()
 	{
-
+	
 	}
-
+	
 	public Enterprise(java.util.UUID id)
 	{
 		this.id = id;
 	}
-
+	
 	public Enterprise(java.util.UUID id, String enterpriseName, String enterpriseDesc)
 	{
 		this.id = id;
 		name = enterpriseName;
 		description = enterpriseDesc;
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "Enterprise - " + getName();
 	}
-
+	
 	@Override
 	public void configureForClassification(EnterpriseXClassification classificationLink, ISystems<?> system)
 	{
-
+	
 	}
-
+	
 	@Override
 	public Enterprise remove()
 	{
@@ -117,7 +119,7 @@ public class Enterprise
 		updateNow();
 		return this;
 	}
-
+	
 	@Override
 	public Enterprise archive()
 	{
@@ -125,12 +127,12 @@ public class Enterprise
 		updateNow();
 		return this;
 	}
-
+	
 	public List<EnterpriseSecurityToken> getSecurities()
 	{
 		return securities;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -145,56 +147,81 @@ public class Enterprise
 		Enterprise that = (Enterprise) o;
 		return Objects.equals(getName(), that.getName());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public java.util.UUID getId()
 	{
 		return id;
 	}
-
+	
 	@Override
 	public @NotNull String getName()
 	{
 		return name;
 	}
-
+	
 	@Override
 	public @NotNull String getDescription()
 	{
 		return description;
 	}
-
+	
 	@Override
 	public Enterprise setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	@Override
 	public Enterprise setName(@NotNull String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
 	@Override
 	public Enterprise setDescription(@NotNull String description)
 	{
 		this.description = description;
 		return this;
 	}
-
+	
 	@Override
 	public IEnterpriseName<?> getIEnterprise()
 	{
 		return GuiceContext.get(IEnterpriseService.class)
 		                   .getIEnterprise(this);
 	}
+	
+	@Override
+	public IEnterprise<?> getEnterprise()
+	{
+		return this;
+	}
+	
+	@Override
+	public void setEnterprise(IEnterprise enterprise)
+	{
+	
+	}
+	
+	@Override
+	public String name()
+	{
+		return getName();
+	}
+	
+	@Override
+	public String classificationDescription()
+	{
+		return getDescription();
+	}
+	
 }
