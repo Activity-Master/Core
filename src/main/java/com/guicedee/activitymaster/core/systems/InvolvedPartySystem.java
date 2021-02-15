@@ -1,24 +1,42 @@
 package com.guicedee.activitymaster.core.systems;
 
-import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.implementations.InvolvedPartyService;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
+import com.guicedee.activitymaster.core.InvolvedPartyService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.types.IPTypes;
-import com.guicedee.activitymaster.core.services.types.IdentificationTypes;
-import com.guicedee.activitymaster.core.services.types.NameTypes;
-import com.guicedee.activitymaster.core.services.types.OrganicPartyTypes;
+import com.guicedee.activitymaster.core.services.system.*;
+import com.guicedee.activitymaster.core.services.types.*;
 import com.guicedee.guicedinjection.GuiceContext;
 
-@Singleton
+import static com.guicedee.activitymaster.core.SystemsService.*;
+import static com.guicedee.activitymaster.core.services.system.IInvolvedPartyService.*;
+
+
 public class InvolvedPartySystem
 		extends ActivityMasterDefaultSystem<InvolvedPartySystem>
 		implements IActivityMasterSystem<InvolvedPartySystem>
 {
+	@Inject
+	private IInvolvedPartyService<?> service;
+	
+	@Inject
+	@Named(ActivityMasterSystemName)
+	private ISystems<?> system;
+	
+	@Inject
+	private Provider<ISystemsService<?>> systemsService;
+	
+	@Override
+	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		systemsService.get()
+		              .create(enterprise, getSystemName(), getSystemDescription());
+	}
+	
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
@@ -32,10 +50,6 @@ public class InvolvedPartySystem
 	
 	private void createIdentificationTypes(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
-		ISystems<?> system = GuiceContext.get(ISystemsService.class)
-		                                         .getActivityMaster(enterprise);
-		
 		service.createIdentificationType(system, IdentificationTypes.IdentificationTypeDriversLicense, "Describes an Individuals Drivers Licence Number");
 		service.createIdentificationType(system, IdentificationTypes.IdentificationTypePassportNumber, "Describes an Individuals Passport Number");
 		service.createIdentificationType(system, IdentificationTypes.IdentificationTypeTaxNumber, "Tax ID Number");
@@ -59,10 +73,6 @@ public class InvolvedPartySystem
 	
 	private void createNameTypes(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
-		ISystems<?> system = GuiceContext.get(ISystemsService.class)
-		                                 .getActivityMaster(enterprise);
-		
 		service.createNameType(NameTypes.FirstNameType, "The first name of an individual or entity", system);
 		service.createNameType(NameTypes.FullNameType, "The full name of an individual or entity", system);
 		service.createNameType(NameTypes.PreferredNameType, "An Alias for the Involved Party", system);
@@ -81,10 +91,6 @@ public class InvolvedPartySystem
 	
 	private void createTypes(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
-		ISystems<?> system = GuiceContext.get(ISystemsService.class)
-		                                 .getActivityMaster(enterprise);
-		
 		service.createType(system, IPTypes.TypeIndividual, "Defines any involved party as a physical person");
 		service.createType(system, IPTypes.TypeOrganisation, "Defines any involved party as an organisation");
 		service.createType(system, IPTypes.TypeSystem, "Defines any involved party as a physical system");
@@ -101,9 +107,6 @@ public class InvolvedPartySystem
 	
 	private void createOrganicTypes(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
-		ISystems<?> system = GuiceContext.get(ISystemsService.class)
-		                                 .getActivityMaster(enterprise);
 		service.createOrganicType(system, OrganicPartyTypes.OrganicCustomerType, "Defines a customer");
 		service.createOrganicType(system, OrganicPartyTypes.OrganicEmployeeType, "Defines an employee of the Enterprise");
 		service.createOrganicType(system, OrganicPartyTypes.OrganicUserType, "Defines a user of the given enterprise");
@@ -124,13 +127,13 @@ public class InvolvedPartySystem
 	@Override
 	public Integer sortOrder()
 	{
-		return Integer.MIN_VALUE + 7;
+		return Integer.MIN_VALUE + 5;
 	}
 	
 	@Override
 	public String getSystemName()
 	{
-		return "Involved Party System";
+		return InvolvedPartySystemName;
 	}
 	
 	@Override

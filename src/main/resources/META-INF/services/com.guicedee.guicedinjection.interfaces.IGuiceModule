@@ -1,1 +1,10 @@
 com.guicedee.activitymaster.core.db.ActivityMasterDBModule
+com.guicedee.activitymaster.core.implementations.EnterpriseBinder
+com.guicedee.activitymaster.core.implementations.ClassificationsBinder
+com.guicedee.activitymaster.core.implementations.ClassificationConceptsBinder
+com.guicedee.activitymaster.core.implementations.SystemsBinder
+com.guicedee.activitymaster.core.implementations.InvolvedPartiesBinder
+com.guicedee.activitymaster.core.implementations.ResourceItemBinder
+com.guicedee.activitymaster.core.implementations.SecurityTokensBinder
+com.guicedee.activitymaster.core.implementations.ActiveFlagBinder
+com.guicedee.activitymaster.core.implementations.EventsBinder

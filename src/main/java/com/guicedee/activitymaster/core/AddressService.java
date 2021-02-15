@@ -1,23 +1,19 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.core;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.classifications.address.AddressBuildingClassifications;
-import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
-import com.guicedee.activitymaster.core.services.classifications.address.PhoneNumberDTO;
+import com.guicedee.activitymaster.core.services.classifications.address.*;
 import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
-import com.guicedee.activitymaster.core.services.dto.IAddress;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.exceptions.AddressException;
 import com.guicedee.activitymaster.core.services.security.Passwords;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IAddressService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
+import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.net.MalformedURLException;
@@ -26,6 +22,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.guicedee.activitymaster.core.SystemsService.*;
 import static com.guicedee.activitymaster.core.services.classifications.address.AddressBoxClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.address.AddressHomeCellClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.address.AddressHomeTelephoneClassifications.*;
@@ -41,30 +38,44 @@ public class AddressService
 {
 	private static final Pattern ipAddressPattern = Pattern.compile("((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\\.|$)){4}");
 	
+	@Inject
+	private IClassificationService<?> classificationService;
+	
+	@Inject
+	@Named("Active")
+	private IActiveFlag<?> activeFlag;
+	
+	@Inject
+	private IEnterprise<?> enterprise;
+	
+	@Inject
+	@Named(ActivityMasterSystemName)
+	private ISystems<?> activityMasterSystem;
+	
 	@Override
 	public IAddress<?> create(IAddressClassification<?> addressClassification, ISystems<?> system, String value, UUID... identifyingToken)
 	{
 		Address addy = new Address();
-
-		Classification classification = (Classification) get(ClassificationService.class).find(addressClassification,
-		                                                                                       system, identifyingToken);
+		
+		Classification classification = (Classification) classificationService.find(addressClassification,
+				system, identifyingToken);
 		
 		boolean found = addy.builder()
 		                    .withClassification(classification)
 		                    .withValue(value)
-		                    .withEnterprise(system.getEnterpriseID())
+		                    .withEnterprise(enterprise)
 		                    .inDateRange()
-		                    .inActiveRange(system.getEnterprise(), identifyingToken)
+		                    .inActiveRange(enterprise, identifyingToken)
 		                    .getCount() > 0;
 		
 		if (!found)
 		{
-			addy.setEnterpriseID(classification.getEnterpriseID());
+			addy.setEnterpriseID(enterprise);
 			addy.setClassificationID(classification);
 			addy.setValue(value);
 			addy.setSystemID((Systems) system);
 			addy.setOriginalSourceSystemID((Systems) system);
-			addy.setActiveFlagID(classification.getActiveFlagID());
+			addy.setActiveFlagID(activeFlag);
 			addy.persist();
 			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
 			{
@@ -80,10 +91,10 @@ public class AddressService
 		{
 			addy = addy.builder()
 			           .withClassification(classification)
-			           .withEnterprise(system.getEnterpriseID())
+			           .withEnterprise(enterprise)
 			           .withValue(value)
 			           .inDateRange()
-			           .withEnterprise(system.getEnterprise())
+			           .withEnterprise(enterprise)
 			           .get()
 			           .orElseThrow(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + value));
 		}
@@ -100,31 +111,32 @@ public class AddressService
 		}
 		
 		Address address = new Address();
-		Classification ipAddressClassification = (Classification) get(ClassificationService.class).find(RemoteAddressIPAddress,
-		                                                                                                system,
-		                                                                                                identityToken);
+		Classification ipAddressClassification = (Classification) classificationService.find(RemoteAddressIPAddress,
+				system,
+				identityToken);
 		
 		boolean found = address.builder()
 		                       .withClassification(ipAddressClassification)
 		                       .withValue(ipAddress)
-		                       .withEnterprise(system.getEnterpriseID())
+		                       .withEnterprise(enterprise)
 		                       .inDateRange()
-		                       .inActiveRange(system.getEnterprise(), identityToken)
+		                       .inActiveRange(enterprise, identityToken)
 		                       .getCount() > 0;
 		
 		if (!found)
 		{
 			address.setValue(ipAddress);
 			address.setClassificationID(ipAddressClassification);
-			address.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			address.setEnterpriseID((Enterprise) enterprise);
 			address.setSystemID((Systems) system);
 			address.setOriginalSourceSystemID((Systems) system);
-			address.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					.getActiveFlag(system.getEnterpriseID(), identityToken));
+			address.setActiveFlagID(activeFlag);
 			address.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
-			{ address.createDefaultSecurity(system, identityToken); }
+			{
+				address.createDefaultSecurity(system, identityToken);
+			}
 			if (EventThread.event.get() != null)
 			{
 				EventThread.event.get()
@@ -136,9 +148,9 @@ public class AddressService
 			address = address.builder()
 			                 .withClassification(ipAddressClassification)
 			                 .withValue(ipAddress)
-			                 .withEnterprise(system.getEnterpriseID())
+			                 .withEnterprise(enterprise)
 			                 .inDateRange()
-			                 .inActiveRange(system.getEnterprise(), identityToken)
+			                 .inActiveRange(enterprise, identityToken)
 			                 .get()
 			                 .orElseThrow(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + ipAddress));
 		}
@@ -150,7 +162,7 @@ public class AddressService
 	{
 		
 		Address address = new Address();
-		Classification ipAddressClassification = (Classification) get(ClassificationService.class).find(
+		Classification ipAddressClassification = (Classification) classificationService.find(
 				RemoteAddressHostName,
 				system,
 				identityToken);
@@ -158,24 +170,25 @@ public class AddressService
 		boolean found = address.builder()
 		                       .withClassification(ipAddressClassification)
 		                       .withValue(hostName)
-		                       .withEnterprise(system.getEnterpriseID())
+		                       .withEnterprise(enterprise)
 		                       .inDateRange()
-		                       .inActiveRange(system.getEnterprise(), identityToken)
+		                       .inActiveRange(enterprise, identityToken)
 		                       .getCount() > 0;
 		
 		if (!found)
 		{
 			address.setValue(hostName);
 			address.setClassificationID(ipAddressClassification);
-			address.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			address.setEnterpriseID((Enterprise) enterprise);
 			address.setSystemID((Systems) system);
 			address.setOriginalSourceSystemID((Systems) system);
-			address.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					.getActiveFlag(system.getEnterpriseID(), identityToken));
+			address.setActiveFlagID(activeFlag);
 			address.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
-			{ address.createDefaultSecurity(system, identityToken); }
+			{
+				address.createDefaultSecurity(system, identityToken);
+			}
 			if (EventThread.event.get() != null)
 			{
 				EventThread.event.get()
@@ -187,9 +200,9 @@ public class AddressService
 			address = address.builder()
 			                 .withClassification(ipAddressClassification)
 			                 .withValue(hostName)
-			                 .withEnterprise(system.getEnterpriseID())
+			                 .withEnterprise(enterprise)
 			                 .inDateRange()
-			                 .inActiveRange(system.getEnterprise(), identityToken)
+			                 .inActiveRange(enterprise, identityToken)
 			                 .get()
 			                 .orElseThrow(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + hostName));
 		}
@@ -202,7 +215,7 @@ public class AddressService
 	{
 		
 		Address address = new Address();
-		Classification ipAddressClassification = (Classification) get(ClassificationService.class).find(
+		Classification ipAddressClassification = (Classification) classificationService.find(
 				WebAddress,
 				system,
 				identityToken);
@@ -211,23 +224,24 @@ public class AddressService
 		boolean found = address.builder()
 		                       .withClassification(ipAddressClassification)
 		                       .withValue(webAddress)
-		                       .withEnterprise(system.getEnterpriseID())
+		                       .withEnterprise(enterprise)
 		                       .inDateRange()
-		                       .inActiveRange(system.getEnterprise(), identityToken)
+		                       .inActiveRange(enterprise, identityToken)
 		                       .getCount() > 0;
 		if (!found)
 		{
 			address.setValue(webAddress);
 			address.setClassificationID(ipAddressClassification);
-			address.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			address.setEnterpriseID((Enterprise) enterprise);
 			address.setSystemID((Systems) system);
 			address.setOriginalSourceSystemID((Systems) system);
-			address.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-					.getActiveFlag(system.getEnterpriseID(), identityToken));
+			address.setActiveFlagID(activeFlag);
 			address.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
-			{ address.createDefaultSecurity(system, identityToken); }
+			{
+				address.createDefaultSecurity(system, identityToken);
+			}
 			
 			if (EventThread.event.get() != null)
 			{
@@ -237,31 +251,31 @@ public class AddressService
 			
 			try
 			{
-				Classification webPortAddressClassification = (Classification) get(ClassificationService.class).find(
+				Classification webPortAddressClassification = (Classification) classificationService.find(
 						WebAddressPort,
 						system,
 						identityToken);
-				Classification webDomainAddressClassification = (Classification) get(ClassificationService.class).find(
+				Classification webDomainAddressClassification = (Classification) classificationService.find(
 						WebAddressDomain,
 						system,
 						identityToken);
-				Classification webSubDomainAddressClassification = (Classification) get(ClassificationService.class).find(
+				Classification webSubDomainAddressClassification = (Classification) classificationService.find(
 						WebAddressSubDomain,
 						system,
 						identityToken);
-				Classification webProtocolAddressClassification = (Classification) get(ClassificationService.class).find(
+				Classification webProtocolAddressClassification = (Classification) classificationService.find(
 						WebAddressProtocol,
 						system,
 						identityToken);
-				Classification webQueryParametersAddressClassification = (Classification) get(ClassificationService.class).find(
+				Classification webQueryParametersAddressClassification = (Classification) classificationService.find(
 						WebAddressQueryParameters,
 						system,
 						identityToken);
-				Classification webSiteAddressClassification = (Classification) get(ClassificationService.class).find(
+				Classification webSiteAddressClassification = (Classification) classificationService.find(
 						WebAddressSite,
 						system,
 						identityToken);
-				Classification webUrlAddressClassification = (Classification) get(ClassificationService.class).find(
+				Classification webUrlAddressClassification = (Classification) classificationService.find(
 						WebAddressUrl,
 						system,
 						identityToken);
@@ -275,12 +289,11 @@ public class AddressService
 				String port = matcher.group(3);
 				String uri = matcher.group(4);
 				Address webDetails = new Address();
-				webDetails.setEnterpriseID((Enterprise) system.getEnterpriseID());
+				webDetails.setEnterpriseID((Enterprise) enterprise);
 				webDetails.setSystemID((Systems) system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setOriginalSourceSystemID((Systems) system);
-				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-						.getActiveFlag(system.getEnterpriseID(), identityToken));
+				webDetails.setActiveFlagID(activeFlag);
 				
 				//
 				webDetails = new Address();
@@ -289,12 +302,13 @@ public class AddressService
 				webDetails.setOriginalSourceSystemID((Systems) system);
 				webDetails.setSystemID((Systems) system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
-				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-						.getActiveFlag(system.getEnterpriseID(), identityToken));
+				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
 				if (GuiceContext.get(ActivityMasterConfiguration.class)
 				                .isSecurityEnabled())
-				{ webDetails.createDefaultSecurity(system, identityToken); }
+				{
+					webDetails.createDefaultSecurity(system, identityToken);
+				}
 				
 				webDetails = new Address();
 				webDetails.setValue(domain);
@@ -302,12 +316,13 @@ public class AddressService
 				webDetails.setOriginalSourceSystemID((Systems) system);
 				webDetails.setSystemID((Systems) system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
-				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-						.getActiveFlag(system.getEnterpriseID(), identityToken));
+				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
 				if (GuiceContext.get(ActivityMasterConfiguration.class)
 				                .isSecurityEnabled())
-				{ webDetails.createDefaultSecurity(system, identityToken); }
+				{
+					webDetails.createDefaultSecurity(system, identityToken);
+				}
 				
 				webDetails = new Address();
 				webDetails.setValue(domain);
@@ -315,12 +330,13 @@ public class AddressService
 				webDetails.setOriginalSourceSystemID((Systems) system);
 				webDetails.setSystemID((Systems) system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
-				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-						.getActiveFlag(system.getEnterpriseID(), identityToken));
+				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
 				if (GuiceContext.get(ActivityMasterConfiguration.class)
 				                .isSecurityEnabled())
-				{ webDetails.createDefaultSecurity(system, identityToken); }
+				{
+					webDetails.createDefaultSecurity(system, identityToken);
+				}
 				
 				webDetails = new Address();
 				webDetails.setValue(protocol);
@@ -328,12 +344,13 @@ public class AddressService
 				webDetails.setOriginalSourceSystemID((Systems) system);
 				webDetails.setSystemID((Systems) system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
-				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-						.getActiveFlag(system.getEnterpriseID(), identityToken));
+				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
 				if (GuiceContext.get(ActivityMasterConfiguration.class)
 				                .isSecurityEnabled())
-				{ webDetails.createDefaultSecurity(system, identityToken); }
+				{
+					webDetails.createDefaultSecurity(system, identityToken);
+				}
 				
 				webDetails = new Address();
 				webDetails.setValue(uri);
@@ -341,12 +358,13 @@ public class AddressService
 				webDetails.setClassificationID(webSiteAddressClassification);
 				webDetails.setSystemID((Systems) system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
-				webDetails.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-						.getActiveFlag(system.getEnterpriseID(), identityToken));
+				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
 				if (GuiceContext.get(ActivityMasterConfiguration.class)
 				                .isSecurityEnabled())
-				{ webDetails.createDefaultSecurity(system, identityToken); }
+				{
+					webDetails.createDefaultSecurity(system, identityToken);
+				}
 			}
 			catch (MalformedURLException e)
 			{
@@ -359,9 +377,9 @@ public class AddressService
 			address = address.builder()
 			                 .withClassification(ipAddressClassification)
 			                 .withValue(webAddress)
-			                 .withEnterprise(system.getEnterpriseID())
+			                 .withEnterprise(enterprise)
 			                 .inDateRange()
-			                 .inActiveRange(system.getEnterprise(), identityToken)
+			                 .inActiveRange(enterprise, identityToken)
 			                 .get()
 			                 .orElseThrow(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + webAddress));
 		}
@@ -372,20 +390,20 @@ public class AddressService
 	@Override
 	public IAddress<?> addOrFindHomePhoneContact(String phoneNumber, ISystems<?> system, UUID... identityToken) throws AddressException
 	{
-		Classification homePhoneNumber = (Classification) get(ClassificationService.class).find(
+		Classification homePhoneNumber = (Classification) classificationService.find(
 				HomeTelephoneNumber,
 				system,
 				identityToken);
 		
-		Classification homePhoneNumberCountryCodeClassification = (Classification) get(ClassificationService.class).find(
+		Classification homePhoneNumberCountryCodeClassification = (Classification) classificationService.find(
 				HomeTelephoneCountryCode,
 				system,
 				identityToken);
-		Classification homePhoneExtensionNumberClassification = (Classification) get(ClassificationService.class).find(
+		Classification homePhoneExtensionNumberClassification = (Classification) classificationService.find(
 				HomeTelephoneExtensionNumber,
 				system,
 				identityToken);
-		Classification homePhoneAreaCodeClassification = (Classification) get(ClassificationService.class).find(
+		Classification homePhoneAreaCodeClassification = (Classification) classificationService.find(
 				HomeTelephoneAreaCode,
 				system,
 				identityToken);
@@ -415,20 +433,15 @@ public class AddressService
 		
 		streetAddress.setValue(contactEncrypted);
 		streetAddress.setClassificationID(homePhoneNumber);
-		streetAddress.setEnterpriseID((Enterprise) system.getEnterpriseID());
+		streetAddress.setEnterpriseID((Enterprise) enterprise);
 		streetAddress.setSystemID((Systems) system);
 		streetAddress.setOriginalSourceSystemID((Systems) system);
-		streetAddress.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				.getActiveFlag(system.getEnterpriseID(), identityToken));
+		streetAddress.setActiveFlagID(activeFlag);
 		streetAddress.persist();
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
-		{ streetAddress.createDefaultSecurity(system, identityToken); }
-		
-		if (EventThread.event.get() != null)
 		{
-			EventThread.event.get()
-			                 .add(streetAddress, Created, streetAddress.getValue(), system, identityToken);
+			streetAddress.createDefaultSecurity(system, identityToken);
 		}
 		
 		streetAddress.add(homePhoneNumberCountryCodeClassification, phoneNumberDTO.getCountryCode(), system, identityToken);
@@ -441,17 +454,17 @@ public class AddressService
 	@Override
 	public IAddress<?> addOrFindCellPhoneContact(String phoneNumber, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException
 	{
-		Classification homePhoneNumber = (Classification) get(ClassificationService.class).find(
+		Classification homePhoneNumber = (Classification) classificationService.find(
 				HomeCellNumber,
 				originatingSystem,
 				identityToken);
 		
-		Classification homePhoneNumberCountryCodeClassification = (Classification) get(ClassificationService.class).find(
+		Classification homePhoneNumberCountryCodeClassification = (Classification) classificationService.find(
 				HomeCellCountryCode,
 				originatingSystem,
 				identityToken);
 		
-		Classification homePhoneAreaCodeClassification = (Classification) get(ClassificationService.class).find(
+		Classification homePhoneAreaCodeClassification = (Classification) classificationService.find(
 				HomeCellAreaCode,
 				originatingSystem,
 				identityToken);
@@ -481,19 +494,18 @@ public class AddressService
 		
 		streetAddress.setValue(contactEncrypted);
 		streetAddress.setClassificationID(homePhoneNumber);
-		streetAddress.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		streetAddress.setEnterpriseID((Enterprise) enterprise);
 		streetAddress.setSystemID((Systems) originatingSystem);
 		streetAddress.setOriginalSourceSystemID((Systems) originatingSystem);
-		streetAddress.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				.getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+		streetAddress.setActiveFlagID(activeFlag);
 		streetAddress.persist();
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
-		{ streetAddress.createDefaultSecurity(originatingSystem, identityToken); }
+		{
+			streetAddress.createDefaultSecurity(originatingSystem, identityToken);
+		}
 		if (EventThread.event.get() != null)
 		{
-			ISystems<?> activityMasterSystem = get(ISystemsService.class)
-					.getActivityMaster(originatingSystem);
 			EventThread.event.get()
 			                 .add(streetAddress, Created, streetAddress.getValue(), activityMasterSystem, identityToken);
 		}
@@ -508,20 +520,20 @@ public class AddressService
 	public IAddress<?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?> system, UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
-		Classification buildingNumberClassification = (Classification) get(ClassificationService.class).find(
+		Classification buildingNumberClassification = (Classification) classificationService.find(
 				AddressBuildingClassifications.BuildingNumber,
 				system,
 				identityToken);
-		Classification buildingStreetClassification = (Classification) get(ClassificationService.class).find(
+		Classification buildingStreetClassification = (Classification) classificationService.find(
 				AddressBuildingClassifications.BuildingStreet,
 				system,
 				identityToken);
-		Classification buildingStreetTypeClassification = (Classification) get(ClassificationService.class).find(
+		Classification buildingStreetTypeClassification = (Classification) classificationService.find(
 				AddressBuildingClassifications.BuildingStreetType,
 				system,
 				identityToken);
 		
-		Classification buildingAddressClassification = (Classification) get(ClassificationService.class).find(
+		Classification buildingAddressClassification = (Classification) classificationService.find(
 				AddressBuildingClassifications.BuildingAddress,
 				system,
 				identityToken);
@@ -545,15 +557,16 @@ public class AddressService
 		Address address = new Address();
 		address.setValue(number + " " + street + " " + streetType);
 		address.setClassificationID(buildingAddressClassification);
-		address.setEnterpriseID((Enterprise) system.getEnterpriseID());
+		address.setEnterpriseID((Enterprise) enterprise);
 		address.setSystemID((Systems) system);
 		address.setOriginalSourceSystemID((Systems) system);
-		address.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				.getActiveFlag(system.getEnterpriseID(), identityToken));
+		address.setActiveFlagID(activeFlag);
 		address.persist();
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
-		{ address.createDefaultSecurity(system, identityToken); }
+		{
+			address.createDefaultSecurity(system, identityToken);
+		}
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
@@ -572,16 +585,16 @@ public class AddressService
 	{
 		
 		Address address = new Address();
-		Classification boxNumberClassification = (Classification) get(ClassificationService.class).find(
+		Classification boxNumberClassification = (Classification) classificationService.find(
 				BoxNumber,
 				system,
 				identityToken);
-		Classification boxidentifierClassification = (Classification) get(ClassificationService.class).find(
+		Classification boxidentifierClassification = (Classification) classificationService.find(
 				BoxIdentifier,
 				system,
 				identityToken);
 		
-		Classification boxAddressClassification = (Classification) get(ClassificationService.class).find(
+		Classification boxAddressClassification = (Classification) classificationService.find(
 				BoxAddress,
 				system,
 				identityToken);
@@ -602,15 +615,16 @@ public class AddressService
 		
 		address.setValue(boxIdentifier + " " + boxNumber);
 		address.setClassificationID(boxAddressClassification);
-		address.setEnterpriseID((Enterprise) system.getEnterpriseID());
+		address.setEnterpriseID((Enterprise) enterprise);
 		address.setSystemID((Systems) system);
 		address.setOriginalSourceSystemID((Systems) system);
-		address.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				.getActiveFlag(system.getEnterpriseID(), identityToken));
+		address.setActiveFlagID(activeFlag);
 		address.persist();
 		if (GuiceContext.get(ActivityMasterConfiguration.class)
 		                .isSecurityEnabled())
-		{ address.createDefaultSecurity(system, identityToken); }
+		{
+			address.createDefaultSecurity(system, identityToken);
+		}
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()

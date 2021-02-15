@@ -1,22 +1,36 @@
 package com.guicedee.activitymaster.core.systems;
 
-import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.implementations.ClassificationService;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.guicedee.activitymaster.core.ClassificationService;
+import com.guicedee.activitymaster.core.SystemsService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-@Singleton
+import static com.guicedee.activitymaster.core.services.system.IRulesService.*;
+
+
 public class RulesSystem
 		extends ActivityMasterDefaultSystem<RulesSystem>
 		implements IActivityMasterSystem<RulesSystem>
 {
+	
+	@Inject
+	private Provider<ISystemsService<?>> systemsService;
+	
+	@Override
+	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		systemsService.get()
+		              .create(enterprise, getSystemName(), getSystemDescription());
+	}
+	
+	
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
@@ -30,7 +44,7 @@ public class RulesSystem
 		service.create(ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup);
 		service.create(ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup);
 		service.create(ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup);*/
-		logProgress("Classifications System", "Loaded Rules Classifications...", 4, progressMonitor);
+		logProgress("Rules System", "Loaded Rules Classifications...", 4, progressMonitor);
 	}
 	
 	@Override
@@ -48,7 +62,7 @@ public class RulesSystem
 	@Override
 	public String getSystemName()
 	{
-		return "Rules System";
+		return RulesSystemName;
 	}
 	
 	@Override

@@ -1,23 +1,17 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.core;
 
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-
 import com.guicedee.activitymaster.core.db.entities.product.Product;
-import com.guicedee.activitymaster.core.db.entities.rules.Rules;
-import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
-import com.guicedee.activitymaster.core.db.entities.rules.RulesXProduct;
-import com.guicedee.activitymaster.core.db.entities.rules.RulesXRulesType;
+import com.guicedee.activitymaster.core.db.entities.rules.*;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IRulesService;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -26,30 +20,38 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 
 public class RulesService<J extends RulesService<J>>
 		implements IRulesService<J>
 {
+	@Inject
+	@Named("Active")
+	private IActiveFlag<?> activeFlag;
+	
+	@Inject
+	private IEnterprise<?> enterprise;
+	
+	@Inject
+	private IClassificationService<?> classificationService;
+	
 	@Override
 	public IRules<?> createRules(String rulesType, String name, String description, ISystems<?> system, UUID... identityToken)
 	{
-		
 		boolean exists = new Rules().builder()
 		                            .withName(name)
-		                            .inActiveRange(system.getEnterprise(), identityToken)
+		                            .inActiveRange(enterprise, identityToken)
 		                            .inDateRange()
-		                            .withEnterprise(system.getEnterprise())
+		                            .withEnterprise(enterprise)
 		                            .getCount() > 0;
 		if (exists)
 		{
 			return new Rules().builder()
 			                  .withName(name)
-			                  .inActiveRange(system.getEnterprise(), identityToken)
+			                  .inActiveRange(enterprise, identityToken)
 			                  .inDateRange()
-			                  .withEnterprise(system.getEnterprise())
+			                  .withEnterprise(enterprise)
 			                  .get()
 			                  .orElseThrow();
 		}
@@ -58,11 +60,10 @@ public class RulesService<J extends RulesService<J>>
 		rules.setName(name);
 		rules.setDescription(description);
 		
-		rules.setEnterpriseID((Enterprise) system.getEnterpriseID());
+		rules.setEnterpriseID((Enterprise) enterprise);
 		rules.setSystemID((Systems) system);
 		rules.setOriginalSourceSystemID((Systems) system);
-		rules.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				.getActiveFlag(system.getEnterpriseID(), identityToken));
+		rules.setActiveFlagID(activeFlag);
 		rules.persist();
 		rules.createDefaultSecurity(system, identityToken);
 		
@@ -120,8 +121,8 @@ public class RulesService<J extends RulesService<J>>
 		
 		boolean exists = et.builder()
 		                   .withName(rulesType)
-		                   .withEnterprise(system.getEnterpriseID())
-		                   .inActiveRange(system.getEnterpriseID())
+		                   .withEnterprise(enterprise)
+		                   .inActiveRange(enterprise)
 		                   .inDateRange()
 		                   .getCount() > 0;
 		
@@ -130,9 +131,8 @@ public class RulesService<J extends RulesService<J>>
 			et.setName(rulesType);
 			et.setDescription(description);
 			et.setSystemID((Systems) system);
-			et.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			et.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                            .getActiveFlag(system.getEnterpriseID(), identityToken));
+			et.setEnterpriseID((Enterprise) enterprise);
+			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID((Systems) system);
 			et.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
@@ -159,7 +159,6 @@ public class RulesService<J extends RulesService<J>>
 	@CacheResult(cacheName = "RulesTypesString")
 	public IRulesType<?> findRulesTypes(@CacheKey String rulesType, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
 	{
-		Enterprise enterprise = (Enterprise) system.getEnterprise();
 		return new RulesType().builder()
 		                      .withName(rulesType)
 		                      .withEnterprise(enterprise)
@@ -173,8 +172,6 @@ public class RulesService<J extends RulesService<J>>
 	@Override
 	public List<IRulesType<?>> findRulesTypes(String classifications, String value, ISystems<?> system, UUID... identityToken)
 	{
-		Enterprise enterprise = (Enterprise) system.getEnterprise();
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classifications, system, identityToken);
 		@SuppressWarnings({"UnnecessaryLocalVariable", "rawtypes"})
 		List all = new RulesType().builder()
@@ -194,8 +191,8 @@ public class RulesService<J extends RulesService<J>>
 		List res = new RulesXRulesType().builder()
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findChildLink((RulesType) rulesType, value)
-		                                .withEnterprise(system.getEnterpriseID())
-		                                .inActiveRange(system, identityToken)
+		                                .withEnterprise(enterprise)
+		                                .inActiveRange(enterprise, identityToken)
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
 		                                .getAll()
@@ -211,8 +208,8 @@ public class RulesService<J extends RulesService<J>>
 		List res = new RulesXRulesType().builder()
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findParentLink((Rules) rulesType, value)
-		                                .withEnterprise(system.getEnterpriseID())
-		                                .inActiveRange(system, identityToken)
+		                                .withEnterprise(enterprise)
+		                                .inActiveRange(enterprise, identityToken)
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
 		                                .getAll()
@@ -228,8 +225,8 @@ public class RulesService<J extends RulesService<J>>
 		List res = new RulesXRulesType().builder()
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findParentLink((Rules) rulesType, value)
-		                                .withEnterprise(system.getEnterpriseID())
-		                                .inActiveRange(system, identityToken)
+		                                .withEnterprise(enterprise)
+		                                .inActiveRange(enterprise, identityToken)
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
 		                                .getAll();
@@ -242,8 +239,8 @@ public class RulesService<J extends RulesService<J>>
 		List res = new RulesXProduct().builder()
 		                              .withClassification(classificationName, value, system, identityToken)
 		                              .findChildLink((Product) product, value)
-		                              .withEnterprise(system.getEnterpriseID())
-		                              .inActiveRange(system, identityToken)
+		                              .withEnterprise(enterprise)
+		                              .inActiveRange(enterprise, identityToken)
 		                              .inDateRange()
 		                              .canRead(system, identityToken)
 		                              .getAll()

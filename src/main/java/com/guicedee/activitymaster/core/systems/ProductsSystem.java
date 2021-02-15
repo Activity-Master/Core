@@ -1,37 +1,49 @@
 package com.guicedee.activitymaster.core.systems;
 
-import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.implementations.ClassificationService;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.classifications.product.ProductClassifications;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
-import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
+import com.guicedee.activitymaster.core.services.system.*;
 
-@Singleton
+import static com.guicedee.activitymaster.core.SystemsService.*;
+import static com.guicedee.activitymaster.core.services.system.IProductService.*;
+
+
 public class ProductsSystem
 		extends ActivityMasterDefaultSystem<ProductsSystem>
 		implements IActivityMasterSystem<ProductsSystem>
 {
+	@Inject
+	private IClassificationService<?> service;
+	
+	@Inject
+	@Named(ActivityMasterSystemName)
+	private ISystems<?> activityMasterSystem;
+	
+	@Inject
+	private Provider<ISystemsService<?>> systemsService;
+	
+	@Override
+	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		systemsService.get()
+		              .create(enterprise, getSystemName(), getSystemDescription());
+	}
+	
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
-		                                               .getActivityMaster(enterprise);
-
-		ClassificationService service = GuiceContext.get(ClassificationService.class);
-
 		service.create(ProductClassifications.Products, activityMasterSystem);
 		service.create(ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products);
 		service.create(ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup);
 		service.create(ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup);
 		service.create(ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup);
-		logProgress("Classifications System", "Loaded Product Classifications...", 4, progressMonitor);
+		logProgress("Products System", "Loaded Product Classifications...", 4, progressMonitor);
 	}
 
 	@Override
@@ -49,7 +61,7 @@ public class ProductsSystem
 	@Override
 	public String getSystemName()
 	{
-		return "Products System";
+		return ProductSystemName;
 	}
 
 	@Override

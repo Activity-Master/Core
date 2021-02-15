@@ -1,28 +1,20 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.core.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderCore;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.implementations.SecurityTokenService;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedinjection.interfaces.JobService;
-
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
@@ -53,110 +45,14 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 	@SuppressWarnings("ConstantConditions")
 	public void createDefaultSecurity(ISystems<?> system, UUID... identity)
 	{
-		boolean async = ActivityMasterConfiguration.get()
-		                                           .isAsyncEnabled();
-		//TODO security enable
-		async = false;
-		boolean securityEnabled = ActivityMasterConfiguration.get()
-		                                                     .isSecurityEnabled();
-		securityEnabled = false;
+		createDefaultAdministratorSecurityAccess(system, identity);
+		createDefaultEveryoneSecurityAccess(system, identity);
+		createDefaultEverywhereSecurityAccess(system, identity);
+		createDefaultSystemsSecurityAccess(system, identity);
+		createDefaultApplicationsSecurityAccess(system, identity);
+		createDefaultPluginsSecurityAccess(system, identity);
+		createDefaultGuestReadSecurityAccess(system, identity);
 		
-		if (async)
-		{
-			JobService.getInstance()
-			          .addJob("SecurityTokenStore",
-					          () -> createDefaultAdministratorSecurityAccess(system, identity));
-		}
-		else
-		{
-			if (securityEnabled)
-			{
-				createDefaultAdministratorSecurityAccess(system, identity);
-			}
-		}
-		
-		if (async)
-		{
-			JobService.getInstance()
-			          .addJob("SecurityTokenStore",
-					          () -> createDefaultEveryoneSecurityAccess(system, identity));
-		}
-		else
-		{
-			if (securityEnabled)
-			{
-				createDefaultEveryoneSecurityAccess(system, identity);
-			}
-		}
-		
-		if (async)
-		{
-			JobService.getInstance()
-			          .addJob("SecurityTokenStore",
-					          () -> createDefaultEverywhereSecurityAccess(system, identity));
-		}
-		else
-		{
-			if (securityEnabled)
-			{
-				createDefaultEverywhereSecurityAccess(system, identity);
-			}
-		}
-		
-		if (async)
-		{
-			JobService.getInstance()
-			          .addJob("SecurityTokenStore",
-					          () -> createDefaultSystemsSecurityAccess(system, identity));
-		}
-		else
-		{
-			if (securityEnabled)
-			{
-				createDefaultSystemsSecurityAccess(system, identity);
-			}
-		}
-		
-		if (async)
-		{
-			JobService.getInstance()
-			          .addJob("SecurityTokenStore",
-					          () -> createDefaultApplicationsSecurityAccess(system, identity));
-		}
-		else
-		{
-			if (securityEnabled)
-			{
-				createDefaultApplicationsSecurityAccess(system, identity);
-			}
-		}
-		
-		if (async)
-		{
-			JobService.getInstance()
-			          .addJob("SecurityTokenStore",
-					          () -> createDefaultPluginsSecurityAccess(system, identity));
-		}
-		else
-		{
-			if (securityEnabled)
-			{
-				createDefaultPluginsSecurityAccess(system, identity);
-			}
-		}
-		if (async)
-		{
-			JobService.getInstance()
-			          .addJob("SecurityTokenStore",
-					          () -> createDefaultGuestReadSecurityAccess(system, identity));
-		}
-		else
-		{
-			if (securityEnabled)
-			{
-				createDefaultGuestReadSecurityAccess(system, identity);
-			}
-		}
 	}
 	
 	public void updateSecurity(J newCoreTable, Systems system)
@@ -192,9 +88,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                                                           .getAdministratorsFolder(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
-		Optional<S> exists = ActivityMasterConfiguration.get()
-		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-				securities.findLinkedSecurityToken(administrators, this)
+		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
 				          //.inActiveRange(enterprise)
 				          .inDateRange()
 				          .setReturnFirst(true)
@@ -229,9 +123,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder();
-		Optional<S> exists = ActivityMasterConfiguration.get()
-		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-				(Optional<S>) securities.findLinkedSecurityToken(administrators, this)
+		Optional<S> exists = (Optional<S>) securities.findLinkedSecurityToken(administrators, this)
 				                        //.inActiveRange(enterprise)
 				                        .inDateRange()
 				                        .setReturnFirst(true)
@@ -262,9 +154,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
-		Optional<S> exists = ActivityMasterConfiguration.get()
-		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-				securities.findLinkedSecurityToken(administrators, this)
+		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
 				          //.inActiveRange(enterprise)
 				          .inDateRange()
 				          .setReturnFirst(true)
@@ -298,9 +188,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
-		Optional<S> exists = ActivityMasterConfiguration.get()
-		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-				securities.findLinkedSecurityToken(administrators, this)
+		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
 				          //.inActiveRange(enterprise)
 				          .inDateRange()
 				          .setReturnFirst(true)
@@ -334,9 +222,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
-		Optional<S> exists = ActivityMasterConfiguration.get()
-		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-				securities.findLinkedSecurityToken(administrators, this)
+		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
 				          //.inActiveRange(enterprise)
 				          .inDateRange()
 				          .setReturnFirst(true)
@@ -370,9 +256,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
-		Optional<S> exists = ActivityMasterConfiguration.get()
-		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-				securities.findLinkedSecurityToken(administrators, this)
+		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
 				          //.inActiveRange(enterprise)
 				          .inDateRange()
 				          .setReturnFirst(true)
@@ -405,9 +289,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
-		Optional<S> exists = ActivityMasterConfiguration.get()
-		                                                .isDoubleCheckDisabled() ? Optional.empty() :
-				securities.findLinkedSecurityToken(administrators, this)
+		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
 				          //.inActiveRange(enterprise)
 				          .inDateRange()
 				          .setReturnFirst(true)

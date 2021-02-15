@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.services.dto;
 
+import com.google.inject.ImplementedBy;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlagXClassification;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;

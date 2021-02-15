@@ -1,9 +1,9 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.core;
 
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
@@ -12,22 +12,16 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.Resour
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
 import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
-import com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IResourceItemService;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -38,6 +32,16 @@ import static jakarta.persistence.criteria.JoinType.*;
 public class ResourceItemService
 		implements IResourceItemService<ResourceItemService>
 {
+	@Inject
+	@Named("Active")
+	private IActiveFlag<?> activeFlag;
+	
+	@Inject
+	private IEnterprise<?> enterprise;
+	
+	@Inject
+	private IClassificationService<?> classificationService;
+	
 	@Override
 	public IResourceItemType<?> createType(IResourceType<?> value, ISystems<?> system, UUID... identityToken)
 	{
@@ -47,14 +51,12 @@ public class ResourceItemService
 	@Override
 	public IResourceItemType<?> createType(String value, String description, ISystems<?> system, UUID... identityToken)
 	{
-		IEnterprise<?> enterprise = system.getEnterpriseID();
-		
 		ResourceItemType xr = new ResourceItemType();
 		boolean exists = xr.builder()
 		                   .withName(value)
 		                   .inActiveRange(enterprise, identityToken)
 		                   .inDateRange()
-		                   .withEnterprise(system.getEnterprise())
+		                   .withEnterprise(enterprise)
 		                   .getCount() > 0;
 		
 		if (!exists)
@@ -63,8 +65,8 @@ public class ResourceItemService
 			xr.setDescription(value);
 			xr.setOriginalSourceSystemID((Systems) system);
 			xr.setSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			if (get(ActivityMasterConfiguration.class)
 					.isSecurityEnabled())
@@ -106,7 +108,7 @@ public class ResourceItemService
 			                      .withValue(resourceItemDataValue)
 			                      .withType(identityResourceType,null,system,identityToken)
 			                      .inDateRange()
-			                      .inActiveRange(system.getEnterprise(), identityToken)
+			                      .inActiveRange(enterprise, identityToken)
 			                      .getCount() > 0)
 			{
 				return new ResourceItem().builder()
@@ -114,7 +116,7 @@ public class ResourceItemService
 				                         .withValue(resourceItemDataValue)
 				                         .inDateRange()
 				                         .withType(identityResourceType,null,system,identityToken)
-				                         .inActiveRange(system.getEnterprise(), identityToken)
+				                         .inActiveRange(enterprise, identityToken)
 				                         .get()
 				                         .orElseThrow();
 			}
@@ -123,19 +125,19 @@ public class ResourceItemService
 		
 		boolean exists = xr.builder()
 		                   .withValue(resourceItemDataValue)
-		                   .inActiveRange(system.getEnterprise(), identityToken)
+		                   .inActiveRange(enterprise, identityToken)
 		                   .withType(identityResourceType,null,system,identityToken)
 		                   .inDateRange()
-		                   .withEnterprise(system.getEnterprise())
+		                   .withEnterprise(enterprise)
 		                   .getCount() > 0;
 		if (exists)
 		{
 			return xr.builder()
 			         .withValue(resourceItemDataValue)
-			         .inActiveRange(system.getEnterprise(), identityToken)
+			         .inActiveRange(enterprise, identityToken)
 			         .inDateRange()
 			         .withType(identityResourceType,null,system,identityToken)
-			         .withEnterprise(system.getEnterprise())
+			         .withEnterprise(enterprise)
 			         .get()
 			         .orElseThrow();
 		}
@@ -144,8 +146,8 @@ public class ResourceItemService
 		xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		xr.setEffectiveFromDate(effectiveFromDate);
 		xr.setSystemID((Systems) system);
-		xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-		xr.setActiveFlagID(((Systems) system).getActiveFlagID());
+		xr.setEnterpriseID((Enterprise) enterprise);
+		xr.setActiveFlagID(activeFlag);
 		xr.setResourceItemDataType(resourceItemDataValue);
 		xr.persist();
 		
@@ -181,8 +183,7 @@ public class ResourceItemService
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
 		ResourceItemXClassificationQueryBuilder builder = res.builder();
-		
-		IClassificationService<?> classificationService = get(IClassificationService.class);
+
 		Classification clazz = (Classification) classificationService.find(classification, systems, identityToken);
 		
 		builder.where(ResourceItemXClassification_.classificationID, Equals, clazz);
@@ -217,7 +218,7 @@ public class ResourceItemService
 		ResourceItem res = new ResourceItem();
 		ResourceItemQueryBuilder builder = res.builder();
 		builder.where(ResourceItem_.resourceItemUUID, Equals, uuid);
-		builder.inActiveRange(systems.getEnterprise(), identityToken);
+		builder.inActiveRange(enterprise, identityToken);
 		builder.inDateRange();
 		
 		Optional<ResourceItem> exists = builder.get();
@@ -232,7 +233,7 @@ public class ResourceItemService
 		ResourceItem res = new ResourceItem();
 		ResourceItemQueryBuilder builder = res.builder();
 		builder.where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceUniqueID);
-		builder.inActiveRange(systems.getEnterprise(), identityToken);
+		builder.inActiveRange(enterprise, identityToken);
 		builder.inDateRange();
 		Optional<ResourceItem> exists = builder.get();
 		return exists.orElse(null);
@@ -259,9 +260,9 @@ public class ResourceItemService
 	{
 		ResourceItemType xr = new ResourceItemType();
 		Optional<ResourceItemType> exists = xr.builder()
-		                                      .withEnterprise(system.getEnterprise())
+		                                      .withEnterprise(enterprise)
 		                                      .withName(type)
-		                                      .inActiveRange(system, identityToken)
+		                                      .inActiveRange(enterprise, identityToken)
 		                                      .canRead(system, identityToken)
 		                                      .inDateRange()
 		                                      .get();
@@ -278,8 +279,8 @@ public class ResourceItemService
 	public List<IResourceItem<?>> findByResourceItemType(@CacheKey String type,String value, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken)
 	{
 		return new ResourceItemXResourceItemType().builder()
-		                                          .withEnterprise(systems.getEnterprise())
-		                                          .inActiveRange(systems.getEnterprise(), identityToken)
+		                                          .withEnterprise(enterprise)
+		                                          .inActiveRange(enterprise, identityToken)
 		                                          .inDateRange()
 		                                          .canRead(systems, identityToken)
 		                                          .withType(type, systems, identityToken)

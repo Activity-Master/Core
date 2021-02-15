@@ -1,19 +1,18 @@
 package com.guicedee.activitymaster.core.services.system;
 
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
-import com.guicedee.activitymaster.core.services.classifications.involvedparty.IInvolvedPartyClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 public interface IArrangementsService<J extends IArrangementsService<J>>
 {
+	String ArrangementSystemName = "Arrangements System";
+	
 	IArrangement<?> create(IArrangementTypes<?> type,
 	                       IClassificationValue<?> arrangementTypeClassification,
 	                       String arrangementTypeValue,

@@ -1,13 +1,7 @@
 package com.guicedee.activitymaster.core.services.system;
 
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.services.dto.IClassificationDataConcept;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -15,6 +9,8 @@ import java.util.UUID;
 
 public interface IClassificationService<J extends IClassificationService<J>>
 {
+	String ClassificationSystemName = "Classifications System";
+	
 	IClassification<?> create(IClassificationValue<?> name,
 	                          ISystems<?> system, UUID... identityToken);
 	

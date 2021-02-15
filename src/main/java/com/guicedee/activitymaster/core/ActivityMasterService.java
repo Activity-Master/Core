@@ -1,216 +1,61 @@
 package com.guicedee.activitymaster.core;
 
+import com.google.inject.Inject;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.implementations.EnterpriseService;
-import com.guicedee.activitymaster.core.implementations.InvolvedPartyService;
-import com.guicedee.activitymaster.core.implementations.SecurityTokenService;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.IProgressable;
+import com.guicedee.activitymaster.core.services.*;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
-import com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-import com.guicedee.activitymaster.core.services.security.Passwords;
 import com.guicedee.activitymaster.core.services.system.IActivityMasterService;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.types.IPTypes;
-import com.guicedee.activitymaster.core.services.types.IdentificationTypes;
-import com.guicedee.guicedinjection.interfaces.IDefaultService;
-import com.guicedee.guicedinjection.pairing.Pair;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.logger.LogFactory;
+import lombok.extern.java.Log;
 
-import jakarta.validation.constraints.NotNull;
-
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.logging.Level;
 
-import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
-import static com.guicedee.activitymaster.core.services.types.NameTypes.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
+@Log
 public class ActivityMasterService
 		implements IProgressable,
 		           IActivityMasterService
 {
-	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
-	                                         @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
-	{
-		return startNewEnterprise(enterpriseName, adminUserName, adminPassword, null, progressMonitor);
-	}
-	
-	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
-	                                         @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier, IActivityMasterProgressMonitor progressMonitor)
-	{
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(false);
-		get(ActivityMasterConfiguration.class)
-				.setAsyncEnabled(false);
-		get(ActivityMasterConfiguration.class)
-				.setEnterpriseName(enterpriseName);
-		
-		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-		
-		int totalTasks = allSystems.stream()
-		                           .mapToInt(IActivityMasterSystem::totalTasks)
-		                           .sum() + 1;
-		
-		logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks, progressMonitor);
-		Enterprise enterprise = get(EnterpriseService.class).create(enterpriseName.classificationName(), enterpriseName.classificationDescription(), progressMonitor);
-		get(ActivityMasterConfiguration.class)
-				.getEnterpriseName()
-				.setEnterprise(enterprise);
-		
-		ActivityMasterConfiguration.getCreatingNew()
-		                           .set(true);
-		createNewEnterprise(enterpriseName, progressMonitor);
-		
-		
-		//Create Involved Party for Enterprise
-		ISystems<?> activityMasterSystem = get(ISystemsService.class).getActivityMaster(enterprise);
-		createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, uuidIdentifier, progressMonitor);
-		
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(true);
-		return enterprise;
-	}
-	
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public void createNewEnterprise(@NotNull IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
-	{
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(false);
-		
-		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-		IEnterprise<?> enterprise = get(IEnterpriseService.class)
-				.getEnterprise(enterpriseName);
-		
-		for (Iterator<IActivityMasterSystem> iterator = allSystems.iterator(); iterator.hasNext(); )
-		{
-			IActivityMasterSystem<?> allSystem = iterator.next();
-			logProgress("Running System", allSystem.getClass()
-			                                       .getSimpleName(), progressMonitor);
-			String nameC = cleanName(allSystem.getClass()
-			                                  .getSimpleName());
-			allSystem.createDefaults(enterprise, progressMonitor);
-			logProgress("Completed with System", nameC, 1, progressMonitor);
-		}
-		
-		logProgress("System Configuration", "Starting System Startups", 1, progressMonitor);
-		loadSystems(enterpriseName, progressMonitor);
-		progressMonitor.setCurrentTask(0);
-		logProgress("System Configuration", "Enterprise All Updates. Updating Systems", 1, progressMonitor);
-		IEnterpriseService enterpriseService = get(IEnterpriseService.class);
-		enterpriseService.loadUpdates(enterprise, progressMonitor);
-		logProgress("System Configuration", "Done", 1, progressMonitor);
-		
-		
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(true);
-	}
-	
-	protected IInvolvedParty<?> createAdminAndCreatorUserForEnterprise(ISystems<?> system, String adminUserName,
-	                                                                   @NotNull String adminPassword, UUID existingLocalKey, IActivityMasterProgressMonitor progressMonitor)
-	{
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(false);
-		IEnterprise<?> enterprise = system.getEnterprise();
-		
-		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1, progressMonitor);
-		
-		UUID token = get(ISystemsService.class).getSecurityIdentityToken(system);
-		
-		SecurityToken administratorsGroup = (SecurityToken) get(SecurityTokenService.class).getAdministratorsFolder(system);
-		
-		InvolvedPartyService service = get(InvolvedPartyService.class);
-		
-		Pair<IIdentificationType<?>, String> pair = new Pair<>(
-				IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
-				new Passwords().integerEncrypt(adminUserName.getBytes()));
-		Optional<InvolvedParty> exists = new InvolvedParty().builder()
-		                                                    .findByIdentificationType(system,
-				                                                    IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
-				                                                    new Passwords().integerEncrypt(adminUserName.getBytes()))
-		                                                    .get();
-		
-		IInvolvedParty<?> administratorUser;
-		if (exists.isEmpty())
-		{
-			IInvolvedParty<?> adminUser = service.create(system, pair, true);
-			
-			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUserName, NoClassification.classificationName(),
-					new Passwords().integerEncrypt(adminUserName.getBytes()), system, token);
-			
-			adminUser.addOrReuseType(IPTypes.TypeIndividual, NoClassification.classificationName(), "Creator Individual", system, token);
-			adminUser.addOrReuseNameType(PreferredNameType, NoClassification.name(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseNameType(CommonNameType, NoClassification.name(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseNameType(FullNameType, NoClassification.name(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseNameType(FirstNameType, NoClassification.name(), "Administrator", system, token);
-			
-			SecurityToken myToken = (SecurityToken) get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity,
-					adminUserName,
-					"The creator of the enterprise", system, administratorsGroup, token);
-			
-			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeEnterpriseCreatorRole, NoClassification.classificationName(),
-					new Passwords().integerEncrypt(adminUserName.getBytes()), system,
-					token);
-			
-			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, system, token);
-			adminUser.createDefaultSecurity(system, token);
-			administratorUser = adminUser;
-		}
-		else
-		{
-			administratorUser = exists.get();
-		}
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(true);
-		return administratorUser;
-	}
+	@Inject
+	private ActivityMasterConfiguration configuration;
+	@Inject
+	private IEnterprise<?> enterprise;
+	@Inject
+	private IEnterpriseService<?> enterpriseService;
 	
 	@Override
 	public void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
-		Set<IActivityMasterSystem> allSystems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
+		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
 		try
 		{
-			IEnterprise<?> enterprise = get(IEnterpriseService.class)
-					.getEnterprise(enterpriseName);
 			for (IActivityMasterSystem<?> allSystem : allSystems)
 			{
 				logProgress("System Loading", "Starting up system " + allSystem.getClass()
 				                                                               .getName(), 1, progressMonitor);
 				allSystem.postStartup(enterprise, progressMonitor);
 			}
-			ActivityMasterConfiguration.get()
-			                           .setDoubleCheckDisabled(true);
 		}
 		catch (NoSuchElementException e)
 		{
-		
+			log.log(Level.SEVERE, "Unable to load a system!", e);
 		}
 	}
 	
 	@Override
 	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		IEnterpriseService enterpriseService = get(IEnterpriseService.class);
 		enterpriseService.loadUpdates(enterprise, progressMonitor);
 		if (progressMonitor != null)
 		{
 			int cur = progressMonitor.getTotalTasks() - progressMonitor.getCurrentTask();
 			logProgress("System Updating", "Completed Updating Systems", cur, progressMonitor);
 		}
-		ActivityMasterConfiguration.get()
-		                           .setDoubleCheckDisabled(true);
 	}
 	
 	@Override

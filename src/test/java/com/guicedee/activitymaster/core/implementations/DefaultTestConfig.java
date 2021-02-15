@@ -3,33 +3,21 @@ package com.guicedee.activitymaster.core.implementations;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import com.guicedee.activitymaster.ActivityMasterTestBinder;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.ActivityMasterService;
-import com.guicedee.activitymaster.core.db.ActivityMasterDBModule;
+import com.guicedee.activitymaster.core.*;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISecurityToken;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.system.ISecurityTokenService;
 import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
 import com.guicedee.logger.LogFactory;
 import com.guicedee.logger.logging.LogColourFormatter;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 import static com.guicedee.activitymaster.core.DefaultEnterprise.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -77,14 +65,13 @@ public class DefaultTestConfig
 
 		req.setHeader("User-Agent", FirefoxHeaderAgent);*/
 
-		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise);
+		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise.classificationName());
 		EnterpriseService service = get(EnterpriseService.class);
 		Optional<IEnterprise<?>> enterpriseO = service.findEnterprise(TestEnterprise);
 		IEnterprise<?> enterprise = null;
 		if (enterpriseO.isEmpty())
 		{
-			enterpriseO = Optional.ofNullable(get(ActivityMasterService.class)
-					                                  .startNewEnterprise(TestEnterprise,
+			enterpriseO = Optional.ofNullable(service.startNewEnterprise(TestEnterprise,
 					                                                      "admin", "admin", getSoutMonitor()));
 		}
 		enterprise = enterpriseO.get();
@@ -93,7 +80,7 @@ public class DefaultTestConfig
 
 		ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
 		config.setSecurityEnabled(false);
-		config.setEnterpriseName(TestEnterprise);
+		config.setEnterpriseName(TestEnterprise.classificationName());
 
 		ISystems<?> systems = GuiceContext.get(ISystemsService.class)
 		                                  .getActivityMaster(enterprise);
@@ -108,8 +95,6 @@ public class DefaultTestConfig
 		securityConfiguration.setToken(token);
 		ISecurityToken<?> inToken = securityConfiguration.getToken();
 		config.setSecurityEnabled(true);
-		config.setAsyncEnabled(true);
-		config.setDoubleCheckDisabled(true);
 		defaultWaitUnit = TimeUnit.HOURS;
 		defaultWaitTime = 1;
 	}

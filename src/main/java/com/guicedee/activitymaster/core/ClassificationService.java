@@ -1,14 +1,13 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.core;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IClassificationDataConcept;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -25,6 +24,15 @@ import static com.guicedee.activitymaster.core.services.classifications.security
 public class ClassificationService
 		implements IClassificationService<ClassificationService>
 {
+	@Inject
+	@Named("Active")
+	private IActiveFlag<?> activeFlag;
+	
+	@Inject
+	private IEnterprise<?> enterprise;
+	
+	@Inject
+	private ClassificationsDataConceptService dataConceptService;
 	
 	@Override
 	public IClassification<?> create(IClassificationValue<?> name,
@@ -127,20 +135,19 @@ public class ClassificationService
 		ClassificationDataConcept dataConcept;
 		if (!Strings.isNullOrEmpty(conceptName))
 		{
-			ClassificationsDataConceptService dataConceptService = GuiceContext.get(ClassificationsDataConceptService.class);
 			dataConcept = dataConceptService.find(conceptName, system, identityToken);
 		}
 		else
 		{
-			dataConcept = null;
+			dataConcept = dataConceptService.find("No Classification", system, identityToken);;
 		}
 		
 		Classification rootCl = new Classification();
 		
 		boolean exists = rootCl.builder()
 		                       .findByNameAndConcept(name, dataConcept)
-		                       .withEnterprise(system.getEnterpriseID())
-		                       .inActiveRange(system.getEnterpriseID())
+		                       .withEnterprise(enterprise)
+		                       .inActiveRange(enterprise)
 		                       .inDateRange()
 		                       .getCount() > 0;
 		
@@ -152,8 +159,8 @@ public class ClassificationService
 			rootCl.setSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemID((Systems) system);
 			rootCl.setOriginalSourceSystemUniqueID("");
-			rootCl.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			rootCl.setActiveFlagID(((Systems) system).getActiveFlagID());
+			rootCl.setEnterpriseID((Enterprise) enterprise);
+			rootCl.setActiveFlagID(activeFlag);
 			rootCl.setConcept(dataConcept);
 			rootCl.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
@@ -203,10 +210,10 @@ public class ClassificationService
 		Classification search = new Classification();
 		search = search.builder()
 		               .findByNameAndConcept(name, concept, system, identityToken)
-		               .inActiveRange(system, identityToken)
+		               .inActiveRange(enterprise, identityToken)
 		               .inDateRange()
 		               .canRead(system, identityToken)
-		               .withEnterprise(system.getEnterprise())
+		               .withEnterprise(enterprise)
 		               .get()
 		               .orElseThrow(()-> new NoSuchElementException("Cannot find Classification with name - [" + name + "] - and concept - [" + concept + "]"));
 		return search;

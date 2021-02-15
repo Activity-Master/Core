@@ -6,7 +6,7 @@ package com.guicedee.activitymaster.core.services.enumtypes;
  * @param <J>
  * 		This enum type
  */
-public interface IClassificationValue<J extends Enum<J> & IClassificationValue<J>>
+public interface IClassificationValue<J extends IClassificationValue<J>>
 {
 	/**
 	 * Overrides the enum and string

@@ -3,12 +3,6 @@ package com.guicedee.activitymaster.core.db.abstraction.builders;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.ISecurityEnabledQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.implementations.ActiveFlagService;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.io.Serializable;
 

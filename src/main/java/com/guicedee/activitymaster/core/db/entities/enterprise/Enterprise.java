@@ -4,21 +4,14 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
+import com.guicedee.activitymaster.core.services.capabilities.*;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseClassification;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
-import com.guicedee.guicedinjection.GuiceContext;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
+import com.guicedee.activitymaster.core.services.dto.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.time.LocalDateTime;
@@ -86,6 +79,12 @@ public class Enterprise
 	public Enterprise()
 	{
 	
+	}
+	
+	@Override
+	public @NotNull boolean isFake()
+	{
+		return super.isFake();
 	}
 	
 	public Enterprise(java.util.UUID id)
@@ -194,10 +193,9 @@ public class Enterprise
 	}
 	
 	@Override
-	public IEnterpriseName<?> getIEnterprise()
+	public IEnterprise<?> getIEnterprise()
 	{
-		return GuiceContext.get(IEnterpriseService.class)
-		                   .getIEnterprise(this);
+		return this;
 	}
 	
 	@Override

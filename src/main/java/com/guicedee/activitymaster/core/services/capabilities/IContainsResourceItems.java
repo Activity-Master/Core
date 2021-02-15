@@ -4,36 +4,26 @@ import com.entityassist.SCDEntity;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSCD;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
+import com.guicedee.activitymaster.core.ClassificationService;
+import com.guicedee.activitymaster.core.db.abstraction.*;
+import com.guicedee.activitymaster.core.db.abstraction.builders.*;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.implementations.ClassificationService;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
 import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
 import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.IResourceItemService;
+import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.activitymaster.core.services.threads.StoreResourceItemThread;
-import com.guicedee.activitymaster.core.systems.ResourceItemSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.JobService;
-
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
@@ -53,7 +43,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		Q extends WarehouseClassificationRelationshipTable<P, S, ?, ? extends QueryBuilderRelationshipClassification, ?, ?, L, R>,
 		C extends IClassificationValue<?>,
 		L, R,
-		J extends IContainsResourceItems<P, S, Q, C,L, R, J>>
+		J extends IContainsResourceItems<P, S, Q, C, L, R, J>>
 {
 	
 	default double sumAll(C reesourceItemType, ISystems<?> originatingSystem, UUID identityToken)
@@ -215,9 +205,13 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 				                   .withEnterprise(system.getEnterprise())
 				                   .canRead(system, identityToken);
 		if (first)
-		{ queryBuilderRelationshipClassification.setMaxResults(1); }
+		{
+			queryBuilderRelationshipClassification.setMaxResults(1);
+		}
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{
+			queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"));
+		}
 		
 		//noinspection rawtypes
 		return (Optional) queryBuilderRelationshipClassification.get();
@@ -234,7 +228,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	{
 		return findResourceItemsAll(classification.classificationName(), value, originatingSystem, latest, identityToken);
 	}
-
+	
 	default List<IRelationshipValue<L, R, ?>> findResourceItemsAll(String classification, boolean latest, ISystems<?> system, UUID... identityToken)
 	{
 		
@@ -261,7 +255,9 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 				                   .inDateRange()
 				                   .canRead(system, identityToken);
 		if (latest)
-		{ queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate")); }
+		{
+			queryBuilderRelationshipClassification.orderBy(queryBuilderRelationshipClassification.getAttribute("effectiveFromDate"));
+		}
 		return (List) queryBuilderRelationshipClassification.getAll();
 	}
 	
@@ -342,7 +338,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system, identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOfAllResourceItems(classificationValue.classificationName(), value, system, identityToken) > 0;
 	}
@@ -361,7 +357,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system, identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOfResourceItems(classificationValue, value, system, identityToken) > 0;
 	}
@@ -409,7 +405,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system, identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOfResourceItems(classificationValue.classificationName(), value, system, identityToken);
 	}
@@ -419,7 +415,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		if (classificationValue == null)
 		{
 			classificationValue = (C) GuiceContext.get(ClassificationService.class)
-			                                      .find(Classifications.NoClassification,system, identityToken);
+			                                      .find(Classifications.NoClassification, system, identityToken);
 		}
 		return numberOfAllResourceItems(classificationValue.classificationName(), null, system, identityToken);
 	}
@@ -466,14 +462,14 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	}
 	
 	default IRelationshipValue<L, R, ?> addResourceItem(R typeAdd,
-	                                        String classificationName,
-	                                        String value,
-	                                        String originalSourceSystemUniqueID,
-	                                        LocalDateTime effectiveFromDate,
-	                                        LocalDateTime effectiveToDate,
-	                                        ISystems<?> originalSystemID,
-	                                        ISystems<?> system,
-	                                        UUID... identityToken )
+	                                                    String classificationName,
+	                                                    String value,
+	                                                    String originalSourceSystemUniqueID,
+	                                                    LocalDateTime effectiveFromDate,
+	                                                    LocalDateTime effectiveToDate,
+	                                                    ISystems<?> originalSystemID,
+	                                                    ISystems<?> system,
+	                                                    UUID... identityToken)
 	{
 		Q tableForClassification = get(findResourceItemAddableTableType());
 		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
@@ -493,8 +489,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		tableForClassification.setClassificationID((Classification) classification);
 		
 		configureResourceItemAddable(tableForClassification, (P) this,
-						(S)typeAdd,
-		                 (C) classification, value, system);
+				(S) typeAdd,
+				(C) classification, value, system);
 		
 		tableForClassification.persist();
 		if (get(ActivityMasterConfiguration.class)
@@ -566,8 +562,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 			newTableForClassification.setValue(storeValue == null ? STRING_EMPTY : storeValue);
 			newTableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 			configureResourceItemLinkValue(newTableForClassification, (P) tableForClassification.getPrimary(), (S) tableForClassification.getSecondary(),
-			                               classification, storeValue,
-			                               system);
+					classification, storeValue,
+					system);
 			newTableForClassification.persist();
 			
 			if (get(ActivityMasterConfiguration.class)
@@ -598,11 +594,13 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		
 		
-		boolean exists = findResourceItemTypeQuery(value, system, tableForClassification,(R) sType, classification, identityToken).getCount() > 0;
+		boolean exists = findResourceItemTypeQuery(value, system, tableForClassification, (R) sType, classification, identityToken).getCount() > 0;
 		if (!exists)
-		{ return addOrUpdateResourceItem((C)classification,type, value,value, data,mimeType,originalSystemID, identityToken); }
+		{
+			return addOrUpdateResourceItem((C) classification, type, value, value, data, mimeType, originalSystemID, identityToken);
+		}
 		
-		tableForClassification = (Q) findResourceItemTypeQuery(value, system, tableForClassification,(R)  sType, classification, identityToken)
+		tableForClassification = (Q) findResourceItemTypeQuery(value, system, tableForClassification, (R) sType, classification, identityToken)
 				.get()
 				.orElseThrow();
 		
@@ -611,7 +609,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		{
 			return tableForClassification;
 		}
-		return updateResourceItem(tableForClassification,(S) sType, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+		return updateResourceItem(tableForClassification, (S) sType, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -630,25 +628,16 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		Classification classification = (Classification) classificationService.find(resourceClassification, system, identityToken);
 		
-		boolean async = GuiceContext.get(ActivityMasterConfiguration.class)
-		                            .isAsyncEnabled();
-		
-		if(data != null)
+		if (data != null)
 		{
 			StoreResourceItemThread storeThread = GuiceContext.get(StoreResourceItemThread.class);
 			storeThread.setItem(item);
 			storeThread.setData(data);
 			storeThread.setIdentifyingToken(identityToken);
 			storeThread.setOriginatingSystem(system);
-			if (async)
-			{
-				JobService.getInstance()
-				          .addJob("StoreResourceItemThread", storeThread);
-			}
-			else
-			{
-				storeThread.run();
-			}
+			JobService.getInstance()
+			          .addJob("StoreResourceItemThread", storeThread);
+			
 		}
 		
 		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
@@ -716,7 +705,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		try
 		{
 			return (S) service.findResourceItemType(typeName, system, identityToken);
-		}catch (NoSuchElementException e)
+		}
+		catch (NoSuchElementException e)
 		{
 			return (S) service.createType(typeName, typeName, system, identityToken);
 		}
@@ -773,7 +763,6 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	{
 		return addResourceItem(secondaryName, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, null, system, identityToken);
 	}
-	
 	
 	
 	default IRelationshipValue<L, R, ?> addOrReuseResourceItem(@NotNull R type,
@@ -848,7 +837,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		}
 		else
 		{
-			tableForClassification = (Q) findResourceItemTypeQuery(value, system, tableForClassification,(R) sType, classification, identityToken)
+			tableForClassification = (Q) findResourceItemTypeQuery(value, system, tableForClassification, (R) sType, classification, identityToken)
 					.get()
 					.orElseThrow();
 		}
@@ -929,10 +918,12 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	{
 		Q tableForClassification = get(findResourceItemAddableTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		Classification classification = (Classification) classificationService.find(classificationName,system,identityToken);
+		Classification classification = (Classification) classificationService.find(classificationName, system, identityToken);
 		boolean exists = findResourceItemTypeQuery(value, system, tableForClassification, type, classification, identityToken).getCount() > 0;
 		if (!exists)
-		{ return addResourceItem(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken); }
+		{
+			return addResourceItem(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+		}
 		
 		tableForClassification = (Q) findResourceItemTypeQuery(value, system, tableForClassification, type, classification, identityToken)
 				.get()
@@ -947,18 +938,18 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	}
 	
 	default IRelationshipValue<L, R, ?> updateResourceItem(@NotNull IRelationshipValue<L, R, ?> original,
-	                                           @NotNull S type,
-	                                           @NotNull String classificationName,
-	                                           String value,
-	                                           String originalSourceSystemUniqueID,
-	                                           LocalDateTime effectiveFromDate,
-	                                           LocalDateTime effectiveToDate,
-	                                           ISystems<?> originalSystemID,
-	                                           @NotNull ISystems<?> system,
-	                                           UUID... identityToken)
+	                                                       @NotNull S type,
+	                                                       @NotNull String classificationName,
+	                                                       String value,
+	                                                       String originalSourceSystemUniqueID,
+	                                                       LocalDateTime effectiveFromDate,
+	                                                       LocalDateTime effectiveToDate,
+	                                                       ISystems<?> originalSystemID,
+	                                                       @NotNull ISystems<?> system,
+	                                                       UUID... identityToken)
 	{
 		archiveResourceItem(original, identityToken);
-		return addResourceItem((R)type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
+		return addResourceItem((R) type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
 	default IRelationshipValue<L, R, ?> updateResourceItem(@NotNull IRelationshipValue<L, R, ?> original,
@@ -976,7 +967,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		return addResourceItem(type, classificationName, value, originalSourceSystemUniqueID, effectiveFromDate, effectiveToDate, originalSystemID, system, identityToken);
 	}
 	
-	default IRelationshipValue<L, R, ?> archiveResourceItem(@NotNull IRelationshipValue<L, R, ?>  original, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> archiveResourceItem(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		IActiveFlagService flagService = get(IActiveFlagService.class);
@@ -985,7 +976,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		return original;
 	}
 	
-	default IRelationshipValue<L, R, ?> removeResourceItem(@NotNull IRelationshipValue<L, R, ?>  original, UUID... identityToken)
+	default IRelationshipValue<L, R, ?> removeResourceItem(@NotNull IRelationshipValue<L, R, ?> original, UUID... identityToken)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		IActiveFlagService flagService = get(IActiveFlagService.class);
@@ -995,7 +986,7 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	}
 	
 	@SuppressWarnings("rawtypes")
-	default IRelationshipValue<L, R, ?> expireResourceItem(@NotNull  IRelationshipValue<L, R, ?>  original, Duration when)
+	default IRelationshipValue<L, R, ?> expireResourceItem(@NotNull IRelationshipValue<L, R, ?> original, Duration when)
 	{
 		WarehouseSCDTable entity = (WarehouseSCDTable) original;
 		entity.setEffectiveToDate(entity.getEffectiveToDate()
@@ -1008,8 +999,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 	private QueryBuilderRelationship<?, ?, ?, ?, ?, ?> findResourceItemTypeQuery(String value, ISystems<?> system, Q tableForClassification, R sType, Classification classification, UUID... identityToken)
 	{
 		return tableForClassification.builder()
-		                             .findLink((P) this, (S)sType, value)
-		                             .inActiveRange(system,identityToken)
+		                             .findLink((P) this, (S) sType, value)
+		                             .inActiveRange(system, identityToken)
 		                             .inDateRange()
 		                             .withClassification(classification)
 		                             .withEnterprise(system.getEnterprise())

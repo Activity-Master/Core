@@ -3,14 +3,13 @@ package com.guicedee.activitymaster.core.services.system;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
 
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
-
 import java.util.List;
 import java.util.UUID;
 
 public interface IRulesService<J extends IRulesService<J>>
 {
+	String RulesSystemName = "Rules System";
+	
 	IRules<?> createRules(String rulesType, String name, String description, ISystems<?> system, UUID... identityToken);
 	
 	IRules<?> find(UUID identity);

@@ -1,10 +1,10 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.core;
 
 import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.entities.arrangement.*;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.*;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -14,12 +14,10 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
-import com.guicedee.activitymaster.core.services.classifications.involvedparty.IInvolvedPartyClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.exceptions.ArrangementException;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IArrangementsService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -29,21 +27,27 @@ import jakarta.persistence.criteria.JoinType;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 
 
 public class ArrangementsService
 		implements IArrangementsService<ArrangementsService>
 {
+	@Inject
+	private IClassificationService<?> classificationService;
+	
+	@Inject
+	@Named("Active")
+	private IActiveFlag<?> activeFlag;
+	
+	@Inject
+	private IEnterprise<?> enterprise;
+	
 	@Override
 	public IArrangement<?> create(IArrangementTypes<?> type,
 	                              IClassificationValue<?> arrangementTypeClassification,
@@ -54,23 +58,23 @@ public class ArrangementsService
 		ArrangementType tt = (ArrangementType) find(type, system);
 		boolean exists = new ArrangementXArrangementType().builder()
 		                                                  .withValue(arrangementTypeValue)
-		                                                  .inActiveRange(system.getEnterpriseID(), identityToken)
+		                                                  .inActiveRange(enterprise, identityToken)
 		                                                  .inDateRange()
 		                                                  .where(ArrangementXArrangementType_.type, Equals, tt)
 		                                                  //  .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
 		                                                  .withClassification(arrangementTypeClassification, system)
-		                                                  .withEnterprise(system.getEnterprise())
+		                                                  .withEnterprise(enterprise)
 		                                                  .getCount() > 0;
 		if (exists)
 		{
 			return new ArrangementXArrangementType().builder()
 			                                        .withValue(arrangementTypeValue)
-			                                        .inActiveRange(system.getEnterpriseID(), identityToken)
+			                                        .inActiveRange(enterprise, identityToken)
 			                                        .inDateRange()
 			                                        .where(ArrangementXArrangementType_.type, Equals, tt)
 			                                        //.where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
 			                                        .withClassification(arrangementTypeClassification, system)
-			                                        .withEnterprise(system.getEnterprise())
+			                                        .withEnterprise(enterprise)
 			                                        .get()
 			                                        .orElseThrow()
 			                                        .getArrangement();
@@ -79,8 +83,8 @@ public class ArrangementsService
 		Arrangement xr = new Arrangement();
 		xr.setSystemID((Systems) system);
 		xr.setOriginalSourceSystemID((Systems) system);
-		xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-		xr.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class).getActiveFlag(system.getEnterprise(), identityToken));
+		xr.setEnterpriseID((Enterprise) enterprise);
+		xr.setActiveFlagID(activeFlag);
 		xr.persist();
 		
 		if (ActivityMasterConfiguration.get()
@@ -108,9 +112,9 @@ public class ArrangementsService
 		
 		boolean exists = xr.builder()
 		                   .withName(type.name())
-		                   .inActiveRange(system.getEnterpriseID(), identityToken)
+		                   .inActiveRange(enterprise, identityToken)
 		                   .inDateRange()
-		                   .withEnterprise(system.getEnterprise())
+		                   .withEnterprise(enterprise)
 		                   .getCount() > 0;
 		
 		if (!exists)
@@ -119,8 +123,8 @@ public class ArrangementsService
 			xr.setDescription(type.classificationDescription());
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID(((Systems) system).getActiveFlagID());
+			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
@@ -141,10 +145,10 @@ public class ArrangementsService
 		List<ArrangementXInvolvedParty> xips =
 				new ArrangementXInvolvedParty()
 						.builder()
-						.withEnterprise(systems.getEnterprise())
+						.withEnterprise(enterprise)
 						.findChildLink((InvolvedParty) ip)
 						.withValue(arrType.classificationValue())
-						.inActiveRange(systems.getEnterpriseID(), identityToken)
+						.inActiveRange(enterprise, identityToken)
 						.inDateRange()
 						.getAll();
 		
@@ -158,21 +162,20 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> classificationName, String value, ISystems<?> systems, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationName, systems, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(systems.getEnterprise())
-		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		aqb.withEnterprise(enterprise)
+		   .inActiveRange(enterprise, identityToken)
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(systems.getEnterprise())
+		qb.withEnterprise(enterprise)
 		  .withClassification((Classification) classification)
 		  .withValue(value)
-		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inActiveRange(enterprise, identityToken)
 		  .inDateRange();
 		
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
@@ -186,21 +189,20 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByClassificationGT(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(systems.getEnterprise())
-		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		aqb.withEnterprise(enterprise)
+		   .inActiveRange(enterprise, identityToken)
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(systems.getEnterprise())
+		qb.withEnterprise(enterprise)
 		  .withClassification((Classification) classification)
 		  .withValueGT(value)
-		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inActiveRange(enterprise, identityToken)
 		  .inDateRange();
 		
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
@@ -211,7 +213,7 @@ public class ArrangementsService
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
 			aqb.join(Arrangement_.arrangementXArrangementList,
@@ -229,21 +231,20 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByClassificationGTE(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(systems.getEnterprise())
-		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		aqb.withEnterprise(enterprise)
+		   .inActiveRange(enterprise, identityToken)
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(systems.getEnterprise())
+		qb.withEnterprise(enterprise)
 		  .withClassification((Classification) classification)
 		  .withValueGTE(value)
-		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inActiveRange(enterprise, identityToken)
 		  .inDateRange();
 		
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
@@ -254,7 +255,7 @@ public class ArrangementsService
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
 			aqb.join(Arrangement_.arrangementXArrangementList,
@@ -279,12 +280,11 @@ public class ArrangementsService
 	                                                                       String value, ISystems<?> system,
 	                                                                       UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(system.getEnterprise())
-		   .inActiveRange(system.getEnterpriseID(), identityToken)
+		aqb.withEnterprise(enterprise)
+		   .inActiveRange(enterprise, identityToken)
 		   .inDateRange();
 		
 		if (classificationName != null)
@@ -292,10 +292,10 @@ public class ArrangementsService
 			JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 			
 			ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-			qb.withEnterprise(system.getEnterprise())
+			qb.withEnterprise(enterprise)
 			  .withClassification((Classification) classification)
 			  .withValueGTE(value)
-			  .inActiveRange(system.getEnterpriseID(), identityToken)
+			  .inActiveRange(enterprise, identityToken)
 			  .inDateRange();
 			aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 		}
@@ -310,7 +310,7 @@ public class ArrangementsService
 			ArrangementXInvolvedPartyQueryBuilder builder =
 					new ArrangementXInvolvedParty()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.withClassification(ipClassification, system)
 							.inDateRange()
 							.where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) withInvolvedParty);
@@ -330,7 +330,7 @@ public class ArrangementsService
 			ArrangementXResourceItemQueryBuilder builder =
 					new ArrangementXResourceItem()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.withClassification(resourceItemClassification, system)
 							.inDateRange()
 							.where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem);
@@ -346,7 +346,7 @@ public class ArrangementsService
 			ArrangementXArrangementTypeQueryBuilder builderAT =
 					new ArrangementXArrangementType()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.withType(arrangementType, system, identityToken)
 							.inDateRange();
 			aqb.join(Arrangement_.types,
@@ -362,7 +362,7 @@ public class ArrangementsService
 			ArrangementXArrangementQueryBuilder builderParent =
 					new ArrangementXArrangement()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
 			aqb.join(Arrangement_.arrangementXArrangementList,
@@ -381,21 +381,20 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByClassificationLT(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(systems.getEnterprise())
-		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		aqb.withEnterprise(enterprise)
+		   .inActiveRange(enterprise, identityToken)
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(systems.getEnterprise())
+		qb.withEnterprise(enterprise)
 		  .withClassification((Classification) classification)
 		  .withValueLT(value)
-		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inActiveRange(enterprise, identityToken)
 		  .inDateRange();
 		
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
@@ -406,7 +405,7 @@ public class ArrangementsService
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
 			aqb.join(Arrangement_.arrangementXArrangementList,
@@ -424,21 +423,20 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByClassificationLTE(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(systems.getEnterprise())
-		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		aqb.withEnterprise(enterprise)
+		   .inActiveRange(enterprise, identityToken)
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(systems.getEnterprise())
+		qb.withEnterprise(enterprise)
 		  .withClassification((Classification) classification)
 		  .withValueLTE(value)
-		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inActiveRange(enterprise, identityToken)
 		  .inDateRange();
 		
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
@@ -449,7 +447,7 @@ public class ArrangementsService
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
 			aqb.join(Arrangement_.arrangementXArrangementList,
@@ -467,21 +465,20 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByClassification(IArrangementClassification<?> arrType, IArrangement<?> withParent, String value, ISystems<?> systems, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification = classificationService.find(arrType, systems, identityToken);
 		
 		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(systems.getEnterprise())
-		   .inActiveRange(systems.getEnterpriseID(), identityToken)
+		aqb.withEnterprise(enterprise)
+		   .inActiveRange(enterprise, identityToken)
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
 		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(systems.getEnterprise())
+		qb.withEnterprise(enterprise)
 		  .withClassification((Classification) classification)
 		  .withValue(value)
-		  .inActiveRange(systems.getEnterpriseID(), identityToken)
+		  .inActiveRange(enterprise, identityToken)
 		  .inDateRange();
 		
 		aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
@@ -492,7 +489,7 @@ public class ArrangementsService
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
 							.builder()
-							.inActiveRange(classification.getEnterprise())
+							.inActiveRange(enterprise)
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
 			if (!Strings.isNullOrEmpty(value))
@@ -515,16 +512,15 @@ public class ArrangementsService
 	@Override
 	public IArrangement<?> findArrangementByResourceItem(IResourceItem<?> resourceItem, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		if (Strings.isNullOrEmpty(classificationName))
 		{
 			classificationName = NoClassification.classificationName();
 		}
 		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		Optional<ArrangementXResourceItem> arrangementXResourceItem = new ArrangementXResourceItem().builder()
-		                                                                                            .inActiveRange(system, identityToken)
+		                                                                                            .inActiveRange(enterprise, identityToken)
 		                                                                                            .inDateRange()
-		                                                                                            .withEnterprise(system)
+		                                                                                            .withEnterprise(enterprise)
 		                                                                                            .withClassification(classification)
 		                                                                                            .withValue(value)
 		                                                                                            .where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
@@ -535,16 +531,15 @@ public class ArrangementsService
 	@Override
 	public IArrangement<?> findArrangementByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		if (Strings.isNullOrEmpty(classificationName))
 		{
 			classificationName = NoClassification.classificationName();
 		}
 		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		Optional<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
-		                                                                           .inActiveRange(system, identityToken)
+		                                                                           .inActiveRange(enterprise, identityToken)
 		                                                                           .inDateRange()
-		                                                                           .withEnterprise(system)
+		                                                                           .withEnterprise(enterprise)
 		                                                                           .withClassification(classification)
 		                                                                           .withValue(value)
 		                                                                           .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
@@ -555,16 +550,15 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByRulesType(IRulesType<?> ruleType, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		if (Strings.isNullOrEmpty(classificationName))
 		{
 			classificationName = NoClassification.classificationName();
 		}
 		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		List collect = new ArrangementXRulesType().builder()
-		                                                       .inActiveRange(system, identityToken)
+		                                                       .inActiveRange(enterprise, identityToken)
 		                                                       .inDateRange()
-		                                                       .withEnterprise(system)
+		                                                       .withEnterprise(enterprise)
 		                                                       .withClassification(classification)
 		                                                       .withValue(value)
 		                                                       .where(ArrangementXRulesType_.rulesTypeID, Equals, (RulesType) ruleType)
@@ -578,16 +572,15 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		if (Strings.isNullOrEmpty(classificationName))
 		{
 			classificationName = NoClassification.classificationName();
 		}
 		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		List<ArrangementXInvolvedParty> all = new ArrangementXInvolvedParty().builder()
-		                                                                     .inActiveRange(system, identityToken)
+		                                                                     .inActiveRange(enterprise, identityToken)
 		                                                                     .inDateRange(startDate, EndOfTime)
-		                                                                     .withEnterprise(system)
+		                                                                     .withEnterprise(enterprise)
 		                                                                     .withClassification(classification)
 		                                                                     .withValue(value)
 		                                                                     .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
@@ -600,16 +593,15 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		if (Strings.isNullOrEmpty(classificationName))
 		{
 			classificationName = NoClassification.classificationName();
 		}
 		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		List<ArrangementXInvolvedParty> all = new ArrangementXInvolvedParty().builder()
-		                                                                     .inActiveRange(system, identityToken)
+		                                                                     .inActiveRange(enterprise, identityToken)
 		                                                                     .inDateRange(startDate, endDate)
-		                                                                     .withEnterprise(system)
+		                                                                     .withEnterprise(enterprise)
 		                                                                     .withClassification(classification)
 		                                                                     .withValue(value)
 		                                                                     .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
@@ -622,16 +614,15 @@ public class ArrangementsService
 	@Override
 	public List<IArrangement<?>> findArrangementsByInvolvedParty(IInvolvedParty<?> involvedParty, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		if (Strings.isNullOrEmpty(classificationName))
 		{
 			classificationName = NoClassification.classificationName();
 		}
 		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		List<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
-		                                                                       .inActiveRange(system, identityToken)
+		                                                                       .inActiveRange(enterprise, identityToken)
 		                                                                       .inDateRange()
-		                                                                       .withEnterprise(system)
+		                                                                       .withEnterprise(enterprise)
 		                                                                       .withClassification(classification)
 		                                                                       .withValue(value)
 		                                                                       .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
@@ -642,16 +633,15 @@ public class ArrangementsService
 	@Override
 	public List<IInvolvedParty<?>> findArrangementInvolvedParties(IArrangement<?> arrangement, String classificationName, String value, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		if (Strings.isNullOrEmpty(classificationName))
 		{
 			classificationName = NoClassification.classificationName();
 		}
 		IClassification<?> classification = classificationService.find(classificationName, system, identityToken);
 		List<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
-		                                                                       .inActiveRange(system, identityToken)
+		                                                                       .inActiveRange(enterprise, identityToken)
 		                                                                       .inDateRange()
-		                                                                       .withEnterprise(system)
+		                                                                       .withEnterprise(enterprise)
 		                                                                       .withClassification(classification)
 		                                                                       .withValue(value)
 		                                                                       .where(ArrangementXInvolvedParty_.arrangementID, Equals, (Arrangement) arrangement)
@@ -666,9 +656,9 @@ public class ArrangementsService
 		ArrangementType xr = new ArrangementType();
 		return xr.builder()
 		         .withName(idType.classificationValue())
-		         .inActiveRange(system, tokens)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
-		         .withEnterprise(system)
+		         .withEnterprise(enterprise)
 		         .canRead(system, tokens)
 		         .get()
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement type - " + idType.classificationValue()));
@@ -681,9 +671,9 @@ public class ArrangementsService
 		ArrangementType xr = new ArrangementType();
 		return xr.builder()
 		         .withName(idType)
-		         .inActiveRange(system, tokens)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
-		         .withEnterprise(system)
+		         .withEnterprise(enterprise)
 		         .canRead(system, tokens)
 		         .get()
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement type - " + idType));
@@ -695,7 +685,7 @@ public class ArrangementsService
 		Arrangement xr = new Arrangement();
 		return xr.builder()
 		         .where(Arrangement_.id, Equals, id)
-		         .inActiveRange(system, tokens)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
 		         .canRead(system, tokens)
 		         .get()
@@ -717,7 +707,7 @@ public class ArrangementsService
 	{
 		IArrangementType<?> type = find(idType, system, identityToken);
 		List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder()
-		                                                                          .inActiveRange(system)
+		                                                                          .inActiveRange(enterprise)
 		                                                                          .inDateRange()
 		                                                                          .canRead(system, identityToken)
 		                                                                          .findChildLink((ArrangementType) type)

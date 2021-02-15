@@ -1,34 +1,34 @@
 package com.guicedee.activitymaster.core.systems;
 
-import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
 import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
-import com.guicedee.activitymaster.core.updates.DatedUpdate;
-import com.guicedee.activitymaster.core.updates.ISystemUpdate;
-import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedinjection.json.LocalDateDeserializer;
-import io.github.classgraph.ClassInfo;
+import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import lombok.extern.java.Log;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import static com.guicedee.activitymaster.core.services.system.IEnterpriseService.*;
 
-@Singleton
+
 @Log
 public class EnterpriseSystem
 		extends ActivityMasterDefaultSystem<EnterpriseSystem>
 		implements IActivityMasterSystem<EnterpriseSystem>
 {
+	
+	@Inject
+	private Provider<ISystemsService<?>> systemsService;
+	
+	@Override
+	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		systemsService.get()
+		              .create(enterprise, getSystemName(), getSystemDescription());
+	}
+	
+	
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
@@ -56,7 +56,7 @@ public class EnterpriseSystem
 	@Override
 	public String getSystemName()
 	{
-		return "Enterprise System";
+		return EnterpriseSystemName;
 	}
 	
 	@Override

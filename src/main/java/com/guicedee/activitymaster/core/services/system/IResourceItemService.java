@@ -1,14 +1,10 @@
 package com.guicedee.activitymaster.core.services.system;
 
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.services.dto.*;
+import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
-
 import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +12,8 @@ import java.util.UUID;
 
 public interface IResourceItemService<J extends IResourceItemService<J>>
 {
+	String ResourceItemSystemName = "Resource Items System";
+	
 	IResourceItemType<?> createType(IResourceType<?> value, ISystems<?> system, UUID... identityToken);
 	
 	IResourceItemType<?> createType(String value, String description, ISystems<?> system, UUID... identityToken);

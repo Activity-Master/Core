@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.core.db.abstraction.builders.handlers;
 import com.entityassist.enumerations.Operand;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.core.SecurityTokenService;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderDefault;
@@ -10,16 +11,15 @@ import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyView;
 import com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyView_;
-import com.guicedee.activitymaster.core.implementations.SecurityTokenService;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.UUID;

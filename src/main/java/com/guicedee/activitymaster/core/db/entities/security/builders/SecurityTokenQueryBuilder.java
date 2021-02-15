@@ -5,22 +5,19 @@
  */
 package com.guicedee.activitymaster.core.db.entities.security.builders;
 
+import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
 import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContainsClassificationsQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXClassification;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.security.*;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.implementations.ClassificationService;
 import com.guicedee.activitymaster.core.services.classifications.securitytokens.ISecurityTokenClassification;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.metamodel.Attribute;
+
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;

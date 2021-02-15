@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.core.services.dto;
 
+import com.google.inject.ImplementedBy;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXClassification;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXGeography;

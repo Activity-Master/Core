@@ -8,11 +8,7 @@ import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.guicedinjection.GuiceContext;
-
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -106,6 +102,12 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 	public J setEnterpriseID(Enterprise enterpriseID)
 	{
 		this.enterpriseID = enterpriseID;
+		return (J) this;
+	}
+	
+	public J setEnterpriseID(IEnterprise<?> enterpriseID)
+	{
+		this.enterpriseID = (Enterprise) enterpriseID;
 		return (J) this;
 	}
 	

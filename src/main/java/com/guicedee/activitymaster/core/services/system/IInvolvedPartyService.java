@@ -1,9 +1,7 @@
 package com.guicedee.activitymaster.core.services.system;
 
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-import com.guicedee.activitymaster.core.services.enumtypes.INameType;
-import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
+import com.guicedee.activitymaster.core.services.enumtypes.*;
 import com.guicedee.guicedinjection.pairing.Pair;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
@@ -13,6 +11,7 @@ import java.util.UUID;
 
 public interface IInvolvedPartyService<J extends IInvolvedPartyService<J>>
 {
+	String InvolvedPartySystemName = "Involved Party System";
 	
 	IInvolvedParty<?> findByID(UUID id);
 	

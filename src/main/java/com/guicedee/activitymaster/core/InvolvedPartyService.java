@@ -1,8 +1,7 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.core;
 
-import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
@@ -11,33 +10,28 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-import com.guicedee.activitymaster.core.services.enumtypes.INameType;
-import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
+import com.guicedee.activitymaster.core.services.enumtypes.*;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
 import com.guicedee.activitymaster.core.services.security.Passwords;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.logger.LogFactory;
-
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.*;
+import static com.guicedee.activitymaster.core.SystemsService.*;
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.events.EventClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications.*;
@@ -46,11 +40,24 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 @SuppressWarnings("Duplicates")
-
 public class InvolvedPartyService
 		implements IInvolvedPartyService<InvolvedPartyService>
 {
 	private static final Logger log = LogFactory.getLog("InvolvedPartyService");
+	
+	@Inject
+	@Named("Active")
+	private IActiveFlag<?> activeFlag;
+	
+	@Inject
+	private IEnterprise<?> enterprise;
+	
+	@Inject
+	@Named(ActivityMasterSystemName)
+	private ISystems<?> activityMasterSystem;
+	
+	@Inject
+	private IClassificationService<?> classificationService;
 	
 	@Override
 	@CacheResult(cacheName = "InvovledPartyByID")
@@ -75,9 +82,9 @@ public class InvolvedPartyService
 		
 		boolean exists = xr.builder()
 		                   .withName(name)
-		                   .inActiveRange(system, identityToken)
+		                   .inActiveRange(enterprise, identityToken)
 		                   .inDateRange()
-		                   .withEnterprise(system)
+		                   .withEnterprise(enterprise)
 		                   .getCount() > 0;
 		
 		if (!exists)
@@ -86,8 +93,8 @@ public class InvolvedPartyService
 			xr.setDescription(description);
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag) get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			
 			if (get(ActivityMasterConfiguration.class)
@@ -117,9 +124,9 @@ public class InvolvedPartyService
 		
 		boolean exists = xr.builder()
 		                   .withName(name)
-		                   .inActiveRange(system, identityToken)
+		                   .inActiveRange(enterprise, identityToken)
 		                   .inDateRange()
-		                   .withEnterprise(system)
+		                   .withEnterprise(enterprise)
 		                   .getCount() > 0;
 		
 		if (!exists)
@@ -128,8 +135,8 @@ public class InvolvedPartyService
 			xr.setDescription(description);
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag) get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			if (get(ActivityMasterConfiguration.class)
 					.isSecurityEnabled())
@@ -157,9 +164,9 @@ public class InvolvedPartyService
 		
 		boolean exists = xr.builder()
 		                   .withName(name)
-		                   .inActiveRange(system, identityToken)
+		                   .inActiveRange(enterprise, identityToken)
 		                   .inDateRange()
-		                   .withEnterprise(system)
+		                   .withEnterprise(enterprise)
 		                   .getCount() > 0;
 		
 		if (!exists)
@@ -168,14 +175,13 @@ public class InvolvedPartyService
 			xr.setDescription(description);
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag) get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			if (get(ActivityMasterConfiguration.class)
 					.isSecurityEnabled())
 			{
-				xr.createDefaultSecurity(get(ISystemsService.class)
-						.getActivityMaster(system, identityToken), identityToken);
+				xr.createDefaultSecurity(activityMasterSystem, identityToken);
 			}
 		}
 		else
@@ -192,9 +198,9 @@ public class InvolvedPartyService
 		InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
 		boolean exists = xr.builder()
 		                   .withName(name.classificationValue())
-		                   .inActiveRange(system, identityToken)
+		                   .inActiveRange(enterprise, identityToken)
 		                   .inDateRange()
-		                   .withEnterprise(system)
+		                   .withEnterprise(enterprise)
 		                   .getCount() > 0;
 		
 		if (!exists)
@@ -203,23 +209,22 @@ public class InvolvedPartyService
 			xr.setDescription(description);
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) system.getEnterpriseID());
-			xr.setActiveFlagID((ActiveFlag) get(ActiveFlagService.class).getActiveFlag(xr.getEnterpriseID()));
+			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			if (get(ActivityMasterConfiguration.class)
 					.isSecurityEnabled())
 			{
-				xr.createDefaultSecurity(get(ISystemsService.class)
-						.getActivityMaster(system, identityToken), identityToken);
+				xr.createDefaultSecurity(activityMasterSystem, identityToken);
 			}
 		}
 		else
 		{
 			xr = xr.builder()
 			       .withName(name.classificationValue())
-			       .inActiveRange(system, identityToken)
+			       .inActiveRange(enterprise, identityToken)
 			       .inDateRange()
-			       .withEnterprise(system)
+			       .withEnterprise(enterprise)
 			       .get()
 			       .orElseThrow();
 		}
@@ -234,7 +239,7 @@ public class InvolvedPartyService
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
 		return xr.builder()
 		         .withName(idType.classificationValue())
-		         .inActiveRange(system, tokens)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
 		         //     .canRead(enterprise, tokens)
 		         .get()
@@ -248,7 +253,7 @@ public class InvolvedPartyService
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
 		return xr.builder()
 		         .withName(idType)
-		         .inActiveRange(system, tokens)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
 		         //     .canRead(enterprise, tokens)
 		         .get()
@@ -262,7 +267,7 @@ public class InvolvedPartyService
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> builder = new InvolvedPartyXInvolvedPartyIdentificationType()
 				.builder()
 				.canRead(system, tokens)
-				.inActiveRange(system, tokens)
+				.inActiveRange(enterprise, tokens)
 				.inDateRange()
 				.findChildLink(
 						(InvolvedPartyIdentificationType) findIdentificationType(idType, system, tokens),
@@ -281,7 +286,7 @@ public class InvolvedPartyService
 		Optional<InvolvedPartyXResourceItem> builder = new InvolvedPartyXResourceItem()
 				.builder()
 				.canRead(system, tokens)
-				.inActiveRange(system, tokens)
+				.inActiveRange(enterprise, tokens)
 				.inDateRange()
 				.findChildLink(
 						(ResourceItem) idType,
@@ -357,7 +362,7 @@ public class InvolvedPartyService
 	public boolean doesUsernameExist(String username, ISystems<?> system, UUID... token)
 	{
 		return new InvolvedParty().builder()
-		                          .withEnterprise(system)
+		                          .withEnterprise(enterprise)
 		                          .findByIdentificationType(system, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()), token)
 		                          .getCount() > 0;
 	}
@@ -367,7 +372,7 @@ public class InvolvedPartyService
 	public IInvolvedParty<?> findByUsername(@CacheKey String username, @CacheKey ISystems<?> system, @CacheKey UUID... token)
 	{
 		IInvolvedParty<?> party = new InvolvedParty().builder()
-		                                             .withEnterprise(system)
+		                                             .withEnterprise(enterprise)
 		                                             .findByIdentificationType(system, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
 				                                             token)
 		                                             .get()
@@ -415,14 +420,14 @@ public class InvolvedPartyService
 	{
 		InvolvedParty ip = new InvolvedParty();
 		Optional<InvolvedParty> exists = ip.builder()
-		                                   .withEnterprise(system.getEnterprise())
+		                                   .withEnterprise(enterprise)
 		                                   .findByIdentificationType(system, idTypes.getKey(), idTypes.getValue(), identityToken)
 		                                   .get();
 		
 		if (exists.isEmpty())
 		{
-			ip.setEnterpriseID((Enterprise) system.getEnterprise());
-			ip.setActiveFlagID(system.getActiveFlagID());
+			ip.setEnterpriseID((Enterprise) enterprise);
+			ip.setActiveFlagID(activeFlag);
 			ip.setSystemID((Systems) system);
 			ip.setOriginalSourceSystemID((Systems) system);
 			ip.persist();
@@ -433,19 +438,10 @@ public class InvolvedPartyService
 			}
 			
 			ip.addOrUpdateIdentificationType(idTypes.getKey(), NoClassification.name(), idTypes.getValue(), system, identityToken);
-			
-			if (get(ActivityMasterConfiguration.class)
-					.isAsyncEnabled())
-			{
-				final InvolvedParty ipAsync = ip;
-				JobService.getInstance()
-				          .addJob("InvolvedPartyOrganicStorage",
-						          () -> setupInvolvedPartyOrganicStatus(isOrganic, ipAsync, system, identityToken));
-			}
-			else
-			{
-				setupInvolvedPartyOrganicStatus(isOrganic, ip, system, identityToken);
-			}
+			InvolvedParty finalIp = ip;
+			JobService.getInstance()
+			          .addJob("InvolvedPartyOrganicStorage",
+					          () -> setupInvolvedPartyOrganicStatus(isOrganic, finalIp, system, identityToken));
 		}
 		else
 		{
@@ -462,8 +458,8 @@ public class InvolvedPartyService
 			InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
 			ipo.setInvolvedParty((InvolvedParty) ip);
 			ipo.setId(ip.getId());
-			ipo.setEnterpriseID((Enterprise) system.getEnterprise());
-			ipo.setActiveFlagID(system.getActiveFlagID());
+			ipo.setEnterpriseID((Enterprise) enterprise);
+			ipo.setActiveFlagID(activeFlag);
 			ipo.setSystemID((Systems) system);
 			ipo.setOriginalSourceSystemID((Systems) system);
 			ipo.persist();
@@ -478,8 +474,8 @@ public class InvolvedPartyService
 			InvolvedPartyNonOrganic ipo = new InvolvedPartyNonOrganic();
 			ipo.setInvolvedParty((InvolvedParty) ip);
 			ipo.setId(ip.getId());
-			ipo.setEnterpriseID((Enterprise) system.getEnterprise());
-			ipo.setActiveFlagID(system.getActiveFlagID());
+			ipo.setEnterpriseID((Enterprise) enterprise);
+			ipo.setActiveFlagID(activeFlag);
 			ipo.setSystemID((Systems) system);
 			ipo.setOriginalSourceSystemID((Systems) system);
 			ipo.persist();
@@ -505,8 +501,8 @@ public class InvolvedPartyService
 		InvolvedPartyType xr = new InvolvedPartyType();
 		return xr.builder()
 		         .withName(nameType)
-		         .inActiveRange(system, tokens)
-		         .withEnterprise(system)
+		         .inActiveRange(enterprise, tokens)
+		         .withEnterprise(enterprise)
 		         .inDateRange()
 		         .canRead(system, tokens)
 		         .get()
@@ -527,9 +523,9 @@ public class InvolvedPartyService
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
 		return xr.builder()
 		         .withName(nameType)
-		         .inActiveRange(system, tokens)
+		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
-		         .withEnterprise(system)
+		         .withEnterprise(enterprise)
 		         .canRead(system, tokens)
 		         .get()
 		         .orElse(null);
@@ -543,9 +539,9 @@ public class InvolvedPartyService
 		InvolvedPartyIdentificationType id = (InvolvedPartyIdentificationType) findIdentificationType(IdentificationTypeUUID, ((SecurityToken) token).getSystemID(), tokens);
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> foundLink = idType.builder()
 		                                                                          .findChildLink(id, token.getSecurityToken())
-		                                                                          .inActiveRange(((SecurityToken) token).getEnterpriseID())
+		                                                                          .inActiveRange(enterprise)
 		                                                                          .inDateRange()
-		                                                                          .withEnterprise(((SecurityToken) token).getEnterpriseID())
+		                                                                          .withEnterprise(enterprise)
 		                                                                          .canRead(((SecurityToken) token).getSystemID(), tokens)
 		                                                                          .get();
 		return foundLink.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
@@ -562,9 +558,9 @@ public class InvolvedPartyService
 		
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> foundLink = idType.builder()
 		                                                                          .findChildLink(id, token.toString())
-		                                                                          .inActiveRange(system, tokens)
+		                                                                          .inActiveRange(enterprise, tokens)
 		                                                                          .inDateRange()
-		                                                                          .withEnterprise(system)
+		                                                                          .withEnterprise(enterprise)
 		                                                                          .canRead(system, tokens)
 		                                                                          .get();
 		return foundLink.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
@@ -637,14 +633,13 @@ public class InvolvedPartyService
 	@Override
 	public List<IInvolvedParty<?>> findByRulesClassification(String classification, String value, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification1 = classificationService.find(classification, system, identityToken);
 		
 		@SuppressWarnings("rawtypes")
 		List collect = new InvolvedPartyXRules().builder()
 		                                        .withClassification(classification1)
 		                                        .withValue(value)
-		                                        .inActiveRange(system.getEnterprise(), identityToken)
+		                                        .inActiveRange(enterprise, identityToken)
 		                                        .inDateRange()
 		                                        .getAll()
 		                                        .stream()
@@ -657,12 +652,11 @@ public class InvolvedPartyService
 	@Override
 	public IInvolvedParty<?> findByClassification(String classification, String value, ISystems<?> system, UUID... identityToken)
 	{
-		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> classification1 = classificationService.find(classification, system, identityToken);
 		return new InvolvedPartyXClassification().builder()
 		                                         .withClassification(classification1)
 		                                         .withValue(value)
-		                                         .inActiveRange(system.getEnterprise(), identityToken)
+		                                         .inActiveRange(enterprise, identityToken)
 		                                         .inDateRange()
 		                                         .get()
 		                                         .orElse(null)

@@ -1,0 +1,181 @@
+package com.guicedee.activitymaster.core.injections.updates;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.core.services.classifications.address.*;
+import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.system.IClassificationService;
+import com.guicedee.activitymaster.core.updates.DatedUpdate;
+import com.guicedee.activitymaster.core.updates.ISystemUpdate;
+
+import static com.guicedee.activitymaster.core.SystemsService.*;
+import static com.guicedee.activitymaster.core.services.classifications.address.AddressClassifications.*;
+
+@DatedUpdate(date = "2016/01/05", taskCount = 15)
+public class AddressBaseSetup implements ISystemUpdate
+{
+	@Inject
+	private IClassificationService<?> service;
+	
+	@Inject
+	@Named(ActivityMasterSystemName)
+	private ISystems<?> activityMasterSystem;
+	
+	@Override
+	public void update(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		createDefaultTelephones(enterprise, progressMonitor);
+		createDefaultInternetAddresses(enterprise, progressMonitor);
+		createDefaultPhysicalAddresses(enterprise, progressMonitor);
+	}
+	
+	@SuppressWarnings("Duplicates")
+	private void createDefaultTelephones(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		service.create(AddressClassifications.Address, activityMasterSystem);
+		service.create(ContactAddress, activityMasterSystem,AddressClassifications.Address);
+		service.create(PostalAddress, activityMasterSystem,AddressClassifications.Address);
+		service.create(CallAddress, activityMasterSystem,AddressClassifications.Address);
+		service.create(InternetAddress, activityMasterSystem,AddressClassifications.Address);
+		service.create(LocationAddress, activityMasterSystem,AddressClassifications.Address);
+		
+		service.create(AddressHomeTelephoneClassifications.HomeTelephoneNumber, activityMasterSystem,CallAddress);
+		service.create(AddressHomeTelephoneClassifications.HomeTelephoneCountryCode, activityMasterSystem, AddressHomeTelephoneClassifications.HomeTelephoneNumber);
+		service.create(AddressHomeTelephoneClassifications.HomeTelephoneExtensionNumber, activityMasterSystem, AddressHomeTelephoneClassifications.HomeTelephoneNumber);
+		service.create(AddressHomeTelephoneClassifications.HomeTelephoneAreaCode, activityMasterSystem, AddressHomeTelephoneClassifications.HomeTelephoneNumber);
+		
+		logProgress("Address System", "Done Home Telephones", 1, progressMonitor);
+		
+		service.create(AddressHomeFaxClassifications.HomeFaxNumber, activityMasterSystem,ContactAddress);
+		service.create(AddressHomeFaxClassifications.HomeFaxCountryCode, activityMasterSystem, AddressHomeFaxClassifications.HomeFaxNumber);
+		service.create(AddressHomeFaxClassifications.HomeFaxExtensionNumber, activityMasterSystem, AddressHomeFaxClassifications.HomeFaxNumber);
+		service.create(AddressHomeFaxClassifications.HomeFaxAreaCode, activityMasterSystem, AddressHomeFaxClassifications.HomeFaxNumber);
+		
+		logProgress("Address System", "Done Home Fax", 1, progressMonitor);
+		
+		service.create(AddressHomeCellClassifications.HomeCellNumber, activityMasterSystem,CallAddress);
+		service.create(AddressHomeCellClassifications.HomeCellCountryCode, activityMasterSystem, AddressHomeCellClassifications.HomeCellNumber);
+		service.create(AddressHomeCellClassifications.HomeCellExtensionNumber, activityMasterSystem, AddressHomeCellClassifications.HomeCellNumber);
+		service.create(AddressHomeCellClassifications.HomeCellAreaCode, activityMasterSystem, AddressHomeCellClassifications.HomeCellNumber);
+		
+		logProgress("Address System", "Done Home Cell", 1, progressMonitor);
+		
+		service.create(AddressHomePagerClassifications.HomePagerNumber, activityMasterSystem,ContactAddress);
+		service.create(AddressHomePagerClassifications.HomePagerCountryCode, activityMasterSystem, AddressHomePagerClassifications.HomePagerNumber);
+		service.create(AddressHomePagerClassifications.HomePagerExtensionNumber, activityMasterSystem, AddressHomePagerClassifications.HomePagerNumber);
+		service.create(AddressHomePagerClassifications.HomePagerAreaCode, activityMasterSystem, AddressHomePagerClassifications.HomePagerNumber);
+		
+		logProgress("Address System", "Done Home Pager", 1, progressMonitor);
+		
+		service.create(AddressOfficeTelepehoneClassifications.OfficeTelephoneNumber, activityMasterSystem,CallAddress);
+		service.create(AddressOfficeTelepehoneClassifications.OfficeTelephoneCountryCode, activityMasterSystem, AddressOfficeTelepehoneClassifications.OfficeTelephoneNumber);
+		service.create(AddressOfficeTelepehoneClassifications.OfficeTelephoneExtensionNumber, activityMasterSystem, AddressOfficeTelepehoneClassifications.OfficeTelephoneNumber);
+		service.create(AddressOfficeTelepehoneClassifications.OfficeTelephoneAreaCode, activityMasterSystem, AddressOfficeTelepehoneClassifications.OfficeTelephoneNumber);
+		
+		logProgress("Address System", "Done Office Telephone", 1, progressMonitor);
+		
+		service.create(AddressOfficeFaxClassifications.OfficeFaxNumber, activityMasterSystem,ContactAddress);
+		service.create(AddressOfficeFaxClassifications.OfficeFaxCountryCode, activityMasterSystem, AddressOfficeFaxClassifications.OfficeFaxNumber);
+		service.create(AddressOfficeFaxClassifications.OfficeFaxExtensionNumber, activityMasterSystem, AddressOfficeFaxClassifications.OfficeFaxNumber);
+		service.create(AddressOfficeFaxClassifications.OfficeFaxAreaCode, activityMasterSystem, AddressOfficeFaxClassifications.OfficeFaxNumber);
+		
+		logProgress("Address System", "Done Office Fax", 1, progressMonitor);
+		
+		service.create(AddressOfficeCellClassifications.OfficeCellNumber, activityMasterSystem,CallAddress);
+		service.create(AddressOfficeCellClassifications.OfficeCellCountryCode, activityMasterSystem, AddressOfficeCellClassifications.OfficeCellNumber);
+		service.create(AddressOfficeCellClassifications.OfficeCellExtensionNumber, activityMasterSystem, AddressOfficeCellClassifications.OfficeCellNumber);
+		service.create(AddressOfficeCellClassifications.OfficeCellAreaCode, activityMasterSystem, AddressOfficeCellClassifications.OfficeCellNumber);
+		
+		logProgress("Address System", "Done Office Cell", 1, progressMonitor);
+		
+		service.create(AddressOfficePagerClassifications.OfficePagerNumber, activityMasterSystem,ContactAddress);
+		service.create(AddressOfficePagerClassifications.OfficePagerCountryCode, activityMasterSystem, AddressOfficePagerClassifications.OfficePagerNumber);
+		service.create(AddressOfficePagerClassifications.OfficePagerExtensionNumber, activityMasterSystem, AddressOfficePagerClassifications.OfficePagerNumber);
+		service.create(AddressOfficePagerClassifications.OfficePagerAreaCode, activityMasterSystem, AddressOfficePagerClassifications.OfficePagerNumber);
+		
+		logProgress("Address System", "Done Office Pager", 1, progressMonitor);
+	}
+	
+	@SuppressWarnings("Duplicates")
+	private void createDefaultInternetAddresses(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		logProgress("Address System", "Starting Internet Address Checks", progressMonitor);
+		
+		service.create(AddressInternalSystemClassifications.InternalAddress, activityMasterSystem,InternetAddress);
+		service.create(AddressInternalSystemClassifications.InternalAddressHostName, activityMasterSystem, AddressInternalSystemClassifications.InternalAddress);
+		service.create(AddressInternalSystemClassifications.InternalAddressIPAddress, activityMasterSystem, AddressInternalSystemClassifications.InternalAddress);
+		service.create(AddressInternalSystemClassifications.InternalAddressSubnet, activityMasterSystem, AddressInternalSystemClassifications.InternalAddress);
+		service.create(AddressInternalSystemClassifications.InternalAddressDns, activityMasterSystem, AddressInternalSystemClassifications.InternalAddress);
+		service.create(AddressInternalSystemClassifications.InternalAddressGateway, activityMasterSystem, AddressInternalSystemClassifications.InternalAddress);
+		
+		service.create(AddressRemoteSystemClassifications.RemoteAddress, activityMasterSystem,InternetAddress);
+		service.create(AddressRemoteSystemClassifications.RemoteAddressHostName, activityMasterSystem, AddressRemoteSystemClassifications.RemoteAddress);
+		service.create(AddressRemoteSystemClassifications.RemoteAddressIPAddress, activityMasterSystem, AddressRemoteSystemClassifications.RemoteAddress);
+		
+		service.create(AddressLocalSystemClassifications.LocalAddress, activityMasterSystem,InternetAddress);
+		service.create(AddressLocalSystemClassifications.LocalAddressHostName, activityMasterSystem, AddressLocalSystemClassifications.LocalAddress);
+		service.create(AddressLocalSystemClassifications.LocalAddressIPAddress, activityMasterSystem, AddressLocalSystemClassifications.LocalAddress);
+		
+		logProgress("Address System", "Done Internal Addresses", 1, progressMonitor);
+		
+		service.create(AddressExternalSystemClassifications.ExternalAddress, activityMasterSystem,InternetAddress);
+		service.create(AddressExternalSystemClassifications.ExternalAddressHostName, activityMasterSystem, AddressExternalSystemClassifications.ExternalAddress);
+		service.create(AddressExternalSystemClassifications.ExternalAddressIPAddress, activityMasterSystem, AddressExternalSystemClassifications.ExternalAddress);
+		
+		logProgress("Address System", "Done External Addresses", 1, progressMonitor);
+		
+		service.create(AddressEmailClassifications.EmailAddress, activityMasterSystem,ContactAddress);
+		service.create(AddressEmailClassifications.EmailAddressDomain, activityMasterSystem, AddressEmailClassifications.EmailAddress);
+		service.create(AddressEmailClassifications.EmailAddressHost, activityMasterSystem, AddressEmailClassifications.EmailAddress);
+		service.create(AddressEmailClassifications.EmailAddressUser, activityMasterSystem, AddressEmailClassifications.EmailAddress);
+		
+		logProgress("Address System", "Done Email Addresses", 1, progressMonitor);
+		
+		service.create(AddressWebClassifications.WebAddress, activityMasterSystem,InternetAddress);
+		service.create(AddressWebClassifications.WebAddressProtocol, activityMasterSystem, AddressWebClassifications.WebAddress);
+		service.create(AddressWebClassifications.WebAddressPort, activityMasterSystem, AddressWebClassifications.WebAddress);
+		service.create(AddressWebClassifications.WebAddressSubDomain, activityMasterSystem, AddressWebClassifications.WebAddress);
+		service.create(AddressWebClassifications.WebAddressDomain, activityMasterSystem, AddressWebClassifications.WebAddress);
+		service.create(AddressWebClassifications.WebAddressUrl, activityMasterSystem, AddressWebClassifications.WebAddress);
+		service.create(AddressWebClassifications.WebAddressQueryParameters, activityMasterSystem, AddressWebClassifications.WebAddress);
+		service.create(AddressWebClassifications.WebAddressSite, activityMasterSystem, AddressWebClassifications.WebAddress);
+		
+		logProgress("Address System", "Done Web Addresses", 1, progressMonitor);
+	}
+	
+	@SuppressWarnings("Duplicates")
+	private void createDefaultPhysicalAddresses(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		logProgress("Address System", "Starting Physical Address Checks", progressMonitor);
+		
+		service.create(AddressBuildingClassifications.BuildingAddress, activityMasterSystem,LocationAddress);
+		service.create(AddressBuildingClassifications.BuildingDesk, activityMasterSystem, AddressBuildingClassifications.BuildingAddress);
+		service.create(AddressBuildingClassifications.BuildingIsle, activityMasterSystem, AddressBuildingClassifications.BuildingAddress);
+		service.create(AddressBuildingClassifications.BuildingFloor, activityMasterSystem, AddressBuildingClassifications.BuildingAddress);
+		service.create(AddressBuildingClassifications.BuildingWindow, activityMasterSystem, AddressBuildingClassifications.BuildingAddress);
+		service.create(AddressBuildingClassifications.BuildingIdentifer, activityMasterSystem, AddressBuildingClassifications.BuildingAddress);
+		service.create(AddressBuildingClassifications.BuildingNumber, activityMasterSystem, AddressBuildingClassifications.BuildingAddress);
+		service.create(AddressBuildingClassifications.BuildingStreet, activityMasterSystem, AddressBuildingClassifications.BuildingAddress);
+		service.create(AddressBuildingClassifications.BuildingStreetType, activityMasterSystem, AddressBuildingClassifications.BuildingAddress);
+		
+		logProgress("Address System", "Done Building Addresses", 1, progressMonitor);
+		
+		service.create(AddressBoxClassifications.BoxAddress, activityMasterSystem,PostalAddress);
+		service.create(AddressBoxClassifications.BoxNumber, activityMasterSystem, AddressBoxClassifications.BoxAddress);
+		service.create(AddressBoxClassifications.BoxIdentifier, activityMasterSystem, AddressBoxClassifications.BoxAddress);
+		service.create(AddressBoxClassifications.BoxCity, activityMasterSystem, AddressBoxClassifications.BoxAddress);
+		service.create(AddressBoxClassifications.BoxPostalCode, activityMasterSystem, AddressBoxClassifications.BoxAddress);
+		
+		logProgress("Address System", "Done Box Addresses", 1, progressMonitor);
+		
+		service.create(AddressLegalClassifications.LegalAddress, activityMasterSystem,PostalAddress);
+		service.create(AddressLegalClassifications.LegalDistrictNumber, activityMasterSystem, AddressLegalClassifications.LegalAddress);
+		service.create(AddressLegalClassifications.LegalLotNumber, activityMasterSystem, AddressLegalClassifications.LegalAddress);
+		service.create(AddressLegalClassifications.LegalBlockNumber, activityMasterSystem, AddressLegalClassifications.LegalAddress);
+		
+		logProgress("Address System", "Done Legal Addresses", 1, progressMonitor);
+	}
+	
+}

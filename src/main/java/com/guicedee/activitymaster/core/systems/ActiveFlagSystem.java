@@ -1,28 +1,39 @@
 package com.guicedee.activitymaster.core.systems;
 
 import com.entityassist.enumerations.ActiveFlag;
-import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.implementations.ActiveFlagService;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.guicedee.activitymaster.core.ActiveFlagService;
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
-@Singleton
+import static com.guicedee.activitymaster.core.services.system.IActiveFlagService.*;
+
+
 public class ActiveFlagSystem
 		extends ActivityMasterDefaultSystem<ActiveFlagSystem>
 		implements IActivityMasterSystem<ActiveFlagSystem>
 {
+	@Inject
+	private Provider<ISystemsService<?>> systemsService;
+	
+	@Override
+	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	{
+		systemsService.get()
+		              .create(enterprise, ActivateFlagSystemName, "The system for the active flag management");
+	}
+	
 	@Override
 	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Active Flag Service", "Loading Active Flags", progressMonitor);
 		for (ActiveFlag activeFlag : ActiveFlag.values())
 		{
-			GuiceContext.get(ActiveFlagService.class)
+			((ActiveFlagService)GuiceContext.get(IActiveFlagService.class))
 			            .create(enterprise, activeFlag.name(), activeFlag.getDescription());
 		}
 	}
@@ -42,7 +53,7 @@ public class ActiveFlagSystem
 	@Override
 	public String getSystemName()
 	{
-		return "Active Flag System";
+		return ActivateFlagSystemName;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.services.system;
 
 import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
 
 import java.util.List;
@@ -9,6 +8,8 @@ import java.util.UUID;
 
 public interface IProductService<J extends IProductService<J>>
 {
+	String ProductSystemName = "Products System";
+	
 	IProduct<?> createProduct(String productType,String name, String description, String code, ISystems<?> system, UUID... identityToken);
 	
 	IProductType<?> createProductType(IProductTypeValue<?> productType, ISystems<?> system, UUID... identityToken);

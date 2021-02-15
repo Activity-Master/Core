@@ -1,17 +1,13 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.core;
 
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts;
-import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationDataConceptService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
@@ -25,6 +21,13 @@ import static com.guicedee.activitymaster.core.services.concepts.EnterpriseClass
 public class ClassificationsDataConceptService
 		implements IClassificationDataConceptService<ClassificationsDataConceptService>
 {
+	@Inject
+	@Named("Active")
+	private IActiveFlag<?> activeFlag;
+	
+	@Inject
+	private IEnterprise<?> enterprise;
+	
 	@Override
 	public ClassificationDataConcept createDataConcept(IClassificationDataConceptValue<?> name,
 	                                                   String description,
@@ -34,22 +37,18 @@ public class ClassificationsDataConceptService
 		ClassificationDataConcept newConcept = new ClassificationDataConcept();
 		boolean exists = newConcept.builder()
 		                           .withName(name.classificationValue())
-		                           .withEnterprise(system.getEnterprise())
-		                           .inActiveRange(system.getEnterprise(), identityToken)
+		                           .withEnterprise(enterprise)
+		                           .inActiveRange(enterprise, identityToken)
 		                           .inDateRange()
 		                           .getCount() > 0;
-		
-		IActiveFlag<?> active = GuiceContext.get(IActiveFlagService.class)
-		                                    .getActiveFlag(system.getEnterprise());
-		
 		if (!exists)
 		{
 			newConcept.setDescription(description);
 			newConcept.setName(name.classificationValue());
 			newConcept.setSystemID((Systems) system);
 			newConcept.setOriginalSourceSystemID((Systems) system);
-			newConcept.setActiveFlagID((ActiveFlag) active);
-			newConcept.setEnterpriseID((Enterprise) active.getEnterpriseID());
+			newConcept.setActiveFlagID(activeFlag);
+			newConcept.setEnterpriseID((com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise) enterprise);
 			newConcept.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
 			                .isSecurityEnabled())
@@ -86,8 +85,8 @@ public class ClassificationsDataConceptService
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
 		cdc = cdc.builder()
 		         .withName(name)
-		         .withEnterprise(system.getEnterprise())
-		         .inActiveRange(system, identityToken)
+		         .withEnterprise(enterprise)
+		         .inActiveRange(enterprise, identityToken)
 		         .inDateRange()
 		         .canRead(system, identityToken)
 		         .get()

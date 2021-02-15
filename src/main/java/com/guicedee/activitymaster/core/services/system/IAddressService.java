@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public interface IAddressService<J extends IAddressService<?>>
 {
+	String AddressSystemName = "Address System";
+	
 	IAddress<?> create(IAddressClassification<?> addressClassification, ISystems<?> originatingSystem, String value, UUID... identifyingToken);
 
 	IAddress<?> addOrFindIPAddress(String ipAddress, ISystems<?> originatingSystem, UUID... identityToken) throws AddressException;

@@ -6,6 +6,7 @@ import java.util.Date;
 
 public interface ITimeService
 {
+	String TimeSystemName = "";
 	int getDayID(LocalDateTime dateTime);
 
 	int getDayID(LocalDate dateTime);

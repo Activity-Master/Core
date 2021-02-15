@@ -4,11 +4,15 @@ import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-public interface IActiveFlagService
+public interface IActiveFlagService<J extends IActiveFlagService<J>>
 {
+	String ActivateFlagSystemName = "Active Flag System";
+	
+	IActiveFlag<?> findFlagByName(String flag, IEnterprise<?> enterprise, UUID... identifyingToken);
+	IActiveFlag<?> findFlagByName(com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?> enterprise, UUID... identifyingToken);
+	
 	List<IActiveFlag<?>> findActiveRange(IEnterprise<?> enterprise, UUID... identifyingToken);
 
 	List<IActiveFlag<?>> getVisibleRange(IEnterprise<?> enterprise, UUID... identifyingToken);
@@ -25,5 +29,4 @@ public interface IActiveFlagService
 
 	IActiveFlag<?> getDeletedFlag(IEnterprise<?> enterprise, UUID... identifyingToken);
 
-	Optional<IActiveFlag<?>> findFlagByName(com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?> enterprise, UUID... identifyingToken);
 }

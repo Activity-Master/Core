@@ -4,14 +4,13 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.services.dto.IClassificationDataConcept;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
 import java.util.UUID;
 
 public interface IClassificationDataConceptService<J extends IClassificationDataConceptService<J>>
 {
+	String ClassificationDataConceptSystemName = "Classification Data Concept System";
+	
 	ClassificationDataConcept createDataConcept(IClassificationDataConceptValue<?> name,
 	                                            String description,
 	                                            ISystems<?> system, UUID... identityToken);

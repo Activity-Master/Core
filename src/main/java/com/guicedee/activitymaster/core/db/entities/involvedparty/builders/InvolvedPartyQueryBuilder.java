@@ -2,21 +2,19 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty.builders;
 
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
+import com.guicedee.activitymaster.core.InvolvedPartyService;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContainsClassificationsQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.implementations.InvolvedPartyService;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.persistence.criteria.JoinType;
 
 import java.util.UUID;
 
-import static com.entityassist.enumerations.Operand.Equals;
+import static com.entityassist.enumerations.Operand.*;
 
 public class InvolvedPartyQueryBuilder
 		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, java.util.UUID, InvolvedPartySecurityToken>

@@ -1,31 +1,21 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.entityassist.RootEntity;
-import com.entityassist.SCDEntity;
 import com.entityassist.enumerations.SelectAggregrate;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.entityassist.querybuilder.statements.InsertStatement;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
+import com.guicedee.activitymaster.core.db.abstraction.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.*;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
-import com.guicedee.activitymaster.core.services.capabilities.bases.IAddableType;
-import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
-import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
-import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.validation.constraints.NotNull;
 
@@ -37,7 +27,6 @@ import java.util.*;
 
 import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
-import static com.guicedee.activitymaster.core.services.classifications.events.EventInvolvedPartiesClassifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 import static jakarta.persistence.criteria.JoinType.*;

@@ -1,43 +1,27 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseHierarchyView;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderCore;
+import com.guicedee.activitymaster.core.*;
+import com.guicedee.activitymaster.core.db.abstraction.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderHierarchyView;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.implementations.ActiveFlagService;
-import com.guicedee.activitymaster.core.implementations.ClassificationService;
-import com.guicedee.activitymaster.core.implementations.SystemsService;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.validation.constraints.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 
-import static com.entityassist.enumerations.Operand.Equals;
-import static com.entityassist.enumerations.Operand.InList;
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
-import static com.guicedee.guicedinjection.GuiceContext.get;
-import static com.guicedee.guicedinjection.json.StaticStrings.STRING_EMPTY;
+import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 /**
  * If this entity has hierarchy capabilities

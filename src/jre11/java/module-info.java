@@ -1,8 +1,6 @@
 import com.guicedee.activitymaster.core.db.ActivityMasterDBModule;
-import com.guicedee.activitymaster.core.injections.ActivityMasterBinder;
-import com.guicedee.activitymaster.core.injections.ActivityMasterModuleInclusion;
-import com.guicedee.activitymaster.core.injections.HazelcastClientConfig;
-import com.guicedee.activitymaster.core.injections.HazelcastServerConfig;
+import com.guicedee.activitymaster.core.implementations.*;
+import com.guicedee.activitymaster.core.injections.*;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.systems.*;
 import com.guicedee.guicedhazelcast.services.IGuicedHazelcastServerConfig;
@@ -86,13 +84,21 @@ module com.guicedee.activitymaster.core {
 	
 	requires static lombok;
 	
-	provides IGuiceModule with ActivityMasterDBModule;
+	provides IGuiceModule with ActivityMasterDBModule,ActivityMasterBinder,
+			EnterpriseBinder,
+			ClassificationConceptsBinder,
+			ClassificationsBinder,
+			SystemsBinder,
+			InvolvedPartiesBinder,
+			ResourceItemBinder,
+			SecurityTokensBinder,
+			ActiveFlagBinder,
+			EventsBinder;
 	
 	provides IActivityMasterSystem with EnterpriseSystem, ActiveFlagSystem, SystemsSystem, ClassificationsDataConceptSystem,
 			ClassificationsSystem, AddressSystem, InvolvedPartySystem, SecurityTokenSystem
 			, ArrangementsSystem, EventsSystem, ResourceItemSystem, ProductsSystem;
-	 
-	provides com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder with ActivityMasterBinder;
+	
 	provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
 	provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
 
@@ -140,6 +146,9 @@ module com.guicedee.activitymaster.core {
 	opens com.guicedee.activitymaster.core.db.hierarchies to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.db.hierarchies.builders to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.injections to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.injections.updates to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	
+	
 	opens com.guicedee.activitymaster.core.services to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.capabilities to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	//opens com.guicedee.activitymaster.core.services.classifications to com.google.guice, org.hibernate.orm.core,com.entityassist,com.fasterxml.jackson.databind;
@@ -158,6 +167,7 @@ module com.guicedee.activitymaster.core {
 	opens com.guicedee.activitymaster.core.services.classifications.systems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	
 	opens com.guicedee.activitymaster.core.services.concepts to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	opens com.guicedee.activitymaster.core.services.providers to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.exceptions to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.security to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.system to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;

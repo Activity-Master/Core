@@ -1,8 +1,28 @@
 use FSDM;
 
+select * from Enterprise (nolock);
+select * from ActiveFlag (nolock);
+select * from Systems (nolock);
+
+select * from 
+Classification.ClassificationDataConcept (nolock)
+order by ClassificationDataConceptName
+
+select * from Classification.Classification (nolock)
+
+
+select * from Security.SecurityToken;
+
+
+
+
+
+
+
+
 select * from Classification.Classification where ClassificationName = 'Grader'
 
-select * from Classification.ClassificationDataConcept
+
 
 
 select * from Classification.Classification where ClassificationName = 'Title'

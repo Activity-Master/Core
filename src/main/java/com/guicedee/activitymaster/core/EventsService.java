@@ -1,44 +1,44 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.core;
 
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.Event;
 import com.guicedee.activitymaster.core.db.entities.events.EventType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IEvent;
-import com.guicedee.activitymaster.core.services.dto.IEventType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IEventTypeValue;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IEventService;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 
 public class EventsService
 		implements IEventService<EventsService>
 {
+	@Inject
+	@Named("Active")
+	private IActiveFlag<?> activeFlag;
+	
+	@Inject
+	private IEnterprise<?> enterprise;
+	
 	@Override
 	public IEvent<?> createEvent(IEventClassification<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
 	{
 		Event event = new Event();
-		event.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
+		event.setEnterpriseID((Enterprise) enterprise);
 		event.setSystemID((Systems) originatingSystem);
 		event.setOriginalSourceSystemID((Systems) originatingSystem);
-		event.setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
-				.getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+		event.setActiveFlagID(activeFlag);
 		event.persist();
 		event.createDefaultSecurity(originatingSystem, identityToken);
 		event.addEventType(NoClassification, eventType, STRING_EMPTY, originatingSystem, identityToken);
@@ -53,8 +53,8 @@ public class EventsService
 		
 		boolean exists = et.builder()
 		                   .withName(eventType.name())
-		                   .withEnterprise(originatingSystem.getEnterpriseID())
-		                   .inActiveRange(originatingSystem.getEnterpriseID())
+		                   .withEnterprise(enterprise)
+		                   .inActiveRange(enterprise)
 		                   .inDateRange()
 		                   .getCount() > 0;
 		
@@ -63,9 +63,8 @@ public class EventsService
 			et.setName(eventType.name());
 			et.setDescription(eventType.classificationValue());
 			et.setSystemID((Systems) originatingSystem);
-			et.setEnterpriseID((Enterprise) originatingSystem.getEnterpriseID());
-			et.setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-			                                            .getActiveFlag(originatingSystem.getEnterpriseID(), identityToken));
+			et.setEnterpriseID((Enterprise) enterprise);
+			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID((Systems) originatingSystem);
 			et.persist();
 			if (GuiceContext.get(ActivityMasterConfiguration.class)
@@ -87,8 +86,8 @@ public class EventsService
 	{
 		return new EventType().builder()
 		                      .withName(eventType.name())
-		                      .withEnterprise(system)
-		                      .inActiveRange(system, identityToken)
+		                      .withEnterprise(enterprise)
+		                      .inActiveRange(enterprise, identityToken)
 		                      .inDateRange()
 		                      .canRead(system, identityToken)
 		                      .get()
@@ -101,8 +100,8 @@ public class EventsService
 	{
 		return new EventType().builder()
 		                      .withName(eventType)
-		                      .withEnterprise(system)
-		                      .inActiveRange(system, identityToken)
+		                      .withEnterprise(enterprise)
+		                      .inActiveRange(enterprise, identityToken)
 		                      .inDateRange()
 		                      .canRead(system, identityToken)
 		                      .get()

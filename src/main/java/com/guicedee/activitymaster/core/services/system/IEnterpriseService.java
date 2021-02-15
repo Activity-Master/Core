@@ -4,19 +4,16 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-
 import com.guicedee.activitymaster.core.updates.ISystemUpdate;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-public interface IEnterpriseService
+public interface IEnterpriseService<J extends IEnterpriseService<J>>
 {
+	String EnterpriseSystemName = "Enterprise System";
+	
 	void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor);
 	
 //	LocalDate getEnterpriseLastUpdateDate(IEnterprise<?> enterprise);
@@ -29,8 +26,9 @@ public interface IEnterpriseService
 	
 	List<IEnterprise<?>> findEnterprisesWithClassification(Classification classification);
 	
-	@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
-	IEnterprise<?> getEnterprise(@CacheKey String name);
+	IEnterprise<?> getEnterprise(String name);
+	
+	boolean doesEnterpriseExist(String name);
 	
 	/**
 	 * Gets an enterprise or throws an exception.
@@ -43,14 +41,17 @@ public interface IEnterpriseService
 	 */
 	IEnterprise<?> getEnterprise(IEnterpriseName<?> name);
 
-	Set<IEnterpriseName<?>> getIEnterprises();
+	Set<IEnterprise<?>> getIEnterprises();
 
-	@CacheResult
-	IEnterpriseName<?> getIEnterprise(@CacheKey IEnterprise<?> enterprise);
+	IEnterprise<?> getIEnterpriseFromName(IEnterpriseName<?> enterprise);
 
-	@CacheResult
-	IEnterprise<?> getIEnterpriseFromName(@CacheKey IEnterpriseName<?> enterprise);
+	IEnterprise<?> getIEnterpriseFromID(UUID enterprise);
 	
-	@CacheResult
-	IEnterprise<?> getIEnterpriseFromID(@CacheKey UUID enterprise);
+	IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
+	                                  @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor);
+	
+	IEnterprise<?> startNewEnterprise(String enterpriseName,
+	                                  @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier, IActivityMasterProgressMonitor progressMonitor);
+	
+	void createNewEnterprise(@NotNull IEnterprise<?> enterprise,  IActivityMasterProgressMonitor progressMonitor);
 }
