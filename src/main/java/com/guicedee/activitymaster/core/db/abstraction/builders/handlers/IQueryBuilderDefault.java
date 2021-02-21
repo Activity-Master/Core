@@ -19,7 +19,8 @@ public interface IQueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>, E 
 	@jakarta.validation.constraints.NotNull
 	default J withEnterprise(ISystems<?> system)
 	{
-		where(getAttribute("enterpriseID"), Equals, system.getEnterprise());
+		if(!(system == null || system.isFake()))
+			where(getAttribute("enterpriseID"), Equals, system.getEnterprise());
 		//noinspection unchecked
 		return (J) this;
 	}
@@ -27,7 +28,8 @@ public interface IQueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>, E 
 	@jakarta.validation.constraints.NotNull
 	default J withEnterprise(IEnterprise<?> enterprise)
 	{
-		where(getAttribute("enterpriseID"), Equals, enterprise);
+		if(!(enterprise == null || enterprise.isFake()))
+			where(getAttribute("enterpriseID"), Equals, enterprise);
 		//noinspection unchecked
 		return (J) this;
 	}

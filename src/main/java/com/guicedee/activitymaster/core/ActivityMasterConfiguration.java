@@ -6,6 +6,7 @@ import com.google.inject.*;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.dto.*;
+import com.guicedee.activitymaster.core.services.exceptions.EnterpriseException;
 import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.activitymaster.core.threads.TransactionalIdentifiedThread;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -45,7 +46,14 @@ public class ActivityMasterConfiguration
 	{
 		if (enterprise == null && !Strings.isNullOrEmpty(applicationEnterpriseName))
 		{
-			enterprise = enterpriseService.get().getEnterprise(applicationEnterpriseName);
+			try
+			{
+				enterprise = enterpriseService.get()
+				                              .getEnterprise(applicationEnterpriseName);
+			}catch (EnterpriseException ee)
+			{
+			
+			}
 		}
 		return enterprise;
 	}
@@ -113,8 +121,12 @@ public class ActivityMasterConfiguration
 		this.applicationEnterpriseName = applicationEnterpriseName;
 		if (applicationEnterpriseName != null)
 		{
-			enterprise = GuiceContext.get(IEnterpriseService.class)
-			                         .getEnterprise(applicationEnterpriseName);
+			try
+			{
+				enterprise = enterpriseService.get().getEnterprise(applicationEnterpriseName);
+			}catch (EnterpriseException e)
+			{
+			}
 		}
 		return this;
 	}
@@ -156,7 +168,7 @@ public class ActivityMasterConfiguration
 		{
 			allSystems = new TreeSet<>();
 			Set<IActivityMasterSystem> systems = IDefaultService.loaderToSet(ServiceLoader.load(IActivityMasterSystem.class));
-			for (IActivityMasterSystem system : systems)
+			for (IActivityMasterSystem<?> system : systems)
 			{
 				allSystems.add(injector.getInstance(system.getClass()));
 			}

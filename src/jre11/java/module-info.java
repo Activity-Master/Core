@@ -41,8 +41,9 @@ module com.guicedee.activitymaster.core {
 	//exports com.guicedee.activitymaster.core.systems;
 	
 	exports com.guicedee.activitymaster.core.threads;
-	
 	exports com.guicedee.activitymaster.core.updates;
+	
+	exports com.guicedee.activitymaster.core.implementations.interceptors;
 	
 	requires io.github.classgraph;
 	requires com.fasterxml.jackson.databind;

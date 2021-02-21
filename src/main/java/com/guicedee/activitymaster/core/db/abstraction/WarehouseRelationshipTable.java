@@ -4,14 +4,12 @@ import com.google.common.base.Strings;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
+import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
+import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.guicedinjection.GuiceContext;
-
-
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
@@ -57,6 +55,23 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 	}
 	
 	@Override
+	public void createDefaultSecurity(ISystems<?> system, UUID... identity)
+	{
+	
+	}
+	
+	@Override
+	public ST createDefaultGuestNoSecurityAccess(ISystems<?> system, UUID... identity)
+	{
+		return null;
+	}
+	
+	public void updateSecurity(J newCoreTable, Systems system)
+	{
+	
+	}
+	
+	@Override
 	public Integer getValueAsNumber()
 	{
 		return Integer.parseInt(value);
@@ -95,6 +110,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 	public J setValue(String value)
 	{
 		this.value = Strings.nullToEmpty(value);
+		//noinspection unchecked
 		return (J) this;
 	}
 	

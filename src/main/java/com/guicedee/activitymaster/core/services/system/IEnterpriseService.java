@@ -24,6 +24,8 @@ public interface IEnterpriseService<J extends IEnterpriseService<J>>
 	
 	Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?> enterprise);
 	
+	Map<LocalDate, Class<? extends ISystemUpdate>> getAllUpdates();
+	
 	List<IEnterprise<?>> findEnterprisesWithClassification(Classification classification);
 	
 	IEnterprise<?> getEnterprise(String name);

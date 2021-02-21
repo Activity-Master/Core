@@ -94,7 +94,7 @@ public class DefaultTestConfig
 		            .loadSystems(TestEnterprise, null);
 		securityConfiguration.setToken(token);
 		ISecurityToken<?> inToken = securityConfiguration.getToken();
-		config.setSecurityEnabled(true);
+		config.setSecurityEnabled(false);
 		defaultWaitUnit = TimeUnit.HOURS;
 		defaultWaitTime = 1;
 	}

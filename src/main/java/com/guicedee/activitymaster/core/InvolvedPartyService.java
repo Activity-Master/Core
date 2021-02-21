@@ -33,11 +33,9 @@ import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
 import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
-import static com.guicedee.activitymaster.core.services.classifications.events.EventClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications.*;
 import static com.guicedee.activitymaster.core.services.types.IdentificationTypes.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 @SuppressWarnings("Duplicates")
 public class InvolvedPartyService
@@ -381,7 +379,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	public IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> system, UUID... token)
+	public IInvolvedParty<?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> system, UUID... token)
 	{
 		byte[] salt;
 		if (involvedParty.hasClassifications(SecurityPasswordSalt, system, token))
@@ -406,11 +404,11 @@ public class InvolvedPartyService
 				new Passwords().integerEncrypt(username.getBytes()), system, token);
 		
 		
-		if (event != null)
-		{
-			event.addOrUpdate(UpdatedPassword, (String) null, STRING_EMPTY, system, token);
-			event.addOrUpdate(UpdatedUsername, (String) null, username, system, token);
-		}
+	//	if (event != null)
+	//	{
+		//	event.addOrUpdate(UpdatedPassword, (String) null, STRING_EMPTY, system, token);
+	//		event.addOrUpdate(UpdatedUsername, (String) null, username, system, token);
+	//	}
 		return involvedParty;
 	}
 	

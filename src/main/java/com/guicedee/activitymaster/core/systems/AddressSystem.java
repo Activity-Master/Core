@@ -32,6 +32,8 @@ public class AddressSystem
 	{
 		systemsService.get()
 		              .create(enterprise, AddressSystemName, "The system for the address management");
+		systemsService.get()
+		              .registerNewSystem(enterprise, getSystem(enterprise));
 	}
 	
 	@Override

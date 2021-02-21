@@ -44,7 +44,7 @@ public interface IInvolvedPartyService<J extends IInvolvedPartyService<J>>
 	
 	IInvolvedParty<?> findByUsername(String username, ISystems<?> system, UUID... token);
 	
-	IInvolvedParty<?> addUpdateUsernamePassword(IEvent<?> event, String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> originatingSystem, UUID... token);
+	IInvolvedParty<?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> originatingSystem, UUID... token);
 	
 	IInvolvedParty<?> create(ISystems<?> originatingSystem, Pair<IIdentificationType<?>, String> idTypes,
 	                         boolean isOrganic, UUID... identityToken);

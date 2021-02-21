@@ -9,20 +9,21 @@ Classification.ClassificationDataConcept (nolock)
 order by ClassificationDataConceptName
 
 select * from Classification.Classification (nolock)
+where ClassificationName = 'UpdateClass'
+
+select * from EnterpriseXClassification (nolock)
 
 
-select * from Security.SecurityToken;
+select * from Security.SecurityToken (nolock);
+select * from SecurityHierarchyView;
 
-
-
-
-
-
-
+select * from [dbo].[ActiveFlagSecurityToken] (nolock);
+select * from [Address].AddressSecurityToken (nolock);
 
 select * from Classification.Classification where ClassificationName = 'Grader'
 
 
+select * from Time.Months;
 
 
 select * from Classification.Classification where ClassificationName = 'Title'
@@ -72,9 +73,13 @@ select * from Party.InvolvedPartyXInvolvedParty
 select * from Party.InvolvedParty
 select * from Party.InvolvedPartyIdentificationType
 select * from Party.InvolvedPartyType
+select * from Party.InvolvedPartyNameType
 select * from Party.InvolvedPartyXResourceItem
 
 
+
+select * from Event.Event
+select * from Event.EventXClassification
 
 
 select * from Resource.ResourceItemXResourceItem

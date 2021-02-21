@@ -28,6 +28,8 @@ public class RulesSystem
 	{
 		systemsService.get()
 		              .create(enterprise, getSystemName(), getSystemDescription());
+		systemsService.get()
+		              .registerNewSystem(enterprise, getSystem(enterprise));
 	}
 	
 	

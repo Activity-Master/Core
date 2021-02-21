@@ -52,7 +52,6 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 		createDefaultApplicationsSecurityAccess(system, identity);
 		createDefaultPluginsSecurityAccess(system, identity);
 		createDefaultGuestReadSecurityAccess(system, identity);
-		
 	}
 	
 	public void updateSecurity(J newCoreTable, Systems system)

@@ -24,6 +24,10 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise>>
 		if (!Strings.isNullOrEmpty(configuration.get().getApplicationEnterpriseName()))
 		{
 			IEnterprise<Enterprise> ent = (IEnterprise<Enterprise>) configuration.get().getEnterprise();
+			if (ent == null)
+			{
+				return new Enterprise();
+			}
 			loadedEnterprise = ent;
 			return ent;
 		}

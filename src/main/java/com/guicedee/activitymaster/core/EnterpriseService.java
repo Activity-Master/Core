@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.*;
@@ -49,10 +48,6 @@ public class EnterpriseService
 		           IEnterpriseService<EnterpriseService>
 {
 	@Inject
-	@Named(EnterpriseSystemName)
-	private ISystems<?> system;
-	
-	@Inject
 	private ActivityMasterConfiguration configuration;
 	
 	private static final Logger log = Logger.getLogger(EnterpriseService.class.getName());
@@ -99,6 +94,8 @@ public class EnterpriseService
 			tasks += v.getAnnotation(DatedUpdate.class)
 			          .taskCount() + 1;
 		}
+		ISystems<?> system = get(ISystemsService.class).getActivityMaster(enterprise);
+		
 		progressMonitor.setTotalTasks(tasks);
 		availableUpdates.forEach((key, value) -> {
 			logProgress("Update System", "Starting updates for " + value.getSimpleName(), progressMonitor);
@@ -113,6 +110,7 @@ public class EnterpriseService
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
 	private void performUpdate(ISystemUpdate o, IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
+		ISystems<?> system = get(ISystemsService.class).getActivityMaster(enterprise);
 		o.update(enterprise, progressMonitor);
 		enterprise.add(UpdateClass, o.getClass()
 		                             .getCanonicalName(), system);
@@ -122,6 +120,7 @@ public class EnterpriseService
 	public Set<String> getEnterpriseAppliedUpdates(IEnterprise<?> enterprise)
 	{
 		Set<String> set = new LinkedHashSet<>();
+		ISystems<?> system = get(ISystemsService.class).getActivityMaster(enterprise);
 		List<IRelationshipValue<IEnterprise<?>, IClassification<?>, ?>> classificationsAll = enterprise.findClassificationsAll(UpdateClass, system);
 		for (IRelationshipValue<IEnterprise<?>, IClassification<?>, ?> rel : classificationsAll)
 		{
@@ -159,6 +158,35 @@ public class EnterpriseService
 			{
 				applicableUpdates.put(key, value);
 			}
+		});
+		return applicableUpdates;
+	}
+	
+	
+	@Override
+	public Map<LocalDate, Class<? extends ISystemUpdate>> getAllUpdates()
+	{
+		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
+		for (ClassInfo classInfo : GuiceContext.instance()
+		                                       .getScanResult()
+		                                       .getClassesWithAnnotation(DatedUpdate.class.getCanonicalName()))
+		{
+			if (classInfo.isAbstract() || classInfo.isInterface())
+			{
+				continue;
+			}
+			
+			@SuppressWarnings("unchecked")
+			Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) classInfo.loadClass();
+			DatedUpdate du = clazz.getAnnotation(DatedUpdate.class);
+			LocalDate updateDate = null;
+			updateDate = new LocalDateDeserializer().convert(du.date());
+			availableUpdates.put(updateDate, clazz);
+		}
+		Map<LocalDate, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
+		availableUpdates.forEach((key, value) -> {
+				applicableUpdates.put(key, value);
+			
 		});
 		return applicableUpdates;
 	}
@@ -274,15 +302,15 @@ public class EnterpriseService
 		logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks, progressMonitor);
 		
 		Enterprise enterprise = installEnterprise(enterpriseName, progressMonitor);
-		
 		createNewEnterprise(enterprise, progressMonitor);
 		
-		//Create Involved Party for Enterprise
 		ISystems<?> activityMasterSystem = get(ISystemsService.class).getActivityMaster(enterprise);
 		createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, uuidIdentifier, progressMonitor);
 		
+		
+		//Create Involved Party for Enterprise
 		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(true);
+				.setSecurityEnabled(false);
 		return enterprise;
 	}
 	
@@ -305,9 +333,8 @@ public class EnterpriseService
 		createBase(progressMonitor, allSystems, enterprise);
 		
 		createBaseSystems(progressMonitor, allSystems, enterprise);
-		
 		installSystems(progressMonitor, allSystems, enterprise);
-		
+		ISystems<?> system = get(ISystemsService.class).getActivityMaster(enterprise);
 		progressMonitor.setCurrentTask(0);
 		logProgress("System Configuration", "Starting system updates", 1, progressMonitor);
 		loadUpdates(enterprise, progressMonitor);
@@ -331,7 +358,7 @@ public class EnterpriseService
 			}
 			if (tillHere)
 			{
-				logProgress("Running System", allSystem.getClass()
+				logProgress("Running System ", allSystem.getClass()
 				                                       .getSimpleName(), progressMonitor);
 				String nameC = cleanName(allSystem.getClass()
 				                                  .getSimpleName());
@@ -339,7 +366,7 @@ public class EnterpriseService
 				registeredSystem.registerSystem(enterprise, progressMonitor);
 				
 				registeredSystem.createDefaults(enterprise, progressMonitor);
-				logProgress("Completed with System", nameC, 1, progressMonitor);
+				logProgress("Installed System ", nameC, 1, progressMonitor);
 			}
 		}
 	}
@@ -388,7 +415,7 @@ public class EnterpriseService
 		}
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	protected IInvolvedParty<?> createAdminAndCreatorUserForEnterprise(ISystems<?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey, IActivityMasterProgressMonitor progressMonitor)
 	{
@@ -440,7 +467,7 @@ public class EnterpriseService
 						token);
 			}
 			
-			service.addUpdateUsernamePassword(null, adminUserName, adminPassword, adminUser, system, token);
+			service.addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, system, token);
 			adminUser.createDefaultSecurity(system, token);
 			administratorUser = adminUser;
 		}
@@ -448,8 +475,17 @@ public class EnterpriseService
 		{
 			administratorUser = exists.get();
 		}
+		
+		logProgress("Systems", "Running Systems Post Startups", 1, progressMonitor);
+		
+		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
+		allSystems.forEach(a->{
+			a.postStartup(system.getEnterprise(),progressMonitor);
+		});
+		
+		
 		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(true);
+				.setSecurityEnabled(false);
 		return administratorUser;
 	}
 }

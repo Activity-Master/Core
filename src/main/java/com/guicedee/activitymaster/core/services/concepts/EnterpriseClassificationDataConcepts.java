@@ -10,11 +10,13 @@ public enum EnterpriseClassificationDataConcepts
 
 	ActiveFlag,
 	ActiveFlagXClassification,
+	
 	Address,
 	AddressXClassification,
 	AddressXGeography,
 	AddressXInvolvedParty,
 	AddressXResourceItem,
+	
 	Arrangement,
 	ArrangementType,
 	ArrangementXArrangement,
@@ -24,6 +26,9 @@ public enum EnterpriseClassificationDataConcepts
 	ArrangementXProduct,
 	ArrangementXResourceItem,
 	ArrangementXRules,
+	ArrangementXRulesTypes,
+	
+	
 	Classification,
 	ClassificationDataConcept,
 	ClassificationDataConceptXClassification,

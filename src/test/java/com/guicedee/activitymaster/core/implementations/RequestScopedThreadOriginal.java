@@ -59,7 +59,7 @@ public abstract class RequestScopedThreadOriginal
 		securityConfiguration.setToken(token);
 		ISecurityToken<?> inToken = securityConfiguration.getToken();
 
-		config.setSecurityEnabled(true);
+		config.setSecurityEnabled(false);
 
 		return token;
 

@@ -440,7 +440,7 @@ public interface IContainsProducts<P extends WarehouseCoreTable,
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
-			                 .add((IEventClassification<?>) Created, " - " + classificationName + " - " + value, system, identityToken);
+			                 .add((IEventClassification<?>) Added, " - " + classificationName + " - " + value, system, identityToken);
 		}
 		return (IRelationshipValue<L, R, ?>) tableForClassification;
 	}

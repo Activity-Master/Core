@@ -54,11 +54,6 @@ public abstract class ActivityMasterDefaultSystem<J extends ActivityMasterDefaul
 		if (systemsMap.get(enterprise) == null)
 		{
 			ISystems<?> sys = systemsService.findSystem(enterprise, getSystemName());
-			if (sys == null)
-			{
-				sys = systemsService.create(enterprise, getSystemName(), getSystemDescription(), getSystemName());
-				systemsService.registerNewSystem(enterprise, sys);
-			}
 			systemsMap.put(enterprise, sys);
 		}
 		return systemsMap.get(enterprise);

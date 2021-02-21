@@ -23,7 +23,6 @@ import java.util.UUID;
 
 import static com.guicedee.activitymaster.core.services.classifications.systems.SystemsClassifications.*;
 
-
 public class SystemsService
 		implements ISystemsService<SystemsService>
 {

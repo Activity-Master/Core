@@ -132,6 +132,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		Q relationshipTable = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
+		searchValue = Strings.nullToEmpty(searchValue);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
