@@ -12,19 +12,14 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.IResourceItemService;
-
+import com.guicedee.activitymaster.core.services.system.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.entityassist.SCDEntity.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -144,11 +139,9 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 		configureResourceItemTypeLinkValue(tableForClassification, (P) this, (S) resourceItemType, classification, value, system.getEnterpriseID());
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -179,11 +172,9 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 			configureResourceItemTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, null, value, system.getEnterpriseID());
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -216,11 +207,9 @@ public interface IContainsResourceItemTypes<P extends WarehouseCoreTable,
 			configureResourceItemTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, null, value, originatingSystem.getEnterpriseID());
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-			}
+			
 		}
 		else
 		{

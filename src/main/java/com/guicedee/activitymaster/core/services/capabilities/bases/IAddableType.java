@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.services.capabilities.bases;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
@@ -13,14 +12,11 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
 import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.validation.constraints.NotNull;
 
 import java.lang.reflect.ParameterizedType;
@@ -105,11 +101,9 @@ public interface IAddableType<P extends WarehouseSCDTable,
 				(C) classification, (T) typeAdd, value, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
@@ -197,11 +191,9 @@ public interface IAddableType<P extends WarehouseSCDTable,
 				(C) classification, typeToUse, value, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()

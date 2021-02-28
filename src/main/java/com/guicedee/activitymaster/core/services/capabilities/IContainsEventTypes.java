@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
@@ -11,22 +10,16 @@ import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.EventType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IEventTypeValue;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.IEventService;
-
+import com.guicedee.activitymaster.core.services.system.*;
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.entityassist.SCDEntity.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -417,11 +410,9 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, (C) classificationValue, value, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+		
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -482,11 +473,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			configureEventTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, (C) classification, value, system);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}
@@ -524,11 +512,9 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, (C) classification, value, originatingSystem);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -555,11 +541,9 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 		configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, (C) classificationValue, value, originatingSystem);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -591,11 +575,9 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, (C) classification, value, originatingSystem);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -631,11 +613,9 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			configureEventTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, (C) classification, value, originatingSystem);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+			
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -669,11 +649,9 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			configureEventTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, (C) classification, value, originatingSystem);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+			
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}
@@ -729,11 +707,8 @@ public interface IContainsEventTypes<P extends WarehouseCoreTable,
 			configureEventTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, (C) classification, value, originatingSystem);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}

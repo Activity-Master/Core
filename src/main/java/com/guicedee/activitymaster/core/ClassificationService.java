@@ -10,7 +10,6 @@ import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -163,11 +162,8 @@ public class ClassificationService
 			rootCl.setActiveFlagID(activeFlag);
 			rootCl.setConcept(dataConcept);
 			rootCl.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				rootCl.createDefaultSecurity(system, identityToken);
-			}
+			
 			
 			if (parent != null)
 			{

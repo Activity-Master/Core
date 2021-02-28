@@ -1,7 +1,8 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.*;
+import com.guicedee.activitymaster.core.ActiveFlagService;
+import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.db.abstraction.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderHierarchyView;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
@@ -111,11 +112,9 @@ public interface IContainsHierarchy<J extends WarehouseCoreTable<J, ?, UUID, ?>,
 			linkTable.setValue(Strings.nullToEmpty(value));
 			configureNewHierarchyItem(linkTable, (T) me, (T) child, value);
 			linkTable.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				linkTable.createDefaultSecurity(system, identifyingToken);
-			}
+			
 		}
 		return (L) me;
 	}

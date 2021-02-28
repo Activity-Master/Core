@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.entityassist.SCDEntity;
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.db.abstraction.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.*;
@@ -317,11 +316,9 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 				(C) classification, value, system.getEnterpriseID());
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
@@ -376,10 +373,9 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 			addy.setOriginalSourceSystemID((Systems) system);
 			addy.setActiveFlagID(classification.getActiveFlagID());
 			addy.persist();
-			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
-			{
+		
 				addy.createDefaultSecurity(system, identifyingToken);
-			}
+			
 			addy.add(involvedPartyClassification, value, system, identifyingToken);
 		}
 		else
@@ -405,10 +401,9 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 			setMyInvolvedPartyLinkValue(tableForClassification, (P) this, (S) addy, system);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(system, identifyingToken);
-			}
+			
 		}
 		else
 		{
@@ -444,10 +439,8 @@ public interface IContainsInvolvedParties<P extends WarehouseCoreTable,
 			setMyInvolvedPartyLinkValue(tableForClassification, (P) this, (S) addy, system);
 			tableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
-			{
 				tableForClassification.createDefaultSecurity(system, identifyingToken);
-			}
+			
 		}
 		else
 		{

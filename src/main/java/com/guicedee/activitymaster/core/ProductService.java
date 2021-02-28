@@ -10,7 +10,6 @@ import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IProductService;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -110,11 +109,8 @@ public class ProductService<J extends ProductService<J>>
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID((Systems) system);
 			et.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				et.createDefaultSecurity(system, identityToken);
-			}
+			
 			return et;
 		}
 		else

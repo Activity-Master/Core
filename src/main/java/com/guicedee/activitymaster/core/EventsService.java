@@ -11,7 +11,6 @@ import com.guicedee.activitymaster.core.services.classifications.events.IEventCl
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IEventTypeValue;
 import com.guicedee.activitymaster.core.services.system.IEventService;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -67,11 +66,8 @@ public class EventsService
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID((Systems) originatingSystem);
 			et.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				et.createDefaultSecurity(originatingSystem, identityToken);
-			}
+			
 			return et;
 		}
 		else

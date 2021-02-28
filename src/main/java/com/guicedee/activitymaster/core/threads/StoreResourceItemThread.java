@@ -1,13 +1,11 @@
 package com.guicedee.activitymaster.core.threads;
 
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemData;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.services.dto.IResourceItem;
 import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.UUID;
 
@@ -44,12 +42,7 @@ public class StoreResourceItemThread
 
 		itemData.setActiveFlagID(((Systems) originatingSystem).getActiveFlagID());
 		itemData.persist();
-
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			itemData.createDefaultSecurity(originatingSystem, identifyingToken);
-		}
 	}
 
 	public IResourceItem<?> getItem()

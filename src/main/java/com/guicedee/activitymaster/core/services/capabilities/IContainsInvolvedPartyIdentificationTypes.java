@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.db.abstraction.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.*;
@@ -14,14 +13,12 @@ import com.guicedee.activitymaster.core.services.classifications.events.EventThr
 import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-import com.guicedee.activitymaster.core.services.security.Passwords;
 import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.validation.constraints.NotNull;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -132,13 +129,12 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		Q relationshipTable = get(findInvolvedPartyIdentificationTypeQueryRelationshipTableType());
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		IClassification<?> iClassification = classificationService.find(classification, system, identityToken);
-		searchValue = Strings.nullToEmpty(searchValue);
 		var queryBuilderRelationshipClassification
 				= relationshipTable.builder()
 				                   .findParentLink((P) this)
 				                   .inActiveRange(system.getEnterprise(), identityToken)
 				                   .withClassification(iClassification)
-				                   .withValue(new Passwords().integerEncrypt(searchValue.getBytes(StandardCharsets.UTF_8)))
+				                   .withValue(searchValue)
 				                   .withType(typeValue, system, identityToken)
 				                   .inDateRange()
 				                   .withEnterprise(system.getEnterprise())
@@ -509,7 +505,7 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		tableForClassification.setEnterpriseID((Enterprise) system.getEnterpriseID());
 		tableForClassification.setValue(Strings.nullToEmpty(value));
 		tableForClassification.setSystemID((Systems) system);
-		tableForClassification.setOriginalSourceSystemID((Systems) system);
+		tableForClassification.setOriginalSourceSystemID((Systems) (originalSystemID == null ? system : originalSystemID));
 		tableForClassification.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		tableForClassification.setEffectiveFromDate(effectiveFromDate);
 		tableForClassification.setEffectiveToDate(effectiveToDate);
@@ -520,11 +516,9 @@ public interface IContainsInvolvedPartyIdentificationTypes<P extends WarehouseCo
 		                                   (C) classification, typeToUse, value, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()

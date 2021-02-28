@@ -25,7 +25,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 import static jakarta.persistence.criteria.JoinType.*;
 
 
@@ -68,11 +67,9 @@ public class ResourceItemService
 			xr.setEnterpriseID((Enterprise) enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+			
 				xr.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -151,11 +148,8 @@ public class ResourceItemService
 		xr.setResourceItemDataType(resourceItemDataValue);
 		xr.persist();
 		
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
 			xr.createDefaultSecurity(system, identityToken);
-		}
+		
 		IResourceType<?> resourceItemType = (IResourceType<?>) createType(identityResourceType, identityResourceType, system, identityToken);
 		
 		

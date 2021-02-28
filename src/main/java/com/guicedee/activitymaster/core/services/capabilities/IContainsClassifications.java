@@ -5,7 +5,6 @@ import com.entityassist.enumerations.SelectAggregrate;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.entityassist.querybuilder.statements.InsertStatement;
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.*;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
@@ -538,11 +537,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		configureForClassification(tableForClassification, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -606,11 +603,8 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			configureForClassification(newTableForClassification, system);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}
@@ -643,11 +637,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			configureForClassification(tableForClassification, system);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -670,11 +662,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 		configureForClassification(tableForClassification, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+		
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -702,11 +692,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			configureForClassification(tableForClassification, system);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -740,11 +728,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			configureForClassification(tableForClassification, system);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -792,11 +778,9 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			configureForClassification(tableForClassification, system);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -830,11 +814,8 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			configureForClassification(newTableForClassification, system);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}
@@ -889,11 +870,8 @@ public interface IContainsClassifications<P extends WarehouseCoreTable,
 			configureForClassification(newTableForClassification, system);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}

@@ -41,17 +41,19 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
 	{
 	
 	}
-	
-	@SuppressWarnings("ConstantConditions")
+
 	public void createDefaultSecurity(ISystems<?> system, UUID... identity)
 	{
-		createDefaultAdministratorSecurityAccess(system, identity);
-		createDefaultEveryoneSecurityAccess(system, identity);
-		createDefaultEverywhereSecurityAccess(system, identity);
-		createDefaultSystemsSecurityAccess(system, identity);
-		createDefaultApplicationsSecurityAccess(system, identity);
-		createDefaultPluginsSecurityAccess(system, identity);
-		createDefaultGuestReadSecurityAccess(system, identity);
+		if(ActivityMasterConfiguration.get().isSecurityEnabled())
+		{
+			createDefaultAdministratorSecurityAccess(system, identity);
+			createDefaultEveryoneSecurityAccess(system, identity);
+			createDefaultEverywhereSecurityAccess(system, identity);
+			createDefaultSystemsSecurityAccess(system, identity);
+			createDefaultApplicationsSecurityAccess(system, identity);
+			createDefaultPluginsSecurityAccess(system, identity);
+			createDefaultGuestReadSecurityAccess(system, identity);
+		}
 	}
 	
 	public void updateSecurity(J newCoreTable, Systems system)

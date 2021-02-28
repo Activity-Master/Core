@@ -95,11 +95,8 @@ public class InvolvedPartyService
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				xr.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -136,11 +133,8 @@ public class InvolvedPartyService
 			xr.setEnterpriseID((Enterprise) enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				xr.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -176,11 +170,9 @@ public class InvolvedPartyService
 			xr.setEnterpriseID((Enterprise) enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				xr.createDefaultSecurity(activityMasterSystem, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -210,11 +202,8 @@ public class InvolvedPartyService
 			xr.setEnterpriseID((Enterprise) enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				xr.createDefaultSecurity(activityMasterSystem, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -312,7 +301,8 @@ public class InvolvedPartyService
 		
 		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(system.getEnterpriseID());
 		InvolvedParty foundPart = new InvolvedParty().builder()
-		                                             .findByIdentificationType(system, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
+		                                             .findByIdentificationType(system, IdentificationTypeUserName,
+				                                             username,
 				                                             identityToken)
 		                                             .get()
 		                                             .orElse(null);
@@ -361,7 +351,7 @@ public class InvolvedPartyService
 	{
 		return new InvolvedParty().builder()
 		                          .withEnterprise(enterprise)
-		                          .findByIdentificationType(system, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()), token)
+		                          .findByIdentificationType(system, IdentificationTypeUserName, username, token)
 		                          .getCount() > 0;
 	}
 	
@@ -401,7 +391,7 @@ public class InvolvedPartyService
 		involvedParty.addOrUpdate(SecurityPassword, null, passEncrypted, system, token);
 		involvedParty.addOrUpdate(SecurityPasswordSalt, null, saltEncrypted, system, token);
 		involvedParty.addOrUpdateIdentificationType(IdentificationTypeUserName, NoClassification.classificationName(),
-				new Passwords().integerEncrypt(username.getBytes()), system, token);
+				username, system, token);
 		
 		
 	//	if (event != null)
@@ -429,11 +419,8 @@ public class InvolvedPartyService
 			ip.setSystemID((Systems) system);
 			ip.setOriginalSourceSystemID((Systems) system);
 			ip.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
-				ip.createDefaultSecurity(system, identityToken);
-			}
+			
+			ip.createDefaultSecurity(system, identityToken);
 			
 			ip.addOrUpdateIdentificationType(idTypes.getKey(), NoClassification.name(), idTypes.getValue(), system, identityToken);
 			InvolvedParty finalIp = ip;
@@ -461,11 +448,9 @@ public class InvolvedPartyService
 			ipo.setSystemID((Systems) system);
 			ipo.setOriginalSourceSystemID((Systems) system);
 			ipo.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+			
 				ipo.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -477,11 +462,9 @@ public class InvolvedPartyService
 			ipo.setSystemID((Systems) system);
 			ipo.setOriginalSourceSystemID((Systems) system);
 			ipo.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+			
 				ipo.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 	}
 	

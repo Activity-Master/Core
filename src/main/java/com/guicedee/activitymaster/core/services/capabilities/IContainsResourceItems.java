@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.core.services.capabilities;
 import com.entityassist.SCDEntity;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.db.abstraction.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.*;
@@ -493,11 +492,9 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 				(C) classification, value, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
@@ -566,11 +563,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 					system);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}
@@ -652,11 +646,8 @@ public interface IContainsResourceItems<P extends WarehouseCoreTable,
 		configureResourceItemLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), system);
 		
 		tableForClassification.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}

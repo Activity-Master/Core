@@ -306,11 +306,6 @@ public class EnterpriseService
 		
 		ISystems<?> activityMasterSystem = get(ISystemsService.class).getActivityMaster(enterprise);
 		createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, uuidIdentifier, progressMonitor);
-		
-		
-		//Create Involved Party for Enterprise
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(false);
 		return enterprise;
 	}
 	
@@ -334,13 +329,10 @@ public class EnterpriseService
 		
 		createBaseSystems(progressMonitor, allSystems, enterprise);
 		installSystems(progressMonitor, allSystems, enterprise);
-		ISystems<?> system = get(ISystemsService.class).getActivityMaster(enterprise);
 		progressMonitor.setCurrentTask(0);
 		logProgress("System Configuration", "Starting system updates", 1, progressMonitor);
 		loadUpdates(enterprise, progressMonitor);
 		logProgress("System Configuration", "Done", 1, progressMonitor);
-		/*get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(true);*/
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
@@ -419,9 +411,6 @@ public class EnterpriseService
 	protected IInvolvedParty<?> createAdminAndCreatorUserForEnterprise(ISystems<?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey, IActivityMasterProgressMonitor progressMonitor)
 	{
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(false);
-		
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1, progressMonitor);
 		
 		UUID token = get(ISystemsService.class).getSecurityIdentityToken(system);
@@ -482,10 +471,6 @@ public class EnterpriseService
 		allSystems.forEach(a->{
 			a.postStartup(system.getEnterprise(),progressMonitor);
 		});
-		
-		
-		get(ActivityMasterConfiguration.class)
-				.setSecurityEnabled(false);
 		return administratorUser;
 	}
 }

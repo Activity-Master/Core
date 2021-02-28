@@ -6,13 +6,15 @@ import com.google.inject.Provider;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.systems.SecurityTokenSystem;
+import com.guicedee.guicedinjection.GuiceContext;
 
 public class EnterpriseProvider implements Provider<IEnterprise<Enterprise>>
 {
 	@Inject
 	private Provider<ActivityMasterConfiguration> configuration;
 	
-	private static IEnterprise<Enterprise> loadedEnterprise = null;
+	public static IEnterprise<Enterprise> loadedEnterprise = null;
 	
 	@Override
 	public IEnterprise<Enterprise> get()
@@ -27,6 +29,11 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise>>
 			if (ent == null)
 			{
 				return new Enterprise();
+			}
+			if(GuiceContext.get(SecurityTokenSystem.class).hasSystemInstalled(ent))
+			{
+				System.out.println("Enabling Authentication Modules");
+				configuration.get().setSecurityEnabled(true);
 			}
 			loadedEnterprise = ent;
 			return ent;

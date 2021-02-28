@@ -20,7 +20,6 @@ import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.exceptions.ArrangementException;
 import com.guicedee.activitymaster.core.services.system.IArrangementsService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
@@ -87,19 +86,12 @@ public class ArrangementsService
 		xr.setActiveFlagID(activeFlag);
 		xr.persist();
 		
-		if (ActivityMasterConfiguration.get()
-		                               .isSecurityEnabled())
-		{
 			xr.createDefaultSecurity(system, identityToken);
-		}
 		
 		ArrangementXArrangementType xarxr = xr.addOrUpdateArrangementTypes(arrangementTypeClassification, type,
 				arrangementTypeValue, system, identityToken);
-		if (ActivityMasterConfiguration.get()
-		                               .isSecurityEnabled())
-		{
 			xarxr.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return xr;
 	}
@@ -126,11 +118,8 @@ public class ArrangementsService
 			xr.setEnterpriseID((Enterprise) enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				xr.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{

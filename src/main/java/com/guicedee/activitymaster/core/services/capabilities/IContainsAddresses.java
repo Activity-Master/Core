@@ -2,13 +2,8 @@ package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
-import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
+import com.guicedee.activitymaster.core.db.abstraction.*;
+import com.guicedee.activitymaster.core.db.abstraction.builders.*;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -18,11 +13,8 @@ import com.guicedee.activitymaster.core.services.capabilities.bases.ISearchable;
 import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
-import com.guicedee.activitymaster.core.services.system.IAddressService;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
+import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.validation.constraints.NotNull;
 
 import java.lang.reflect.ParameterizedType;
@@ -406,11 +398,8 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), system);
 		
 		tableForClassification.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -471,12 +460,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 					classification, storeValue,
 					system);
 			newTableForClassification.persist();
-			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+	
 				newTableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}
@@ -506,11 +492,8 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 		configureAddressLinkValue(tableForClassification, (P) this, (S) item, classification, tableForClassification.getValue(), system);
 		
 		tableForClassification.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -568,11 +551,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 				system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -607,11 +588,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 					system);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+	
 				tableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -649,11 +628,9 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 					system);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -689,11 +666,8 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 					system);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}
@@ -751,11 +725,8 @@ public interface IContainsAddresses<P extends WarehouseCoreTable,
 					system);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}

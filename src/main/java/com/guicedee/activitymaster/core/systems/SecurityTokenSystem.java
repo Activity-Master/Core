@@ -108,8 +108,9 @@ public class SecurityTokenSystem
 		              .registerNewSystem(enterprise, ips.getSystem(enterprise));
 		
 		logProgress("Security Token Service", "Enabling Security System", progressMonitor);
+		System.out.println("Enabling Authentication Modules");
 		GuiceContext.get(ActivityMasterConfiguration.class)
-		            .setSecurityEnabled(false);
+		            .setSecurityEnabled(true);
 	}
 	
 	void createSecurityDefaults(IEnterpriseName<?> enterpriseName, ISystems<?> system, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)

@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
@@ -161,11 +160,8 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
 		                                         .getActiveFlag(getEnterpriseID(), identifyingToken));
 		persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			createDefaultSecurity(getSystemID());
-		}
+		
 		return (J) this;
 	}
 }

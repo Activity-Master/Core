@@ -14,7 +14,6 @@ import com.guicedee.activitymaster.core.services.exceptions.AddressException;
 import com.guicedee.activitymaster.core.services.security.Passwords;
 import com.guicedee.activitymaster.core.services.system.IAddressService;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,7 +28,6 @@ import static com.guicedee.activitymaster.core.services.classifications.address.
 import static com.guicedee.activitymaster.core.services.classifications.address.AddressRemoteSystemClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.address.AddressWebClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.events.EventInvolvedPartiesClassifications.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 
@@ -77,10 +75,9 @@ public class AddressService
 			addy.setOriginalSourceSystemID((Systems) system);
 			addy.setActiveFlagID(activeFlag);
 			addy.persist();
-			if (get(ActivityMasterConfiguration.class).isSecurityEnabled())
-			{
+			
 				addy.createDefaultSecurity(system, identifyingToken);
-			}
+			
 			if (EventThread.event.get() != null)
 			{
 				EventThread.event.get()
@@ -132,11 +129,8 @@ public class AddressService
 			address.setOriginalSourceSystemID((Systems) system);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				address.createDefaultSecurity(system, identityToken);
-			}
+			
 			if (EventThread.event.get() != null)
 			{
 				EventThread.event.get()
@@ -184,11 +178,8 @@ public class AddressService
 			address.setOriginalSourceSystemID((Systems) system);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				address.createDefaultSecurity(system, identityToken);
-			}
+			
 			if (EventThread.event.get() != null)
 			{
 				EventThread.event.get()
@@ -237,11 +228,8 @@ public class AddressService
 			address.setOriginalSourceSystemID((Systems) system);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				address.createDefaultSecurity(system, identityToken);
-			}
+			
 			
 			if (EventThread.event.get() != null)
 			{
@@ -304,11 +292,8 @@ public class AddressService
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
-				if (GuiceContext.get(ActivityMasterConfiguration.class)
-				                .isSecurityEnabled())
-				{
 					webDetails.createDefaultSecurity(system, identityToken);
-				}
+				
 				
 				webDetails = new Address();
 				webDetails.setValue(domain);
@@ -318,11 +303,8 @@ public class AddressService
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
-				if (GuiceContext.get(ActivityMasterConfiguration.class)
-				                .isSecurityEnabled())
-				{
 					webDetails.createDefaultSecurity(system, identityToken);
-				}
+				
 				
 				webDetails = new Address();
 				webDetails.setValue(domain);
@@ -332,11 +314,8 @@ public class AddressService
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
-				if (GuiceContext.get(ActivityMasterConfiguration.class)
-				                .isSecurityEnabled())
-				{
 					webDetails.createDefaultSecurity(system, identityToken);
-				}
+				
 				
 				webDetails = new Address();
 				webDetails.setValue(protocol);
@@ -346,11 +325,8 @@ public class AddressService
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
-				if (GuiceContext.get(ActivityMasterConfiguration.class)
-				                .isSecurityEnabled())
-				{
 					webDetails.createDefaultSecurity(system, identityToken);
-				}
+				
 				
 				webDetails = new Address();
 				webDetails.setValue(uri);
@@ -360,11 +336,8 @@ public class AddressService
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
 				webDetails.persist();
-				if (GuiceContext.get(ActivityMasterConfiguration.class)
-				                .isSecurityEnabled())
-				{
 					webDetails.createDefaultSecurity(system, identityToken);
-				}
+				
 			}
 			catch (MalformedURLException e)
 			{
@@ -438,11 +411,8 @@ public class AddressService
 		streetAddress.setOriginalSourceSystemID((Systems) system);
 		streetAddress.setActiveFlagID(activeFlag);
 		streetAddress.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			streetAddress.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		streetAddress.add(homePhoneNumberCountryCodeClassification, phoneNumberDTO.getCountryCode(), system, identityToken);
 		streetAddress.add(homePhoneExtensionNumberClassification, Strings.nullToEmpty(phoneNumberDTO.getExtension()), system, identityToken);
@@ -499,11 +469,8 @@ public class AddressService
 		streetAddress.setOriginalSourceSystemID((Systems) originatingSystem);
 		streetAddress.setActiveFlagID(activeFlag);
 		streetAddress.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			streetAddress.createDefaultSecurity(originatingSystem, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
@@ -562,11 +529,8 @@ public class AddressService
 		address.setOriginalSourceSystemID((Systems) system);
 		address.setActiveFlagID(activeFlag);
 		address.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			address.createDefaultSecurity(system, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
@@ -620,11 +584,8 @@ public class AddressService
 		address.setOriginalSourceSystemID((Systems) system);
 		address.setActiveFlagID(activeFlag);
 		address.persist();
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			address.createDefaultSecurity(system, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()

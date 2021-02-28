@@ -36,7 +36,7 @@ public class SystemsProvider implements Provider<ISystems<Systems>>
 	@Override
 	public ISystems<Systems> get()
 	{
-		if (enterprise.get().isFake())
+		if(EnterpriseProvider.loadedEnterprise == null)
 		{
 			return new Systems();
 		}

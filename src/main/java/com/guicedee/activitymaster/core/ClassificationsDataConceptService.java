@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificati
 import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
 import com.guicedee.activitymaster.core.services.system.IClassificationDataConceptService;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -50,11 +49,8 @@ public class ClassificationsDataConceptService
 			newConcept.setActiveFlagID(activeFlag);
 			newConcept.setEnterpriseID((com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise) enterprise);
 			newConcept.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				newConcept.createDefaultSecurity(system, identityToken);
-			}
+			
 		}
 		else
 		{

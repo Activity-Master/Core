@@ -11,7 +11,6 @@ import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
 import com.guicedee.activitymaster.core.services.system.IClassificationService;
 import com.guicedee.activitymaster.core.services.system.IRulesService;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -135,11 +134,8 @@ public class RulesService<J extends RulesService<J>>
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID((Systems) system);
 			et.persist();
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				et.createDefaultSecurity(system, identityToken);
-			}
+			
 			return et;
 		}
 		else

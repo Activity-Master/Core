@@ -71,6 +71,7 @@ select * from Party.InvolvedPartyXInvolvedParty
 
 
 select * from Party.InvolvedParty
+select * from Party.InvolvedPartyXInvolvedPartyIdentificationType
 select * from Party.InvolvedPartyIdentificationType
 select * from Party.InvolvedPartyType
 select * from Party.InvolvedPartyNameType
@@ -197,3 +198,7 @@ select rt.RulesTypeName, c.ClassificationName, c.ClassificationDesc, * from Rule
 		and c.ClassificationID = '557456d7-7e1d-434a-a28c-e04b596092a4'
 
 		
+
+
+
+	select * from Geography.Geography

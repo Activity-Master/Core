@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import static com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications.*;
 import static com.guicedee.activitymaster.core.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.System;
 import static com.guicedee.activitymaster.core.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 
@@ -123,11 +122,7 @@ public class SecurityTokenService
 				st.setOriginalSourceSystemID(classification.getSystemID());
 				st.setSecurityTokenClassificationID(classification);
 				st.persist();
-				if (get(ActivityMasterConfiguration.class)
-						.isSecurityEnabled())
-				{
-					st.createDefaultSecurity(system, identityToken);
-				}
+				st.createDefaultSecurity(system, identityToken);
 			}
 			else
 			{

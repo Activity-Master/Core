@@ -10,24 +10,16 @@ import com.guicedee.activitymaster.core.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.classifications.rules.IRulesClassification;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.IRulesService;
-
+import com.guicedee.activitymaster.core.services.system.*;
 import jakarta.validation.constraints.NotNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.entityassist.SCDEntity.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -301,11 +293,9 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -366,11 +356,8 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			configureRulesTypeLinkValue(newTableForClassification, (P) this, (S) classificationDataConcept, classification, value, system);
 			newTableForClassification.persist();
 			
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
 				newTableForClassification.createDefaultSecurity(originalSystem, identityToken);
-			}
+			
 		}
 		return tableForClassification;
 	}
@@ -408,11 +395,9 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-			}
+			
 		}
 		else
 		{
@@ -439,11 +424,9 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 		configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classificationValue, value, originatingSystem);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+	
 			tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-		}
+		
 		
 		return tableForClassification;
 	}
@@ -475,11 +458,9 @@ public interface IContainsRulesTypes<P extends WarehouseCoreTable,
 			configureRulesTypeLinkValue(tableForClassification, (P) this, (S) classificationDataConcept, classification, value, originatingSystem);
 			
 			tableForClassification.persist();
-			if (get(ActivityMasterConfiguration.class)
-					.isSecurityEnabled())
-			{
+		
 				tableForClassification.createDefaultSecurity(originatingSystem, identityToken);
-			}
+			
 		}
 		else
 		{

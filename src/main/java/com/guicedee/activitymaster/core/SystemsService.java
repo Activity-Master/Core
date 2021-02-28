@@ -145,18 +145,10 @@ public class SystemsService
 		
 		UUID newSystemUUID = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(newSystem, activityMasterSystemUUID.get());
-		
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
 			newSystemsSecurityToken.createDefaultSecurity(activityMasterSystem, activityMasterSystemUUID.get());
-		}
-		
-		if (GuiceContext.get(ActivityMasterConfiguration.class)
-		                .isSecurityEnabled())
-		{
+			
 			systemsToken.createDefaultSecurity(activityMasterSystem, activityMasterSystemUUID.get());
-		}
+		
 		
 		GuiceContext.get(SystemsSystem.class)
 		            .createInvolvedPartyForNewSystem(newSystem);
@@ -186,12 +178,8 @@ public class SystemsService
 			newSystem.setEnterpriseID((Enterprise) enterprise);
 			newSystem.setActiveFlagID(activeFlag);
 			newSystem.persist();
-			
-			if (GuiceContext.get(ActivityMasterConfiguration.class)
-			                .isSecurityEnabled())
-			{
 				newSystem.createDefaultSecurity(activityMasterSystem, identityToken);
-			}
+			
 		}
 		else
 		{

@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.services.capabilities;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.db.abstraction.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.*;
@@ -515,11 +514,9 @@ public interface IContainsInvolvedPartyNameTypes<P extends WarehouseCoreTable,
 		                                 (C) classification, typeToUse, value, system);
 		
 		tableForClassification.persist();
-		if (get(ActivityMasterConfiguration.class)
-				.isSecurityEnabled())
-		{
+		
 			tableForClassification.createDefaultSecurity(system, identityToken);
-		}
+		
 		if (EventThread.event.get() != null)
 		{
 			EventThread.event.get()
