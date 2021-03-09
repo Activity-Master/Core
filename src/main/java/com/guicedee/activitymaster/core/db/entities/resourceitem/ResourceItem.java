@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXResourceItem;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConceptXResourceItem;
-import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXResourceItem;
+import com.guicedee.activitymaster.core.db.entities.classifications.*;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.EventXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.geography.GeographyXResourceItem;
@@ -16,13 +14,9 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.Resour
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.db.hierarchies.ResourceItemHierarchyView;
 import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IResourceItem;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
+import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,10 +25,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serial;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
@@ -199,7 +190,7 @@ public class ResourceItem
 		{
 			ResourceItemData rid = d.get();
 			rid.setResourceItemData(data);
-			rid.updateNow();
+			rid.builder().update(rid);
 		}
 		else
 		{
