@@ -3,11 +3,13 @@ package com.guicedee.activitymaster.core.implementations;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import com.guicedee.activitymaster.ActivityMasterTestBinder;
+import com.guicedee.activitymaster.client.services.ISecurityTokenService;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.security.ISecurityToken;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.*;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.system.ISecurityTokenService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.logger.LogFactory;
@@ -65,13 +67,13 @@ public class DefaultTestConfig
 
 		req.setHeader("User-Agent", FirefoxHeaderAgent);*/
 
-		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise.classificationName());
+		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise.name());
 		EnterpriseService service = get(EnterpriseService.class);
-		Optional<IEnterprise<?>> enterpriseO = service.findEnterprise(TestEnterprise);
-		IEnterprise<?> enterprise = null;
+		Optional<IEnterprise<?,?>> enterpriseO = service.findEnterprise(TestEnterprise.name());
+		IEnterprise<?,?> enterprise = null;
 		if (enterpriseO.isEmpty())
 		{
-			enterpriseO = Optional.ofNullable(service.startNewEnterprise(TestEnterprise,
+			enterpriseO = Optional.ofNullable(service.startNewEnterprise(TestEnterprise.name(),
 					                                                      "admin", "admin", getSoutMonitor()));
 		}
 		enterprise = enterpriseO.get();
@@ -80,20 +82,20 @@ public class DefaultTestConfig
 
 		ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
 		config.setSecurityEnabled(false);
-		config.setEnterpriseName(TestEnterprise.classificationName());
+		config.setEnterpriseName(TestEnterprise.name());
 
-		ISystems<?> systems = GuiceContext.get(ISystemsService.class)
-		                                  .getActivityMaster(enterprise);
+		ISystems<?,?> systems = GuiceContext.get(ISystemsService.class)
+		                               .getActivityMaster(enterprise);
 		UUID identityToken = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
 		
-		ISecurityToken<?> token = GuiceContext.get(ISecurityTokenService.class)
+		ISecurityToken<?,?> token = GuiceContext.get(ISecurityTokenService.class)
 		                                      .getSecurityToken(identityToken, systems);
 
 		GuiceContext.get(ActivityMasterService.class)
-		            .loadSystems(TestEnterprise, null);
+		            .loadSystems(TestEnterprise.name(), null);
 		securityConfiguration.setToken(token);
-		ISecurityToken<?> inToken = securityConfiguration.getToken();
+		ISecurityToken<?,?> inToken = securityConfiguration.getToken();
 		config.setSecurityEnabled(false);
 		defaultWaitUnit = TimeUnit.HOURS;
 		defaultWaitTime = 1;

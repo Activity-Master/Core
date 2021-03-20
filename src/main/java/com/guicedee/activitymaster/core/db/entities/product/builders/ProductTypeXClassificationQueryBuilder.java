@@ -4,12 +4,11 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.product.*;
-import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ProductTypeXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ProductType, Classification, ProductTypeXClassificationQueryBuilder,
-				                                              ProductTypeXClassification, java.util.UUID, ProductTypeXClassificationSecurityToken>
+				                                              ProductTypeXClassification, java.util.UUID>
 {
 	@Override
 	public SingularAttribute<ProductTypeXClassification, ProductType> getPrimaryAttribute()

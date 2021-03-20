@@ -2,23 +2,15 @@ package com.guicedee.activitymaster.core.db.entities.arrangement;
 
 
 import com.fasterxml.jackson.annotation.*;
-
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXRulesTypeQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
-import com.guicedee.activitymaster.core.services.dto.IArrangement;
-import com.guicedee.activitymaster.core.services.dto.IRules;
-import com.guicedee.activitymaster.core.services.dto.IRulesType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -43,9 +35,7 @@ public class ArrangementXRulesType
 				RulesType,
 				ArrangementXRulesType,
 				ArrangementXRulesTypeQueryBuilder,
-				UUID,
-				ArrangementXRulesTypeSecurityToken,
-				IArrangement<?>, IRulesType<?>>
+				UUID>
 		implements Serializable
 {
 	@Serial
@@ -89,13 +79,6 @@ public class ArrangementXRulesType
 	public ArrangementXRulesType(UUID arrangementXRulesID)
 	{
 		this.id = arrangementXRulesID;
-	}
-	
-	@Override
-	protected ArrangementXRulesTypeSecurityToken configureDefaultsForNewToken(ArrangementXRulesTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	public UUID getId()
@@ -176,13 +159,13 @@ public class ArrangementXRulesType
 	}
 	
 	@Override
-	public IArrangement<?> getPrimary()
+	public Arrangement getPrimary()
 	{
 		return getArrangement();
 	}
 	
 	@Override
-	public IRulesType<?> getSecondary()
+	public RulesType getSecondary()
 	{
 		return getRulesTypeID();
 	}

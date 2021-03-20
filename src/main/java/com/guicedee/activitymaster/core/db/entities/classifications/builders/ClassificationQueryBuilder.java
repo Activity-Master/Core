@@ -1,23 +1,22 @@
 package com.guicedee.activitymaster.core.db.entities.classifications.builders;
 
 import com.entityassist.enumerations.Operand;
-import com.google.common.base.Strings;
+import com.guicedee.activitymaster.client.services.IClassificationDataConceptService;
+import com.guicedee.activitymaster.client.services.builders.IQueryBuilderNamesAndDescriptions;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassificationQueryBuilder;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
-import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContainsNameDescriptionQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept;
-import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification_;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IClassificationDataConceptService;
+import com.guicedee.activitymaster.core.db.entities.classifications.*;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.UUID;
 
 public class ClassificationQueryBuilder
-		extends QueryBuilderTable<ClassificationQueryBuilder, Classification, java.util.UUID, ClassificationSecurityToken>
-		implements IContainsNameDescriptionQueryBuilder<ClassificationQueryBuilder, Classification, java.util.UUID>
-	
+		extends QueryBuilderTable<ClassificationQueryBuilder, Classification, java.util.UUID>
+		implements IClassificationQueryBuilder<ClassificationQueryBuilder, Classification>,
+		           IQueryBuilderNamesAndDescriptions<ClassificationQueryBuilder, Classification, UUID>
+
 {
 	public ClassificationQueryBuilder findByNameAndConcept(String name, ClassificationDataConcept concept)
 	{
@@ -26,15 +25,18 @@ public class ClassificationQueryBuilder
 		return this;
 	}
 	
-	public ClassificationQueryBuilder findByNameAndConcept(String name, String concept, ISystems<?> system, UUID...identityToken)
+	public ClassificationQueryBuilder findByNameAndConcept(String name, EnterpriseClassificationDataConcepts concept, ISystems<?,?> system, UUID... identityToken)
 	{
 		withName(name);
-		if (!Strings.isNullOrEmpty(concept))
+		if (concept == null)
 		{
-			IClassificationDataConceptService<?> service = GuiceContext.get(IClassificationDataConceptService.class);
-			ClassificationDataConcept classificationDataConcept = service.find(concept, system, identityToken);
-			where(Classification_.concept, Operand.Equals, classificationDataConcept);
+			concept = EnterpriseClassificationDataConcepts.NoClassificationDataConceptName;
 		}
+		
+		IClassificationDataConceptService<?> service = GuiceContext.get(IClassificationDataConceptService.class);
+		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) service.find(concept, system, identityToken);
+		where(Classification_.concept, Operand.Equals, classificationDataConcept);
+		
 		return this;
 	}
 }

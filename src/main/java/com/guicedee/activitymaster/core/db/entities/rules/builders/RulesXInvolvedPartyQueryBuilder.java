@@ -1,15 +1,13 @@
 package com.guicedee.activitymaster.core.db.entities.rules.builders;
 
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.rules.*;
-import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 public class RulesXInvolvedPartyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, InvolvedParty, RulesXInvolvedPartyQueryBuilder,
-		RulesXInvolvedParty, java.util.UUID, RulesXInvolvedPartySecurityToken>
+		RulesXInvolvedParty, java.util.UUID>
 {
 	@Override
 	public SingularAttribute<RulesXInvolvedParty, Rules> getPrimaryAttribute()

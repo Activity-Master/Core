@@ -4,19 +4,12 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.security.builders.SecurityTokenXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISecurityToken;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -27,10 +20,11 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Security",name = "SecurityTokenXClassification")
+@Table(schema = "Security", name = "SecurityTokenXClassification")
 @XmlRootElement
 
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
@@ -38,85 +32,77 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class SecurityTokenXClassification
 		extends WarehouseClassificationRelationshipTable<SecurityToken,
-				                                                Classification,
-				                                                SecurityTokenXClassification,
-				                                                SecurityTokenXClassificationQueryBuilder,
-				                                                java.util.UUID,
-				                                                SecurityTokenXClassificationSecurityToken,
-				                                                ISecurityToken<?>, IClassification<?>>
+		Classification,
+		SecurityTokenXClassification,
+		SecurityTokenXClassificationQueryBuilder,
+		java.util.UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "SecurityTokenXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "SecurityTokenXClassificationID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
-
+	
 	@JoinColumn(name = "SecurityTokenID",
-			referencedColumnName = "SecurityTokenID",
-			nullable = false)
+	            referencedColumnName = "SecurityTokenID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private SecurityToken securityTokenID;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<SecurityTokenXClassificationSecurityToken> securities;
-
+	
 	public SecurityTokenXClassification()
 	{
-
+	
 	}
-
+	
 	public SecurityTokenXClassification(UUID securityTokenXClassificationID)
 	{
 		this.id = securityTokenXClassificationID;
 	}
-
-	@Override
-	protected SecurityTokenXClassificationSecurityToken configureDefaultsForNewToken(SecurityTokenXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public SecurityToken getSecurityTokenID()
 	{
 		return this.securityTokenID;
 	}
-
+	
 	public List<SecurityTokenXClassificationSecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public SecurityTokenXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public SecurityTokenXClassification setSecurityTokenID(SecurityToken securityTokenID)
 	{
 		this.securityTokenID = securityTokenID;
 		return this;
 	}
-
+	
 	public SecurityTokenXClassification setSecurities(List<SecurityTokenXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -131,21 +117,21 @@ public class SecurityTokenXClassification
 		SecurityTokenXClassification that = (SecurityTokenXClassification) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
-	public ISecurityToken<?> getPrimary()
+	public SecurityToken getPrimary()
 	{
 		return getSecurityTokenID();
 	}
-
+	
 	@Override
-	public IClassification<?> getSecondary()
+	public Classification getSecondary()
 	{
 		return getClassificationID();
 	}

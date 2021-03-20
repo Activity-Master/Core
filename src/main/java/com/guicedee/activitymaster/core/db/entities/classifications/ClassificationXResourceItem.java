@@ -1,23 +1,17 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationXResourceItemQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IResourceItem;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -45,9 +39,7 @@ public class ClassificationXResourceItem
 				                                                ResourceItem,
 				                                                ClassificationXResourceItem,
 				                                                ClassificationXResourceItemQueryBuilder,
-				                                                java.util.UUID,
-				                                                ClassificationXResourceItemSecurityToken,
-				                                                IClassification<?>, IResourceItem<?>>
+				                                                java.util.UUID>
 		implements Serializable
 {
 
@@ -89,13 +81,6 @@ public class ClassificationXResourceItem
 	}
 
 	@Override
-	protected ClassificationXResourceItemSecurityToken configureDefaultsForNewToken(ClassificationXResourceItemSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-
-	@Override
 	public java.util.UUID getId()
 	{
 		return id;
@@ -131,9 +116,9 @@ public class ClassificationXResourceItem
 	}
 
 	@Override
-	public ClassificationXResourceItem setClassificationID(Classification classificationID)
+	public ClassificationXResourceItem setClassificationID(IClassification classificationID)
 	{
-		this.classificationID = classificationID;
+		this.classificationID = (Classification) classificationID;
 		return this;
 	}
 
@@ -165,13 +150,13 @@ public class ClassificationXResourceItem
 	}
 
 	@Override
-	public IClassification<?> getPrimary()
+	public Classification getPrimary()
 	{
 		return getClassificationID();
 	}
 
 	@Override
-	public IResourceItem<?> getSecondary()
+	public ResourceItem getSecondary()
 	{
 		return getResourceItemID();
 	}

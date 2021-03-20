@@ -2,14 +2,18 @@ package com.guicedee.activitymaster.core.systems;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.administration.IProgressable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.core.ActivityMasterService;
 import com.guicedee.activitymaster.core.TimeService;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.entities.time.*;
 import com.guicedee.activitymaster.core.db.timelord.EnglishNumberToWords;
-import com.guicedee.activitymaster.core.services.*;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.system.*;
+import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.core.services.system.ITimeSystem;
 import com.guicedee.activitymaster.core.threads.TimeLoaderThread;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.JobService;
@@ -23,9 +27,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.activitymaster.client.services.classifications.types.DateTimeFormats.*;
+import static com.guicedee.activitymaster.client.services.classifications.types.NumberFormats.*;
 import static com.guicedee.activitymaster.core.services.system.ITimeService.*;
-import static com.guicedee.activitymaster.core.services.types.DateTimeFormats.*;
-import static com.guicedee.activitymaster.core.services.types.NumberFormats.*;
 import static java.time.temporal.ChronoUnit.*;
 
 
@@ -42,7 +46,7 @@ public class TimeSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		systemsService.get()
 		              .create(enterprise, getSystemName(), getSystemDescription());
@@ -51,7 +55,7 @@ public class TimeSystem
 	}
 	
 	@Override
-	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Time System", "Loading Time Classifications...", 4, progressMonitor);
 		loadTimeRange(2004, LocalDateTime.now()

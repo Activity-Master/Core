@@ -6,27 +6,24 @@
 package com.guicedee.activitymaster.core.db.entities.geography;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.geography.IGeography;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXGeography;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.geography.builders.GeographyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.db.hierarchies.GeographyHierarchyView;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.classifications.geography.IGeographyClassification;
-
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -37,7 +34,7 @@ import static jakarta.persistence.FetchType.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Geography",
        name = "Geography")
@@ -51,22 +48,17 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Geography
-		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, java.util.UUID, GeographySecurityToken>
-		implements IContainsClassifications<Geography, Classification, GeographyXClassification, IGeographyClassification<?>, IGeography<?>, IClassification<?>, Geography>,
-		           IContainsResourceItems<Geography, ResourceItem, GeographyXResourceItem, IClassificationValue<?>, IGeography<?>, IResourceItem<?>, Geography>,
-		           IActivityMasterEntity<Geography>,
-		           IContainsHierarchy<Geography, GeographyXGeography, GeographyHierarchyView,IGeography<?>, IGeography<?>>,
-		           IContainsNameAndDescription<Geography>,
-		           IGeography<Geography>
+		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, java.util.UUID>
+		implements IGeography<Geography, GeographyQueryBuilder>
 {
-	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
 	        name = "GeographyID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	
 	@Basic(optional = false,
@@ -77,7 +69,7 @@ public class Geography
 	@Column(nullable = false,
 	        length = 500,
 	        name = "GeographyName")
-		private String name;
+	private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -86,42 +78,42 @@ public class Geography
 	@Column(nullable = false,
 	        length = 500,
 	        name = "GeographyDesc")
-		private String description;
+	private String description;
 	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
-		private List<GeographyXClassification> classifications;
+	private List<GeographyXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
-		private List<AddressXGeography> addresses;
+	private List<AddressXGeography> addresses;
 	
 	@JoinColumn(name = "ClassificationID",
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
-		private Classification classificationID;
+	private Classification classificationID;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<GeographySecurityToken> securities;
+	private List<GeographySecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "geographyID",
 			fetch = FetchType.LAZY)
-		private List<GeographyXResourceItem> resources;
+	private List<GeographyXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "parentGeographyID",
 			fetch = FetchType.LAZY)
-		private List<GeographyXGeography> geographyXGeographyList;
+	private List<GeographyXGeography> geographyXGeographyList;
 	@OneToMany(
 			mappedBy = "childGeographyID",
 			fetch = FetchType.LAZY)
-		private List<GeographyXGeography> geographyXGeographyList1;
+	private List<GeographyXGeography> geographyXGeographyList1;
 	
 	public Geography()
 	{
@@ -139,44 +131,6 @@ public class Geography
 		this.name = geographyName;
 		this.description = geographyDesc;
 		
-	}
-	
-	@Override
-	protected GeographySecurityToken configureDefaultsForNewToken(GeographySecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
-	@Override
-	public void configureForClassification(GeographyXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setGeographyID(this);
-	}
-	
-	@Override
-	public void configureNewHierarchyItem(GeographyXGeography newLink, IGeography<?> parent, IGeography<?> child, String value)
-	{
-		newLink.setParentGeographyID((Geography) parent);
-		newLink.setChildGeographyID((Geography) child);
-		if (value != null)
-		{
-			newLink.setValue(value);
-		}
-	}
-	
-	@Override
-	public void configureResourceItemLinkValue(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setGeographyID(this);
-		linkTable.setResourceItemID(secondary);
-	}
-	
-	@Override
-	public void configureResourceItemAddable(GeographyXResourceItem linkTable, Geography primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setGeographyID(this);
-		linkTable.setResourceItemID(secondary);
 	}
 	
 	public List<GeographyXClassification> getClassifications()
@@ -204,6 +158,13 @@ public class Geography
 	public Classification getClassificationID()
 	{
 		return this.classificationID;
+	}
+	
+	@Override
+	public Geography setClassificationID(IClassification<?, ?> classificationID)
+	{
+		this.classificationID = (Classification) classificationID;
+		return this;
 	}
 	
 	public Geography setClassificationID(Classification classificationID)
@@ -326,4 +287,29 @@ public class Geography
 		return this;
 	}
 	
+	@Override
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Geography, Geography, UUID> newLink, Geography parent, Geography child, String value)
+	{
+		GeographyXGeography g = (GeographyXGeography) newLink;
+		g.setParentGeographyID(parent);
+		g.setChildGeographyID(child);
+		g.setValue(value);
+		
+	}
+	
+	@Override
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?, ?> system)
+	{
+		((GeographyXClassification) linkTable).setGeographyID(this);
+	}
+	
+	@Override
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Geography primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+	{
+		GeographyXResourceItem g = (GeographyXResourceItem) linkTable;
+		g.setGeographyID(primary);
+		g.setResourceItemID((ResourceItem) secondary);
+		g.setClassificationID(classificationValue);
+		g.setValue(value);
+	}
 }

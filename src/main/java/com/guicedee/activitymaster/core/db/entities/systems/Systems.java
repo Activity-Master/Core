@@ -1,15 +1,15 @@
 package com.guicedee.activitymaster.core.db.entities.systems;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.builders.SystemsQueryBuilder;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.classifications.systems.ISystemsClassification;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
@@ -37,25 +37,20 @@ import static jakarta.persistence.AccessType.*;
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Systems
-		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.util.UUID, SystemsSecurityToken>
-		implements IContainsClassifications<Systems, Classification, SystemXClassification, ISystemsClassification<?>, ISystems<?>, IClassification<?>, Systems>,
-		           IActivityMasterEntity<Systems>,
-		           IContainsNameAndDescription<Systems>,
-		           IContainsEnterprise<Systems>,
-		           ISystems<Systems>,
-		           IContainsActiveFlags<Systems>
+		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.util.UUID>
+		implements ISystems<Systems, SystemsQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-	
 	@Column(nullable = false,
 	        name = "SystemID")
 	@JsonValue
@@ -69,7 +64,7 @@ public class Systems
 	@Column(nullable = false,
 	        length = 150,
 	        name = "SystemName")
-		private String name;
+	private String name;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -77,7 +72,7 @@ public class Systems
 	@Column(nullable = false,
 	        length = 250,
 	        name = "SystemDesc")
-		private String description;
+	private String description;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -86,25 +81,25 @@ public class Systems
 	@Column(nullable = false,
 	        length = 250,
 	        name = "SystemHistoryName")
-		private String systemHistoryName;
+	private String systemHistoryName;
 	
 	@JoinColumn(name = "EnterpriseID",
 	            referencedColumnName = "EnterpriseID",
 	            nullable = false)
 	@ManyToOne(optional = false)
-		private Enterprise enterpriseID;
+	private Enterprise enterpriseID;
 	
 	@JoinColumn(name = "ActiveFlagID",
 	            referencedColumnName = "ActiveFlagID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.EAGER)
-		private ActiveFlag activeFlagID;
+	private ActiveFlag activeFlagID;
 	
 	@OneToMany(
 			mappedBy = "systemID",
 			fetch = FetchType.LAZY)
-		private List<SystemsSecurityToken> securities;
+	private List<SystemsSecurityToken> securities;
 	
 	public Systems()
 	{
@@ -125,42 +120,31 @@ public class Systems
 	}
 	
 	@Override
-	protected SystemsSecurityToken configureDefaultsForNewToken(SystemsSecurityToken stAdmin, ISystems<?> system, ISystems<?> activityMasterSystem)
-	{
-		SystemsSecurityToken token = super.configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
-		stAdmin.setSystemID(this);
-		return token;
-	}
-	
-	@Override
 	public String toString()
 	{
 		return "System - " + getName();
 	}
 	
-	@Override
-	public void configureForClassification(SystemXClassification classificationLink, ISystems<?> system)
+	
+	public void configureForClassification(SystemXClassification classificationLink, ISystems<?,?> system)
 	{
 		classificationLink.setSystemID(this);
 	}
 	
-	@Override
-	@SuppressWarnings("unchecked")
 	public Systems remove()
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken((IEnterprise<?>) getEnterpriseID())));
+		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;
 	}
 	
-	@Override
-	@SuppressWarnings("unchecked")
+	
 	public Systems archive()
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken((IEnterprise<?>) getEnterpriseID())));
+		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;
@@ -222,7 +206,7 @@ public class Systems
 	}
 	
 	@Override
-	public Systems setActiveFlagID(IActiveFlag<?> activeFlagID)
+	public Systems setActiveFlagID(IActiveFlag<?,?> activeFlagID)
 	{
 		return setActiveFlagID((ActiveFlag) activeFlagID);
 	}
@@ -254,9 +238,9 @@ public class Systems
 		return this;
 	}
 	
-	public Systems setEnterpriseID(Enterprise enterpriseID)
+	public Systems setEnterpriseID(IEnterprise<?,?> enterpriseID)
 	{
-		this.enterpriseID = enterpriseID;
+		this.enterpriseID = (Enterprise) enterpriseID;
 		return this;
 	}
 	
@@ -264,5 +248,12 @@ public class Systems
 	{
 		this.activeFlagID = activeFlagID;
 		return this;
+	}
+	
+	@Override
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	{
+		SystemXClassification.class.cast(linkTable)
+		                           .setSystemID(this);
 	}
 }

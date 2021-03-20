@@ -1,30 +1,31 @@
 package com.guicedee.activitymaster.core.db.entities.arrangement;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.arrangements.IArrangement;
+import com.guicedee.activitymaster.client.services.builders.warehouse.arrangements.IArrangementType;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.party.IInvolvedParty;
+import com.guicedee.activitymaster.client.services.builders.warehouse.products.IProduct;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.rules.IRules;
+import com.guicedee.activitymaster.client.services.builders.warehouse.rules.IRulesType;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.events.EventXArrangement;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
+import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
-import com.guicedee.activitymaster.core.db.hierarchies.ArrangementsHierarchyView;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-
-import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -34,7 +35,7 @@ import static jakarta.persistence.AccessType.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Arrangement",
        name = "Arrangement")
@@ -47,18 +48,8 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Arrangement
-		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, java.util.UUID, ArrangementSecurityToken>
-		implements IContainsClassifications<Arrangement, Classification, ArrangementXClassification, IArrangementClassification<?>, IArrangement<?>, IClassification<?>, Arrangement>,
-		           IContainsResourceItems<Arrangement, ResourceItem, ArrangementXResourceItem, IClassificationValue<?>, IArrangement<?>, IResourceItem<?>, Arrangement>,
-		           IActivityMasterEntity<Arrangement>,
-		           IContainsArrangementTypes<Arrangement, ArrangementType, ArrangementXArrangementType, IArrangementTypes<?>, IArrangement<?>, IArrangementType<?>, Arrangement>,
-		           IContainsInvolvedParties<Arrangement, InvolvedParty, ArrangementXInvolvedParty, IClassificationValue<?>, IArrangement<?>, IInvolvedParty<?>, Arrangement>,
-		           IContainsActiveFlags<Arrangement>,
-		           IContainsEnterprise<Arrangement>,
-		           IContainsHierarchy<Arrangement,ArrangementXArrangement, ArrangementsHierarchyView,IArrangement<?>,IArrangement<Arrangement>>,
-		           IArrangement<Arrangement>,
-		           IContainsRules<Arrangement, Rules,ArrangementXRules,IClassification<?>,IArrangement<?>,IRules<?>>,
-		           IContainsRulesTypes<Arrangement, RulesType,ArrangementXRulesType,IClassificationValue<?>, IRulesTypeValue<?>,IArrangement<?>,IRulesType<?>,Arrangement>
+		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, java.util.UUID>
+		implements IArrangement<Arrangement,ArrangementQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -128,45 +119,12 @@ public class Arrangement
 		this.id = arrangementID;
 	}
 	
-	@Override
-	protected ArrangementSecurityToken configureDefaultsForNewToken(ArrangementSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
-	@Override
-	public void configureForClassification(ArrangementXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setArrangementID(this);
-	}
-	
-	@Override
-	public void configureResourceItemLinkValue(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setArrangementID(this);
-		linkTable.setResourceItemID(secondary);
-	}
-	
-	@Override
-	public void configureResourceItemAddable(ArrangementXResourceItem linkTable, Arrangement primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setArrangementID(this);
-		linkTable.setResourceItemID(secondary);
-	}
-	
-	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, InvolvedParty involvedParty, IEnterprise<?> enterprise)
+	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, InvolvedParty involvedParty, IEnterprise<?,?> enterprise)
 	{
 		classificationLink.setArrangementID(this);
 		classificationLink.setInvolvedPartyID(involvedParty);
 	}
-	
-	@Override
-	public void configureArrangementType(ArrangementXArrangementType linkTable, Arrangement primary, ArrangementType secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setArrangement(primary);
-		linkTable.setType(secondary);
-	}
+
 	
 	@Override
 	public Arrangement remove()
@@ -356,45 +314,77 @@ public class Arrangement
 	}
 	
 	@Override
-	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, Arrangement first, InvolvedParty involvedParty, ISystems<?> enterprise)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Arrangement, Arrangement, UUID> newLink, Arrangement parent, Arrangement child, String value)
 	{
-		classificationLink.setArrangementID(first);
-		classificationLink.setInvolvedPartyID(involvedParty);
+		ArrangementXArrangement axa = (ArrangementXArrangement) newLink;
+		axa.setParentArrangementID(parent);
+		axa.setChildArrangementID(child);
+		axa.setValue(value);
 	}
 	
 	@Override
-	public void configureAddable(ArrangementXInvolvedParty newLink, Arrangement primary, InvolvedParty secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureArrangementTypeAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IArrangementType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-		newLink.setArrangementID(primary);
-		newLink.setInvolvedPartyID(secondary);
-		newLink.setClassificationID((Classification) classificationValue);
-		newLink.setValue(value);
-		newLink.setEnterpriseID((Enterprise) enterprise);
+		ArrangementXArrangementType axa = (ArrangementXArrangementType) linkTable;
+		axa.setArrangement(primary);
+		axa.setType((ArrangementType) secondary);
+		axa.setClassificationID(classificationValue);
+		axa.setValue(value);
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(ArrangementXArrangement newLink, IArrangement<Arrangement> parent, IArrangement<Arrangement> child, String value)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
 	{
-		newLink.setParentArrangementID((Arrangement) parent);
-		newLink.setChildArrangementID((Arrangement) child);
-		newLink.setValue(value);
+		((ArrangementXClassification) linkTable).setArrangementID(this);
 	}
 	
 	@Override
-	public void configureAddableRule(ArrangementXRules linkTable, Arrangement primary, Rules secondary, IClassification<?> classificationValue, String value, ISystems<?> enterprise)
+	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-		linkTable.setArrangement(primary);
-		linkTable.setRulesID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
+		ArrangementXProduct axa = (ArrangementXProduct) linkTable;
+		axa.setArrangementID(primary);
+		axa.setProductID((Product) secondary);
+		axa.setClassificationID(classificationValue);
+		axa.setValue(value);
+	}
+	
+	@Override
+	public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Arrangement primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
+	{
+		ArrangementXRulesType axa = (ArrangementXRulesType) linkTable;
+		axa.setArrangement(primary);
+		axa.setRulesTypeID((RulesType) secondary);
+		axa.setClassificationID(classificationValue);
+		axa.setValue(value);
+	}
+	
+	@Override
+	public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+		ArrangementXRules axa = (ArrangementXRules) linkTable;
+		axa.setArrangement(primary);
+		axa.setRulesID((Rules) secondary);
+		axa.setClassificationID(classificationValue);
+		axa.setValue(value);
+	}
+	
+	@Override
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+	{
+		ArrangementXResourceItem axr = (ArrangementXResourceItem) linkTable;
+		((ArrangementXResourceItem) linkTable).setArrangementID(primary);
+		((ArrangementXResourceItem) linkTable).setResourceItemID((ResourceItem) secondary);
+		axr.setClassificationID(classificationValue);
 		linkTable.setValue(value);
 	}
 	
 	@Override
-	public void configureRulesTypeLinkValue(ArrangementXRulesType linkTable, Arrangement primary, RulesType secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
+	public void configureInvolvedPartyAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IInvolvedParty<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
-		linkTable.setArrangement(primary);
-		linkTable.setRulesTypeID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
+		ArrangementXInvolvedParty axi = (ArrangementXInvolvedParty) linkTable;
+		axi.setArrangementID(primary);
+		axi.setInvolvedPartyID((InvolvedParty) secondary);
+		axi.setClassificationID(classificationValue);
+		axi.setValue(value);
 	}
 }

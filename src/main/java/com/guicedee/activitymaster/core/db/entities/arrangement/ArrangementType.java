@@ -1,18 +1,10 @@
 package com.guicedee.activitymaster.core.db.entities.arrangement;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.arrangements.IArrangementType;
+import com.guicedee.activitymaster.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementTypeQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.classifications.arrangement.IArrangementClassification;
-import com.guicedee.activitymaster.core.services.dto.IArrangementType;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
-import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -20,9 +12,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -47,10 +37,8 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ArrangementType
-		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, java.util.UUID, ArrangementTypeSecurityToken>
-		implements IContainsClassifications<ArrangementType, Classification, ArrangementTypeXClassification, IArrangementClassification<?>, IArrangementType<?>, IClassification<?>, ArrangementType>,
-		           IArrangementType<ArrangementType>,
-		           IArrangementTypes
+		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, java.util.UUID>
+		implements IArrangementType<ArrangementType,ArrangementTypeQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -110,13 +98,6 @@ public class ArrangementType
 		this.description = arrangementTypeDescription;
 	}
 	
-	@Override
-	protected ArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementTypeSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
 	public List<ArrangementTypeSecurityToken> getSecurities()
 	{
 		return this.securities;
@@ -142,7 +123,7 @@ public class ArrangementType
 	@Override
 	public String toString()
 	{
-		return "ArrangementType - " + getName();
+		return getName();
 	}
 	
 	@Override
@@ -202,33 +183,8 @@ public class ArrangementType
 		return this;
 	}
 	
-	@Override
-	public void configureForClassification(ArrangementTypeXClassification classificationLink, ISystems<?> system)
+	public EnterpriseClassificationDataConcepts concept()
 	{
-		classificationLink.setArrangementTypeID(this);
-	}
-	
-	@Override
-	public String name()
-	{
-		return getName();
-	}
-	
-	@Override
-	public String classificationValue()
-	{
-		return getName();
-	}
-	
-	@Override
-	public String classificationDescription()
-	{
-		return getDescription();
-	}
-	
-	@Override
-	public IClassificationDataConceptValue<?> concept()
-	{
-		return null;
+		return EnterpriseClassificationDataConcepts.ArrangementType;
 	}
 }

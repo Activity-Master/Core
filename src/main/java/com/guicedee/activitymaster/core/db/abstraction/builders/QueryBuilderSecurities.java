@@ -8,10 +8,8 @@ package com.guicedee.activitymaster.core.db.abstraction.builders;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
-import java.io.Serializable;
 
 import static com.entityassist.enumerations.Operand.*;
 
@@ -29,7 +27,7 @@ import static com.entityassist.enumerations.Operand.*;
  */
 public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J, E, I>,
 		                                            E extends WarehouseSecurityTable<E, J, I>,
-		                                            I extends Serializable>
+		                                            I extends java.util.UUID>
 		extends QueryBuilderDefault<J, E, I>
 {
 	@SuppressWarnings("unchecked")

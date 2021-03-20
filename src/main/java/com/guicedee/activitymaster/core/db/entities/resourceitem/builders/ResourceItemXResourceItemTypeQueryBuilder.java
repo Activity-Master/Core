@@ -1,11 +1,10 @@
 package com.guicedee.activitymaster.core.db.entities.resourceitem.builders;
 
 import com.entityassist.enumerations.Operand;
+import com.guicedee.activitymaster.client.services.IResourceItemService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
-import com.guicedee.activitymaster.core.services.system.IResourceItemService;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
@@ -16,9 +15,7 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 		ResourceItemType,
 		ResourceItemXResourceItemTypeQueryBuilder,
 		ResourceItemXResourceItemType,
-		IResourceType<?>,
-		java.util.UUID,
-		ResourceItemXResourceItemTypeSecurityToken>
+		java.util.UUID>
 {
 	@Override
 	public SingularAttribute<ResourceItemXResourceItemType, ResourceItem> getPrimaryAttribute()
@@ -33,7 +30,7 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 	}
 	
 	@Override
-	public ResourceItemXResourceItemTypeQueryBuilder withType(String typeValue, ISystems<?> system, UUID... identityToken)
+	public ResourceItemXResourceItemTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

@@ -4,17 +4,12 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassificationSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification_;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-
-import jakarta.persistence.metamodel.Attribute;
+import com.guicedee.activitymaster.core.db.entities.systems.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 public class SystemsXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Systems, Classification, SystemsXClassificationQueryBuilder,
-				                                              SystemXClassification, java.util.UUID, SystemXClassificationSecurityToken>
+				                                              SystemXClassification, java.util.UUID>
 {
 	@SuppressWarnings("rawtypes")
 	@Override

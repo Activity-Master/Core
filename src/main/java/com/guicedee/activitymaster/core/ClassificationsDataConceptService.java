@@ -2,19 +2,20 @@ package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.guicedee.activitymaster.client.services.IClassificationDataConceptService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
-import com.guicedee.activitymaster.core.services.system.IClassificationDataConceptService;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import static com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts.*;
+import static com.guicedee.activitymaster.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 
 
 public class ClassificationsDataConceptService
@@ -22,15 +23,14 @@ public class ClassificationsDataConceptService
 {
 	@Inject
 	@Named("Active")
-	private IActiveFlag<?> activeFlag;
+	private IActiveFlag<?,?> activeFlag;
 	
 	@Inject
-	private IEnterprise<?> enterprise;
+	private IEnterprise<?,?> enterprise;
 	
-	@Override
-	public ClassificationDataConcept createDataConcept(IClassificationDataConceptValue<?> name,
+	public ClassificationDataConcept createDataConcept(EnterpriseClassificationDataConcepts name,
 	                                                   String description,
-	                                                   ISystems<?> system,
+	                                                   ISystems<?,?> system,
 	                                                   UUID... identityToken)
 	{
 		ClassificationDataConcept newConcept = new ClassificationDataConcept();
@@ -62,21 +62,20 @@ public class ClassificationsDataConceptService
 	
 	@Override
 	@CacheResult(cacheName = "GetGlobalConcept")
-	public ClassificationDataConcept getGlobalConcept(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getGlobalConcept(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		return find(GlobalClassificationsDataConceptName, system, identityToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystem")
-	public ClassificationDataConcept find(@CacheKey IClassificationDataConceptValue<?> name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept find(@CacheKey EnterpriseClassificationDataConcepts name, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		return find(name.classificationValue(), system, identityToken);
 	}
-	
-	@Override
+
 	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
-	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
 		cdc = cdc.builder()
@@ -84,7 +83,7 @@ public class ClassificationsDataConceptService
 		         .withEnterprise(enterprise)
 		         .inActiveRange(enterprise, identityToken)
 		         .inDateRange()
-		         .canRead(system, identityToken)
+		       //  .canRead(system, identityToken)
 		         .get()
 		         .orElseThrow(()-> new NoSuchElementException("Cannot find Classification Data Concept with name - " + name));
 		return cdc;
@@ -92,14 +91,14 @@ public class ClassificationsDataConceptService
 	
 	@Override
 	@CacheResult(cacheName = "NoDataConcept")
-	public ClassificationDataConcept getNoConcept(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getNoConcept(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		return find(NoClassificationDataConceptName, system, identityToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "SecurityHierarchyConcept")
-	public ClassificationDataConcept getSecurityHierarchyConcept(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getSecurityHierarchyConcept(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		return find(EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken, system, identityToken);
 	}

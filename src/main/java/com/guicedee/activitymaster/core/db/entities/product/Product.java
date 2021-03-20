@@ -2,23 +2,20 @@ package com.guicedee.activitymaster.core.db.entities.product;
 
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.products.IProduct;
+import com.guicedee.activitymaster.client.services.builders.warehouse.products.IProductType;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXProduct;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.events.EventXProduct;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXProduct;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsProductTypes;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
-import com.guicedee.activitymaster.core.services.classifications.product.IProductClassification;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,9 +23,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -54,12 +49,8 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Product
-		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, java.util.UUID, ProductSecurityToken>
-		implements IContainsClassifications<Product, Classification, ProductXClassification, IProductClassification<?>, IProduct<?>, IClassification<?>, Product>,
-		           IContainsResourceItems<Product, ResourceItem, ProductXResourceItem, IClassificationValue<?>, IProduct<?>, IResourceItem<?>, Product>,
-		           IContainsProductTypes<Product, ProductType, ProductXProductType, IClassificationValue<?>, IProductTypeValue<?>, IProduct<?>, IProductType<?>, Product>,
-		           IActivityMasterEntity<Product>,
-		           IProduct<Product>
+		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, java.util.UUID>
+		implements IProduct<Product,ProductQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -149,33 +140,6 @@ public class Product
 		name = productName;
 		description = productDesc;
 		this.productCode = productCode;
-	}
-	
-	@Override
-	protected ProductSecurityToken configureDefaultsForNewToken(ProductSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
-	@Override
-	public void configureForClassification(ProductXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setProductID(this);
-	}
-	
-	@Override
-	public void configureResourceItemLinkValue(ProductXResourceItem linkTable, Product primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setResourceItemID(secondary);
-		linkTable.setProductID(this);
-	}
-	
-	@Override
-	public void configureResourceItemAddable(ProductXResourceItem linkTable, Product primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setResourceItemID(secondary);
-		linkTable.setProductID(this);
 	}
 	
 	public List<ProductXClassification> getClassifications()
@@ -341,14 +305,31 @@ public class Product
 		this.productCode = productCode;
 		return this;
 	}
+
+	@Override
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	{
+		ProductXClassification.class.cast(linkTable)
+		                            .setProductID(this);
+	}
 	
 	@Override
-	public void configureProductTypeLinkValue(ProductXProductType linkTable, Product primary, ProductType secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
+	public void configureProductTypeLinkValue(IWarehouseRelationshipTable linkTable, Product primary, IProductType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
 	{
-		linkTable.setProductID(primary);
-		linkTable.setProductTypeID(secondary);
-		IClassificationService<?> service = GuiceContext.get(IClassificationService.class);
-		linkTable.setClassificationID((Classification) service.find(classificationValue.classificationName(), system));
+		ProductXProductType pxt = (ProductXProductType) linkTable;
+		pxt.setProductID(primary);
+		pxt.setProductTypeID((ProductType) secondary);
+		linkTable.setClassificationID(classificationValue);
+		linkTable.setValue(Strings.nullToEmpty(value));
+	}
+	
+	@Override
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Product primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+		ProductXResourceItem pxt = (ProductXResourceItem) linkTable;
+		pxt.setProductID(primary);
+		pxt.setResourceItemID((ResourceItem) secondary);
+		linkTable.setClassificationID(classificationValue);
 		linkTable.setValue(Strings.nullToEmpty(value));
 	}
 }

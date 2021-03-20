@@ -1,12 +1,13 @@
 package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
+import com.guicedee.activitymaster.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.administration.IProgressable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.services.*;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.system.IActivityMasterService;
-import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.logger.LogFactory;
 import lombok.extern.java.Log;
 
@@ -24,12 +25,12 @@ public class ActivityMasterService
 	@Inject
 	private ActivityMasterConfiguration configuration;
 	@Inject
-	private IEnterprise<?> enterprise;
+	private IEnterprise<?,?> enterprise;
 	@Inject
 	private IEnterpriseService<?> enterpriseService;
 	
 	@Override
-	public void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor)
+	public void loadSystems(String enterpriseName, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
 		try
@@ -48,7 +49,7 @@ public class ActivityMasterService
 	}
 	
 	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void loadUpdates(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		enterpriseService.loadUpdates(enterprise, progressMonitor);
 		if (progressMonitor != null)

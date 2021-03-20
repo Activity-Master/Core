@@ -2,17 +2,17 @@ package com.guicedee.activitymaster.core.systems;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.SystemsService;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
 
-import static com.guicedee.activitymaster.core.services.system.IRulesService.*;
+import static com.guicedee.activitymaster.client.services.IRulesService.*;
 
 
 public class RulesSystem
@@ -24,7 +24,7 @@ public class RulesSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		systemsService.get()
 		              .create(enterprise, getSystemName(), getSystemDescription());
@@ -34,9 +34,9 @@ public class RulesSystem
 	
 	
 	@Override
-	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = GuiceContext.get(SystemsService.class)
 		                                               .getActivityMaster(enterprise);
 		
 		ClassificationService service = GuiceContext.get(ClassificationService.class);

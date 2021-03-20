@@ -8,19 +8,11 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyNameTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyNameType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.INameType;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -46,11 +38,7 @@ public class InvolvedPartyXInvolvedPartyNameType
 		extends WarehouseClassificationRelationshipTypesTable<InvolvedParty, InvolvedPartyNameType,
 		InvolvedPartyXInvolvedPartyNameType,
 		InvolvedPartyXInvolvedPartyNameTypeQueryBuilder,
-		INameType<?>,
-		java.util.UUID,
-		InvolvedPartyXInvolvedPartyNameTypeSecurityToken,
-		IInvolvedParty<?>,
-		IInvolvedPartyNameType<?>>
+		java.util.UUID>
 {
 	
 	@Serial
@@ -94,14 +82,7 @@ public class InvolvedPartyXInvolvedPartyNameType
 		this.id = involvedPartyXInvolvedPartyNameTypeID;
 		setValue(involvedPartyName);
 	}
-	
-	@Override
-	protected InvolvedPartyXInvolvedPartyNameTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXInvolvedPartyNameTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
+
 	@Override
 	public java.util.UUID getId()
 	{
@@ -170,13 +151,13 @@ public class InvolvedPartyXInvolvedPartyNameType
 	}
 	
 	@Override
-	public IInvolvedParty<?> getPrimary()
+	public InvolvedParty getPrimary()
 	{
 		return getInvolvedPartyID();
 	}
 	
 	@Override
-	public IInvolvedPartyNameType<?> getSecondary()
+	public InvolvedPartyNameType getSecondary()
 	{
 		return getInvolvedPartyNameTypeID();
 	}

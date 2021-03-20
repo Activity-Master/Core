@@ -1,27 +1,17 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.party.IInvolvedPartyType;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -46,13 +36,8 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, java.util.UUID, InvolvedPartyTypeSecurityToken>
-		implements IInvolvedPartyType<InvolvedPartyType>,
-		           IContainsNameAndDescription<InvolvedPartyType>,
-		           IContainsEnterprise<InvolvedPartyType>,
-		           IActivityMasterEntity<InvolvedPartyType>,
-		           IContainsActiveFlags<InvolvedPartyType>,
-		           ITypeValue
+		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, java.util.UUID>
+		implements IInvolvedPartyType<InvolvedPartyType,InvolvedPartyTypeQueryBuilder>
 {
 	
 	@Serial
@@ -104,13 +89,6 @@ public class InvolvedPartyType
 		id = involvedPartyTypeID;
 		name = involvedPartyTypeName;
 		description = involvedPartyTypeDesc;
-	}
-	
-	@Override
-	protected InvolvedPartyTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	public List<InvolvedPartyTypeSecurityToken> getSecurities()
@@ -199,17 +177,5 @@ public class InvolvedPartyType
 	{
 		this.description = description;
 		return this;
-	}
-	
-	@Override
-	public String name()
-	{
-		return getName();
-	}
-	
-	@Override
-	public String classificationValue()
-	{
-		return getName();
 	}
 }

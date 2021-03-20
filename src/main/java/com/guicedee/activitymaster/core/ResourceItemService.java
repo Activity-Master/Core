@@ -4,18 +4,16 @@ import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.guicedee.activitymaster.client.services.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.DefaultClassifications;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.IResourceItemClassification;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.IResourceItemService;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.*;
@@ -33,22 +31,16 @@ public class ResourceItemService
 {
 	@Inject
 	@Named("Active")
-	private IActiveFlag<?> activeFlag;
+	private IActiveFlag<?,?> activeFlag;
 	
 	@Inject
-	private IEnterprise<?> enterprise;
+	private IEnterprise<?,?> enterprise;
 	
 	@Inject
 	private IClassificationService<?> classificationService;
 	
 	@Override
-	public IResourceItemType<?> createType(IResourceType<?> value, ISystems<?> system, UUID... identityToken)
-	{
-		return createType(value.classificationName(), value.classificationDescription(), system, identityToken);
-	}
-	
-	@Override
-	public IResourceItemType<?> createType(String value, String description, ISystems<?> system, UUID... identityToken)
+	public IResourceItemType<?, ?> createType(String value, String description, ISystems<?,?> system, UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
 		boolean exists = xr.builder()
@@ -62,13 +54,13 @@ public class ResourceItemService
 		{
 			xr.setName(value);
 			xr.setDescription(value);
-			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setOriginalSourceSystemID(system);
+			xr.setSystemID(system);
+			xr.setEnterpriseID(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			
-				xr.createDefaultSecurity(system, identityToken);
+			xr.createDefaultSecurity(system, identityToken);
 			
 		}
 		else
@@ -80,30 +72,23 @@ public class ResourceItemService
 	
 	
 	@Override
-	public IResourceItem<?> create(IResourceType<?> identityResourceType, String resourceItemDataValue,
-	                               ISystems<?> system, UUID... identityToken)
-	{
-		return create(identityResourceType.classificationName(), resourceItemDataValue, system, identityToken);
-	}
-	
-	@Override
-	public IResourceItem<?> create(String identityResourceType, String resourceItemDataValue,
-	                               ISystems<?> system, UUID... identityToken)
+	public IResourceItem<?, ?> create(String identityResourceType, String resourceItemDataValue,
+	                                  ISystems<?,?> system, UUID... identityToken)
 	{
 		return create(identityResourceType, resourceItemDataValue, "", LocalDateTime.now(), system, identityToken);
 	}
 	
 	@Override
-	public IResourceItem<?> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
-	                               LocalDateTime effectiveFromDate,
-	                               ISystems<?> system, UUID... identityToken)
+	public IResourceItem<?, ?> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
+	                                  LocalDateTime effectiveFromDate,
+	                                  ISystems<?,?> system, UUID... identityToken)
 	{
 		if (!Strings.isNullOrEmpty(originalSourceSystemUniqueID))
 		{
 			if (new ResourceItem().builder()
 			                      .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
 			                      .withValue(resourceItemDataValue)
-			                      .withType(identityResourceType,null,system,identityToken)
+			                      .withType(identityResourceType, null, system, identityToken)
 			                      .inDateRange()
 			                      .inActiveRange(enterprise, identityToken)
 			                      .getCount() > 0)
@@ -112,7 +97,7 @@ public class ResourceItemService
 				                         .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
 				                         .withValue(resourceItemDataValue)
 				                         .inDateRange()
-				                         .withType(identityResourceType,null,system,identityToken)
+				                         .withType(identityResourceType, null, system, identityToken)
 				                         .inActiveRange(enterprise, identityToken)
 				                         .get()
 				                         .orElseThrow();
@@ -123,7 +108,7 @@ public class ResourceItemService
 		boolean exists = xr.builder()
 		                   .withValue(resourceItemDataValue)
 		                   .inActiveRange(enterprise, identityToken)
-		                   .withType(identityResourceType,null,system,identityToken)
+		                   .withType(identityResourceType, null, system, identityToken)
 		                   .inDateRange()
 		                   .withEnterprise(enterprise)
 		                   .getCount() > 0;
@@ -133,51 +118,39 @@ public class ResourceItemService
 			         .withValue(resourceItemDataValue)
 			         .inActiveRange(enterprise, identityToken)
 			         .inDateRange()
-			         .withType(identityResourceType,null,system,identityToken)
+			         .withType(identityResourceType, null, system, identityToken)
 			         .withEnterprise(enterprise)
 			         .get()
 			         .orElseThrow();
 		}
 		xr.setResourceItemUUID(UUID.randomUUID());
-		xr.setOriginalSourceSystemID((Systems) system);
+		xr.setOriginalSourceSystemID(system);
 		xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		xr.setEffectiveFromDate(effectiveFromDate);
-		xr.setSystemID((Systems) system);
-		xr.setEnterpriseID((Enterprise) enterprise);
+		xr.setSystemID(system);
+		xr.setEnterpriseID(enterprise);
 		xr.setActiveFlagID(activeFlag);
 		xr.setResourceItemDataType(resourceItemDataValue);
 		xr.persist();
 		
-			xr.createDefaultSecurity(system, identityToken);
+		xr.createDefaultSecurity(system, identityToken);
 		
-		IResourceType<?> resourceItemType = (IResourceType<?>) createType(identityResourceType, identityResourceType, system, identityToken);
-		
-		
-		xr.addResourceItemTypes(resourceItemType, null, Classifications.NoClassification.classificationName() , system, identityToken);
+		xr.addResourceItemTypes(identityResourceType, null, DefaultClassifications.NoClassification.toString(), system, identityToken);
 		
 		return xr;
 	}
 	
-	@Override
-	public IResourceItem<?> findByClassification(IResourceType<?> resourceType,
-	                                             IResourceItemClassification<?> classification,
-	                                             String value,
-	                                             ISystems<?> systems,
-	                                             UUID... identityToken)
-	{
-		return findByClassification(resourceType, classification.classificationName(), value, systems, identityToken);
-	}
 	
 	@Override
-	public IResourceItem<?> findByClassification(IResourceType<?> resourceType,
-	                                             String classification,
-	                                             String value,
-	                                             ISystems<?> systems,
-	                                             UUID... identityToken)
+	public IResourceItem<?, ?> findByClassification(String resourceType,
+	                                                String classification,
+	                                                String value,
+	                                                ISystems<?,?> systems,
+	                                                UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
 		ResourceItemXClassificationQueryBuilder builder = res.builder();
-
+		
 		Classification clazz = (Classification) classificationService.find(classification, systems, identityToken);
 		
 		builder.where(ResourceItemXClassification_.classificationID, Equals, clazz);
@@ -197,7 +170,7 @@ public class ResourceItemService
 				.join(ResourceItemXResourceItemType_.resourceItemTypeID, INNER);
 		
 		resourceTypesJoin.on(builder.getCriteriaBuilder()
-		                            .equal(resourceTypesJoin.get(ResourceItemType_.name), resourceType.classificationName()));
+		                            .equal(resourceTypesJoin.get(ResourceItemType_.name), resourceType));
 		
 		Optional<ResourceItemXClassification> exists = builder.get();
 		return exists.map(ResourceItemXClassification::getResourceItemID)
@@ -205,9 +178,9 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public IResourceItem<?> findByUUID(@CacheKey UUID uuid,
-	                                   @CacheKey ISystems<?> systems,
-	                                   @CacheKey UUID... identityToken)
+	public IResourceItem<?, ?> findByUUID(@CacheKey UUID uuid,
+	                                      @CacheKey ISystems<?,?> systems,
+	                                      @CacheKey UUID... identityToken)
 	{
 		ResourceItem res = new ResourceItem();
 		ResourceItemQueryBuilder builder = res.builder();
@@ -220,9 +193,9 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public IResourceItem<?> findByOriginalSourceUniqueID(@CacheKey String originalSourceUniqueID,
-	                                                     @CacheKey ISystems<?> systems,
-	                                                     @CacheKey UUID... identityToken)
+	public IResourceItem<?, ?> findByOriginalSourceUniqueID(@CacheKey String originalSourceUniqueID,
+	                                                        @CacheKey ISystems<?,?> systems,
+	                                                        @CacheKey UUID... identityToken)
 	{
 		ResourceItem res = new ResourceItem();
 		ResourceItemQueryBuilder builder = res.builder();
@@ -234,43 +207,35 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public byte[] getDataForResourceItemValue(IRelationshipValue<IResourceItem<?>, IResourceData<?>, ?> data)
+	public byte[] getDataForResourceItemValue(IRelationshipValue<IResourceItem<?, ?>, IResourceData<?, ?>, ?> data)
 	{
 		ResourceItemData d = (ResourceItemData) data.getSecondary();
 		return d.getResourceItemData();
 	}
 	
 	@Override
-	@CacheResult(cacheName = "FindResourceItemType")
-	public IResourceItemType<?> findResourceItemType(@CacheKey IResourceType<?> type, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
-	{
-		return findResourceItemType(type.classificationName(), system, identityToken);
-	}
-	
-	
-	@Override
 	@CacheResult(cacheName = "FindResourceItemTypeString")
-	public IResourceItemType<?> findResourceItemType(@CacheKey String type, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public IResourceItemType<?, ?> findResourceItemType(@CacheKey String type, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
 		Optional<ResourceItemType> exists = xr.builder()
 		                                      .withEnterprise(enterprise)
 		                                      .withName(type)
 		                                      .inActiveRange(enterprise, identityToken)
-		                                      .canRead(system, identityToken)
+		                                      //       .canRead(system, identityToken)
 		                                      .inDateRange()
 		                                      .get();
 		return exists.orElseThrow();
 	}
 	
 	@Override
-	public List<IResourceItem<?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken)
+	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?,?> systems, @CacheKey UUID... identityToken)
 	{
-		return findByResourceItemType(type,null, systems, identityToken);
+		return findByResourceItemType(type, null, systems, identityToken);
 	}
 	
 	@Override
-	public List<IResourceItem<?>> findByResourceItemType(@CacheKey String type,String value, @CacheKey ISystems<?> systems, @CacheKey UUID... identityToken)
+	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, String value, @CacheKey ISystems<?,?> systems, @CacheKey UUID... identityToken)
 	{
 		return new ResourceItemXResourceItemType().builder()
 		                                          .withEnterprise(enterprise)

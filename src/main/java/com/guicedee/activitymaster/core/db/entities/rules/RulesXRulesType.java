@@ -4,18 +4,11 @@ package com.guicedee.activitymaster.core.db.entities.rules;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesXRulesTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IRules;
-import com.guicedee.activitymaster.core.services.dto.IRulesType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -40,9 +33,7 @@ public class RulesXRulesType
 		RulesType,
 		RulesXRulesType,
 		RulesXRulesTypeQueryBuilder,
-		java.util.UUID,
-		RulesXRulesTypeSecurityToken,
-		IRules<?>, IRulesType<?>>
+		java.util.UUID>
 {
 	
 	@Serial
@@ -77,13 +68,6 @@ public class RulesXRulesType
 	public RulesXRulesType(UUID rulesXRulesTypeID)
 	{
 		this.id = rulesXRulesTypeID;
-	}
-	
-	@Override
-	protected RulesXRulesTypeSecurityToken configureDefaultsForNewToken(RulesXRulesTypeSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	@Override
@@ -154,13 +138,13 @@ public class RulesXRulesType
 	}
 	
 	@Override
-	public IRules<?> getPrimary()
+	public Rules getPrimary()
 	{
 		return getRulesID();
 	}
 	
 	@Override
-	public IRulesType<?> getSecondary()
+	public RulesType getSecondary()
 	{
 		return getRulesTypeID();
 	}

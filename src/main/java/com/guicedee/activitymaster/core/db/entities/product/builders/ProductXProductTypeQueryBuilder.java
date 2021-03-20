@@ -1,13 +1,11 @@
 package com.guicedee.activitymaster.core.db.entities.product.builders;
 
 import com.google.common.base.Strings;
+import com.guicedee.activitymaster.client.services.IProductService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.product.*;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
-import com.guicedee.activitymaster.core.services.system.IProductService;
 import com.guicedee.guicedinjection.GuiceContext;
-import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
@@ -19,9 +17,7 @@ public class ProductXProductTypeQueryBuilder
 		ProductType,
 		ProductXProductTypeQueryBuilder,
 		ProductXProductType,
-		IProductTypeValue<?>,
-		java.util.UUID,
-		ProductXProductTypeSecurityToken>
+		java.util.UUID>
 {
 	@Override
 	public SingularAttribute<ProductXProductType, Product> getPrimaryAttribute()
@@ -36,7 +32,7 @@ public class ProductXProductTypeQueryBuilder
 	}
 	
 	@Override
-	public ProductXProductTypeQueryBuilder withType(String productTypeValue, ISystems<?> system, UUID... identityToken)
+	public ProductXProductTypeQueryBuilder withType(String productTypeValue, ISystems<?,?> system, UUID... identityToken)
 	{
 		if(!Strings.isNullOrEmpty(productTypeValue))
 		{

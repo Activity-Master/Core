@@ -2,15 +2,17 @@ package com.guicedee.activitymaster.core.systems;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.party.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.types.*;
 import com.guicedee.activitymaster.core.InvolvedPartyService;
 import com.guicedee.activitymaster.core.SystemsService;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.types.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 
@@ -18,8 +20,10 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.guicedee.activitymaster.client.services.IActiveFlagService.*;
+import static com.guicedee.activitymaster.client.services.IEnterpriseService.*;
+import static com.guicedee.activitymaster.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
-import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
 
 
 public class SystemsSystem
@@ -32,16 +36,23 @@ public class SystemsSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		systemsService.get()
+		              .create(enterprise, EnterpriseSystemName, "The system for handling enterprises");
+		
+		systemsService.get()
+		              .create(enterprise, ActivateFlagSystemName, "The system for the active flag management");
+		
+		systemsService.get()
 		              .create(enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master");
+		
 		systemsService.get()
 		              .create(enterprise, SystemsService.ActivityMasterWebSystemName, "The Web Administration Application for Activity Master", "Activity Master Web");
 	}
 	
 	@Override
-	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 	
 	}
@@ -52,15 +63,15 @@ public class SystemsSystem
 		return 2;
 	}
 	
-	public IInvolvedParty<?> createInvolvedPartyForNewSystem(ISystems<?> newSystem, UUID... identityToken)
+	public IInvolvedParty<?,?> createInvolvedPartyForNewSystem(ISystems<?,?> system, UUID... identityToken)
 	{
-		ISystems<?> activityMasterSystem = systemsService.get()
-		                                                 .getActivityMaster(newSystem.getEnterpriseID());
+		ISystems<?,?> activityMasterSystem = systemsService.get()
+		                                                 .getActivityMaster(system.getEnterpriseID());
 		UUID activityMasterSystemUUID = systemsService.get()
 		                                              .getSecurityIdentityToken(activityMasterSystem);
 		
 		UUID newSystemUUID = systemsService.get()
-		                                   .getSecurityIdentityToken(newSystem, activityMasterSystemUUID);
+		                                   .getSecurityIdentityToken(system, activityMasterSystemUUID);
 		if (newSystemUUID == null)
 		{
 			throw new ActivityMasterException("No UUID for newly created system");
@@ -68,11 +79,16 @@ public class SystemsSystem
 		InvolvedPartyService ipService = GuiceContext.get(InvolvedPartyService.class);
 		try
 		{
-			IInvolvedParty<?> ip = ipService.create(newSystem, Pair.of(IdentificationTypes.IdentificationTypeUUID, newSystemUUID.toString()), false, activityMasterSystemUUID);
-			ip.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeSystemID, NoClassification.name(), newSystem.getId()
-			                                                                                                                  .toString(), newSystem, activityMasterSystemUUID);
-			ip.addOrReuseType(IPTypes.TypeSystem, NoClassification.name(), newSystemUUID.toString(), newSystem, activityMasterSystemUUID);
-			ip.addOrReuseNameType(NameTypes.PreferredNameType, NoClassification.name(), newSystem.getName(), newSystem, activityMasterSystemUUID);
+			IInvolvedParty<?,?> ip = ipService.create(system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), newSystemUUID.toString()), false, activityMasterSystemUUID);
+			
+			IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = ipService.findInvolvedPartyIdentificationType(IdentificationTypes.IdentificationTypeSystemID.toString(), system, identityToken);
+			ip.addOrReuseInvolvedPartyIdentificationType( NoClassification.toString(), involvedPartyIdentificationType, system.getId()
+			                                                                                                                  .toString(), system, activityMasterSystemUUID);
+			
+			IInvolvedPartyType<?, ?> ipType = ipService.findType(IPTypes.TypeSystem.toString(), system, identityToken);
+			ip.addOrReuseInvolvedPartyType(NoClassification.toString(),ipType, newSystemUUID.toString(), system, activityMasterSystemUUID);
+			IInvolvedPartyNameType<?, ?> nameType = ipService.findInvolvedPartyNameType(NameTypes.PreferredNameType.toString(), system, identityToken);
+			ip.addOrReuseInvolvedPartyNameType(NoClassification.toString(),nameType,  system.getName(), system, activityMasterSystemUUID);
 			return ip;
 		}
 		catch (Exception e)

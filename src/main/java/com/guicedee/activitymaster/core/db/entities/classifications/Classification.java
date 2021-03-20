@@ -1,15 +1,16 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.db.hierarchies.ClassificationHierarchyView;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +30,7 @@ import static jakarta.persistence.FetchType.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Classification",
        name = "Classification")
@@ -44,13 +45,8 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Classification
-		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.util.UUID, ClassificationSecurityToken>
-		implements IContainsHierarchy<Classification, ClassificationXClassification, ClassificationHierarchyView,IClassification<?>, IClassification<?>>,
-		           IContainsResourceItems<Classification, ResourceItem, ClassificationXResourceItem, IClassificationValue<?>, IClassification<?>, IResourceItem<?>, Classification>,
-		           IContainsClassifications<Classification, Classification, ClassificationXClassification, IClassificationValue<?>, IClassification<?>, IClassification<?>, Classification>,
-		           IActivityMasterEntity<Classification>,
-		           IClassification<Classification>,
-		           IClassificationValue
+		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.util.UUID>
+		implements IClassification<Classification, ClassificationQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -116,30 +112,32 @@ public class Classification
 		this.classificationSequenceNumber = classificationSequenceNumber;
 	}
 	
-	@Override
-	protected ClassificationSecurityToken configureDefaultsForNewToken(ClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		ClassificationSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
-		token.setBase(this);
-		return token;
-	}
-	
-	public void configureForClassification(ClassificationXClassification classificationLink, ISystems<?> system)
+	public void configureForClassification(ClassificationXClassification classificationLink, ISystems<?,?> system)
 	{
 		Classification hierarchyClassification = (Classification) GuiceContext.get(ClassificationService.class)
 		                                                                      .getHierarchyType(system);
-		Classification incomingClassification = classificationLink.getClassificationID();
+		Classification incomingClassification = (Classification) classificationLink.getClassificationID();
 		
 		classificationLink.setChildClassificationID(incomingClassification);
 		classificationLink.setParentClassificationID(this);
 		classificationLink.setClassificationID(hierarchyClassification);
 	}
 	
-	@Override
-	public void configureNewHierarchyItem(ClassificationXClassification newLink, IClassification<?> parent, IClassification<?> child, String value)
+	//@Override
+	public void configureNewHierarchyItem(ClassificationXClassification newLink, IClassification<?,?> parent, IClassification<?,?> child, String value)
 	{
 		newLink.setParentClassificationID(this);
 		newLink.setChildClassificationID((Classification) child);
+		newLink.setEnterpriseID(getEnterpriseID());
+	}
+	
+	
+	@Override
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Classification, Classification, UUID> newLink, Classification parent, Classification child, String value)
+	{
+		ClassificationXClassification c = (ClassificationXClassification) newLink;
+		c.setParentClassificationID(this);
+		c.setChildClassificationID(child);
 		newLink.setEnterpriseID(getEnterpriseID());
 	}
 	
@@ -217,20 +215,12 @@ public class Classification
 		return this;
 	}
 	
-	@Override
-	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
+	//@Override
+	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?,?> classificationValue, String value, ISystems<?,?> system)
 	{
 		linkTable.setClassificationID(this);
 		linkTable.setResourceItemID(secondary);
 	}
-	
-	@Override
-	public void configureResourceItemAddable(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setClassificationID(this);
-		linkTable.setResourceItemID(secondary);
-	}
-	
 	
 	@Override
 	public Classification setName(String name)
@@ -247,21 +237,40 @@ public class Classification
 		return this;
 	}
 	
-	@Override
+	//@Override
 	public String name()
 	{
 		return name;
 	}
 	
-	@Override
+	//@Override
 	public String classificationDescription()
 	{
 		return description;
 	}
 	
-	@Override
-	public IClassificationDataConceptValue<?> concept()
+	//@Override
+	public EnterpriseClassificationDataConcepts concept()
 	{
-		return concept;
+		return EnterpriseClassificationDataConcepts.valueOf(concept.getName());
+	}
+	
+	
+	@Override
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Classification primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+		ClassificationXResourceItem x = (ClassificationXResourceItem) linkTable;
+		x.setClassificationID(primary);
+		x.setResourceItemID((ResourceItem) secondary);
+		x.setClassificationID(classificationValue);
+		x.setValue(value);
+		
+	}
+	
+	@Override
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?, ?> system)
+	{
+		ClassificationXClassification c = (ClassificationXClassification) linkTable;
+		((ClassificationXClassification) linkTable).setParentClassificationID(this);
 	}
 }

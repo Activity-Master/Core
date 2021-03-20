@@ -1,22 +1,22 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
+import com.guicedee.activitymaster.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.capabilities.contains.*;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
- * @param <S>
  * @param <J>
- * @param <S>
  *
  * @author Marc Magon
  * @version 1.0
@@ -24,10 +24,14 @@ import java.io.Serializable;
  */
 @MappedSuperclass
 
-public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
-		Q extends QueryBuilderSCD<Q, J, I, S>,
-		I extends Serializable, S extends WarehouseSecurityTable>
-		extends WarehouseCoreTable<J, Q, I, S>
+public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I>,
+		Q extends QueryBuilderSCD<Q, J, I>,
+		I extends java.util.UUID>
+		extends WarehouseCoreTable<J, Q, I>
+		implements IWarehouseTable<J,Q,I>,
+		           IContainsActiveFlags<J>,
+		           IContainsEnterprise<J>,
+		           IContainsSystem<J>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -54,11 +58,6 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 	private Systems systemID;
 	
 	
-	public WarehouseSCDTable(IEnterprise<?> enterprise)
-	{
-		setEnterpriseID((Enterprise) enterprise);
-	}
-	
 	public WarehouseSCDTable()
 	{
 	}
@@ -66,8 +65,8 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 	protected J configureDefaultsSystemValues(Systems requestingSystem)
 	{
 		setSystemID(requestingSystem);
-		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
-		                                         .getActiveFlag(requestingSystem.getEnterpriseID()));
+		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		                            .getActiveFlag(requestingSystem.getEnterpriseID()));
 		setEnterpriseID(requestingSystem.getEnterpriseID());
 		return (J) this;
 	}
@@ -87,33 +86,21 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I, S>,
 		return this.systemID;
 	}
 	
-	public J setActiveFlagID(IActiveFlag<?> activeFlagID)
+	public J setActiveFlagID(IActiveFlag<?,?> activeFlagID)
 	{
 		this.activeFlagID = (ActiveFlag) activeFlagID;
 		return (J) this;
 	}
 	
-	public J setActiveFlagID(ActiveFlag activeFlagID)
-	{
-		this.activeFlagID = activeFlagID;
-		return (J) this;
-	}
-	
-	public J setEnterpriseID(Enterprise enterpriseID)
-	{
-		this.enterpriseID = enterpriseID;
-		return (J) this;
-	}
-	
-	public J setEnterpriseID(IEnterprise<?> enterpriseID)
+	public J setEnterpriseID(IEnterprise<?,?> enterpriseID)
 	{
 		this.enterpriseID = (Enterprise) enterpriseID;
 		return (J) this;
 	}
 	
-	public J setSystemID(Systems systemID)
+	public J setSystemID(ISystems<?,?> systemID)
 	{
-		this.systemID = systemID;
+		this.systemID = (Systems) systemID;
 		return (J) this;
 	}
 }

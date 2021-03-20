@@ -1,10 +1,8 @@
 package com.guicedee.activitymaster.core.db.entities.events.builders;
 
+import com.guicedee.activitymaster.client.services.builders.warehouse.events.IEventQueryBuilder;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
-import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContainsClassificationsQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.events.Event;
-import com.guicedee.activitymaster.core.db.entities.events.EventSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.events.EventXClassification;
 import com.guicedee.activitymaster.core.services.system.ITimeService;
 import com.guicedee.activitymaster.core.services.system.ITimeSystem;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -13,8 +11,8 @@ import java.sql.Date;
 import java.time.ZoneOffset;
 
 public class EventQueryBuilder
-		extends QueryBuilderTable<EventQueryBuilder, Event, java.util.UUID, EventSecurityToken>
-		implements IContainsClassificationsQueryBuilder<EventQueryBuilder, Event, java.util.UUID, EventXClassification>
+		extends QueryBuilderTable<EventQueryBuilder, Event, java.util.UUID>
+		implements IEventQueryBuilder<EventQueryBuilder,Event>
 {
 
 	@Override

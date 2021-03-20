@@ -4,17 +4,12 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification;
-import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassificationSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.enterprise.EnterpriseXClassification_;
-
-import jakarta.persistence.metamodel.Attribute;
+import com.guicedee.activitymaster.core.db.entities.enterprise.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EnterpriseXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Enterprise, Classification, EnterpriseXClassificationQueryBuilder,
-						                                              EnterpriseXClassification, java.util.UUID, EnterpriseXClassificationSecurityToken>
+						                                              EnterpriseXClassification, java.util.UUID>
 {
 	@Override
 	public  SingularAttribute<WarehouseSCDTable, Enterprise> getPrimaryAttribute()

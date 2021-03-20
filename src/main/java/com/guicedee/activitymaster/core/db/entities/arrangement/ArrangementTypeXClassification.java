@@ -9,19 +9,12 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementTypeXClassificationQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.services.dto.IArrangementType;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -47,9 +40,7 @@ public class ArrangementTypeXClassification
 		Classification,
 		ArrangementTypeXClassification,
 		ArrangementTypeXClassificationQueryBuilder,
-		java.util.UUID,
-		ArrangementTypeXClassificationSecurityToken,
-		IArrangementType<?>, IClassification<?>>
+		java.util.UUID>
 		implements Serializable
 {
 	
@@ -83,12 +74,6 @@ public class ArrangementTypeXClassification
 		this.id = arrangementXClassificationID;
 	}
 	
-	@Override
-	protected ArrangementTypeXClassificationSecurityToken configureDefaultsForNewToken(ArrangementTypeXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
 	
 	@Override
 	public java.util.UUID getId()
@@ -147,13 +132,13 @@ public class ArrangementTypeXClassification
 	}
 	
 	@Override
-	public IArrangementType<?> getPrimary()
+	public ArrangementType getPrimary()
 	{
 		return getArrangementTypeID();
 	}
 	
 	@Override
-	public IClassification<?> getSecondary()
+	public Classification getSecondary()
 	{
 		return getClassificationID();
 	}

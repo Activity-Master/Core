@@ -1,15 +1,11 @@
 package com.guicedee.activitymaster.core.db.entities.events.builders;
 
 import com.entityassist.enumerations.Operand;
+import com.guicedee.activitymaster.client.services.IEventService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.events.*;
-import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IEventService;
 import com.guicedee.guicedinjection.GuiceContext;
-
-import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
@@ -19,9 +15,7 @@ public class EventXEventTypeQueryBuilder
 		EventType,
 		EventXEventTypeQueryBuilder,
 		EventXEventType,
-		IEventClassification<?>,
-		java.util.UUID,
-		EventXEventTypeSecurityToken>
+		java.util.UUID>
 {
 	@Override
 	public SingularAttribute<EventXEventType, Event> getPrimaryAttribute()
@@ -36,7 +30,7 @@ public class EventXEventTypeQueryBuilder
 	}
 	
 	@Override
-	public EventXEventTypeQueryBuilder withType(String typeValue, ISystems<?> system, UUID... identityToken)
+	public EventXEventTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

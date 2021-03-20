@@ -2,21 +2,21 @@ package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
+import com.guicedee.activitymaster.client.services.IEventService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.events.IEvent;
+import com.guicedee.activitymaster.client.services.builders.warehouse.events.IEventType;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.events.EventThread;
 import com.guicedee.activitymaster.core.db.entities.events.Event;
 import com.guicedee.activitymaster.core.db.entities.events.EventType;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.classifications.events.EventThread;
-import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IEventTypeValue;
-import com.guicedee.activitymaster.core.services.system.IEventService;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
 import java.util.UUID;
 
-import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
+import static com.guicedee.activitymaster.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 
@@ -25,33 +25,33 @@ public class EventsService
 {
 	@Inject
 	@Named("Active")
-	private IActiveFlag<?> activeFlag;
+	private IActiveFlag<?,?> activeFlag;
 	
 	@Inject
-	private IEnterprise<?> enterprise;
+	private IEnterprise<?,?> enterprise;
 	
 	@Override
-	public IEvent<?> createEvent(IEventClassification<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
+	public IEvent<?,?> createEvent(String eventType, ISystems<?,?> originatingSystem, UUID... identityToken)
 	{
 		Event event = new Event();
-		event.setEnterpriseID((Enterprise) enterprise);
-		event.setSystemID((Systems) originatingSystem);
-		event.setOriginalSourceSystemID((Systems) originatingSystem);
+		event.setEnterpriseID(enterprise);
+		event.setSystemID(originatingSystem);
+		event.setOriginalSourceSystemID(originatingSystem);
 		event.setActiveFlagID(activeFlag);
 		event.persist();
 		event.createDefaultSecurity(originatingSystem, identityToken);
-		event.addEventType(NoClassification, eventType, STRING_EMPTY, originatingSystem, identityToken);
+		event.addEventTypes(NoClassification, eventType, STRING_EMPTY, originatingSystem, identityToken);
 		EventThread.event.set(event);
 		return event;
 	}
 	
 	@Override
-	public IEventType<?> createEventType(IEventTypeValue<?> eventType, ISystems<?> originatingSystem, UUID... identityToken)
+	public IEventType<?,?> createEventType(String eventType, ISystems<?,?> originatingSystem, UUID... identityToken)
 	{
 		EventType et = new EventType();
 		
 		boolean exists = et.builder()
-		                   .withName(eventType.name())
+		                   .withName(eventType)
 		                   .withEnterprise(enterprise)
 		                   .inActiveRange(enterprise)
 		                   .inDateRange()
@@ -59,12 +59,12 @@ public class EventsService
 		
 		if (!exists)
 		{
-			et.setName(eventType.name());
-			et.setDescription(eventType.classificationValue());
-			et.setSystemID((Systems) originatingSystem);
-			et.setEnterpriseID((Enterprise) enterprise);
+			et.setName(eventType);
+			et.setDescription(eventType);
+			et.setSystemID(originatingSystem);
+			et.setEnterpriseID(enterprise);
 			et.setActiveFlagID(activeFlag);
-			et.setOriginalSourceSystemID((Systems) originatingSystem);
+			et.setOriginalSourceSystemID(originatingSystem);
 			et.persist();
 				et.createDefaultSecurity(originatingSystem, identityToken);
 			
@@ -77,29 +77,15 @@ public class EventsService
 	}
 	
 	@Override
-	@CacheResult(cacheName = "EventTypes")
-	public IEventType<?> findEventType(@CacheKey IEventTypeValue<?> eventType, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
-	{
-		return new EventType().builder()
-		                      .withName(eventType.name())
-		                      .withEnterprise(enterprise)
-		                      .inActiveRange(enterprise, identityToken)
-		                      .inDateRange()
-		                      .canRead(system, identityToken)
-		                      .get()
-		                      .orElseThrow();
-	}
-	
-	@Override
 	@CacheResult(cacheName = "EventTypesStrings")
-	public IEventType<?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public IEventType<?,?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		return new EventType().builder()
 		                      .withName(eventType)
 		                      .withEnterprise(enterprise)
 		                      .inActiveRange(enterprise, identityToken)
 		                      .inDateRange()
-		                      .canRead(system, identityToken)
+		                    //  .canRead(system, identityToken)
 		                      .get()
 		                      .orElseThrow();
 	}

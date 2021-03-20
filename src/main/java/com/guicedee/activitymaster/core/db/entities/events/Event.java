@@ -1,28 +1,27 @@
 package com.guicedee.activitymaster.core.db.entities.events;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.address.IAddress;
+import com.guicedee.activitymaster.client.services.builders.warehouse.arrangements.IArrangement;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.events.IEvent;
+import com.guicedee.activitymaster.client.services.builders.warehouse.events.IEventType;
+import com.guicedee.activitymaster.client.services.builders.warehouse.geography.IGeography;
+import com.guicedee.activitymaster.client.services.builders.warehouse.party.IInvolvedParty;
+import com.guicedee.activitymaster.client.services.builders.warehouse.products.IProduct;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.rules.IRules;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
-import com.guicedee.activitymaster.core.db.entities.address.Address;
-import com.guicedee.activitymaster.core.db.entities.arrangement.Arrangement;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.geography.Geography;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.db.entities.rules.Rules;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
-import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -46,17 +45,8 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Event
-		extends WarehouseTable<Event, EventQueryBuilder, java.util.UUID, EventSecurityToken>
-		implements IContainsClassifications<Event, Classification, EventXClassification, IEventClassification<?>, IEvent<?>, IClassification<?>, Event>,
-		           IContainsGeographies<Event, Geography, EventXGeography>,
-		           IContainsResourceItems<Event, ResourceItem, EventXResourceItem, IClassificationValue<?>, IEvent<?>, IResourceItem<?>, Event>,
-		           IContainsInvolvedParties<Event, InvolvedParty, EventXInvolvedParty, IClassificationValue<?>, IEvent<?>, IInvolvedParty<?>, Event>,
-		           IContainsAddresses<Event, Address, EventXAddress, IAddressClassification<?>, IEvent<?>, IAddress<?>, Event>,
-		           IContainsEventTypes<Event, EventType, EventXEventType, IClassificationValue<?>, IEventClassification<?>, IEvent<?>, IEventType<?>, Event>,
-		           IActivityMasterEntity<Event>,
-		           IEvent<Event>,
-		           IContainsRules<Event, Rules,EventXRules,IClassification<?>,IEvent<?>,IRules<?>>,
-		           IContainsArrangements<Event, Arrangement, EventXArrangement,IArrangement<?>,IEvent<?>,IArrangement<?>,Event>
+		extends WarehouseTable<Event, EventQueryBuilder, java.util.UUID>
+		implements IEvent<Event,EventQueryBuilder>
 {
 	
 	@Serial
@@ -132,54 +122,6 @@ public class Event
 	public Event(UUID eventID)
 	{
 		this.id = eventID;
-	}
-	
-	@Override
-	public void configureAddressLinkValue(EventXAddress linkTable, Event primary, Address secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setEventID(primary);
-		linkTable.setAddressID(secondary);
-	}
-	
-	@Override
-	protected EventSecurityToken configureDefaultsForNewToken(EventSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
-	@Override
-	public void configureForClassification(EventXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setEventID(this);
-	}
-	
-	@Override
-	public void setMyGeographyLinkValue(EventXGeography classificationLink, Geography geography, IEnterprise<?> enterprise)
-	{
-		classificationLink.setEventID(this);
-		classificationLink.setGeographyID(geography);
-	}
-	
-	@Override
-	public void configureResourceItemLinkValue(EventXResourceItem linkTable, Event primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setEventID(this);
-		linkTable.setResourceItemID(secondary);
-	}
-	
-	@Override
-	public void configureResourceItemAddable(EventXResourceItem linkTable, Event primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setEventID(this);
-		linkTable.setResourceItemID(secondary);
-	}
-	
-	@Override
-	public void configureEventTypeLinkValue(EventXEventType linkTable, Event primary, EventType secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setEventID(primary);
-		linkTable.setEventTypeID(secondary);
 	}
 	
 	public int getDayID()
@@ -355,37 +297,56 @@ public class Event
 	}
 	
 	@Override
-	public void setMyInvolvedPartyLinkValue(EventXInvolvedParty classificationLink, Event first, InvolvedParty involvedParty, ISystems<?> enterprise)
+	public void configureAddressLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IAddress<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-		classificationLink.setEventID(first);
-		classificationLink.setInvolvedPartyID(involvedParty);
+		EventXAddress e = (EventXAddress) linkTable;
 	}
 	
 	@Override
-	public void configureAddable(EventXInvolvedParty linkTable, Event primary, InvolvedParty secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Event primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-		linkTable.setEventID(primary);
-		linkTable.setInvolvedPartyID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
-		
+	
 	}
 	
 	@Override
-	public void configureAddableRule(EventXRules linkTable, Event primary, Rules secondary, IClassification<?> classificationValue, String value, ISystems<?> enterprise)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
 	{
-		linkTable.setEventID(primary);
-		linkTable.setRulesID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
+	
 	}
 	
 	@Override
-	public void configureArrangementType(EventXArrangement linkTable, Event primary, Arrangement secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
+	public void configureEventTypeLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IEventType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
 	{
-		linkTable.setEventID(primary);
-		linkTable.setArrangementID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
+	
+	}
+	
+	@Override
+	public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Event primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+	
+	}
+	
+	@Override
+	public void configureInvolvedPartyAddable(IWarehouseRelationshipTable linkTable, Event primary, IInvolvedParty<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+	
+	}
+	
+	@Override
+	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+	
+	}
+	
+	@Override
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Event primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+	
+	}
+	
+	@Override
+	public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Event primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+	
 	}
 }

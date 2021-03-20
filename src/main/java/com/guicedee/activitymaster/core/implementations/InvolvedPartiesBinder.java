@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.core.implementations;
 
 import com.google.inject.*;
+import com.guicedee.activitymaster.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.core.InvolvedPartyService;
-import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 public class InvolvedPartiesBinder extends PrivateModule implements IGuiceModule<InvolvedPartiesBinder>

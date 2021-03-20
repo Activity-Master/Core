@@ -4,11 +4,6 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventXProductQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IEvent;
-import com.guicedee.activitymaster.core.services.dto.IProduct;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -40,9 +35,7 @@ public class EventXProduct
 				                                                Product,
 				                                                EventXProduct,
 				                                                EventXProductQueryBuilder,
-				                                                java.util.UUID,
-				                                                EventXProductSecurityToken,
-				                                                IEvent<?>, IProduct<?>>
+				                                                java.util.UUID>
 {
 
 	@Serial
@@ -80,13 +73,7 @@ public class EventXProduct
 	{
 		this.id = eventXProductID;
 	}
-
-	@Override
-	protected EventXProductSecurityToken configureDefaultsForNewToken(EventXProductSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
@@ -132,13 +119,13 @@ public class EventXProduct
 	}
 
 	@Override
-	public IEvent<?> getPrimary()
+	public Event getPrimary()
 	{
 		return getEventID();
 	}
 
 	@Override
-	public IProduct<?> getSecondary()
+	public Product getSecondary()
 	{
 		return getProductID();
 	}

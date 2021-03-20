@@ -1,28 +1,30 @@
 package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
+import com.guicedee.activitymaster.client.implementations.Passwords;
+import com.guicedee.activitymaster.client.services.*;
+import com.guicedee.activitymaster.client.services.administration.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.party.IInvolvedParty;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.EnterpriseClassifications;
+import com.guicedee.activitymaster.client.services.classifications.SecurityTokenClassifications;
+import com.guicedee.activitymaster.client.services.classifications.types.IPTypes;
+import com.guicedee.activitymaster.client.services.classifications.types.IdentificationTypes;
+import com.guicedee.activitymaster.client.services.events.IOnSystemInstall;
+import com.guicedee.activitymaster.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.*;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.services.*;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
-import com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
+import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.exceptions.EnterpriseException;
-import com.guicedee.activitymaster.core.services.security.Passwords;
-import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
-import com.guicedee.activitymaster.core.services.types.IPTypes;
-import com.guicedee.activitymaster.core.services.types.IdentificationTypes;
 import com.guicedee.activitymaster.core.systems.SystemsSystem;
 import com.guicedee.activitymaster.core.updates.DatedUpdate;
-import com.guicedee.activitymaster.core.updates.ISystemUpdate;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedinjection.json.LocalDateDeserializer;
 import com.guicedee.guicedinjection.json.LocalDateSerializer;
 import com.guicedee.guicedinjection.pairing.Pair;
@@ -32,15 +34,18 @@ import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
-import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
-import static com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications.*;
-import static com.guicedee.activitymaster.core.services.types.NameTypes.*;
+import static com.guicedee.activitymaster.client.services.classifications.DefaultClassifications.*;
+import static com.guicedee.activitymaster.client.services.classifications.EnterpriseClassifications.*;
+import static com.guicedee.activitymaster.client.services.classifications.types.NameTypes.*;
+import static com.guicedee.activitymaster.core.services.ActivityMasterSystemsManager.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 public class EnterpriseService
@@ -74,19 +79,15 @@ public class EnterpriseService
 	}
 	
 	@Override
-	public void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void loadUpdates(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = getUpdates(enterprise);
 		
-		log.config("There are " + availableUpdates.size() + " required updates");
+		log.config(MessageFormat.format("There are {0} required updates", availableUpdates.size()));
 		
 		progressMonitor.setCurrentTask(0);
 		int tasks = 0;
-		List<LocalDate> toSort = new ArrayList<>();
-		for (LocalDate a : availableUpdates.keySet())
-		{
-			toSort.add(a);
-		}
+		List<LocalDate> toSort = new ArrayList<>(availableUpdates.keySet());
 		toSort.sort(null);
 		for (LocalDate a : toSort)
 		{
@@ -94,35 +95,59 @@ public class EnterpriseService
 			tasks += v.getAnnotation(DatedUpdate.class)
 			          .taskCount() + 1;
 		}
-		ISystems<?> system = get(ISystemsService.class).getActivityMaster(enterprise);
+		@SuppressWarnings({"unchecked"})
+		ISystems<?,?> system = get(ISystemsService.class).getActivityMaster(enterprise);
+		
+		@SuppressWarnings({"rawtypes", "unchecked"})
+		Set<IOnSystemUpdate> systemUpdateEventHandlers = IDefaultService.loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
 		
 		progressMonitor.setTotalTasks(tasks);
 		availableUpdates.forEach((key, value) -> {
-			logProgress("Update System", "Starting updates for " + value.getSimpleName(), progressMonitor);
-			ISystemUpdate o = GuiceContext.get(value);
-			performUpdate(o, enterprise, progressMonitor);
+			try
+			{
+				logProgress("Update System", "Starting updates for " + value.getSimpleName(), progressMonitor);
+				for (IOnSystemUpdate<?> systemUpdateEventHandler : systemUpdateEventHandlers)
+				{
+					systemUpdateEventHandler.onSystemUpdateStart(value);
+				}
+				ISystemUpdate o = GuiceContext.get(value);
+				performUpdate(o, enterprise, progressMonitor);
+				for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
+				{
+					a.onSystemUpdateEnd(value);
+				}
+			}catch (Throwable T)
+			{
+				log.log(Level.SEVERE,"Unable to perform update",T);
+				for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
+				{
+					a.onSystemUpdateFail(value);
+				}
+			}
 		});
-		enterprise.addOrUpdate(EnterpriseClassifications.LastUpdateDate, DateTimeFormatter.ofPattern("yyyy/MM/dd")
+		enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
 		                                                                                  .format(LocalDate.now()), system);
 		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(LocalDate.now()), progressMonitor);
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
-	private void performUpdate(ISystemUpdate o, IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void performUpdate(ISystemUpdate o, IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		ISystems<?> system = get(ISystemsService.class).getActivityMaster(enterprise);
+		@SuppressWarnings({ "unchecked"})
+		ISystems<?,?> system = get(ISystemsService.class).getActivityMaster(enterprise);
 		o.update(enterprise, progressMonitor);
-		enterprise.add(UpdateClass, o.getClass()
+		enterprise.addClassification(UpdateClass.toString(), o.getClass()
 		                             .getCanonicalName(), system);
 	}
 	
 	@Override
-	public Set<String> getEnterpriseAppliedUpdates(IEnterprise<?> enterprise)
+	public Set<String> getEnterpriseAppliedUpdates(IEnterprise<?,?> enterprise)
 	{
 		Set<String> set = new LinkedHashSet<>();
-		ISystems<?> system = get(ISystemsService.class).getActivityMaster(enterprise);
-		List<IRelationshipValue<IEnterprise<?>, IClassification<?>, ?>> classificationsAll = enterprise.findClassificationsAll(UpdateClass, system);
-		for (IRelationshipValue<IEnterprise<?>, IClassification<?>, ?> rel : classificationsAll)
+		@SuppressWarnings({"unchecked"})
+		ISystems<?,?> system = get(ISystemsService.class).getActivityMaster(enterprise);
+		List<? extends IRelationshipValue<?, IClassification<?, ?>, ?>> classificationsAll = enterprise.findClassifications(UpdateClass.toString(), system);
+		for (IRelationshipValue<?, IClassification<?, ?>, ?> rel : classificationsAll)
 		{
 			set.add(rel.getValue());
 		}
@@ -130,7 +155,7 @@ public class EnterpriseService
 	}
 	
 	@Override
-	public Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?> enterprise)
+	public Map<LocalDate, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?,?> enterprise)
 	{
 		Map<LocalDate, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
 		for (ClassInfo classInfo : GuiceContext.instance()
@@ -193,7 +218,7 @@ public class EnterpriseService
 	
 	@Override
 	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
-	public List<IEnterprise<?>> findEnterprisesWithClassification(@CacheKey Classification classification)
+	public List<IEnterprise> findEnterprisesWithClassification(@CacheKey IClassification<?,?> classification)
 	{
 		List<UUID> classy = new EnterpriseXClassification().builder()
 		                                                   .withClassification(classification)
@@ -208,17 +233,17 @@ public class EnterpriseService
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public Optional<IEnterprise<?>> findEnterprise(IEnterpriseName<?> name)
+	public Optional<IEnterprise<?,?>> findEnterprise(String name)
 	{
 		return (Optional) new Enterprise().builder()
-		                                  .withName(name.classificationName())
+		                                  .withName(name)
 		                                  .inDateRange()
 		                                  .get();
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
-	public IEnterprise<?> getEnterprise(@CacheKey String name)
+	public IEnterprise<?,?> getEnterprise(@CacheKey String name)
 	{
 		return new Enterprise().builder()
 		                       .withName(name)
@@ -236,23 +261,8 @@ public class EnterpriseService
 		                       .getCount() > 0;
 	}
 	
-	/**
-	 * Gets an enterprise or throws an exception.
-	 * <p>
-	 * Result is cached
-	 *
-	 * @param name the name of the enterprise
-	 * @return The enterprise
-	 */
 	@Override
-	@CacheResult(cacheName = "GetEnterpriseByEnterpriseName")
-	public IEnterprise<?> getEnterprise(@CacheKey IEnterpriseName<?> name)
-	{
-		return getEnterprise(name.classificationName());
-	}
-	
-	@Override
-	public Set<IEnterprise<?>> getIEnterprises()
+	public Set<IEnterprise> getIEnterprises()
 	{
 		return new TreeSet<>(new Enterprise().builder()
 		                                     .inDateRange()
@@ -261,17 +271,17 @@ public class EnterpriseService
 	
 	@CacheResult
 	@Override
-	public IEnterprise<?> getIEnterpriseFromName(@CacheKey IEnterpriseName<?> enterprise)
+	public IEnterprise<?,?> getIEnterpriseFromName(@CacheKey String enterprise)
 	{
 		return new Enterprise().builder()
-		                       .withName(enterprise.classificationName())
+		                       .withName(enterprise)
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Enterprise for the given name"));
 	}
 	
 	@CacheResult
 	@Override
-	public IEnterprise<?> getIEnterpriseFromID(@CacheKey UUID enterprise)
+	public IEnterprise<?,?> getIEnterpriseFromID(@CacheKey UUID enterprise)
 	{
 		return new Enterprise().builder()
 		                       .find(enterprise)
@@ -280,14 +290,14 @@ public class EnterpriseService
 	}
 	
 	@Override
-	public IEnterprise<?> startNewEnterprise(IEnterpriseName<?> enterpriseName,
+	public IEnterprise<?,?> startNewEnterprise(String enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, IActivityMasterProgressMonitor progressMonitor)
 	{
-		return startNewEnterprise(enterpriseName.classificationName(), adminUserName, adminPassword, null, progressMonitor);
+		return startNewEnterprise(enterpriseName, adminUserName, adminPassword, null, progressMonitor);
 	}
 	
 	@Override
-	public IEnterprise<?> startNewEnterprise(String enterpriseName,
+	public IEnterprise<?,?> startNewEnterprise(String enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier, IActivityMasterProgressMonitor progressMonitor)
 	{
 		get(ActivityMasterConfiguration.class)
@@ -304,8 +314,9 @@ public class EnterpriseService
 		Enterprise enterprise = installEnterprise(enterpriseName, progressMonitor);
 		createNewEnterprise(enterprise, progressMonitor);
 		
-		ISystems<?> activityMasterSystem = get(ISystemsService.class).getActivityMaster(enterprise);
+		ISystems<?,?> activityMasterSystem = get(ISystemsService.class).getActivityMaster(enterprise);
 		createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, uuidIdentifier, progressMonitor);
+		wipeCaches();
 		return enterprise;
 	}
 	
@@ -319,16 +330,18 @@ public class EnterpriseService
 	}
 
 	@Override
-	public void createNewEnterprise(@NotNull IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createNewEnterprise(@NotNull IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
-		
+		wipeCaches();
 		createBase(progressMonitor, allSystems, enterprise);
-		
+		wipeCaches();
 		createBaseSystems(progressMonitor, allSystems, enterprise);
+		wipeCaches();
 		installSystems(progressMonitor, allSystems, enterprise);
+		wipeCaches();
 		progressMonitor.setCurrentTask(0);
 		logProgress("System Configuration", "Starting system updates", 1, progressMonitor);
 		loadUpdates(enterprise, progressMonitor);
@@ -336,7 +349,7 @@ public class EnterpriseService
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
-	private void installSystems(IActivityMasterProgressMonitor progressMonitor, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?> enterprise)
+	private void installSystems(IActivityMasterProgressMonitor progressMonitor, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		//then from classifications data service do both
 		boolean tillHere = false;
@@ -352,19 +365,34 @@ public class EnterpriseService
 			{
 				logProgress("Running System ", allSystem.getClass()
 				                                       .getSimpleName(), progressMonitor);
-				String nameC = cleanName(allSystem.getClass()
-				                                  .getSimpleName());
-				IActivityMasterSystem<?> registeredSystem = get(allSystem.getClass());
-				registeredSystem.registerSystem(enterprise, progressMonitor);
-				
-				registeredSystem.createDefaults(enterprise, progressMonitor);
-				logProgress("Installed System ", nameC, 1, progressMonitor);
+				performSystemInstall(progressMonitor, enterprise, allSystem);
 			}
 		}
 	}
 	
+	private void performSystemInstall(IActivityMasterProgressMonitor progressMonitor, IEnterprise<?,?> enterprise, IActivityMasterSystem<?> allSystem)
+	{
+		String nameC = cleanName(allSystem.getClass()
+		                                  .getSimpleName());
+		IActivityMasterSystem<?> registeredSystem = get(allSystem.getClass());
+		
+		@SuppressWarnings({"rawtypes", "unchecked"})
+		Set<IOnSystemInstall> systemInstallEventListeners = IDefaultService.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
+		systemInstallEventListeners.forEach(a->{
+			a.onSystemInstallStart(registeredSystem.getSystemName());
+		});
+		
+		registeredSystem.registerSystem(enterprise, progressMonitor);
+		registeredSystem.createDefaults(enterprise, progressMonitor);
+		systemInstallEventListeners.forEach(a->{
+			a.onSystemInstallEnd(registeredSystem.getSystemName());
+		});
+		
+		logProgress("Installed System", nameC, 1, progressMonitor);
+	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
-	private void createBaseSystems(IActivityMasterProgressMonitor progressMonitor, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?> enterprise)
+	private void createBaseSystems(IActivityMasterProgressMonitor progressMonitor, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Base Systems", "Initializing Base Systems", progressMonitor);
 		for (Iterator<IActivityMasterSystem<?>> iterator = allSystems.iterator(); iterator.hasNext(); )
@@ -375,18 +403,12 @@ public class EnterpriseService
 			{
 				break;
 			}
-			
-			String nameC = cleanName(allSystem.getClass()
-			                                  .getSimpleName());
-			IActivityMasterSystem<?> registeredSystem = get(allSystem.getClass());
-			registeredSystem.registerSystem(enterprise, progressMonitor);
-			//registeredSystem.createDefaults(enterprise, progressMonitor);
-			logProgress("Completed with System", nameC, 1, progressMonitor);
+			performSystemInstall(progressMonitor, enterprise, allSystem);
 		}
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
-	private void createBase(IActivityMasterProgressMonitor progressMonitor, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?> enterprise)
+	private void createBase(IActivityMasterProgressMonitor progressMonitor, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Core", "Initializing Core Systems", progressMonitor);
 		for (Iterator<IActivityMasterSystem<?>> iterator = allSystems.iterator(); iterator.hasNext(); )
@@ -397,18 +419,12 @@ public class EnterpriseService
 			{
 				break;
 			}
-			String nameC = cleanName(allSystem.getClass()
-			                                  .getSimpleName());
-			IActivityMasterSystem<?> registeredSystem = get(allSystem.getClass());
-			//	registeredSystem.registerSystem(enterprise, progressMonitor);
-			
-			registeredSystem.createDefaults(enterprise, progressMonitor);
-			logProgress("Completed with Core", nameC, 1, progressMonitor);
+			performSystemInstall(progressMonitor, enterprise, allSystem);
 		}
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	protected IInvolvedParty<?> createAdminAndCreatorUserForEnterprise(ISystems<?> system, String adminUserName,
+	protected IInvolvedParty<?,?> createAdminAndCreatorUserForEnterprise(ISystems<?,?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1, progressMonitor);
@@ -419,8 +435,8 @@ public class EnterpriseService
 		
 		InvolvedPartyService service = get(InvolvedPartyService.class);
 		
-		Pair<IIdentificationType<?>, String> pair = new Pair<>(
-				IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
+		Pair<String, String> pair = new Pair<>(
+				IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(),
 				new Passwords().integerEncrypt(adminUserName.getBytes()));
 		Optional<InvolvedParty> exists = new InvolvedParty().builder()
 		                                                    .findByIdentificationType(system,
@@ -428,30 +444,29 @@ public class EnterpriseService
 				                                                    new Passwords().integerEncrypt(adminUserName.getBytes()))
 		                                                    .get();
 		
-		IInvolvedParty<?> administratorUser;
+		IInvolvedParty<?,?> administratorUser;
 		if (exists.isEmpty())
 		{
-			IInvolvedParty<?> adminUser = service.create(system, pair, true);
+			IInvolvedParty<?,?> adminUser = service.create(system, pair, true);
 			
-			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeUserName, NoClassification.classificationName(),
-					new Passwords().integerEncrypt(adminUserName.getBytes()), system, token);
+			adminUser.addOrReuseInvolvedPartyIdentificationType( NoClassification.toString(),IdentificationTypes.IdentificationTypeUserName.toString(),
+					adminUserName, system, token);
 			
-			adminUser.addOrReuseType(IPTypes.TypeIndividual, NoClassification.classificationName(), "Creator Individual", system, token);
-			adminUser.addOrReuseNameType(PreferredNameType, NoClassification.name(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseNameType(CommonNameType, NoClassification.name(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseNameType(FullNameType, NoClassification.name(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseNameType(FirstNameType, NoClassification.name(), "Administrator", system, token);
+			adminUser.addOrReuseInvolvedPartyType(NoClassification.toString(),IPTypes.TypeIndividual.toString(),  "Creator Individual", system, token);
+			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(),PreferredNameType.toString(),  "Enterprise Creator", system, token);
+			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(),CommonNameType.toString(),  "Enterprise Creator", system, token);
+			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(),FullNameType.toString(),  "Enterprise Creator", system, token);
+			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(),FirstNameType.toString(),  "Administrator", system, token);
 			
-			SecurityToken myToken = (SecurityToken) get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity,
+			get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity.toString(),
 					adminUserName,
 					"The creator of the enterprise", system, administratorsGroup, token);
 			
-			adminUser.addOrReuseIdentificationType(IdentificationTypes.IdentificationTypeEnterpriseCreatorRole, NoClassification.classificationName(),
-					new Passwords().integerEncrypt(adminUserName.getBytes()), system,
-					token);
+			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(),IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(),
+					adminUserName, system,					token);
 			if (existingLocalKey != null)
 			{
-				adminUser.addOrReuseIdentificationType("IdentificationTypeWebClientUUID", NoClassification.classificationName(),
+				adminUser.addOrReuseInvolvedPartyIdentificationType( NoClassification.toString(),"IdentificationTypeWebClientUUID",
 						existingLocalKey.toString(), system,
 						token);
 			}

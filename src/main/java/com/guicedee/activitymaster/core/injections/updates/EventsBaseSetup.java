@@ -2,13 +2,13 @@ package com.guicedee.activitymaster.core.injections.updates;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.services.classifications.events.*;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
+import com.guicedee.activitymaster.client.services.IClassificationService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.administration.ISystemUpdate;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.*;
 import com.guicedee.activitymaster.core.updates.DatedUpdate;
-import com.guicedee.activitymaster.core.updates.ISystemUpdate;
 
 import static com.guicedee.activitymaster.core.SystemsService.*;
 
@@ -20,10 +20,10 @@ public class EventsBaseSetup implements ISystemUpdate
 	
 	@Inject
 	@Named(ActivityMasterSystemName)
-	private ISystems<?> activityMasterSystem;
+	private ISystems<?,?> activityMasterSystem;
 	
 	@Override
-	public void update(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void update(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Events System", "Loading Base Events...", 1, progressMonitor);
 		createEventInvolvedPartyDefaultClassifications(enterprise, progressMonitor);
@@ -35,7 +35,7 @@ public class EventsBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	void createEventInvolvedPartyDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventInvolvedPartyDefaultClassifications(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		//Involved party relations with events
 		service.create(EventInvolvedPartiesClassifications.InvolvedPartyEvents, activityMasterSystem);
@@ -61,7 +61,7 @@ public class EventsBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	void createEventAddressDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventAddressDefaultClassifications(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		service.create(EventAddressClassifications.AddressEvents, activityMasterSystem);
 		service.create(EventAddressClassifications.SignedAt, activityMasterSystem, EventAddressClassifications.AddressEvents);
@@ -82,7 +82,7 @@ public class EventsBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	void createEventArrangementDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventArrangementDefaultClassifications(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		service.create(EventArrangementClassifications.ArrangementEvents, activityMasterSystem);
 		service.create(EventArrangementClassifications.Started, activityMasterSystem, EventArrangementClassifications.ArrangementEvents);
@@ -95,7 +95,7 @@ public class EventsBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	void createEventEventTypesClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventEventTypesClassifications(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		service.create(EventTypeClassifications.TypeOfEvents, activityMasterSystem);
 		service.create(EventTypeClassifications.HasTheType, activityMasterSystem, EventTypeClassifications.TypeOfEvents);
@@ -105,7 +105,7 @@ public class EventsBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	void createEventProductsDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventProductsDefaultClassifications(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		service.create(EventProductClassifications.ProductEvent, activityMasterSystem);
 		service.create(EventProductClassifications.ShowedInterestIn, activityMasterSystem, EventProductClassifications.ProductEvent);
@@ -127,7 +127,7 @@ public class EventsBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("WeakerAccess")
-	void createEventResourceItemDefaultClassifications(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void createEventResourceItemDefaultClassifications(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		service.create(EventResourceItemClassifications.ResourceItemEvent, activityMasterSystem);
 		service.create(EventResourceItemClassifications.AddedResourceItem, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);

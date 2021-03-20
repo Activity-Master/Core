@@ -2,15 +2,15 @@ package com.guicedee.activitymaster.core.injections.updates;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.ResourceItemClassifications;
-import com.guicedee.activitymaster.core.services.classifications.resourceitems.ResourceItemTypes;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.IResourceItemService;
+import com.guicedee.activitymaster.client.services.IClassificationService;
+import com.guicedee.activitymaster.client.services.IResourceItemService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.administration.ISystemUpdate;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.ResourceItemClassifications;
+import com.guicedee.activitymaster.client.services.classifications.ResourceItemTypes;
 import com.guicedee.activitymaster.core.updates.DatedUpdate;
-import com.guicedee.activitymaster.core.updates.ISystemUpdate;
 
 import static com.guicedee.activitymaster.core.SystemsService.*;
 
@@ -22,13 +22,13 @@ public class ResourceItemsBaseSetup implements ISystemUpdate
 	
 	@Inject
 	@Named(ActivityMasterSystemName)
-	private ISystems<?> activityMasterSystem;
+	private ISystems<?,?> activityMasterSystem;
 	
 	@Inject
 	private IResourceItemService<?> resourceItemService;
 	
 	@Override
-	public void update(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void update(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Resource Items", "Loading Default Resource Items...", 1, progressMonitor);
 		resourceItemService.createType(ResourceItemTypes.Documents, activityMasterSystem);

@@ -1,15 +1,11 @@
 package com.guicedee.activitymaster.core.db.entities.arrangement.builders;
 
 import com.entityassist.enumerations.Operand;
+import com.guicedee.activitymaster.client.services.IArrangementsService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.arrangement.*;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
-import com.guicedee.activitymaster.core.services.system.IArrangementsService;
 import com.guicedee.guicedinjection.GuiceContext;
-
-import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
@@ -19,9 +15,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 		ArrangementType,
 		ArrangementXArrangementTypeQueryBuilder,
 		ArrangementXArrangementType,
-		IArrangementTypes<?>,
-		java.util.UUID,
-		ArrangementXArrangementTypeSecurityToken>
+		java.util.UUID>
 {
 	@Override
 	public  SingularAttribute<ArrangementXArrangementType, Arrangement> getPrimaryAttribute()
@@ -36,7 +30,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 	}
 	
 	@Override
-	public ArrangementXArrangementTypeQueryBuilder withType(String typeValue, ISystems<?> system, UUID... identityToken)
+	public ArrangementXArrangementTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

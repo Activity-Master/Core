@@ -3,14 +3,16 @@ package com.guicedee.activitymaster.core.systems;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.IClassificationService;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.*;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 
+import static com.guicedee.activitymaster.client.services.IAddressService.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
-import static com.guicedee.activitymaster.core.services.system.IAddressService.*;
 
 
 public class AddressSystem
@@ -22,13 +24,13 @@ public class AddressSystem
 	
 	@Inject
 	@Named(ActivityMasterSystemName)
-	private ISystems<?> activityMasterSystem;
+	private ISystems<?,?> activityMasterSystem;
 	
 	@Inject
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		systemsService.get()
 		              .create(enterprise, AddressSystemName, "The system for the address management");
@@ -37,7 +39,7 @@ public class AddressSystem
 	}
 	
 	@Override
-	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Address System", "Starting Address Checks", progressMonitor);
 	}

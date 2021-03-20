@@ -1,10 +1,12 @@
 package com.guicedee.activitymaster.core.services.system;
 
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
 import com.guicedee.guicedinjection.pairing.Pair;
 import lombok.extern.java.Log;
 
@@ -15,8 +17,8 @@ import java.util.*;
 public abstract class ActivityMasterDefaultSystem<J extends ActivityMasterDefaultSystem<J>>
 		implements IActivityMasterSystem<J>
 {
-	private static final List<Pair<Class<? extends ActivityMasterDefaultSystem>, Map<IEnterprise<?>, ISystems<?>>>> systemsEnterpriseSystems = new ArrayList<>();
-	private static final List<Pair<Class<? extends ActivityMasterDefaultSystem>, Map<IEnterprise<?>, UUID>>> systemsEnterpriseTokens = new ArrayList<>();
+	private static final List<Pair<Class<? extends ActivityMasterDefaultSystem>, Map<IEnterprise, ISystems>>> systemsEnterpriseSystems = new ArrayList<>();
+	private static final List<Pair<Class<? extends ActivityMasterDefaultSystem>, Map<IEnterprise, UUID>>> systemsEnterpriseTokens = new ArrayList<>();
 	
 	@Inject
 	private ISystemsService<?> systemsService;
@@ -25,19 +27,19 @@ public abstract class ActivityMasterDefaultSystem<J extends ActivityMasterDefaul
 	private IEnterpriseService<?> enterpriseService;
 	
 	@Override
-	public void postStartup(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void postStartup(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		getSystem(enterprise);
 		getSystemToken(enterprise);
 	}
 	
 	@Override
-	public boolean hasSystemInstalled(IEnterprise<?> enterprise)
+	public boolean hasSystemInstalled(IEnterprise<?,?> enterprise)
 	{
 		return systemsService.doesSystemExist(enterprise, getSystemName());
 	}
 	
-	public ISystems<?> getSystem(IEnterprise<?> enterprise)
+	public ISystems<?,?> getSystem(IEnterprise<?,?> enterprise)
 	{
 		var oSystemsMap = systemsEnterpriseSystems.stream()
 		                                          .filter(a -> a.getKey()
@@ -45,21 +47,21 @@ public abstract class ActivityMasterDefaultSystem<J extends ActivityMasterDefaul
 		                                          .findFirst();
 		if (oSystemsMap.isEmpty())
 		{
-			Pair<Class<? extends ActivityMasterDefaultSystem>, Map<IEnterprise<?>, ISystems<?>>> pair = Pair.of(getClass(), new HashMap<>());
+			Pair<Class<? extends ActivityMasterDefaultSystem>, Map<IEnterprise, ISystems>> pair = Pair.of(getClass(), new HashMap<>());
 			oSystemsMap = Optional.of(pair);
 			systemsEnterpriseSystems.add(pair);
 		}
-		Map<IEnterprise<?>, ISystems<?>> systemsMap = oSystemsMap.get()
+		Map<IEnterprise, ISystems> systemsMap = oSystemsMap.get()
 		                                                         .getValue();
 		if (systemsMap.get(enterprise) == null)
 		{
-			ISystems<?> sys = systemsService.findSystem(enterprise, getSystemName());
+			ISystems<?,?> sys = systemsService.findSystem(enterprise, getSystemName());
 			systemsMap.put(enterprise, sys);
 		}
 		return systemsMap.get(enterprise);
 	}
 	
-	public UUID getSystemToken(IEnterprise<?> enterprise)
+	public UUID getSystemToken(IEnterprise<?,?> enterprise)
 	{
 		var oSystemsMap = systemsEnterpriseTokens.stream()
 		                                         .filter(a -> a.getKey()
@@ -67,15 +69,15 @@ public abstract class ActivityMasterDefaultSystem<J extends ActivityMasterDefaul
 		                                         .findFirst();
 		if (oSystemsMap.isEmpty())
 		{
-			Pair<Class<? extends ActivityMasterDefaultSystem>, Map<IEnterprise<?>, UUID>> pair = Pair.of(getClass(), new HashMap<>());
+			Pair<Class<? extends ActivityMasterDefaultSystem>, Map<IEnterprise, UUID>> pair = Pair.of(getClass(), new HashMap<>());
 			oSystemsMap = Optional.of(pair);
 			systemsEnterpriseTokens.add(pair);
 		}
-		Map<IEnterprise<?>, UUID> systemTokens = oSystemsMap.get()
+		Map<IEnterprise, UUID> systemTokens = oSystemsMap.get()
 		                                                    .getValue();
 		if (systemTokens.get(enterprise) == null)
 		{
-			ISystems<?> system = getSystem(enterprise);
+			ISystems<?,?> system = getSystem(enterprise);
 			UUID token = systemsService.getSecurityIdentityToken(system);
 			systemTokens.put(enterprise, token);
 		}
@@ -86,16 +88,16 @@ public abstract class ActivityMasterDefaultSystem<J extends ActivityMasterDefaul
 	
 	public abstract String getSystemDescription();
 	
-	public ISystems<?> getSystem(String enterpriseName)
+	public ISystems<?,?> getSystem(String enterpriseName)
 	{
-		IEnterprise<?> enterprise = enterpriseService.getEnterprise(enterpriseName);
+		IEnterprise<?,?> enterprise = enterpriseService.getEnterprise(enterpriseName);
 		return getSystem(enterprise);
 	}
 	
 	
 	public UUID getSystemToken(String enterpriseName)
 	{
-		IEnterprise<?> enterprise = enterpriseService.getEnterprise(enterpriseName);
+		IEnterprise<?,?> enterprise = enterpriseService.getEnterprise(enterpriseName);
 		return getSystemToken(enterprise);
 	}
 }

@@ -3,19 +3,17 @@ package com.guicedee.activitymaster.core.systems;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.IClassificationService;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.*;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications;
-import com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications;
-import com.guicedee.activitymaster.core.services.classifications.systems.SystemsClassifications;
-import com.guicedee.activitymaster.core.services.concepts.EnterpriseClassificationDataConcepts;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.*;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 
+import static com.guicedee.activitymaster.client.services.IClassificationService.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
-import static com.guicedee.activitymaster.core.services.system.IClassificationService.*;
 
 
 public class ClassificationsSystem
@@ -27,14 +25,14 @@ public class ClassificationsSystem
 	
 	@Inject
 	@Named(ActivityMasterSystemName)
-	private ISystems<?> activityMasterSystem;
+	private ISystems<?,?> activityMasterSystem;
 	
 	
 	@Inject
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		systemsService.get()
 		              .create(enterprise, getSystemName(), getSystemDescription());
@@ -42,29 +40,29 @@ public class ClassificationsSystem
 	
 	
 	@Override
-	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		//Create Root Enterprise Name
-		service.create(enterprise.classificationName(),enterprise.classificationName(),
-				EnterpriseClassificationDataConcepts.NoClassificationDataConceptName.classificationValue(), activityMasterSystem);
+		service.create(enterprise.getName(),enterprise.getName(),
+				EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, activityMasterSystem);
 		
 		logProgress("Classifications System", "Loaded Default Classifications...", 1, progressMonitor);
 		
-		service.create(Classifications.HierarchyTypeClassification, activityMasterSystem);
-		service.create(Classifications.HierarchyTypeClassification, activityMasterSystem, enterprise.classificationName());
-		service.create(Classifications.NoClassification, activityMasterSystem, enterprise.classificationName());
-		service.create(Classifications.DefaultClassification, activityMasterSystem, enterprise.classificationName());
-		service.create(Classifications.Security, activityMasterSystem, enterprise.classificationName());
+		service.create(DefaultClassifications.HierarchyTypeClassification, activityMasterSystem);
+		service.create(DefaultClassifications.HierarchyTypeClassification, activityMasterSystem, enterprise.getName());
+		service.create(DefaultClassifications.NoClassification, activityMasterSystem, enterprise.getName());
+		service.create(DefaultClassifications.DefaultClassification, activityMasterSystem, enterprise.getName());
+		service.create(DefaultClassifications.Security, activityMasterSystem, enterprise.getName());
 		
 		logProgress("Classifications System", "Loading Security Classifications...", 1, progressMonitor);
 		
-		service.create(SystemsClassifications.SystemIdentity, activityMasterSystem, Classifications.Security);
-		service.create(InvolvedPartyClassifications.SecurityPassword, activityMasterSystem, Classifications.Security);
-		service.create(InvolvedPartyClassifications.SecurityPasswordSalt, activityMasterSystem, Classifications.Security);
+		service.create(SystemsClassifications.SystemIdentity, activityMasterSystem, DefaultClassifications.Security);
+		service.create(InvolvedPartyClassifications.SecurityPassword, activityMasterSystem, DefaultClassifications.Security);
+		service.create(InvolvedPartyClassifications.SecurityPasswordSalt, activityMasterSystem, DefaultClassifications.Security);
 
-		service.create(EnterpriseClassifications.LastUpdateDate, activityMasterSystem, enterprise.classificationName());
-		service.create(EnterpriseClassifications.UpdateClass, activityMasterSystem, enterprise.classificationName());
-		service.create(EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterprise.classificationName());
+		service.create(EnterpriseClassifications.LastUpdateDate, activityMasterSystem, enterprise.getName());
+		service.create(EnterpriseClassifications.UpdateClass, activityMasterSystem, enterprise.getName());
+		service.create(EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterprise.getName());
 	}
 
 	@Override

@@ -2,13 +2,13 @@ package com.guicedee.activitymaster.core.injections.updates;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.services.classifications.arrangement.*;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
+import com.guicedee.activitymaster.client.services.IClassificationService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.administration.ISystemUpdate;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.*;
 import com.guicedee.activitymaster.core.updates.DatedUpdate;
-import com.guicedee.activitymaster.core.updates.ISystemUpdate;
 
 import static com.guicedee.activitymaster.core.SystemsService.*;
 
@@ -20,10 +20,10 @@ public class ArrangementsBaseSetup implements ISystemUpdate
 	
 	@Inject
 	@Named(ActivityMasterSystemName)
-	private ISystems<?> activityMasterSystem;
+	private ISystems<?,?> activityMasterSystem;
 	
 	@Override
-	public void update(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void update(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		
 		logProgress("Arrangements", "Creating Base...", progressMonitor);

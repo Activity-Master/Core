@@ -1,15 +1,11 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty.builders;
 
 import com.entityassist.enumerations.Operand;
+import com.guicedee.activitymaster.client.services.IInvolvedPartyService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
-import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.guicedinjection.GuiceContext;
-
-import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
@@ -18,9 +14,7 @@ public class InvolvedPartyXInvolvedPartyTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<InvolvedParty, InvolvedPartyType,
 		InvolvedPartyXInvolvedPartyTypeQueryBuilder,
 		InvolvedPartyXInvolvedPartyType,
-		ITypeValue<?>,
-		java.util.UUID,
-		InvolvedPartyXInvolvedPartyTypeSecurityToken>
+		java.util.UUID>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXInvolvedPartyType, InvolvedParty> getPrimaryAttribute()
@@ -35,7 +29,7 @@ public class InvolvedPartyXInvolvedPartyTypeQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyTypeQueryBuilder withType(String typeValue, ISystems<?> system, UUID... identityToken)
+	public InvolvedPartyXInvolvedPartyTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

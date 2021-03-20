@@ -7,7 +7,6 @@ package com.guicedee.activitymaster.core.db.entities.product;
 
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductTypeSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -34,9 +33,10 @@ public class ProductTypeSecurityToken
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-	        name = "ProductTypesSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ProductTypesSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	
 	@JoinColumn(name = "ProductTypesID",

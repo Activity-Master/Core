@@ -1,22 +1,23 @@
 package com.guicedee.activitymaster.core.db.entities.resourceitem;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItemType;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.AddressXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXResourceItem;
-import com.guicedee.activitymaster.core.db.entities.classifications.*;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
+import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConceptXResourceItem;
+import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.events.EventXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.geography.GeographyXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.product.ProductXResourceItem;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.db.hierarchies.ResourceItemHierarchyView;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-import com.guicedee.activitymaster.core.services.enumtypes.IResourceType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -51,16 +52,8 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ResourceItem
-		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.util.UUID, ResourceItemSecurityToken>
-		implements IContainsClassifications<ResourceItem, Classification, ResourceItemXClassification, IClassificationValue<?>, IResourceItem<?>, IClassification<?>, ResourceItem>,
-		           IContainsResourceItemTypes<ResourceItem, ResourceItemType, ResourceItemXResourceItemType, IResourceType<?>, ResourceItem>,
-		           IActivityMasterEntity<ResourceItem>,
-		           IContainsActiveFlags<ResourceItem>,
-		           IContainsEnterprise<ResourceItem>,
-		           IContainsData<ResourceItem>,
-		           IContainsHierarchy<ResourceItem, ResourceItemXResourceItem, ResourceItemHierarchyView, IResourceItem<?>,IResourceItem<?>>,
-		           IContainsResourceItems<ResourceItem, ResourceItem, ResourceItemXResourceItem, IClassificationValue<?>, IResourceItem<?>, IResourceItem<?>, ResourceItem>,
-		           IResourceItem<ResourceItem>
+		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.util.UUID>
+		implements IResourceItem<ResourceItem,ResourceItemQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -145,20 +138,7 @@ public class ResourceItem
 	{
 	
 	}
-	
-	@Override
-	protected ResourceItemSecurityToken configureDefaultsForNewToken(ResourceItemSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
-	@Override
-	public void configureForClassification(ResourceItemXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setResourceItemID(this);
-	}
-	
+
 	public byte[] getData(UUID... identityToken)
 	{
 		if (data == null || data.isEmpty())
@@ -178,7 +158,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void updateData(byte[] data,ISystems<?> system, UUID... identityToken)
+	public void updateData(byte[] data,ISystems<?,?> system, UUID... identityToken)
 	{
 		Optional<ResourceItemData> d
 				= new ResourceItemData().builder()
@@ -201,16 +181,16 @@ public class ResourceItem
 			rid.setEffectiveToDate(EndOfTime);
 			rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
 			rid.setResourceItemData(data);
-			rid.setSystemID((Systems) system);
+			rid.setSystemID(system);
 			rid.setActiveFlagID(rid.getSystemID().getActiveFlagID());
-			rid.setOriginalSourceSystemID((Systems) system);
-			rid.setEnterpriseID((Enterprise) system.getEnterpriseID());
+			rid.setOriginalSourceSystemID(system);
+			rid.setEnterpriseID(system.getEnterpriseID());
 			rid.persist();
 		}
 	}
 	
 	@Override
-	public void updateAndKeepHistoryData(byte[] data,ISystems<?> system, UUID... identityToken)
+	public void updateAndKeepHistoryData(byte[] data,ISystems<?,?> system, UUID... identityToken)
 	{
 		Optional<ResourceItemData> d
 				= new ResourceItemData().builder()
@@ -299,39 +279,29 @@ public class ResourceItem
 		return this;
 	}
 	
-	@Override
-	public void configureResourceItemTypeLinkValue(ResourceItemXResourceItemType linkTable, ResourceItem primary, ResourceItemType secondary, IClassification<?> classificationValue, String value, IEnterprise<?> enterprise)
+	//@Override
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, ResourceItem, ResourceItem, UUID> newLink, ResourceItem parent, ResourceItem child, String value)
 	{
-		linkTable.setResourceItemID(this);
-		linkTable.setResourceItemTypeID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
+		ResourceItemXResourceItem ri = (ResourceItemXResourceItem) newLink;
+		ri.setParentResourceItemID(parent);
+		ri.setChildResourceItemID(child);
+		ri.setValue(value);
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(ResourceItemXResourceItem newLink, IResourceItem<?> parent, IResourceItem<?> child, String value)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
 	{
-		newLink.setParentResourceItemID((ResourceItem) parent);
-		newLink.setChildResourceItemID((ResourceItem) child);
-		newLink.setValue(value);
+		ResourceItemXClassification rxc = (ResourceItemXClassification)linkTable;
+		rxc.setResourceItemID(this);
 	}
 	
 	@Override
-	public void configureResourceItemLinkValue(ResourceItemXResourceItem linkTable, ResourceItem primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
+	public void configureResourceItemTypeLinkValue(IWarehouseRelationshipTable linkTable, ResourceItem primary, IResourceItemType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
 	{
-		linkTable.setParentResourceItemID(primary);
-		linkTable.setChildResourceItemID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
-		
+		ResourceItemXResourceItemType rix = (ResourceItemXResourceItemType)linkTable;
+		rix.setResourceItemID(primary);
+		rix.setResourceItemTypeID((ResourceItemType) secondary);
+		rix.setClassificationID(classificationValue);
+		rix.setValue(value);
 	}
-	
-	@Override
-	public void configureResourceItemAddable(ResourceItemXResourceItem linkTable, ResourceItem primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setParentResourceItemID(primary);
-		linkTable.setChildResourceItemID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
-	}
-	
 }

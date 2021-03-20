@@ -1,11 +1,12 @@
 package com.guicedee.activitymaster.core.implementations;
 
 import com.google.inject.*;
+import com.guicedee.activitymaster.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.core.EnterpriseService;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.guicedee.activitymaster.core.services.providers.EnterpriseProvider;
-import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 public class EnterpriseBinder extends PrivateModule implements IGuiceModule<EnterpriseBinder>
@@ -14,9 +15,9 @@ public class EnterpriseBinder extends PrivateModule implements IGuiceModule<Ente
 	protected void configure()
 	{
 		@SuppressWarnings("Convert2Diamond")
-		Key<IEnterprise<?>> enterpriseKey = Key.get(new TypeLiteral<IEnterprise<?>>() {});
+		Key<IEnterprise<?,?>> enterpriseKey = Key.get(new TypeLiteral<IEnterprise<?,?>>() {});
 		@SuppressWarnings("Convert2Diamond")
-		Key<IEnterprise<Enterprise>> enterpriseKeyLegit = Key.get(new TypeLiteral<IEnterprise<Enterprise>>() {});
+		Key<IEnterprise<Enterprise, EnterpriseQueryBuilder>> enterpriseKeyLegit = Key.get(new TypeLiteral<IEnterprise<Enterprise, EnterpriseQueryBuilder>>() {});
 		bind(IEnterprise.class).to(enterpriseKey);
 		bind(enterpriseKey).to(enterpriseKeyLegit);
 		bind(enterpriseKeyLegit).toProvider(EnterpriseProvider.class);

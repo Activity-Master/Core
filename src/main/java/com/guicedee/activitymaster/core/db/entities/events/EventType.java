@@ -1,22 +1,16 @@
 package com.guicedee.activitymaster.core.db.entities.events;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.events.IEventType;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IEventType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -29,7 +23,7 @@ import static jakarta.persistence.AccessType.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(schema = "Event",
-		name = "EventType")
+       name = "EventType")
 @XmlRootElement
 
 @Access(FIELD)
@@ -40,90 +34,83 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class EventType
-		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, java.util.UUID, EventTypesSecurityToken>
-		implements IEventType<EventType>,
-				           IActivityMasterEntity<EventType>
+		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, java.util.UUID>
+		implements IEventType<EventType, EventTypeQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "EventTypeID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventTypeID")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
-			max = 200)
+	      max = 200)
 	@Column(nullable = false,
-			length = 200,
-			name = "EventTypeName")
-		private String name;
+	        length = 200,
+	        name = "EventTypeName")
+	private String name;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
-			max = 200)
+	      max = 200)
 	@Column(nullable = false,
-			length = 200,
-			name = "EventTypeDesc")
-		private String description;
-
+	        length = 200,
+	        name = "EventTypeDesc")
+	private String description;
+	
 	@OneToMany(
 			mappedBy = "eventTypeID",
 			fetch = FetchType.LAZY)
-		private List<EventXEventType> eventXEventTypeList;
+	private List<EventXEventType> eventXEventTypeList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<EventTypesSecurityToken> securities;
-
+	private List<EventTypesSecurityToken> securities;
+	
 	public EventType()
 	{
-
+	
 	}
-
+	
 	public EventType(UUID eventTypeID)
 	{
 		this.id = eventTypeID;
 	}
-
+	
 	public EventType(UUID eventTypeID, String eventTypName, String eventTypeDesc)
 	{
 		this.id = eventTypeID;
 		this.name = eventTypName;
 		this.description = eventTypeDesc;
 	}
-
-	@Override
-	protected EventTypesSecurityToken configureDefaultsForNewToken(EventTypesSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-
+	
 	public List<EventXEventType> getEventXEventTypeList()
 	{
 		return this.eventXEventTypeList;
 	}
-
+	
 	public List<EventTypesSecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public EventType setEventXEventTypeList(List<EventXEventType> eventXEventTypeList)
 	{
 		this.eventXEventTypeList = eventXEventTypeList;
 		return this;
 	}
-
+	
 	public EventType setSecurities(List<EventTypesSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -138,51 +125,51 @@ public class EventType
 		EventType eventType = (EventType) o;
 		return Objects.equals(getName(), eventType.getName());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
-		return "EventType - " + getName();
+		return getName();
 	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public @NotNull @Size(min = 1,
-			max = 200) String getName()
+	                      max = 200) String getName()
 	{
 		return this.name;
 	}
-
+	
 	public @NotNull @Size(min = 1,
-			max = 200) String getDescription()
+	                      max = 200) String getDescription()
 	{
 		return this.description;
 	}
-
+	
 	public EventType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public EventType setName(@NotNull @Size(min = 1,
-			max = 200) String name)
+	                                        max = 200) String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
 	public EventType setDescription(@NotNull @Size(min = 1,
-			max = 200) String description)
+	                                               max = 200) String description)
 	{
 		this.description = description;
 		return this;

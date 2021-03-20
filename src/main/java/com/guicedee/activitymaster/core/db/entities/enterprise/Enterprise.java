@@ -1,20 +1,17 @@
 package com.guicedee.activitymaster.core.db.entities.enterprise;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseClassification;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
-import com.guicedee.activitymaster.core.services.dto.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,12 +37,9 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Enterprise
-		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.util.UUID, EnterpriseSecurityToken>
-		implements IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise<?>, IClassification<?>, Enterprise>,
-		           IActivityMasterEntity<Enterprise>,
-		           IContainsNameAndDescription<Enterprise>,
-		           IEnterprise<Enterprise>,
-		           IEnterpriseName
+		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.util.UUID>
+		implements //IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise, IClassification<?,?>, Enterprise>,
+		           IEnterprise<Enterprise,EnterpriseQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -81,12 +75,6 @@ public class Enterprise
 	
 	}
 	
-	@Override
-	public @NotNull boolean isFake()
-	{
-		return super.isFake();
-	}
-	
 	public Enterprise(java.util.UUID id)
 	{
 		this.id = id;
@@ -105,26 +93,10 @@ public class Enterprise
 		return "Enterprise - " + getName();
 	}
 	
-	@Override
-	public void configureForClassification(EnterpriseXClassification classificationLink, ISystems<?> system)
+	//@Override
+	public void configureForClassification(EnterpriseXClassification classificationLink, ISystems<?,?> system)
 	{
 	
-	}
-	
-	@Override
-	public Enterprise remove()
-	{
-		setEffectiveToDate(LocalDateTime.now());
-		updateNow();
-		return this;
-	}
-	
-	@Override
-	public Enterprise archive()
-	{
-		setEffectiveToDate(LocalDateTime.now());
-		updateNow();
-		return this;
 	}
 	
 	public List<EnterpriseSecurityToken> getSecurities()
@@ -192,34 +164,20 @@ public class Enterprise
 		return this;
 	}
 	
-	@Override
-	public IEnterprise<?> getIEnterprise()
-	{
-		return this;
-	}
-	
-	@Override
-	public IEnterprise<?> getEnterprise()
-	{
-		return this;
-	}
-	
-	@Override
-	public void setEnterprise(IEnterprise enterprise)
-	{
-	
-	}
-	
-	@Override
 	public String name()
 	{
 		return getName();
 	}
 	
-	@Override
 	public String classificationDescription()
 	{
 		return getDescription();
 	}
 	
+	@Override
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	{
+		EnterpriseXClassification x = (EnterpriseXClassification) linkTable;
+		x.setEnterpriseID(this);
+	}
 }

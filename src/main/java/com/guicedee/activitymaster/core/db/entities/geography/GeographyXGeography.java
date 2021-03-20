@@ -8,19 +8,12 @@ package com.guicedee.activitymaster.core.db.entities.geography;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.geography.builders.GeographyXGeographyQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IGeography;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -31,7 +24,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Geography",name = "GeographyXGeography")
+@Table(schema = "Geography", name = "GeographyXGeography")
 @XmlRootElement
 
 @Access(FIELD)
@@ -43,101 +36,93 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class GeographyXGeography
 		extends WarehouseClassificationRelationshipTable<Geography,
-				                                                Geography,
-				                                                GeographyXGeography,
-				                                                GeographyXGeographyQueryBuilder,
-				                                                java.util.UUID,
-				                                                GeographyXGeographySecurityToken,
-				                                                IGeography<?>,IGeography<?>>
+		Geography,
+		GeographyXGeography,
+		GeographyXGeographyQueryBuilder,
+		java.util.UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "GeographyXGeographyID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "GeographyXGeographyID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<GeographyXGeographySecurityToken> securities;
-
+	
 	@JoinColumn(name = "ParentGeographyID",
-			referencedColumnName = "GeographyID",
-			nullable = false)
+	            referencedColumnName = "GeographyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private Geography parentGeographyID;
 	@JoinColumn(name = "ChildGeographyID",
-			referencedColumnName = "GeographyID",
-			nullable = false)
+	            referencedColumnName = "GeographyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private Geography childGeographyID;
-
+	
 	public GeographyXGeography()
 	{
-
+	
 	}
-
+	
 	public GeographyXGeography(UUID geographyXGeographyID)
 	{
 		this.id = geographyXGeographyID;
 	}
-
-	@Override
-	protected GeographyXGeographySecurityToken configureDefaultsForNewToken(GeographyXGeographySecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public List<GeographyXGeographySecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public Geography getParentGeographyID()
 	{
 		return this.parentGeographyID;
 	}
-
+	
 	public Geography getChildGeographyID()
 	{
 		return this.childGeographyID;
 	}
-
+	
 	public GeographyXGeography setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public GeographyXGeography setSecurities(List<GeographyXGeographySecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	public GeographyXGeography setParentGeographyID(Geography parentGeographyID)
 	{
 		this.parentGeographyID = parentGeographyID;
 		return this;
 	}
-
+	
 	public GeographyXGeography setChildGeographyID(Geography childGeographyID)
 	{
 		this.childGeographyID = childGeographyID;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -152,21 +137,21 @@ public class GeographyXGeography
 		GeographyXGeography that = (GeographyXGeography) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
-	public IGeography<?> getPrimary()
+	public Geography getPrimary()
 	{
 		return getParentGeographyID();
 	}
-
+	
 	@Override
-	public IGeography<?> getSecondary()
+	public Geography getSecondary()
 	{
 		return getChildGeographyID();
 	}

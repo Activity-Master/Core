@@ -2,7 +2,7 @@ package com.guicedee.activitymaster.core.implementations;
 
 import com.google.inject.*;
 import com.guicedee.activitymaster.core.SecurityTokenService;
-import com.guicedee.activitymaster.core.services.system.ISecurityTokenService;
+import com.guicedee.activitymaster.client.services.ISecurityTokenService;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 public class SecurityTokensBinder extends PrivateModule implements IGuiceModule<SecurityTokensBinder>

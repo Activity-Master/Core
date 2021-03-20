@@ -1,16 +1,17 @@
 package com.guicedee.activitymaster.core.db.entities.systems.builders;
 
+import com.guicedee.activitymaster.client.services.builders.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystemsQueryBuilder;
 import com.guicedee.activitymaster.core.db.abstraction.builders.assists.QueryBuilderNameDescription;
-import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContainsClassificationsQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityTokenXClassification;
-import com.guicedee.activitymaster.core.db.entities.security.builders.SecurityTokenQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemsSecurityToken;
+
+import java.util.UUID;
 
 public class SystemsQueryBuilder
-		extends QueryBuilderNameDescription<SystemsQueryBuilder, Systems, java.util.UUID, SystemsSecurityToken>
-		implements IContainsClassificationsQueryBuilder<SystemsQueryBuilder, Systems, java.util.UUID, SystemXClassification>
+		extends QueryBuilderNameDescription<SystemsQueryBuilder, Systems, java.util.UUID>
+		implements IQueryBuilderClassifications<SystemsQueryBuilder,Systems, UUID>,
+		           ISystemsQueryBuilder<SystemsQueryBuilder, Systems>,
+		           IQueryBuilderDefault<SystemsQueryBuilder,Systems,UUID>,
+		           IQueryBuilderEnterprise<SystemsQueryBuilder,Systems,UUID>
 {
 }

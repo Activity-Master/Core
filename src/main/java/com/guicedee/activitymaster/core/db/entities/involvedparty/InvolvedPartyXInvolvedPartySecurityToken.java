@@ -7,7 +7,6 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartySecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -22,66 +21,67 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Party",name = "InvolvedPartyXInvolvedPartySecurityToken")
+@Table(schema = "Party", name = "InvolvedPartyXInvolvedPartySecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
 public class InvolvedPartyXInvolvedPartySecurityToken
 		extends WarehouseSecurityTable<InvolvedPartyXInvolvedPartySecurityToken, InvolvedPartyXInvolvedPartySecurityTokenQueryBuilder, java.util.UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "InvolvedPartyXInvolvedPartySecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "InvolvedPartyXInvolvedPartySecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@JoinColumn(name = "InvolvedPartyXInvolvedPartyID",
-			referencedColumnName = "InvolvedPartyXInvolvedPartyID",
-			nullable = false)
+	            referencedColumnName = "InvolvedPartyXInvolvedPartyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private InvolvedPartyXInvolvedParty base;
-
+	
 	public InvolvedPartyXInvolvedPartySecurityToken()
 	{
-
+	
 	}
-
+	
 	public InvolvedPartyXInvolvedPartySecurityToken(UUID involvedPartyXInvolvedPartySecurityTokenID)
 	{
 		this.id = involvedPartyXInvolvedPartySecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "InvolvedPartyXInvolvedPartySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public InvolvedPartyXInvolvedParty getBase()
 	{
 		return this.base;
 	}
-
+	
 	public InvolvedPartyXInvolvedPartySecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public InvolvedPartyXInvolvedPartySecurityToken setBase(InvolvedPartyXInvolvedParty base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -105,12 +105,12 @@ public class InvolvedPartyXInvolvedPartySecurityToken
 		}
 		return true;
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof InvolvedPartyXInvolvedPartySecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

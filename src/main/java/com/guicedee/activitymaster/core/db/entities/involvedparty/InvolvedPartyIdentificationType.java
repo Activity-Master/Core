@@ -1,27 +1,17 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.party.IInvolvedPartyIdentificationType;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsActiveFlags;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyIdentificationType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -47,13 +37,8 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyIdentificationType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder, java.util.UUID, InvolvedPartyIdentificationTypeSecurityToken>
-		implements IInvolvedPartyIdentificationType<InvolvedPartyIdentificationType>,
-		           IContainsNameAndDescription<InvolvedPartyIdentificationType>,
-		           IContainsEnterprise<InvolvedPartyIdentificationType>,
-		           IActivityMasterEntity<InvolvedPartyIdentificationType>,
-		           IContainsActiveFlags<InvolvedPartyIdentificationType>,
-		           IIdentificationType
+		extends WarehouseSCDNameDescriptionTable<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder, java.util.UUID>
+		implements IInvolvedPartyIdentificationType<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -61,7 +46,8 @@ public class InvolvedPartyIdentificationType
 	
 	@Column(nullable = false,
 	        name = "InvolvedPartyIdentificationTypeID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -71,7 +57,7 @@ public class InvolvedPartyIdentificationType
 	@Column(nullable = false,
 	        length = 150,
 	        name = "InvolvedPartyIdentificationName")
-		private String name;
+	private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -80,17 +66,17 @@ public class InvolvedPartyIdentificationType
 	@Column(nullable = false,
 	        length = 500,
 	        name = "InvolvedPartyIdentificationDesc")
-		private String description;
+	private String description;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyIdentificationTypeSecurityToken> securities;
+	private List<InvolvedPartyIdentificationTypeSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "involvedPartyIdentificationTypeID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXInvolvedPartyIdentificationType> involvedPartyXInvolvedPartyIdentificationTypeList;
+	private List<InvolvedPartyXInvolvedPartyIdentificationType> involvedPartyXInvolvedPartyIdentificationTypeList;
 	
 	public InvolvedPartyIdentificationType()
 	{
@@ -110,16 +96,9 @@ public class InvolvedPartyIdentificationType
 	}
 	
 	@Override
-	protected InvolvedPartyIdentificationTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyIdentificationTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
-	@Override
 	public String toString()
 	{
-		return "IdentificationType - " + getName();
+		return getName();
 	}
 	
 	public List<InvolvedPartyIdentificationTypeSecurityToken> getSecurities()
@@ -205,21 +184,4 @@ public class InvolvedPartyIdentificationType
 		return this;
 	}
 	
-	@Override
-	public String name()
-	{
-		return name;
-	}
-	
-	@Override
-	public String classificationValue()
-	{
-		return name;
-	}
-	
-	@Override
-	public String classificationDescription()
-	{
-		return description;
-	}
 }

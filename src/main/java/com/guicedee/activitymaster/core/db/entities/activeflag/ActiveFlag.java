@@ -1,30 +1,20 @@
 package com.guicedee.activitymaster.core.db.entities.activeflag;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.activeflag.builders.ActiveFlagQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsEnterprise;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
-import com.guicedee.activitymaster.core.services.classifications.activeflag.IActiveFlagClassification;
-import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.lang.reflect.ParameterizedType;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,12 +40,8 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ActiveFlag
-		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.util.UUID, ActiveFlagSecurityToken>
-		implements IContainsNameAndDescription<ActiveFlag>,
-		           IContainsClassifications<ActiveFlag, Classification, ActiveFlagXClassification, IActiveFlagClassification<?>, IActiveFlag<?>, IClassification<?>, IActiveFlag<ActiveFlag>>,
-		           IActivityMasterEntity<ActiveFlag>,
-		           IContainsEnterprise<ActiveFlag>,
-		           IActiveFlag<ActiveFlag>
+		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.util.UUID>
+		implements IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -587,23 +573,7 @@ public class ActiveFlag
 		name = activeFlagName;
 		this.allowAccess = allowAccess;
 	}
-	
-	@Override
-	public ActiveFlag archive()
-	{
-		setEffectiveToDate(LocalDateTime.now());
-		updateNow();
-		return this;
-	}
-	
-	@Override
-	public ActiveFlag remove()
-	{
-		setEffectiveToDate(LocalDateTime.now());
-		updateNow();
-		return this;
-	}
-	
+/*
 	@Override
 	@NotNull
 	protected Class<ActiveFlagSecurityToken> findPersistentSecurityClass()
@@ -613,7 +583,7 @@ public class ActiveFlag
 	
 	
 	@Override
-	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, ISystems<?> system, ISystems<?> originalSourceSystem)
+	protected ActiveFlagSecurityToken configureDefaultsForNewToken(ActiveFlagSecurityToken stAdmin, ISystems<?,?> system, ISystems<?,?> originalSourceSystem)
 	{
 		stAdmin.setSystemID((Systems) originalSourceSystem);
 		stAdmin.setActiveFlagID(((Systems) originalSourceSystem).getActiveFlagID());
@@ -623,13 +593,8 @@ public class ActiveFlag
 		stAdmin.setEnterpriseID((Enterprise) system.getEnterprise());
 		return stAdmin;
 	}
-	
-	@Override
-	public void configureForClassification(ActiveFlagXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setActiveFlagID(this);
-	}
-	
+	*/
+
 	@Override
 	public int hashCode()
 	{
@@ -663,6 +628,7 @@ public class ActiveFlag
 		return id;
 	}
 	
+	
 	@Override
 	public ActiveFlag setId(java.util.UUID id)
 	{
@@ -682,9 +648,9 @@ public class ActiveFlag
 		return name;
 	}
 	
-	public ActiveFlag setEnterpriseID(Enterprise enterpriseID)
+	public ActiveFlag setEnterpriseID(IEnterprise<?,?> enterpriseID)
 	{
-		this.enterpriseID = enterpriseID;
+		this.enterpriseID = (Enterprise) enterpriseID;
 		return this;
 	}
 	
@@ -720,5 +686,10 @@ public class ActiveFlag
 		return this;
 	}
 	
-	
+	@Override
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	{
+		ActiveFlagXClassification x = (ActiveFlagXClassification) linkTable;
+		x.setActiveFlagID(this);
+	}
 }

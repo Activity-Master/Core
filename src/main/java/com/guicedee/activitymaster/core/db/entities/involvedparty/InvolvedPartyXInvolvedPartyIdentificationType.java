@@ -3,20 +3,12 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedPartyIdentificationType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -42,11 +34,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 		extends WarehouseClassificationRelationshipTypesTable<InvolvedParty, InvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
-		IIdentificationType<?>,
-		java.util.UUID,
-		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken,
-		IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>
-		>
+		java.util.UUID>
 		implements Serializable
 {
 	
@@ -55,7 +43,8 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	@Id
 	
 	@Column(nullable = false,
-	        name = "InvolvedPartyXInvolvedPartyIdentificationTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "InvolvedPartyXInvolvedPartyIdentificationTypeID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	
 	@OneToMany(
@@ -93,12 +82,6 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 		setValue(value);
 	}
 	
-	@Override
-	protected InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
 	
 	@Override
 	public java.util.UUID getId()
@@ -168,13 +151,13 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	}
 	
 	@Override
-	public IInvolvedParty<?> getPrimary()
+	public InvolvedParty getPrimary()
 	{
 		return getInvolvedPartyID();
 	}
 	
 	@Override
-	public IInvolvedPartyIdentificationType<?> getSecondary()
+	public InvolvedPartyIdentificationType getSecondary()
 	{
 		return getInvolvedPartyIdentificationTypeID();
 	}

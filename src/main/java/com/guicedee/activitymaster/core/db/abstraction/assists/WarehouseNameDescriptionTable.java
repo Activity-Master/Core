@@ -1,19 +1,15 @@
 package com.guicedee.activitymaster.core.db.abstraction.assists;
 
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseNameAndDescriptionTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.assists.QueryBuilderNameDescription;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
-
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
 /**
- * @param <S>
  * @param <J>
  *
  * @author Marc Magon
@@ -21,12 +17,11 @@ import java.lang.reflect.ParameterizedType;
  * @since 06 Dec 2016
  */
 @MappedSuperclass()
-public abstract class WarehouseNameDescriptionTable<J extends WarehouseNameDescriptionTable<J, Q, I, S>,
-		                                                   Q extends QueryBuilderNameDescription<Q, J, I, S>,
-		                                                   I extends Serializable,
-		                                                   S extends WarehouseSecurityTable>
-		extends WarehouseCoreTable<J, Q, I, S>
-		implements IContainsNameAndDescription<J>
+public abstract class WarehouseNameDescriptionTable<J extends WarehouseNameDescriptionTable<J, Q, I>,
+		                                                   Q extends QueryBuilderNameDescription<Q, J, I>,
+		                                                   I extends java.util.UUID>
+		extends WarehouseCoreTable<J, Q, I>
+		implements IWarehouseNameAndDescriptionTable<J,Q,I>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

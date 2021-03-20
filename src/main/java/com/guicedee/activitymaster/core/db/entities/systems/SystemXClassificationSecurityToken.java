@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.core.db.entities.systems;
 
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.systems.builders.SystemXClassificationSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -26,60 +25,61 @@ public class SystemXClassificationSecurityToken
 		extends WarehouseSecurityTable<SystemXClassificationSecurityToken, SystemXClassificationSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "SystemXClassificationSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "SystemXClassificationSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
-
+	
 	@JoinColumn(name = "SystemXClassificationID",
-			referencedColumnName = "SystemXClassificationID",
-			nullable = false)
+	            referencedColumnName = "SystemXClassificationID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private SystemXClassification base;
-
+	
 	public SystemXClassificationSecurityToken()
 	{
-
+	
 	}
-
+	
 	public SystemXClassificationSecurityToken(UUID systemXClassificationSecurityTokenID)
 	{
 		this.id = systemXClassificationSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "SystemXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public SystemXClassification getBase()
 	{
 		return this.base;
 	}
-
+	
 	public SystemXClassificationSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public SystemXClassificationSecurityToken setBase(SystemXClassification base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -103,12 +103,12 @@ public class SystemXClassificationSecurityToken
 		}
 		return true;
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof SystemXClassificationSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

@@ -2,22 +2,13 @@ package com.guicedee.activitymaster.core.db.entities.product;
 
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductXProductTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IProduct;
-import com.guicedee.activitymaster.core.services.dto.IProductType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -43,10 +34,7 @@ public class ProductXProductType
 				ProductType,
 				ProductXProductType,
 				ProductXProductTypeQueryBuilder,
-				IProductTypeValue<?>,
-				java.util.UUID,
-				ProductXProductTypeSecurityToken,
-				IProduct<?>, IProductType<?>>
+				java.util.UUID>
 {
 	
 	@Serial
@@ -81,13 +69,6 @@ public class ProductXProductType
 	public ProductXProductType(UUID productXProductTypeID)
 	{
 		this.id = productXProductTypeID;
-	}
-	
-	@Override
-	protected ProductXProductTypeSecurityToken configureDefaultsForNewToken(ProductXProductTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	@Override
@@ -158,13 +139,13 @@ public class ProductXProductType
 	}
 	
 	@Override
-	public IProduct<?> getPrimary()
+	public Product getPrimary()
 	{
 		return getProductID();
 	}
 	
 	@Override
-	public IProductType<?> getSecondary()
+	public ProductType getSecondary()
 	{
 		return getProductTypeID();
 	}

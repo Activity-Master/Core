@@ -4,19 +4,11 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXProductTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.product.ProductType;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
-import com.guicedee.activitymaster.core.services.dto.IProductType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IProductTypeValue;
-import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -43,17 +35,15 @@ public class InvolvedPartyXProductType
 		ProductType,
 		InvolvedPartyXProductType,
 		InvolvedPartyXProductTypeQueryBuilder,
-		IProductTypeValue<?>,
-		UUID,
-		InvolvedPartyXProductTypeSecurityToken,
-		IInvolvedParty<?>, IProductType<?>>
+		UUID>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-	        name = "InvolvedPartyXProductTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "InvolvedPartyXProductTypeID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@JoinColumn(name = "InvolvedPartyID",
@@ -82,13 +72,6 @@ public class InvolvedPartyXProductType
 	public InvolvedPartyXProductType(UUID involvedPartyXProductTypeID)
 	{
 		this.id = involvedPartyXProductTypeID;
-	}
-	
-	@Override
-	protected InvolvedPartyXProductTypeSecurityToken configureDefaultsForNewToken(InvolvedPartyXProductTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	@Override
@@ -160,13 +143,13 @@ public class InvolvedPartyXProductType
 	}
 	
 	@Override
-	public IInvolvedParty<?> getPrimary()
+	public InvolvedParty getPrimary()
 	{
 		return getInvolvedPartyID();
 	}
 	
 	@Override
-	public IProductType<?> getSecondary()
+	public ProductType getSecondary()
 	{
 		return getProductTypeID();
 	}

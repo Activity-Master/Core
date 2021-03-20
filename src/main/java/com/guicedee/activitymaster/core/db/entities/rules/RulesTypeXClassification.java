@@ -3,20 +3,13 @@ package com.guicedee.activitymaster.core.db.entities.rules;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.rules.RulesType;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesTypeXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IRulesType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -41,9 +34,7 @@ public class RulesTypeXClassification
 		Classification,
 		RulesTypeXClassification,
 		RulesTypeXClassificationQueryBuilder,
-		UUID,
-		RulesTypeXClassificationSecurityToken,
-		IRulesType<?>, IClassification<?>>
+		UUID>
 		implements Serializable
 {
 	@Serial
@@ -75,13 +66,6 @@ public class RulesTypeXClassification
 	public RulesTypeXClassification(UUID rulesXClassificationID)
 	{
 		this.id = rulesXClassificationID;
-	}
-	
-	@Override
-	protected RulesTypeXClassificationSecurityToken configureDefaultsForNewToken(RulesTypeXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	public UUID getId()
@@ -140,13 +124,13 @@ public class RulesTypeXClassification
 	}
 	
 	@Override
-	public IRulesType<?> getPrimary()
+	public RulesType getPrimary()
 	{
 		return getRulesTypeID();
 	}
 	
 	@Override
-	public IClassification<?> getSecondary()
+	public Classification getSecondary()
 	{
 		return getSecondary();
 	}

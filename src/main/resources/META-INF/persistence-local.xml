@@ -74,6 +74,8 @@
         <class>com.guicedee.activitymaster.core.db.entities.events.EventXArrangementsSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.events.EventXClassification</class>
         <class>com.guicedee.activitymaster.core.db.entities.events.EventXClassificationSecurityToken</class>
+        <class>com.guicedee.activitymaster.core.db.entities.events.EventXEvent</class>
+        <class>com.guicedee.activitymaster.core.db.entities.events.EventXEventSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.events.EventXEventType</class>
         <class>com.guicedee.activitymaster.core.db.entities.events.EventXEventTypeSecurityToken</class>
         <class>com.guicedee.activitymaster.core.db.entities.events.EventXGeography</class>

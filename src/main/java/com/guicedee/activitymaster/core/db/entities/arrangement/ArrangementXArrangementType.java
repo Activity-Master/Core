@@ -3,19 +3,11 @@ package com.guicedee.activitymaster.core.db.entities.arrangement;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.entities.arrangement.builders.ArrangementXArrangementTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IArrangement;
-import com.guicedee.activitymaster.core.services.dto.IArrangementType;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IArrangementTypes;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -41,11 +33,7 @@ public class ArrangementXArrangementType
 		ArrangementType,
 		ArrangementXArrangementType,
 		ArrangementXArrangementTypeQueryBuilder,
-		IArrangementTypes<?>,
-		java.util.UUID,
-		ArrangementXArrangementTypeSecurityToken,
-		IArrangement<?>,
-		IArrangementType<?>>
+		java.util.UUID>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -73,13 +61,6 @@ public class ArrangementXArrangementType
 	public ArrangementXArrangementType(UUID arrangementXArrangementTypeID)
 	{
 		this.id = arrangementXArrangementTypeID;
-	}
-	
-	@Override
-	protected ArrangementXArrangementTypeSecurityToken configureDefaultsForNewToken(ArrangementXArrangementTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	@Override
@@ -150,13 +131,13 @@ public class ArrangementXArrangementType
 	}
 	
 	@Override
-	public IArrangement<?> getPrimary()
+	public Arrangement getPrimary()
 	{
 		return getArrangement();
 	}
 	
 	@Override
-	public IArrangementType<?> getSecondary()
+	public ArrangementType getSecondary()
 	{
 		return getType();
 	}

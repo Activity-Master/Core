@@ -3,11 +3,13 @@ package com.guicedee.activitymaster.core;
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
 import com.google.inject.*;
+import com.guicedee.activitymaster.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.security.ISecurityToken;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.dto.*;
 import com.guicedee.activitymaster.core.services.exceptions.EnterpriseException;
-import com.guicedee.activitymaster.core.services.system.IEnterpriseService;
 import com.guicedee.activitymaster.core.threads.TransactionalIdentifiedThread;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
@@ -22,12 +24,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @Singleton
 public class ActivityMasterConfiguration
 {
-	private final ThreadLocal<ISecurityToken<?>> token = ThreadLocal.withInitial(SecurityToken::new);
+	private final ThreadLocal<ISecurityToken<?,?>> token = ThreadLocal.withInitial(SecurityToken::new);
 	private final ThreadLocal<Boolean> securities = ThreadLocal.withInitial(() -> true);
 	
-	private ISystems<?> applicationSystem;
+	private ISystems<?,?> applicationSystem;
 	private UUID applicationSystemUUID;
-	private IEnterprise<?> enterprise;
+	private IEnterprise<?,?> enterprise;
 	private String applicationEnterpriseName;
 	
 	private Set<IActivityMasterSystem<?>> allSystems;
@@ -42,7 +44,7 @@ public class ActivityMasterConfiguration
 		// no config required
 	}
 	
-	public IEnterprise<?> getEnterprise()
+	public IEnterprise<?,?> getEnterprise()
 	{
 		if (enterprise == null && !Strings.isNullOrEmpty(applicationEnterpriseName))
 		{
@@ -73,7 +75,7 @@ public class ActivityMasterConfiguration
 		}
 	}
 	
-	public ActivityMasterConfiguration setEnterprise(IEnterprise<?> enterprise)
+	public ActivityMasterConfiguration setEnterprise(IEnterprise<?,?> enterprise)
 	{
 		this.enterprise = enterprise;
 		return this;
@@ -89,12 +91,12 @@ public class ActivityMasterConfiguration
 		securities.set(securityEnabled);
 	}
 	
-	public ISystems<?> getApplicationSystem()
+	public ISystems<?,?> getApplicationSystem()
 	{
 		return applicationSystem;
 	}
 	
-	public ActivityMasterConfiguration setApplicationSystem(ISystems<?> applicationSystem)
+	public ActivityMasterConfiguration setApplicationSystem(ISystems<?,?> applicationSystem)
 	{
 		this.applicationSystem = applicationSystem;
 		return this;
@@ -131,12 +133,12 @@ public class ActivityMasterConfiguration
 		return this;
 	}
 	
-	public ISecurityToken<?> getToken()
+	public ISecurityToken<?,?> getToken()
 	{
 		return token.get();
 	}
 	
-	public ISecurityToken<?> setToken(ISecurityToken<?> token)
+	public ISecurityToken<?,?> setToken(ISecurityToken<?,?> token)
 	{
 		this.token.set(token);
 		return this.token.get();
@@ -185,7 +187,7 @@ public class ActivityMasterConfiguration
 	public static class ActivityMasterConfigurationDTO
 	{
 		private String enterpriseName;
-		private ISecurityToken<?> token;
+		private ISecurityToken<?,?> token;
 		private Boolean securities;
 		
 		public ActivityMasterConfigurationDTO()

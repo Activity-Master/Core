@@ -7,7 +7,6 @@ package com.guicedee.activitymaster.core.db.entities.resourceitem;
 
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXResourceItemTypeSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -23,7 +22,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Resource",name = "ResourceItemXResourceItemTypeSecurityToken")
+@Table(schema = "Resource", name = "ResourceItemXResourceItemTypeSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
@@ -31,59 +30,60 @@ public class ResourceItemXResourceItemTypeSecurityToken
 		extends WarehouseSecurityTable<ResourceItemXResourceItemTypeSecurityToken, ResourceItemXResourceItemTypeSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "ResourceItemXResourceItemTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ResourceItemXResourceItemTypeSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@JoinColumn(name = "ResourceItemXResourceItemTypeID",
-			referencedColumnName = "ResourceItemXResourceItemTypeID",
-			nullable = false)
+	            referencedColumnName = "ResourceItemXResourceItemTypeID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private ResourceItemXResourceItemType base;
-
+	
 	public ResourceItemXResourceItemTypeSecurityToken()
 	{
-
+	
 	}
-
+	
 	public ResourceItemXResourceItemTypeSecurityToken(UUID resourceItemXResourceItemTypeSecurityTokenID)
 	{
 		this.id = resourceItemXResourceItemTypeSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "ResourceItemXResourceItemTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public ResourceItemXResourceItemType getBase()
 	{
 		return this.base;
 	}
-
+	
 	public ResourceItemXResourceItemTypeSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public ResourceItemXResourceItemTypeSecurityToken setBase(ResourceItemXResourceItemType base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -107,12 +107,12 @@ public class ResourceItemXResourceItemTypeSecurityToken
 		}
 		return true;
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof ResourceItemXResourceItemTypeSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

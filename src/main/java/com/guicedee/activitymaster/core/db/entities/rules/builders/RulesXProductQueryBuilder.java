@@ -2,16 +2,11 @@ package com.guicedee.activitymaster.core.db.entities.rules.builders;
 
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.rules.*;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
@@ -20,7 +15,7 @@ import static com.entityassist.enumerations.Operand.*;
 
 public class RulesXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, Product, RulesXProductQueryBuilder,
-		RulesXProduct, java.util.UUID, RulesXProductSecurityToken>
+		RulesXProduct, java.util.UUID>
 {
 	@Override
 	public SingularAttribute<RulesXProduct, Rules> getPrimaryAttribute()
@@ -36,19 +31,17 @@ public class RulesXProductQueryBuilder
 	
 	
 	@jakarta.validation.constraints.NotNull
-	public RulesXProductQueryBuilder withClassification(String classification, String value, ISystems<?> system, UUID...identityToken)
+	public RulesXProductQueryBuilder withClassification(String classification, String value, ISystems<?,?> system, UUID...identityToken)
 	{
-		IClassificationService<?> classificationService = GuiceContext.get(IClassificationService.class);
-		IClassification<?> classification1 = classificationService.find(classification, system, identityToken);
 		JoinExpression joinExpression = new JoinExpression();
 		RulesXProductQueryBuilder builder =
 				new RulesXProduct()
 						.builder()
-						.withClassification((Classification) classification1,value)
+						.withClassification(classification,system)
+						.withValue(value)
 						.inActiveRange(system.getEnterpriseID())
 						.inDateRange()
-						.withEnterprise(system.getEnterpriseID())
-						.where(RulesXProduct_.classificationID, Equals, (Classification)classification1);
+						.withEnterprise(system.getEnterpriseID());
 		
 		if (!Strings.isNullOrEmpty(value))
 		{

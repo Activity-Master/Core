@@ -1,14 +1,13 @@
 package com.guicedee.activitymaster.core.services.system;
 
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 
 public interface IActivityMasterService
 {
-	void loadSystems(IEnterpriseName<?> enterpriseName, IActivityMasterProgressMonitor progressMonitor);
+	void loadSystems(String enterpriseName, IActivityMasterProgressMonitor progressMonitor);
 	
-	void loadUpdates(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor);
+	void loadUpdates(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor);
 	
 	void runScript(String script);
 

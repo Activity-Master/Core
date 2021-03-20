@@ -1,14 +1,13 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTypeTable;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
-import com.guicedee.activitymaster.core.services.enumtypes.ITypeValue;
-
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.UUID;
 
 /**
  * @param <S>
@@ -20,15 +19,13 @@ import java.lang.reflect.ParameterizedType;
 @MappedSuperclass
 
 public abstract class WarehouseClassificationRelationshipTypesTable<
-		P extends WarehouseCoreTable,
-		S extends WarehouseCoreTable,
-		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, T, I, ST, L, R>,
-		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, T, I, ST>,
-		T extends ITypeValue<?>,
-		I extends Serializable,
-		ST extends WarehouseSecurityTable
-		, L, R>
-		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST, L, R>
+		P extends WarehouseCoreTable<P,?, UUID>,
+		S extends WarehouseCoreTable<S,?,UUID>,
+		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q,  I>,
+		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J,  I>,
+		I extends java.util.UUID>
+		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I>
+		implements IWarehouseRelationshipClassificationTypeTable<J,Q,P,S,I>
 {
 	
 	@Serial
@@ -58,13 +55,6 @@ public abstract class WarehouseClassificationRelationshipTypesTable<
 	protected @NotNull Class<Q> getClassQueryBuilderClass()
 	{
 		return (Class<Q>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	protected @NotNull Class<ST> findPersistentSecurityClass()
-	{
-		return (Class<ST>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[6];
 	}
 	
 }

@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesXProductQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IProduct;
-import com.guicedee.activitymaster.core.services.dto.IRules;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -16,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -38,9 +34,7 @@ public class RulesXProduct
 		Product,
 		RulesXProduct,
 		RulesXProductQueryBuilder,
-		java.util.UUID,
-		RulesXProductSecurityToken,
-		IRules<?>, IProduct<?>>
+		java.util.UUID>
 {
 	
 	@Serial
@@ -78,13 +72,6 @@ public class RulesXProduct
 	public RulesXProduct(UUID RulesXProductID)
 	{
 		this.id = RulesXProductID;
-	}
-	
-	@Override
-	protected RulesXProductSecurityToken configureDefaultsForNewToken(RulesXProductSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	public java.util.UUID getId()
@@ -132,13 +119,13 @@ public class RulesXProduct
 	}
 	
 	@Override
-	public IRules<?> getPrimary()
+	public Rules getPrimary()
 	{
 		return getRulesID();
 	}
 	
 	@Override
-	public IProduct<?> getSecondary()
+	public Product getSecondary()
 	{
 		return getProductID();
 	}

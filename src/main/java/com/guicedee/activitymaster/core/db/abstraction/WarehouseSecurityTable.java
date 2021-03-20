@@ -1,21 +1,18 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
+import com.guicedee.activitymaster.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.activitymaster.core.systems.ActiveFlagSystem;
-import com.guicedee.guicedinjection.GuiceContext;
-import org.hibernate.annotations.JoinFormula;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.JoinFormula;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -28,7 +25,7 @@ import static jakarta.persistence.FetchType.*;
 @MappedSuperclass
 
 public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
-		                                            Q extends QueryBuilderSecurities<Q, J, I>, I extends Serializable>
+		                                            Q extends QueryBuilderSecurities<Q, J, I>, I extends java.util.UUID>
 		extends WarehouseBaseTable<J, Q, I>
 {
 
@@ -106,7 +103,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	{
 		setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
-		                                                                                            .getSystemToken((IEnterprise<?>) getEnterpriseID())));
+		                                                                                            .getSystemToken((IEnterprise) getEnterpriseID())));
 		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return (J) this;
@@ -198,9 +195,9 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 		return this;
 	}
 
-	public WarehouseSecurityTable<J, Q, I> setEnterpriseID(Enterprise enterpriseID)
+	public WarehouseSecurityTable<J, Q, I> setEnterpriseID(IEnterprise<?,?> enterpriseID)
 	{
-		this.enterpriseID = enterpriseID;
+		this.enterpriseID = (Enterprise) enterpriseID;
 		return this;
 	}
 

@@ -9,20 +9,12 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.geography.builders.GeographyXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IGeography;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -48,9 +40,7 @@ public class GeographyXClassification
 				                                                Classification,
 				                                                GeographyXClassification,
 				                                                GeographyXClassificationQueryBuilder,
-				                                                java.util.UUID,
-				                                                GeographyXClassificationSecurityToken,
-				                                                IGeography<?>, IClassification<?>>
+				                                                java.util.UUID>
 		implements Serializable
 {
 
@@ -83,13 +73,7 @@ public class GeographyXClassification
 	{
 		this.id = geographyXClassificationID;
 	}
-
-	@Override
-	protected GeographyXClassificationSecurityToken configureDefaultsForNewToken(GeographyXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
+	
 
 	public java.util.UUID getId()
 	{
@@ -146,13 +130,13 @@ public class GeographyXClassification
 	}
 
 	@Override
-	public IGeography<?> getPrimary()
+	public Geography getPrimary()
 	{
 		return getGeographyID();
 	}
 
 	@Override
-	public IClassification<?> getSecondary()
+	public Classification getSecondary()
 	{
 		return getClassificationID();
 	}

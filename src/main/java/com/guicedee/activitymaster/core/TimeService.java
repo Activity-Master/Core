@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Date;
 
-import static com.guicedee.activitymaster.core.services.types.DateTimeFormats.*;
+import static com.guicedee.activitymaster.client.services.classifications.types.DateTimeFormats.*;
 
 
 public class TimeService<J extends TimeService<J>>

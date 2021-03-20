@@ -1,6 +1,14 @@
 package com.guicedee.activitymaster.core.db.entities.address;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.implementations.Passwords;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.address.IAddress;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.geography.IGeography;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.builders.AddressQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -8,19 +16,12 @@ import com.guicedee.activitymaster.core.db.entities.events.EventXAddress;
 import com.guicedee.activitymaster.core.db.entities.geography.Geography;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedPartyXAddress;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.classifications.address.IAddressClassification;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -43,14 +44,8 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Address
-		extends WarehouseTable<Address, AddressQueryBuilder, java.util.UUID, AddressSecurityToken>
-		implements IContainsClassifications<Address, Classification, AddressXClassification, IAddressClassification<?>, IAddress<?>, IClassification<?>, Address>,
-		           IContainsGeographies<Address, Geography, AddressXGeography>,
-		           IContainsResourceItems<Address, ResourceItem, AddressXResourceItem, IClassificationValue<?>, IAddress<?>, IResourceItem<?>, Address>,
-		           IActivityMasterEntity<Address>,
-		           IContainsEnterprise<Address>,
-		           IContainsActiveFlags<Address>,
-		           IAddress<Address>
+		extends WarehouseTable<Address, AddressQueryBuilder, java.util.UUID>
+		implements IAddress<Address,AddressQueryBuilder>
 {
 	
 	@Serial
@@ -126,39 +121,13 @@ public class Address
 		this.id = addressID;
 	}
 	
-	@Override
-	protected AddressSecurityToken configureDefaultsForNewToken(AddressSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
-	@Override
-	public void configureForClassification(AddressXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setAddressID(this);
-	}
-	
-	@Override
-	public void setMyGeographyLinkValue(AddressXGeography classificationLink, Geography geography, IEnterprise<?> enterprise)
+
+	/*@Override
+	public void setMyGeographyLinkValue(AddressXGeography classificationLink, Geography geography, IEnterprise<?,?> enterprise)
 	{
 		classificationLink.setAddressID(this);
 		classificationLink.setGeographyID(geography);
-	}
-	
-	@Override
-	public void configureResourceItemLinkValue(AddressXResourceItem linkTable, Address primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setAddressID(this);
-		linkTable.setResourceItemID(secondary);
-	}
-	
-	@Override
-	public void configureResourceItemAddable(AddressXResourceItem linkTable, Address primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setAddressID(this);
-		linkTable.setResourceItemID(secondary);
-	}
+	}*/
 	
 	public List<AddressXClassification> getClassifications()
 	{
@@ -249,7 +218,7 @@ public class Address
 	
 	public @NotNull String getValue()
 	{
-		return this.value;
+		return new String(new Passwords().integerDecrypt(this.value));
 	}
 	
 	public Classification getClassificationID()
@@ -257,9 +226,16 @@ public class Address
 		return this.classificationID;
 	}
 	
+	@Override
+	public Address setClassificationID(IClassification<?, ?> classificationID)
+	{
+		this.classificationID = (Classification) classificationID;
+		return this;
+	}
+
 	public Address setValue(@NotNull String value)
 	{
-		this.value = value;
+		this.value = new Passwords().integerEncrypt(value.getBytes());
 		return this;
 	}
 	
@@ -269,4 +245,30 @@ public class Address
 		return this;
 	}
 	
+	@Override
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	{
+		AddressXClassification axg = (AddressXClassification) linkTable;
+		axg.setAddressID(this);
+	}
+	
+	@Override
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Address primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+		AddressXResourceItem axg = (AddressXResourceItem) linkTable;
+		axg.setAddressID(primary);
+		axg.setResourceItemID((ResourceItem) secondary);
+		axg.setClassificationID(classificationValue);
+		axg.setValue(value);
+	}
+	
+	@Override
+	public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Address primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+		AddressXGeography axg = (AddressXGeography) linkTable;
+		axg.setAddressID(primary);
+		axg.setGeographyID((Geography) secondary);
+		axg.setClassificationID(classificationValue);
+		axg.setValue(value);
+	}
 }

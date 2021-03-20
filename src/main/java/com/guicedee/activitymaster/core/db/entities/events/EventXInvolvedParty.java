@@ -4,18 +4,11 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventXInvolvedPartyQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IEvent;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -41,9 +34,7 @@ public class EventXInvolvedParty
 				                                                InvolvedParty,
 				                                                EventXInvolvedParty,
 				                                                EventXInvolvedPartyQueryBuilder,
-				                                                java.util.UUID,
-				                                                EventXInvolvedPartySecurityToken,
-				                                                IEvent<?>, IInvolvedParty<?>>
+				                                                java.util.UUID>
 {
 
 	@Serial
@@ -80,13 +71,6 @@ public class EventXInvolvedParty
 	public EventXInvolvedParty(UUID eventXInvolvedPartyID)
 	{
 		this.id = eventXInvolvedPartyID;
-	}
-
-	@Override
-	protected EventXInvolvedPartySecurityToken configureDefaultsForNewToken(EventXInvolvedPartySecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 
 	public java.util.UUID getId()
@@ -155,13 +139,13 @@ public class EventXInvolvedParty
 	}
 
 	@Override
-	public IEvent<?> getPrimary()
+	public Event getPrimary()
 	{
 		return getEventID();
 	}
 
 	@Override
-	public IInvolvedParty<?> getSecondary()
+	public InvolvedParty getSecondary()
 	{
 		return getInvolvedPartyID();
 	}

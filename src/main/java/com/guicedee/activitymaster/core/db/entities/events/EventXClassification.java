@@ -4,18 +4,11 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IEvent;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -41,9 +34,7 @@ public class EventXClassification
 				                                                Classification,
 				                                                EventXClassification,
 				                                                EventXClassificationQueryBuilder,
-				                                                java.util.UUID,
-				                                                EventXClassificationSecurityToken,
-				                                                IEvent<?>, IClassification<?>>
+				                                                java.util.UUID>
 {
 
 	@Serial
@@ -75,14 +66,7 @@ public class EventXClassification
 	{
 		this.id = eventXClassificationID;
 	}
-
-	@Override
-	protected EventXClassificationSecurityToken configureDefaultsForNewToken(EventXClassificationSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
@@ -138,13 +122,13 @@ public class EventXClassification
 	}
 
 	@Override
-	public IEvent<?> getPrimary()
+	public Event getPrimary()
 	{
 		return getEventID();
 	}
 
 	@Override
-	public IClassification<?> getSecondary()
+	public Classification getSecondary()
 	{
 		return getClassificationID();
 	}

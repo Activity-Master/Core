@@ -1,26 +1,23 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
 import com.fasterxml.jackson.annotation.*;
+import com.google.common.base.Strings;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassificationDataConcept;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationDataConceptQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsNameAndDescription;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsResourceItems;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationDataConceptValue;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -46,13 +43,12 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ClassificationDataConcept
-		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, java.util.UUID, ClassificationDataConceptSecurityToken>
+		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, java.util.UUID>
 		implements// IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
-		IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, IClassificationValue<?>, IClassificationDataConcept<?>, IResourceItem<?>, ClassificationDataConcept>,
-		IActivityMasterEntity<ClassificationDataConcept>,
-		IClassificationDataConcept<ClassificationDataConcept>,
-		IClassificationDataConceptValue,
-		IContainsNameAndDescription<ClassificationDataConcept>
+		//IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, String, IClassificationDataConcept<?>, IResourceItem<?,?>, ClassificationDataConcept>,
+		//IActivityMasterEntity<ClassificationDataConcept>,
+		IClassificationDataConcept<ClassificationDataConcept, ClassificationDataConceptQueryBuilder>
+		//IContainsNameAndDescription<ClassificationDataConcept>
 {
 	
 	@Serial
@@ -124,34 +120,13 @@ public class ClassificationDataConcept
 	@Override
 	public String toString()
 	{
-		return "ClassificationDataConcept - " + getName();
+		return getName();
 	}
 	
-	@Override
-	protected ClassificationDataConceptSecurityToken configureDefaultsForNewToken(ClassificationDataConceptSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		ClassificationDataConceptSecurityToken token = super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem);
-		token.setBase(this);
-		return token;
-	}
-	
-	public void configureForClassification(ClassificationDataConceptXClassification classificationLink, ISystems<?> system)
+
+	public void configureForClassification(ClassificationDataConceptXClassification classificationLink, ISystems<?,?> system)
 	{
 		classificationLink.setClassificationDataConceptID(this);
-	}
-	
-	@Override
-	public void configureResourceItemLinkValue(ClassificationDataConceptXResourceItem linkTable, ClassificationDataConcept primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setClassificationDataConceptID(this);
-		linkTable.setResourceItemID(secondary);
-	}
-	
-	@Override
-	public void configureResourceItemAddable(ClassificationDataConceptXResourceItem linkTable, ClassificationDataConcept primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setClassificationDataConceptID(this);
-		linkTable.setResourceItemID(secondary);
 	}
 	
 	public List<Classification> getClassificationList()
@@ -255,16 +230,24 @@ public class ClassificationDataConcept
 		this.description = description;
 		return this;
 	}
-	
-	@Override
+
 	public String name()
 	{
 		return name;
 	}
 	
-	@Override
 	public String classificationValue()
 	{
 		return name;
+	}
+	
+	@Override
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, ClassificationDataConcept primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	{
+		ClassificationDataConceptXResourceItem cdc = (ClassificationDataConceptXResourceItem) linkTable;
+		cdc.setClassificationDataConceptID(primary);
+		cdc.setResourceItemID((ResourceItem) secondary);
+		cdc.setClassificationID(classificationValue);
+		cdc.setValue(Strings.nullToEmpty(value));
 	}
 }

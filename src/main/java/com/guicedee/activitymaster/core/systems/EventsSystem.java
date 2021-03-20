@@ -2,15 +2,17 @@ package com.guicedee.activitymaster.core.systems;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.system.*;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.core.services.system.ITimeSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.Date;
 
-import static com.guicedee.activitymaster.core.services.system.IEventService.*;
+import static com.guicedee.activitymaster.client.services.IEventService.*;
 
 
 public class EventsSystem
@@ -21,7 +23,7 @@ public class EventsSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		systemsService.get()
 		              .create(enterprise, getSystemName(), getSystemDescription());
@@ -30,7 +32,7 @@ public class EventsSystem
 	}
 	
 	@Override
-	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Loading Events", "Events creating default types", progressMonitor);
 	

@@ -101,6 +101,37 @@
             <artifactId>mapstruct</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>hibernate-jcache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>cache-annotations-ri-guice</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>guice-persist</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>guice-servlet</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.armineasy.activitymaster</groupId>
+            <artifactId>activity-master-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>com.guicedee.servlets</groupId>
+            <artifactId>guiced-rest-services</artifactId>
+        </dependency>-->
+
     </dependencies>
 
     <build>

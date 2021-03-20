@@ -2,11 +2,11 @@ package com.guicedee.activitymaster.core.services.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.guicedee.activitymaster.client.services.ISecurityTokenService;
+import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.system.ISecurityTokenService;
-import com.guicedee.activitymaster.core.services.system.ISystemsService;
 
 import java.util.Set;
 import java.util.UUID;
@@ -14,7 +14,7 @@ import java.util.UUID;
 public class SystemsTokenProvider implements Provider<UUID>
 {
 	@Inject
-	private Provider<IEnterprise<?>> enterprise;
+	private Provider<IEnterprise<?,?>> enterprise;
 	
 	private String systemName;
 	
@@ -55,8 +55,7 @@ public class SystemsTokenProvider implements Provider<UUID>
 					{
 						try
 						{
-							return system.getSystemToken(enterprise.get()
-							                                       .classificationName());
+							return system.getSystemToken(enterprise.get().getName());
 						}catch (Throwable T)
 						{
 							//Sys Tokens not ready

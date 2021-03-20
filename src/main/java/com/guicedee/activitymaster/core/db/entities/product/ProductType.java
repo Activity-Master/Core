@@ -1,15 +1,11 @@
 package com.guicedee.activitymaster.core.db.entities.product;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.products.IProductType;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductTypeQueryBuilder;
-import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemXClassification;
-import com.guicedee.activitymaster.core.services.capabilities.IActivityMasterEntity;
-import com.guicedee.activitymaster.core.services.capabilities.IContainsClassifications;
-import com.guicedee.activitymaster.core.services.dto.*;
-
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,9 +13,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -44,10 +38,8 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ProductType
-		extends WarehouseSCDNameDescriptionTable<ProductType, ProductTypeQueryBuilder, java.util.UUID, ProductTypeSecurityToken>
-		implements IProductType<ProductType>,
-		           IActivityMasterEntity<ProductType>,
-		           IContainsClassifications<ProductType, Classification, ProductTypeXClassification, IClassificationValue<?>, IProductType<?>,IClassification<?>,ProductType>
+		extends WarehouseTable<ProductType, ProductTypeQueryBuilder, UUID>
+		implements IProductType<ProductType,ProductTypeQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -107,13 +99,6 @@ public class ProductType
 		this.description = productTypeDesc;
 	}
 	
-	@Override
-	protected ProductTypeSecurityToken configureDefaultsForNewToken(ProductTypeSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
 	public List<ProductXProductType> getProductXProductTypeList()
 	{
 		return this.productXProductTypeList;
@@ -163,11 +148,6 @@ public class ProductType
 		return "ProductType - " + getName();
 	}
 	
-	@Override
-	public java.util.UUID getId()
-	{
-		return this.id;
-	}
 	
 	@Override
 	public @NotNull @Size(min = 1,
@@ -189,6 +169,11 @@ public class ProductType
 		this.id = id;
 		return this;
 	}
+	@Override
+	public java.util.UUID getId()
+	{
+		return this.id;
+	}
 	
 	@Override
 	public ProductType setName(@NotNull @Size(min = 1,
@@ -205,23 +190,12 @@ public class ProductType
 		this.description = description;
 		return this;
 	}
-	
+
 	@Override
-	public String name()
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
 	{
-		return getName();
+		ProductTypeXClassification pxc = (ProductTypeXClassification) linkTable;
+		pxc.setProductTypeID(this);
 	}
-	
-	@Override
-	public String classificationValue()
-	{
-		return getDescription();
-	}
-	
-	
-	@Override
-	public void configureForClassification(ProductTypeXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setProductTypeID(this);
-	}
+
 }

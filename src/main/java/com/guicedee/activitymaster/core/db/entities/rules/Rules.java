@@ -1,28 +1,28 @@
 package com.guicedee.activitymaster.core.db.entities.rules;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.arrangements.IArrangement;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.products.IProduct;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.rules.IRules;
+import com.guicedee.activitymaster.client.services.builders.warehouse.rules.IRulesType;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
+import com.guicedee.activitymaster.core.db.entities.arrangement.Arrangement;
 import com.guicedee.activitymaster.core.db.entities.product.Product;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesQueryBuilder;
-import com.guicedee.activitymaster.core.db.hierarchies.RulesHierarchyView;
-import com.guicedee.activitymaster.core.services.capabilities.*;
-import com.guicedee.activitymaster.core.services.classifications.rules.IRulesClassification;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.IClassificationValue;
-import com.guicedee.activitymaster.core.services.enumtypes.IRulesTypeValue;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -45,15 +45,8 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Rules
-		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, java.util.UUID, RulesSecurityToken>
-		implements IContainsClassifications<Rules, Classification, RulesXClassification, IRulesClassification<?>, IRules<?>, IClassification<?>, Rules>,
-		           IContainsResourceItems<Rules, ResourceItem, RulesXResourceItem, IClassificationValue<?>, IRules<?>, IResourceItem<?>, Rules>,
-		           IContainsInvolvedParties<Rules, InvolvedParty, RulesXInvolvedParty, IClassificationValue<?>, IRules<?>, IInvolvedParty<?>, Rules>,
-		           IContainsProducts<Rules, Product, RulesXProduct, IClassificationValue<?>, IRules<?>, IProduct<?>, Rules>,
-		           IContainsRulesTypes<Rules, RulesType, RulesXRulesType, IRulesClassification<?>, IRulesTypeValue<?>, IRules<?>, IRulesType<?>, Rules>,
-		           IActivityMasterEntity<Rules>,
-		           IRules<Rules>,
-		           IContainsHierarchy<Rules, RulesXRules, RulesHierarchyView, IRules<?>, Rules>
+		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, java.util.UUID>
+		implements IRules<Rules,RulesQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -133,33 +126,6 @@ public class Rules
 		id = rulesID;
 		name = rulesName;
 		description = rulesDesc;
-	}
-	
-	@Override
-	protected RulesSecurityToken configureDefaultsForNewToken(RulesSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-	
-	@Override
-	public void configureForClassification(RulesXClassification classificationLink, ISystems<?> system)
-	{
-		classificationLink.setRulesID(this);
-	}
-	
-	@Override
-	public void configureResourceItemLinkValue(RulesXResourceItem linkTable, Rules primary, ResourceItem secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setResourceItemID(secondary);
-		linkTable.setRulesID(this);
-	}
-	
-	@Override
-	public void configureResourceItemAddable(RulesXResourceItem linkTable, Rules primary, ResourceItem secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
-	{
-		linkTable.setResourceItemID(secondary);
-		linkTable.setRulesID(this);
 	}
 	
 	public List<RulesXClassification> getClassifications()
@@ -280,48 +246,62 @@ public class Rules
 		return this;
 	}
 	
+	
 	@Override
-	public void configureRulesTypeLinkValue(RulesXRulesType linkTable, Rules primary, RulesType secondary, IClassification<?> classificationValue, String value, ISystems<?> system)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Rules, Rules, UUID> newLink, Rules parent, Rules child, String value)
 	{
-		linkTable.setRulesID(primary);
-		linkTable.setRulesTypeID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
-		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
+		RulesXRules r = (RulesXRules) newLink;
+		r.setParentRulesID(parent);
+		r.setChildRulesID(child);
+		r.setValue(value);
 	}
 	
 	@Override
-	public void setMyInvolvedPartyLinkValue(RulesXInvolvedParty classificationLink, Rules first, InvolvedParty involvedParty, ISystems<?> enterprise)
+	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Rules primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-		classificationLink.setRulesID(first);
-		classificationLink.setInvolvedPartyID(involvedParty);
+		RulesXArrangement r = (RulesXArrangement) linkTable;
+		r.setRulesID(primary);
+		r.setArrangementID((Arrangement) secondary);
+		r.setClassificationID(classificationValue);
+		r.setValue(value);
+		
 	}
 	
 	@Override
-	public void configureAddable(RulesXInvolvedParty linkTable, Rules primary, InvolvedParty secondary, IClassificationValue<?> classificationValue, String value, IEnterprise<?> enterprise)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
 	{
-		linkTable.setRulesID(primary);
-		linkTable.setInvolvedPartyID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
-		linkTable.setEnterpriseID((Enterprise) enterprise);
+		RulesXClassification rxc = (RulesXClassification) linkTable;
+		rxc.setRulesID(this);
 	}
 	
 	@Override
-	public void configureAddableProduct(RulesXProduct linkTable, Rules primary, Product secondary, IClassificationValue<?> classificationValue, String value, ISystems<?> system)
+	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-		linkTable.setRulesID(primary);
-		linkTable.setProductID(secondary);
-		linkTable.setClassificationID((Classification) classificationValue);
-		linkTable.setValue(value);
-		linkTable.setEnterpriseID((Enterprise) system.getEnterprise());
+		RulesXProduct rxp = (RulesXProduct) linkTable;
+		rxp.setRulesID(primary);
+		rxp.setProductID((Product) secondary);
+		rxp.setClassificationID(classificationValue);
+		rxp.setValue(value);
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(RulesXRules newLink, Rules parent, Rules child, String value)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Rules primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-		newLink.setParentRulesID(parent);
-		newLink.setChildRulesID(child);
-		newLink.setValue(Objects.requireNonNullElse(value, ""));
+		RulesXResourceItem r = (RulesXResourceItem) linkTable;
+		r.setRulesID(primary);
+		r.setResourceItemID((ResourceItem) secondary);
+		r.setClassificationID(classificationValue);
+		r.setValue(value);
+		
+	}
+	
+	@Override
+	public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Rules primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
+	{
+		RulesXRulesType r = (RulesXRulesType) linkTable;
+		r.setRulesID(primary);
+		r.setRulesTypeID((RulesType) secondary);
+		r.setClassificationID(classificationValue);
+		r.setValue(value);
 	}
 }

@@ -3,19 +3,11 @@ package com.guicedee.activitymaster.core.db.entities.events;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventXEventTypeQueryBuilder;
-import com.guicedee.activitymaster.core.services.classifications.events.IEventClassification;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IEvent;
-import com.guicedee.activitymaster.core.services.dto.IEventType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -42,10 +34,7 @@ public class EventXEventType
 		EventType,
 		EventXEventType,
 		EventXEventTypeQueryBuilder,
-		IEventClassification<?>,
-		java.util.UUID,
-		EventXEventTypeSecurityToken,
-		IEvent<?>, IEventType<?>>
+		java.util.UUID>
 {
 	
 	@Serial
@@ -82,13 +71,6 @@ public class EventXEventType
 	public EventXEventType(UUID eventXEventTypeID)
 	{
 		this.id = eventXEventTypeID;
-	}
-	
-	@Override
-	protected EventXEventTypeSecurityToken configureDefaultsForNewToken(EventXEventTypeSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	@Override
@@ -159,13 +141,13 @@ public class EventXEventType
 	}
 	
 	@Override
-	public IEvent<?> getPrimary()
+	public Event getPrimary()
 	{
 		return getEventID();
 	}
 	
 	@Override
-	public IEventType<?> getSecondary()
+	public EventType getSecondary()
 	{
 		return getEventTypeID();
 	}

@@ -1,17 +1,13 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
+import java.util.UUID;
 
 /**
  * @param <S>
@@ -22,14 +18,13 @@ import java.lang.reflect.ParameterizedType;
  */
 @MappedSuperclass
 
-public abstract class WarehouseClassificationRelationshipTable<P extends WarehouseCoreTable,
-		S extends WarehouseCoreTable,
-		J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I, ST, L, R>,
-		Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I, ST>,
-		I extends Serializable,
-		ST extends WarehouseSecurityTable
-		, L, R>
-		extends WarehouseRelationshipTable<P, S, J, Q, I, ST, L, R>
+public abstract class WarehouseClassificationRelationshipTable <P extends WarehouseCoreTable<P,?, UUID>,
+		S extends WarehouseCoreTable<S,?,UUID>,
+		J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I>,
+		Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I>,
+		I extends java.util.UUID>
+		extends WarehouseRelationshipTable<P, S, J, Q, I>
+		implements IWarehouseRelationshipClassificationTable<J,Q,P,S,I>
 {
 	
 	@Serial
@@ -48,6 +43,19 @@ public abstract class WarehouseClassificationRelationshipTable<P extends Warehou
 	}
 	
 	@Override
+	public J setClassificationID(IClassification classificationID)
+	{
+		this.classificationID = (Classification) classificationID;
+		return (J)this;
+	}
+	
+	@Override
+	public Classification getClassificationID()
+	{
+		return classificationID;
+	}
+	
+	/*	@Override
 	@SuppressWarnings("unchecked")
 	protected @NotNull Class<Q> getClassQueryBuilderClass()
 	{
@@ -60,15 +68,15 @@ public abstract class WarehouseClassificationRelationshipTable<P extends Warehou
 	{
 		return (Class<ST>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[5];
 	}
-	
-	public Classification getClassificationID()
+	*/
+/*	public IClassification<?,?> getClassificationID()
 	{
 		return this.classificationID;
 	}
 	
-	public J setClassificationID(Classification classificationID)
+	public J setClassificationID(IClassification<?,?> classificationID)
 	{
-		this.classificationID = classificationID;
+		this.classificationID = (Classification) classificationID;
 		return (J) this;
-	}
+	}*/
 }

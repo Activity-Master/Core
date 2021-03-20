@@ -5,18 +5,11 @@
  */
 package com.guicedee.activitymaster.core.db.abstraction.builders;
 
+import com.guicedee.activitymaster.client.services.builders.IQueryBuilderRelationships;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseRelationshipTable;
-import com.guicedee.activitymaster.core.db.abstraction.WarehouseSecurityTable;
-import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasValueQueryBuilder;
-import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IHasClassificationQueryBuilder;
 
-import jakarta.persistence.metamodel.Attribute;
-
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-
-import static com.entityassist.enumerations.Operand.*;
+import java.util.UUID;
 
 /**
  * Default query builder for relationship tables
@@ -29,100 +22,13 @@ import static com.entityassist.enumerations.Operand.*;
  *
  * @author Marc Magon
  */
-public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable,
-		S extends WarehouseBaseTable,
-		J extends QueryBuilderRelationship<P, S, J, E, I, ST>,
-		E extends WarehouseRelationshipTable<P, S, E, J, I, ST, ?, ?>,
-		I extends Serializable,
-		ST extends WarehouseSecurityTable>
-		extends QueryBuilderTable<J, E, I, ST>
-		implements IHasValueQueryBuilder<J, E, I>,
-		           IHasClassificationQueryBuilder<J, E, I>
+public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P,?,UUID>,
+		S extends WarehouseBaseTable<S,?, UUID>,
+		J extends QueryBuilderRelationship<P, S, J, E, I>,
+		E extends WarehouseRelationshipTable<P, S, E, J, I>,
+		I extends java.util.UUID>
+		extends QueryBuilderTable<J, E, I>
+		implements IQueryBuilderRelationships<J,E,P,S,I>
 {
-	@SuppressWarnings("unchecked")
-	@jakarta.validation.constraints.NotNull
-	public J findLink(P parent, S child)
-	{
-		if (parent != null)
-		{
-			where(getPrimaryAttribute(), Equals, parent);
-		}
-		if (child != null)
-		{
-			where(getSecondaryAttribute(), Equals, child);
-		}
-		return (J) this;
-	}
-	
-	public abstract Attribute getPrimaryAttribute();
-	
-	public abstract Attribute getSecondaryAttribute();
-	
-	@SuppressWarnings("unchecked")
-	@jakarta.validation.constraints.NotNull
-	public J findLink(P parent, S child, String value)
-	{
-		if (parent != null)
-		{
-			where(getPrimaryAttribute(), Equals, parent);
-		}
-		if (child != null)
-		{
-			where(getSecondaryAttribute(), Equals, child);
-		}
-		withValue(value);
-		return (J) this;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@jakarta.validation.constraints.NotNull
-	public J findChildLink(S child)
-	{
-		return findChildLink(child, null);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@jakarta.validation.constraints.NotNull
-	public J findChildLink(S child, String value)
-	{
-		where(getSecondaryAttribute(), Equals, child);
-		if (value != null)
-		{
-			withValue(value);
-		}
-		return (J) this;
-	}
-	
-	
-	@SuppressWarnings("unchecked")
-	@jakarta.validation.constraints.NotNull
-	public J findParentLink(P child)
-	{
-		return findParentLink(child, null);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@jakarta.validation.constraints.NotNull
-	public J findParentLink(P parent, String value)
-	{
-		if (parent != null)
-		{
-			if (parent.getId() != null)
-			{
-				where(getPrimaryAttribute(), Equals, parent);
-			}
-		}
-		if (value != null)
-		{
-			withValue(value);
-		}
-		return (J) this;
-	}
-	
-	
-	public Class<ST> findSecurityClass()
-	{
-		return (Class<ST>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[5];
-	}
-	
+
 }

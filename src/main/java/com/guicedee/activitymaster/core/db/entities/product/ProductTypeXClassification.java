@@ -4,18 +4,15 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.product.builders.ProductTypeXClassificationQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.*;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -38,9 +35,7 @@ public class ProductTypeXClassification
 		Classification,
 		ProductTypeXClassification,
 		ProductTypeXClassificationQueryBuilder,
-		UUID,
-		ProductTypeXClassificationSecurityToken,
-		IProductType<?>, IClassification<?>>
+		UUID>
 		implements Serializable
 {
 	
@@ -75,12 +70,6 @@ public class ProductTypeXClassification
 		this.id = productXClassificationID;
 	}
 	
-	@Override
-	protected ProductTypeXClassificationSecurityToken configureDefaultsForNewToken(ProductTypeXClassificationSecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
 	
 	public UUID getId()
 	{
@@ -138,13 +127,13 @@ public class ProductTypeXClassification
 	}
 	
 	@Override
-	public IProductType<?> getPrimary()
+	public ProductType getPrimary()
 	{
 		return getProductTypeID();
 	}
 	
 	@Override
-	public IClassification<?> getSecondary()
+	public Classification getSecondary()
 	{
 		return getSecondary();
 	}

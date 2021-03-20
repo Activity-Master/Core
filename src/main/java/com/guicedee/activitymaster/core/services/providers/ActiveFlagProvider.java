@@ -2,16 +2,17 @@ package com.guicedee.activitymaster.core.services.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.guicedee.activitymaster.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
-import com.guicedee.activitymaster.core.services.dto.IActiveFlag;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
+import com.guicedee.activitymaster.core.db.entities.activeflag.builders.ActiveFlagQueryBuilder;
 import com.guicedee.activitymaster.core.services.exceptions.ActiveFlagException;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 
-public class ActiveFlagProvider implements Provider<IActiveFlag<ActiveFlag>>
+public class ActiveFlagProvider implements Provider<IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>>
 {
 	@Inject
-	private Provider<IEnterprise<?>> enterprise;
+	private Provider<IEnterprise<?,?>> enterprise;
 	
 	@Inject
 	private Provider<IActiveFlagService<?>> activeFlagService;
@@ -24,17 +25,20 @@ public class ActiveFlagProvider implements Provider<IActiveFlag<ActiveFlag>>
 	}
 	
 	@Override
-	public IActiveFlag<ActiveFlag> get()
+	public IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder> get()
 	{
-		if (enterprise.get().isFake())
+		if (enterprise.get()
+		              .isFake())
 		{
 			return new ActiveFlag();
 		}
 		try
 		{
 			//noinspection unchecked
-			return (IActiveFlag<ActiveFlag>) activeFlagService.get().findFlagByName(flag, enterprise.get());
-		}catch (ActiveFlagException e)
+			return (IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>) activeFlagService.get()
+			                                                                          .findFlagByName(flag, enterprise.get());
+		}
+		catch (ActiveFlagException e)
 		{
 			return new ActiveFlag();
 		}

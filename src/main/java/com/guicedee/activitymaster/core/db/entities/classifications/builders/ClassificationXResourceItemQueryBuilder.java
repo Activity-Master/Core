@@ -1,18 +1,13 @@
 package com.guicedee.activitymaster.core.db.entities.classifications.builders;
 
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassification;
-import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXResourceItem;
-import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXResourceItemSecurityToken;
-import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationXResourceItem_;
+import com.guicedee.activitymaster.core.db.entities.classifications.*;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-
-import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ClassificationXResourceItemQueryBuilder
 		extends QueryBuilderRelationshipClassification<Classification, ResourceItem, ClassificationXResourceItemQueryBuilder,
-						                                              ClassificationXResourceItem, java.util.UUID, ClassificationXResourceItemSecurityToken>
+						                                              ClassificationXResourceItem, java.util.UUID>
 {
 	@Override
 	public SingularAttribute<ClassificationXResourceItem, Classification> getPrimaryAttribute()

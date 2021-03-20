@@ -2,24 +2,22 @@ package com.guicedee.activitymaster.core.db.entities.geography.builders;
 
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
+import com.guicedee.activitymaster.client.services.builders.warehouse.geography.IGeography;
+import com.guicedee.activitymaster.client.services.builders.warehouse.geography.IGeographyQueryBuilder;
 import com.guicedee.activitymaster.core.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
-import com.guicedee.activitymaster.core.db.abstraction.builders.handlers.IContainsClassificationsQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.geography.*;
-import com.guicedee.activitymaster.core.services.dto.IGeography;
-
 import jakarta.persistence.criteria.JoinType;
 import jakarta.validation.constraints.Null;
 
 import static com.entityassist.enumerations.Operand.*;
 
 public class GeographyQueryBuilder
-		extends QueryBuilderSCDNameDescription<GeographyQueryBuilder, Geography, java.util.UUID, GeographySecurityToken>
-		implements IContainsClassificationsQueryBuilder<GeographyQueryBuilder, Geography, java.util.UUID, GeographyXClassification>
-		           //IContainsValueQueryBuilder<GeographyQueryBuilder, Geography, java.util.UUID>
+		extends QueryBuilderSCDNameDescription<GeographyQueryBuilder, Geography, java.util.UUID>
+		implements IGeographyQueryBuilder<GeographyQueryBuilder,Geography>
 {
 
 	@jakarta.validation.constraints.NotNull
-	public GeographyQueryBuilder withParent(IGeography<?> parent, @Null String value)
+	public GeographyQueryBuilder withParent(IGeography<?,?> parent, @Null String value)
 	{
 		if(parent == null)
 			return this;

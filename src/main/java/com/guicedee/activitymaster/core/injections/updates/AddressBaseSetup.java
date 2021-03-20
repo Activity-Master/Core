@@ -2,16 +2,16 @@ package com.guicedee.activitymaster.core.injections.updates;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.services.classifications.address.*;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
+import com.guicedee.activitymaster.client.services.IClassificationService;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.administration.ISystemUpdate;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.address.*;
 import com.guicedee.activitymaster.core.updates.DatedUpdate;
-import com.guicedee.activitymaster.core.updates.ISystemUpdate;
 
+import static com.guicedee.activitymaster.client.services.classifications.address.AddressClassifications.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
-import static com.guicedee.activitymaster.core.services.classifications.address.AddressClassifications.*;
 
 @DatedUpdate(date = "2016/01/05", taskCount = 15)
 public class AddressBaseSetup implements ISystemUpdate
@@ -21,10 +21,10 @@ public class AddressBaseSetup implements ISystemUpdate
 	
 	@Inject
 	@Named(ActivityMasterSystemName)
-	private ISystems<?> activityMasterSystem;
+	private ISystems<?,?> activityMasterSystem;
 	
 	@Override
-	public void update(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void update(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		createDefaultTelephones(enterprise, progressMonitor);
 		createDefaultInternetAddresses(enterprise, progressMonitor);
@@ -32,7 +32,7 @@ public class AddressBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("Duplicates")
-	private void createDefaultTelephones(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createDefaultTelephones(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		service.create(AddressClassifications.Address, activityMasterSystem);
 		service.create(ContactAddress, activityMasterSystem,AddressClassifications.Address);
@@ -99,7 +99,7 @@ public class AddressBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("Duplicates")
-	private void createDefaultInternetAddresses(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createDefaultInternetAddresses(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Address System", "Starting Internet Address Checks", progressMonitor);
 		
@@ -146,7 +146,7 @@ public class AddressBaseSetup implements ISystemUpdate
 	}
 	
 	@SuppressWarnings("Duplicates")
-	private void createDefaultPhysicalAddresses(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	private void createDefaultPhysicalAddresses(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Address System", "Starting Physical Address Checks", progressMonitor);
 		

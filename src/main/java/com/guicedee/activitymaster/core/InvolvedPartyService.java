@@ -2,6 +2,15 @@ package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.guicedee.activitymaster.client.implementations.Passwords;
+import com.guicedee.activitymaster.client.services.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.party.*;
+import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.client.services.builders.warehouse.security.ISecurityToken;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
@@ -9,13 +18,8 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.Invol
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.enumtypes.*;
 import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
-import com.guicedee.activitymaster.core.services.security.Passwords;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedinjection.pairing.Pair;
@@ -31,10 +35,10 @@ import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.*;
+import static com.guicedee.activitymaster.client.services.classifications.DefaultClassifications.*;
+import static com.guicedee.activitymaster.client.services.classifications.InvolvedPartyClassifications.*;
+import static com.guicedee.activitymaster.client.services.classifications.types.IdentificationTypes.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
-import static com.guicedee.activitymaster.core.services.classifications.classification.Classifications.*;
-import static com.guicedee.activitymaster.core.services.classifications.involvedparty.InvolvedPartyClassifications.*;
-import static com.guicedee.activitymaster.core.services.types.IdentificationTypes.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
@@ -45,21 +49,21 @@ public class InvolvedPartyService
 	
 	@Inject
 	@Named("Active")
-	private IActiveFlag<?> activeFlag;
+	private IActiveFlag<?,?> activeFlag;
 	
 	@Inject
-	private IEnterprise<?> enterprise;
+	private IEnterprise<?,?> enterprise;
 	
 	@Inject
 	@Named(ActivityMasterSystemName)
-	private ISystems<?> activityMasterSystem;
+	private ISystems<?,?> activityMasterSystem;
 	
 	@Inject
 	private IClassificationService<?> classificationService;
 	
 	@Override
 	@CacheResult(cacheName = "InvovledPartyByID")
-	public IInvolvedParty<?> findByID(@CacheKey UUID id)
+	public IInvolvedParty<?,?> findByID(@CacheKey UUID id)
 	{
 		return new InvolvedParty().builder()
 		                          .find(id)
@@ -68,13 +72,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	public IInvolvedPartyNameType<?> createNameType(ITypeValue<?> name, String description, ISystems<?> system)
-	{
-		return createNameType(name.classificationValue(), description, system);
-	}
-	
-	@Override
-	public IInvolvedPartyNameType<?> createNameType(String name, String description, ISystems<?> system, UUID... identityToken)
+	public IInvolvedPartyNameType<?,?> createNameType(String name, String description, ISystems<?,?> system, UUID... identityToken)
 	{
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
 		
@@ -100,20 +98,15 @@ public class InvolvedPartyService
 		}
 		else
 		{
-			return findNameType(name, system, identityToken);
+			return findInvolvedPartyNameType(name, system, identityToken);
 		}
 		
 		return xr;
 	}
 	
+
 	@Override
-	public IInvolvedPartyIdentificationType<?> createIdentificationType(ISystems<?> system, ITypeValue<?> name, String description, UUID... identityToken)
-	{
-		return createIdentificationType(system, name.name(), description, identityToken);
-	}
-	
-	@Override
-	public IInvolvedPartyIdentificationType<?> createIdentificationType(ISystems<?> system, String name, String description, UUID... identityToken)
+	public IInvolvedPartyIdentificationType<?,?> createIdentificationType(ISystems<?,?> system, String name, String description, UUID... identityToken)
 	{
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
 		
@@ -138,19 +131,13 @@ public class InvolvedPartyService
 		}
 		else
 		{
-			return findIdentificationType(name, system, identityToken);
+			return findInvolvedPartyIdentificationType(name, system, identityToken);
 		}
 		return xr;
 	}
 	
 	@Override
-	public IInvolvedPartyType<?> createType(ISystems<?> system, ITypeValue<?> name, String description)
-	{
-		return createType(system, name.classificationValue(), description);
-	}
-	
-	@Override
-	public IInvolvedPartyType<?> createType(ISystems<?> system, String name, String description, UUID... identityToken)
+	public IInvolvedPartyType<?,?> createType(ISystems<?,?> system, String name, String description, UUID... identityToken)
 	{
 		InvolvedPartyType xr = new InvolvedPartyType();
 		
@@ -182,12 +169,11 @@ public class InvolvedPartyService
 		return xr;
 	}
 	
-	@Override
-	public IInvolvedPartyOrganicType<?> createOrganicType(ISystems<?> system, ITypeValue<?> name, String description, UUID... identityToken)
+	public InvolvedPartyOrganicType createOrganicType(ISystems<?,?> system, String name, String description, UUID... identityToken)
 	{
 		InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
 		boolean exists = xr.builder()
-		                   .withName(name.classificationValue())
+		                   .withName(name)
 		                   .inActiveRange(enterprise, identityToken)
 		                   .inDateRange()
 		                   .withEnterprise(enterprise)
@@ -195,7 +181,7 @@ public class InvolvedPartyService
 		
 		if (!exists)
 		{
-			xr.setName(name.classificationValue());
+			xr.setName(name);
 			xr.setDescription(description);
 			xr.setSystemID((Systems) system);
 			xr.setOriginalSourceSystemID((Systems) system);
@@ -208,7 +194,7 @@ public class InvolvedPartyService
 		else
 		{
 			xr = xr.builder()
-			       .withName(name.classificationValue())
+			       .withName(name)
 			       .inActiveRange(enterprise, identityToken)
 			       .inDateRange()
 			       .withEnterprise(enterprise)
@@ -219,28 +205,14 @@ public class InvolvedPartyService
 		return xr;
 	}
 	
-	@CacheResult(cacheName = "InvolvedPartyGetIdentificationType")
-	@Override
-	public IInvolvedPartyIdentificationType<?> findIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
-	{
-		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
-		return xr.builder()
-		         .withName(idType.classificationValue())
-		         .inActiveRange(enterprise, tokens)
-		         .inDateRange()
-		         //     .canRead(enterprise, tokens)
-		         .get()
-		         .orElseThrow(() -> new ActivityMasterException("No Read Access or No Item Found"));
-	}
-	
 	@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
 	@Override
-	public IInvolvedPartyIdentificationType<?> findIdentificationType(@CacheKey String idType, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
+	public IInvolvedPartyIdentificationType<?,?> findInvolvedPartyIdentificationType(@CacheKey String idType, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
 		return xr.builder()
 		         .withName(idType)
-		         .inActiveRange(enterprise, tokens)
+		         .inActiveRange(enterprise, identityToken)
 		         .inDateRange()
 		         //     .canRead(enterprise, tokens)
 		         .get()
@@ -249,16 +221,16 @@ public class InvolvedPartyService
 	
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
-	public IInvolvedParty<?> findByIdentificationType(@CacheKey IIdentificationType<?> idType, @CacheKey String value, ISystems<?> system, @CacheKey UUID... tokens)
+	public IInvolvedParty<?,?> findByIdentificationType(@CacheKey String idType, @CacheKey String hierarchyLinkValue, ISystems<?,?> system, @CacheKey UUID... tokens)
 	{
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> builder = new InvolvedPartyXInvolvedPartyIdentificationType()
 				.builder()
 				.canRead(system, tokens)
 				.inActiveRange(enterprise, tokens)
 				.inDateRange()
-				.findChildLink(
-						(InvolvedPartyIdentificationType) findIdentificationType(idType, system, tokens),
-						value)
+				.findLink(null,
+						(InvolvedPartyIdentificationType) findInvolvedPartyIdentificationType(idType, system, tokens),
+						hierarchyLinkValue)
 				.setReturnFirst(true)
 				.get();
 		return builder.map(InvolvedPartyXInvolvedPartyIdentificationType::getInvolvedPartyID)
@@ -268,14 +240,14 @@ public class InvolvedPartyService
 	
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
-	public IInvolvedParty<?> findByResourceItem(@CacheKey IResourceItem<?> idType, @CacheKey String value, ISystems<?> system, @CacheKey UUID... tokens)
+	public IInvolvedParty<?,?> findByResourceItem(@CacheKey IResourceItem<?,?> idType, @CacheKey String value, ISystems<?,?> system, @CacheKey UUID... tokens)
 	{
 		Optional<InvolvedPartyXResourceItem> builder = new InvolvedPartyXResourceItem()
 				.builder()
 				.canRead(system, tokens)
 				.inActiveRange(enterprise, tokens)
 				.inDateRange()
-				.findChildLink(
+				.findLink(null,
 						(ResourceItem) idType,
 						value)
 				.setReturnFirst(true)
@@ -285,7 +257,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	public IInvolvedParty<?> findByUsernameAndPassword(String username, String password, ISystems<?> system, boolean throwForNoUser, UUID... token)
+	public IInvolvedParty<?,?> findByUsernameAndPassword(String username, String password, ISystems<?,?> system, boolean throwForNoUser, UUID... token)
 	{
 		if (!doesUsernameExist(username, system, token))
 		{
@@ -311,8 +283,8 @@ public class InvolvedPartyService
 			throw new SecurityAccessException("Unable to find any Involved Party with that username");
 		}
 		
-		Optional<IRelationshipValue<IInvolvedParty<?>, IClassification<?>, ?>> saltEntity = foundPart.findClassifications(SecurityPasswordSalt, system, identityToken);
-		Optional<IRelationshipValue<IInvolvedParty<?>, IClassification<?>, ?>> passEntity = foundPart.findClassifications(SecurityPassword, system, identityToken);
+		Optional<IRelationshipValue<InvolvedParty,  IClassification<?,?>, ?>> saltEntity = foundPart.findClassification(SecurityPasswordSalt, system, identityToken);
+		Optional<IRelationshipValue<InvolvedParty, IClassification<?,?>, ?>> passEntity = foundPart.findClassification(SecurityPassword, system, identityToken);
 		if (saltEntity.isEmpty() || passEntity.isEmpty())
 		{
 			if (throwForNoUser)
@@ -347,7 +319,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	public boolean doesUsernameExist(String username, ISystems<?> system, UUID... token)
+	public boolean doesUsernameExist(String username, ISystems<?,?> system, UUID... token)
 	{
 		return new InvolvedParty().builder()
 		                          .withEnterprise(enterprise)
@@ -357,9 +329,9 @@ public class InvolvedPartyService
 	
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyByUsername")
-	public IInvolvedParty<?> findByUsername(@CacheKey String username, @CacheKey ISystems<?> system, @CacheKey UUID... token)
+	public IInvolvedParty<?,?> findByUsername(@CacheKey String username, @CacheKey ISystems<?,?> system, @CacheKey UUID... token)
 	{
-		IInvolvedParty<?> party = new InvolvedParty().builder()
+		IInvolvedParty<?,?> party = new InvolvedParty().builder()
 		                                             .withEnterprise(enterprise)
 		                                             .findByIdentificationType(system, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
 				                                             token)
@@ -369,12 +341,12 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	public IInvolvedParty<?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?> involvedParty, ISystems<?> system, UUID... token)
+	public IInvolvedParty<?,?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?,?> involvedParty, ISystems<?,?> system, UUID... token)
 	{
 		byte[] salt;
-		if (involvedParty.hasClassifications(SecurityPasswordSalt, system, token))
+		if (involvedParty.hasClassifications(SecurityPasswordSalt,null, system, token))
 		{
-			salt = involvedParty.findClassifications(SecurityPasswordSalt, system, token)
+			salt = involvedParty.findClassification(SecurityPasswordSalt, system, token)
 			                    .get()
 			                    .getValue()
 			                    .getBytes();
@@ -388,22 +360,17 @@ public class InvolvedPartyService
 		String passEncrypted = encrypt(password, new String(salt));
 		String saltEncrypted = new Passwords().integerEncrypt(salt);
 		
-		involvedParty.addOrUpdate(SecurityPassword, null, passEncrypted, system, token);
-		involvedParty.addOrUpdate(SecurityPasswordSalt, null, saltEncrypted, system, token);
-		involvedParty.addOrUpdateIdentificationType(IdentificationTypeUserName, NoClassification.classificationName(),
-				username, system, token);
+		involvedParty.addOrUpdateClassification(SecurityPassword, null, passEncrypted, system, token);
+		involvedParty.addOrUpdateClassification(SecurityPasswordSalt, null, saltEncrypted, system, token);
+		IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(IdentificationTypeUserName.toString(), system, token);
+		involvedParty.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(),involvedPartyIdentificationType,
+				username,username, system, token);
 		
-		
-	//	if (event != null)
-	//	{
-		//	event.addOrUpdate(UpdatedPassword, (String) null, STRING_EMPTY, system, token);
-	//		event.addOrUpdate(UpdatedUsername, (String) null, username, system, token);
-	//	}
 		return involvedParty;
 	}
 	
 	@Override
-	public IInvolvedParty<?> create(ISystems<?> system, Pair<IIdentificationType<?>, String> idTypes,
+	public IInvolvedParty<?,?> create(ISystems<?,?> system, Pair<String, String> idTypes,
 	                                boolean isOrganic, UUID... identityToken)
 	{
 		InvolvedParty ip = new InvolvedParty();
@@ -422,7 +389,8 @@ public class InvolvedPartyService
 			
 			ip.createDefaultSecurity(system, identityToken);
 			
-			ip.addOrUpdateIdentificationType(idTypes.getKey(), NoClassification.name(), idTypes.getValue(), system, identityToken);
+			IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(idTypes.getKey(), system, identityToken);
+			ip.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(),involvedPartyIdentificationType, idTypes.getValue(),idTypes.getValue(), system, identityToken);
 			InvolvedParty finalIp = ip;
 			JobService.getInstance()
 			          .addJob("InvolvedPartyOrganicStorage",
@@ -436,7 +404,7 @@ public class InvolvedPartyService
 		return ip;
 	}
 	
-	private void setupInvolvedPartyOrganicStatus(boolean isOrganic, IInvolvedParty<?> ip, ISystems<?> system, UUID... identityToken)
+	private void setupInvolvedPartyOrganicStatus(boolean isOrganic, IInvolvedParty<?,?> ip, ISystems<?,?> system, UUID... identityToken)
 	{
 		if (isOrganic)
 		{
@@ -468,16 +436,9 @@ public class InvolvedPartyService
 		}
 	}
 	
-	@CacheResult(cacheName = "InvolvedPartyGetNameType")
-	@Override
-	public IInvolvedPartyType<?> findType(@CacheKey ITypeValue<?> idType, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
-	{
-		return findType(idType.classificationValue(), system, tokens);
-	}
-	
 	@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
 	@Override
-	public IInvolvedPartyType<?> findType(@CacheKey String nameType, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
+	public IInvolvedPartyType<?,?> findType(@CacheKey String nameType, @CacheKey ISystems<?,?> system, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyType xr = new InvolvedPartyType();
 		return xr.builder()
@@ -485,21 +446,14 @@ public class InvolvedPartyService
 		         .inActiveRange(enterprise, tokens)
 		         .withEnterprise(enterprise)
 		         .inDateRange()
-		         .canRead(system, tokens)
+		      //   .canRead(system, tokens)
 		         .get()
 		         .orElse(null);
 	}
 	
-	@Override
-	@CacheResult(cacheName = "InvolvedPartyGetNameType")
-	public IInvolvedPartyNameType<?> findNameType(@CacheKey INameType<?> idType, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
-	{
-		return findNameType(idType.classificationValue(), system, tokens);
-	}
-	
 	@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
 	@Override
-	public IInvolvedPartyNameType<?> findNameType(@CacheKey String nameType, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
+	public IInvolvedPartyNameType<?,?> findInvolvedPartyNameType(@CacheKey String nameType, @CacheKey ISystems<?,?> system, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
 		return xr.builder()
@@ -507,19 +461,19 @@ public class InvolvedPartyService
 		         .inActiveRange(enterprise, tokens)
 		         .inDateRange()
 		         .withEnterprise(enterprise)
-		         .canRead(system, tokens)
+		      //   .canRead(system, tokens)
 		         .get()
 		         .orElse(null);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByToken")
-	public IInvolvedParty<?> findByToken(@CacheKey ISecurityToken<?> token, @CacheKey UUID... tokens)
+	public IInvolvedParty<?,?> findByToken(@CacheKey ISecurityToken<?,?> token, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
-		InvolvedPartyIdentificationType id = (InvolvedPartyIdentificationType) findIdentificationType(IdentificationTypeUUID, ((SecurityToken) token).getSystemID(), tokens);
+		InvolvedPartyIdentificationType id = (InvolvedPartyIdentificationType) findInvolvedPartyIdentificationType(IdentificationTypeUUID.toString(), ((SecurityToken) token).getSystemID(), tokens);
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> foundLink = idType.builder()
-		                                                                          .findChildLink(id, token.getSecurityToken())
+		                                                                          .findLink(null,id, token.getSecurityToken())
 		                                                                          .inActiveRange(enterprise)
 		                                                                          .inDateRange()
 		                                                                          .withEnterprise(enterprise)
@@ -532,13 +486,13 @@ public class InvolvedPartyService
 	
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByUUID")
-	public IInvolvedParty<?> findByUUID(@CacheKey UUID token, @CacheKey ISystems<?> system, @CacheKey UUID... tokens)
+	public IInvolvedParty<?,?> findByUUID(@CacheKey UUID token, @CacheKey ISystems<?,?> system, @CacheKey UUID... tokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
-		InvolvedPartyIdentificationType id = (InvolvedPartyIdentificationType) findIdentificationType(IdentificationTypeUUID, system, tokens);
+		InvolvedPartyIdentificationType id = (InvolvedPartyIdentificationType) findInvolvedPartyIdentificationType(IdentificationTypeUUID.toString(), system, tokens);
 		
 		Optional<InvolvedPartyXInvolvedPartyIdentificationType> foundLink = idType.builder()
-		                                                                          .findChildLink(id, token.toString())
+		                                                                          .findLink(null,id, token.toString())
 		                                                                          .inActiveRange(enterprise, tokens)
 		                                                                          .inDateRange()
 		                                                                          .withEnterprise(enterprise)
@@ -549,7 +503,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	public IInvolvedParty<?> findByIdentificationType(String identificationType, String value)
+	public IInvolvedParty<?,?> findByIdentificationType(String identificationType, String value)
 	{
 		InvolvedPartyIdentificationTypeQueryBuilder builder = new InvolvedPartyIdentificationType().builder();
 		builder.inDateRange()
@@ -581,7 +535,7 @@ public class InvolvedPartyService
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public List<IRelationshipValue<IInvolvedParty<?>, IInvolvedPartyIdentificationType<?>, ?>> findAllByIdentificationType(String identificationType, String value)
+	public List<IRelationshipValue<IInvolvedParty<?,?>, IInvolvedPartyIdentificationType<?,?>, ?>> findAllByIdentificationType(String identificationType, String value)
 	{
 		InvolvedPartyIdentificationTypeQueryBuilder builder = new InvolvedPartyIdentificationType().builder();
 		builder.inDateRange()
@@ -612,9 +566,9 @@ public class InvolvedPartyService
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<IInvolvedParty<?>> findByRulesClassification(String classification, String value, ISystems<?> system, UUID... identityToken)
+	public List<IInvolvedParty<?,?>> findByRulesClassification(String classification, String value, ISystems<?,?> system, UUID... identityToken)
 	{
-		IClassification<?> classification1 = classificationService.find(classification, system, identityToken);
+		IClassification<?,?> classification1 = classificationService.find(classification, system, identityToken);
 		
 		@SuppressWarnings("rawtypes")
 		List collect = new InvolvedPartyXRules().builder()
@@ -631,9 +585,9 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	public IInvolvedParty<?> findByClassification(String classification, String value, ISystems<?> system, UUID... identityToken)
+	public IInvolvedParty<?,?> findByClassification(String classification, String value, ISystems<?,?> system, UUID... identityToken)
 	{
-		IClassification<?> classification1 = classificationService.find(classification, system, identityToken);
+		IClassification<?,?> classification1 = classificationService.find(classification, system, identityToken);
 		return new InvolvedPartyXClassification().builder()
 		                                         .withClassification(classification1)
 		                                         .withValue(value)

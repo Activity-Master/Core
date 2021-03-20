@@ -1,18 +1,17 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
 import com.google.common.base.Strings;
+import com.guicedee.activitymaster.client.implementations.Passwords;
+import com.guicedee.activitymaster.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
-import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.dto.IRelationshipValue;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.IActiveFlagService;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,15 +27,13 @@ import java.util.UUID;
  * @since 09 Dec 2016
  */
 @MappedSuperclass
-public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
-		S extends WarehouseBaseTable,
-		J extends WarehouseRelationshipTable<P, S, J, Q, I, ST, L, R>,
-		Q extends QueryBuilderRelationship<P, S, Q, J, I, ST>,
-		I extends Serializable,
-		ST extends WarehouseSecurityTable,
-		L, R>
-		extends WarehouseTable<J, Q, I, ST>
-		implements IRelationshipValue<L, R, J>
+public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,?,UUID>,
+		S extends WarehouseBaseTable<S,?,UUID>,
+		J extends WarehouseRelationshipTable<P, S, J, Q, I>,
+		Q extends QueryBuilderRelationship<P, S, Q, J, I>,
+		I extends java.util.UUID>
+		extends WarehouseTable<J, Q, I>
+		implements IWarehouseRelationshipTable<J,Q,P,S,I>
 {
 	
 	@Serial
@@ -54,13 +51,13 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 	}
 	
 	@Override
-	public void createDefaultSecurity(ISystems<?> system, UUID... identity)
+	public void createDefaultSecurity(ISystems<?,?> system, UUID... identity)
 	{
 	
 	}
 	
-	@Override
-	public ST createDefaultGuestNoSecurityAccess(ISystems<?> system, UUID... identity)
+
+	public WarehouseSecurityTable createDefaultGuestNoSecurityAccess(ISystems<?,?> system, UUID... identity)
 	{
 		return null;
 	}
@@ -106,11 +103,19 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 	}
 	
 	@Override
-	public J setValue(String value)
+	public void setValue(String value)
+	{
+		setValue(value,false);
+	}
+	
+	@Override
+	public void setValue(String value,boolean encrypted)
 	{
 		this.value = Strings.nullToEmpty(value);
-		//noinspection unchecked
-		return (J) this;
+		if(!Strings.isNullOrEmpty(this.value) && encrypted)
+		{
+			this.value = new Passwords().integerEncrypt(this.value.getBytes());
+		}
 	}
 	
 	@Override
@@ -134,18 +139,10 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 		return (Class<I>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[4];
 	}
 	
-	@Override
-	@SuppressWarnings("unchecked")
-	protected @NotNull Class<ST> findPersistentSecurityClass()
-	{
-		return (Class<ST>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[5];
-	}
-	
-	
 	@SuppressWarnings("unchecked")
 	public @NotNull J update(String newValue, UUID... identifyingToken)
 	{
-		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                                         .getDeletedFlag(getEnterpriseID(), identifyingToken));
 		setEffectiveToDate(LocalDateTime.now());
 		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
@@ -157,7 +154,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable,
 		setEffectiveToDate(EndOfTime);
 		setWarehouseCreatedTimestamp(LocalDateTime.now());
 		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
-		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                                         .getActiveFlag(getEnterpriseID(), identifyingToken));
 		persist();
 			createDefaultSecurity(getSystemID());

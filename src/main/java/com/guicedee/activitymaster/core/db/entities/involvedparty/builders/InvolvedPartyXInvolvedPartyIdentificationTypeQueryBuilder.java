@@ -2,12 +2,11 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty.builders;
 
 import com.entityassist.enumerations.Operand;
 import com.google.common.base.Strings;
+import com.guicedee.activitymaster.client.implementations.Passwords;
+import com.guicedee.activitymaster.client.services.IInvolvedPartyService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.enumtypes.IIdentificationType;
-import com.guicedee.activitymaster.core.services.security.Passwords;
-import com.guicedee.activitymaster.core.services.system.IInvolvedPartyService;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
@@ -20,9 +19,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 		InvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
 		InvolvedPartyXInvolvedPartyIdentificationType,
-		IIdentificationType<?>,
-		java.util.UUID,
-		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken>
+		java.util.UUID>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXInvolvedPartyIdentificationType, InvolvedParty> getPrimaryAttribute()
@@ -58,12 +55,12 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 	}
 
 	@Override
-	public InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withType(String typeValue, ISystems<?> system, UUID... identityToken)
+	public InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{
 			IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
-			InvolvedPartyIdentificationType at = (InvolvedPartyIdentificationType) service.findIdentificationType(typeValue, system, identityToken);
+			InvolvedPartyIdentificationType at = (InvolvedPartyIdentificationType) service.findInvolvedPartyIdentificationType(typeValue, system, identityToken);
 			where(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, Operand.Equals, at);
 		}
 		return this;

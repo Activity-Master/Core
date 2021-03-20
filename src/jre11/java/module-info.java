@@ -1,9 +1,12 @@
+import com.guicedee.activitymaster.client.services.events.IOnSystemInstall;
+import com.guicedee.activitymaster.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.core.db.ActivityMasterDBModule;
 import com.guicedee.activitymaster.core.implementations.*;
 import com.guicedee.activitymaster.core.injections.*;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.systems.*;
 import com.guicedee.guicedhazelcast.services.IGuicedHazelcastServerConfig;
+import com.guicedee.guicedinjection.interfaces.IGuiceConfigurator;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 module com.guicedee.activitymaster.core {
@@ -11,30 +14,10 @@ module com.guicedee.activitymaster.core {
 	
 	exports com.guicedee.activitymaster.core.async;
 	exports com.guicedee.activitymaster.core.services;
-	exports com.guicedee.activitymaster.core.services.dto;
-	exports com.guicedee.activitymaster.core.services.enumtypes;
-	exports com.guicedee.activitymaster.core.services.capabilities;
-	exports com.guicedee.activitymaster.core.services.classifications.enterprise;
-	
-	exports com.guicedee.activitymaster.core.services.classifications.address;
-	exports com.guicedee.activitymaster.core.services.classifications.arrangement;
-	exports com.guicedee.activitymaster.core.services.classifications.events;
-	exports com.guicedee.activitymaster.core.services.concepts;
+
 	exports com.guicedee.activitymaster.core.services.exceptions;
-	exports com.guicedee.activitymaster.core.services.security;
 	exports com.guicedee.activitymaster.core.services.system;
-	exports com.guicedee.activitymaster.core.services.types;
 	
-	exports com.guicedee.activitymaster.core.services.classifications.activeflag;
-	exports com.guicedee.activitymaster.core.services.classifications.classification;
-	exports com.guicedee.activitymaster.core.services.classifications.classificationdataconcepts;
-	exports com.guicedee.activitymaster.core.services.classifications.geography;
-	exports com.guicedee.activitymaster.core.services.classifications.involvedparty;
-	exports com.guicedee.activitymaster.core.services.classifications.product;
-	exports com.guicedee.activitymaster.core.services.classifications.resourceitems;
-	exports com.guicedee.activitymaster.core.services.classifications.securitytokens;
-	exports com.guicedee.activitymaster.core.services.classifications.systems;
-	exports com.guicedee.activitymaster.core.services.classifications.rules;
 	
 	exports com.guicedee.activitymaster.core.db.entities.time;
 	
@@ -45,28 +28,18 @@ module com.guicedee.activitymaster.core {
 	
 	exports com.guicedee.activitymaster.core.implementations.interceptors;
 	
-	requires io.github.classgraph;
-	requires com.fasterxml.jackson.databind;
-	requires com.fasterxml.jackson.annotation;
-	
 	requires com.guicedee.guicedinjection;
 	requires com.guicedee.guicedpersistence;
-	
+
 	requires com.entityassist;
 	
 	requires com.google.common;
-	
-	requires java.sql;
+
 	requires com.microsoft.sqlserver.jdbc;
-	
-	requires jakarta.persistence;
-	
-	requires jakarta.xml.bind;
-	
+
 	requires jakarta.activation;
 	requires jakarta.validation;
 	
-	requires com.google.guice.extensions.servlet;
 	requires cache.annotations.ri.guice;
 	
 	requires java.naming;
@@ -75,13 +48,13 @@ module com.guicedee.activitymaster.core {
 	
 	requires com.google.guice;
 	
-	requires org.hibernate.orm.core;
 	requires org.hibernate.validator;
 	
 	requires com.guicedee.guicedhazelcast.hibernate;
 	requires com.guicedee.guicedhazelcast;
 	
-	requires cache.api;
+	
+	requires com.guicedee.activitymaster.client;
 	
 	requires static lombok;
 	
@@ -94,11 +67,17 @@ module com.guicedee.activitymaster.core {
 			ResourceItemBinder,
 			SecurityTokensBinder,
 			ActiveFlagBinder,
-			EventsBinder;
+			EventsBinder,
+			AddressBinder,
+			ArrangementsBinder,
+			ProductsBinder;
+	
+	provides IGuiceConfigurator with ActivityMasterScanConfiguration;
 	
 	provides IActivityMasterSystem with EnterpriseSystem, ActiveFlagSystem, SystemsSystem, ClassificationsDataConceptSystem,
 			ClassificationsSystem, AddressSystem, InvolvedPartySystem, SecurityTokenSystem
-			, ArrangementsSystem, EventsSystem, ResourceItemSystem, ProductsSystem;
+			, ArrangementsSystem, EventsSystem, ResourceItemSystem, ProductsSystem
+			;
 	
 	provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
 	provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
@@ -106,6 +85,11 @@ module com.guicedee.activitymaster.core {
 	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 	
 	uses IActivityMasterSystem;
+	
+	
+	uses IOnSystemUpdate;
+	uses IOnSystemInstall;
+	
 	
 	opens com.guicedee.activitymaster.core to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.async to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
@@ -151,33 +135,22 @@ module com.guicedee.activitymaster.core {
 	
 	
 	opens com.guicedee.activitymaster.core.services to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.capabilities to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	//opens com.guicedee.activitymaster.core.services.classifications to com.google.guice, org.hibernate.orm.core,com.entityassist,com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.activeflag to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.address to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.arrangement to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.classification to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.classificationdataconcepts to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.enterprise to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.events to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.geography to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.involvedparty to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.product to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.resourceitems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.securitytokens to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.classifications.systems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	//opens com.guicedee.activitymaster.core.services.classifications.events to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+
 	
-	opens com.guicedee.activitymaster.core.services.concepts to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	//opens com.guicedee.activitymaster.core.services.concepts to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.providers to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.exceptions to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.security to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.system to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.types to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.systems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.enumtypes to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	
 	opens com.guicedee.activitymaster.core.services.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind;
+	
+	
+//	opens com.guicedee.activitymaster.core.api  to com.google.guice, com.entityassist, com.fasterxml.jackson.databind,com.guicedee.guicedservlets.rest;
+	
 	
 	exports com.guicedee.activitymaster.core.db.entities.systems to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.core.db.entities.enterprise to com.guicedee.activitymaster.geography;

@@ -4,20 +4,14 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesXInvolvedPartyQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IInvolvedParty;
-import com.guicedee.activitymaster.core.services.dto.IRules;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -25,10 +19,11 @@ import static jakarta.persistence.AccessType.FIELD;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Rules",name = "RulesXInvolvedParty")
+@Table(schema = "Rules", name = "RulesXInvolvedParty")
 @XmlRootElement
 
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
@@ -36,101 +31,93 @@ import static jakarta.persistence.AccessType.FIELD;
 		property = "id")
 public class RulesXInvolvedParty
 		extends WarehouseClassificationRelationshipTable<Rules,
-				                                                InvolvedParty,
+		InvolvedParty,
 		RulesXInvolvedParty,
 		RulesXInvolvedPartyQueryBuilder,
-				                                                java.util.UUID,
-		RulesXInvolvedPartySecurityToken,
-				                                                IRules<?>, IInvolvedParty<?>>
+		java.util.UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "RulesXInvolvedPartyID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "RulesXInvolvedPartyID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
-
+	
 	@JoinColumn(name = "RulesID",
-			referencedColumnName = "RulesID",
-			nullable = false)
+	            referencedColumnName = "RulesID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private Rules rulesID;
 	@JoinColumn(name = "InvolvedPartyID",
-			referencedColumnName = "InvolvedPartyID",
-			nullable = false)
+	            referencedColumnName = "InvolvedPartyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private InvolvedParty involvedPartyID;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<RulesXInvolvedPartySecurityToken> securities;
-
+	
 	public RulesXInvolvedParty()
 	{
-
+	
 	}
-
+	
 	public RulesXInvolvedParty(UUID RulesXInvolvedPartyID)
 	{
 		this.id = RulesXInvolvedPartyID;
 	}
-
-	@Override
-	protected RulesXInvolvedPartySecurityToken configureDefaultsForNewToken(RulesXInvolvedPartySecurityToken stAdmin,  ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
-	}
-
+	
 	public java.util.UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public Rules getRulesID()
 	{
 		return this.rulesID;
 	}
-
+	
 	public InvolvedParty getInvolvedPartyID()
 	{
 		return this.involvedPartyID;
 	}
-
+	
 	public List<RulesXInvolvedPartySecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
-
+	
 	public RulesXInvolvedParty setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public RulesXInvolvedParty setRulesID(Rules RulesID)
 	{
 		this.rulesID = RulesID;
 		return this;
 	}
-
+	
 	public RulesXInvolvedParty setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
 	}
-
+	
 	public RulesXInvolvedParty setSecurities(List<RulesXInvolvedPartySecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -145,21 +132,21 @@ public class RulesXInvolvedParty
 		RulesXInvolvedParty that = (RulesXInvolvedParty) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
-	public IRules<?> getPrimary()
+	public Rules getPrimary()
 	{
 		return getRulesID();
 	}
-
+	
 	@Override
-	public IInvolvedParty<?> getSecondary()
+	public InvolvedParty getSecondary()
 	{
 		return getInvolvedPartyID();
 	}

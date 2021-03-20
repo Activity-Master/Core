@@ -1,10 +1,5 @@
 package com.guicedee.activitymaster.core.implementations;
 
-import com.guicedee.activitymaster.core.ActivityMasterService;
-import com.guicedee.activitymaster.core.DefaultEnterprise;
-import com.guicedee.activitymaster.core.services.ConsoleLogActivityMasterProgressMaster;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.logger.LogFactory;
 import com.guicedee.logger.logging.LogColourFormatter;
 import org.junit.jupiter.api.Test;

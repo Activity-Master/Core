@@ -9,18 +9,11 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventXAddressQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IAddress;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IEvent;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -46,9 +39,7 @@ public class EventXAddress
 				                                                Address,
 				                                                EventXAddress,
 				                                                EventXAddressQueryBuilder,
-				                                                java.util.UUID,
-				                                                EventXAddressSecurityToken,
-				                                                IEvent<?>, IAddress<?>>
+				                                                java.util.UUID>
 {
 
 	@Serial
@@ -86,13 +77,6 @@ public class EventXAddress
 	public EventXAddress(UUID eventXAddressID)
 	{
 		this.id = eventXAddressID;
-	}
-
-	@Override
-	protected EventXAddressSecurityToken configureDefaultsForNewToken(EventXAddressSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 
 	public java.util.UUID getId()
@@ -161,13 +145,13 @@ public class EventXAddress
 	}
 
 	@Override
-	public IEvent<?> getPrimary()
+	public Event getPrimary()
 	{
 		return getEventID();
 	}
 
 	@Override
-	public IAddress<?> getSecondary()
+	public Address getSecondary()
 	{
 		return getAddressID();
 	}

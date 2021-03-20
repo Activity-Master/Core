@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.core.implementations;
 
 import com.google.inject.*;
+import com.guicedee.activitymaster.client.services.IClassificationDataConceptService;
 import com.guicedee.activitymaster.core.ClassificationsDataConceptService;
-import com.guicedee.activitymaster.core.services.system.IClassificationDataConceptService;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 public class ClassificationConceptsBinder extends PrivateModule implements IGuiceModule<ClassificationConceptsBinder>

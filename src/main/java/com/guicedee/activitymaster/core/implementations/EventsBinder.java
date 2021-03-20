@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.core.implementations;
 
 import com.google.inject.*;
+import com.guicedee.activitymaster.client.services.IEventService;
 import com.guicedee.activitymaster.core.EventsService;
-import com.guicedee.activitymaster.core.services.system.IEventService;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 public class EventsBinder extends PrivateModule implements IGuiceModule<EventsBinder>

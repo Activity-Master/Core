@@ -4,17 +4,12 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.rules.builders.RulesTypeXResourceItemQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IResourceItem;
-import com.guicedee.activitymaster.core.services.dto.IRulesType;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -39,9 +34,7 @@ public class RulesTypeXResourceItem
 		ResourceItem,
 		RulesTypeXResourceItem,
 		RulesTypeXResourceItemQueryBuilder,
-		UUID,
-		RulesTypeXResourceItemSecurityToken,
-		IRulesType<?>, IResourceItem<?>>
+		UUID>
 		implements Serializable
 {
 	
@@ -77,13 +70,6 @@ public class RulesTypeXResourceItem
 	public RulesTypeXResourceItem(UUID rulesXResourceItemID)
 	{
 		id = rulesXResourceItemID;
-	}
-	
-	@Override
-	protected RulesTypeXResourceItemSecurityToken configureDefaultsForNewToken(RulesTypeXResourceItemSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	@Override
@@ -154,13 +140,13 @@ public class RulesTypeXResourceItem
 	}
 	
 	@Override
-	public IRulesType<?> getPrimary()
+	public RulesType getPrimary()
 	{
 		return getRulesTypeID();
 	}
 	
 	@Override
-	public IResourceItem<?> getSecondary()
+	public ResourceItem getSecondary()
 	{
 		return getResourceItemID();
 	}

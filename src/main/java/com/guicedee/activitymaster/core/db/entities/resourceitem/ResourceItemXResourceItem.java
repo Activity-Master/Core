@@ -3,19 +3,13 @@ package com.guicedee.activitymaster.core.db.entities.resourceitem;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.builders.ResourceItemXResourceItemQueryBuilder;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.IResourceItem;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.AccessType.*;
@@ -43,9 +37,7 @@ public class ResourceItemXResourceItem
 		ResourceItem,
 		ResourceItemXResourceItem,
 		ResourceItemXResourceItemQueryBuilder,
-		java.util.UUID,
-		ResourceItemXResourceItemSecurityToken,
-		IResourceItem<?>, IResourceItem<?>>
+		java.util.UUID>
 		implements Serializable
 {
 	
@@ -54,7 +46,8 @@ public class ResourceItemXResourceItem
 	@Id
 	
 	@Column(nullable = false,
-	        name = "ResourceItemXResourceItemID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ResourceItemXResourceItemID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	
 	@OneToMany(
@@ -83,13 +76,6 @@ public class ResourceItemXResourceItem
 	public ResourceItemXResourceItem(UUID productXResourceItemID)
 	{
 		id = productXResourceItemID;
-	}
-	
-	@Override
-	protected ResourceItemXResourceItemSecurityToken configureDefaultsForNewToken(ResourceItemXResourceItemSecurityToken stAdmin, ISystems<?> enterprise, ISystems<?> activityMasterSystem)
-	{
-		return super.configureDefaultsForNewToken(stAdmin, enterprise, activityMasterSystem)
-		            .setBase(this);
 	}
 	
 	@Override
@@ -160,13 +146,13 @@ public class ResourceItemXResourceItem
 	}
 	
 	@Override
-	public IResourceItem<?> getPrimary()
+	public ResourceItem getPrimary()
 	{
 		return getParentResourceItemID();
 	}
 	
 	@Override
-	public IResourceItem<?> getSecondary()
+	public ResourceItem getSecondary()
 	{
 		return getChildResourceItemID();
 	}

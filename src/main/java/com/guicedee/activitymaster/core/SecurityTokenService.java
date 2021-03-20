@@ -2,17 +2,20 @@ package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.guicedee.activitymaster.client.services.IClassificationService;
+import com.guicedee.activitymaster.client.services.ISecurityTokenService;
+import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.security.ISecurityToken;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.UserGroupSecurityTokenClassifications;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.security.*;
 import com.guicedee.activitymaster.core.db.entities.security.builders.SecurityTokenQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.classifications.securitytokens.ISecurityTokenClassification;
-import com.guicedee.activitymaster.core.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
-import com.guicedee.activitymaster.core.services.dto.*;
-import com.guicedee.activitymaster.core.services.system.IClassificationService;
-import com.guicedee.activitymaster.core.services.system.ISecurityTokenService;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
@@ -20,9 +23,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications.*;
-import static com.guicedee.activitymaster.core.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.System;
-import static com.guicedee.activitymaster.core.services.classifications.securitytokens.UserGroupSecurityTokenClassifications.*;
+import static com.guicedee.activitymaster.client.services.classifications.SecurityTokenClassifications.*;
+import static com.guicedee.activitymaster.client.services.classifications.UserGroupSecurityTokenClassifications.System;
+import static com.guicedee.activitymaster.client.services.classifications.UserGroupSecurityTokenClassifications.*;
 
 @SuppressWarnings("Duplicates")
 
@@ -33,26 +36,26 @@ public class SecurityTokenService
 	
 	@Inject
 	@Named("Active")
-	private IActiveFlag<?> activeFlag;
+	private IActiveFlag<?,?> activeFlag;
 	
 	@Inject
-	private IEnterprise<?> enterprise;
+	private IEnterprise<?,?> enterprise;
 	
 	@Inject
 	private IClassificationService<?> classificationService;
 	
 	@Override
-	public void grantAccessToToken(ISecurityToken<?> fromToken, ISecurityToken<?> toToken,
-	                               boolean create, boolean update, boolean delete, boolean read, ISystems<?> system)
+	public void grantAccessToToken(ISecurityToken<?,?> fromToken, ISecurityToken<?,?> toToken,
+	                               boolean create, boolean update, boolean delete, boolean read, ISystems<?,?> system)
 	
 	{
 		grantAccessToToken(fromToken, toToken, create, update, delete, read, system, null, null, null);
 	}
 	
 	@Override
-	public void grantAccessToToken(@NotNull ISecurityToken<?> fromToken, @NotNull ISecurityToken<?> toToken,
+	public void grantAccessToToken(@NotNull ISecurityToken<?,?> fromToken, @NotNull ISecurityToken<?,?> toToken,
 	                               boolean create, boolean update, boolean delete, boolean read,
-	                               ISystems<?> system, String originalId,
+	                               ISystems<?,?> system, String originalId,
 	                               Date effectiveFromDate, Date effectiveToDate)
 	{
 		SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
@@ -83,13 +86,13 @@ public class SecurityTokenService
 	}
 	
 	@Override
-	public ISecurityToken<?> create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems<?> system)
+	public ISecurityToken<?,?> create(String classificationValue, String name, String description, ISystems<?,?> system)
 	{
 		return create(classificationValue, name, description, system, null);
 	}
 	
 	@Override
-	public ISecurityToken<?> create(ISecurityTokenClassification<?> classificationValue, String name, String description, ISystems<?> system, ISecurityToken<?> parent, UUID... identityToken)
+	public ISecurityToken<?,?> create(String classificationValue, String name, String description, ISystems<?,?> system, ISecurityToken<?,?> parent, UUID... identityToken)
 	{
 		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
 		
@@ -144,12 +147,12 @@ public class SecurityTokenService
 	}
 	
 	@Override
-	public void link(ISecurityToken<?> parent, ISecurityToken<?> child, IClassification<?> classification, UUID... identifyingToken)
+	public void link(ISecurityToken<?,?> parent, ISecurityToken<?,?> child, IClassification<?,?> classification, UUID... identifyingToken)
 	{
 		SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
 		Optional<SecurityTokenXSecurityToken> exists = root.builder()
 		                                                   .withEnterprise(enterprise)
-		                                                   .findLink((SecurityToken) parent, (SecurityToken) child)
+		                                                   .findLink((SecurityToken) parent, (SecurityToken) child,null)
 		                                                   .withClassification(classification)
 		                                                   .inActiveRange(enterprise)
 		                                                   .inDateRange()
@@ -197,11 +200,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	@Override
-	public ISecurityToken<?> getEveryoneGroup(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getEveryoneGroup(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, system, identityToken)
+		                                   .findFolder(UserGroup.toString(), system, identityToken)
 		                                   .withName(Everyone)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
@@ -213,11 +216,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
 	@Override
-	public ISecurityToken<?> getEverywhereGroup(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getEverywhereGroup(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, system, identityToken)
+		                                   .findFolder(UserGroup.toString(), system, identityToken)
 		                                   .withName(Everywhere)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
@@ -229,11 +232,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
 	@Override
-	public ISecurityToken<?> getGuestsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, system, identityToken)
+		                                   .findFolder(UserGroup.toString(), system, identityToken)
 		                                   .withName(Guests)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
@@ -245,11 +248,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
 	@Override
-	public ISecurityToken<?> getRegisteredGuestsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getRegisteredGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, system, identityToken)
+		                                   .findFolder(UserGroup.toString(), system, identityToken)
 		                                   .withName(Registered)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
@@ -261,11 +264,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
 	@Override
-	public ISecurityToken<?> getVisitorsGuestsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getVisitorsGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, system, identityToken)
+		                                   .findFolder(UserGroup.toString(), system, identityToken)
 		                                   .withName(Visitors)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
@@ -277,11 +280,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
 	@Override
-	public ISecurityToken<?> getAdministratorsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getAdministratorsFolder(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup, system, identityToken)
+		                                   .findFolder(UserGroup.toString(), system, identityToken)
 		                                   .withName(Administrators)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
@@ -293,11 +296,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
 	@Override
-	public ISecurityToken<?> getSystemsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getSystemsFolder(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroupSecurityTokenClassifications.System, system, identityToken)
+		                                   .findFolder(UserGroupSecurityTokenClassifications.System.toString(), system, identityToken)
 		                                   .withName(System)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   .inDateRange()
@@ -309,11 +312,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
 	@Override
-	public ISecurityToken<?> getPluginsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getPluginsFolder(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(Plugin, system, identityToken)
+		                                   .findFolder(Plugin.toString(), system, identityToken)
 		                                   .withName(Plugins)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   //  .canRead(enterprise, identityToken)
@@ -325,11 +328,11 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
 	@Override
-	public ISecurityToken<?> getApplicationsFolder(@CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getApplicationsFolder(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken st = new SecurityToken();
 		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(Application, system, identityToken)
+		                                   .findFolder(Application.toString(), system, identityToken)
 		                                   .withName(Applications)
 		                                   .inActiveRange(enterprise, identityToken)
 		                                   //   .canRead(enterprise, identityToken)
@@ -341,7 +344,7 @@ public class SecurityTokenService
 	
 	@CacheResult(cacheName = "SecurityGetSecurityToken")
 	@Override
-	public ISecurityToken<?> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityToken view = new SecurityToken().builder()
 		                                        .findBySecurityToken(identifyingToken.toString())
@@ -356,7 +359,7 @@ public class SecurityTokenService
 	}
 	
 	@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
-	public ISecurityToken<?> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey ISystems<?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
 	{
 		SecurityTokenQueryBuilder builder = new SecurityToken().builder();
 		builder = builder.findBySecurityToken(identifyingToken.toString())

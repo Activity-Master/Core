@@ -3,6 +3,12 @@ package com.guicedee.activitymaster.core.systems;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
+import com.guicedee.activitymaster.client.services.*;
+import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.classifications.*;
 import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.SystemsService;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseCoreTable;
@@ -16,24 +22,15 @@ import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemTyp
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.classifications.classification.Classifications;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.EnterpriseClassifications;
-import com.guicedee.activitymaster.core.services.classifications.enterprise.IEnterpriseName;
-import com.guicedee.activitymaster.core.services.classifications.securitytokens.SecurityTokenClassifications;
-import com.guicedee.activitymaster.core.services.classifications.securitytokens.UserGroupSecurityTokenClassifications;
-import com.guicedee.activitymaster.core.services.classifications.systems.SystemsClassifications;
-import com.guicedee.activitymaster.core.services.dto.IEnterprise;
-import com.guicedee.activitymaster.core.services.dto.ISystems;
-import com.guicedee.activitymaster.core.services.system.*;
+import com.guicedee.activitymaster.core.services.system.ActivityMasterDefaultSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import static com.guicedee.activitymaster.client.services.ISecurityTokenService.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
-import static com.guicedee.activitymaster.core.services.system.ISecurityTokenService.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 
@@ -51,13 +48,13 @@ public class SecurityTokenSystem
 	
 	@Inject
 	@Named(ActivityMasterSystemName)
-	private ISystems<?> activityMasterSystem;
+	private ISystems<?,?> activityMasterSystem;
 	
 	@Inject
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		systemsService.get()
 		              .create(enterprise, getSystemName(), getSystemDescription());
@@ -66,12 +63,12 @@ public class SecurityTokenSystem
 	}
 	
 	@Override
-	public void createDefaults(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Security Token Service", "Starting Security Structure Checks/Install", progressMonitor);
 		
-		createSecurityDefaults(enterprise, activityMasterSystem, progressMonitor);
-		SecurityToken rootToken = createSecurityTokens(enterprise, enterprise, progressMonitor);
+		createSecurityDefaults(enterprise.getName(), activityMasterSystem, progressMonitor);
+		SecurityToken rootToken = createSecurityTokens(enterprise.getName(), enterprise, progressMonitor);
 		createGroupsAndFolders(enterprise, rootToken, progressMonitor);
 		applyDefaultsToNewEnterprise(enterprise, progressMonitor);
 		createActivityMasterInvolvedParty(enterprise);
@@ -113,24 +110,41 @@ public class SecurityTokenSystem
 		            .setSecurityEnabled(true);
 	}
 	
-	void createSecurityDefaults(IEnterpriseName<?> enterpriseName, ISystems<?> system, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)
+	void createSecurityDefaults(String enterpriseName, ISystems<?,?> system, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)
 	{
-		classificationService.create(enterpriseName, system, 0, identityToken);
-		classificationService.create(SecurityTokenClassifications.UserGroup, system, 1, Classifications.Security, identityToken);
-		classificationService.create(SecurityTokenClassifications.User, system, 2, Classifications.Security, identityToken);
-		classificationService.create(SecurityTokenClassifications.Guests, system, 2, Classifications.Security, identityToken);
-		classificationService.create(SecurityTokenClassifications.Visitors, system, 2, Classifications.Security, identityToken);
-		classificationService.create(SecurityTokenClassifications.Registered, system, 2, Classifications.Security, identityToken);
-		classificationService.create(SecurityTokenClassifications.Application, system, 3, Classifications.Security, identityToken);
-		classificationService.create(UserGroupSecurityTokenClassifications.System, system, 4, Classifications.Security, identityToken);
-		classificationService.create(SecurityTokenClassifications.Plugin, system, 5, Classifications.Security, identityToken);
+		IClassification<?, ?> entClassification = classificationService.create(enterpriseName, system, identityToken);
 		
-		classificationService.create(SecurityTokenClassifications.Identity, system, Classifications.Security);
+		classificationService.create(SecurityTokenClassifications.UserGroup.toString(),SecurityTokenClassifications.UserGroup.toString(),
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 1,entClassification,  identityToken);
+		
+		classificationService.create(SecurityTokenClassifications.User.toString(),SecurityTokenClassifications.User.toString(),
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 2,  identityToken);
+		
+		classificationService.create(SecurityTokenClassifications.Guests.toString(),SecurityTokenClassifications.Guests.toString(),
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 2,  identityToken);
+		
+		classificationService.create(SecurityTokenClassifications.Visitors.toString(),SecurityTokenClassifications.Visitors.toString(),
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 2,  identityToken);
+		
+		classificationService.create(SecurityTokenClassifications.Registered.toString(),SecurityTokenClassifications.Registered.toString(),
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 2,  identityToken);
+		
+		classificationService.create(SecurityTokenClassifications.Application.toString(),SecurityTokenClassifications.Application.toString(),
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 3,  identityToken);
+		
+		classificationService.create(UserGroupSecurityTokenClassifications.System.toString(),UserGroupSecurityTokenClassifications.System.toString(),
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 4,  identityToken);
+		
+		classificationService.create(SecurityTokenClassifications.Plugin.toString(),SecurityTokenClassifications.Plugin.toString(),
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 5,  identityToken);
+
+		classificationService.create(SecurityTokenClassifications.Identity.toString(),"A security token identity",EnterpriseClassificationDataConcepts.SecurityTokenXClassification,
+				system,1,entClassification, identityToken);
 		
 		logProgress("Security Token Service", "Security Classifications Installed", 11, progressMonitor);
 	}
 	
-	SecurityToken createSecurityTokens(IEnterpriseName<?> enterpriseName, IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	SecurityToken createSecurityTokens(String enterpriseName, IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		UUID uuid = getSystemToken(enterprise);
 		
@@ -141,7 +155,7 @@ public class SecurityTokenSystem
 		
 		securityTokenService.grantAccessToToken(rootToken, rootToken, false, false, false, false, activityMasterSystem);
 		
-		enterprise.addOrUpdate(EnterpriseClassifications.EnterpriseIdentity, null, rootToken.getSecurityToken(), activityMasterSystem, uuid);
+		enterprise.addOrUpdateClassification(EnterpriseClassifications.EnterpriseIdentity, null, rootToken.getSecurityToken(), activityMasterSystem, uuid);
 		
 		logProgress("Security Token Service", "Enterprise Security Validated", 3, progressMonitor);
 		
@@ -149,63 +163,63 @@ public class SecurityTokenSystem
 	}
 	
 	@SuppressWarnings("Duplicates")
-	void createGroupsAndFolders(IEnterprise<?> enterprise, SecurityToken rootToken, IActivityMasterProgressMonitor progressMonitor)
+	void createGroupsAndFolders(IEnterprise<?,?> enterprise, SecurityToken rootToken, IActivityMasterProgressMonitor progressMonitor)
 	{
 		SecurityToken everyoneToken = (SecurityToken) securityTokenService.create(
-				SecurityTokenClassifications.UserGroup,
-				UserGroupSecurityTokenClassifications.Everyone.classificationName(),
+				SecurityTokenClassifications.UserGroup.toString(),
+				UserGroupSecurityTokenClassifications.Everyone.toString(),
 				UserGroupSecurityTokenClassifications.Everyone.classificationDescription(),
 				activityMasterSystem);
 		SecurityToken everywhereToken = (SecurityToken) securityTokenService.create(
-				SecurityTokenClassifications.UserGroup,
-				UserGroupSecurityTokenClassifications.Everywhere.classificationName(),
+				SecurityTokenClassifications.UserGroup.toString(),
+				UserGroupSecurityTokenClassifications.Everywhere.toString(),
 				UserGroupSecurityTokenClassifications.Everywhere.classificationDescription(),
 				activityMasterSystem);
 		SecurityToken administratorsToken = (SecurityToken) securityTokenService.create(
-				SecurityTokenClassifications.UserGroup,
-				UserGroupSecurityTokenClassifications.Administrators.classificationName(),
+				SecurityTokenClassifications.UserGroup.toString(),
+				UserGroupSecurityTokenClassifications.Administrators.toString(),
 				UserGroupSecurityTokenClassifications.Administrators.classificationDescription(),
 				activityMasterSystem);
 		SecurityToken usersGuestsToken = (SecurityToken) securityTokenService.create(
-				SecurityTokenClassifications.UserGroup,
-				SecurityTokenClassifications.Guests.classificationName(),
+				SecurityTokenClassifications.UserGroup.toString(),
+				SecurityTokenClassifications.Guests.toString(),
 				SecurityTokenClassifications.Guests.classificationDescription(),
 				activityMasterSystem);
 		SecurityToken usersGuestsVisitorsToken = (SecurityToken) securityTokenService.create(
-				SecurityTokenClassifications.UserGroup,
-				SecurityTokenClassifications.Visitors.classificationName(),
+				SecurityTokenClassifications.UserGroup.toString(),
+				SecurityTokenClassifications.Visitors.toString(),
 				SecurityTokenClassifications.Visitors.classificationDescription(),
 				activityMasterSystem);
 		SecurityToken usersGuestsRegisteredToken = (SecurityToken) securityTokenService.create(
-				SecurityTokenClassifications.UserGroup,
-				SecurityTokenClassifications.Registered.classificationName(),
+				SecurityTokenClassifications.UserGroup.toString(),
+				SecurityTokenClassifications.Registered.toString(),
 				SecurityTokenClassifications.Registered.classificationDescription(),
 				activityMasterSystem);
 		
 		SecurityToken applicationToken = (SecurityToken) securityTokenService.create(
-				SecurityTokenClassifications.Application,
-				UserGroupSecurityTokenClassifications.Applications.classificationName(),
+				SecurityTokenClassifications.Application.toString(),
+				UserGroupSecurityTokenClassifications.Applications.toString(),
 				UserGroupSecurityTokenClassifications.Applications.classificationDescription(),
 				activityMasterSystem);
 		SecurityToken systemsToken = (SecurityToken) securityTokenService.create(
-				UserGroupSecurityTokenClassifications.System,
-				UserGroupSecurityTokenClassifications.System.classificationName(),
+				UserGroupSecurityTokenClassifications.System.toString(),
+				UserGroupSecurityTokenClassifications.System.toString(),
 				UserGroupSecurityTokenClassifications.System.classificationDescription(),
 				activityMasterSystem);
 		
 		SecurityToken pluginToken = (SecurityToken) securityTokenService.create(
-				SecurityTokenClassifications.Plugin,
-				UserGroupSecurityTokenClassifications.Plugins.classificationName(),
+				SecurityTokenClassifications.Plugin.toString(),
+				UserGroupSecurityTokenClassifications.Plugins.toString(),
 				UserGroupSecurityTokenClassifications.Plugins.classificationDescription(),
 				activityMasterSystem);
 		
 		SecurityToken activityMasterToken = (SecurityToken) securityTokenService.create(
-				UserGroupSecurityTokenClassifications.System,
+				UserGroupSecurityTokenClassifications.System.toString(),
 				"Activity Master System", "Defines the activity master as a system", activityMasterSystem);
 		
 		logProgress("Security Token Service", "Base Security Tokens", 11, progressMonitor);
 		
-		activityMasterSystem.addOrReuse(SystemsClassifications.SystemIdentity,
+		activityMasterSystem.addOrReuseClassification(SystemsClassifications.SystemIdentity,
 				activityMasterToken.getSecurityToken(),
 				activityMasterSystem);
 		
@@ -336,7 +350,7 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Default Security Confirmed", 37, progressMonitor);
 	}
 	
-	void applyDefaultsToNewEnterprise(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void applyDefaultsToNewEnterprise(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Security Token Service", "Checking Default Security for all enterprise default items", progressMonitor);
 		
@@ -365,17 +379,17 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Starting Final Enterprise checks", 1, progressMonitor);
 		createDefaultSecurityForTable(new EnterpriseXClassification(), activityMasterSystem, progressMonitor);
 		
-		createDefaultSecurityForTable((WarehouseCoreTable<?, ?, ?, ?>) enterprise, activityMasterSystem, progressMonitor);
+		createDefaultSecurityForTable((WarehouseCoreTable<?, ?, ?>) enterprise, activityMasterSystem, progressMonitor);
 		logProgress("Security Token Service", "Completed Checks", 1, progressMonitor);
 	}
 	
-	void createActivityMasterInvolvedParty(IEnterprise<?> enterprise)
+	void createActivityMasterInvolvedParty(IEnterprise<?,?> enterprise)
 	{
 		get(SystemsSystem.class)
 				.createInvolvedPartyForNewSystem(activityMasterSystem);
 	}
 	
-	void applyDefaultsToNewEnterpriseAfterActivityMaster(IEnterprise<?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	void applyDefaultsToNewEnterpriseAfterActivityMaster(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 		logProgress("Security Token Service", "Starting Involved Party Relationship checks", 1, progressMonitor);
 		createDefaultSecurityForTable(new InvolvedParty(), activityMasterSystem, progressMonitor);
@@ -411,9 +425,9 @@ public class SecurityTokenSystem
 		createDefaultSecurityForTable(new ArrangementXProduct(), activityMasterSystem, progressMonitor);
 	}
 	
-	void createDefaultSecurityForTable(WarehouseCoreTable<?, ?, ?, ?> table, ISystems<?> system, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)
+	void createDefaultSecurityForTable(WarehouseCoreTable< ?, ?, ?> table, ISystems<?,?> system, IActivityMasterProgressMonitor progressMonitor, UUID... identityToken)
 	{
-		for (WarehouseCoreTable next : table.builder()
+		/*for (WarehouseCoreTable next : table.builder()
 		                                    .withEnterprise(system.getEnterpriseID())
 		                                    .whereNoSecurityIsApplied()
 		                                    .inDateRange()
@@ -423,7 +437,7 @@ public class SecurityTokenSystem
 			                                      next.getClass()
 			                                          .getSimpleName(), 0, progressMonitor);
 			next.createDefaultSecurity(system, identityToken);
-		}
+		}*/
 	}
 	
 	@Override

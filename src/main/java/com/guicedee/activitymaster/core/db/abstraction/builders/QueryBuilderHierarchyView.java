@@ -1,19 +1,19 @@
 package com.guicedee.activitymaster.core.db.abstraction.builders;
 
+import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyView_;
-import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.guicedinjection.GuiceContext;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+
 import java.io.Serializable;
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
 
-public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends Serializable>
+public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends java.util.UUID>
 	extends QueryBuilder<J,E,I>
 {
 	@Override
