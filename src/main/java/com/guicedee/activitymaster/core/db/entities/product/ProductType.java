@@ -24,7 +24,7 @@ import static jakarta.persistence.AccessType.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Product",
        name = "ProductType")
@@ -40,7 +40,7 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class ProductType
 		extends WarehouseTable<ProductType, ProductTypeQueryBuilder, UUID>
-		implements IProductType<ProductType,ProductTypeQueryBuilder>
+		implements IProductType<ProductType, ProductTypeQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -48,7 +48,8 @@ public class ProductType
 	
 	@Column(nullable = false,
 	        name = "ProductTypeID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@Basic(optional = false)
 	@NotNull
@@ -57,7 +58,7 @@ public class ProductType
 	@Column(nullable = false,
 	        length = 200,
 	        name = "ProductTypeName")
-		private String name;
+	private String name;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -65,22 +66,22 @@ public class ProductType
 	@Column(nullable = false,
 	        length = 200,
 	        name = "ProductTypeDesc")
-		private String description;
+	private String description;
 	
 	@OneToMany(
 			mappedBy = "productTypeID",
 			fetch = FetchType.LAZY)
-		private List<ProductXProductType> productXProductTypeList;
+	private List<ProductXProductType> productXProductTypeList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<ProductTypeSecurityToken> securities;
+	private List<ProductTypeSecurityToken> securities;
 	
 	
 	@OneToMany(
 			mappedBy = "productTypeID",
 			fetch = FetchType.LAZY)
-		private List<ProductTypeXClassification> classifications;
+	private List<ProductTypeXClassification> classifications;
 	
 	
 	public ProductType()
@@ -146,7 +147,7 @@ public class ProductType
 	@Override
 	public String toString()
 	{
-		return "ProductType - " + getName();
+		return getName();
 	}
 	
 	
@@ -170,6 +171,7 @@ public class ProductType
 		this.id = id;
 		return this;
 	}
+	
 	@Override
 	public java.util.UUID getId()
 	{
@@ -191,12 +193,12 @@ public class ProductType
 		this.description = description;
 		return this;
 	}
-
+	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		ProductTypeXClassification pxc = (ProductTypeXClassification) linkTable;
 		pxc.setProductTypeID(this);
 	}
-
+	
 }

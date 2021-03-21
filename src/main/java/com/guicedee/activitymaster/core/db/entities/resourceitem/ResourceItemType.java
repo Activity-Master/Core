@@ -24,7 +24,7 @@ import static jakarta.persistence.FetchType.*;
  */
 @Entity
 @Table(name = "ResourceItemType",
-		schema = "Resource")
+       schema = "Resource")
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -37,82 +37,83 @@ import static jakarta.persistence.FetchType.*;
 		property = "id")
 public class ResourceItemType
 		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, java.util.UUID>
-		implements IResourceItemType<ResourceItemType,ResourceItemTypeQueryBuilder>
+		implements IResourceItemType<ResourceItemType, ResourceItemTypeQueryBuilder>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "ResourceItemTypeID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ResourceItemTypeID")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 100)
+	      max = 100)
 	@Column(nullable = false,
-			length = 100,
-			name = "ResourceItemTypeName")
-		private String name;
+	        length = 100,
+	        name = "ResourceItemTypeName")
+	private String name;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Column(nullable = false,
-			name = "ResourceItemTypeDesc")
-		private String description;
-
+	        name = "ResourceItemTypeDesc")
+	private String description;
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<ResourceItemTypeSecurityToken> securities;
-
+	private List<ResourceItemTypeSecurityToken> securities;
+	
 	@OneToMany(
 			mappedBy = "resourceItemTypeID",
 			fetch = FetchType.LAZY)
-		private List<ResourceItemXResourceItemType> involvedPartyXResourceItemTypeList;
-
+	private List<ResourceItemXResourceItemType> involvedPartyXResourceItemTypeList;
+	
 	public ResourceItemType()
 	{
-
+	
 	}
-
+	
 	public ResourceItemType(UUID resourceItemTypeID)
 	{
 		id = resourceItemTypeID;
 	}
-
+	
 	public ResourceItemType(UUID resourceItemTypeID, String resourceItemTypeName, String resourceItemTypeDesc)
 	{
 		id = resourceItemTypeID;
 		name = resourceItemTypeName;
 		description = resourceItemTypeDesc;
 	}
-
+	
 	public List<ResourceItemTypeSecurityToken> getSecurities()
 	{
 		return securities;
 	}
-
+	
 	public List<ResourceItemXResourceItemType> getInvolvedPartyXResourceItemTypeList()
 	{
 		return involvedPartyXResourceItemTypeList;
 	}
-
+	
 	public ResourceItemType setSecurities(List<ResourceItemTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	public ResourceItemType setInvolvedPartyXResourceItemTypeList(List<ResourceItemXResourceItemType> involvedPartyXResourceItemTypeList)
 	{
 		this.involvedPartyXResourceItemTypeList = involvedPartyXResourceItemTypeList;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -127,51 +128,51 @@ public class ResourceItemType
 		ResourceItemType that = (ResourceItemType) o;
 		return Objects.equals(getName(), that.getName());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
-		return "ResourceType - " + getName();
+		return getName();
 	}
-
+	
 	@Override
 	public java.util.UUID getId()
 	{
 		return id;
 	}
-
+	
 	@Override
 	public String getName()
 	{
 		return name;
 	}
-
+	
 	@Override
 	public @NotNull String getDescription()
 	{
 		return description;
 	}
-
+	
 	@Override
 	public ResourceItemType setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	@Override
 	public ResourceItemType setName(String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
 	@Override
 	public ResourceItemType setDescription(@NotNull String description)
 	{

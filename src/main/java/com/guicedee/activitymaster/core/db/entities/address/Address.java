@@ -31,7 +31,7 @@ import static jakarta.persistence.AccessType.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Address",
        name = "Address")
@@ -45,7 +45,7 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class Address
 		extends WarehouseTable<Address, AddressQueryBuilder, java.util.UUID>
-		implements IAddress<Address,AddressQueryBuilder>
+		implements IAddress<Address, AddressQueryBuilder>
 {
 	
 	@Serial
@@ -54,49 +54,50 @@ public class Address
 	
 	@Column(nullable = false,
 	        name = "AddressID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-		private List<AddressXClassification> classifications;
+	private List<AddressXClassification> classifications;
 	
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 	        name = "Value")
-		private String value;
+	private String value;
 	
 	@JoinColumn(name = "ClassificationID",
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
-		private Classification classificationID;
+	private Classification classificationID;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<AddressSecurityToken> securities;
+	private List<AddressSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-		private List<AddressXGeography> geographies;
+	private List<AddressXGeography> geographies;
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-		private List<AddressXResourceItem> resources;
+	private List<AddressXResourceItem> resources;
 	
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-		private List<EventXAddress> events;
+	private List<EventXAddress> events;
 	@OneToMany(
 			mappedBy = "addressID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXAddress> addresses;
+	private List<InvolvedPartyXAddress> addresses;
 	
 	public Address()
 	{
@@ -120,14 +121,6 @@ public class Address
 	{
 		this.id = addressID;
 	}
-	
-
-	/*@Override
-	public void setMyGeographyLinkValue(AddressXGeography classificationLink, Geography geography, IEnterprise<?,?> enterprise)
-	{
-		classificationLink.setAddressID(this);
-		classificationLink.setGeographyID(geography);
-	}*/
 	
 	public List<AddressXClassification> getClassifications()
 	{
@@ -232,7 +225,7 @@ public class Address
 		this.classificationID = (Classification) classificationID;
 		return this;
 	}
-
+	
 	public Address setValue(@NotNull String value)
 	{
 		this.value = new Passwords().integerEncrypt(value.getBytes());
@@ -246,14 +239,14 @@ public class Address
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		AddressXClassification axg = (AddressXClassification) linkTable;
 		axg.setAddressID(this);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Address primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Address primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		AddressXResourceItem axg = (AddressXResourceItem) linkTable;
 		axg.setAddressID(primary);
@@ -263,7 +256,7 @@ public class Address
 	}
 	
 	@Override
-	public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Address primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Address primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		AddressXGeography axg = (AddressXGeography) linkTable;
 		axg.setAddressID(primary);

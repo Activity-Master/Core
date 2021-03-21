@@ -123,7 +123,7 @@ public class Systems
 	@Override
 	public String toString()
 	{
-		return "System - " + getName();
+		return getName();
 	}
 	
 	

@@ -89,7 +89,7 @@ public class ClassificationService
 		Classification rootCl = new Classification();
 		
 		boolean exists = rootCl.builder()
-		                       .findByNameAndConcept(name, dataConcept)
+		                       .withName(name)
 		                       .withEnterprise(enterprise)
 		                       .inActiveRange(enterprise)
 		                       .inDateRange()
@@ -137,7 +137,7 @@ public class ClassificationService
 	{
 		Classification search = new Classification();
 		search = search.builder()
-		               .findByNameAndConcept(name, concept, system, identityToken)
+		               .withName(name)
 		               .inActiveRange(enterprise, identityToken)
 		               .inDateRange()
 		            //   .canRead(system, identityToken)

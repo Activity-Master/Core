@@ -40,7 +40,7 @@ import static jakarta.persistence.FetchType.*;
 		property = "id")
 public class SecurityToken
 		extends WarehouseTable<SecurityToken, SecurityTokenQueryBuilder, UUID>
-		implements ISecurityToken<SecurityToken,SecurityTokenQueryBuilder>
+		implements ISecurityToken<SecurityToken, SecurityTokenQueryBuilder>
 {
 	private static final Logger log = LogFactory.getLog("SecurityToken");
 	

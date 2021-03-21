@@ -18,25 +18,12 @@ public class ClassificationQueryBuilder
 		           IQueryBuilderNamesAndDescriptions<ClassificationQueryBuilder, Classification, UUID>
 
 {
-	public ClassificationQueryBuilder findByNameAndConcept(String name, ClassificationDataConcept concept)
+	public ClassificationQueryBuilder withConcept(EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken)
 	{
-		withName(name);
-		where(Classification_.concept, Operand.Equals, concept);
+		IClassificationDataConceptService<?> service = GuiceContext.get(IClassificationDataConceptService.class);
+		ClassificationDataConcept dc = (ClassificationDataConcept) service.find(concept, system, identityToken);
+		where(Classification_.concept, Operand.Equals, dc);
 		return this;
 	}
 	
-	public ClassificationQueryBuilder findByNameAndConcept(String name, EnterpriseClassificationDataConcepts concept, ISystems<?,?> system, UUID... identityToken)
-	{
-		withName(name);
-		if (concept == null)
-		{
-			return this;
-		}
-		
-		IClassificationDataConceptService<?> service = GuiceContext.get(IClassificationDataConceptService.class);
-		ClassificationDataConcept classificationDataConcept = (ClassificationDataConcept) service.find(concept, system, identityToken);
-		where(Classification_.concept, Operand.Equals, classificationDataConcept);
-		
-		return this;
-	}
 }

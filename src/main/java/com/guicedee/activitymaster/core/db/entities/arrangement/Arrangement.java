@@ -297,7 +297,7 @@ public class Arrangement
 	@Override
 	public String toString()
 	{
-		return "Arrangement - " + getId();
+		return getId() + "";
 	}
 	
 	@Override

@@ -91,7 +91,7 @@ public class Enterprise
 	@Override
 	public String toString()
 	{
-		return "Enterprise - " + getName();
+		return getName();
 	}
 	
 	//@Override

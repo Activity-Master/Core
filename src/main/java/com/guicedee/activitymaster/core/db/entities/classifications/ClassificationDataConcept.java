@@ -28,7 +28,7 @@ import static jakarta.persistence.FetchType.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Classification",
        name = "ClassificationDataConcept")
@@ -231,16 +231,6 @@ public class ClassificationDataConcept
 		return this;
 	}
 
-	public String name()
-	{
-		return name;
-	}
-	
-	public String classificationValue()
-	{
-		return name;
-	}
-	
 	@Override
 	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, ClassificationDataConcept primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{

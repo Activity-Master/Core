@@ -12,8 +12,6 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
 
-import static com.entityassist.enumerations.Operand.*;
-
 public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<InvolvedParty,
 		InvolvedPartyIdentificationType,
@@ -44,16 +42,14 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 		return super.onCreate(entity);
 	}
 	
-	public InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withValue(String value)
+	@Override
+	public @jakarta.validation.constraints.NotNull InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withValue(Operand operand, String value)
 	{
-		if (!Strings.isNullOrEmpty(value))
-		{
-			String storeValue = new Passwords().integerEncrypt(value.getBytes());
-			where(InvolvedPartyXInvolvedPartyIdentificationType_.value, Equals, storeValue);
-		}
+		String storeValue = new Passwords().integerEncrypt(value.getBytes());
+		where(InvolvedPartyXInvolvedPartyIdentificationType_.value, operand, storeValue);
 		return this;
 	}
-
+	
 	@Override
 	public InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
 	{

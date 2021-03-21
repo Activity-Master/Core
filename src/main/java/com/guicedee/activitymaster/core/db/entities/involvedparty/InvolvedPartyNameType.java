@@ -38,16 +38,17 @@ import static jakarta.persistence.FetchType.*;
 		property = "id")
 public class InvolvedPartyNameType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, java.util.UUID>
-		implements IInvolvedPartyNameType<InvolvedPartyNameType,InvolvedPartyNameTypeQueryBuilder>
+		implements IInvolvedPartyNameType<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder>
 
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
 	        name = "InvolvedPartyNameTypeID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -57,7 +58,7 @@ public class InvolvedPartyNameType
 	@Column(nullable = false,
 	        length = 500,
 	        name = "InvolvedPartyNameTypeName")
-		private String name;
+	private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -66,17 +67,17 @@ public class InvolvedPartyNameType
 	@Column(nullable = false,
 	        length = 500,
 	        name = "InvolvedPartyNameTypeDescr")
-		private String description;
+	private String description;
 	
 	@OneToMany(
 			mappedBy = "involvedPartyNameTypeID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList;
+	private List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyNameTypeSecurityToken> securities;
+	private List<InvolvedPartyNameTypeSecurityToken> securities;
 	
 	public InvolvedPartyNameType()
 	{

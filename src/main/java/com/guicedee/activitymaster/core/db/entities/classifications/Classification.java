@@ -166,7 +166,7 @@ public class Classification
 	@Override
 	public String toString()
 	{
-		return "Classification - " + getName() + " - " + getDescription();
+		return  getName();
 	}
 	
 	@Override

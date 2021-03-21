@@ -241,7 +241,7 @@ public class Geography
 	@Override
 	public String toString()
 	{
-		return "Geography - " + getName();
+		return getName();
 	}
 	
 	public String getName()

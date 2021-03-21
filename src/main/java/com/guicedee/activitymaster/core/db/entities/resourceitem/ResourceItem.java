@@ -38,7 +38,7 @@ import static jakarta.persistence.FetchType.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Resource",
        name = "ResourceItem")
@@ -53,7 +53,7 @@ import static jakarta.persistence.FetchType.*;
 		property = "id")
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.util.UUID>
-		implements IResourceItem<ResourceItem,ResourceItemQueryBuilder>
+		implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -71,74 +71,74 @@ public class ResourceItem
 	@Column(nullable = false,
 	        length = 128,
 	        name = "ResourceItemUUID")
-		private UUID resourceItemUUID;
+	private UUID resourceItemUUID;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@Column(nullable = false,
 	        name = "ResourceItemDataType",
 	        length = 150)
 	@Size(max = 150)
-		private String resourceItemDataType;
+	private String resourceItemDataType;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<ResourceItemXClassification> classifications;
+	private List<ResourceItemXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<ResourceItemXResourceItemType> types;
+	private List<ResourceItemXResourceItemType> types;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXResourceItem> parties;
+	private List<InvolvedPartyXResourceItem> parties;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXResourceItem> arrangements;
+	private List<ArrangementXResourceItem> arrangements;
 	
 	@OneToMany(
 			mappedBy = "resource",
 			fetch = FetchType.LAZY)
-		private List<ResourceItemData> data;
+	private List<ResourceItemData> data;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<AddressXResourceItem> addresses;
+	private List<AddressXResourceItem> addresses;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<EventXResourceItem> events;
+	private List<EventXResourceItem> events;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<ProductXResourceItem> products;
+	private List<ProductXResourceItem> products;
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<ClassificationDataConceptXResourceItem> concept;
+	private List<ClassificationDataConceptXResourceItem> concept;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<ClassificationXResourceItem> classificationXResourceItemList;
+	private List<ClassificationXResourceItem> classificationXResourceItemList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<ResourceItemSecurityToken> securities;
+	private List<ResourceItemSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "resourceItemID",
 			fetch = FetchType.LAZY)
-		private List<GeographyXResourceItem> geographies;
+	private List<GeographyXResourceItem> geographies;
 	
 	public ResourceItem()
 	{
 	
 	}
-
+	
 	public byte[] getData(UUID... identityToken)
 	{
 		if (data == null || data.isEmpty())
@@ -158,7 +158,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void updateData(byte[] data,ISystems<?,?> system, UUID... identityToken)
+	public void updateData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
 	{
 		Optional<ResourceItemData> d
 				= new ResourceItemData().builder()
@@ -170,7 +170,8 @@ public class ResourceItem
 		{
 			ResourceItemData rid = d.get();
 			rid.setResourceItemData(data);
-			rid.builder().update(rid);
+			rid.builder()
+			   .update(rid);
 		}
 		else
 		{
@@ -182,7 +183,8 @@ public class ResourceItem
 			rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
 			rid.setResourceItemData(data);
 			rid.setSystemID(system);
-			rid.setActiveFlagID(rid.getSystemID().getActiveFlagID());
+			rid.setActiveFlagID(rid.getSystemID()
+			                       .getActiveFlagID());
 			rid.setOriginalSourceSystemID(system);
 			rid.setEnterpriseID(system.getEnterpriseID());
 			rid.persist();
@@ -190,7 +192,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void updateAndKeepHistoryData(byte[] data,ISystems<?,?> system, UUID... identityToken)
+	public void updateAndKeepHistoryData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
 	{
 		Optional<ResourceItemData> d
 				= new ResourceItemData().builder()
@@ -243,7 +245,7 @@ public class ResourceItem
 	@Override
 	public String toString()
 	{
-		return "ResourceItem -  " + getResourceItemUUID();
+		return getResourceItemUUID() + "";
 	}
 	
 	public java.util.UUID getId()
@@ -289,16 +291,16 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
-		ResourceItemXClassification rxc = (ResourceItemXClassification)linkTable;
+		ResourceItemXClassification rxc = (ResourceItemXClassification) linkTable;
 		rxc.setResourceItemID(this);
 	}
 	
 	@Override
-	public void configureResourceItemTypeLinkValue(IWarehouseRelationshipTable linkTable, ResourceItem primary, IResourceItemType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
+	public void configureResourceItemTypeLinkValue(IWarehouseRelationshipTable linkTable, ResourceItem primary, IResourceItemType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
 	{
-		ResourceItemXResourceItemType rix = (ResourceItemXResourceItemType)linkTable;
+		ResourceItemXResourceItemType rix = (ResourceItemXResourceItemType) linkTable;
 		rix.setResourceItemID(primary);
 		rix.setResourceItemTypeID((ResourceItemType) secondary);
 		rix.setClassificationID(classificationValue);

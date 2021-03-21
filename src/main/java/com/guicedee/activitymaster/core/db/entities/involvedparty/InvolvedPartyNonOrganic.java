@@ -21,7 +21,7 @@ import static jakarta.persistence.AccessType.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(schema = "Party",
-		name = "InvolvedPartyNonOrganic")
+       name = "InvolvedPartyNonOrganic")
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -35,34 +35,35 @@ import static jakarta.persistence.AccessType.*;
 public class InvolvedPartyNonOrganic
 		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, java.util.UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(nullable = false,
-			name = "InvolvedPartyNonOrganicID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "InvolvedPartyNonOrganicID")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
-
+	
 	@JoinColumn(name = "InvolvedPartyNonOrganicID",
-			referencedColumnName = "InvolvedPartyID",
-			nullable = false,
-			insertable = false,
-			updatable = false)
+	            referencedColumnName = "InvolvedPartyID",
+	            nullable = false,
+	            insertable = false,
+	            updatable = false)
 	@OneToOne(optional = false,
-			fetch = FetchType.LAZY)
-		private InvolvedParty involvedParty;
-
+	          fetch = FetchType.LAZY)
+	private InvolvedParty involvedParty;
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyNonOrganicSecurityToken> securities;
-
+	private List<InvolvedPartyNonOrganicSecurityToken> securities;
+	
 	public InvolvedPartyNonOrganic()
 	{
-
+	
 	}
-
+	
 	public InvolvedPartyNonOrganic(UUID involvedPartyNonOrganicID)
 	{
 		id = involvedPartyNonOrganicID;
@@ -72,13 +73,13 @@ public class InvolvedPartyNonOrganic
 	{
 		return securities;
 	}
-
+	
 	public InvolvedPartyNonOrganic setSecurities(List<InvolvedPartyNonOrganicSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -93,37 +94,37 @@ public class InvolvedPartyNonOrganic
 		InvolvedPartyNonOrganic that = (InvolvedPartyNonOrganic) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
-		return "NonOrganicParty - " + getId();
+		return getId() + "";
 	}
-
+	
 	@Override
 	public java.util.UUID getId()
 	{
 		return id;
 	}
-
+	
 	public InvolvedParty getInvolvedParty()
 	{
 		return involvedParty;
 	}
-
+	
 	@Override
 	public InvolvedPartyNonOrganic setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public InvolvedPartyNonOrganic setInvolvedParty(InvolvedParty involvedParty)
 	{
 		this.involvedParty = involvedParty;

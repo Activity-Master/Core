@@ -687,6 +687,7 @@ public class ActiveFlag
 		return this;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{

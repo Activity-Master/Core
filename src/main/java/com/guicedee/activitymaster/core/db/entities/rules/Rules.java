@@ -38,7 +38,8 @@ import static jakarta.persistence.FetchType.*;
 @Table(schema = "Rules",
        name = "Rules")
 @XmlRootElement
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
@@ -46,7 +47,7 @@ import static jakarta.persistence.FetchType.*;
 		property = "id")
 public class Rules
 		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, java.util.UUID>
-		implements IRules<Rules,RulesQueryBuilder>
+		implements IRules<Rules, RulesQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -65,7 +66,7 @@ public class Rules
 	@Column(nullable = false,
 	        length = 150,
 	        name = "RuleSetName")
-		private String name;
+	private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -74,42 +75,42 @@ public class Rules
 	@Column(nullable = false,
 	        length = 250,
 	        name = "RuleSetDescription")
-		private String description;
-
+	private String description;
+	
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-		private List<RulesXClassification> classifications;
+	private List<RulesXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<RulesSecurityToken> securities;
+	private List<RulesSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-		private List<RulesXResourceItem> resources;
+	private List<RulesXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "childRulesID",
 			fetch = FetchType.LAZY)
-		private List<RulesXRules> rulesXRulesList;
+	private List<RulesXRules> rulesXRulesList;
 	@OneToMany(
 			mappedBy = "parentRulesID",
 			fetch = FetchType.LAZY)
-		private List<RulesXRules> rulesXRulesList1;
+	private List<RulesXRules> rulesXRulesList1;
 	
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-		private List<RulesXInvolvedParty> parties;
+	private List<RulesXInvolvedParty> parties;
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-		private List<RulesXArrangement> arrangements;
+	private List<RulesXArrangement> arrangements;
 	@OneToMany(
 			mappedBy = "rulesID",
 			fetch = FetchType.LAZY)
-		private List<RulesXProduct> products;
+	private List<RulesXProduct> products;
 	
 	public Rules()
 	{
@@ -208,7 +209,7 @@ public class Rules
 	@Override
 	public String toString()
 	{
-		return "Rules - " + getName() + " - " + getName();
+		return getName();
 	}
 	
 	@Override
@@ -257,7 +258,7 @@ public class Rules
 	}
 	
 	@Override
-	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Rules primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Rules primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		RulesXArrangement r = (RulesXArrangement) linkTable;
 		r.setRulesID(primary);
@@ -268,14 +269,14 @@ public class Rules
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		RulesXClassification rxc = (RulesXClassification) linkTable;
 		rxc.setRulesID(this);
 	}
 	
 	@Override
-	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		RulesXProduct rxp = (RulesXProduct) linkTable;
 		rxp.setRulesID(primary);
@@ -285,7 +286,7 @@ public class Rules
 	}
 	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Rules primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Rules primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		RulesXResourceItem r = (RulesXResourceItem) linkTable;
 		r.setRulesID(primary);
@@ -296,7 +297,7 @@ public class Rules
 	}
 	
 	@Override
-	public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Rules primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
+	public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Rules primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
 	{
 		RulesXRulesType r = (RulesXRulesType) linkTable;
 		r.setRulesID(primary);

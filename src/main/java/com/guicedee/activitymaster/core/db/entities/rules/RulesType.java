@@ -32,7 +32,8 @@ import static jakarta.persistence.AccessType.*;
        name = "RulesType")
 @XmlRootElement
 
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
@@ -40,7 +41,7 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class RulesType
 		extends WarehouseSCDNameDescriptionTable<RulesType, RulesTypeQueryBuilder, java.util.UUID>
-		implements IRulesType<RulesType,RulesTypeQueryBuilder>
+		implements IRulesType<RulesType, RulesTypeQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -48,7 +49,8 @@ public class RulesType
 	
 	@Column(nullable = false,
 	        name = "RulesTypeID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private java.util.UUID id;
 	@Basic(optional = false)
 	@NotNull
@@ -57,7 +59,7 @@ public class RulesType
 	@Column(nullable = false,
 	        length = 200,
 	        name = "RulesTypeName")
-		private String name;
+	private String name;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -65,25 +67,25 @@ public class RulesType
 	@Column(nullable = false,
 	        length = 200,
 	        name = "RulesTypeDesc")
-		private String description;
+	private String description;
 	
 	@OneToMany(
 			mappedBy = "rulesTypeID",
 			fetch = FetchType.LAZY)
-		private List<RulesXRulesType> rulesXRulesTypeList;
+	private List<RulesXRulesType> rulesXRulesTypeList;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<RulesTypeSecurityToken> securities;
+	private List<RulesTypeSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "rulesTypeID",
 			fetch = FetchType.LAZY)
-		private List<RulesTypeXResourceItem> resources;
+	private List<RulesTypeXResourceItem> resources;
 	
 	@OneToMany(
 			mappedBy = "rulesTypeID",
 			fetch = FetchType.LAZY)
-		private List<RulesTypeXClassification> classifications;
+	private List<RulesTypeXClassification> classifications;
 	
 	
 	public RulesType()
@@ -159,7 +161,7 @@ public class RulesType
 	@Override
 	public String toString()
 	{
-		return "RulesType - " + getName();
+		return getName();
 	}
 	
 	@Override
@@ -191,7 +193,7 @@ public class RulesType
 	
 	@Override
 	public RulesType setName(@NotNull @Size(min = 1,
-	                                          max = 200) String name)
+	                                        max = 200) String name)
 	{
 		this.name = name;
 		return this;
@@ -199,7 +201,7 @@ public class RulesType
 	
 	@Override
 	public RulesType setDescription(@NotNull @Size(min = 1,
-	                                                 max = 200) String description)
+	                                               max = 200) String description)
 	{
 		this.description = description;
 		return this;
@@ -207,14 +209,14 @@ public class RulesType
 	
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		RulesTypeXClassification r = (RulesTypeXClassification) linkTable;
 		r.setRulesTypeID(this);
 	}
 	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, RulesType primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, RulesType primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		RulesTypeXResourceItem r = (RulesTypeXResourceItem) linkTable;
 		r.setRulesTypeID(primary);
@@ -222,5 +224,5 @@ public class RulesType
 		r.setClassificationID(classificationValue);
 		r.setValue(value);
 	}
-
+	
 }

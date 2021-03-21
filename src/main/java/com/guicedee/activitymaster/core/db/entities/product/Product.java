@@ -50,7 +50,7 @@ import static jakarta.persistence.FetchType.*;
 		property = "id")
 public class Product
 		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, java.util.UUID>
-		implements IProduct<Product,ProductQueryBuilder>
+		implements IProduct<Product, ProductQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -69,7 +69,7 @@ public class Product
 	@Column(nullable = false,
 	        length = 150,
 	        name = "ProductName")
-		private String name;
+	private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -78,7 +78,7 @@ public class Product
 	@Column(nullable = false,
 	        length = 250,
 	        name = "ProductDesc")
-		private String description;
+	private String description;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -87,42 +87,42 @@ public class Product
 	@Column(nullable = false,
 	        length = 10,
 	        name = "ProductCode")
-		private String productCode;
+	private String productCode;
 	
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-		private List<ProductXClassification> classifications;
+	private List<ProductXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<ProductSecurityToken> securities;
+	private List<ProductSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXProduct> arrangements;
+	private List<ArrangementXProduct> arrangements;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-		private List<ProductXResourceItem> resources;
+	private List<ProductXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-		private List<InvolvedPartyXProduct> parties;
+	private List<InvolvedPartyXProduct> parties;
 	@OneToMany(
 			mappedBy = "productID",
 			fetch = FetchType.LAZY)
-		private List<EventXProduct> events;
+	private List<EventXProduct> events;
 	@OneToMany(
 			mappedBy = "childProductID",
 			fetch = FetchType.LAZY)
-		private List<ProductXProduct> productXProductList;
+	private List<ProductXProduct> productXProductList;
 	@OneToMany(
 			mappedBy = "parentProductID",
 			fetch = FetchType.LAZY)
-		private List<ProductXProduct> productXProductList1;
+	private List<ProductXProduct> productXProductList1;
 	
 	public Product()
 	{
@@ -243,7 +243,7 @@ public class Product
 		}
 		Product product = (Product) o;
 		return Objects.equals(getName(), product.getName()) &&
-				Objects.equals(getProductCode(), product.getProductCode());
+		       Objects.equals(getProductCode(), product.getProductCode());
 	}
 	
 	@Override
@@ -255,7 +255,7 @@ public class Product
 	@Override
 	public String toString()
 	{
-		return "Product - " + getProductCode() + " - " + getName();
+		return getProductCode();
 	}
 	
 	@Override
@@ -305,16 +305,16 @@ public class Product
 		this.productCode = productCode;
 		return this;
 	}
-
+	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		ProductXClassification.class.cast(linkTable)
 		                            .setProductID(this);
 	}
 	
 	@Override
-	public void configureProductTypeLinkValue(IWarehouseRelationshipTable linkTable, Product primary, IProductType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
+	public void configureProductTypeLinkValue(IWarehouseRelationshipTable linkTable, Product primary, IProductType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
 	{
 		ProductXProductType pxt = (ProductXProductType) linkTable;
 		pxt.setProductID(primary);
@@ -324,7 +324,7 @@ public class Product
 	}
 	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Product primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Product primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		ProductXResourceItem pxt = (ProductXResourceItem) linkTable;
 		pxt.setProductID(primary);
