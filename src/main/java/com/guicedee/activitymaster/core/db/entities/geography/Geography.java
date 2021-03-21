@@ -298,7 +298,7 @@ public class Geography
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?, ?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?, ?> system)
 	{
 		((GeographyXClassification) linkTable).setGeographyID(this);
 	}

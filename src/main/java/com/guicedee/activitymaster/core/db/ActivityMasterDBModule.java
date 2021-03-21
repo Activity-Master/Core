@@ -1,11 +1,12 @@
 package com.guicedee.activitymaster.core.db;
 
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.guicedpersistence.btm.BTMConnectionBaseInfo;
 import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
 import com.guicedee.guicedpersistence.db.DatabaseModule;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
-import jakarta.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.util.Properties;
 

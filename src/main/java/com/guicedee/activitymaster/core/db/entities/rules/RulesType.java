@@ -207,7 +207,7 @@ public class RulesType
 	
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		RulesTypeXClassification r = (RulesTypeXClassification) linkTable;
 		r.setRulesTypeID(this);

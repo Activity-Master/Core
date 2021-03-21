@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.address;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.activitymaster.client.implementations.Passwords;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.address.IAddress;
@@ -9,6 +8,7 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.classifica
 import com.guicedee.activitymaster.client.services.builders.warehouse.geography.IGeography;
 import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.builders.AddressQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -246,7 +246,7 @@ public class Address
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		AddressXClassification axg = (AddressXClassification) linkTable;
 		axg.setAddressID(this);

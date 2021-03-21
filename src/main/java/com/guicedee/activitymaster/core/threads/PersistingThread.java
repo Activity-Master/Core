@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.core.threads;
 
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.entityassist.BaseEntity;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
@@ -20,12 +20,12 @@ public class PersistingThread
 	@Override
 	public Object call() throws Exception
 	{
-		perform();
+		run();
 		return null;
 	}
 
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	void perform()
+	void run()
 	{
 		for (BaseEntity entity : entities)
 		{

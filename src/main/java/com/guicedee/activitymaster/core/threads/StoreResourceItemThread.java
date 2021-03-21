@@ -1,16 +1,18 @@
 package com.guicedee.activitymaster.core.threads;
 
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItemData;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.UUID;
 
 public class StoreResourceItemThread
-		extends com.guicedee.activitymaster.core.threads.TransactionalIdentifiedThread
+		extends Thread
 {
 	private IResourceItem<?,?> item;
 	private byte[] data;
@@ -28,9 +30,9 @@ public class StoreResourceItemThread
 		this.originatingSystem = originatingSystem;
 		this.identifyingToken = identifyingToken;
 	}
-
-	@Override
-	public void perform()
+	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	public void run()
 	{
 		ResourceItemData itemData = new ResourceItemData();
 		itemData.setResource((ResourceItem) item);

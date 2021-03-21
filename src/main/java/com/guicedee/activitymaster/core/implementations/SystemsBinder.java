@@ -4,15 +4,14 @@ import com.google.inject.*;
 import com.google.inject.name.Names;
 import com.guicedee.activitymaster.client.services.ISystemsService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.SystemsService;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.db.entities.systems.builders.SystemsQueryBuilder;
-import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.services.providers.SystemsProvider;
 import com.guicedee.activitymaster.core.services.providers.SystemsTokenProvider;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
-import java.util.ServiceLoader;
 import java.util.UUID;
 
 public class SystemsBinder extends PrivateModule implements IGuiceModule<SystemsBinder>
@@ -34,7 +33,7 @@ public class SystemsBinder extends PrivateModule implements IGuiceModule<Systems
 		expose(ISystemsService.class);
 
 		//All systems named bindings
-		for (IActivityMasterSystem<?> system : ServiceLoader.load(IActivityMasterSystem.class))
+		for (IActivityMasterSystem<?> system : IActivityMasterSystem.allSystems())
 		{
 			@SuppressWarnings("Convert2Diamond")
 			Key<ISystems<?,?>> aSystemGenericKey = Key.get(new TypeLiteral<ISystems<?,?>>() {}, Names.named(system.getSystemName()));

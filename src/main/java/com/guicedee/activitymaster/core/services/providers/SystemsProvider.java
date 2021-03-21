@@ -2,12 +2,12 @@ package com.guicedee.activitymaster.core.services.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.db.entities.systems.builders.SystemsQueryBuilder;
-import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 
 import java.util.Map;
 import java.util.Set;

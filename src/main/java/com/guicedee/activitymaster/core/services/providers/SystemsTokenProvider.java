@@ -4,9 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.guicedee.activitymaster.client.services.ISecurityTokenService;
 import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
+import com.guicedee.activitymaster.client.services.systems.IActivityMasterSystem;
 
 import java.util.Set;
 import java.util.UUID;

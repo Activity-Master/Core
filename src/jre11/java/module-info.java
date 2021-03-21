@@ -1,9 +1,9 @@
 import com.guicedee.activitymaster.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.client.services.events.IOnSystemUpdate;
+import com.guicedee.activitymaster.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.db.ActivityMasterDBModule;
 import com.guicedee.activitymaster.core.implementations.*;
 import com.guicedee.activitymaster.core.injections.*;
-import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.systems.*;
 import com.guicedee.guicedhazelcast.services.IGuicedHazelcastServerConfig;
 import com.guicedee.guicedinjection.interfaces.IGuiceConfigurator;
@@ -15,16 +15,13 @@ module com.guicedee.activitymaster.core {
 	exports com.guicedee.activitymaster.core.async;
 	exports com.guicedee.activitymaster.core.services;
 
-	exports com.guicedee.activitymaster.core.services.exceptions;
 	exports com.guicedee.activitymaster.core.services.system;
-	
 	
 	exports com.guicedee.activitymaster.core.db.entities.time;
 	
 	//exports com.guicedee.activitymaster.core.systems;
 	
 	exports com.guicedee.activitymaster.core.threads;
-	exports com.guicedee.activitymaster.core.updates;
 	
 	exports com.guicedee.activitymaster.core.implementations.interceptors;
 	
@@ -54,7 +51,7 @@ module com.guicedee.activitymaster.core {
 	requires com.guicedee.guicedhazelcast;
 	
 	
-	requires com.guicedee.activitymaster.client;
+	requires transitive com.guicedee.activitymaster.client;
 	
 	requires static lombok;
 	
@@ -70,7 +67,8 @@ module com.guicedee.activitymaster.core {
 			EventsBinder,
 			AddressBinder,
 			ArrangementsBinder,
-			ProductsBinder;
+			ProductsBinder,
+			RulesBinder;
 	
 	provides IGuiceConfigurator with ActivityMasterScanConfiguration;
 	
@@ -84,7 +82,7 @@ module com.guicedee.activitymaster.core {
 
 	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 	
-	uses IActivityMasterSystem;
+	//uses IActivityMasterSystem;
 	
 	
 	uses IOnSystemUpdate;
@@ -141,7 +139,7 @@ module com.guicedee.activitymaster.core {
 	
 	//opens com.guicedee.activitymaster.core.services.concepts to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.providers to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.core.services.exceptions to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+//	opens com.guicedee.activitymaster.client.services.exceptions to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.services.system to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.core.systems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	

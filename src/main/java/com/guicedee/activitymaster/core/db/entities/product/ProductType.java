@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.core.db.entities.product;
 
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.client.services.builders.warehouse.products.IProductType;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
@@ -192,7 +193,7 @@ public class ProductType
 	}
 
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		ProductTypeXClassification pxc = (ProductTypeXClassification) linkTable;
 		pxc.setProductTypeID(this);

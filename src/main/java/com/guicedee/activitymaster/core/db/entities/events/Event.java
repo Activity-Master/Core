@@ -16,7 +16,14 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.resourceit
 import com.guicedee.activitymaster.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.core.db.entities.address.Address;
+import com.guicedee.activitymaster.core.db.entities.arrangement.Arrangement;
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventQueryBuilder;
+import com.guicedee.activitymaster.core.db.entities.geography.Geography;
+import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
+import com.guicedee.activitymaster.core.db.entities.product.Product;
+import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
+import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -31,7 +38,7 @@ import static jakarta.persistence.AccessType.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Event",
        name = "Event")
@@ -300,53 +307,91 @@ public class Event
 	public void configureAddressLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IAddress<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
 		EventXAddress e = (EventXAddress) linkTable;
+		e.setEventID(primary);
+		e.setAddressID((Address) secondary);
+		e.setClassificationID(classificationValue);
+		e.setValue(value);
 	}
 	
 	@Override
 	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Event primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-	
+		EventXArrangement e = (EventXArrangement) linkTable;
+		e.setEventID(primary);
+		e.setArrangementID((Arrangement) secondary);
+		e.setClassificationID(classificationValue);
+		e.setValue(value);
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
-	
+		EventXClassification e = (EventXClassification) linkTable;
+		e.setEventID(this);
+		e.setClassificationID(classificationValue);
 	}
 	
 	@Override
 	public void configureEventTypeLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IEventType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
 	{
-	
+		EventXEventType e = (EventXEventType) linkTable;
+		e.setEventID(primary);
+		e.setEventTypeID((EventType) secondary);
+		e.setClassificationID(classificationValue);
+		e.setValue(value);
 	}
 	
 	@Override
 	public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Event primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-	
+		EventXGeography e = (EventXGeography) linkTable;
+		e.setEventID(primary);
+		e.setGeographyID((Geography) secondary);
+		e.setClassificationID(classificationValue);
+		e.setValue(value);
+		
 	}
 	
 	@Override
 	public void configureInvolvedPartyAddable(IWarehouseRelationshipTable linkTable, Event primary, IInvolvedParty<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-	
+		EventXInvolvedParty e = (EventXInvolvedParty) linkTable;
+		e.setEventID(primary);
+		e.setInvolvedPartyID((InvolvedParty) secondary);
+		e.setClassificationID(classificationValue);
+		e.setValue(value);
 	}
 	
 	@Override
 	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-	
+		EventXProduct product = (EventXProduct) linkTable;
+		product.setEventID(primary);
+		product.setProductID((Product) secondary);
+		product.setClassificationID(classificationValue);
+		product.setValue(value);
+		
 	}
 	
 	@Override
 	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Event primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-	
+		EventXResourceItem e = (EventXResourceItem) linkTable;
+		e.setEventID(primary);
+		e.setResourceItemID((ResourceItem) secondary);
+		e.setClassificationID(classificationValue);
+		e.setValue(value);
+		
 	}
 	
 	@Override
 	public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Event primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
 	{
-	
+		EventXRules e = (EventXRules) linkTable;
+		e.setEventID(primary);
+		e.setRulesID((Rules) secondary);
+		e.setClassificationID(classificationValue);
+		e.setValue(value);
+		
 	}
 }

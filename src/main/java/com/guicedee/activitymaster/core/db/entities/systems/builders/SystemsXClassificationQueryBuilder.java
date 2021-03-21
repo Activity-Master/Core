@@ -9,19 +9,19 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class SystemsXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Systems, Classification, SystemsXClassificationQueryBuilder,
-				                                              SystemXClassification, java.util.UUID>
+		SystemsXClassification, java.util.UUID>
 {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public SingularAttribute<WarehouseSCDTable, Systems> getPrimaryAttribute()
 	{
-		return SystemXClassification_.systemID;
+		return SystemsXClassification_.systemID;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
 	{
-		return SystemXClassification_.classificationID;
+		return SystemsXClassification_.classificationID;
 	}
 }

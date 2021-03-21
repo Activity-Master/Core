@@ -2,7 +2,7 @@ package com.guicedee.activitymaster.core.db.entities.time.builders;
 
 import com.entityassist.BaseEntity;
 import com.entityassist.querybuilder.QueryBuilder;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.EntityManager;
 

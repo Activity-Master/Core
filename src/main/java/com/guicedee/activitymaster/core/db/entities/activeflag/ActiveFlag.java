@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.core.db.entities.activeflag;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
@@ -687,7 +688,7 @@ public class ActiveFlag
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		ActiveFlagXClassification x = (ActiveFlagXClassification) linkTable;
 		x.setActiveFlagID(this);

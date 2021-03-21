@@ -8,13 +8,13 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.classifica
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.client.services.classifications.EnterpriseClassificationDataConcepts;
+import com.guicedee.activitymaster.client.services.exceptions.ClassificationException;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationQueryBuilder;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.client.services.classifications.DefaultClassifications.*;
@@ -112,6 +112,7 @@ public class ClassificationService
 			
 			if (parent != null)
 			{
+				@SuppressWarnings("unchecked")
 				IClassification<Classification, ClassificationQueryBuilder> pp = (IClassification<Classification, ClassificationQueryBuilder>) parent;
 				pp.addChild(rootCl,NoClassification.toString(),null, system, identityToken);
 			}
@@ -142,7 +143,7 @@ public class ClassificationService
 		            //   .canRead(system, identityToken)
 		               .withEnterprise(enterprise)
 		               .get()
-		               .orElseThrow(()-> new NoSuchElementException("Cannot find Classification with name - [" + name + "] - and concept - [" + concept + "]"));
+		               .orElseThrow(()-> new ClassificationException("Cannot find Classification with name - [" + name + "] - and concept - [" + concept + "]"));
 		return search;
 	}
 	

@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.core.db.abstraction.builders;
 
 import com.entityassist.querybuilder.QueryBuilder;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.core.db.hierarchies.SecurityHierarchyView_;
 import com.guicedee.guicedinjection.GuiceContext;

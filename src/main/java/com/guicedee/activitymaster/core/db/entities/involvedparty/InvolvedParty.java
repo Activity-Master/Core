@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.client.services.IInvolvedPartyService;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.address.IAddress;
@@ -14,7 +15,6 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.resourceit
 import com.guicedee.activitymaster.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.client.services.classifications.types.IdentificationTypes;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.arrangement.ArrangementXInvolvedParty;
@@ -229,7 +229,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		InvolvedPartyXClassification i = (InvolvedPartyXClassification) linkTable;
 		i.setInvolvedPartyID(this);

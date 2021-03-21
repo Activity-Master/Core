@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.core.db.entities.classifications;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.client.services.IClassificationService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
@@ -11,7 +12,6 @@ import com.guicedee.activitymaster.core.ClassificationService;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.classifications.builders.ClassificationQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,6 +22,7 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+import static com.guicedee.guicedinjection.GuiceContext.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -114,7 +115,7 @@ public class Classification
 	
 	public void configureForClassification(ClassificationXClassification classificationLink, ISystems<?,?> system)
 	{
-		Classification hierarchyClassification = (Classification) GuiceContext.get(ClassificationService.class)
+		Classification hierarchyClassification = (Classification) get(ClassificationService.class)
 		                                                                      .getHierarchyType(system);
 		Classification incomingClassification = (Classification) classificationLink.getClassificationID();
 		
@@ -268,9 +269,12 @@ public class Classification
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?, ?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?, ?> system)
 	{
 		ClassificationXClassification c = (ClassificationXClassification) linkTable;
-		((ClassificationXClassification) linkTable).setParentClassificationID(this);
+		c.setParentClassificationID(this);
+		c.setChildClassificationID((Classification) classificationValue);
+		IClassificationService<?> classificationService = get(IClassificationService.class);
+		c.setClassificationID(classificationService.getNoClassification(system));
 	}
 }

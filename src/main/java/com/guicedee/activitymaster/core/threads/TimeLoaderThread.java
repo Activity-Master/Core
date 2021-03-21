@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.core.threads;
 
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.core.systems.TimeSystem;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import lombok.Data;

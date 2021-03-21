@@ -21,8 +21,8 @@ import static jakarta.persistence.AccessType.*;
 @XmlRootElement
 
 @Access(FIELD)
-public class SystemXClassificationSecurityToken
-		extends WarehouseSecurityTable<SystemXClassificationSecurityToken, SystemXClassificationSecurityTokenQueryBuilder, java.util.UUID>
+public class SystemsXClassificationSecurityToken
+		extends WarehouseSecurityTable<SystemsXClassificationSecurityToken, SystemXClassificationSecurityTokenQueryBuilder, java.util.UUID>
 		implements Serializable
 {
 	
@@ -41,14 +41,14 @@ public class SystemXClassificationSecurityToken
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
 	
-	private SystemXClassification base;
+	private SystemsXClassification base;
 	
-	public SystemXClassificationSecurityToken()
+	public SystemsXClassificationSecurityToken()
 	{
 	
 	}
 	
-	public SystemXClassificationSecurityToken(UUID systemXClassificationSecurityTokenID)
+	public SystemsXClassificationSecurityToken(UUID systemXClassificationSecurityTokenID)
 	{
 		this.id = systemXClassificationSecurityTokenID;
 	}
@@ -63,18 +63,18 @@ public class SystemXClassificationSecurityToken
 		return this.id;
 	}
 	
-	public SystemXClassification getBase()
+	public SystemsXClassification getBase()
 	{
 		return this.base;
 	}
 	
-	public SystemXClassificationSecurityToken setId(java.util.UUID id)
+	public SystemsXClassificationSecurityToken setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
-	public SystemXClassificationSecurityToken setBase(SystemXClassification base)
+	public SystemsXClassificationSecurityToken setBase(SystemsXClassification base)
 	{
 		this.base = base;
 		return this;
@@ -86,11 +86,11 @@ public class SystemXClassificationSecurityToken
 		{
 			return true;
 		}
-		if (!(o instanceof SystemXClassificationSecurityToken))
+		if (!(o instanceof SystemsXClassificationSecurityToken))
 		{
 			return false;
 		}
-		final SystemXClassificationSecurityToken other = (SystemXClassificationSecurityToken) o;
+		final SystemsXClassificationSecurityToken other = (SystemsXClassificationSecurityToken) o;
 		if (!other.canEqual((Object) this))
 		{
 			return false;
@@ -106,7 +106,7 @@ public class SystemXClassificationSecurityToken
 	
 	protected boolean canEqual(final Object other)
 	{
-		return other instanceof SystemXClassificationSecurityToken;
+		return other instanceof SystemsXClassificationSecurityToken;
 	}
 	
 	public int hashCode()

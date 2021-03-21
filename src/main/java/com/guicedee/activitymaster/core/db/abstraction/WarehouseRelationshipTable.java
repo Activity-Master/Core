@@ -1,10 +1,10 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.client.implementations.Passwords;
 import com.guicedee.activitymaster.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationship;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.guicedinjection.GuiceContext;

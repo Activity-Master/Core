@@ -1,20 +1,21 @@
 package com.guicedee.activitymaster.core.implementations;
 
-import com.guicedee.activitymaster.core.threads.TransactionalIdentifiedThread;
-import com.google.inject.servlet.RequestScoper;
-import com.google.inject.servlet.ScopingException;
-import com.google.inject.servlet.ServletScopes;
+import com.google.inject.servlet.*;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class RequestScopedThread extends TransactionalIdentifiedThread
+public abstract class RequestScopedThread extends Thread
 {
 	private static final Logger log = Logger.getLogger(RequestScopedThread.class.getName());
 	private RequestScoper.CloseableScope scoper;
+	
 	@Override
-	public final void perform()
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	public final void run()
 	{
 		try
 		{

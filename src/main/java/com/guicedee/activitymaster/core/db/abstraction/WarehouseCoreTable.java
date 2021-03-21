@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.core.db.abstraction;
 
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseCoreTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.core.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderCore;
 import jakarta.persistence.MappedSuperclass;
 

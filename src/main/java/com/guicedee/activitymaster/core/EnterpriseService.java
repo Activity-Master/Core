@@ -1,9 +1,9 @@
 package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.client.implementations.Passwords;
 import com.guicedee.activitymaster.client.services.*;
-import com.guicedee.activitymaster.client.services.administration.*;
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.client.services.builders.warehouse.party.IInvolvedParty;
@@ -14,15 +14,14 @@ import com.guicedee.activitymaster.client.services.classifications.types.IPTypes
 import com.guicedee.activitymaster.client.services.classifications.types.IdentificationTypes;
 import com.guicedee.activitymaster.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.client.services.events.IOnSystemUpdate;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.client.services.exceptions.EnterpriseException;
+import com.guicedee.activitymaster.client.services.systems.*;
+import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.entities.enterprise.*;
 import com.guicedee.activitymaster.core.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.activitymaster.core.services.exceptions.EnterpriseException;
 import com.guicedee.activitymaster.core.systems.SystemsSystem;
-import com.guicedee.activitymaster.core.updates.DatedUpdate;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedinjection.json.LocalDateDeserializer;

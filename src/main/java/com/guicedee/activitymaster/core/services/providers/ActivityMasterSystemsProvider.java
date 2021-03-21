@@ -1,8 +1,7 @@
 package com.guicedee.activitymaster.core.services.providers;
 
 import com.google.inject.Provider;
-import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.activitymaster.client.services.systems.IActivityMasterSystem;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
 
 import java.util.ServiceLoader;

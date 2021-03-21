@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.core.async;
 
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;

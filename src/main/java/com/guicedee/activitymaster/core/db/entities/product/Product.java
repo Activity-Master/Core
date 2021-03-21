@@ -307,7 +307,7 @@ public class Product
 	}
 
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		ProductXClassification.class.cast(linkTable)
 		                            .setProductID(this);

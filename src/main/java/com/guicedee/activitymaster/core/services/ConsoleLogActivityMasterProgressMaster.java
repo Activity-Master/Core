@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.core.services;
 
-import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.systems.IActivityMasterProgressMonitor;
 import lombok.extern.java.Log;
 
 @Log

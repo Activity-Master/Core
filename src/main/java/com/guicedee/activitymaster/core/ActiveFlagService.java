@@ -3,9 +3,9 @@ package com.guicedee.activitymaster.core;
 import com.guicedee.activitymaster.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.exceptions.ActiveFlagException;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
-import com.guicedee.activitymaster.core.services.exceptions.ActiveFlagException;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 

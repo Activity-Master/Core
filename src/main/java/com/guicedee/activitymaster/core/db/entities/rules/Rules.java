@@ -268,7 +268,7 @@ public class Rules
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		RulesXClassification rxc = (RulesXClassification) linkTable;
 		rxc.setRulesID(this);

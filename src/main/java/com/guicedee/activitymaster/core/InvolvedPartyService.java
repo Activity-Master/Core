@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.client.implementations.Passwords;
 import com.guicedee.activitymaster.client.services.*;
 import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
@@ -11,6 +10,9 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.party.*;
 import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.exceptions.ActivityMasterException;
+import com.guicedee.activitymaster.client.services.exceptions.SecurityAccessException;
+import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
@@ -18,8 +20,6 @@ import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.Invol
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.exceptions.ActivityMasterException;
-import com.guicedee.activitymaster.core.services.exceptions.SecurityAccessException;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedinjection.pairing.Pair;

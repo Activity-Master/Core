@@ -4,11 +4,12 @@ import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import com.guicedee.activitymaster.client.services.ISecurityTokenService;
 import com.guicedee.activitymaster.client.services.ISystemsService;
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.core.*;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
+import com.guicedee.activitymaster.core.EnterpriseService;
+import com.guicedee.activitymaster.core.SystemsService;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
@@ -58,9 +59,6 @@ public abstract class RequestScopedThreadOriginal
 		                                 .getSecurityIdentityToken(systems);
 		SecurityToken token = (SecurityToken) GuiceContext.get(ISecurityTokenService.class)
 		                                                  .getSecurityToken(identityToken, systems);
-		securityConfiguration.setToken(token);
-		ISecurityToken<?,?> inToken = securityConfiguration.getToken();
-
 		config.setSecurityEnabled(false);
 
 		return token;

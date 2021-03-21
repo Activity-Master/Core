@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.core;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.guicedee.activitymaster.client.implementations.Passwords;
 import com.guicedee.activitymaster.client.services.IAddressService;
 import com.guicedee.activitymaster.client.services.IClassificationService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -12,10 +11,11 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.client.services.classifications.address.AddressBuildingClassifications;
 import com.guicedee.activitymaster.client.services.dto.PhoneNumberDTO;
+import com.guicedee.activitymaster.client.services.exceptions.AddressException;
+import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.exceptions.AddressException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -365,7 +365,7 @@ public class AddressService
 		                 .hasClassification(homePhoneExtensionNumberClassification, Strings.nullToEmpty(phoneNumberDTO.getExtension()))
 		                 .hasClassification(homePhoneAreaCodeClassification, phoneNumberDTO.getAreaCode())
 		                 .withClassification(homePhoneNumber)
-		                 .withValue(phoneNumber,true)
+		                 .withValue(phoneNumber)
 		                 .getCount() > 0)
 		{
 			return streetAddress.builder()
@@ -373,7 +373,7 @@ public class AddressService
 			                    .hasClassification(homePhoneExtensionNumberClassification, Strings.nullToEmpty(phoneNumberDTO.getExtension()))
 			                    .hasClassification(homePhoneAreaCodeClassification, phoneNumberDTO.getAreaCode())
 			                    .withClassification(homePhoneNumber)
-			                    .withValue(phoneNumber,true)
+			                    .withValue(phoneNumber)
 			                    .get(true)
 			                    .orElseThrow(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + homePhoneNumber));
 		}

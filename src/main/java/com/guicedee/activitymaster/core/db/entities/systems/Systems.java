@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.core.db.abstraction.assists.WarehouseNameDescriptionTable;
@@ -126,7 +127,7 @@ public class Systems
 	}
 	
 	
-	public void configureForClassification(SystemXClassification classificationLink, ISystems<?,?> system)
+	public void configureForClassification(SystemsXClassification classificationLink, ISystems<?,?> system)
 	{
 		classificationLink.setSystemID(this);
 	}
@@ -251,9 +252,9 @@ public class Systems
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
-		SystemXClassification.class.cast(linkTable)
-		                           .setSystemID(this);
+		SystemsXClassification.class.cast(linkTable)
+		                            .setSystemID(this);
 	}
 }

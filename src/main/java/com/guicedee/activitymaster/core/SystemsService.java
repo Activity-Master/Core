@@ -11,11 +11,11 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.security.I
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.client.services.classifications.SystemsClassifications;
 import com.guicedee.activitymaster.client.services.classifications.UserGroupSecurityTokenClassifications;
+import com.guicedee.activitymaster.client.services.exceptions.SystemsException;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.services.exceptions.SystemsException;
+import com.guicedee.activitymaster.core.db.entities.systems.SystemsXClassification;
 import com.guicedee.activitymaster.core.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
@@ -113,7 +113,7 @@ public class SystemsService
 	@Override
 	public ISystems<?,?> findSystem(@CacheKey ISystems<?,?> requestingSystem, @CacheKey UUID token, UUID... identityToken)
 	{
-		SystemXClassification systemClassifications = new SystemXClassification();
+		SystemsXClassification systemClassifications = new SystemsXClassification();
 		Classification identifyClassification = (Classification) classificationService.getIdentityType(requestingSystem, identityToken);
 		
 		return systemClassifications.builder()

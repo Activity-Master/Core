@@ -5,9 +5,9 @@ import com.google.inject.Provider;
 import com.guicedee.activitymaster.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.exceptions.ActiveFlagException;
 import com.guicedee.activitymaster.core.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.core.db.entities.activeflag.builders.ActiveFlagQueryBuilder;
-import com.guicedee.activitymaster.core.services.exceptions.ActiveFlagException;
 
 public class ActiveFlagProvider implements Provider<IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>>
 {

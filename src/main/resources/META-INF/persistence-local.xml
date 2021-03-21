@@ -196,8 +196,8 @@
 
         <class>com.guicedee.activitymaster.core.db.entities.systems.Systems</class>
         <class>com.guicedee.activitymaster.core.db.entities.systems.SystemsSecurityToken</class>
-        <class>com.guicedee.activitymaster.core.db.entities.systems.SystemXClassification</class>
-        <class>com.guicedee.activitymaster.core.db.entities.systems.SystemXClassificationSecurityToken</class>
+        <class>com.guicedee.activitymaster.core.db.entities.systems.SystemsXClassification</class>
+        <class>com.guicedee.activitymaster.core.db.entities.systems.SystemsXClassificationSecurityToken</class>
 
         <class>com.guicedee.activitymaster.core.db.entities.time.DayNames</class>
         <class>com.guicedee.activitymaster.core.db.entities.time.DayParts</class>
@@ -236,11 +236,10 @@
             <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2012Dialect"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.use_sql_comments" value="true"/>
             <property name="hibernate.connection.useUnicode" value="yes"/>
             <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;DatabaseName=FSDM"/>
-            <property name="javax.persistence.jdbc.user" value=""/>
-            <property name="javax.persistence.jdbc.password" value=""/>
             <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.max_fetch_depth" value="1"/>

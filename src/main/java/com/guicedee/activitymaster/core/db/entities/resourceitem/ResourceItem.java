@@ -289,7 +289,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		ResourceItemXClassification rxc = (ResourceItemXClassification)linkTable;
 		rxc.setResourceItemID(this);

@@ -333,7 +333,7 @@ public class Arrangement
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
 	{
 		((ArrangementXClassification) linkTable).setArrangementID(this);
 	}

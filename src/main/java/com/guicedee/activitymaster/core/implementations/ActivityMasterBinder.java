@@ -2,7 +2,9 @@ package com.guicedee.activitymaster.core.implementations;
 
 import com.google.inject.PrivateModule;
 import com.google.inject.Singleton;
-import com.guicedee.activitymaster.core.*;
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.core.ActivityMasterService;
+import com.guicedee.activitymaster.core.TimeService;
 import com.guicedee.activitymaster.core.services.system.*;
 import com.guicedee.activitymaster.core.systems.TimeSystem;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;

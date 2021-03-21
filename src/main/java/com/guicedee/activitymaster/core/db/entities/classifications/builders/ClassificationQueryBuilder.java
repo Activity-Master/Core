@@ -30,7 +30,7 @@ public class ClassificationQueryBuilder
 		withName(name);
 		if (concept == null)
 		{
-			concept = EnterpriseClassificationDataConcepts.NoClassificationDataConceptName;
+			return this;
 		}
 		
 		IClassificationDataConceptService<?> service = GuiceContext.get(IClassificationDataConceptService.class);

@@ -32,10 +32,10 @@ import static jakarta.persistence.AccessType.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-public class SystemXClassification
+public class SystemsXClassification
 		extends WarehouseClassificationRelationshipTable<Systems,
 		Classification,
-		SystemXClassification,
+		SystemsXClassification,
 		SystemsXClassificationQueryBuilder,
 		java.util.UUID>
 		implements Serializable
@@ -53,14 +53,14 @@ public class SystemXClassification
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-	private List<SystemXClassificationSecurityToken> securities;
+	private List<SystemsXClassificationSecurityToken> securities;
 	
-	public SystemXClassification()
+	public SystemsXClassification()
 	{
 	
 	}
 	
-	public SystemXClassification(UUID systemXClassificationID)
+	public SystemsXClassification(UUID systemXClassificationID)
 	{
 		id = systemXClassificationID;
 	}
@@ -71,19 +71,19 @@ public class SystemXClassification
 		return id;
 	}
 	
-	public List<SystemXClassificationSecurityToken> getSecurities()
+	public List<SystemsXClassificationSecurityToken> getSecurities()
 	{
 		return securities;
 	}
 	
 	@Override
-	public SystemXClassification setId(java.util.UUID id)
+	public SystemsXClassification setId(java.util.UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
-	public SystemXClassification setSecurities(List<SystemXClassificationSecurityToken> securities)
+	public SystemsXClassification setSecurities(List<SystemsXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
@@ -100,7 +100,7 @@ public class SystemXClassification
 		{
 			return false;
 		}
-		SystemXClassification that = (SystemXClassification) o;
+		SystemsXClassification that = (SystemsXClassification) o;
 		return Objects.equals(getId(), that.getId());
 	}
 	

@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.core.db.abstraction.builders;
 
 import com.entityassist.querybuilder.QueryBuilderSCD;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.client.services.builders.IQueryBuilderClassifications;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseBaseTable;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.EntityManager;

@@ -2,9 +2,9 @@ package com.guicedee.activitymaster.core.db.entities.involvedparty.builders;
 
 import com.entityassist.enumerations.Operand;
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.client.implementations.Passwords;
 import com.guicedee.activitymaster.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.guicedinjection.GuiceContext;

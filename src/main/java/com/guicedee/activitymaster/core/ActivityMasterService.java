@@ -2,11 +2,10 @@ package com.guicedee.activitymaster.core;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.client.services.IEnterpriseService;
-import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.client.services.administration.IProgressable;
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.core.db.ActivityMasterDB;
-import com.guicedee.activitymaster.core.services.IActivityMasterSystem;
+import com.guicedee.activitymaster.client.services.systems.*;
 import com.guicedee.activitymaster.core.services.system.IActivityMasterService;
 import com.guicedee.logger.LogFactory;
 import lombok.extern.java.Log;

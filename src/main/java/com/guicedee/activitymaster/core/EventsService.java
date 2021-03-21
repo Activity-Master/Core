@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise
 import com.guicedee.activitymaster.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.client.services.builders.warehouse.events.IEventType;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.client.services.events.EventThread;
 import com.guicedee.activitymaster.core.db.entities.events.Event;
 import com.guicedee.activitymaster.core.db.entities.events.EventType;
 import jakarta.cache.annotation.CacheKey;
@@ -41,7 +40,6 @@ public class EventsService
 		event.persist();
 		event.createDefaultSecurity(originatingSystem, identityToken);
 		event.addEventTypes(NoClassification, eventType, STRING_EMPTY, originatingSystem, identityToken);
-		EventThread.event.set(event);
 		return event;
 	}
 	

@@ -3,12 +3,11 @@ package com.guicedee.activitymaster.core.implementations;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import com.guicedee.activitymaster.ActivityMasterTestBinder;
-import com.guicedee.activitymaster.client.services.ISecurityTokenService;
 import com.guicedee.activitymaster.client.services.ISystemsService;
-import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.client.services.systems.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.core.*;
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -89,13 +88,9 @@ public class DefaultTestConfig
 		UUID identityToken = GuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
 		
-		ISecurityToken<?,?> token = GuiceContext.get(ISecurityTokenService.class)
-		                                      .getSecurityToken(identityToken, systems);
-
 		GuiceContext.get(ActivityMasterService.class)
 		            .loadSystems(TestEnterprise.name(), null);
-		securityConfiguration.setToken(token);
-		ISecurityToken<?,?> inToken = securityConfiguration.getToken();
+
 		config.setSecurityEnabled(false);
 		defaultWaitUnit = TimeUnit.HOURS;
 		defaultWaitTime = 1;

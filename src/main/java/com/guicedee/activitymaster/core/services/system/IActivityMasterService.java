@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.core.services.system;
 
-import com.guicedee.activitymaster.client.services.administration.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.systems.IActivityMasterProgressMonitor;
 
 public interface IActivityMasterService
 {
