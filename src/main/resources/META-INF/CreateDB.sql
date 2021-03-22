@@ -1328,7 +1328,7 @@ GO
 CREATE TABLE [Address].[Address](
 	[AddressID] [uniqueidentifier] NOT NULL,
 	[ClassificationID] [uniqueidentifier] NOT NULL,
-	[Value] [varchar](500) NOT NULL,
+	[Value] [varchar](2500) NOT NULL,
 	[OriginalSourceSystemID] [uniqueidentifier] NOT NULL,
 	[OriginalSourceSystemUniqueID] [varchar](500) NOT NULL,
 	[WarehouseCreatedTimestamp] [datetime] NOT NULL,
@@ -4088,7 +4088,7 @@ CREATE TABLE [Party].[InvolvedPartyXInvolvedPartyIdentificationType](
 	[InvolvedPartyID] [uniqueidentifier] NOT NULL,
 	[InvolvedPartyIdentificationTypeID] [uniqueidentifier] NOT NULL,
 	[ClassificationID] [uniqueidentifier] NOT NULL,
-	[Value] [varchar](500) NOT NULL,
+	[Value] [varchar](2500) NOT NULL,
 	[SystemID] [uniqueidentifier] NOT NULL,
 	[OriginalSourceSystemID] [uniqueidentifier] NOT NULL,
 	[OriginalSourceSystemUniqueID] [varchar](500) NOT NULL,

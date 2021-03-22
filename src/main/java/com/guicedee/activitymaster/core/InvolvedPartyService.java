@@ -11,16 +11,11 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.resourceit
 import com.guicedee.activitymaster.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.client.services.exceptions.ActivityMasterException;
-import com.guicedee.activitymaster.client.services.exceptions.SecurityAccessException;
-import com.guicedee.activitymaster.core.api.Passwords;
-import com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
-import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.logger.LogFactory;
@@ -36,10 +31,8 @@ import java.util.stream.Collectors;
 import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.*;
 import static com.guicedee.activitymaster.client.services.classifications.DefaultClassifications.*;
-import static com.guicedee.activitymaster.client.services.classifications.InvolvedPartyClassifications.*;
 import static com.guicedee.activitymaster.client.services.classifications.types.IdentificationTypes.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("Duplicates")
 public class InvolvedPartyService
@@ -87,9 +80,9 @@ public class InvolvedPartyService
 		{
 			xr.setName(name);
 			xr.setDescription(description);
-			xr.setSystemID((Systems) system);
-			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setSystemID(system);
+			xr.setOriginalSourceSystemID(system);
+			xr.setEnterpriseID(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			
@@ -121,9 +114,9 @@ public class InvolvedPartyService
 		{
 			xr.setName(name);
 			xr.setDescription(description);
-			xr.setSystemID((Systems) system);
-			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setSystemID(system);
+			xr.setOriginalSourceSystemID(system);
+			xr.setEnterpriseID(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 				xr.createDefaultSecurity(system, identityToken);
@@ -152,9 +145,9 @@ public class InvolvedPartyService
 		{
 			xr.setName(name);
 			xr.setDescription(description);
-			xr.setSystemID((Systems) system);
-			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setSystemID(system);
+			xr.setOriginalSourceSystemID(system);
+			xr.setEnterpriseID(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 		
@@ -183,9 +176,9 @@ public class InvolvedPartyService
 		{
 			xr.setName(name);
 			xr.setDescription(description);
-			xr.setSystemID((Systems) system);
-			xr.setOriginalSourceSystemID((Systems) system);
-			xr.setEnterpriseID((Enterprise) enterprise);
+			xr.setSystemID(system);
+			xr.setOriginalSourceSystemID(system);
+			xr.setEnterpriseID(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 				xr.createDefaultSecurity(activityMasterSystem, identityToken);
@@ -256,118 +249,7 @@ public class InvolvedPartyService
 		              .orElse(null);
 	}
 	
-	@Override
-	public IInvolvedParty<?,?> findByUsernameAndPassword(String username, String password, ISystems<?,?> system, boolean throwForNoUser, UUID... token)
-	{
-		if (!doesUsernameExist(username, system, token))
-		{
-			if (throwForNoUser)
-			{
-				throw new SecurityAccessException("Invalid Username");
-			}
-			else
-			{
-				return null;
-			}
-		}
-		
-		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(system.getEnterpriseID());
-		InvolvedParty foundPart = new InvolvedParty().builder()
-		                                             .findByIdentificationType(system, IdentificationTypeUserName,
-				                                             username,
-				                                             identityToken)
-		                                             .get()
-		                                             .orElse(null);
-		if (foundPart == null)
-		{
-			throw new SecurityAccessException("Unable to find any Involved Party with that username");
-		}
-		
-		Optional<IRelationshipValue<InvolvedParty,  IClassification<?,?>, ?>> saltEntity = foundPart.findClassification(SecurityPasswordSalt, system, identityToken);
-		Optional<IRelationshipValue<InvolvedParty, IClassification<?,?>, ?>> passEntity = foundPart.findClassification(SecurityPassword, system, identityToken);
-		if (saltEntity.isEmpty() || passEntity.isEmpty())
-		{
-			if (throwForNoUser)
-			{
-				throw new SecurityAccessException("Involved Party does not have Username/Password credentials");
-			}
-		}
-		
-		String saltString = saltEntity.get()
-		                              .getValue();
-		saltString = new String(new Passwords().integerDecrypt(saltString));
-		String passMatch = passEntity.get()
-		                             .getValue();
-		String passEncrypted = encrypt(password, saltString);
-		
-		if (!passEncrypted.equalsIgnoreCase(passMatch))
-		{
-			throw new SecurityAccessException("Password Incorrect");
-		}
-		return foundPart;
-	}
 	
-	private String encrypt(String toEncrypt, String salt)
-	{
-		//byte[] salt = saltString.getBytes();
-		byte[] saltDecrypted = salt.getBytes();
-		char[] pass = toEncrypt.toCharArray();
-		byte[] passHashed = new Passwords().hash(pass, saltDecrypted);
-		//String saltEncrypted = Passwords.integerEncrypt(salt);
-		String passEncrypted = new Passwords().integerEncrypt(passHashed);
-		return passEncrypted;
-	}
-	
-	@Override
-	public boolean doesUsernameExist(String username, ISystems<?,?> system, UUID... token)
-	{
-		return new InvolvedParty().builder()
-		                          .withEnterprise(enterprise)
-		                          .findByIdentificationType(system, IdentificationTypeUserName, username, token)
-		                          .getCount() > 0;
-	}
-	
-	@Override
-	@CacheResult(cacheName = "InvolvedPartyByUsername")
-	public IInvolvedParty<?,?> findByUsername(@CacheKey String username, @CacheKey ISystems<?,?> system, @CacheKey UUID... token)
-	{
-		IInvolvedParty<?,?> party = new InvolvedParty().builder()
-		                                             .withEnterprise(enterprise)
-		                                             .findByIdentificationType(system, IdentificationTypeUserName, new Passwords().integerEncrypt(username.getBytes()),
-				                                             token)
-		                                             .get()
-		                                             .orElseThrow(() -> new SecurityAccessException("Involved Party Does Not Exist"));
-		return party;
-	}
-	
-	@Override
-	public IInvolvedParty<?,?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?,?> involvedParty, ISystems<?,?> system, UUID... token)
-	{
-		byte[] salt;
-		if (involvedParty.hasClassifications(SecurityPasswordSalt,null, system, token))
-		{
-			salt = involvedParty.findClassification(SecurityPasswordSalt, system, token)
-			                    .get()
-			                    .getValue()
-			                    .getBytes();
-		}
-		else
-		{
-			salt = System.getProperty("systemSalt") != null ? System.getProperty("systemSalt")
-			                                                        .getBytes() : new Passwords().getNextSalt();
-		}
-		
-		String passEncrypted = encrypt(password, new String(salt));
-		String saltEncrypted = new Passwords().integerEncrypt(salt);
-		
-		involvedParty.addOrUpdateClassification(SecurityPassword, null, passEncrypted, system, token);
-		involvedParty.addOrUpdateClassification(SecurityPasswordSalt, null, saltEncrypted, system, token);
-		IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(IdentificationTypeUserName.toString(), system, token);
-		involvedParty.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(),involvedPartyIdentificationType,
-				username,username, system, token);
-		
-		return involvedParty;
-	}
 	
 	@Override
 	public IInvolvedParty<?,?> create(ISystems<?,?> system, Pair<String, String> idTypes,
@@ -381,10 +263,10 @@ public class InvolvedPartyService
 		
 		if (exists.isEmpty())
 		{
-			ip.setEnterpriseID((Enterprise) enterprise);
+			ip.setEnterpriseID(enterprise);
 			ip.setActiveFlagID(activeFlag);
-			ip.setSystemID((Systems) system);
-			ip.setOriginalSourceSystemID((Systems) system);
+			ip.setSystemID(system);
+			ip.setOriginalSourceSystemID(system);
 			ip.persist();
 			
 			ip.createDefaultSecurity(system, identityToken);
@@ -411,10 +293,10 @@ public class InvolvedPartyService
 			InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
 			ipo.setInvolvedParty((InvolvedParty) ip);
 			ipo.setId(ip.getId());
-			ipo.setEnterpriseID((Enterprise) enterprise);
+			ipo.setEnterpriseID(enterprise);
 			ipo.setActiveFlagID(activeFlag);
-			ipo.setSystemID((Systems) system);
-			ipo.setOriginalSourceSystemID((Systems) system);
+			ipo.setSystemID(system);
+			ipo.setOriginalSourceSystemID(system);
 			ipo.persist();
 			
 				ipo.createDefaultSecurity(system, identityToken);
@@ -425,10 +307,10 @@ public class InvolvedPartyService
 			InvolvedPartyNonOrganic ipo = new InvolvedPartyNonOrganic();
 			ipo.setInvolvedParty((InvolvedParty) ip);
 			ipo.setId(ip.getId());
-			ipo.setEnterpriseID((Enterprise) enterprise);
+			ipo.setEnterpriseID(enterprise);
 			ipo.setActiveFlagID(activeFlag);
-			ipo.setSystemID((Systems) system);
-			ipo.setOriginalSourceSystemID((Systems) system);
+			ipo.setSystemID(system);
+			ipo.setOriginalSourceSystemID(system);
 			ipo.persist();
 			
 				ipo.createDefaultSecurity(system, identityToken);

@@ -31,12 +31,13 @@ public class ProductsSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public ISystems<?,?>  registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		systemsService.get()
-		              .create(enterprise, getSystemName(), getSystemDescription());
+		ISystems<?, ?> iSystems = systemsService.get()
+		                                        .create(enterprise, getSystemName(), getSystemDescription());
 		systemsService.get()
 		              .registerNewSystem(enterprise, getSystem(enterprise));
+		return iSystems;
 	}
 	
 	@Override

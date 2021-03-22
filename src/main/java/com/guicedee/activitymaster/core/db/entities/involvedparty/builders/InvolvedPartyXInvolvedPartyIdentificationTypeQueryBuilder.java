@@ -4,7 +4,6 @@ import com.entityassist.enumerations.Operand;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.*;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -37,7 +36,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 	{
 		if (!Strings.isNullOrEmpty(entity.getValue()))
 		{
-			entity.setValue(new Passwords().integerEncrypt(entity.getValue().getBytes()));
+			//entity.setValue(new Passwords().integerEncrypt(entity.getValue().getBytes()));
 		}
 		return super.onCreate(entity);
 	}
@@ -45,7 +44,8 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 	@Override
 	public @jakarta.validation.constraints.NotNull InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withValue(Operand operand, String value)
 	{
-		String storeValue = new Passwords().integerEncrypt(value.getBytes());
+		//String storeValue = new Passwords().integerEncrypt(value.getBytes());
+		String storeValue = value;
 		where(InvolvedPartyXInvolvedPartyIdentificationType_.value, operand, storeValue);
 		return this;
 	}

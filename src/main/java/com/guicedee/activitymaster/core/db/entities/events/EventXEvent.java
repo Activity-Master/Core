@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.core.db.entities.events.builders.EventXEventQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,8 +22,6 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Event",
        name = "EventXEvent")
 @XmlRootElement
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Access(FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)

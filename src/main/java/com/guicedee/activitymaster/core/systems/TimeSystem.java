@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.client.services.ISystemsService;
 import com.guicedee.activitymaster.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.client.services.systems.*;
 import com.guicedee.activitymaster.core.ActivityMasterService;
 import com.guicedee.activitymaster.core.TimeService;
@@ -44,12 +45,13 @@ public class TimeSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public ISystems<?,?> registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		systemsService.get()
-		              .create(enterprise, getSystemName(), getSystemDescription());
+		ISystems<?, ?> iSystems = systemsService.get()
+		                                        .create(enterprise, getSystemName(), getSystemDescription());
 		systemsService.get()
 		              .registerNewSystem(enterprise, getSystem(enterprise));
+		return iSystems;
 	}
 	
 	@Override

@@ -13,7 +13,7 @@ import static com.guicedee.activitymaster.client.services.classifications.Involv
 import static com.guicedee.activitymaster.client.services.classifications.ResourceItemClassifications.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
 
-@DatedUpdate(date = "2016/01/01", taskCount = 3)
+@SortedUpdate(sortOrder = -500, taskCount = 3)
 public class ClassificationBaseSetup implements ISystemUpdate
 {
 	@Inject

@@ -12,11 +12,10 @@ import com.guicedee.activitymaster.client.services.exceptions.ActivityMasterExce
 import com.guicedee.activitymaster.client.services.systems.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.InvolvedPartyService;
-import com.guicedee.activitymaster.core.SystemsService;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,23 +35,51 @@ public class SystemsSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public ISystems<?,?>  registerSystem(IEnterprise<?, ?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		systemsService.get()
-		              .create(enterprise, EnterpriseSystemName, "The system for handling enterprises");
+		Map<IEnterprise<?, ?>, ISystems<?, ?>> systemsMap = new HashMap<>();
+		ISystems<?, ?> entSystem = systemsService.get()
+		                                         .create(enterprise, EnterpriseSystemName, "The system for handling enterprises");
+		systemsMap.put(enterprise, entSystem);
+		Pair p = Pair.of(EnterpriseSystem.class, systemsMap);
 		
-		systemsService.get()
-		              .create(enterprise, ActivateFlagSystemName, "The system for the active flag management");
+		ActivityMasterDefaultSystem.systemsEnterpriseSystems.remove(p);
+		ActivityMasterDefaultSystem.systemsEnterpriseSystems.add(p);
+		ActivityMasterDefaultSystem.systemsNamesToClasses.put(EnterpriseSystemName, EnterpriseSystem.class);
 		
-		systemsService.get()
-		              .create(enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master");
+		Map<IEnterprise<?, ?>, ISystems<?, ?>> flagSystemsMap = new HashMap<>();
+		ISystems<?, ?> flagSystem = systemsService.get()
+		                                        .create(enterprise, ActivateFlagSystemName, "The system for the active flag management");
+		flagSystemsMap.put(enterprise, flagSystem);
+		Pair ap = Pair.of(ActiveFlagSystem.class, flagSystemsMap);
+		ActivityMasterDefaultSystem.systemsEnterpriseSystems.remove(ap);
+		ActivityMasterDefaultSystem.systemsEnterpriseSystems.add(ap);
+		ActivityMasterDefaultSystem.systemsNamesToClasses.put(ActivateFlagSystemName, ActiveFlagSystem.class);
 		
-		systemsService.get()
-		              .create(enterprise, SystemsService.ActivityMasterWebSystemName, "The Web Administration Application for Activity Master", "Activity Master Web");
+		Map<IEnterprise<?, ?>, ISystems<?, ?>> actSystemsMap = new HashMap<>();
+		ISystems<?, ?> activityMasterSystem = systemsService.get()
+		                                               .create(enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master");
+		actSystemsMap.put(enterprise, activityMasterSystem);
+		Pair pAct = Pair.of(SystemsSystem.class, actSystemsMap);
+		
+		ActivityMasterDefaultSystem.systemsEnterpriseSystems.remove(pAct);
+		ActivityMasterDefaultSystem.systemsEnterpriseSystems.add(pAct);
+		ActivityMasterDefaultSystem.systemsNamesToClasses.put(ActivityMasterSystemName, SystemsSystem.class);
+		
+		return activityMasterSystem;
+	/*
+		Map<IEnterprise<?, ?>, ISystems<?, ?>> actWebSystemsMap = new HashMap<>();
+		ISystems<?, ?> activity_master_web = systemsService.get()
+		                                                   .create(enterprise, ActivityMasterWebSystemName, "The Web Administration Application for Activity Master", "Activity Master Web");
+		actWebSystemsMap.put(enterprise, activity_master_web);
+		Pair pActWeb = Pair.of(SystemsSystem.class, actWebSystemsMap);
+		
+		ActivityMasterDefaultSystem.systemsEnterpriseSystems.remove(pActWeb);
+		ActivityMasterDefaultSystem.systemsEnterpriseSystems.add(pActWeb);*/
 	}
 	
 	@Override
-	public void createDefaults(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public void createDefaults(IEnterprise<?, ?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
 	
 	}
@@ -63,10 +90,10 @@ public class SystemsSystem
 		return 2;
 	}
 	
-	public IInvolvedParty<?,?> createInvolvedPartyForNewSystem(ISystems<?,?> system, UUID... identityToken)
+	public IInvolvedParty<?, ?> createInvolvedPartyForNewSystem(ISystems<?, ?> system, UUID... identityToken)
 	{
-		ISystems<?,?> activityMasterSystem = systemsService.get()
-		                                                 .getActivityMaster(system.getEnterpriseID());
+		ISystems<?, ?> activityMasterSystem = systemsService.get()
+		                                                    .getActivityMaster(system.getEnterpriseID());
 		UUID activityMasterSystemUUID = systemsService.get()
 		                                              .getSecurityIdentityToken(activityMasterSystem);
 		
@@ -79,16 +106,16 @@ public class SystemsSystem
 		InvolvedPartyService ipService = GuiceContext.get(InvolvedPartyService.class);
 		try
 		{
-			IInvolvedParty<?,?> ip = ipService.create(system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), newSystemUUID.toString()), false, activityMasterSystemUUID);
+			IInvolvedParty<?, ?> ip = ipService.create(system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), newSystemUUID.toString()), false, activityMasterSystemUUID);
 			
 			IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = ipService.findInvolvedPartyIdentificationType(IdentificationTypes.IdentificationTypeSystemID.toString(), system, identityToken);
-			ip.addOrReuseInvolvedPartyIdentificationType( NoClassification.toString(), involvedPartyIdentificationType, system.getId()
-			                                                                                                                  .toString(), system, activityMasterSystemUUID);
+			ip.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType, system.getId()
+			                                                                                                                 .toString(), system, activityMasterSystemUUID);
 			
 			IInvolvedPartyType<?, ?> ipType = ipService.findType(IPTypes.TypeSystem.toString(), system, identityToken);
-			ip.addOrReuseInvolvedPartyType(NoClassification.toString(),ipType, newSystemUUID.toString(), system, activityMasterSystemUUID);
+			ip.addOrReuseInvolvedPartyType(NoClassification.toString(), ipType, newSystemUUID.toString(), system, activityMasterSystemUUID);
 			IInvolvedPartyNameType<?, ?> nameType = ipService.findInvolvedPartyNameType(NameTypes.PreferredNameType.toString(), system, identityToken);
-			ip.addOrReuseInvolvedPartyNameType(NoClassification.toString(),nameType,  system.getName(), system, activityMasterSystemUUID);
+			ip.addOrReuseInvolvedPartyNameType(NoClassification.toString(), nameType, system.getName(), system, activityMasterSystemUUID);
 			return ip;
 		}
 		catch (Exception e)

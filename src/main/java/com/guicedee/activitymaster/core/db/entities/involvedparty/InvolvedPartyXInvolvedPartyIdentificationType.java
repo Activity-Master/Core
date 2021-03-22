@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.core.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import jakarta.persistence.*;
@@ -166,6 +165,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	@Override
 	public void setValue(String value)
 	{
-		super.setValue(new Passwords().integerEncrypt(value.getBytes()));
+		//super.setValue(new Passwords().integerEncrypt(value.getBytes()));
+		super.setValue(value);
 	}
 }

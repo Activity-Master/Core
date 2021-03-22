@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.classifica
 import com.guicedee.activitymaster.client.services.builders.warehouse.geography.IGeography;
 import com.guicedee.activitymaster.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.core.db.entities.address.builders.AddressQueryBuilder;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
@@ -211,7 +210,7 @@ public class Address
 	
 	public @NotNull String getValue()
 	{
-		return new String(new Passwords().integerDecrypt(this.value));
+		return new String(this.value);
 	}
 	
 	public Classification getClassificationID()
@@ -228,7 +227,7 @@ public class Address
 	
 	public Address setValue(@NotNull String value)
 	{
-		this.value = new Passwords().integerEncrypt(value.getBytes());
+		this.value = value;
 		return this;
 	}
 	

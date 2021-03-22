@@ -2,28 +2,21 @@ package com.guicedee.activitymaster.core.services.providers;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import com.guicedee.activitymaster.core.db.entities.systems.builders.SystemsQueryBuilder;
+import com.guicedee.guicedinjection.pairing.Pair;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import static com.guicedee.activitymaster.client.services.administration.ActivityMasterDefaultSystem.*;
 
 public class SystemsProvider implements Provider<ISystems<Systems, SystemsQueryBuilder>>
 {
 	@Inject
 	private Provider<IEnterprise<?,?>> enterprise;
 	
-	@Inject
-	private Provider<ActivityMasterConfiguration> configuration;
-	
 	private String systemName;
-	
-	private static final Map<String, ISystems<Systems, SystemsQueryBuilder>> systemsMap = new ConcurrentHashMap<>();
 	
 	public SystemsProvider()
 	{
@@ -37,14 +30,24 @@ public class SystemsProvider implements Provider<ISystems<Systems, SystemsQueryB
 	@Override
 	public ISystems<Systems, SystemsQueryBuilder> get()
 	{
-		if(EnterpriseProvider.loadedEnterprise == null)
+		if(EnterpriseProvider.loadedEnterprise == null || EnterpriseProvider.loadedEnterprise.isFake())
 		{
 			return new Systems();
 		}
+		Class<? extends ActivityMasterDefaultSystem> dd = ActivityMasterDefaultSystem.systemsNamesToClasses.get(systemName);
 		
+		Pair eqPair = Pair.of(dd,null);
+		if(systemsEnterpriseSystems.contains(eqPair))
+		{
+			return (ISystems<Systems, SystemsQueryBuilder>) systemsEnterpriseSystems.get(systemsEnterpriseSystems.indexOf(eqPair)).getValue().get(enterprise.get());
+		}else {
+			System.out.println("System not yet ready - " + this.systemName);
+			return new Systems();
+		}
+		/*
 		if(systemsMap.containsKey(systemName))
 		{
-			//noinspection unchecked
+			//noinspection
 			return systemsMap.get(systemName);
 		}
 		Set<IActivityMasterSystem<?>> systems = configuration.get().getAllSystems();
@@ -60,17 +63,17 @@ public class SystemsProvider implements Provider<ISystems<Systems, SystemsQueryB
 					//noinspection unchecked
 					ISystems<Systems, SystemsQueryBuilder> system1 = (ISystems<Systems, SystemsQueryBuilder>) system.getSystem(enterprise.get().getName());
 					systemsMap.put(systemName, system1);
-					return system1;
+					break;
 				}else {
-					return new Systems();
+					systemsMap.put(systemName, new Systems());
 				}
 			}
 		}
-		return new Systems();
+		return systemsMap.get(systemName);*/
 	}
 	
-	public static Map<String, ISystems<Systems, SystemsQueryBuilder>> getSystemsMap()
+	/*public static Map<String, ISystems<Systems, SystemsQueryBuilder>> getSystemsMap()
 	{
 		return systemsMap;
-	}
+	}*/
 }

@@ -11,7 +11,7 @@ import com.guicedee.activitymaster.client.services.systems.*;
 import static com.guicedee.activitymaster.client.services.classifications.address.AddressClassifications.*;
 import static com.guicedee.activitymaster.core.SystemsService.*;
 
-@DatedUpdate(date = "2016/01/05", taskCount = 15)
+@SortedUpdate(sortOrder = -400, taskCount = 15)
 public class AddressBaseSetup implements ISystemUpdate
 {
 	@Inject

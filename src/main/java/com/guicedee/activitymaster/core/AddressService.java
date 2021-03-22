@@ -12,7 +12,6 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.systems.IS
 import com.guicedee.activitymaster.client.services.classifications.address.AddressBuildingClassifications;
 import com.guicedee.activitymaster.client.services.dto.PhoneNumberDTO;
 import com.guicedee.activitymaster.client.services.exceptions.AddressException;
-import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.core.db.entities.systems.Systems;
@@ -417,8 +416,7 @@ public class AddressService
 		
 		Address streetAddress = new Address();
 		
-		String contactEncrypted = new Passwords().integerEncrypt(phoneNumberDTO.getCompleteNumber()
-		                                                                       .getBytes());
+		String contactEncrypted = phoneNumberDTO.getCompleteNumber();
 		
 		if (streetAddress.builder()
 		                 .hasClassification(homePhoneNumberCountryCodeClassification, phoneNumberDTO.getCountryCode())

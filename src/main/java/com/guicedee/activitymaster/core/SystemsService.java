@@ -96,13 +96,13 @@ public class SystemsService
 	
 	@CacheResult(cacheName = "FindSystem")
 	@Override
-	public ISystems<?,?> findSystem(@CacheKey ISystems<?,?> requestingSystem, @CacheKey String systemName, @CacheKey UUID... token)
+	public ISystems<?,?> findSystem(ISystems<?,?> requestingSystem, @CacheKey String systemName, UUID... token)
 	{
 		Systems search = new Systems();
 		return search.builder()
 		             .withName(systemName)
-		             .withEnterprise(requestingSystem)
-		             .inActiveRange(requestingSystem, token)
+		             .withEnterprise(enterprise)
+		             .inActiveRange(enterprise, token)
 		             .inDateRange()
 		             //.canRead(enterprise, token)
 		             .get()
@@ -118,9 +118,9 @@ public class SystemsService
 		
 		return systemClassifications.builder()
 		                            .findLink(null,identifyClassification, token.toString())
-		                            .inActiveRange(requestingSystem, identityToken)
+		                            .inActiveRange(enterprise, identityToken)
 		                            .inDateRange()
-		                            .withEnterprise(requestingSystem)
+		                            .withEnterprise(enterprise)
 		                            .canRead(requestingSystem, identityToken)
 		                            .get()
 		                            .orElseThrow(() -> new SystemsException("Cannot find a child system for - " + requestingSystem + " - in enterprise - " + enterprise))

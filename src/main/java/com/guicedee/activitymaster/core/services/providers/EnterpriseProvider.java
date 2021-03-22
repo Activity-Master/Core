@@ -30,9 +30,9 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, Ente
 			IEnterprise<Enterprise,EnterpriseQueryBuilder> ent = (IEnterprise<Enterprise,EnterpriseQueryBuilder>) configuration.get().getEnterprise();
 			if (ent == null)
 			{
-				return new Enterprise();
+				return loadedEnterprise = new Enterprise();
 			}
-			if(GuiceContext.get(SecurityTokenSystem.class).hasSystemInstalled(ent))
+			if(!configuration.get().isSecurityEnabled() && GuiceContext.get(SecurityTokenSystem.class).hasSystemInstalled(ent))
 			{
 				System.out.println("Enabling Authentication Modules");
 				configuration.get().setSecurityEnabled(true);
@@ -42,7 +42,7 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, Ente
 		}
 		else
 		{
-			return new Enterprise();
+			return loadedEnterprise = new Enterprise();
 		}
 	}
 }

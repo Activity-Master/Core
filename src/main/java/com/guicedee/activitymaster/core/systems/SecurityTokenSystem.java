@@ -54,9 +54,9 @@ public class SecurityTokenSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public ISystems<?,?>  registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-		systemsService.get()
+		return systemsService.get()
 		              .create(enterprise, getSystemName(), getSystemDescription());
 		
 		

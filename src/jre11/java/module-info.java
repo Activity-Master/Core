@@ -6,8 +6,7 @@ import com.guicedee.activitymaster.core.implementations.*;
 import com.guicedee.activitymaster.core.injections.*;
 import com.guicedee.activitymaster.core.systems.*;
 import com.guicedee.guicedhazelcast.services.IGuicedHazelcastServerConfig;
-import com.guicedee.guicedinjection.interfaces.IGuiceConfigurator;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.guicedinjection.interfaces.*;
 
 module com.guicedee.activitymaster.core {
 	exports com.guicedee.activitymaster.core;
@@ -68,7 +67,8 @@ module com.guicedee.activitymaster.core {
 			AddressBinder,
 			ArrangementsBinder,
 			ProductsBinder,
-			RulesBinder;
+			RulesBinder,
+			PasswordsServiceBinder;
 	
 	provides IGuiceConfigurator with ActivityMasterScanConfiguration;
 	
@@ -79,9 +79,10 @@ module com.guicedee.activitymaster.core {
 	
 	provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
 	provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
-
 	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 	
+	provides IGuicePostStartup with ActivityMasterPostStartup;
+
 	//uses IActivityMasterSystem;
 	
 	

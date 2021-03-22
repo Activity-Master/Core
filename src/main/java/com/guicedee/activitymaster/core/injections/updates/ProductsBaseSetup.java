@@ -10,7 +10,7 @@ import com.guicedee.activitymaster.client.services.systems.*;
 
 import static com.guicedee.activitymaster.core.SystemsService.*;
 
-@DatedUpdate(date = "2016/04/01", taskCount = 1)
+@SortedUpdate(sortOrder = 0, taskCount = 1)
 public class ProductsBaseSetup implements ISystemUpdate
 {
 	@Inject

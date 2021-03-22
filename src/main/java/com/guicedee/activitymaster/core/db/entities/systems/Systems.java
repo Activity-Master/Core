@@ -146,7 +146,6 @@ public class Systems
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
 		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-		setEffectiveToDate(LocalDateTime.now());
 		updateNow();
 		return this;
 	}

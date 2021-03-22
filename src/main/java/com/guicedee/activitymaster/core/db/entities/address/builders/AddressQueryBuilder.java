@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.core.db.entities.address.builders;
 
 import com.entityassist.enumerations.Operand;
 import com.guicedee.activitymaster.client.services.builders.warehouse.address.IAddressQueryBuilder;
-import com.guicedee.activitymaster.core.api.Passwords;
 import com.guicedee.activitymaster.core.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.core.db.entities.address.Address;
 import com.guicedee.activitymaster.core.db.entities.address.Address_;
@@ -15,7 +14,7 @@ public class AddressQueryBuilder
 	@Override
 	public @NotNull AddressQueryBuilder withValue(Operand operand, String value)
 	{
-		where(Address_.value, operand, new Passwords().integerEncrypt(value.getBytes()));
+		where(Address_.value, operand, value);
 		return this;
 	}
 }

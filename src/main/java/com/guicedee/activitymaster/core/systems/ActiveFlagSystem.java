@@ -1,12 +1,10 @@
 package com.guicedee.activitymaster.core.systems;
 
 import com.entityassist.enumerations.ActiveFlag;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.guicedee.activitymaster.client.services.IActiveFlagService;
-import com.guicedee.activitymaster.client.services.ISystemsService;
 import com.guicedee.activitymaster.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.client.services.systems.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.core.ActiveFlagService;
@@ -19,13 +17,10 @@ public class ActiveFlagSystem
 		extends ActivityMasterDefaultSystem<ActiveFlagSystem>
 		implements IActivityMasterSystem<ActiveFlagSystem>
 {
-	@Inject
-	private Provider<ISystemsService<?>> systemsService;
-	
 	@Override
-	public void registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
+	public ISystems<?,?> registerSystem(IEnterprise<?,?> enterprise, IActivityMasterProgressMonitor progressMonitor)
 	{
-	
+		return null;
 	}
 	
 	@Override

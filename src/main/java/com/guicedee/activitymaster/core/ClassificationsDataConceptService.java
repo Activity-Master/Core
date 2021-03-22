@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise
 import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.core.db.entities.classifications.ClassificationDataConcept;
-import com.guicedee.activitymaster.core.db.entities.systems.Systems;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -44,10 +43,10 @@ public class ClassificationsDataConceptService
 		{
 			newConcept.setDescription(description);
 			newConcept.setName(name.classificationValue());
-			newConcept.setSystemID((Systems) system);
-			newConcept.setOriginalSourceSystemID((Systems) system);
+			newConcept.setSystemID(system);
+			newConcept.setOriginalSourceSystemID(system);
 			newConcept.setActiveFlagID(activeFlag);
-			newConcept.setEnterpriseID((com.guicedee.activitymaster.core.db.entities.enterprise.Enterprise) enterprise);
+			newConcept.setEnterpriseID(enterprise);
 			newConcept.persist();
 				newConcept.createDefaultSecurity(system, identityToken);
 			
