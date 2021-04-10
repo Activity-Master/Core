@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.core.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
+import com.google.common.base.Strings;
 import com.guicedee.activitymaster.client.services.IInvolvedPartyService;
-import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.client.services.builders.warehouse.address.IAddress;
@@ -25,7 +25,6 @@ import com.guicedee.activitymaster.core.db.entities.product.ProductType;
 import com.guicedee.activitymaster.core.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.core.db.entities.rules.Rules;
 import com.guicedee.activitymaster.core.systems.InvolvedPartySystem;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -126,51 +125,6 @@ public class InvolvedParty
 		this.id = involvedPartyID;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
-	public InvolvedParty moveWebClientUUIDToNewInvolvedParty(IInvolvedParty<?,?> destination, UUID newUUID)
-	{
-		
-		//DataSource ds = GuiceContext.get(Key.get(DataSource.class, ActivityMasterDB.class));
-		InvolvedParty dest = (InvolvedParty) destination;
-		
-	/*	InvolvedParty dest = (InvolvedParty) destination;
-		try
-		{
-			Connection connection = ds.getConnection();
-			java.sql.CallableStatement cs = connection.prepareCall("exec MoveToExistingInvolvedParty '" + getId().toString() + "','" + dest.getId()
-                                                                                                                   .toString() + "'");
-			cs.execute();
-			cs.close();
-		}
-		catch (SQLException throwables)
-		{
-			throwables.printStackTrace();
-		}
-		
-		remove();*/
-		//new InvolvedPartyOrganic(getId()).remove();
-	//	new InvolvedPartyNonOrganic(getId()).remove();
-		
-		
-		ISystems<?,?> originatingSystem = get(InvolvedPartySystem.class).getSystem(dest.getEnterprise());
-		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(dest.getEnterprise());
-		
-		InvolvedParty me = builder().find(getId())
-		                            .get()
-		                            .orElseThrow();
-		
-		IInvolvedPartyService<?> partyService = get(IInvolvedPartyService.class);
-		IInvolvedPartyIdentificationType partyType =  partyService.findInvolvedPartyIdentificationType("IdentificationTypeWebClientUUID", getSystemID(), identityToken);
-		for (var identificationTypeWebClientUUID : partyService.findAllByIdentificationType("IdentificationTypeWebClientUUID", newUUID.toString()))
-		{
-			identificationTypeWebClientUUID.expire();
-		}
-		destination.addInvolvedPartyIdentificationType(NoClassification.toString(),partyType,  newUUID.toString(), dest.getSystemID(), identityToken);
-		
-		return dest;
-	}
-	
 	@Override
 	public UUID getSecurityIdentity()
 	{
@@ -225,7 +179,10 @@ public class InvolvedParty
 	@Override
 	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, InvolvedParty, InvolvedParty, UUID> newLink, InvolvedParty parent, InvolvedParty child, String value)
 	{
-	
+		InvolvedPartyXInvolvedParty i= (InvolvedPartyXInvolvedParty) newLink;
+		i.setParentInvolvedPartyID(parent);
+		i.setChildInvolvedPartyID(child);
+		i.setValue(Strings.nullToEmpty(value));
 	}
 	
 	@Override
