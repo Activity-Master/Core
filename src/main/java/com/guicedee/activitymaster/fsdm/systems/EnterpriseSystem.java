@@ -1,0 +1,61 @@
+package com.guicedee.activitymaster.fsdm.systems;
+
+import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import lombok.extern.java.Log;
+
+import static com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.*;
+
+
+@Log
+public class EnterpriseSystem
+		extends ActivityMasterDefaultSystem<EnterpriseSystem>
+		implements IActivityMasterSystem<EnterpriseSystem>
+{
+	@Override
+	public ISystems<?,?> registerSystem(IEnterprise<?,?> enterprise)
+	{
+		return null;
+	}
+	
+	
+	@Override
+	public void createDefaults(IEnterprise<?,?> enterprise)
+	{
+	
+	}
+	
+	@Override
+	public int totalTasks()
+	{
+		return 0;
+	}
+	
+	@Override
+	public Integer sortOrder()
+	{
+		return Integer.MIN_VALUE;
+	}
+	
+	@Override
+	public void postStartup(IEnterprise<?,?> enterprise)
+	{
+		super.postStartup(enterprise);
+	}
+	
+	@Override
+	public String getSystemName()
+	{
+		return EnterpriseSystemName;
+	}
+	
+	@Override
+	public String getSystemDescription()
+	{
+		return "The system for handling enterprises";
+	}
+	
+}

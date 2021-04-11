@@ -1,0 +1,11 @@
+package com.guicedee.activitymaster.fsdm.db.entities.classifications.builders;
+
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConceptQueryBuilder;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
+import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
+
+public class ClassificationDataConceptQueryBuilder
+		extends QueryBuilderSCDNameDescription<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, java.util.UUID>
+		implements IClassificationDataConceptQueryBuilder<ClassificationDataConceptQueryBuilder,ClassificationDataConcept>
+{
+}

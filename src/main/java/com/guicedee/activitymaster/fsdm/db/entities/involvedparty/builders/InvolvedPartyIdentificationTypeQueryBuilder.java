@@ -1,0 +1,12 @@
+package com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders;
+
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyIdentificationTypeQueryBuilder;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
+import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyIdentificationType;
+
+public class InvolvedPartyIdentificationTypeQueryBuilder
+		extends QueryBuilderSCDNameDescription<InvolvedPartyIdentificationTypeQueryBuilder, InvolvedPartyIdentificationType, java.util.UUID>
+		implements IInvolvedPartyIdentificationTypeQueryBuilder<InvolvedPartyIdentificationTypeQueryBuilder, InvolvedPartyIdentificationType>
+{
+
+}

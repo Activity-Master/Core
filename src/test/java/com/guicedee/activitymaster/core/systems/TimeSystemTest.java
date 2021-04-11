@@ -1,6 +1,6 @@
-package com.guicedee.activitymaster.core.systems;
+package com.guicedee.activitymaster.fsdm.systems;
 
-import com.guicedee.activitymaster.core.services.system.ITimeSystem;
+import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.logger.LogFactory;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.servlet.*;
-import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.HashMap;

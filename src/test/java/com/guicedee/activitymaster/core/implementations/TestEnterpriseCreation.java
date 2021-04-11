@@ -1,4 +1,4 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.guicedee.logger.LogFactory;
 import com.guicedee.logger.logging.LogColourFormatter;

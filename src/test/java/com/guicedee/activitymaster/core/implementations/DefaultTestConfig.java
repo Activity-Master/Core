@@ -1,14 +1,13 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import com.guicedee.activitymaster.ActivityMasterTestBinder;
-import com.guicedee.activitymaster.client.services.ISystemsService;
-import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.client.services.systems.IActivityMasterProgressMonitor;
-import com.guicedee.activitymaster.core.*;
+import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
+import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterProgressMonitor;
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.logger.LogFactory;
@@ -20,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
-import static com.guicedee.activitymaster.core.DefaultEnterprise.*;
+import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 public class DefaultTestConfig

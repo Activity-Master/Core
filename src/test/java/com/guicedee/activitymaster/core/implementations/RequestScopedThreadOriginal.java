@@ -1,24 +1,23 @@
-package com.guicedee.activitymaster.core.implementations;
+package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
-import com.guicedee.activitymaster.client.services.ISecurityTokenService;
-import com.guicedee.activitymaster.client.services.ISystemsService;
-import com.guicedee.activitymaster.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.client.services.annotations.ActivityMasterDB;
-import com.guicedee.activitymaster.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.core.EnterpriseService;
-import com.guicedee.activitymaster.core.SystemsService;
-import com.guicedee.activitymaster.core.db.entities.security.SecurityToken;
+import com.guicedee.activitymaster.fsdm.EnterpriseService;
+import com.guicedee.activitymaster.fsdm.SystemsService;
+import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
+import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
+import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
+import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.*;
 import java.util.concurrent.Callable;
 
-import static com.guicedee.activitymaster.core.DefaultEnterprise.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.*;
 
 public abstract class RequestScopedThreadOriginal
 		implements Callable<Object>, Runnable

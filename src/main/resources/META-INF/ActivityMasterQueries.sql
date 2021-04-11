@@ -6,15 +6,10 @@ select * from Systems (nolock);
 
 select * from 
 Classification.ClassificationDataConcept (nolock)
-where ClassificationDataConceptID = 'C72C4D45-D786-4127-AEFA-E8BDCE41F989'
 order by ClassificationDataConceptName
 
-
-
 select * from Classification.Classification (nolock)
---where ClassificationName = 'AD.06'
-order by EffectiveFromDate desc
-
+where ClassificationName = 'UpdateClass'
 
 select * from EnterpriseXClassification (nolock)
 
@@ -76,15 +71,10 @@ select * from Party.InvolvedPartyXInvolvedParty
 
 
 select * from Party.InvolvedParty
-select * from Party.InvolvedPartyXClassification
 select * from Party.InvolvedPartyXInvolvedPartyIdentificationType
-
-select * from Party.InvolvedPartyXInvolvedPartyNameType
-where InvolvedPartyNameTypeID = 'f4eb8ab1-7d2f-48f1-a3c9-c8eded6407d2'
-
 select * from Party.InvolvedPartyIdentificationType
 select * from Party.InvolvedPartyType
-select * from Party.InvolvedPartyNameType where
+select * from Party.InvolvedPartyNameType
 select * from Party.InvolvedPartyXResourceItem
 
 
@@ -211,7 +201,4 @@ select rt.RulesTypeName, c.ClassificationName, c.ClassificationDesc, * from Rule
 
 
 
-	select * from Geography.Geography (nolock)
-	where GeographyName like 'AS.05%'
-	order by EffectiveFromDate desc
-
+	select * from Geography.Geography

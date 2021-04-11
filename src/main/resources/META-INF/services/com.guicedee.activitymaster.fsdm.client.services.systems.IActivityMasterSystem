@@ -1,0 +1,12 @@
+com.guicedee.activitymaster.fsdm.systems.EnterpriseSystem
+com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem
+com.guicedee.activitymaster.fsdm.systems.SystemsSystem
+com.guicedee.activitymaster.fsdm.systems.ClassificationsDataConceptSystem
+com.guicedee.activitymaster.fsdm.systems.ClassificationsSystem
+com.guicedee.activitymaster.fsdm.systems.AddressSystem
+com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem
+com.guicedee.activitymaster.fsdm.systems.SecurityTokenSystem
+com.guicedee.activitymaster.fsdm.systems.ArrangementsSystem
+com.guicedee.activitymaster.fsdm.systems.EventsSystem
+com.guicedee.activitymaster.fsdm.systems.ResourceItemSystem
+com.guicedee.activitymaster.fsdm.systems.ProductsSystem
