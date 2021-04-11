@@ -9,8 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItem;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException;
+import com.guicedee.activitymaster.fsdm.client.services.exceptions.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.guicedinjection.representations.IJsonRepresentation;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 import static com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor.*;
 import static com.guicedee.guicedinjection.interfaces.ObjectBinderKeys.*;
 
@@ -64,11 +64,24 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 		var refObject = getRefObject(methodInvocation);
 		for (Pair<LogItem, Object> logItemObjectPair : refObject)
 		{
+			checkClassificationExists(logItemObjectPair.getKey().value());
 			processLogItemEntry(logItemObjectPair);
 		}
 		return methodInvocation.proceed();
 		
 	}
+	
+	private void checkClassificationExists(String classificationName)
+	{
+		try
+		{
+			classificationService.find(classificationName, getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName));
+		}catch (ClassificationException e)
+		{
+			classificationService.create(classificationName, classificationName, EventXAddress, getISystem(ActivityMasterSystemName), 0, "LogItemTypes", getISystemToken(ActivityMasterSystemName));
+		}
+	}
+	
 	
 	public void processLogItemEntry(Pair<LogItem, Object> logItemObjectPair)
 	{
