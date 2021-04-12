@@ -2,13 +2,13 @@ package com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders;
 
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.inject.Inject;
-import jakarta.persistence.criteria.JoinType;
 import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyQueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
+import jakarta.persistence.criteria.JoinType;
 
 import java.util.UUID;
 
@@ -63,7 +63,21 @@ public class InvolvedPartyQueryBuilder
 		
 		inActiveRange();
 		inDateRange();
+		return this;
+	}
+	
+	@Override
+	public InvolvedPartyQueryBuilder findByTypeAll(String idType, String value, ISystems<?, ?> system, UUID... identityTokens)
+	{
+		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder();
+		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(idType, system, identityTokens);
 		
+		joinTableQueryBuilder.where(InvolvedPartyXInvolvedPartyType_.involvedPartyTypeID, Equals, type);
+		if (value != null)
+		{
+			joinTableQueryBuilder.withValue(value);
+		}
+		join(InvolvedParty_.types, joinTableQueryBuilder, JoinType.INNER);
 		return this;
 	}
 	
