@@ -21,7 +21,7 @@ public class Passwords
 	private static final int KEY_LENGTH = 512;
 	
 	//NEVER EVER EVER CHANGE, OR USE AGAIN ANYWHERE ELSE
-	private static final int ASCII_OFFSET = Integer.parseInt(System.getProperty("Ascii_Offset", "26"));
+	private static final int ASCII_OFFSET = Integer.parseInt(System.getProperty("ascii_offset", "26"));
 
 	/**
 	 * Passwords tility class
