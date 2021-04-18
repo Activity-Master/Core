@@ -411,7 +411,6 @@ public class TimeSystem
 	/**
 	 * @param date
 	 * @return
-	 * @throws Exception
 	 */
 	@CacheResult
 	public Weeks getWeek(@CacheKey Date date)
