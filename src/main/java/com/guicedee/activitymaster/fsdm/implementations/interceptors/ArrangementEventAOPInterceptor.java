@@ -57,6 +57,10 @@ public class ArrangementEventAOPInterceptor implements MethodInterceptor
 		
 		for (Pair<Arrangement, IArrangement<?, ?>> pair : refObject)
 		{
+			if (pair.getValue() == null)
+			{
+				continue;
+			}
 			String classification = pair.getKey()
 			                            .value();
 			checkClassificationExists(classification);

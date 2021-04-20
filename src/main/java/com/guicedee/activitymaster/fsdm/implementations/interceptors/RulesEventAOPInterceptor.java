@@ -57,6 +57,10 @@ public class RulesEventAOPInterceptor implements MethodInterceptor
 		
 		for (Pair<RuleSet, IRules<?, ?>> pair : refObject)
 		{
+			if (pair.getValue() == null)
+			{
+				continue;
+			}
 			String classification = pair.getKey()
 			                            .value();
 			checkClassificationExists(classification);

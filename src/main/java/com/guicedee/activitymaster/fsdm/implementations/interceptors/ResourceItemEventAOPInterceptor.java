@@ -59,6 +59,10 @@ public class ResourceItemEventAOPInterceptor implements MethodInterceptor
 		
 		for (Pair<ResourceItem, IResourceItem<?, ?>> pair : refObject)
 		{
+			if (pair.getValue() == null)
+			{
+				continue;
+			}
 			String classification = pair.getKey()
 			                            .value();
 			checkClassificationExists(classification);

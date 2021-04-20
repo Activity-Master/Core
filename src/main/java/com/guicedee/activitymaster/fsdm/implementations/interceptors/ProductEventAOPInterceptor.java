@@ -65,6 +65,10 @@ public class ProductEventAOPInterceptor implements MethodInterceptor
 		
 		for (Pair<Product, IProduct<?, ?>> pair : refObject)
 		{
+			if (pair.getValue() == null)
+			{
+				continue;
+			}
 			String classification = pair.getKey()
 			                            .value();
 			checkClassificationExists(classification);

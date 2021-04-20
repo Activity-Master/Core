@@ -57,6 +57,10 @@ public class GeographyEventAOPInterceptor implements MethodInterceptor
 		
 		for (Pair<Geography, IGeography<?, ?>> pair : refObject)
 		{
+			if (pair.getValue() == null)
+			{
+				continue;
+			}
 			String classification = pair.getKey()
 			                            .value();
 			checkClassificationExists(classification);

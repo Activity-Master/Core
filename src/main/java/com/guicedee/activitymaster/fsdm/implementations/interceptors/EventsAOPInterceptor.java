@@ -29,7 +29,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	private ActivityMasterConfiguration configuration;
 	@Inject
 	@Named(EventSystemName)
-	private Provider<ISystems<?,?>> systemProvider;
+	private Provider<ISystems<?, ?>> systemProvider;
 	@Inject
 	@Named(ActivityMasterSystemName)
 	private UUID identityToken;
@@ -38,13 +38,15 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	 * Tracks if the unit of work was begun implicitly by this transaction.
 	 */
 	@Getter
-	private static final ThreadLocal<IEvent<?,?>> eventThreads = ThreadLocal.withInitial(()->null);
+	private static final ThreadLocal<IEvent<?, ?>> eventThreads = ThreadLocal.withInitial(() -> null);
+	
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
 	{
 		if (systemProvider == null)
 		{
-			GuiceContext.inject().injectMembers(this);
+			GuiceContext.inject()
+			            .injectMembers(this);
 		}
 		ISystems<?, ?> system = systemProvider.get();
 		if (system.isFake() || !configuration.isEnterpriseReady())
@@ -53,18 +55,27 @@ public class EventsAOPInterceptor implements MethodInterceptor
 		}
 		
 		Event eventAnnotation = methodInvocation.getMethod()
-		                                  .getAnnotation(Event.class);
+		                                        .getAnnotation(Event.class);
 		
 		Object result = null;
 		IEventService<?> eventService = get(IEventService.class);
 		IEvent<?, ?> event;
 		IEvent<?, ?> previousEvent = null;
+		try
+		{
+			eventService.findEventType(eventAnnotation.value(), system, identityToken);
+		}
+		catch (Throwable T)
+		{
+			eventService.createEventType(eventAnnotation.value(), system, identityToken);
+		}
 		if (eventThreads.get() == null)
 		{
 			event = eventService.createEvent(eventAnnotation.value(), system, identityToken);
 			eventThreads.set(event);
 		}
-		else {
+		else
+		{
 			previousEvent = eventThreads.get();
 			event = eventService.createEvent(eventAnnotation.value(), system, identityToken);
 			eventThreads.set(event);
@@ -76,7 +87,8 @@ public class EventsAOPInterceptor implements MethodInterceptor
 		{
 			o = methodInvocation.proceed();
 			event.addClassification("EventStatus", "Successful", getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName));
-		}catch (Throwable t)
+		}
+		catch (Throwable t)
 		{
 			event.addClassification("EventStatus", "Failure", getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName));
 			throw t;
@@ -97,7 +109,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 			return null;
 		}
 		//noinspection Convert2Diamond
-		return GuiceContext.get(Key.get(new TypeLiteral<ISystems<?,?>>(){}, Names.named(systemName)));
+		return GuiceContext.get(Key.get(new TypeLiteral<ISystems<?, ?>>() {}, Names.named(systemName)));
 	}
 	
 	public static UUID getISystemToken(String systemName)

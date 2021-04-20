@@ -54,9 +54,12 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 		
 		var refObject
 				= getRefObject(methodInvocation);
-		
 		for (Pair<Address, IAddress<?, ?>> pair : refObject)
 		{
+			if (pair.getValue() == null)
+			{
+				continue;
+			}
 			String classification = pair.getKey()
 			                                 .value();
 			checkClassificationExists(classification);

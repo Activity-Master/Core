@@ -56,6 +56,10 @@ public class ClassificationEventAOPInterceptor implements MethodInterceptor
 		
 		for (Pair<Classification, IClassification<?, ?>> pair : refObject)
 		{
+			if (pair.getValue() == null)
+			{
+				continue;
+			}
 			String classification = pair.getValue()
 			                            .getName();
 			checkClassificationExists(classification);

@@ -40,16 +40,16 @@ public class AddressService
 	private IClassificationService<?> classificationServiceProvider;
 	
 	@Inject
-	private IEnterprise<?,?> enterprise;
+	private IEnterprise<?, ?> enterprise;
 	
 	@Override
-	public IAddress<?,?> get()
+	public IAddress<?, ?> get()
 	{
 		return new Address();
 	}
 	
 	@Override
-	public IAddress<?, ?> create(String addressClassification, ISystems<?,?> system, String value, UUID... identifyingToken)
+	public IAddress<?, ?> create(String addressClassification, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
 		Address addy = new Address();
 		
@@ -72,7 +72,7 @@ public class AddressService
 			addy.setSystemID(system);
 			addy.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			addy.setActiveFlagID(activeFlag);
 			addy.persist();
 			
@@ -93,7 +93,7 @@ public class AddressService
 	}
 	
 	@Override
-	public IAddress<?, ?> addOrFindIPAddress(String ipAddress, ISystems<?,?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindIPAddress(String ipAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
 		                     .matches())
@@ -122,7 +122,7 @@ public class AddressService
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
 			address.createDefaultSecurity(system, identityToken);
@@ -142,7 +142,7 @@ public class AddressService
 	}
 	
 	@Override
-	public IAddress<?, ?> addOrFindHostName(String hostName, ISystems<?,?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindHostName(String hostName, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		
 		Address address = new Address();
@@ -167,7 +167,7 @@ public class AddressService
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
 			address.createDefaultSecurity(system, identityToken);
@@ -188,7 +188,7 @@ public class AddressService
 	}
 	
 	@Override
-	public IAddress<?, ?> addOrFindWebAddress(String webAddress, ISystems<?,?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindWebAddress(String webAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		
 		Address address = new Address();
@@ -213,7 +213,7 @@ public class AddressService
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
 			address.createDefaultSecurity(system, identityToken);
@@ -287,7 +287,6 @@ public class AddressService
 				webDetails.createDefaultSecurity(system, identityToken);
 				
 				
-				
 				webDetails = new Address();
 				webDetails.setValue(protocol);
 				webDetails.setClassificationID(webProtocolAddressClassification);
@@ -331,7 +330,7 @@ public class AddressService
 	}
 	
 	@Override
-	public IAddress<?, ?> addOrFindPhoneContact(String phoneNumber, ISystems<?,?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindPhoneContact(String phoneNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Classification homePhoneNumber = (Classification) classificationServiceProvider.find(
 				TelephoneNumber.name(),
@@ -378,7 +377,7 @@ public class AddressService
 		streetAddress.setSystemID(system);
 		streetAddress.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		streetAddress.setActiveFlagID(activeFlag);
 		streetAddress.persist();
 		streetAddress.createDefaultSecurity(system, identityToken);
@@ -414,55 +413,65 @@ public class AddressService
 				system,
 				identityToken);
 		
-		String host = emailAddressString.substring(emailAddressString.indexOf('@') + 1,emailAddressString.indexOf('.'));
-		String user = emailAddressString.substring(0,emailAddressString.indexOf('@'));
-		String domain = emailAddressString.substring(emailAddressString.indexOf('.') + 1);
-		
 		Address emailAddy = new Address();
-
-		if (emailAddy.builder()
-		                 .hasClassification(emailAddressHost, host)
-		                 .hasClassification(emailAddressDomain, domain)
-		                 .withClassification(emailAddress)
-		                 .withValue(emailAddressString)
-		                 .getCount() > 0)
+		String host = null;
+		String user = null;
+		String domain = null;
+		try
 		{
-			return emailAddy.builder()
-			                    .hasClassification(emailAddressHost, host)
-			                    .hasClassification(emailAddressDomain, domain)
-			                    .withClassification(emailAddress)
-			                    .withValue(emailAddressString)
-			                    .get(true)
-			                    .orElseThrow(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + emailAddress));
+			host = emailAddressString.substring(emailAddressString.indexOf('@') + 1, emailAddressString.indexOf('.'));
+			user = emailAddressString.substring(0, emailAddressString.indexOf('@'));
+			domain = emailAddressString.substring(emailAddressString.indexOf('.') + 1);
+			
+			if (emailAddy.builder()
+			             .hasClassification(emailAddressHost, host)
+			             .hasClassification(emailAddressDomain, domain)
+			             .withClassification(emailAddress)
+			             .withValue(emailAddressString)
+			             .getCount() > 0)
+			{
+				return emailAddy.builder()
+				                .hasClassification(emailAddressHost, host)
+				                .hasClassification(emailAddressDomain, domain)
+				                .withClassification(emailAddress)
+				                .withValue(emailAddressString)
+				                .get(true)
+				                .orElseThrow(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + emailAddress));
+			}
+			
+			emailAddy.setValue(emailAddressString);
+			
+			emailAddy.setClassificationID(emailAddress);
+			emailAddy.setEnterpriseID(enterprise);
+			emailAddy.setSystemID(system);
+			emailAddy.setOriginalSourceSystemID(system);
+			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			emailAddy.setActiveFlagID(activeFlag);
+			emailAddy.persist();
+			emailAddy.createDefaultSecurity(system, identityToken);
+			
+		}
+		catch (Throwable T)
+		{
+			throw new AddressException("Unable to create email address - invalid value", T);
 		}
 		
-		emailAddy.setValue(emailAddressString);
-		
-		emailAddy.setClassificationID(emailAddress);
-		emailAddy.setEnterpriseID(enterprise);
-		emailAddy.setSystemID(system);
-		emailAddy.setOriginalSourceSystemID(system);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
-		emailAddy.setActiveFlagID(activeFlag);
-		emailAddy.persist();
-		emailAddy.createDefaultSecurity(system, identityToken);
-		
-		emailAddy.addOrReuseClassification(emailAddressHost.toString(),host, system, identityToken);
-		emailAddy.addOrReuseClassification(emailAddressDomain.toString(),domain,  system, identityToken);
-		emailAddy.addOrReuseClassification(emailAddressUser.toString(),user,  system, identityToken);
+		emailAddy.addOrReuseClassification(emailAddressHost.toString(), host, system, identityToken);
+		emailAddy.addOrReuseClassification(emailAddressDomain.toString(), domain, system, identityToken);
+		emailAddy.addOrReuseClassification(emailAddressUser.toString(), user, system, identityToken);
 		
 		return emailAddy;
 	}
 	
 	@Override
-	public Optional<? extends IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(IInvolvedParty<?,?> involvedParty, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public Optional<? extends IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		return involvedParty.findAddress(HomeCellNumber.name(), null, system, true, true, identityToken);
 	}
 	
 	@Override
-	public IAddress<?, ?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?,?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
 		Classification buildingNumberClassification = (Classification) classificationServiceProvider.find(
@@ -506,7 +515,7 @@ public class AddressService
 		address.setSystemID(system);
 		address.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		address.setActiveFlagID(activeFlag);
 		address.persist();
 		address.createDefaultSecurity(system, identityToken);
@@ -519,7 +528,7 @@ public class AddressService
 	}
 	
 	@Override
-	public IAddress<?, ?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?,?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		
 		Address address = new Address();
@@ -557,7 +566,7 @@ public class AddressService
 		address.setSystemID(system);
 		address.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		address.setActiveFlagID(activeFlag);
 		address.persist();
 		address.createDefaultSecurity(system, identityToken);

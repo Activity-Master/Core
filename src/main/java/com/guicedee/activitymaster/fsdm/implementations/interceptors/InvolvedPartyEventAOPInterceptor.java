@@ -58,6 +58,10 @@ public class InvolvedPartyEventAOPInterceptor implements MethodInterceptor
 		
 		for (Pair<Party, IInvolvedParty<?, ?>> pair : refObject)
 		{
+			if (pair.getValue() == null)
+			{
+				continue;
+			}
 			String classification = pair.getKey()
 			                            .value();
 			checkClassificationExists(classification);

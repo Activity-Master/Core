@@ -62,10 +62,14 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 		}
 		
 		var refObject = getRefObject(methodInvocation);
-		for (Pair<LogItem, Object> logItemObjectPair : refObject)
+		for (Pair<LogItem, Object> pair : refObject)
 		{
-			checkClassificationExists(logItemObjectPair.getKey().value());
-			processLogItemEntry(logItemObjectPair);
+			if (pair.getValue() == null)
+			{
+				pair.setValue("null");
+			}
+			checkClassificationExists(pair.getKey().value());
+			processLogItemEntry(pair);
 		}
 		return methodInvocation.proceed();
 		
