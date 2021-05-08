@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.implementations;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import com.guicedee.activitymaster.ActivityMasterTestBinder;
+import com.guicedee.activitymaster.fsdm.*;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -64,23 +65,25 @@ public class DefaultTestConfig
 		MockRequest req = (MockRequest) GuiceContext.get(GuicedServletKeys.getHttpServletRequestKey());
 
 		req.setHeader("User-Agent", FirefoxHeaderAgent);*/
-
-		get(ActivityMasterConfiguration.class).setEnterpriseName(TestEnterprise.name());
+		
+		ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
+		
+		config.setApplicationEnterpriseName(TestEnterprise.name());
 		EnterpriseService service = get(EnterpriseService.class);
 		Optional<IEnterprise<?,?>> enterpriseO = service.findEnterprise(TestEnterprise.name());
 		IEnterprise<?,?> enterprise = null;
 		if (enterpriseO.isEmpty())
 		{
 			enterpriseO = Optional.ofNullable(service.startNewEnterprise(TestEnterprise.name(),
-					                                                      "admin", "admin", getSoutMonitor()));
+					                                                      "admin", "admin"));
 		}
 		enterprise = enterpriseO.get();
 
 		ActivityMasterConfiguration securityConfiguration = GuiceContext.get(ActivityMasterConfiguration.class);
 
-		ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
+		
 		config.setSecurityEnabled(false);
-		config.setEnterpriseName(TestEnterprise.name());
+		config.setApplicationEnterpriseName(TestEnterprise.name());
 
 		ISystems<?,?> systems = GuiceContext.get(ISystemsService.class)
 		                               .getActivityMaster(enterprise);
@@ -88,7 +91,7 @@ public class DefaultTestConfig
 		                                 .getSecurityIdentityToken(systems);
 		
 		GuiceContext.get(ActivityMasterService.class)
-		            .loadSystems(TestEnterprise.name(), null);
+		            .loadSystems(TestEnterprise.name());
 
 		config.setSecurityEnabled(false);
 		defaultWaitUnit = TimeUnit.HOURS;

@@ -1,6 +1,6 @@
 use FSDM;
 
-select * from Enterprise (nolock);
+select * from EnterpriseXClassification(nolock);
 select * from ActiveFlag (nolock);
 select * from Systems (nolock);
 
@@ -40,24 +40,30 @@ select * from Product.ProductXProductType
 
 
 select * from Resource.ResourceItem
+select * from Resource.ResourceItemData
 select * from Resource.ResourceItemXClassification
 select * from Resource.ResourceItemXResourceItemType
-select * from Resource.ResourceItemData
+
 select * from Resource.ResourceItemType
 
 
 
 
 select * from Rules.Rules
+select * from Rules.RulesXRules
 select * from Rules.RulesType
 select * from Rules.RulesXRulesType
 select * from Rules.RulesXClassification
 select * from Rules.RulesTypeXClassification
 select * from Rules.RulesTypeXResourceItem
-select * from Rules.RulesXRules
 
 
 
+
+select * from Address.Address
+
+
+select * from Classification.Classification where ClassificationID = 'D1BC6854-1D16-4B0A-B413-BEA8B27190B6'
 
 select * from Security.SecurityToken
 
@@ -76,6 +82,16 @@ select * from Party.InvolvedPartyIdentificationType
 select * from Party.InvolvedPartyType
 select * from Party.InvolvedPartyNameType
 select * from Party.InvolvedPartyXResourceItem
+
+select * from Party.InvolvedPartyXInvolvedParty
+
+select * from Party.InvolvedPartyXProductType
+
+
+select * from Product.ProductType;
+
+
+select * from Party.InvolvedPartyIdentificationType where InvolvedPartyIdentificationTypeID = '41A1F948-F2C9-44CE-9C23-E9C416FA47CF'
 
 
 

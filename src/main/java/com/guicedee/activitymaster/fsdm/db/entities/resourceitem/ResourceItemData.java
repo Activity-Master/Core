@@ -36,7 +36,7 @@ public class ResourceItemData
 	@Column(nullable = false,
 	        name = "ResourceItemDataID")
 	@org.hibernate.annotations.Type(type = "uuid-char")
-	private UUID id;
+	private UUID id = UUID.randomUUID();
 	@Lob()
 	@Column(nullable = false,
 	        name = "ResourceItemData")

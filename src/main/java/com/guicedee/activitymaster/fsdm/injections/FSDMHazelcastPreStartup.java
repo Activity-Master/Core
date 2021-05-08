@@ -2,8 +2,6 @@ package com.guicedee.activitymaster.fsdm.injections;
 
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.interfaces.IGuicePreStartup;
-import com.guicedee.guicedpersistence.implementations.EntityManagerPostStartup;
-import jakarta.persistence.EntityManager;
 
 public class FSDMHazelcastPreStartup implements IGuicePreStartup<FSDMHazelcastPreStartup>
 {

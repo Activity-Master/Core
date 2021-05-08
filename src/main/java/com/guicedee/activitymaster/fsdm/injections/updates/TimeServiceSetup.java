@@ -2,7 +2,8 @@ package com.guicedee.activitymaster.fsdm.injections.updates;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.fsdm.client.services.systems.*;
+import com.guicedee.activitymaster.fsdm.client.services.systems.ISystemUpdate;
+import com.guicedee.activitymaster.fsdm.client.services.systems.SortedUpdate;
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
 
 import java.time.LocalDate;
@@ -17,7 +18,6 @@ public class TimeServiceSetup implements ISystemUpdate
 	public void update(IEnterprise<?, ?> enterprise)
 	{
 		logProgress("Time Service", "Loading Time Specifications", 1);
-		setCurrentTask(0);
 		timeSystem.loadTimeRange(LocalDate.now()
 		                                  .getYear(), LocalDate.now()
 		                                        .getYear() + 1);

@@ -4,13 +4,13 @@ import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import com.guicedee.activitymaster.fsdm.EnterpriseService;
 import com.guicedee.activitymaster.fsdm.SystemsService;
-import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
@@ -47,8 +47,8 @@ public abstract class RequestScopedThreadOriginal
 
 		ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
 		config.setSecurityEnabled(false);
-		config.setEnterpriseName(TestEnterprise.name());
-		EnterpriseService service = get(EnterpriseService.class);
+		config.setApplicationEnterpriseName(TestEnterprise.name());
+		EnterpriseService service = GuiceContext.get(EnterpriseService.class);
 		Optional<IEnterprise<?,?>> enterpriseO = service.findEnterprise(TestEnterprise.name());
 		IEnterprise<?,?> enterprise = enterpriseO.get();
 

@@ -35,7 +35,7 @@ public class InvolvedPartyXProductTypeQueryBuilder
 		if (typeValue != null)
 		{
 			IProductService<?> service = GuiceContext.get(IProductService.class);
-			ProductType at = (ProductType) service.findProductType(typeValue, system, identityToken);
+			ProductType at = (ProductType) service.findProductTypeForProduct(typeValue, system, identityToken);
 			where(InvolvedPartyXProductType_.involvedPartyTypeID, Operand.Equals, at);
 		}
 		return this;

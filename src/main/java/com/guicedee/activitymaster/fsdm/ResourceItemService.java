@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -38,6 +39,12 @@ public class ResourceItemService
 	public IResourceItem<?,?> get()
 	{
 		return new ResourceItem();
+	}
+	
+	@Override
+	public IResourceItemType<?,?> getType()
+	{
+		return new ResourceItemType();
 	}
 	
 	@Override
@@ -180,6 +187,40 @@ public class ResourceItemService
 		Optional<ResourceItemXClassification> exists = builder.get();
 		return exists.map(ResourceItemXClassification::getResourceItemID)
 		             .orElse(null);
+	}
+	
+	@Override
+	public List<IRelationshipValue<IResourceItem<?, ?>, IClassification<?,?>,?>> findByClassificationAll(String resourceType,
+	                                                                                             String classification,
+	                                                                                             String value,
+	                                                                                             ISystems<?,?> systems,
+	                                                                                             UUID... identityToken)
+	{
+		ResourceItemXClassification res = new ResourceItemXClassification();
+		ResourceItemXClassificationQueryBuilder builder = res.builder();
+		
+		Classification clazz = (Classification) classificationService.find(classification, systems, identityToken);
+		
+		builder.where(ResourceItemXClassification_.classificationID, Equals, clazz);
+		if (!Strings.isNullOrEmpty(value))
+		{
+			builder.where(ResourceItemXClassification_.value, Equals, value);
+		}
+		
+		JoinExpression<ResourceItem, ResourceItem, ResourceItemXClassification> resourceJoin = new JoinExpression<>();
+		ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder();
+		builder.join(ResourceItemXClassification_.resourceItemID, itemQueryBuilder, JoinType.INNER, resourceJoin);
+		
+		ListJoin<ResourceItem, ResourceItemXResourceItemType> resourceItemTypesJoin = resourceJoin.getGeneratedRoot()
+		                                                                                          .join(ResourceItem_.types, INNER);
+		
+		Join<ResourceItemXResourceItemType, ResourceItemType> resourceTypesJoin = resourceItemTypesJoin
+				.join(ResourceItemXResourceItemType_.resourceItemTypeID, INNER);
+		
+		resourceTypesJoin.on(builder.getCriteriaBuilder()
+		                            .equal(resourceTypesJoin.get(ResourceItemType_.name), resourceType));
+		
+		return (List) builder.getAll();
 	}
 	
 	@Override

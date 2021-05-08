@@ -1,18 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.logger.LogFactory;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
-import org.hibernate.AssertionFailure;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
-import com.guicedee.activitymaster.fsdm.client.services.IPasswordsService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -31,6 +20,15 @@ import com.guicedee.activitymaster.fsdm.db.entities.geography.GeographyXResource
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
+import com.guicedee.logger.LogFactory;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.utils.IOUtils;
+import org.hibernate.AssertionFailure;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -72,7 +70,7 @@ public class ResourceItem
 	        name = "ResourceItemID")
 	@JsonValue
 	@org.hibernate.annotations.Type(type = "uuid-char")
-	private UUID id;
+	private UUID id = UUID.randomUUID();
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -170,8 +168,13 @@ public class ResourceItem
 				                        .get();
 		if (d.isPresent())
 		{
-			return unzip(d.get()
-			              .getResourceItemData());
+			var em = new ResourceItemData().builder()
+			            .getEntityManager();
+			ResourceItemData resourceItemData = em.find(ResourceItemData.class, d.get()
+			                                                                     .getId());
+			byte[] data = resourceItemData.getResourceItemData();
+			em.clear();
+			return unzip(data);
 		}
 		else
 		{
@@ -254,26 +257,30 @@ public class ResourceItem
 			{
 				throw new ResourceItemException("Cannot create a resource item that has no data?");
 			}
-			boolean noUpdate = new ResourceItemData().builder()
-			                                         .inActiveRange()
-			                                         .inDateRange()
-			                                         .where(ResourceItemData_.resourceItemData, Equals, data)
-			                                         .where(ResourceItemData_.resource, Equals, this)
-			                                         .getCount() > 0;
-			if (noUpdate)
+			if(data.length < 4096)
 			{
-				//Identical resource data, no update to occur
-				System.out.println("No update required to resource item data");
-				return;
+				boolean noUpdate = new ResourceItemData().builder()
+				                                         .inActiveRange()
+				                                         .inDateRange()
+				                                         .where(ResourceItemData_.resourceItemData, Equals, data)
+				                                         .where(ResourceItemData_.resource, Equals, this)
+				                                         .getCount() > 0;
+				if (noUpdate)
+				{
+					//Identical resource data, no update to occur
+					//System.out.println("No update required to resource item data");
+					return;
+				}
 			}
-			/*rid.getResource();
-			rid.getResourceItemData();
-			rid.getEnterpriseID();
-			rid.getActiveFlagID();
 			rid.setResourceItemData(data);
-			rid.getOriginalSourceSystemID();*/
-			rid.builder()
-			   .update(rid);
+			var em = rid.builder()
+			   .getEntityManager();
+			
+			ResourceItemData ird = em.find(ResourceItemData.class, rid.getId());
+			ird.setResourceItemData(data);
+			em.merge(ird);
+			em.flush();
+			em.clear();
 		}
 		else
 		{
@@ -289,7 +296,12 @@ public class ResourceItem
 			                       .getActiveFlagID());
 			rid.setOriginalSourceSystemID(system);
 			rid.setEnterpriseID(system.getEnterpriseID());
-			rid.persist();
+			
+			var em = rid.builder()
+			            .getEntityManager();
+			em.persist(rid);
+			em.flush();
+			em.clear();
 		}
 	}
 	
@@ -314,7 +326,6 @@ public class ResourceItem
 		if (resourceItemData1.isPresent())
 		{
 			//Identical resource data, no update to occur
-			System.out.println("No update required to resource item data - keep history");
 			return;
 		}
 		
@@ -335,7 +346,12 @@ public class ResourceItem
 		rid.setOriginalSourceSystemID(getSystemID());
 		rid.setSystemID(getSystemID());
 		rid.setEnterpriseID(system.getEnterpriseID());
-		rid.persist();
+		
+		var em = rid.builder()
+		            .getEntityManager();
+		em.persist(rid);
+		em.flush();
+		em.clear();
 		
 	}
 	
