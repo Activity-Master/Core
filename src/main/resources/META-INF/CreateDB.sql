@@ -923,7 +923,7 @@ CREATE TABLE [Product].[Product](
 	[ProductID] [uniqueidentifier] NOT NULL,
 	[ProductName] [nvarchar](150) NOT NULL,
 	[ProductDesc] [nvarchar](250) NOT NULL,
-	[ProductCode] [nvarchar](10) NOT NULL,
+	[ProductCode] [nvarchar](50) NOT NULL,
 	[OriginalSourceSystemID] [uniqueidentifier] NOT NULL,
 	[OriginalSourceSystemUniqueID] [varchar](500) NOT NULL,
 	[WarehouseCreatedTimestamp] [datetime] NOT NULL,
@@ -1183,7 +1183,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [Resource].[ResourceItem](
 	[ResourceItemID] [uniqueidentifier] NOT NULL,
-	[ResourceItemUUID] [varchar](128) NOT NULL,
 	[ResourceItemDataType] [varchar](150) NOT NULL,
 	[OriginalSourceSystemID] [uniqueidentifier] NOT NULL,
 	[OriginalSourceSystemUniqueID] [varchar](500) NOT NULL,
@@ -1209,7 +1208,7 @@ GO
 
 CREATE View [dbo].[ResourceTypeClassificationsView]
 AS
-select ResourceItemUUID,
+select ri.ResourceItemID,
        typ.ResourceItemTypeName,
        t.value                                'TypeValue',
        c.ClassificationName,

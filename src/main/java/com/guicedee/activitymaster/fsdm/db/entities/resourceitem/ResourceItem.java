@@ -22,7 +22,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.ProductXResourceItem
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.logger.LogFactory;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -71,7 +70,7 @@ public class ResourceItem
 	@JsonValue
 	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id = UUID.randomUUID();
-	@Basic(optional = false,
+/*	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
@@ -79,7 +78,9 @@ public class ResourceItem
 	@Column(nullable = false,
 	        length = 128,
 	        name = "ResourceItemUUID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID resourceItemUUID;
+	*/
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@Column(nullable = false,
@@ -145,6 +146,15 @@ public class ResourceItem
 	public ResourceItem()
 	{
 	
+	}
+	
+	@Override
+	public IResourceItem<?,?> updateDataTypeValue(String newValue)
+	{
+		setResourceItemDataType(newValue);
+		builder().find(getId())
+		         .update(this);
+		return this;
 	}
 	
 	public byte[] getData(UUID... identityToken)
@@ -367,29 +377,24 @@ public class ResourceItem
 			return false;
 		}
 		ResourceItem that = (ResourceItem) o;
-		return Objects.equals(getResourceItemUUID(), that.getResourceItemUUID());
+		return Objects.equals(getId(), that.getId());
 	}
 	
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(getResourceItemUUID());
+		return Objects.hash(getId());
 	}
 	
 	@Override
 	public String toString()
 	{
-		return getResourceItemUUID() + "";
+		return getId() + "";
 	}
 	
 	public UUID getId()
 	{
 		return this.id;
-	}
-	
-	public UUID getResourceItemUUID()
-	{
-		return this.resourceItemUUID;
 	}
 	
 	public @Size(max = 150) String getResourceItemDataType()
@@ -400,12 +405,6 @@ public class ResourceItem
 	public ResourceItem setId(UUID id)
 	{
 		this.id = id;
-		return this;
-	}
-	
-	public ResourceItem setResourceItemUUID(UUID resourceItemUUID)
-	{
-		this.resourceItemUUID = resourceItemUUID;
 		return this;
 	}
 	

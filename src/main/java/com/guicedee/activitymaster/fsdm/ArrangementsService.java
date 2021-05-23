@@ -45,6 +45,7 @@ public class ArrangementsService
 	@Inject
 	private IEnterprise<?,?> enterprise;
 	
+	@Override
 	public IArrangement<?,?> get()
 	{
 		return new Arrangement();

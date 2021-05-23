@@ -27,7 +27,7 @@ select * from Time.Months;
 
 
 select * from Classification.Classification where ClassificationName = 'Title'
-select * from Classification.Classification where ClassificationID =  '943CF5D0-12DC-411A-890D-3CFCB75C50AC'
+select * from Classification.Classification where ClassificationID =  '284D8F31-5BB3-49F7-8792-42E07FFB2F3C'
 
 select * from Classification.Classification where ClassificationID =  'ABA1F0C4-DC3A-480F-8936-12BFFCF60E1A'
 
@@ -81,11 +81,15 @@ select * from Party.InvolvedPartyXInvolvedPartyIdentificationType
 select * from Party.InvolvedPartyIdentificationType
 select * from Party.InvolvedPartyType
 select * from Party.InvolvedPartyNameType
+where InvolvedPartyNameTypeID = '9ADC388D-3D56-43A8-811C-2C6B720C6B44'
+
 select * from Party.InvolvedPartyXResourceItem
 
 select * from Party.InvolvedPartyXInvolvedParty
 
 select * from Party.InvolvedPartyXProductType
+
+select * from Party.InvolvedPartyXInvolvedPartyNameType
 
 
 select * from Product.ProductType;

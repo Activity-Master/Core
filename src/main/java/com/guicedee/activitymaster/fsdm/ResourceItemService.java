@@ -133,7 +133,6 @@ public class ResourceItemService
 			         .get()
 			         .orElseThrow();
 		}
-		xr.setResourceItemUUID(UUID.randomUUID());
 		xr.setOriginalSourceSystemID(system);
 		xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		xr.setEffectiveFromDate(effectiveFromDate);
@@ -230,7 +229,7 @@ public class ResourceItemService
 	{
 		ResourceItem res = new ResourceItem();
 		ResourceItemQueryBuilder builder = res.builder();
-		builder.where(ResourceItem_.resourceItemUUID, Equals, uuid);
+		builder.where(ResourceItem_.id, Equals, uuid);
 		builder.inActiveRange();
 		builder.inDateRange();
 		
