@@ -223,16 +223,13 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public IResourceItem<?, ?> findByUUID(@CacheKey UUID uuid,
-	                                      @CacheKey ISystems<?,?> systems,
-	                                      @CacheKey UUID... identityToken)
+	public IResourceItem<?, ?> findByUUID(@CacheKey UUID uuid)
 	{
 		ResourceItem res = new ResourceItem();
 		ResourceItemQueryBuilder builder = res.builder();
 		builder.where(ResourceItem_.id, Equals, uuid);
 		builder.inActiveRange();
 		builder.inDateRange();
-		
 		Optional<ResourceItem> exists = builder.get();
 		return exists.orElse(null);
 	}

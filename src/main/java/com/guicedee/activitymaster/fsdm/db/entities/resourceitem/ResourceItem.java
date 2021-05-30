@@ -27,7 +27,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.hibernate.AssertionFailure;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -70,17 +69,6 @@ public class ResourceItem
 	@JsonValue
 	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id = UUID.randomUUID();
-/*	@Basic(optional = false,
-	       fetch = EAGER)
-	@NotNull
-	@Size(min = 1,
-	      max = 128)
-	@Column(nullable = false,
-	        length = 128,
-	        name = "ResourceItemUUID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
-	private UUID resourceItemUUID;
-	*/
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@Column(nullable = false,
@@ -159,31 +147,16 @@ public class ResourceItem
 	
 	public byte[] getData(UUID... identityToken)
 	{
-		try
-		{
-			if (data == null || data.isEmpty())
-			{
-				return null;
-			}
-		}catch (AssertionFailure a)
-		{
-			return null;
-		}
-		
-		Optional<ResourceItemData> d
+		Optional<byte[]> d
 				= new ResourceItemData().builder()
 				                        .inActiveRange()
 				                        .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
-				                        .get();
+				                        .selectColumn(ResourceItemData_.resourceItemData)
+				                        .get(byte[].class);
 		if (d.isPresent())
 		{
-			var em = new ResourceItemData().builder()
-			            .getEntityManager();
-			ResourceItemData resourceItemData = em.find(ResourceItemData.class, d.get()
-			                                                                     .getId());
-			byte[] data = resourceItemData.getResourceItemData();
-			em.clear();
+			byte[] data = d.get();
 			return unzip(data);
 		}
 		else
@@ -283,14 +256,7 @@ public class ResourceItem
 				}
 			}
 			rid.setResourceItemData(data);
-			var em = rid.builder()
-			   .getEntityManager();
-			
-			ResourceItemData ird = em.find(ResourceItemData.class, rid.getId());
-			ird.setResourceItemData(data);
-			em.merge(ird);
-			em.flush();
-			em.clear();
+			rid.updateNow();
 		}
 		else
 		{
@@ -307,11 +273,7 @@ public class ResourceItem
 			rid.setOriginalSourceSystemID(system);
 			rid.setEnterpriseID(system.getEnterpriseID());
 			
-			var em = rid.builder()
-			            .getEntityManager();
-			em.persist(rid);
-			em.flush();
-			em.clear();
+			rid.persist();
 		}
 	}
 	
@@ -356,13 +318,7 @@ public class ResourceItem
 		rid.setOriginalSourceSystemID(getSystemID());
 		rid.setSystemID(getSystemID());
 		rid.setEnterpriseID(system.getEnterpriseID());
-		
-		var em = rid.builder()
-		            .getEntityManager();
-		em.persist(rid);
-		em.flush();
-		em.clear();
-		
+		rid.persist();
 	}
 	
 	@Override

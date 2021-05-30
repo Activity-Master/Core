@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.fsdm;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -7,13 +8,16 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProduct;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProductType;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
@@ -30,6 +34,25 @@ public class ProductService
 	public IProduct<?, ?> get()
 	{
 		return new Product();
+	}
+	
+	@Override
+	public IProduct<?, ?> find(UUID id)
+	{
+		return new Product().builder()
+		                    .find(id)
+		                    .get()
+		                    .orElse(null);
+	}
+	
+	
+	@Override
+	public IProductType<?, ?> findType(UUID id)
+	{
+		return new ProductType().builder()
+		                        .find(id)
+		                        .get()
+		                        .orElse(null);
 	}
 	
 	@Override
@@ -90,6 +113,25 @@ public class ProductService
 		                    .withEnterprise(enterprise)
 		                    .get()
 		                    .orElseThrow();
+	}
+	
+	@Override
+	public List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>> findProductByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+	{
+		if (Strings.isNullOrEmpty(classificationName))
+		{
+			classificationName = NoClassification.toString();
+		}
+		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
+		List arrangementXResourceItem = new ProductXResourceItem().builder()
+		                                                          .inActiveRange()
+		                                                          .inDateRange()
+		                                                          .withEnterprise(enterprise)
+		                                                          .withClassification(classification)
+		                                                          .withValue(value)
+		                                                          .where(ProductXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
+		                                                          .getAll();
+		return arrangementXResourceItem;
 	}
 	
 	@Override

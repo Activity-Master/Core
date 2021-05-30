@@ -20,7 +20,7 @@ public class TimeServiceSetup implements ISystemUpdate
 		logProgress("Time Service", "Loading Time Specifications", 1);
 		timeSystem.loadTimeRange(LocalDate.now()
 		                                  .getYear(), LocalDate.now()
-		                                        .getYear() + 1);
+		                                        .getYear());
 	}
 	
 }

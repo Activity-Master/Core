@@ -6,11 +6,13 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activ
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProduct;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
+import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.cache.annotation.CacheKey;
@@ -82,6 +84,15 @@ public class RulesService
 	public IRules<?,?> find(UUID identity)
 	{
 		return new Rules().builder()
+		                  .find(identity)
+		                  .get()
+		                  .orElse(null);
+	}
+	
+	@Override
+	public IRulesType<?,?> findType(UUID identity)
+	{
+		return new RulesType().builder()
 		                  .find(identity)
 		                  .get()
 		                  .orElse(null);
@@ -243,6 +254,21 @@ public class RulesService
 		                              .stream()
 		                              .map(RulesXProduct::getRulesID)
 		                              .collect(Collectors.toList());
+		return res;
+	}
+	
+	
+	@Override
+	public List<IRelationshipValue<IRules<?,?>,IResourceItem<?,?>,?>> findRulesByResourceItem(IResourceItem<?,?> resourceItem, String classificationName, String value, ISystems<?,?> system, UUID... identityToken)
+	{
+		List res = new RulesXResourceItem().builder()
+		                              .withClassification(classificationName,  system)
+		                              .findLink(null,(ResourceItem) resourceItem, value)
+		                              .withEnterprise(enterprise)
+		                              .inActiveRange()
+		                              .inDateRange()
+		                              .canRead(system, identityToken)
+		                              .getAll();
 		return res;
 	}
 }
