@@ -1,9 +1,9 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.*;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
+import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 public class ActivityMasterSystemBinder extends PrivateModule implements IGuiceModule<ActivityMasterSystemBinder>
 {
@@ -21,5 +21,7 @@ public class ActivityMasterSystemBinder extends PrivateModule implements IGuiceM
 		
 		expose(enterpriseServiceKey);
 		expose(IActivityMasterSystem.class);
+		
+		
 	}
 }

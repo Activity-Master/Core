@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
+import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
-import static com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor.*;
 
 public class AddressEventAOPInterceptor implements MethodInterceptor
 {

@@ -1,12 +1,11 @@
 package com.guicedee.activitymaster.fsdm.implementations.interceptors;
 
-import com.google.inject.*;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.Event;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -18,6 +17,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
+import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IEventService.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
@@ -101,26 +101,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	}
 	
 	
-	public static ISystems<?, ?> getISystem(String systemName)
-	{
-		IEnterprise<?, ?> enterprise = GuiceContext.get(IEnterprise.class);
-		if (enterprise.isFake())
-		{
-			return null;
-		}
-		//noinspection Convert2Diamond
-		return GuiceContext.get(Key.get(new TypeLiteral<ISystems<?, ?>>() {}, Names.named(systemName)));
-	}
 	
-	public static UUID getISystemToken(String systemName)
-	{
-		IEnterprise<?, ?> enterprise = GuiceContext.get(IEnterprise.class);
-		if (enterprise.isFake())
-		{
-			return null;
-		}
-		return GuiceContext.get(Key.get(UUID.class, Names.named(systemName)));
-	}
 }
 
 

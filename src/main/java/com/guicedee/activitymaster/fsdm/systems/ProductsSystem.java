@@ -1,14 +1,12 @@
 package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
-import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
+import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.ProductClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IProductService.*;
@@ -37,7 +35,7 @@ public class ProductsSystem
 	@Override
 	public void createDefaults(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.create(ProductClassifications.Products, activityMasterSystem);
 		service.create(ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products);
 		service.create(ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup);

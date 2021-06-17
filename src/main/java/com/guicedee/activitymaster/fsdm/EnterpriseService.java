@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -20,7 +19,6 @@ import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedinjection.json.LocalDateSerializer;
-import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import io.github.classgraph.ClassInfo;
 import jakarta.cache.annotation.CacheKey;
@@ -35,10 +33,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
-import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications.*;
 import static com.guicedee.activitymaster.fsdm.services.ActivityMasterSystemsManager.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 
 @SuppressWarnings("DuplicatedCode")
 public class EnterpriseService
@@ -393,25 +389,6 @@ public class EnterpriseService
 			a.onSystemInstallStart(registeredSystem.getSystemName());
 		});
 		ISystems<?, ?> registerSystem = registeredSystem.registerSystem(enterprise);
-		if(registerSystem != null)
-		{
-			Map<IEnterprise<?, ?>, ISystems<?, ?>> systemsMap = new HashMap<>();
-			systemsMap.put(enterprise, registerSystem);
-			Pair p = Pair.of(registeredSystem.getClass(), systemsMap);
-			if(systemsEnterpriseSystems.contains(p))
-			{
-				systemsEnterpriseSystems.get(systemsEnterpriseSystems.indexOf(p))
-				                        .getValue()
-				                        .put(enterprise,registerSystem);
-			}
-			else
-			{
-				systemsEnterpriseSystems.add(p);
-			}
-			//noinspection unchecked,rawtypes
-			ActivityMasterDefaultSystem.systemsNamesToClasses.put(registeredSystem.getSystemName(), (Class<? extends ActivityMasterDefaultSystem>)
-					registeredSystem.getClass());
-		}
 		
 		registeredSystem.createDefaults(enterprise);
 		systemInstallEventListeners.forEach(a->{

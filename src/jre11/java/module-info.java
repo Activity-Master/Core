@@ -15,23 +15,23 @@ module com.guicedee.activitymaster.fsdm {
 	
 	exports com.guicedee.activitymaster.fsdm.async;
 	exports com.guicedee.activitymaster.fsdm.services;
-
+	
 	exports com.guicedee.activitymaster.fsdm.services.system;
 	exports com.guicedee.activitymaster.fsdm.db.entities.time;
-
+	
 	
 	exports com.guicedee.activitymaster.fsdm.threads;
 	exports com.guicedee.activitymaster.fsdm.implementations.interceptors;
 	
 	requires com.guicedee.guicedinjection;
 	requires com.guicedee.guicedpersistence;
-
+	
 	requires com.entityassist;
 	
 	requires com.google.common;
-
+	
 	requires com.microsoft.sqlserver.jdbc;
-
+	
 	requires jakarta.activation;
 	requires jakarta.validation;
 	
@@ -49,12 +49,12 @@ module com.guicedee.activitymaster.fsdm {
 	requires com.guicedee.guicedhazelcast;
 	
 	
-	
 	requires static lombok;
 	requires org.apache.commons.compress;
-	requires com.guicedee.guicedservlets.rest;
+	//requires com.guicedee.guicedservlets.rest;
 	
-	provides IGuiceModule with ActivityMasterDBModule, ActivityMasterBinder,
+	provides IGuiceModule with ActivityMasterDBModule,
+			ActivityMasterBinder,
 			EnterpriseBinder,
 			ClassificationConceptsBinder,
 			ClassificationsBinder,
@@ -75,16 +75,25 @@ module com.guicedee.activitymaster.fsdm {
 	
 	provides IGuiceConfigurator with ActivityMasterScanConfiguration;
 	
-	provides IActivityMasterSystem with EnterpriseSystem, ActiveFlagSystem, SystemsSystem, ClassificationsDataConceptSystem,
-			ClassificationsSystem, AddressSystem, InvolvedPartySystem, SecurityTokenSystem
-			, ArrangementsSystem, EventsSystem, ResourceItemSystem, ProductsSystem
+	provides IActivityMasterSystem with EnterpriseSystem,
+			ActiveFlagSystem,
+			SystemsSystem,
+			ClassificationsDataConceptSystem,
+			ClassificationsSystem,
+			AddressSystem,
+			InvolvedPartySystem,
+			SecurityTokenSystem,
+			ArrangementsSystem,
+			EventsSystem,
+			ResourceItemSystem,
+			ProductsSystem
 			;
 	
 	provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
 	provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
 	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 	
-	provides IGuicePreStartup with FSDMHazelcastPreStartup,JaxRSProvidersRegistrations;
+	provides IGuicePreStartup with FSDMHazelcastPreStartup;
 	provides IGuicePostStartup with ActivityMasterPostStartup;
 	
 	
@@ -136,8 +145,8 @@ module com.guicedee.activitymaster.fsdm {
 	
 	
 	opens com.guicedee.activitymaster.fsdm.services to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-
-	opens com.guicedee.activitymaster.fsdm.services.api to com.google.guice, org.apache.cxf,com.guicedee.guicedservlets.rest, com.fasterxml.jackson.databind;
+	
+	//opens com.guicedee.activitymaster.fsdm.services.api to com.google.guice, org.apache.cxf, com.guicedee.guicedservlets.rest, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.fsdm.services.providers to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.fsdm.services.system to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.fsdm.systems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;

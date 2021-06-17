@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.ClassificationsDataConceptService;
+import com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -57,7 +58,7 @@ public class ClassificationsDataConceptSystem
 	private void createDefaultConcepts()
 	{
 		logProgress("Data Concept System", "Base Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GlobalClassificationsDataConceptName, "Any general classification", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, "No classification is applicable", activityMasterSystem);
@@ -80,7 +81,7 @@ public class ClassificationsDataConceptSystem
 	private void createInvolvedPartyConcepts()
 	{
 		logProgress("Data Concept System", "Involved Party Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedParty, "Standard Table Based Classification", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyIdentificationType, "Standard Table Based Classification", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.InvolvedPartyNameType, "Standard Table Based Classification", activityMasterSystem);
@@ -107,7 +108,7 @@ public class ClassificationsDataConceptSystem
 	private void createProductConcepts()
 	{
 		logProgress("Data Concept System", "Product Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Product, "Standard Table Based Classification", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ProductType, "Standard Table Based Classification", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ProductXProductType, "Product Types", activityMasterSystem);
@@ -120,7 +121,7 @@ public class ClassificationsDataConceptSystem
 	private void createResourceItemConcepts()
 	{
 		logProgress("Data Concept System", "Resource Item Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItem, "Standard Table Based Classification", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemData, "Standard Table Based Classification", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ResourceItemType, "Standard Table Based Classification", activityMasterSystem);
@@ -133,7 +134,7 @@ public class ClassificationsDataConceptSystem
 	private void createRulesConcepts()
 	{
 		logProgress("Data Concept System", "Rules Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(Rules, "Calculated rules", activityMasterSystem);
 		service.createDataConcept(RulesType, "Calculated rules types", activityMasterSystem);
 		service.createDataConcept(RulesTypeXClassification, "Rule Types Calculations", activityMasterSystem);
@@ -147,7 +148,7 @@ public class ClassificationsDataConceptSystem
 	private void createActiveFlagConcepts()
 	{
 		logProgress("Data Concept System", "Active Flag Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ActiveFlag, "An Active Flag", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ActiveFlagXClassification, "Any active flag classifications", activityMasterSystem);
 		
@@ -157,7 +158,7 @@ public class ClassificationsDataConceptSystem
 	private void createGeographyConcepts()
 	{
 		logProgress("Data Concept System", "Active Flag Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Geography, "Specific to a geography item", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GeographyXClassification, "All Geography Classifications", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.GeographyXGeography, "All Geography Relationships", activityMasterSystem);
@@ -168,7 +169,7 @@ public class ClassificationsDataConceptSystem
 	private void createAddressConcepts()
 	{
 		logProgress("Data Concept System", "Address Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Address, "Addresses are a physical location in a certain geography", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.AddressXGeography, "Any classifications for Address Geography groupings", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.AddressXResourceItem, "Any classification for resource items", activityMasterSystem);
@@ -179,7 +180,7 @@ public class ClassificationsDataConceptSystem
 	{
 		logProgress("Data Concept System", "Arrangement Concepts");
 		
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Arrangement, "Standard Table Based Classification", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXInvolvedParty, "Any relationships for the arrangement and the involved party", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ArrangementXClassification, "Any classifications for arrangements", activityMasterSystem);
@@ -200,7 +201,7 @@ public class ClassificationsDataConceptSystem
 	private void createClassificationsConcepts()
 	{
 		logProgress("Data Concept System", "Classification Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationDataConcept, "A designation of a table", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationDataConceptXClassification, "All classifications for the data concepts", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.ClassificationDataConceptXResourceItem, "Resource Items for data concepts", activityMasterSystem);
@@ -216,7 +217,7 @@ public class ClassificationsDataConceptSystem
 	private void createEventsConcepts()
 	{
 		logProgress("Data Concept System", "Event Concepts");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		//Event
 		service.createDataConcept(EnterpriseClassificationDataConcepts.Event, "An event is an audit of any change in the system, post installation", activityMasterSystem);
 		service.createDataConcept(EnterpriseClassificationDataConcepts.EventType, "A specific type of event ", activityMasterSystem);

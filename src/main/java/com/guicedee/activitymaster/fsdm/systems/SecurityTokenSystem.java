@@ -60,7 +60,7 @@ public class SecurityTokenSystem
 	public void createDefaults(IEnterprise<?,?> enterprise)
 	{
 		logProgress("Security Token Service", "Starting Security Structure Checks/Install");
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		createSecurityDefaults(enterprise.getName(), activityMasterSystem);
 		SecurityToken rootToken = createSecurityTokens(enterprise.getName(), enterprise);
 		createGroupsAndFolders(enterprise, rootToken);
@@ -139,7 +139,7 @@ public class SecurityTokenSystem
 	SecurityToken createSecurityTokens(String enterpriseName, IEnterprise<?,?> enterprise)
 	{
 		UUID uuid = getSystemToken(enterprise);
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		SecurityToken rootToken = (SecurityToken) securityTokenService.create(enterpriseName,
 				enterprise.getName(), enterprise.getDescription()
 				                                .isEmpty() ? "An enterprise-wide project" : enterprise.getDescription(),
@@ -157,7 +157,7 @@ public class SecurityTokenSystem
 	@SuppressWarnings("Duplicates")
 	void createGroupsAndFolders(IEnterprise<?,?> enterprise, SecurityToken rootToken)
 	{
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		SecurityToken everyoneToken = (SecurityToken) securityTokenService.create(
 				SecurityTokenClassifications.UserGroup.toString(),
 				UserGroupSecurityTokenClassifications.Everyone.toString(),
@@ -345,7 +345,7 @@ public class SecurityTokenSystem
 	
 	void applyDefaultsToNewEnterprise(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		logProgress("Security Token Service", "Checking Default Security for all enterprise default items");
 		
 		logProgress("Security Token Service", "Starting basic security checks", 1);
@@ -379,14 +379,14 @@ public class SecurityTokenSystem
 	
 	void createActivityMasterInvolvedParty(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		get(SystemsSystem.class)
 				.createInvolvedPartyForNewSystem(activityMasterSystem);
 	}
 	
 	void applyDefaultsToNewEnterpriseAfterActivityMaster(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		logProgress("Security Token Service", "Starting Involved Party Relationship checks", 1);
 		createDefaultSecurityForTable(new InvolvedParty(), activityMasterSystem);
 		logProgress("Security Token Service", "Starting Involved Party Organic Relationship checks", 1);

@@ -156,8 +156,8 @@ public class InvolvedPartyService
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
-			ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
-			//UUID activityMasterSystemUUID = EventsAOPInterceptor.getISystemToken(ActivityMasterSystemName);
+			ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
+			//UUID activityMasterSystemUUID = IActivityMasterService.getISystemToken(ActivityMasterSystemName);
 			xr.createDefaultSecurity(activityMasterSystem, identityToken);
 		}
 		else
@@ -189,8 +189,8 @@ public class InvolvedPartyService
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
-			ISystems<?, ?> activityMasterSystem = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
-			//UUID activityMasterSystemUUID = EventsAOPInterceptor.getISystemToken(ActivityMasterSystemName);
+			ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
+			//UUID activityMasterSystemUUID = IActivityMasterService.getISystemToken(ActivityMasterSystemName);
 			xr.createDefaultSecurity(activityMasterSystem, identityToken);
 			
 		}

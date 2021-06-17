@@ -22,8 +22,8 @@ import jakarta.cache.annotation.CacheResult;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications.*;
-import static com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor.*;
 
 public class SystemsService
 		implements ISystemsService<SystemsService>
@@ -51,7 +51,7 @@ public class SystemsService
 	
 	@Override
 	@CacheResult(cacheName = "GetActivityMasterEnterprise")
-	public ISystems<?,?> getActivityMaster(@CacheKey IEnterprise<?,?> requestingSystem, @CacheKey UUID... token)
+	public ISystems<?,?> getActivityMaster(@CacheKey IEnterprise<?,?> requestingSystem, UUID... token)
 	{
 		return findSystem(requestingSystem, ActivityMasterSystemName, token);
 	}
@@ -69,7 +69,7 @@ public class SystemsService
 	
 	@CacheResult(cacheName = "FindSystemEnterpriseLevel")
 	@Override
-	public ISystems<?,?> findSystem(@CacheKey IEnterprise<?,?> enterprise, @CacheKey String systemName, @CacheKey UUID... token)
+	public ISystems<?,?> findSystem(@CacheKey IEnterprise<?,?> enterprise, @CacheKey String systemName, UUID... token)
 	{
 		Systems search = new Systems();
 		return search.builder()
@@ -174,9 +174,8 @@ public class SystemsService
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			newSystem.setActiveFlagID(activeFlag);
 			newSystem.persist();
-			ISystems<?, ?> activityMasterSystem = getISystem(ActivityMasterSystemName);
-			UUID activityMasterSystemUUID = getISystemToken(ActivityMasterSystemName);
-			newSystem.createDefaultSecurity(activityMasterSystem, identityToken);
+			
+			newSystem.createDefaultSecurity(newSystem, identityToken);
 		}
 		else
 		{
@@ -187,7 +186,7 @@ public class SystemsService
 	}
 	
 	@CacheResult(cacheName = "SystemGetSecurityToken")
-	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID uuidIdentity, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
+	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID uuidIdentity, @CacheKey ISystems<?,?> system, UUID... identityToken)
 	{
 		Optional<SecurityToken> token = new SecurityToken().builder()
 		                                                   .findBySecurityToken(uuidIdentity.toString(), enterprise)
@@ -209,7 +208,7 @@ public class SystemsService
 	
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
 	@Override
-	public UUID getSecurityIdentityToken(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
+	public UUID getSecurityIdentityToken(@CacheKey ISystems<?,?> system, UUID... identityToken)
 	{
 		Optional<? extends IRelationshipValue<?, IClassification<?, ?>, ?>> systemToken = system.findClassification(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
+import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
-import static com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor.*;
 import static com.guicedee.guicedinjection.interfaces.ObjectBinderKeys.*;
 
 @Log

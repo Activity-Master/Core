@@ -2,14 +2,12 @@ package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.InvolvedPartyService;
-import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
-import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
+import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.types.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
@@ -45,7 +43,7 @@ public class InvolvedPartySystem
 	
 	private void createIdentificationTypes(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?, ?> system = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> system = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createIdentificationType(system, IdentificationTypes.IdentificationTypeDriversLicense, "Describes an Individuals Drivers Licence Number");
 		service.createIdentificationType(system, IdentificationTypes.IdentificationTypePassportNumber, "Describes an Individuals Passport Number");
 		service.createIdentificationType(system, IdentificationTypes.IdentificationTypeTaxNumber, "Tax ID Number");
@@ -69,7 +67,7 @@ public class InvolvedPartySystem
 	
 	private void createNameTypes(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?, ?> system = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> system = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createNameType(NameTypes.FirstNameType, "The first name of an individual or entity", system);
 		service.createNameType(NameTypes.FullNameType, "The full name of an individual or entity", system);
 		service.createNameType(NameTypes.PreferredNameType, "An Alias for the Involved Party", system);
@@ -88,7 +86,7 @@ public class InvolvedPartySystem
 	
 	private void createTypes(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?, ?> system = EventsAOPInterceptor.getISystem(ActivityMasterSystemName);
+		ISystems<?, ?> system = IActivityMasterService.getISystem(ActivityMasterSystemName);
 		service.createType(system, IPTypes.TypeIndividual, "Defines any involved party as a physical person");
 		service.createType(system, IPTypes.TypeOrganisation, "Defines any involved party as an organisation");
 		service.createType(system, IPTypes.TypeSystem, "Defines any involved party as a physical system");
