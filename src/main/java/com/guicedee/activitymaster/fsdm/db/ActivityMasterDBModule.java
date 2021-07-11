@@ -26,24 +26,23 @@ public class ActivityMasterDBModule
 	@Override
 	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(ParsedPersistenceXmlDescriptor persistenceUnit, Properties properties)
 	{
-		//BTMAutomatedTransactionHandler.setActive(true);
 		if (System.getProperty("fsdm_integratedSecurity") == null)
 		{
 			System.setProperty("fsdm_integratedSecurity", "true");
 		}
 		TransactionManagerServices.getConfiguration()
-		                          .setAllowMultipleLrc(true)
+		                      //    .setAllowMultipleLrc(true)
 		                          .setAsynchronous2Pc(true)
 		                          .setDisableJmx(true)
-		                          .setMaxLogSizeInMb(10)
+		                          .setMaxLogSizeInMb(20)
 		                          .setSkipCorruptedLogs(true)
 		                          .setWarnAboutZeroResourceTransaction(false);
 		
 		return new BTMConnectionBaseInfo()
 				.setEnableJdbc4ConnectionTest(true)
-				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "5")))
+				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "250")))
 				.setMinPoolSize(1)
-				.setPrefill(true)
+				.setPrefill(false)
 				.setServerName(System.getProperty("fsdm_dbserver", "localhost"))
 				.setDatabaseName(System.getProperty("fsdm_dbname", "FSDM"))
 				.setInstanceName(System.getProperty("fsdm_dbinstance", ""))
@@ -53,10 +52,9 @@ public class ActivityMasterDBModule
 				.setUrl("jdbc:sqlserver://" + System.getProperty("fsdm_dbserver", "localhost") +
 				        ";DatabaseName=" + System.getProperty("fsdm_dbname", "FSDM")
 				        + ";integratedSecurity=" + System.getProperty("fsdm_integratedSecurity", "true") + ";")
-				.setTransactionIsolation(BTMTransactionIsolation.READ_COMMITTED.toString())
-				.setAllowLocalTransactions(true);
-		
-		
+				.setTransactionIsolation(BTMTransactionIsolation.READ_UNCOMMITTED.toString())
+			//	.setAllowLocalTransactions(true)
+				;
 	}
 	
 	@Override

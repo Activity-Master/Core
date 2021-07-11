@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
@@ -17,7 +16,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.pairing.Pair;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Optional;
@@ -144,7 +142,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		                          .getCount() > 0;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedParty<?, ?> createAdminAndCreatorUserForEnterprise(ISystems<?, ?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey)

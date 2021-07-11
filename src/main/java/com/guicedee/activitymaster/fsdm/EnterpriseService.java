@@ -123,7 +123,7 @@ public class EnterpriseService
 		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(LocalDate.now()));
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void performUpdate(ISystemUpdate o, IEnterprise<?,?> enterprise)
 	{
 		@SuppressWarnings({ "unchecked"})

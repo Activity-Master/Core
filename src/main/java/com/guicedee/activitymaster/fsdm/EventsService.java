@@ -28,9 +28,18 @@ public class EventsService
 	private IEnterprise<?, ?> enterprise;
 	
 	@Override
-	public IEvent<?,?> get()
+	public IEvent<?, ?> get()
 	{
 		return new Event();
+	}
+	
+	@Override
+	public IEvent<?, ?> find(UUID id)
+	{
+		return new Event().builder()
+		                  .find(id)
+		                  .get()
+		                  .orElse(null);
 	}
 	
 	@Override
@@ -41,12 +50,12 @@ public class EventsService
 		event.setSystemID(system);
 		event.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		event.setActiveFlagID(activeFlag);
 		event.persist();
 		event.createDefaultSecurity(system, identityToken);
 		
-		event.addEventTypes(eventType, STRING_EMPTY,NoClassification.toString(), system, identityToken);
+		event.addEventTypes(eventType, STRING_EMPTY, NoClassification.toString(), system, identityToken);
 		return event;
 	}
 	
@@ -69,7 +78,7 @@ public class EventsService
 			et.setSystemID(system);
 			et.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID(system);
 			et.persist();
