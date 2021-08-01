@@ -6,8 +6,6 @@ import com.guicedee.activitymaster.fsdm.client.services.systems.ISystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.systems.SortedUpdate;
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
 
-import java.time.LocalDate;
-
 @SortedUpdate(sortOrder = Integer.MAX_VALUE - 200, taskCount = 1)
 public class TimeServiceSetup implements ISystemUpdate
 {
@@ -18,9 +16,9 @@ public class TimeServiceSetup implements ISystemUpdate
 	public void update(IEnterprise<?, ?> enterprise)
 	{
 		logProgress("Time Service", "Loading Time Specifications", 1);
-		timeSystem.loadTimeRange(LocalDate.now()
+		/*timeSystem.loadTimeRange(LocalDate.now()
 		                                  .getYear(), LocalDate.now()
-		                                        .getYear());
+		                                        .getYear());*/
 	}
 	
 }

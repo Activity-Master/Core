@@ -134,7 +134,7 @@
             <plugin>
                 <groupId>com.guicedee.services</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>${guicedee.version}</version>
+                <version>${maven.hibernate.enhance.version}</version>
                 <executions>
                     <execution>
                         <id>enhance</id>
@@ -163,22 +163,22 @@
                         <annotationProcessorPath>
                             <groupId>com.guicedee.services</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${guicedee.version}</version>
+                            <version>${maven.hibernate.version}</version>
                         </annotationProcessorPath>
                         <annotationProcessorPath>
                             <groupId>com.guicedee.services</groupId>
                             <artifactId>jakarta.xml.bind-api</artifactId>
-                            <version>${guicedee.version}</version>
+                            <version>${jakarta.xml.jaxb.api.version}</version>
                         </annotationProcessorPath>
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>1.4.2.Final</version>
+                            <version>${mapstruct.version}</version>
                         </path>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.20</version>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                     <annotationProcessors>
@@ -196,23 +196,23 @@
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm</artifactId>
-                        <version>9.1</version>
+                        <version>${asm.version}</version>
                         <type>jar</type>
                     </dependency>
                     <dependency>
                         <groupId>com.guicedee.services</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>${guicedee.version}</version>
+                        <version>${maven.hibernate.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
-                        <version>1.18.20</version>
+                        <version>${lombok.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>com.guicedee.services</groupId>
                         <artifactId>jakarta.xml.bind-api</artifactId>
-                        <version>${guicedee.version}</version>
+                        <version>${jakarta.xml.jaxb.api.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
