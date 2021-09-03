@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.involvedparty;
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
@@ -26,7 +25,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.ProductType;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 

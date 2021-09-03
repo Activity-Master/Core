@@ -38,7 +38,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	 * Tracks if the unit of work was begun implicitly by this transaction.
 	 */
 	@Getter
-	private static final ThreadLocal<IEvent<?, ?>> eventThreads = ThreadLocal.withInitial(() -> null);
+	private static final ThreadLocal<IEvent<?, ?>> eventThreads = ThreadLocal.withInitial(com.guicedee.activitymaster.fsdm.db.entities.events.Event::new);
 	
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable

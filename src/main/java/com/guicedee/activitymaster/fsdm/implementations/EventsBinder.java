@@ -1,16 +1,10 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.*;
-import com.google.inject.matcher.Matchers;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 import com.guicedee.activitymaster.fsdm.EventsService;
-import com.guicedee.activitymaster.fsdm.InvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
-import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
-import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventQueryBuilder;
-import com.guicedee.activitymaster.fsdm.implementations.interceptors.*;
+import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 public class EventsBinder extends PrivateModule implements IGuiceModule<EventsBinder>
 {
@@ -37,8 +31,10 @@ public class EventsBinder extends PrivateModule implements IGuiceModule<EventsBi
 				= Key.get(com.guicedee.activitymaster.fsdm.db.entities.events.Event.class);
 		
 		bind(genericKeyIEvent).to(realKeyIEvent);
+		bind(IEvent.class).to(realKeyIEvent);
 		bind(realKeyIEvent).toProvider(IEventProvider.class);
 		
 		expose(genericKeyIEvent);
+		expose(IEvent.class);
 	}
 }
