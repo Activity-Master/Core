@@ -134,7 +134,7 @@
             <plugin>
                 <groupId>com.guicedee.services</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>${maven.hibernate.enhance.version}</version>
+                <version>${guicedee.version}</version>
                 <executions>
                     <execution>
                         <id>enhance</id>
@@ -163,12 +163,12 @@
                         <annotationProcessorPath>
                             <groupId>com.guicedee.services</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${maven.hibernate.version}</version>
+                            <version>${guicedee.version}</version>
                         </annotationProcessorPath>
                         <annotationProcessorPath>
                             <groupId>com.guicedee.services</groupId>
                             <artifactId>jakarta.xml.bind-api</artifactId>
-                            <version>${jakarta.xml.jaxb.api.version}</version>
+                            <version>${guicedee.version}</version>
                         </annotationProcessorPath>
                         <path>
                             <groupId>org.mapstruct</groupId>
@@ -202,7 +202,7 @@
                     <dependency>
                         <groupId>com.guicedee.services</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>${maven.hibernate.version}</version>
+                        <version>${guicedee.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.projectlombok</groupId>
@@ -212,7 +212,7 @@
                     <dependency>
                         <groupId>com.guicedee.services</groupId>
                         <artifactId>jakarta.xml.bind-api</artifactId>
-                        <version>${jakarta.xml.jaxb.api.version}</version>
+                        <version>${guicedee.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
