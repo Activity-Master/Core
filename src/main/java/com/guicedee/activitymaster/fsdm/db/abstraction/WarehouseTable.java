@@ -12,7 +12,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
-import java.time.LocalDateTime;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
@@ -66,7 +65,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 	{
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-		setEffectiveToDate(LocalDateTime.now());
+		setEffectiveToDate(com.entityassist.RootEntity.getNow());
 		updateNow();
 		return (J) this;
 	}

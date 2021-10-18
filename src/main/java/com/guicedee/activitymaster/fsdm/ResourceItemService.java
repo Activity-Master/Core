@@ -85,7 +85,7 @@ public class ResourceItemService
 	public IResourceItem<?, ?> create(String identityResourceType, String resourceItemDataValue,
 	                                  ISystems<?,?> system, UUID... identityToken)
 	{
-		return create(identityResourceType, resourceItemDataValue, "", LocalDateTime.now(), system, identityToken);
+		return create(identityResourceType, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
 	}
 	
 	@Override

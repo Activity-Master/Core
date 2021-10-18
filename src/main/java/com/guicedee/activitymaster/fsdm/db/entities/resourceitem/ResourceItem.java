@@ -29,7 +29,6 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.*;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -262,8 +261,8 @@ public class ResourceItem
 		{
 			ResourceItemData rid = new ResourceItemData();
 			rid.setResource(this);
-			rid.setEffectiveFromDate(LocalDateTime.now());
-			rid.setWarehouseCreatedTimestamp(LocalDateTime.now());
+			rid.setEffectiveFromDate(com.entityassist.RootEntity.getNow());
+			rid.setWarehouseCreatedTimestamp(com.entityassist.RootEntity.getNow());
 			rid.setEffectiveToDate(EndOfTime);
 			rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
 			rid.setResourceItemData(data);
@@ -309,8 +308,8 @@ public class ResourceItem
 		
 		ResourceItemData rid = new ResourceItemData();
 		rid.setResource(this);
-		rid.setEffectiveFromDate(LocalDateTime.now());
-		rid.setWarehouseCreatedTimestamp(LocalDateTime.now());
+		rid.setEffectiveFromDate(com.entityassist.RootEntity.getNow());
+		rid.setWarehouseCreatedTimestamp(com.entityassist.RootEntity.getNow());
 		rid.setEffectiveToDate(EndOfTime);
 		rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
 		rid.setResourceItemData(data);

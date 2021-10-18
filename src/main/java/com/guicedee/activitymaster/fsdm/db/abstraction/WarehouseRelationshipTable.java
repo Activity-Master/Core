@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -133,16 +132,16 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 	{
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                                         .getDeletedFlag(getEnterpriseID(), identifyingToken));
-		setEffectiveToDate(LocalDateTime.now());
-		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
+		setEffectiveToDate(com.entityassist.RootEntity.getNow());
+		setWarehouseLastUpdatedTimestamp(com.entityassist.RootEntity.getNow());
 		update();
 		
 		setId(null);
 		setValue(newValue);
 		setEffectiveFromDate(StartOfTime);
 		setEffectiveToDate(EndOfTime);
-		setWarehouseCreatedTimestamp(LocalDateTime.now());
-		setWarehouseLastUpdatedTimestamp(LocalDateTime.now());
+		setWarehouseCreatedTimestamp(com.entityassist.RootEntity.getNow());
+		setWarehouseLastUpdatedTimestamp(com.entityassist.RootEntity.getNow());
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                                         .getActiveFlag(getEnterpriseID(), identifyingToken));
 		persist();

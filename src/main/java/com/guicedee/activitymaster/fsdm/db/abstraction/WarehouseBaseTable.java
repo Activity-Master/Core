@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
 import java.time.Duration;
-import java.time.LocalDateTime;
 
 @MappedSuperclass()
 public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
@@ -28,7 +27,7 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 	
 	public J expireIn(Duration duration)
 	{
-		setEffectiveToDate(LocalDateTime.now()
+		setEffectiveToDate(com.entityassist.RootEntity.getNow()
 		                                .plus(duration));
 		updateNow();
 		return (J) this;

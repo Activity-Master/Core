@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.JoinFormula;
 
 import java.io.Serial;
-import java.time.LocalDateTime;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static jakarta.persistence.FetchType.*;
@@ -104,7 +103,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 		setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
 		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
 		                                                                                            .getSystemToken((IEnterprise) getEnterpriseID())));
-		setEffectiveToDate(LocalDateTime.now());
+		setEffectiveToDate(com.entityassist.RootEntity.getNow());
 		updateNow();
 		return (J) this;
 	}

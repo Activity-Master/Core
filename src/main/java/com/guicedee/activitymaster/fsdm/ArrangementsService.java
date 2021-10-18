@@ -165,7 +165,7 @@ public class ArrangementsService
 		
 		return xips.stream()
 		           .map(ArrangementXInvolvedParty::getArrangementID)
-		           .filter(a -> LocalDateTime.now()
+		           .filter(a -> com.entityassist.RootEntity.getNow()
 		                                     .isBefore(a.getEffectiveToDate()))
 		           .collect(Collectors.toList());
 	}
