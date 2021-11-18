@@ -45,7 +45,14 @@ public class EventsService
 	@Override
 	public IEvent<?, ?> createEvent(String eventType, ISystems<?, ?> system, UUID... identityToken)
 	{
+		return createEvent(eventType, null, system, identityToken);
+	}
+	
+	@Override
+	public IEvent<?, ?> createEvent(String eventType, UUID key, ISystems<?, ?> system, UUID... identityToken)
+	{
 		Event event = new Event();
+		event.setId(key);
 		event.setEnterpriseID(enterprise);
 		event.setSystemID(system);
 		event.setOriginalSourceSystemID(system);

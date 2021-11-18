@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
+import com.entityassist.RootEntity;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
@@ -138,7 +139,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 		
 		setId(null);
 		setValue(newValue);
-		setEffectiveFromDate(StartOfTime);
+		setEffectiveFromDate(RootEntity.getNow());
 		setEffectiveToDate(EndOfTime);
 		setWarehouseCreatedTimestamp(com.entityassist.RootEntity.getNow());
 		setWarehouseLastUpdatedTimestamp(com.entityassist.RootEntity.getNow());

@@ -51,6 +51,12 @@ public class AddressService
 	@Override
 	public IAddress<?, ?> create(String addressClassification, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
+		return create(addressClassification, null, system, value, identifyingToken);
+	}
+	
+	@Override
+	public IAddress<?, ?> create(String addressClassification, UUID key, ISystems<?, ?> system, String value, UUID... identifyingToken)
+	{
 		Address addy = new Address();
 		
 		Classification classification = (Classification) classificationServiceProvider.find(addressClassification,
@@ -66,6 +72,7 @@ public class AddressService
 		
 		if (!found)
 		{
+			addy.setId(key);
 			addy.setEnterpriseID(system.getEnterpriseID());
 			addy.setClassificationID(classification);
 			addy.setValue(value);

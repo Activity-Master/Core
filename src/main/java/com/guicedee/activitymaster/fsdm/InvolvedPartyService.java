@@ -16,9 +16,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.Invol
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.logger.LogFactory;
 import jakarta.cache.annotation.CacheKey;
@@ -240,9 +238,15 @@ public class InvolvedPartyService
 		              .orElse(null);
 	}
 	
-	
 	@Override
 	public IInvolvedParty<?, ?> create(ISystems<?, ?> system, Pair<String, String> idTypes,
+	                                   boolean isOrganic, UUID... identityToken)
+	{
+		return create(system,null, idTypes, isOrganic, identityToken);
+	}
+	
+	@Override
+	public IInvolvedParty<?, ?> create(ISystems<?, ?> system, UUID key, Pair<String, String> idTypes,
 	                                   boolean isOrganic, UUID... identityToken)
 	{
 		InvolvedParty ip = new InvolvedParty();
@@ -256,6 +260,8 @@ public class InvolvedPartyService
 			ip.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			
+			ip.setId(key);
 			ip.setActiveFlagID(activeFlag);
 			ip.setSystemID(system);
 			ip.setOriginalSourceSystemID(system);
@@ -266,9 +272,8 @@ public class InvolvedPartyService
 			IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(idTypes.getKey(), system, identityToken);
 			ip.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType, idTypes.getValue(), idTypes.getValue(), system, identityToken);
 			InvolvedParty finalIp = ip;
-			JobService.getInstance()
-			          .addJob("InvolvedPartyOrganicStorage",
-					          () -> setupInvolvedPartyOrganicStatus(isOrganic, finalIp, system, identityToken));
+			
+			setupInvolvedPartyOrganicStatus(isOrganic, finalIp, system, identityToken);
 		}
 		else
 		{

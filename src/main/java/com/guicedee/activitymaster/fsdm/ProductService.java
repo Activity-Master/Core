@@ -64,6 +64,12 @@ public class ProductService
 	@Override
 	public IProduct<?, ?> createProduct(String productType, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken)
 	{
+		return createProduct(productType, null, name, description, code, system, identityToken);
+	}
+	
+	@Override
+	public IProduct<?, ?> createProduct(String productType, UUID key, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken)
+	{
 		
 		boolean exists = new Product().builder()
 		                              .withName(name)
@@ -83,6 +89,7 @@ public class ProductService
 		}
 		
 		Product product = new Product();
+		product.setId(key);
 		product.setName(name);
 		product.setProductCode(code);
 		product.setDescription(description);
@@ -134,8 +141,15 @@ public class ProductService
 		return arrangementXResourceItem;
 	}
 	
+	
 	@Override
 	public IProductType<?, ?> createProductType(String productsType, String description, ISystems<?, ?> system, UUID... identityToken)
+	{
+		return createProductType(productsType, null, description, system, identityToken);
+	}
+	
+	@Override
+	public IProductType<?, ?> createProductType(String productsType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
 		ProductType et = new ProductType();
 		
@@ -148,6 +162,7 @@ public class ProductService
 		
 		if (!exists)
 		{
+			et.setId(key);
 			et.setName(productsType);
 			et.setDescription(description);
 			et.setSystemID(system);

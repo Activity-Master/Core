@@ -58,6 +58,16 @@ public class ArrangementsService
 	                                 ISystems<?,?> system,
 	                                 UUID... identityToken)
 	{
+		return create(type,null, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
+	}
+	
+	@Override
+	public IArrangement<?, ?> create(String type, UUID key,
+	                                 String arrangementTypeClassification,
+	                                 String arrangementTypeValue,
+	                                 ISystems<?, ?> system,
+	                                 UUID... identityToken)
+	{
 		ArrangementType tt = (ArrangementType) find(type, system);
 		boolean exists = new ArrangementXArrangementType().builder()
 		                                                  .withValue(arrangementTypeValue)
@@ -84,6 +94,7 @@ public class ArrangementsService
 		}
 		
 		Arrangement xr = new Arrangement();
+		xr.setId(key);
 		xr.setSystemID(system);
 		xr.setOriginalSourceSystemID(system);
 		xr.setEnterpriseID(enterprise);
@@ -104,8 +115,15 @@ public class ArrangementsService
 	}
 	
 	@Override
+	public IArrangementType<?, ?> createArrangementType(String type, ISystems<?,?> system, UUID... identityToken)
+	{
+		return createArrangementType(type, null,system, identityToken);
+	}
+	
+	
+	@Override
 	@CacheResult(cacheName = "ArrangementTypes")
-	public IArrangementType<?, ?> createArrangementType(@CacheKey String type, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
+	public IArrangementType<?, ?> createArrangementType(@CacheKey String type, UUID key, @CacheKey ISystems<?, ?> system, @CacheKey UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
 		
@@ -118,6 +136,7 @@ public class ArrangementsService
 		
 		if (!exists)
 		{
+			xr.setId(key);
 			xr.setName(type);
 			xr.setDescription(type);
 			xr.setSystemID(system);

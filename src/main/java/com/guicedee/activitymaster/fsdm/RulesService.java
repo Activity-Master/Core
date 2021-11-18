@@ -43,6 +43,12 @@ public class RulesService
 	@Override
 	public IRules<?,?> createRules(String rulesType, String name, String description, ISystems<?,?> system, UUID... identityToken)
 	{
+		return createRules(rulesType,null, name, description, system, identityToken);
+	}
+	
+	@Override
+	public IRules<?,?> createRules(String rulesType, UUID key, String name, String description, ISystems<?, ?> system, UUID... identityToken)
+	{
 		boolean exists = new Rules().builder()
 		                            .withName(name)
 		                            .inActiveRange()
@@ -61,6 +67,7 @@ public class RulesService
 		}
 		
 		Rules rules = new Rules();
+		rules.setId(key);
 		rules.setName(name);
 		rules.setDescription(description);
 		
@@ -132,6 +139,12 @@ public class RulesService
 	@Override
 	public IRulesType<?,?> createRulesType(String rulesType, String description, ISystems<?,?> system, UUID... identityToken)
 	{
+		return createRulesType(rulesType,null, description, system, identityToken);
+	}
+	
+	@Override
+	public IRulesType<?,?> createRulesType(String rulesType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
+	{
 		RulesType et = new RulesType();
 		
 		boolean exists = et.builder()
@@ -143,6 +156,7 @@ public class RulesService
 		
 		if (!exists)
 		{
+			et.setId(key);
 			et.setName(rulesType);
 			et.setDescription(description);
 			et.setSystemID(system);
