@@ -66,6 +66,7 @@ public class EventType
 	@OneToMany(
 			mappedBy = "eventTypeID",
 			fetch = FetchType.LAZY)
+	
 	private List<EventXEventType> eventXEventTypeList;
 	@OneToMany(
 			mappedBy = "base",
@@ -94,15 +95,15 @@ public class EventType
 		return this.eventXEventTypeList;
 	}
 	
-	public List<EventTypesSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public EventType setEventXEventTypeList(List<EventXEventType> eventXEventTypeList)
 	{
 		this.eventXEventTypeList = eventXEventTypeList;
 		return this;
+	}
+	
+	public List<EventTypesSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public EventType setSecurities(List<EventTypesSecurityToken> securities)
@@ -143,22 +144,16 @@ public class EventType
 		return this.id;
 	}
 	
-	public @NotNull @Size(min = 1,
-	                      max = 200) String getName()
-	{
-		return this.name;
-	}
-	
-	public @NotNull @Size(min = 1,
-	                      max = 200) String getDescription()
-	{
-		return this.description;
-	}
-	
 	public EventType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public @NotNull @Size(min = 1,
+	                      max = 200) String getName()
+	{
+		return this.name;
 	}
 	
 	public EventType setName(@NotNull @Size(min = 1,
@@ -166,6 +161,12 @@ public class EventType
 	{
 		this.name = name;
 		return this;
+	}
+	
+	public @NotNull @Size(min = 1,
+	                      max = 200) String getDescription()
+	{
+		return this.description;
 	}
 	
 	public EventType setDescription(@NotNull @Size(min = 1,

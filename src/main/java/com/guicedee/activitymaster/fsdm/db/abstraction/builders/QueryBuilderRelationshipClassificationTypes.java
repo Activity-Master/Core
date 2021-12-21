@@ -20,15 +20,15 @@ import java.util.UUID;
  * @since 01 May 2017
  */
 public abstract class QueryBuilderRelationshipClassificationTypes<
-		P extends WarehouseCoreTable<P,?,UUID>,
-		S extends WarehouseCoreTable<S,?,UUID>,
-		J extends QueryBuilderRelationshipClassificationTypes<P, S, J, E,  I>,
+		P extends WarehouseCoreTable<P, ?, UUID>,
+		S extends WarehouseCoreTable<S, ?, UUID>,
+		J extends QueryBuilderRelationshipClassificationTypes<P, S, J, E, I>,
 		E extends WarehouseClassificationRelationshipTypesTable<P, S, E, J, I>,
 		I extends UUID>
 		extends QueryBuilderRelationshipClassification<P, S, J, E, I>
-		implements IQueryBuilderClassifications<J,E,I>
+		implements IQueryBuilderClassifications<J, E, I>
 {
 	
-	public abstract J withType(String typeValue, ISystems<?,?> system, UUID... identityToken);
+	public abstract J withType(String typeValue, ISystems<?, ?> system, UUID... identityToken);
 	
 }

@@ -2,12 +2,11 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.TransFiscalQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.*;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -19,7 +18,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "Trans_Fiscal",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -33,27 +32,27 @@ public class TransFiscal
 	@Id
 	@Basic(optional = false)
 	@Column(name = "DayID",
-			nullable = false)
+	        nullable = false)
 	private Integer id;
 	@Basic(optional = false)
 	@Column(name = "FiscalDayID",
-			nullable = false)
+	        nullable = false)
 	private int fiscalDayID;
-
+	
 	public TransFiscal()
 	{
 	}
-
+	
 	public TransFiscal(Integer id, int fiscalDayID)
 	{
 		this.id = id;
 		this.fiscalDayID = fiscalDayID;
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return id + " - " + fiscalDayID;
 	}
-
+	
 }

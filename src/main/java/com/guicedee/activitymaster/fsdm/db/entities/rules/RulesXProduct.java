@@ -23,7 +23,8 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Rules", name = "RulesXProduct")
 @XmlRootElement
 
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
@@ -79,25 +80,15 @@ public class RulesXProduct
 		return this.id;
 	}
 	
-	public List<RulesXProductSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
-	}
-	
-	public Product getProductID()
-	{
-		return this.productID;
-	}
-	
 	public RulesXProduct setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<RulesXProductSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public RulesXProduct setSecurities(List<RulesXProductSecurityToken> securities)
@@ -106,10 +97,20 @@ public class RulesXProduct
 		return this;
 	}
 	
+	public Rules getRulesID()
+	{
+		return this.rulesID;
+	}
+	
 	public RulesXProduct setRulesID(Rules rulesID)
 	{
 		this.rulesID = rulesID;
 		return this;
+	}
+	
+	public Product getProductID()
+	{
+		return this.productID;
 	}
 	
 	public RulesXProduct setProductID(Product productID)

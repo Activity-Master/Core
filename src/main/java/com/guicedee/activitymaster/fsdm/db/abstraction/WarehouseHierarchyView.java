@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Immutable
 @MappedSuperclass
-public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends UUID>
+public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends UUID>
 		extends BaseEntity<J, Q, I>
 {
 	@Column
@@ -25,34 +25,36 @@ public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J
 	private String pather;
 	@Column
 	private String path;
-/*	@Column
-	private String value;*/
+	/*	@Column
+		private String value;*/
 	@Column
 	private Integer one;
-
+	
 	public String getName()
 	{
 		return this.name;
 	}
-
+	
+	public WarehouseHierarchyView<J, Q, I> setName(String name)
+	{
+		this.name = name;
+		return this;
+	}
+	
 	public UUID getParentID()
 	{
 		return this.parentID;
 	}
-
+	
+	public WarehouseHierarchyView<J, Q, I> setParentID(UUID parentID)
+	{
+		this.parentID = parentID;
+		return this;
+	}
+	
 	public String getPather()
 	{
 		return this.pather;
-	}
-
-	public String getPath()
-	{
-		return this.path;
-	}
-
-	public Integer getOne()
-	{
-		return this.one;
 	}
 
 /*	public String getValue() {
@@ -63,37 +65,35 @@ public abstract class WarehouseHierarchyView <J extends WarehouseHierarchyView<J
 		this.value = value;
 		return this;
 	}*/
-
-	public WarehouseHierarchyView<J, Q, I> setName(String name)
-	{
-		this.name = name;
-		return this;
-	}
-
-	public WarehouseHierarchyView<J, Q, I> setParentID(UUID parentID)
-	{
-		this.parentID = parentID;
-		return this;
-	}
-
+	
 	public WarehouseHierarchyView<J, Q, I> setPather(String pather)
 	{
 		this.pather = pather;
 		return this;
 	}
-
+	
+	public String getPath()
+	{
+		return this.path;
+	}
+	
 	public WarehouseHierarchyView<J, Q, I> setPath(String path)
 	{
 		this.path = path;
 		return this;
 	}
-
+	
+	public Integer getOne()
+	{
+		return this.one;
+	}
+	
 	public WarehouseHierarchyView<J, Q, I> setOne(Integer one)
 	{
 		this.one = one;
 		return this;
 	}
-
+	
 	public String toString()
 	{
 		return "WarehouseHierarchyView(name=" + this.getName() + ")";

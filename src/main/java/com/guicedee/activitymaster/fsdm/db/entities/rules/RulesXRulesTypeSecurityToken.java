@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.rules;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.builders.RulesXRulesTypeSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -31,7 +30,8 @@ public class RulesXRulesTypeSecurityToken
 	@Id
 	
 	@Column(nullable = false,
-	        name = "RulesXRulesTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "RulesXRulesTypeSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@JoinColumn(name = "RulesXRulesTypeID",
@@ -64,16 +64,16 @@ public class RulesXRulesTypeSecurityToken
 		return this.id;
 	}
 	
-	public RulesXRulesType getBase()
-	{
-		return this.base;
-	}
-	
 	@Override
 	public RulesXRulesTypeSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public RulesXRulesType getBase()
+	{
+		return this.base;
 	}
 	
 	public RulesXRulesTypeSecurityToken setBase(RulesXRulesType base)
@@ -94,17 +94,13 @@ public class RulesXRulesTypeSecurityToken
 			return false;
 		}
 		final RulesXRulesTypeSecurityToken other = (RulesXRulesTypeSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
 	
 	protected boolean canEqual(final Object other)

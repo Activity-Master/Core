@@ -42,17 +42,17 @@ public class TimeSystem
 	private ISystemsService<?> systemsService;
 	
 	@Override
-	public ISystems<?,?> registerSystem(IEnterprise<?,?> enterprise)
+	public ISystems<?, ?> registerSystem(IEnterprise<?, ?> enterprise)
 	{
 		ISystems<?, ?> iSystems = systemsService
-		                                        .create(enterprise, getSystemName(), getSystemDescription());
+				.create(enterprise, getSystemName(), getSystemDescription());
 		systemsService
-		              .registerNewSystem(enterprise, getSystem(enterprise));
+				.registerNewSystem(enterprise, getSystem(enterprise));
 		return iSystems;
 	}
 	
 	@Override
-	public void createDefaults(IEnterprise<?,?> enterprise)
+	public void createDefaults(IEnterprise<?, ?> enterprise)
 	{
 		logProgress("Time System", "Loading Time Classifications...", 4);
 		loadTimeRange(2004, LocalDateTime.now()
@@ -84,6 +84,7 @@ public class TimeSystem
 	}
 	
 	@Override
+	
 	public void loadTimeRange(int startYear, int endYear)
 	{
 		JobService.getInstance()
@@ -109,8 +110,10 @@ public class TimeSystem
 		}
 		
 		int difference = endYear - startYear;
-		if(difference < 1)
+		if (difference < 1)
+		{
 			difference = 1;
+		}
 		setTotalTasks(difference * 12);
 		
 		//Create data storage partitions
@@ -134,6 +137,7 @@ public class TimeSystem
 		return year;
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Years createYear(Date date)
 	{
 		Years year = new Years().setId(Short.parseShort(YearIDFormat.getSimpleDateFormat()
@@ -179,7 +183,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Quarters createQuarter(Date date)
 	{
 		Quarters quarter = new Quarters(getQuarterID(date));
@@ -329,7 +333,7 @@ public class TimeSystem
 		                        .orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	Months createMonth(Date date)
 	{
 		Months month = new Months(Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
@@ -452,6 +456,7 @@ public class TimeSystem
 		return weekID;
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Weeks createWeek(Date date)
 	{
 		Weeks week = new Weeks();
@@ -556,6 +561,7 @@ public class TimeSystem
 		                                   .format(gc.getTime()));
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Days createDay(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -608,7 +614,12 @@ public class TimeSystem
 		newDay.setWeekID(getWeek(date));
 		try
 		{
-			newDay.setYearID(getYearFromID(date).getId());
+			Years y = getYearFromID(date);
+			if (y == null)
+			{
+				y = createYear(date);
+			}
+			newDay.setYearID(y.getId());
 		}
 		catch (Exception ex)
 		{
@@ -637,6 +648,7 @@ public class TimeSystem
 		getDayFiscal(date, fiscalLag);
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void getDayYTD(Date date)
 	{
 		
@@ -682,6 +694,7 @@ public class TimeSystem
 		arr.clear();
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void getDayMTD(Date date)
 	{
 		
@@ -724,6 +737,7 @@ public class TimeSystem
 		arr.clear();
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private TransFiscal getDayFiscal(Date date, int fiscalMonthLag)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -739,6 +753,7 @@ public class TimeSystem
 		return tran;
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void getDayQTD(Date date)
 	{
 		
@@ -811,6 +826,7 @@ public class TimeSystem
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createTime()
 	{
 		if (new Hours().builder()

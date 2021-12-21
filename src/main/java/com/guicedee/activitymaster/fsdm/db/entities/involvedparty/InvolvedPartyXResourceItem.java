@@ -86,25 +86,15 @@ public class InvolvedPartyXResourceItem
 		return this.id;
 	}
 	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
-	}
-	
-	public List<InvolvedPartyXResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public InvolvedPartyXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
 	}
 	
 	public InvolvedPartyXResourceItem setInvolvedPartyID(InvolvedParty involvedPartyID)
@@ -113,10 +103,20 @@ public class InvolvedPartyXResourceItem
 		return this;
 	}
 	
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
+	}
+	
 	public InvolvedPartyXResourceItem setResourceItemID(ResourceItem resourceItemID)
 	{
 		this.resourceItemID = resourceItemID;
 		return this;
+	}
+	
+	public List<InvolvedPartyXResourceItemSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public InvolvedPartyXResourceItem setSecurities(List<InvolvedPartyXResourceItemSecurityToken> securities)

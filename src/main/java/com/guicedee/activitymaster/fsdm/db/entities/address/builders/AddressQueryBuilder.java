@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class AddressQueryBuilder
 		extends QueryBuilderTable<AddressQueryBuilder, Address, java.util.UUID>
-		implements IAddressQueryBuilder<AddressQueryBuilder,Address>
+		implements IAddressQueryBuilder<AddressQueryBuilder, Address>
 {
 	@Override
 	public @NotNull AddressQueryBuilder withValue(Operand operand, String value)

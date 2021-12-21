@@ -16,18 +16,14 @@ import static com.entityassist.enumerations.Operand.*;
 /**
  * Default query builder for relationship tables
  *
- * @param <J>
- * 		the type parameter
- * @param <E>
- * 		the type parameter
- * @param <I>
- * 		the type parameter
- *
+ * @param <J> the type parameter
+ * @param <E> the type parameter
+ * @param <I> the type parameter
  * @author Marc Magon
  */
 public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J, E, I>,
-		                                            E extends WarehouseSecurityTable<E, J, I>,
-		                                            I extends java.util.UUID>
+		E extends WarehouseSecurityTable<E, J, I>,
+		I extends java.util.UUID>
 		extends QueryBuilderDefault<J, E, I>
 {
 	@SuppressWarnings("unchecked")
@@ -38,25 +34,25 @@ public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J,
 		where(getMyAttribute(), Equals, id);
 		return (J) this;
 	}
-
+	
 	protected Attribute getSecurityTokenAttribute()
 	{
 		return getAttribute("securityTokenID");
 	}
-
+	
 	protected Attribute getBaseEntityAttribute()
 	{
 		return getAttribute("base");
 	}
-
+	
 	protected abstract Attribute getMyAttribute();
-
+	
 	public J findBySecurityToken(SecurityToken uuid)
 	{
 		where(getSecurityTokenAttribute(), Equals, uuid);
 		return (J) this;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@NotNull
 	public J findLinkedSecurityToken(SecurityToken token, WarehouseBaseTable id)
@@ -66,7 +62,7 @@ public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J,
 		where(securityAttribute, Equals, token);
 		return (J) this;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@NotNull
 	public J findLinkedSecurityTokens(WarehouseBaseTable id)

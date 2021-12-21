@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXResourceItemSecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXResourceItemSecurityToken_;
-
 import jakarta.persistence.metamodel.Attribute;
 
 public class InvolvedPartyXResourceItemSecurityTokenQueryBuilder

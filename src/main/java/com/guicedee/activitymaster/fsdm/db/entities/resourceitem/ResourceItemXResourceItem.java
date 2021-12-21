@@ -84,26 +84,16 @@ public class ResourceItemXResourceItem
 		return id;
 	}
 	
-	public List<ResourceItemXResourceItemSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public ResourceItem getChildResourceItemID()
-	{
-		return childResourceItemID;
-	}
-	
-	public ResourceItem getParentResourceItemID()
-	{
-		return parentResourceItemID;
-	}
-	
 	@Override
 	public ResourceItemXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<ResourceItemXResourceItemSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public ResourceItemXResourceItem setSecurities(List<ResourceItemXResourceItemSecurityToken> securities)
@@ -112,10 +102,20 @@ public class ResourceItemXResourceItem
 		return this;
 	}
 	
+	public ResourceItem getChildResourceItemID()
+	{
+		return childResourceItemID;
+	}
+	
 	public ResourceItemXResourceItem setChildResourceItemID(ResourceItem childResourceItemID)
 	{
 		this.childResourceItemID = childResourceItemID;
 		return this;
+	}
+	
+	public ResourceItem getParentResourceItemID()
+	{
+		return parentResourceItemID;
 	}
 	
 	public ResourceItemXResourceItem setParentResourceItemID(ResourceItem parentResourceItemID)

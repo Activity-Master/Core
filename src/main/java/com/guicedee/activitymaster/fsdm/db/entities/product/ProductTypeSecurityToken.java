@@ -69,16 +69,16 @@ public class ProductTypeSecurityToken
 		return this.id;
 	}
 	
-	public ProductType getBase()
-	{
-		return this.base;
-	}
-	
 	@Override
 	public ProductTypeSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public ProductType getBase()
+	{
+		return this.base;
 	}
 	
 	public ProductTypeSecurityToken setBase(ProductType base)
@@ -99,17 +99,13 @@ public class ProductTypeSecurityToken
 			return false;
 		}
 		final ProductTypeSecurityToken other = (ProductTypeSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
 	
 	protected boolean canEqual(final Object other)

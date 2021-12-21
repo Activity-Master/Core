@@ -75,26 +75,26 @@ public class RulesXClassification
 		return this.id;
 	}
 	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
-	}
-	
-	public List<RulesXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public RulesXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public Rules getRulesID()
+	{
+		return this.rulesID;
+	}
+	
 	public RulesXClassification setRulesID(Rules rulesID)
 	{
 		this.rulesID = rulesID;
 		return this;
+	}
+	
+	public List<RulesXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public RulesXClassification setSecurities(List<RulesXClassificationSecurityToken> securities)

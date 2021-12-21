@@ -80,26 +80,16 @@ public class ProductXResourceItem
 		return id;
 	}
 	
-	public List<ProductXResourceItemSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public Product getProductID()
-	{
-		return productID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return resourceItemID;
-	}
-	
 	@Override
 	public ProductXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<ProductXResourceItemSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public ProductXResourceItem setSecurities(List<ProductXResourceItemSecurityToken> securities)
@@ -108,10 +98,20 @@ public class ProductXResourceItem
 		return this;
 	}
 	
+	public Product getProductID()
+	{
+		return productID;
+	}
+	
 	public ProductXResourceItem setProductID(Product productID)
 	{
 		this.productID = productID;
 		return this;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return resourceItemID;
 	}
 	
 	public ProductXResourceItem setResourceItemID(ResourceItem resourceItemID)

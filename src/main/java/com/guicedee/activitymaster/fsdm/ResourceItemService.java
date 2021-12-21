@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
 import static jakarta.persistence.criteria.JoinType.*;
 
@@ -50,10 +51,11 @@ public class ResourceItemService
 	@Override
 	public IResourceItemType<?, ?> createType(String value, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return createType(value,null, description, system, identityToken);
+		return createType(value, null, description, system, identityToken);
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IResourceItemType<?, ?> createType(String value, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
@@ -96,10 +98,10 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public IResourceItem<?, ?> create(String identityResourceType,UUID key, String resourceItemDataValue,
+	public IResourceItem<?, ?> create(String identityResourceType, UUID key, String resourceItemDataValue,
 	                                  ISystems<?, ?> system, UUID... identityToken)
 	{
-		return create(identityResourceType, key,resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
+		return create(identityResourceType, key, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
 	}
 	
 	
@@ -112,6 +114,7 @@ public class ResourceItemService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IResourceItem<?, ?> create(String identityResourceType, UUID key, String resourceItemDataValue, String originalSourceSystemUniqueID,
 	                                  LocalDateTime effectiveFromDate,
 	                                  ISystems<?, ?> system, UUID... identityToken)
@@ -147,14 +150,40 @@ public class ResourceItemService
 		                   .getCount() > 0;
 		if (exists)
 		{
-			return xr.builder()
-			         .withValue(resourceItemDataValue)
-			         .inActiveRange()
-			         .inDateRange()
-			         .withType(identityResourceType, null, system, identityToken)
-			         .withEnterprise(enterprise)
-			         .get()
-			         .orElseThrow();
+			if (key != null)
+			{
+				Optional<ResourceItem> found = xr.builder()
+				                                 .find(key)
+				                                 .get();
+				if (found.isPresent())
+				{
+					return found.get();
+				}
+				else
+				{
+					//expire current record, wrong UUID
+					var result = xr.builder()
+					               .withValue(resourceItemDataValue)
+					               .inActiveRange()
+					               .inDateRange()
+					               .withType(identityResourceType, null, system, identityToken)
+					               .withEnterprise(enterprise)
+					               .get()
+					               .get();
+					result.expire();
+				}
+			}
+			else
+			{
+				return xr.builder()
+				         .withValue(resourceItemDataValue)
+				         .inActiveRange()
+				         .inDateRange()
+				         .withType(identityResourceType, null, system, identityToken)
+				         .withEnterprise(enterprise)
+				         .get()
+				         .orElseThrow();
+			}
 		}
 		xr.setOriginalSourceSystemID(system);
 		xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
@@ -170,6 +199,21 @@ public class ResourceItemService
 		xr.createDefaultSecurity(system, identityToken);
 		
 		xr.addResourceItemTypes(identityResourceType, null, DefaultClassifications.NoClassification.toString(), system, identityToken);
+		
+		ResourceItemData rid = new ResourceItemData();
+		rid.setResource(xr);
+		rid.setEffectiveFromDate(com.entityassist.RootEntity.getNow());
+		rid.setWarehouseCreatedTimestamp(com.entityassist.RootEntity.getNow());
+		rid.setEffectiveToDate(EndOfTime);
+		rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
+		rid.setResourceItemData("".getBytes());
+		rid.setActiveFlagID(activeFlag);
+		rid.setOriginalSourceSystemID(system);
+		rid.setSystemID(system);
+		rid.setEnterpriseID(system.getEnterpriseID());
+		rid.persist();
+		
+		rid.createDefaultSecurity(system, identityToken);
 		
 		return xr;
 	}

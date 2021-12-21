@@ -16,10 +16,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.pairing.Pair;
+import jakarta.cache.annotation.CacheRemove;
+import jakarta.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.*;
@@ -112,7 +113,19 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return foundPart;
 	}
 	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	@CacheResult(cacheName = "UsersList")
 	@Override
+	public List<IInvolvedParty<?, ?>> getAllUsers(ISystems<?, ?> system, UUID... identityToken)
+	{
+		return (List) new InvolvedParty().builder()
+		                                 .findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
+		                                 .getAll();
+	}
+	
+	@Override
+	@CacheRemove(cacheName = "UsersList")
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedParty<?, ?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken)
 	{
 		byte[] salt = System.getProperty("systemSalt") != null ? System.getProperty("systemSalt")
@@ -142,8 +155,8 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		                          .getCount() > 0;
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedParty<?, ?> createAdminAndCreatorUserForEnterprise(ISystems<?, ?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey)
 	{
@@ -183,7 +196,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 			
 			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(),
 					adminUserName, system, token);
-	
+			
 			addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, system, token);
 			adminUser.createDefaultSecurity(system, token);
 			administratorUser = adminUser;

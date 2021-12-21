@@ -79,26 +79,16 @@ public class InvolvedPartyXInvolvedPartyType
 		return this.id;
 	}
 	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public InvolvedPartyType getInvolvedPartyTypeID()
-	{
-		return this.involvedPartyTypeID;
-	}
-	
-	public List<InvolvedPartyXInvolvedPartyTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	@Override
 	public InvolvedPartyXInvolvedPartyType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
 	}
 	
 	public InvolvedPartyXInvolvedPartyType setInvolvedPartyID(InvolvedParty involvedPartyID)
@@ -107,10 +97,20 @@ public class InvolvedPartyXInvolvedPartyType
 		return this;
 	}
 	
+	public InvolvedPartyType getInvolvedPartyTypeID()
+	{
+		return this.involvedPartyTypeID;
+	}
+	
 	public InvolvedPartyXInvolvedPartyType setInvolvedPartyTypeID(InvolvedPartyType involvedPartyTypeID)
 	{
 		this.involvedPartyTypeID = involvedPartyTypeID;
 		return this;
+	}
+	
+	public List<InvolvedPartyXInvolvedPartyTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public InvolvedPartyXInvolvedPartyType setSecurities(List<InvolvedPartyXInvolvedPartyTypeSecurityToken> securities)

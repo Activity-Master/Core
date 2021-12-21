@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class ProductTypeQueryBuilder
 		extends QueryBuilderTable<ProductTypeQueryBuilder, ProductType, UUID>
-		implements IProductTypeQueryBuilder<ProductTypeQueryBuilder,ProductType>
+		implements IProductTypeQueryBuilder<ProductTypeQueryBuilder, ProductType>
 {
 
 }

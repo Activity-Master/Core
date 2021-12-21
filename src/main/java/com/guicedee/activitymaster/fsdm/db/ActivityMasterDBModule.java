@@ -31,29 +31,39 @@ public class ActivityMasterDBModule
 			System.setProperty("fsdm_integratedSecurity", "true");
 		}
 		TransactionManagerServices.getConfiguration()
-		                      //    .setAllowMultipleLrc(true)
+		                          .setAllowMultipleLrc(true)
 		                          .setAsynchronous2Pc(true)
 		                          .setDisableJmx(true)
 		                          .setMaxLogSizeInMb(20)
 		                          .setSkipCorruptedLogs(true)
-		                          .setWarnAboutZeroResourceTransaction(false);
+		                          .setWarnAboutZeroResourceTransaction(true);
 		
 		return new BTMConnectionBaseInfo()
 				.setEnableJdbc4ConnectionTest(true)
-				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "250")))
+				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "50")))
 				.setMinPoolSize(1)
 				.setPrefill(false)
+				
+				
+				.setShareTransactionConnections(true)
+				.setAllowLocalTransactions(true)
+				
+				
+				//.setXa(true)
+			//	.setClassName("com.microsoft.sqlserver.jdbc.SQLServerXADataSource")
+			//	.setDriverClass("com.microsoft.sqlserver.jdbc.SQLServerDriver")
+				
 				.setServerName(System.getProperty("fsdm_dbserver", "localhost"))
 				.setDatabaseName(System.getProperty("fsdm_dbname", "FSDM"))
-				.setInstanceName(System.getProperty("fsdm_dbinstance", ""))
-				.setShareTransactionConnections(true)
+			//	.setInstanceName(System.getProperty("fsdm_dbinstance", ""))
 				.setUsername(System.getProperty("fsdm_username", ""))
 				.setPassword(System.getProperty("fsdm_password", ""))
+				
 				.setUrl("jdbc:sqlserver://" + System.getProperty("fsdm_dbserver", "localhost") +
 				        ";DatabaseName=" + System.getProperty("fsdm_dbname", "FSDM")
 				        + ";integratedSecurity=" + System.getProperty("fsdm_integratedSecurity", "true") + ";")
+				
 				.setTransactionIsolation(BTMTransactionIsolation.READ_UNCOMMITTED.toString())
-			//	.setAllowLocalTransactions(true)
 				;
 	}
 	

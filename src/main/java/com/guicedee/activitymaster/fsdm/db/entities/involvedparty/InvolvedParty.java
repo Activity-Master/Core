@@ -55,7 +55,7 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class InvolvedParty
 		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, UUID>
-		implements IInvolvedParty<InvolvedParty,InvolvedPartyQueryBuilder>
+		implements IInvolvedParty<InvolvedParty, InvolvedPartyQueryBuilder>
 {
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
 	@Id
@@ -129,8 +129,8 @@ public class InvolvedParty
 	public UUID getSecurityIdentity()
 	{
 		IInvolvedPartyService<?> partyService = get(IInvolvedPartyService.class);
-		String value = this.findInvolvedPartyIdentificationType(NoClassification,IdentificationTypes.IdentificationTypeUUID, null, getSystemID(),true, true,
-				get(InvolvedPartySystem.class).getSystemToken(getEnterprise()))
+		String value = this.findInvolvedPartyIdentificationType(NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
+				                   get(InvolvedPartySystem.class).getSystemToken(getEnterprise()))
 		                   .orElseThrow()
 		                   .getValue();
 		return UUID.fromString(value);
@@ -179,21 +179,21 @@ public class InvolvedParty
 	@Override
 	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, InvolvedParty, InvolvedParty, UUID> newLink, InvolvedParty parent, InvolvedParty child, String value)
 	{
-		InvolvedPartyXInvolvedParty i= (InvolvedPartyXInvolvedParty) newLink;
+		InvolvedPartyXInvolvedParty i = (InvolvedPartyXInvolvedParty) newLink;
 		i.setParentInvolvedPartyID(parent);
 		i.setChildInvolvedPartyID(child);
 		i.setValue(Strings.nullToEmpty(value));
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		InvolvedPartyXClassification i = (InvolvedPartyXClassification) linkTable;
 		i.setInvolvedPartyID(this);
 	}
 	
 	@Override
-	public void configureInvolvedPartyIdentificationTypeAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IInvolvedPartyIdentificationType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureInvolvedPartyIdentificationTypeAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IInvolvedPartyIdentificationType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType i = (InvolvedPartyXInvolvedPartyIdentificationType) linkTable;
 		i.setInvolvedPartyID(primary);
@@ -203,7 +203,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureInvolvedPartyNameTypeAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IInvolvedPartyNameType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureInvolvedPartyNameTypeAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IInvolvedPartyNameType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		InvolvedPartyXInvolvedPartyNameType i = (InvolvedPartyXInvolvedPartyNameType) linkTable;
 		i.setInvolvedPartyID(primary);
@@ -213,7 +213,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureInvolvedPartyTypeAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IInvolvedPartyType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureInvolvedPartyTypeAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IInvolvedPartyType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		InvolvedPartyXInvolvedPartyType i = (InvolvedPartyXInvolvedPartyType) linkTable;
 		i.setInvolvedPartyID(primary);
@@ -223,7 +223,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureProductTypeLinkValue(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IProductType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
+	public void configureProductTypeLinkValue(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IProductType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
 	{
 		InvolvedPartyXProductType p = (InvolvedPartyXProductType) linkTable;
 		p.setInvolvedPartyID(primary);
@@ -234,7 +234,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureProductAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureProductAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		InvolvedPartyXProduct p = (InvolvedPartyXProduct) linkTable;
 		p.setInvolvedPartyID(primary);
@@ -244,7 +244,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		InvolvedPartyXResourceItem r = (InvolvedPartyXResourceItem) linkTable;
 		r.setInvolvedPartyID(primary);
@@ -254,7 +254,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureAddressLinkValue(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IAddress<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureAddressLinkValue(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IAddress<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		InvolvedPartyXAddress a = (InvolvedPartyXAddress) linkTable;
 		a.setInvolvedPartyID(primary);

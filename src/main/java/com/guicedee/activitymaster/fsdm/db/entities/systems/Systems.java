@@ -126,7 +126,7 @@ public class Systems
 	}
 	
 	
-	public void configureForClassification(SystemsXClassification classificationLink, ISystems<?,?> system)
+	public void configureForClassification(SystemsXClassification classificationLink, ISystems<?, ?> system)
 	{
 		classificationLink.setSystemID(this);
 	}
@@ -136,7 +136,7 @@ public class Systems
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
 		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(com.entityassist.RootEntity.getNow());
-		updateNow();
+		update();
 		return this;
 	}
 	
@@ -145,7 +145,7 @@ public class Systems
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
 		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-		updateNow();
+		update();
 		return this;
 	}
 	
@@ -177,44 +177,16 @@ public class Systems
 	}
 	
 	@Override
-	public String getName()
-	{
-		return name;
-	}
-	
-	@Override
-	public @NotNull @Size() String getDescription()
-	{
-		return description;
-	}
-	
-	public String getSystemHistoryName()
-	{
-		return systemHistoryName;
-	}
-	
-	@Override
-	public Enterprise getEnterpriseID()
-	{
-		return enterpriseID;
-	}
-	
-	public ActiveFlag getActiveFlagID()
-	{
-		return activeFlagID;
-	}
-	
-	@Override
-	public Systems setActiveFlagID(IActiveFlag<?,?> activeFlagID)
-	{
-		return setActiveFlagID((ActiveFlag) activeFlagID);
-	}
-	
-	@Override
 	public Systems setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	@Override
+	public String getName()
+	{
+		return name;
 	}
 	
 	@Override
@@ -225,10 +197,21 @@ public class Systems
 	}
 	
 	@Override
+	public @NotNull @Size() String getDescription()
+	{
+		return description;
+	}
+	
+	@Override
 	public Systems setDescription(@NotNull @Size() String description)
 	{
 		this.description = description;
 		return this;
+	}
+	
+	public String getSystemHistoryName()
+	{
+		return systemHistoryName;
 	}
 	
 	public Systems setSystemHistoryName(@NotNull String systemHistoryName)
@@ -237,10 +220,27 @@ public class Systems
 		return this;
 	}
 	
-	public Systems setEnterpriseID(IEnterprise<?,?> enterpriseID)
+	@Override
+	public Enterprise getEnterpriseID()
+	{
+		return enterpriseID;
+	}
+	
+	public Systems setEnterpriseID(IEnterprise<?, ?> enterpriseID)
 	{
 		this.enterpriseID = (Enterprise) enterpriseID;
 		return this;
+	}
+	
+	public ActiveFlag getActiveFlagID()
+	{
+		return activeFlagID;
+	}
+	
+	@Override
+	public Systems setActiveFlagID(IActiveFlag<?, ?> activeFlagID)
+	{
+		return setActiveFlagID((ActiveFlag) activeFlagID);
 	}
 	
 	public Systems setActiveFlagID(ActiveFlag activeFlagID)
@@ -250,9 +250,9 @@ public class Systems
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
-		SystemsXClassification.class.cast(linkTable)
+		((SystemsXClassification) linkTable)
 		                            .setSystemID(this);
 	}
 }

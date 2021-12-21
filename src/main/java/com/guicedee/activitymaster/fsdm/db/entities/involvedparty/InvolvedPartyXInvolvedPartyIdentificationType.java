@@ -1,11 +1,11 @@
 package com.guicedee.activitymaster.fsdm.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
-import jakarta.persistence.*;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -90,26 +90,16 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 		return this.id;
 	}
 	
-	public List<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public InvolvedPartyIdentificationType getInvolvedPartyIdentificationTypeID()
-	{
-		return this.involvedPartyIdentificationTypeID;
-	}
-	
 	@Override
 	public InvolvedPartyXInvolvedPartyIdentificationType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public InvolvedPartyXInvolvedPartyIdentificationType setSecurities(List<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken> securities)
@@ -118,10 +108,20 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 		return this;
 	}
 	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+	
 	public InvolvedPartyXInvolvedPartyIdentificationType setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
+	}
+	
+	public InvolvedPartyIdentificationType getInvolvedPartyIdentificationTypeID()
+	{
+		return this.involvedPartyIdentificationTypeID;
 	}
 	
 	public InvolvedPartyXInvolvedPartyIdentificationType setInvolvedPartyIdentificationTypeID(InvolvedPartyIdentificationType involvedPartyIdentificationTypeID)

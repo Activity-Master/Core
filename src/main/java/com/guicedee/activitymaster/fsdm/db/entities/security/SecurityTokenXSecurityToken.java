@@ -78,26 +78,26 @@ public class SecurityTokenXSecurityToken
 		return this.id;
 	}
 	
-	public SecurityToken getParentSecurityTokenID()
-	{
-		return this.parentSecurityTokenID;
-	}
-	
-	public SecurityToken getChildSecurityTokenID()
-	{
-		return this.childSecurityTokenID;
-	}
-	
 	public SecurityTokenXSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public SecurityToken getParentSecurityTokenID()
+	{
+		return this.parentSecurityTokenID;
+	}
+	
 	public SecurityTokenXSecurityToken setParentSecurityTokenID(SecurityToken parentSecurityTokenID)
 	{
 		this.parentSecurityTokenID = parentSecurityTokenID;
 		return this;
+	}
+	
+	public SecurityToken getChildSecurityTokenID()
+	{
+		return this.childSecurityTokenID;
 	}
 	
 	public SecurityTokenXSecurityToken setChildSecurityTokenID(SecurityToken childSecurityTokenID)

@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -13,6 +14,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,6 +70,7 @@ public class ProductService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IProduct<?, ?> createProduct(String productType, UUID key, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken)
 	{
 		
@@ -149,6 +152,7 @@ public class ProductService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IProductType<?, ?> createProductType(String productsType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
 		ProductType et = new ProductType();

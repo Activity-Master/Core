@@ -7,14 +7,13 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.DayPartsQueryBuilder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
@@ -39,7 +38,7 @@ public class DayParts extends BaseEntity<DayParts, DayPartsQueryBuilder, Integer
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Basic(optional = false)
 	@Column(nullable = false,
 	        name = "dayPartID")

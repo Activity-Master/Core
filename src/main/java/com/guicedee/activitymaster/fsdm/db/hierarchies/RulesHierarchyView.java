@@ -7,9 +7,7 @@ package com.guicedee.activitymaster.fsdm.db.hierarchies;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.fsdm.db.hierarchies.builders.RulesHierarchyViewQueryBuilder;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Immutable;
 
@@ -62,17 +60,13 @@ public class RulesHierarchyView
 			return false;
 		}
 		final RulesHierarchyView other = (RulesHierarchyView) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
 	
 	protected boolean canEqual(final Object other)

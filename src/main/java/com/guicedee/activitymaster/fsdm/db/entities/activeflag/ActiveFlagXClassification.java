@@ -53,6 +53,7 @@ public class ActiveFlagXClassification
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Systems systemID;
 	
 	@OneToMany(
@@ -76,26 +77,26 @@ public class ActiveFlagXClassification
 		return this.id;
 	}
 	
-	public Systems getSystemID()
-	{
-		return this.systemID;
-	}
-	
-	public List<ActiveFlagXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ActiveFlagXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public Systems getSystemID()
+	{
+		return this.systemID;
+	}
+	
 	public ActiveFlagXClassification setSystemID(Systems systemID)
 	{
 		this.systemID = systemID;
 		return this;
+	}
+	
+	public List<ActiveFlagXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ActiveFlagXClassification setSecurities(List<ActiveFlagXClassificationSecurityToken> securities)
@@ -135,6 +136,6 @@ public class ActiveFlagXClassification
 	@Override
 	public Classification getSecondary()
 	{
-		return (Classification) getClassificationID();
+		return getClassificationID();
 	}
 }

@@ -63,15 +63,15 @@ public class SystemsXClassificationSecurityToken
 		return this.id;
 	}
 	
-	public SystemsXClassification getBase()
-	{
-		return this.base;
-	}
-	
 	public SystemsXClassificationSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public SystemsXClassification getBase()
+	{
+		return this.base;
 	}
 	
 	public SystemsXClassificationSecurityToken setBase(SystemsXClassification base)
@@ -91,17 +91,13 @@ public class SystemsXClassificationSecurityToken
 			return false;
 		}
 		final SystemsXClassificationSecurityToken other = (SystemsXClassificationSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
 	
 	protected boolean canEqual(final Object other)

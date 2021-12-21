@@ -57,12 +57,14 @@ public class EventXEvent
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Event childEventID;
 	@JoinColumn(name = "ParentEventID",
 	            referencedColumnName = "EventID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Event parentEventID;
 	
 	public EventXEvent()
@@ -81,26 +83,16 @@ public class EventXEvent
 		return id;
 	}
 	
-	public List<EventXEventSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public Event getChildEventID()
-	{
-		return childEventID;
-	}
-	
-	public Event getParentEventID()
-	{
-		return parentEventID;
-	}
-	
 	@Override
 	public EventXEvent setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<EventXEventSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public EventXEvent setSecurities(List<EventXEventSecurityToken> securities)
@@ -109,10 +101,20 @@ public class EventXEvent
 		return this;
 	}
 	
+	public Event getChildEventID()
+	{
+		return childEventID;
+	}
+	
 	public EventXEvent setChildEventID(Event childEventID)
 	{
 		this.childEventID = childEventID;
 		return this;
+	}
+	
+	public Event getParentEventID()
+	{
+		return parentEventID;
 	}
 	
 	public EventXEvent setParentEventID(Event parentEventID)

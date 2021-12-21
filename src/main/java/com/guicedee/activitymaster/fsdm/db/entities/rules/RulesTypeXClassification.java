@@ -23,7 +23,8 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Rules", name = "RulesTypeXClassification")
 @XmlRootElement
 
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
@@ -73,26 +74,26 @@ public class RulesTypeXClassification
 		return this.id;
 	}
 	
-	public RulesType getRulesTypeID()
-	{
-		return this.rulesTypeID;
-	}
-	
-	public List<RulesTypeXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public RulesTypeXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public RulesType getRulesTypeID()
+	{
+		return this.rulesTypeID;
+	}
+	
 	public RulesTypeXClassification setRulesTypeID(RulesType rulesTypeID)
 	{
 		this.rulesTypeID = rulesTypeID;
 		return this;
+	}
+	
+	public List<RulesTypeXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public RulesTypeXClassification setSecurities(List<RulesTypeXClassificationSecurityToken> securities)

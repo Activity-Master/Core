@@ -49,7 +49,8 @@ public class ArrangementTypeXClassification
 	@Id
 	
 	@Column(nullable = false,
-	        name = "ArrangementTypeXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ArrangementTypeXClassificationID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@ManyToOne(optional = false,
@@ -57,6 +58,7 @@ public class ArrangementTypeXClassification
 	@JoinColumn(name = "ArrangementTypeID",
 	            referencedColumnName = "ArrangementTypeID",
 	            nullable = false)
+	
 	private ArrangementType arrangementID;
 	
 	@OneToMany(
@@ -81,16 +83,6 @@ public class ArrangementTypeXClassification
 		return this.id;
 	}
 	
-	public ArrangementType getArrangementTypeID()
-	{
-		return this.arrangementID;
-	}
-	
-	public List<ArrangementTypeXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	@Override
 	public ArrangementTypeXClassification setId(UUID id)
 	{
@@ -98,10 +90,20 @@ public class ArrangementTypeXClassification
 		return this;
 	}
 	
+	public ArrangementType getArrangementTypeID()
+	{
+		return this.arrangementID;
+	}
+	
 	public ArrangementTypeXClassification setArrangementTypeID(ArrangementType arrangementID)
 	{
 		this.arrangementID = arrangementID;
 		return this;
+	}
+	
+	public List<ArrangementTypeXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ArrangementTypeXClassification setSecurities(List<ArrangementTypeXClassificationSecurityToken> securities)

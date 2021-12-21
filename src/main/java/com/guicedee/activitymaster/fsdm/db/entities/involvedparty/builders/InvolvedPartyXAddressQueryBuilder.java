@@ -7,14 +7,14 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class InvolvedPartyXAddressQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, Address, InvolvedPartyXAddressQueryBuilder,
-						                                              InvolvedPartyXAddress, java.util.UUID>
+		InvolvedPartyXAddress, java.util.UUID>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXAddress, InvolvedParty> getPrimaryAttribute()
 	{
 		return InvolvedPartyXAddress_.involvedPartyID;
 	}
-
+	
 	@Override
 	public SingularAttribute<InvolvedPartyXAddress, Address> getSecondaryAttribute()
 	{

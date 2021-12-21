@@ -110,14 +110,20 @@ public class RulesType
 		return this.rulesXRulesTypeList;
 	}
 	
+	public RulesType setRulesXRulesTypeList(List<RulesXRulesType> rulesXRulesTypeList)
+	{
+		this.rulesXRulesTypeList = rulesXRulesTypeList;
+		return this;
+	}
+	
 	public List<RulesTypeSecurityToken> getSecurities()
 	{
 		return this.securities;
 	}
 	
-	public RulesType setRulesXRulesTypeList(List<RulesXRulesType> rulesXRulesTypeList)
+	public RulesType setSecurities(List<RulesTypeSecurityToken> securities)
 	{
-		this.rulesXRulesTypeList = rulesXRulesTypeList;
+		this.securities = securities;
 		return this;
 	}
 	
@@ -129,12 +135,6 @@ public class RulesType
 	public void setClassifications(List<RulesTypeXClassification> classifications)
 	{
 		this.classifications = classifications;
-	}
-	
-	public RulesType setSecurities(List<RulesTypeSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
 	}
 	
 	@Override
@@ -171,24 +171,17 @@ public class RulesType
 	}
 	
 	@Override
-	public @NotNull @Size(min = 1,
-	                      max = 200) String getName()
-	{
-		return this.name;
-	}
-	
-	@Override
-	public @NotNull @Size(min = 1,
-	                      max = 200) String getDescription()
-	{
-		return this.description;
-	}
-	
-	@Override
 	public RulesType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	@Override
+	public @NotNull @Size(min = 1,
+	                      max = 200) String getName()
+	{
+		return this.name;
 	}
 	
 	@Override
@@ -197,6 +190,13 @@ public class RulesType
 	{
 		this.name = name;
 		return this;
+	}
+	
+	@Override
+	public @NotNull @Size(min = 1,
+	                      max = 200) String getDescription()
+	{
+		return this.description;
 	}
 	
 	@Override

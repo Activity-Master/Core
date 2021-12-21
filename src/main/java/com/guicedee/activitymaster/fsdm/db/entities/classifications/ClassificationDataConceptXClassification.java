@@ -55,6 +55,7 @@ public class ClassificationDataConceptXClassification
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private ClassificationDataConcept classificationDataConceptID;
 	
 	public ClassificationDataConceptXClassification()
@@ -72,26 +73,26 @@ public class ClassificationDataConceptXClassification
 		return this.id;
 	}
 	
-	public List<ClassificationDataConceptXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public ClassificationDataConcept getClassificationDataConceptID()
-	{
-		return this.classificationDataConceptID;
-	}
-	
 	public ClassificationDataConceptXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public List<ClassificationDataConceptXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public ClassificationDataConceptXClassification setSecurities(List<ClassificationDataConceptXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public ClassificationDataConcept getClassificationDataConceptID()
+	{
+		return this.classificationDataConceptID;
 	}
 	
 	public ClassificationDataConceptXClassification setClassificationDataConceptID(ClassificationDataConcept classificationDataConceptID)
@@ -131,6 +132,6 @@ public class ClassificationDataConceptXClassification
 	@Override
 	public Classification getSecondary()
 	{
-		return (Classification) getClassificationID();
+		return getClassificationID();
 	}
 }

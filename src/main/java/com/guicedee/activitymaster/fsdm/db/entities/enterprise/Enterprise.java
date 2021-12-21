@@ -6,7 +6,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseNameDescriptionTable;
-import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementXClassification;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -41,7 +40,7 @@ import static jakarta.persistence.AccessType.*;
 public class Enterprise
 		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.util.UUID>
 		implements //IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise, IClassification<?,?>, Enterprise>,
-		           IEnterprise<Enterprise,EnterpriseQueryBuilder>
+		IEnterprise<Enterprise, EnterpriseQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -101,7 +100,7 @@ public class Enterprise
 	}
 	
 	//@Override
-	public void configureForClassification(EnterpriseXClassification classificationLink, ISystems<?,?> system)
+	public void configureForClassification(EnterpriseXClassification classificationLink, ISystems<?, ?> system)
 	{
 	
 	}
@@ -139,18 +138,6 @@ public class Enterprise
 	}
 	
 	@Override
-	public @NotNull String getName()
-	{
-		return name;
-	}
-	
-	@Override
-	public @NotNull String getDescription()
-	{
-		return description;
-	}
-	
-	@Override
 	public Enterprise setId(java.util.UUID id)
 	{
 		this.id = id;
@@ -158,10 +145,22 @@ public class Enterprise
 	}
 	
 	@Override
+	public @NotNull String getName()
+	{
+		return name;
+	}
+	
+	@Override
 	public Enterprise setName(@NotNull String name)
 	{
 		this.name = name;
 		return this;
+	}
+	
+	@Override
+	public @NotNull String getDescription()
+	{
+		return description;
 	}
 	
 	@Override
@@ -182,9 +181,15 @@ public class Enterprise
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		EnterpriseXClassification x = (EnterpriseXClassification) linkTable;
 		x.setEnterpriseID(this);
+	}
+	
+	@Override
+	public @NotNull boolean isFake()
+	{
+		return getId() == null;
 	}
 }

@@ -1,13 +1,11 @@
 package com.guicedee.activitymaster.fsdm.services.threads;
 
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemData;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.UUID;
 
@@ -32,7 +30,6 @@ public class StoreResourceItemThread
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void run()
 	{
 		ResourceItemData itemData = new ResourceItemData();

@@ -13,5 +13,5 @@ public class ActiveFlagSecurityTokenQueryBuilder
 	{
 		return ActiveFlagSecurityToken_.base;
 	}
-
+	
 }

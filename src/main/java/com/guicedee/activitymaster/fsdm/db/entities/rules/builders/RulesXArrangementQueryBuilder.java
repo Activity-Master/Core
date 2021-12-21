@@ -14,7 +14,7 @@ public class RulesXArrangementQueryBuilder
 	{
 		return RulesXArrangement_.rulesID;
 	}
-
+	
 	@Override
 	public SingularAttribute<RulesXArrangement, Arrangement> getSecondaryAttribute()
 	{

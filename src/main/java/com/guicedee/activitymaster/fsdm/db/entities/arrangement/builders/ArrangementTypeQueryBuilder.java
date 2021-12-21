@@ -7,8 +7,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType;
 import java.util.UUID;
 
 public class ArrangementTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<ArrangementTypeQueryBuilder,ArrangementType, UUID>
-		implements IArrangementTypesQueryBuilder<ArrangementTypeQueryBuilder,ArrangementType>
+		extends QueryBuilderSCDNameDescription<ArrangementTypeQueryBuilder, ArrangementType, UUID>
+		implements IArrangementTypesQueryBuilder<ArrangementTypeQueryBuilder, ArrangementType>
 {
 
 }

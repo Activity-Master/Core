@@ -54,10 +54,11 @@ public class ClassificationDataConcept
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
 	        name = "ClassificationDataConceptID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@Basic(optional = false,
@@ -68,7 +69,7 @@ public class ClassificationDataConcept
 	@Column(nullable = false,
 	        length = 100,
 	        name = "classificationDataConceptName")
-		private String name;
+	private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -77,27 +78,28 @@ public class ClassificationDataConcept
 	@Column(nullable = false,
 	        length = 1500,
 	        name = "ClassificationDataConceptDesc")
-		private String description;
+	private String description;
 	
 	@OneToMany(
 			mappedBy = "concept",
 			fetch = FetchType.LAZY)
-		private List<Classification> classificationList;
+	
+	private List<Classification> classificationList;
 	
 	@OneToMany(
 			mappedBy = "classificationDataConceptID",
 			fetch = FetchType.LAZY)
-		private List<ClassificationDataConceptXClassification> classifications;
+	private List<ClassificationDataConceptXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<ClassificationDataConceptSecurityToken> securities;
+	private List<ClassificationDataConceptSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "classificationDataConceptID",
 			fetch = FetchType.LAZY)
-		private List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList;
+	private List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList;
 	
 	public ClassificationDataConcept()
 	{
@@ -123,8 +125,8 @@ public class ClassificationDataConcept
 		return getName();
 	}
 	
-
-	public void configureForClassification(ClassificationDataConceptXClassification classificationLink, ISystems<?,?> system)
+	
+	public void configureForClassification(ClassificationDataConceptXClassification classificationLink, ISystems<?, ?> system)
 	{
 		classificationLink.setClassificationDataConceptID(this);
 	}
@@ -134,25 +136,15 @@ public class ClassificationDataConcept
 		return classificationList;
 	}
 	
-	public List<ClassificationDataConceptXClassification> getClassifications()
-	{
-		return classifications;
-	}
-	
-	public List<ClassificationDataConceptSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public List<ClassificationDataConceptXResourceItem> getClassificationDataConceptXResourceItemList()
-	{
-		return classificationDataConceptXResourceItemList;
-	}
-	
 	public ClassificationDataConcept setClassificationList(List<Classification> classificationList)
 	{
 		this.classificationList = classificationList;
 		return this;
+	}
+	
+	public List<ClassificationDataConceptXClassification> getClassifications()
+	{
+		return classifications;
 	}
 	
 	public ClassificationDataConcept setClassifications(List<ClassificationDataConceptXClassification> classifications)
@@ -161,10 +153,20 @@ public class ClassificationDataConcept
 		return this;
 	}
 	
+	public List<ClassificationDataConceptSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
 	public ClassificationDataConcept setSecurities(List<ClassificationDataConceptSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public List<ClassificationDataConceptXResourceItem> getClassificationDataConceptXResourceItemList()
+	{
+		return classificationDataConceptXResourceItemList;
 	}
 	
 	public ClassificationDataConcept setClassificationDataConceptXResourceItemList(List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList)
@@ -200,22 +202,16 @@ public class ClassificationDataConcept
 		return id;
 	}
 	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public @NotNull @Size(min = 1,
-	                      max = 1500) String getDescription()
-	{
-		return description;
-	}
-	
 	@Override
 	public ClassificationDataConcept setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public String getName()
+	{
+		return name;
 	}
 	
 	public ClassificationDataConcept setName(String name)
@@ -224,15 +220,21 @@ public class ClassificationDataConcept
 		return this;
 	}
 	
+	public @NotNull @Size(min = 1,
+	                      max = 1500) String getDescription()
+	{
+		return description;
+	}
+	
 	public ClassificationDataConcept setDescription(@NotNull @Size(min = 1,
 	                                                               max = 1500) String description)
 	{
 		this.description = description;
 		return this;
 	}
-
+	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, ClassificationDataConcept primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, ClassificationDataConcept primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		ClassificationDataConceptXResourceItem cdc = (ClassificationDataConceptXResourceItem) linkTable;
 		cdc.setClassificationDataConceptID(primary);

@@ -51,6 +51,7 @@ public class EnterpriseService
 		return new Enterprise();
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public Enterprise create(@NotNull String name, @NotNull String description)
 	{
 		Enterprise enterprise = new Enterprise();
@@ -298,6 +299,7 @@ public class EnterpriseService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = 9000)
 	public IEnterprise<?,?> startNewEnterprise(String enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier)
 	{
@@ -326,7 +328,6 @@ public class EnterpriseService
 		return enterprise;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
 	private Enterprise installEnterprise(String enterpriseName)
 	{
 		Enterprise enterprise = create(enterpriseName, enterpriseName);
@@ -336,6 +337,7 @@ public class EnterpriseService
 	}
 
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createNewEnterprise(@NotNull IEnterprise<?,?> enterprise)
 	{
 		GuiceContext.get(ActivityMasterConfiguration.class)
@@ -355,7 +357,7 @@ public class EnterpriseService
 		logProgress("System Configuration", "Done", 1);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void installSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		//then from classifications data service do both
@@ -377,6 +379,7 @@ public class EnterpriseService
 		}
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void performSystemInstall( IEnterprise<?,?> enterprise, IActivityMasterSystem<?> allSystem)
 	{
 		String nameC = cleanName(allSystem.getClass()
@@ -398,7 +401,7 @@ public class EnterpriseService
 		logProgress("Installed System", nameC, 1);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void createBaseSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Base Systems", "Initializing Base Systems");
@@ -414,7 +417,7 @@ public class EnterpriseService
 		}
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class, timeout = 30)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void createBase( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Core", "Initializing Core Systems");

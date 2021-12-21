@@ -21,7 +21,6 @@ class TimeLoaderThread implements Runnable
 	}
 
 	@Override
-//	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void run()
 	{
 		new TimeSystem().populateTransformationTables(date, -3);

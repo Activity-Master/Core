@@ -5,9 +5,9 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventTypeSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -22,67 +22,68 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Event",name = "EventTypesSecurityToken")
+@Table(schema = "Event", name = "EventTypesSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
 public class EventTypesSecurityToken
 		extends WarehouseSecurityTable<EventTypesSecurityToken, EventTypeSecurityTokenQueryBuilder, UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "EventTypesSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventTypesSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "EventTypesID",
-			referencedColumnName = "EventTypeID",
-			nullable = false)
+	            referencedColumnName = "EventTypeID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private EventType base;
-
+	
 	public EventTypesSecurityToken()
 	{
-
+	
 	}
-
+	
 	public EventTypesSecurityToken(UUID eventTypesSecurityTokenID)
 	{
 		this.id = eventTypesSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "EventTypesSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public EventType getBase()
-	{
-		return this.base;
-	}
-
+	
 	public EventTypesSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public EventType getBase()
+	{
+		return this.base;
+	}
+	
 	public EventTypesSecurityToken setBase(EventType base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -94,24 +95,20 @@ public class EventTypesSecurityToken
 			return false;
 		}
 		final EventTypesSecurityToken other = (EventTypesSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof EventTypesSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

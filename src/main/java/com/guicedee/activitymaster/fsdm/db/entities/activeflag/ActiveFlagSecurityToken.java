@@ -1,10 +1,8 @@
 package com.guicedee.activitymaster.fsdm.db.entities.activeflag;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders.ActiveFlagSecurityTokenQueryBuilder;
-
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -27,60 +25,62 @@ public class ActiveFlagSecurityToken
 		extends WarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "ActiveFlagSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ActiveFlagSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "SecurityTokenActiveFlagID",
-			referencedColumnName = "ActiveFlagID",
-			nullable = false)
+	            referencedColumnName = "ActiveFlagID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY,
-			cascade = CascadeType.ALL)
+	           fetch = FetchType.LAZY,
+	           cascade = CascadeType.ALL)
+	
 	private ActiveFlag base;
-
+	
 	public ActiveFlagSecurityToken()
 	{
-
+	
 	}
-
+	
 	public ActiveFlagSecurityToken(UUID activeFlagSecurityTokenID)
 	{
 		this.id = activeFlagSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "ActiveFlagSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public ActiveFlag getBase()
-	{
-		return this.base;
-	}
-
+	
 	public ActiveFlagSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public ActiveFlag getBase()
+	{
+		return this.base;
+	}
+	
 	public ActiveFlagSecurityToken setBase(ActiveFlag base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -92,24 +92,20 @@ public class ActiveFlagSecurityToken
 			return false;
 		}
 		final ActiveFlagSecurityToken other = (ActiveFlagSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof ActiveFlagSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

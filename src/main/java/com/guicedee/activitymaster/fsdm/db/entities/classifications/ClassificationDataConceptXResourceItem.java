@@ -52,6 +52,7 @@ public class ClassificationDataConceptXResourceItem
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private ClassificationDataConcept classificationDataConceptID;
 	
 	
@@ -60,6 +61,7 @@ public class ClassificationDataConceptXResourceItem
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private ResourceItem resourceItemID;
 	
 	@OneToMany(
@@ -82,25 +84,15 @@ public class ClassificationDataConceptXResourceItem
 		return this.id;
 	}
 	
-	public ClassificationDataConcept getClassificationDataConceptID()
-	{
-		return this.classificationDataConceptID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
-	}
-	
-	public List<ClassificationDataConceptXResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ClassificationDataConceptXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public ClassificationDataConcept getClassificationDataConceptID()
+	{
+		return this.classificationDataConceptID;
 	}
 	
 	public ClassificationDataConceptXResourceItem setClassificationDataConceptID(ClassificationDataConcept classificationDataConceptID)
@@ -109,10 +101,20 @@ public class ClassificationDataConceptXResourceItem
 		return this;
 	}
 	
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
+	}
+	
 	public ClassificationDataConceptXResourceItem setResourceItemID(ResourceItem resourceItemID)
 	{
 		this.resourceItemID = resourceItemID;
 		return this;
+	}
+	
+	public List<ClassificationDataConceptXResourceItemSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ClassificationDataConceptXResourceItem setSecurities(List<ClassificationDataConceptXResourceItemSecurityToken> securities)

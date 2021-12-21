@@ -97,15 +97,15 @@ public class ResourceItemType
 		return securities;
 	}
 	
-	public List<ResourceItemXResourceItemType> getInvolvedPartyXResourceItemTypeList()
-	{
-		return involvedPartyXResourceItemTypeList;
-	}
-	
 	public ResourceItemType setSecurities(List<ResourceItemTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public List<ResourceItemXResourceItemType> getInvolvedPartyXResourceItemTypeList()
+	{
+		return involvedPartyXResourceItemTypeList;
 	}
 	
 	public ResourceItemType setInvolvedPartyXResourceItemTypeList(List<ResourceItemXResourceItemType> involvedPartyXResourceItemTypeList)
@@ -148,18 +148,6 @@ public class ResourceItemType
 	}
 	
 	@Override
-	public String getName()
-	{
-		return name;
-	}
-	
-	@Override
-	public @NotNull String getDescription()
-	{
-		return description;
-	}
-	
-	@Override
 	public ResourceItemType setId(UUID id)
 	{
 		this.id = id;
@@ -167,10 +155,22 @@ public class ResourceItemType
 	}
 	
 	@Override
+	public String getName()
+	{
+		return name;
+	}
+	
+	@Override
 	public ResourceItemType setName(String name)
 	{
 		this.name = name;
 		return this;
+	}
+	
+	@Override
+	public @NotNull String getDescription()
+	{
+		return description;
 	}
 	
 	@Override

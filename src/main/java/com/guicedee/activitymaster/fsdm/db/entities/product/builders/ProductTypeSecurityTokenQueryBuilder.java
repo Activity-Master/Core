@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.product.builders;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductTypeSecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductTypeSecurityToken_;
-
 import jakarta.persistence.metamodel.Attribute;
 
 public class ProductTypeSecurityTokenQueryBuilder

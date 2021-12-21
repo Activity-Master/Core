@@ -18,14 +18,14 @@ public class ResourceItemQueryBuilder
 		implements IQueryBuilderClassifications<ResourceItemQueryBuilder, ResourceItem, UUID>,
 		           IResourceItemQueryBuilder<ResourceItemQueryBuilder, ResourceItem>
 {
-
+	
 	public @NotNull ResourceItemQueryBuilder withValue(String value)
 	{
 		where(ResourceItem_.resourceItemDataType, Equals, value);
 		return this;
 	}
 	
-	public ResourceItemQueryBuilder withType(String type,String typeValue, ISystems<?,?> system, UUID...identityToken)
+	public ResourceItemQueryBuilder withType(String type, String typeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		

@@ -19,16 +19,18 @@ import java.util.UUID;
  * @param <J> the type parameter
  * @param <E> the type parameter
  * @param <I> the type parameter
- *
  * @author Marc Magon
  */
-public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P,?,UUID>,
-		S extends WarehouseBaseTable<S,?, UUID>,
+public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P, ?, UUID>,
+		S extends WarehouseBaseTable<S, ?, UUID>,
 		J extends QueryBuilderRelationship<P, S, J, E, I>,
 		E extends WarehouseRelationshipTable<P, S, E, J, I>,
 		I extends UUID>
 		extends QueryBuilderTable<J, E, I>
-		implements IQueryBuilderRelationships<J,E,P,S,I>
+		implements IQueryBuilderRelationships<J, E, P, S, I>
 {
+	public QueryBuilderRelationship()
+	{
 
+	}
 }

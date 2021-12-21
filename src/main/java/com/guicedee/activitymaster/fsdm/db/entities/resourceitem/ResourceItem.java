@@ -6,8 +6,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWare
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
@@ -136,7 +135,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public IResourceItem<?,?> updateDataTypeValue(String newValue)
+	public IResourceItem<?, ?> updateDataTypeValue(String newValue)
 	{
 		setResourceItemDataType(newValue);
 		builder().find(getId())
@@ -164,7 +163,16 @@ public class ResourceItem
 			          .log(Level.FINE, "No resource item data exists");
 			return new byte[]{};
 		}
-		
+	}
+	
+	@Override
+	public Optional<IResourceData<?, ?>> getDataRow(UUID... identityToken)
+	{
+		return (Optional) new ResourceItemData().builder()
+		                                        .inActiveRange()
+		                                        .inDateRange()
+		                                        .where(ResourceItemData_.resource, Equals, this)
+		                                        .get();
 	}
 	
 	/**
@@ -174,11 +182,12 @@ public class ResourceItem
 	 * @param data
 	 * @return
 	 */
-	private byte[] zip(byte[] data)
+	byte[] zip(byte[] data)
 	{
 		if ("true".equals(System.getProperty("encrypt", "true")))
 		{
-			data = new Passwords().integerEncrypt(data).getBytes();
+			data = new Passwords().integerEncrypt(data)
+			                      .getBytes();
 		}
 		
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -200,14 +209,14 @@ public class ResourceItem
 	 * @param data
 	 * @return
 	 */
-	private byte[] unzip(byte[] data)
+	byte[] unzip(byte[] data)
 	{
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(data);
 		     GzipCompressorInputStream archive = new GzipCompressorInputStream(bais);
 		     ByteArrayOutputStream output = new ByteArrayOutputStream())
 		{
 			IOUtils.copy(archive, output);
-			byte[] outcome =output.toByteArray();
+			byte[] outcome = output.toByteArray();
 			if ("true".equals(System.getProperty("encrypt", "true")))
 			{
 				outcome = new Passwords().integerDecrypt(new String(outcome));
@@ -229,8 +238,10 @@ public class ResourceItem
 		Optional<ResourceItemData> d
 				= new ResourceItemData().builder()
 				                        .inActiveRange()
-				                        .inDateRange()
+				                    //    .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
+				                        .latestFirst()
+				                        .setReturnFirst(true)
 				                        .get();
 		if (d.isPresent())
 		{
@@ -239,11 +250,11 @@ public class ResourceItem
 			{
 				throw new ResourceItemException("Cannot create a resource item that has no data?");
 			}
-			if(data.length < 4096)
+			if (data.length < 4096)
 			{
 				boolean noUpdate = new ResourceItemData().builder()
 				                                         .inActiveRange()
-				                                         .inDateRange()
+				                                  //       .inDateRange()
 				                                         .where(ResourceItemData_.resourceItemData, Equals, data)
 				                                         .where(ResourceItemData_.resource, Equals, this)
 				                                         .getCount() > 0;
@@ -255,24 +266,11 @@ public class ResourceItem
 				}
 			}
 			rid.setResourceItemData(data);
-			rid.updateNow();
+			rid.update();
 		}
 		else
 		{
-			ResourceItemData rid = new ResourceItemData();
-			rid.setResource(this);
-			rid.setEffectiveFromDate(com.entityassist.RootEntity.getNow());
-			rid.setWarehouseCreatedTimestamp(com.entityassist.RootEntity.getNow());
-			rid.setEffectiveToDate(EndOfTime);
-			rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
-			rid.setResourceItemData(data);
-			rid.setSystemID(system);
-			rid.setActiveFlagID(rid.getSystemID()
-			                       .getActiveFlagID());
-			rid.setOriginalSourceSystemID(system);
-			rid.setEnterpriseID(system.getEnterpriseID());
-			
-			rid.persist();
+			throw new ResourceItemException("No resource item data found for this resource item - " + getId());
 		}
 	}
 	
@@ -284,21 +282,11 @@ public class ResourceItem
 		Optional<ResourceItemData> d
 				= new ResourceItemData().builder()
 				                        .inActiveRange()
-				                        .inDateRange()
+				                       // .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
+				                        .latestFirst()
+				                        .setReturnFirst(true)
 				                        .get();
-		
-		Optional<ResourceItemData> resourceItemData1 = new ResourceItemData().builder()
-		                                                                     .inActiveRange()
-		                                                                     .inDateRange()
-		                                                                     .where(ResourceItemData_.resourceItemData, Equals, data)
-		                                                                     .where(ResourceItemData_.resource, Equals, this)
-		                                                                     .get();
-		if (resourceItemData1.isPresent())
-		{
-			//Identical resource data, no update to occur
-			return;
-		}
 		
 		if (d.isPresent())
 		{
@@ -352,15 +340,15 @@ public class ResourceItem
 		return this.id;
 	}
 	
-	public @Size(max = 150) String getResourceItemDataType()
-	{
-		return this.resourceItemDataType;
-	}
-	
 	public ResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public @Size(max = 150) String getResourceItemDataType()
+	{
+		return this.resourceItemDataType;
 	}
 	
 	public ResourceItem setResourceItemDataType(@Size(max = 150) String resourceItemDataType)

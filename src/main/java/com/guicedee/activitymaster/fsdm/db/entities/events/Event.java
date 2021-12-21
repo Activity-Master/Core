@@ -53,7 +53,7 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class Event
 		extends WarehouseTable<Event, EventQueryBuilder, UUID>
-		implements IEvent<Event,EventQueryBuilder>
+		implements IEvent<Event, EventQueryBuilder>
 {
 	
 	@Serial
@@ -73,53 +73,54 @@ public class Event
 	
 	@Column(nullable = false,
 	        name = "EventID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXClassification> classifications;
+	private List<EventXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXInvolvedParty> parties;
+	private List<EventXInvolvedParty> parties;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXArrangement> arrangements;
+	private List<EventXArrangement> arrangements;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXResourceItem> resources;
+	private List<EventXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXAddress> addresses;
+	private List<EventXAddress> addresses;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<EventSecurityToken> securities;
+	private List<EventSecurityToken> securities;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXProduct> products;
+	private List<EventXProduct> products;
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXGeography> geographies;
+	private List<EventXGeography> geographies;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXEventType> eventTypes;
+	private List<EventXEventType> eventTypes;
 	
 	@OneToMany(
 			mappedBy = "eventID",
 			fetch = FetchType.LAZY)
-		private List<EventXRules> rules;
+	private List<EventXRules> rules;
 	
 	public Event()
 	{
@@ -169,50 +170,15 @@ public class Event
 		return this.classifications;
 	}
 	
-	public List<EventXInvolvedParty> getParties()
-	{
-		return this.parties;
-	}
-	
-	public List<EventXArrangement> getArrangements()
-	{
-		return this.arrangements;
-	}
-	
-	public List<EventXResourceItem> getResources()
-	{
-		return this.resources;
-	}
-	
-	public List<EventXAddress> getAddresses()
-	{
-		return this.addresses;
-	}
-	
-	public List<EventSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public List<EventXProduct> getProducts()
-	{
-		return this.products;
-	}
-	
-	public List<EventXGeography> getGeographies()
-	{
-		return this.geographies;
-	}
-	
-	public List<EventXEventType> getEventTypes()
-	{
-		return this.eventTypes;
-	}
-	
 	public Event setClassifications(List<EventXClassification> classifications)
 	{
 		this.classifications = classifications;
 		return this;
+	}
+	
+	public List<EventXInvolvedParty> getParties()
+	{
+		return this.parties;
 	}
 	
 	public Event setParties(List<EventXInvolvedParty> parties)
@@ -221,10 +187,20 @@ public class Event
 		return this;
 	}
 	
+	public List<EventXArrangement> getArrangements()
+	{
+		return this.arrangements;
+	}
+	
 	public Event setArrangements(List<EventXArrangement> arrangements)
 	{
 		this.arrangements = arrangements;
 		return this;
+	}
+	
+	public List<EventXResourceItem> getResources()
+	{
+		return this.resources;
 	}
 	
 	public Event setResources(List<EventXResourceItem> resources)
@@ -233,10 +209,20 @@ public class Event
 		return this;
 	}
 	
+	public List<EventXAddress> getAddresses()
+	{
+		return this.addresses;
+	}
+	
 	public Event setAddresses(List<EventXAddress> addresses)
 	{
 		this.addresses = addresses;
 		return this;
+	}
+	
+	public List<EventSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public Event setSecurities(List<EventSecurityToken> securities)
@@ -245,16 +231,31 @@ public class Event
 		return this;
 	}
 	
+	public List<EventXProduct> getProducts()
+	{
+		return this.products;
+	}
+	
 	public Event setProducts(List<EventXProduct> products)
 	{
 		this.products = products;
 		return this;
 	}
 	
+	public List<EventXGeography> getGeographies()
+	{
+		return this.geographies;
+	}
+	
 	public Event setGeographies(List<EventXGeography> geographies)
 	{
 		this.geographies = geographies;
 		return this;
+	}
+	
+	public List<EventXEventType> getEventTypes()
+	{
+		return this.eventTypes;
 	}
 	
 	public Event setEventTypes(List<EventXEventType> eventTypes)
@@ -304,7 +305,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureAddressLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IAddress<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureAddressLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IAddress<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		EventXAddress e = (EventXAddress) linkTable;
 		e.setEventID(primary);
@@ -314,7 +315,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Event primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Event primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		EventXArrangement e = (EventXArrangement) linkTable;
 		e.setEventID(primary);
@@ -324,7 +325,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		EventXClassification e = (EventXClassification) linkTable;
 		e.setEventID(this);
@@ -332,7 +333,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureEventTypeLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IEventType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
+	public void configureEventTypeLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IEventType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
 	{
 		EventXEventType e = (EventXEventType) linkTable;
 		e.setEventID(primary);
@@ -342,7 +343,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Event primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Event primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		EventXGeography e = (EventXGeography) linkTable;
 		e.setEventID(primary);
@@ -353,7 +354,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureInvolvedPartyAddable(IWarehouseRelationshipTable linkTable, Event primary, IInvolvedParty<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureInvolvedPartyAddable(IWarehouseRelationshipTable linkTable, Event primary, IInvolvedParty<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		EventXInvolvedParty e = (EventXInvolvedParty) linkTable;
 		e.setEventID(primary);
@@ -363,7 +364,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		EventXProduct product = (EventXProduct) linkTable;
 		product.setEventID(primary);
@@ -374,7 +375,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Event primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Event primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		EventXResourceItem e = (EventXResourceItem) linkTable;
 		e.setEventID(primary);
@@ -385,7 +386,7 @@ public class Event
 	}
 	
 	@Override
-	public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Event primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Event primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		EventXRules e = (EventXRules) linkTable;
 		e.setEventID(primary);

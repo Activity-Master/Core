@@ -52,6 +52,7 @@ public class ArrangementXInvolvedParty
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Arrangement arrangementID;
 	
 	@JoinColumn(name = "InvolvedPartyID",
@@ -59,6 +60,7 @@ public class ArrangementXInvolvedParty
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private InvolvedParty involvedPartyID;
 	
 	@OneToMany(
@@ -81,25 +83,15 @@ public class ArrangementXInvolvedParty
 		return this.id;
 	}
 	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
-	}
-	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public List<ArrangementXInvolvedPartySecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXInvolvedParty setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public Arrangement getArrangementID()
+	{
+		return this.arrangementID;
 	}
 	
 	public ArrangementXInvolvedParty setArrangementID(Arrangement arrangementID)
@@ -108,10 +100,20 @@ public class ArrangementXInvolvedParty
 		return this;
 	}
 	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+	
 	public ArrangementXInvolvedParty setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
+	}
+	
+	public List<ArrangementXInvolvedPartySecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ArrangementXInvolvedParty setSecurities(List<ArrangementXInvolvedPartySecurityToken> securities)

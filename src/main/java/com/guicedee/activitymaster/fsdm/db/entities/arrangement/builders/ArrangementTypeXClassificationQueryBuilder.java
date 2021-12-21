@@ -17,7 +17,7 @@ public class ArrangementTypeXClassificationQueryBuilder
 	}
 	
 	@Override
-	public  SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
+	public SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
 	{
 		return ArrangementTypeXClassification_.classificationID;
 	}

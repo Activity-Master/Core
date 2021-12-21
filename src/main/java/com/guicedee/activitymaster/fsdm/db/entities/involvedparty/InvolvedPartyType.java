@@ -97,15 +97,15 @@ public class InvolvedPartyType
 		return securities;
 	}
 	
-	public List<InvolvedPartyXInvolvedPartyType> getInvolvedPartyXInvolvedPartyTypeList()
-	{
-		return involvedPartyXInvolvedPartyTypeList;
-	}
-	
 	public InvolvedPartyType setSecurities(List<InvolvedPartyTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public List<InvolvedPartyXInvolvedPartyType> getInvolvedPartyXInvolvedPartyTypeList()
+	{
+		return involvedPartyXInvolvedPartyTypeList;
 	}
 	
 	public InvolvedPartyType setInvolvedPartyXInvolvedPartyTypeList(List<InvolvedPartyXInvolvedPartyType> involvedPartyXInvolvedPartyTypeList)
@@ -148,18 +148,6 @@ public class InvolvedPartyType
 	}
 	
 	@Override
-	public String getName()
-	{
-		return name;
-	}
-	
-	@Override
-	public @NotNull String getDescription()
-	{
-		return description;
-	}
-	
-	@Override
 	public InvolvedPartyType setId(UUID id)
 	{
 		this.id = id;
@@ -167,10 +155,22 @@ public class InvolvedPartyType
 	}
 	
 	@Override
+	public String getName()
+	{
+		return name;
+	}
+	
+	@Override
 	public InvolvedPartyType setName(String name)
 	{
 		this.name = name;
 		return this;
+	}
+	
+	@Override
+	public @NotNull String getDescription()
+	{
+		return description;
 	}
 	
 	@Override

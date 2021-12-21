@@ -19,7 +19,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Event",name = "EventXInvolvedParty")
+@Table(schema = "Event", name = "EventXInvolvedParty")
 @XmlRootElement
 
 @Access(FIELD)
@@ -31,92 +31,94 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class EventXInvolvedParty
 		extends WarehouseClassificationRelationshipTable<Event,
-				                                                InvolvedParty,
-				                                                EventXInvolvedParty,
-				                                                EventXInvolvedPartyQueryBuilder,
-				                                                UUID>
+		InvolvedParty,
+		EventXInvolvedParty,
+		EventXInvolvedPartyQueryBuilder,
+		UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "EventXInvolvedPartyID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventXInvolvedPartyID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "EventID",
-			referencedColumnName = "EventID",
-			nullable = false)
+	            referencedColumnName = "EventID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
 	@JoinColumn(name = "InvolvedPartyID",
-			referencedColumnName = "InvolvedPartyID",
-			nullable = false)
+	            referencedColumnName = "InvolvedPartyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private InvolvedParty involvedPartyID;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<EventXInvolvedPartySecurityToken> securities;
-
+	
 	public EventXInvolvedParty()
 	{
-
+	
 	}
-
+	
 	public EventXInvolvedParty(UUID eventXInvolvedPartyID)
 	{
 		this.id = eventXInvolvedPartyID;
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-
-	public List<EventXInvolvedPartySecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
+	
 	public EventXInvolvedParty setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+	
 	public EventXInvolvedParty setEventID(Event eventID)
 	{
 		this.eventID = eventID;
 		return this;
 	}
-
+	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+	
 	public EventXInvolvedParty setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
 	}
-
+	
+	public List<EventXInvolvedPartySecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public EventXInvolvedParty setSecurities(List<EventXInvolvedPartySecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -131,19 +133,19 @@ public class EventXInvolvedParty
 		EventXInvolvedParty that = (EventXInvolvedParty) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public Event getPrimary()
 	{
 		return getEventID();
 	}
-
+	
 	@Override
 	public InvolvedParty getSecondary()
 	{

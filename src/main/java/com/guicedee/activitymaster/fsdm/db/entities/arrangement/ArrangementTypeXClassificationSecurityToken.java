@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementTypeXClassificationSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -31,9 +31,10 @@ public class ArrangementTypeXClassificationSecurityToken
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-	        name = "ArrangementTypeXClassificationSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ArrangementTypeXClassificationSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@JoinColumn(name = "ArrangementTypeXClassificationID",
@@ -66,16 +67,16 @@ public class ArrangementTypeXClassificationSecurityToken
 		return this.id;
 	}
 	
-	public ArrangementTypeXClassification getBase()
-	{
-		return this.base;
-	}
-	
 	@Override
 	public ArrangementTypeXClassificationSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public ArrangementTypeXClassification getBase()
+	{
+		return this.base;
 	}
 	
 	public ArrangementTypeXClassificationSecurityToken setBase(ArrangementTypeXClassification base)
@@ -96,17 +97,13 @@ public class ArrangementTypeXClassificationSecurityToken
 			return false;
 		}
 		final ArrangementTypeXClassificationSecurityToken other = (ArrangementTypeXClassificationSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
 	
 	protected boolean canEqual(final Object other)

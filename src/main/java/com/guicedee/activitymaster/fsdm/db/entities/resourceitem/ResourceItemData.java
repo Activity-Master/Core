@@ -21,12 +21,12 @@ import static jakarta.persistence.AccessType.*;
  */
 @Entity
 @Table(schema = "Resource",
-		name = "ResourceItemData")
+       name = "ResourceItemData")
 @XmlRootElement
 @Access(FIELD)
 public class ResourceItemData
 		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, UUID>
-		implements IResourceData<ResourceItemData,ResourceItemDataQueryBuilder>
+		implements IResourceData<ResourceItemData, ResourceItemDataQueryBuilder>
 {
 	
 	@Serial
@@ -74,15 +74,15 @@ public class ResourceItemData
 		return securities;
 	}
 	
-	public List<ResourceItemDataXClassification> getClassifications()
-	{
-		return classifications;
-	}
-	
 	public ResourceItemData setSecurities(List<ResourceItemDataSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public List<ResourceItemDataXClassification> getClassifications()
+	{
+		return classifications;
 	}
 	
 	public ResourceItemData setClassifications(List<ResourceItemDataXClassification> classifications)
@@ -124,16 +124,6 @@ public class ResourceItemData
 		return id;
 	}
 	
-	public byte[] getResourceItemData()
-	{
-		return resourceItemData;
-	}
-	
-	public ResourceItem getResource()
-	{
-		return resource;
-	}
-	
 	@Override
 	public ResourceItemData setId(UUID id)
 	{
@@ -141,10 +131,21 @@ public class ResourceItemData
 		return this;
 	}
 	
+	@Override
+	public byte[] getResourceItemData()
+	{
+		return getResource().unzip(resourceItemData);
+	}
+	
 	public ResourceItemData setResourceItemData(byte[] resourceItemData)
 	{
 		this.resourceItemData = resourceItemData;
 		return this;
+	}
+	
+	public ResourceItem getResource()
+	{
+		return resource;
 	}
 	
 	public ResourceItemData setResource(ResourceItem resource)
@@ -154,7 +155,7 @@ public class ResourceItemData
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 	
 	}

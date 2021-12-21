@@ -54,6 +54,7 @@ public class EventXRules
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
 	@JoinColumn(name = "RulesID",
 	            referencedColumnName = "RulesID",
@@ -71,25 +72,10 @@ public class EventXRules
 	{
 		this.id = eventXRulesID;
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
-	}
-	
-	public List<EventXRulesSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
 	}
 	
 	public EventXRules setId(UUID id)
@@ -98,16 +84,31 @@ public class EventXRules
 		return this;
 	}
 	
+	public List<EventXRulesSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public EventXRules setSecurities(List<EventXRulesSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
 	
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+	
 	public EventXRules setEventID(Event eventID)
 	{
 		this.eventID = eventID;
 		return this;
+	}
+	
+	public Rules getRulesID()
+	{
+		return this.rulesID;
 	}
 	
 	public EventXRules setRulesID(Rules resourceItemID)

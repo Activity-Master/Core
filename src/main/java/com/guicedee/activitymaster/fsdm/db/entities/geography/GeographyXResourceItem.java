@@ -86,25 +86,15 @@ public class GeographyXResourceItem
 		return this.id;
 	}
 	
-	public List<GeographyXResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Geography getGeographyID()
-	{
-		return this.geographyID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
-	}
-	
 	public GeographyXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<GeographyXResourceItemSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public GeographyXResourceItem setSecurities(List<GeographyXResourceItemSecurityToken> securities)
@@ -113,10 +103,20 @@ public class GeographyXResourceItem
 		return this;
 	}
 	
+	public Geography getGeographyID()
+	{
+		return this.geographyID;
+	}
+	
 	public GeographyXResourceItem setGeographyID(Geography geographyID)
 	{
 		this.geographyID = geographyID;
 		return this;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
 	}
 	
 	public GeographyXResourceItem setResourceItemID(ResourceItem resourceItemID)

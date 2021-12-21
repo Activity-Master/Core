@@ -79,25 +79,15 @@ public class RulesXInvolvedParty
 		return this.id;
 	}
 	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
-	}
-	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public List<RulesXInvolvedPartySecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public RulesXInvolvedParty setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public Rules getRulesID()
+	{
+		return this.rulesID;
 	}
 	
 	public RulesXInvolvedParty setRulesID(Rules RulesID)
@@ -106,10 +96,20 @@ public class RulesXInvolvedParty
 		return this;
 	}
 	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+	
 	public RulesXInvolvedParty setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
+	}
+	
+	public List<RulesXInvolvedPartySecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public RulesXInvolvedParty setSecurities(List<RulesXInvolvedPartySecurityToken> securities)

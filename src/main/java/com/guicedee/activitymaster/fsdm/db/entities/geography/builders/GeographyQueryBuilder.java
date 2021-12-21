@@ -13,14 +13,16 @@ import static com.entityassist.enumerations.Operand.*;
 
 public class GeographyQueryBuilder
 		extends QueryBuilderSCDNameDescription<GeographyQueryBuilder, Geography, java.util.UUID>
-		implements IGeographyQueryBuilder<GeographyQueryBuilder,Geography>
+		implements IGeographyQueryBuilder<GeographyQueryBuilder, Geography>
 {
-
+	
 	@jakarta.validation.constraints.NotNull
-	public GeographyQueryBuilder withParent(IGeography<?,?> parent, @Null String value)
+	public GeographyQueryBuilder withParent(IGeography<?, ?> parent, @Null String value)
 	{
-		if(parent == null)
+		if (parent == null)
+		{
 			return this;
+		}
 		JoinExpression joinExpression = new JoinExpression();
 		GeographyXGeographyQueryBuilder builder =
 				new GeographyXGeography()
@@ -32,13 +34,13 @@ public class GeographyQueryBuilder
 		{
 			builder.where(GeographyXClassification_.value, Equals, value);
 		}
-
+		
 		join(Geography_.geographyXGeographyList,
-		     builder,
-		     JoinType.INNER, joinExpression);
+				builder,
+				JoinType.INNER, joinExpression);
 		return this;
 	}
-
+	
 	public GeographyQueryBuilder withGeoNameID(String id)
 	{
 		where(Geography_.originalSourceSystemUniqueID, Equals, id);

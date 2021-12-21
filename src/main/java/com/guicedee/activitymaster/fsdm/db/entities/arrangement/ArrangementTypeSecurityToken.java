@@ -7,7 +7,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementTypeSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -23,7 +22,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Arrangement",name = "ArrangementTypeSecurityToken")
+@Table(schema = "Arrangement", name = "ArrangementTypeSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
@@ -31,60 +30,61 @@ public class ArrangementTypeSecurityToken
 		extends WarehouseSecurityTable<ArrangementTypeSecurityToken, ArrangementTypeSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "ArrangementTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ArrangementTypeSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "ArrangementTypeID",
-			referencedColumnName = "ArrangementTypeID",
-			nullable = false)
+	            referencedColumnName = "ArrangementTypeID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private ArrangementType base;
-
+	
 	public ArrangementTypeSecurityToken()
 	{
-
+	
 	}
-
+	
 	public ArrangementTypeSecurityToken(UUID arrangementTypeSecurityTokenID)
 	{
 		this.id = arrangementTypeSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "ArrangementTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public ArrangementType getBase()
-	{
-		return this.base;
-	}
-
+	
 	public ArrangementTypeSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public ArrangementType getBase()
+	{
+		return this.base;
+	}
+	
 	public ArrangementTypeSecurityToken setBase(ArrangementType base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -96,24 +96,20 @@ public class ArrangementTypeSecurityToken
 			return false;
 		}
 		final ArrangementTypeSecurityToken other = (ArrangementTypeSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof ArrangementTypeSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

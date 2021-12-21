@@ -75,26 +75,26 @@ public class SecurityTokenXClassification
 		return this.id;
 	}
 	
-	public SecurityToken getSecurityTokenID()
-	{
-		return this.securityTokenID;
-	}
-	
-	public List<SecurityTokenXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public SecurityTokenXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public SecurityToken getSecurityTokenID()
+	{
+		return this.securityTokenID;
+	}
+	
 	public SecurityTokenXClassification setSecurityTokenID(SecurityToken securityTokenID)
 	{
 		this.securityTokenID = securityTokenID;
 		return this;
+	}
+	
+	public List<SecurityTokenXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public SecurityTokenXClassification setSecurities(List<SecurityTokenXClassificationSecurityToken> securities)

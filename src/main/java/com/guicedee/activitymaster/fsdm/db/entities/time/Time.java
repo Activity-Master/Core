@@ -8,12 +8,11 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.TimeQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.*;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,7 +22,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "Time",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -32,52 +31,50 @@ public class Time
 		extends BaseEntity<Time, TimeQueryBuilder, TimePK>
 		implements Serializable
 {
+	@Serial
+	private static final long serialVersionUID = 1L;
 	@EmbeddedId
 	protected TimePK id;
-
 	@Basic(optional = false)
 	@Column(name = "TwelveHourClockDesc",
-			nullable = false,
-			length = 10)
+	        nullable = false,
+	        length = 10)
 	private String twelveHoursDesc;
 	@Basic(optional = false)
 	@Column(name = "TwentyFourHourClockDesc",
-			nullable = false,
-			length = 10)
+	        nullable = false,
+	        length = 10)
 	private String twentyFourHoursDesc;
 	@Basic(optional = false)
 	@Column(name = "AmPmDesc",
-			nullable = false,
-			length = 5)
+	        nullable = false,
+	        length = 5)
 	private String amPmDesc;
 	@Basic(optional = false)
 	@Column(name = "PreviousHourID",
-			nullable = false)
+	        nullable = false)
 	private int previousHourID;
 	@Basic(optional = false)
 	@Column(name = "PreviousMinuteID",
-			nullable = false)
+	        nullable = false)
 	private int previousMinuteID;
 	@JoinColumn(name = "HourID",
-			referencedColumnName = "HourID",
-			nullable = false,
-			insertable = false,
-			updatable = false)
+	            referencedColumnName = "HourID",
+	            nullable = false,
+	            insertable = false,
+	            updatable = false)
 	@ManyToOne(optional = false)
 	private Hours Hours;
-
-	@Serial
-	private static final long serialVersionUID = 1L;
-
+	
 	public Time()
 	{
 	}
-
+	
 	public Time(TimePK id)
 	{
 		this.id = id;
 	}
-
+	
 	@Override
 	public String toString()
 	{

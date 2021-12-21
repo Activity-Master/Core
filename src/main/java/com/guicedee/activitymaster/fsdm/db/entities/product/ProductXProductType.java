@@ -31,18 +31,19 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class ProductXProductType
 		extends WarehouseClassificationRelationshipTypesTable<Product,
-				ProductType,
-				ProductXProductType,
-				ProductXProductTypeQueryBuilder,
-				UUID>
+		ProductType,
+		ProductXProductType,
+		ProductXProductTypeQueryBuilder,
+		UUID>
 {
 	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-	        name = "ProductXProductTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ProductXProductTypeID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	@OneToMany(
 			mappedBy = "base",
@@ -77,26 +78,16 @@ public class ProductXProductType
 		return this.id;
 	}
 	
-	public List<ProductXProductTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Product getProductID()
-	{
-		return this.productID;
-	}
-	
-	public ProductType getProductTypeID()
-	{
-		return this.productTypeID;
-	}
-	
 	@Override
 	public ProductXProductType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<ProductXProductTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ProductXProductType setSecurities(List<ProductXProductTypeSecurityToken> securities)
@@ -105,10 +96,20 @@ public class ProductXProductType
 		return this;
 	}
 	
+	public Product getProductID()
+	{
+		return this.productID;
+	}
+	
 	public ProductXProductType setProductID(Product productID)
 	{
 		this.productID = productID;
 		return this;
+	}
+	
+	public ProductType getProductTypeID()
+	{
+		return this.productTypeID;
 	}
 	
 	public ProductXProductType setProductTypeID(ProductType productTypeID)

@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.product;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.product.builders.ProductXProductTypeSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -29,9 +28,10 @@ public class ProductXProductTypeSecurityToken
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-	        name = "ProductXProductTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ProductXProductTypeSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@JoinColumn(name = "ProductXProductTypeID",
@@ -64,16 +64,16 @@ public class ProductXProductTypeSecurityToken
 		return this.id;
 	}
 	
-	public ProductXProductType getBase()
-	{
-		return this.base;
-	}
-	
 	@Override
 	public ProductXProductTypeSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public ProductXProductType getBase()
+	{
+		return this.base;
 	}
 	
 	public ProductXProductTypeSecurityToken setBase(ProductXProductType base)
@@ -94,17 +94,13 @@ public class ProductXProductTypeSecurityToken
 			return false;
 		}
 		final ProductXProductTypeSecurityToken other = (ProductXProductTypeSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
 	
 	protected boolean canEqual(final Object other)

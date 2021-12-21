@@ -9,9 +9,9 @@ import java.util.UUID;
 
 public class SystemsQueryBuilder
 		extends QueryBuilderNameDescription<SystemsQueryBuilder, Systems, UUID>
-		implements IQueryBuilderClassifications<SystemsQueryBuilder,Systems, UUID>,
+		implements IQueryBuilderClassifications<SystemsQueryBuilder, Systems, UUID>,
 		           ISystemsQueryBuilder<SystemsQueryBuilder, Systems>,
-		           IQueryBuilderDefault<SystemsQueryBuilder,Systems,UUID>,
-		           IQueryBuilderEnterprise<SystemsQueryBuilder,Systems,UUID>
+		           IQueryBuilderDefault<SystemsQueryBuilder, Systems, UUID>,
+		           IQueryBuilderEnterprise<SystemsQueryBuilder, Systems, UUID>
 {
 }

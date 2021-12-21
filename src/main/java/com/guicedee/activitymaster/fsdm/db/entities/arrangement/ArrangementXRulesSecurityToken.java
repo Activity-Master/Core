@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXRulesSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
@@ -9,7 +10,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
-import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -17,7 +18,7 @@ import static jakarta.persistence.AccessType.FIELD;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Arrangement",name = "ArrangementXRulesSecurityToken")
+@Table(schema = "Arrangement", name = "ArrangementXRulesSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
@@ -25,59 +26,61 @@ public class ArrangementXRulesSecurityToken
 		extends WarehouseSecurityTable<ArrangementXRulesSecurityToken, ArrangementXRulesSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "ArrangementXRulesSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ArrangementXRulesSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "ArrangementXRulesID",
-			referencedColumnName = "ArrangementXRulesID",
-			nullable = false)
+	            referencedColumnName = "ArrangementXRulesID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	
 	private ArrangementXRules base;
-
+	
 	public ArrangementXRulesSecurityToken()
 	{
-
+	
 	}
-
+	
 	public ArrangementXRulesSecurityToken(UUID arrangementXRulesSecurityTokenID)
 	{
 		this.id = arrangementXRulesSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "ArrangementXRulesSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public ArrangementXRules getBase()
-	{
-		return this.base;
-	}
-
+	
 	public ArrangementXRulesSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public ArrangementXRules getBase()
+	{
+		return this.base;
+	}
+	
 	public ArrangementXRulesSecurityToken setBase(ArrangementXRules base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -89,24 +92,20 @@ public class ArrangementXRulesSecurityToken
 			return false;
 		}
 		final ArrangementXRulesSecurityToken other = (ArrangementXRulesSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof ArrangementXRulesSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

@@ -5,9 +5,9 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXProductSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -22,67 +22,68 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Event",name = "EventXProductSecurityToken")
+@Table(schema = "Event", name = "EventXProductSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
 public class EventXProductSecurityToken
 		extends WarehouseSecurityTable<EventXProductSecurityToken, EventXProductSecurityTokenQueryBuilder, UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "EventXProductSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventXProductSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "EventXProductID",
-			referencedColumnName = "EventXProductID",
-			nullable = false)
+	            referencedColumnName = "EventXProductID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private EventXProduct base;
-
+	
 	public EventXProductSecurityToken()
 	{
-
+	
 	}
-
+	
 	public EventXProductSecurityToken(UUID eventXProductSecurityTokenID)
 	{
 		this.id = eventXProductSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "EventXProductSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public EventXProduct getBase()
-	{
-		return this.base;
-	}
-
+	
 	public EventXProductSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public EventXProduct getBase()
+	{
+		return this.base;
+	}
+	
 	public EventXProductSecurityToken setBase(EventXProduct base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -94,24 +95,20 @@ public class EventXProductSecurityToken
 			return false;
 		}
 		final EventXProductSecurityToken other = (EventXProductSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof EventXProductSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

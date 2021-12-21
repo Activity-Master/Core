@@ -29,7 +29,7 @@ public class InvolvedPartyXInvolvedPartyTypeQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
+	public InvolvedPartyXInvolvedPartyTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

@@ -16,40 +16,40 @@ import java.io.Serial;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 /**
- *
  * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @MappedSuperclass
 public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
-		                                    Q extends QueryBuilderTable<Q, J, I>,
-		                                    I extends java.util.UUID>
+		Q extends QueryBuilderTable<Q, J, I>,
+		I extends java.util.UUID>
 		extends WarehouseSCDTable<J, Q, I>
 		implements IContainsActiveFlags<J>,
-		           IWarehouseTable<J,Q,I>
+		           IWarehouseTable<J, Q, I>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
-
+	
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
-			name = "OriginalSourceSystemUniqueID")
+	        name = "OriginalSourceSystemUniqueID")
 	private String originalSourceSystemUniqueID = "";
-
+	
 	@JoinColumn(name = "OriginalSourceSystemID",
-			referencedColumnName = "SystemID",
-			nullable = false)
+	            referencedColumnName = "SystemID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	
 	private Systems originalSourceSystemID;
-
+	
 	public WarehouseTable()
 	{
-
+	
 	}
-
+	
 	@Override
 	@NotNull
 	@SuppressWarnings("unchecked")
@@ -59,25 +59,25 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 		setOriginalSourceSystemID(requestingSystem);
 		return (J) this;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public J remove()
 	{
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(com.entityassist.RootEntity.getNow());
-		updateNow();
+		update();
 		return (J) this;
 	}
-
-
+	
+	
 	@SuppressWarnings("unchecked")
 	public J archive()
 	{
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                            .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
-				                                                                             .getSystemToken(getEnterpriseID())));
-		updateNow();
+				                            .getSystemToken(getEnterpriseID())));
+		update();
 		return (J) this;
 	}
 	
@@ -85,23 +85,23 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 	{
 		return this.originalSourceSystemUniqueID;
 	}
-
+	
 	public J setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
 	{
 		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
 		return (J) this;
 	}
-
-	public ISystems<?,?> getOriginalSourceSystemID()
+	
+	public ISystems<?, ?> getOriginalSourceSystemID()
 	{
 		return this.originalSourceSystemID;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	public J setOriginalSourceSystemID(ISystems<?,?> originalSourceSystemID)
+	public J setOriginalSourceSystemID(ISystems<?, ?> originalSourceSystemID)
 	{
 		this.originalSourceSystemID = (Systems) originalSourceSystemID;
-		if(this.originalSourceSystemID != null && !this.originalSourceSystemID.isFake())
+		if (this.originalSourceSystemID != null && !this.originalSourceSystemID.isFake())
 		{
 			originalSourceSystemID.initialize();
 		}

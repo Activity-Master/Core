@@ -57,6 +57,7 @@ public class ArrangementXRules
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Arrangement arrangement;
 	
 	@JoinColumn(name = "RulesID",
@@ -64,6 +65,7 @@ public class ArrangementXRules
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Rules rulesID;
 	
 	@OneToMany(
@@ -86,30 +88,15 @@ public class ArrangementXRules
 		return this.id;
 	}
 	
-	public List<ArrangementXRulesSecurityToken> getArrangementXRulesSecurityTokenList()
-	{
-		return this.arrangementXRulesSecurityTokenList;
-	}
-	
-	public Arrangement getArrangement()
-	{
-		return this.arrangement;
-	}
-	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
-	}
-	
-	public List<ArrangementXRulesSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXRules setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<ArrangementXRulesSecurityToken> getArrangementXRulesSecurityTokenList()
+	{
+		return this.arrangementXRulesSecurityTokenList;
 	}
 	
 	public ArrangementXRules setArrangementXRulesSecurityTokenList(List<ArrangementXRulesSecurityToken> arrangementXRulesSecurityTokenList)
@@ -118,16 +105,31 @@ public class ArrangementXRules
 		return this;
 	}
 	
+	public Arrangement getArrangement()
+	{
+		return this.arrangement;
+	}
+	
 	public ArrangementXRules setArrangement(Arrangement arrangement)
 	{
 		this.arrangement = arrangement;
 		return this;
 	}
 	
+	public Rules getRulesID()
+	{
+		return this.rulesID;
+	}
+	
 	public ArrangementXRules setRulesID(Rules resourceItemID)
 	{
 		this.rulesID = resourceItemID;
 		return this;
+	}
+	
+	public List<ArrangementXRulesSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ArrangementXRules setSecurities(List<ArrangementXRulesSecurityToken> securities)

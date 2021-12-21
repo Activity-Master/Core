@@ -134,31 +134,15 @@ public class Rules
 		return classifications;
 	}
 	
-	public List<RulesSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public List<RulesXResourceItem> getResources()
-	{
-		return resources;
-	}
-	
-	
-	public List<RulesXRules> getRulesXRulesList()
-	{
-		return rulesXRulesList;
-	}
-	
-	public List<RulesXRules> getRulesXRulesList1()
-	{
-		return rulesXRulesList1;
-	}
-	
 	public Rules setClassifications(List<RulesXClassification> classifications)
 	{
 		this.classifications = classifications;
 		return this;
+	}
+	
+	public List<RulesSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public Rules setSecurities(List<RulesSecurityToken> securities)
@@ -167,16 +151,31 @@ public class Rules
 		return this;
 	}
 	
+	public List<RulesXResourceItem> getResources()
+	{
+		return resources;
+	}
+	
 	public Rules setResources(List<RulesXResourceItem> resources)
 	{
 		this.resources = resources;
 		return this;
 	}
 	
+	public List<RulesXRules> getRulesXRulesList()
+	{
+		return rulesXRulesList;
+	}
+	
 	public Rules setRulesXRulesList(List<RulesXRules> rulesXRulesList)
 	{
 		this.rulesXRulesList = rulesXRulesList;
 		return this;
+	}
+	
+	public List<RulesXRules> getRulesXRulesList1()
+	{
+		return rulesXRulesList1;
 	}
 	
 	public Rules setRulesXRulesList1(List<RulesXRules> rulesXRulesList1)
@@ -218,16 +217,6 @@ public class Rules
 		return id;
 	}
 	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public String getDescription()
-	{
-		return description;
-	}
-	
 	@Override
 	public Rules setId(UUID id)
 	{
@@ -235,10 +224,20 @@ public class Rules
 		return this;
 	}
 	
+	public String getName()
+	{
+		return name;
+	}
+	
 	public Rules setName(String name)
 	{
 		this.name = name;
 		return this;
+	}
+	
+	public String getDescription()
+	{
+		return description;
 	}
 	
 	public Rules setDescription(String description)

@@ -18,10 +18,24 @@ public class ActivityMasterSystemsManager
 		LogFactory.getLog("ActivityMasterSystemsManager")
 		          .info("Wiping Caches");
 		CacheManager cacheManager = GuiceContext.get(CacheManager.class);
-		for (String cacheName : cacheManager.getCacheNames())
+		try
 		{
-			cacheManager.getCache(cacheName)
-			            .clear();
+			for (String cacheName : cacheManager.getCacheNames())
+			{
+				try
+				{
+					cacheManager.getCache(cacheName)
+					            .clear();
+				}
+				catch (Exception e)
+				{
+					//ignore failed clear
+				}
+			}
+		}
+		catch (Throwable T)
+		{
+			//ignore failed clear
 		}
 	}
 }

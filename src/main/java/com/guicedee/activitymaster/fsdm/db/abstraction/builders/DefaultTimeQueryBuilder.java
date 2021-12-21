@@ -1,4 +1,4 @@
-package com.guicedee.activitymaster.fsdm.db.entities.time.builders;
+package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
 import com.entityassist.BaseEntity;
 import com.entityassist.querybuilder.QueryBuilder;
@@ -15,19 +15,20 @@ public abstract class DefaultTimeQueryBuilder<J extends DefaultTimeQueryBuilder<
 	{
 		setRunDetached(true);
 		setReturnFirst(true);
+		setUseDirectConnection(true);
 		setDetach(true);
 	}
-
+	
 	@Override
 	public EntityManager getEntityManager()
 	{
 		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
 	}
-
+	
 	@Override
 	public boolean isIdGenerated()
 	{
 		return false;
 	}
-
+	
 }

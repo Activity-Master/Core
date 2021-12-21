@@ -74,26 +74,26 @@ public class InvolvedPartyXClassification
 		return this.id;
 	}
 	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public List<InvolvedPartyXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public InvolvedPartyXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+	
 	public InvolvedPartyXClassification setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
+	}
+	
+	public List<InvolvedPartyXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public InvolvedPartyXClassification setSecurities(List<InvolvedPartyXClassificationSecurityToken> securities)

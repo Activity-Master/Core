@@ -6,6 +6,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 
 public class ClassificationDataConceptQueryBuilder
 		extends QueryBuilderSCDNameDescription<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, java.util.UUID>
-		implements IClassificationDataConceptQueryBuilder<ClassificationDataConceptQueryBuilder,ClassificationDataConcept>
+		implements IClassificationDataConceptQueryBuilder<ClassificationDataConceptQueryBuilder, ClassificationDataConcept>
 {
 }

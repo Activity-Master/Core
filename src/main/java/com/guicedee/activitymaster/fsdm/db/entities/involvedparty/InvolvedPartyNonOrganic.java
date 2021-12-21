@@ -113,16 +113,16 @@ public class InvolvedPartyNonOrganic
 		return id;
 	}
 	
-	public InvolvedParty getInvolvedParty()
-	{
-		return involvedParty;
-	}
-	
 	@Override
 	public InvolvedPartyNonOrganic setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public InvolvedParty getInvolvedParty()
+	{
+		return involvedParty;
 	}
 	
 	public InvolvedPartyNonOrganic setInvolvedParty(InvolvedParty involvedParty)

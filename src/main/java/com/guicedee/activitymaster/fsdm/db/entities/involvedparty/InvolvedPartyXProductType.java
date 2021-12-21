@@ -80,26 +80,16 @@ public class InvolvedPartyXProductType
 		return this.id;
 	}
 	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public ProductType getProductTypeID()
-	{
-		return this.involvedPartyTypeID;
-	}
-	
-	public List<InvolvedPartyXProductTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	@Override
 	public InvolvedPartyXProductType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
 	}
 	
 	public InvolvedPartyXProductType setInvolvedPartyID(InvolvedParty involvedPartyID)
@@ -108,10 +98,20 @@ public class InvolvedPartyXProductType
 		return this;
 	}
 	
+	public ProductType getProductTypeID()
+	{
+		return this.involvedPartyTypeID;
+	}
+	
 	public InvolvedPartyXProductType setProductTypeID(ProductType involvedPartyTypeID)
 	{
 		this.involvedPartyTypeID = involvedPartyTypeID;
 		return this;
+	}
+	
+	public List<InvolvedPartyXProductTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public InvolvedPartyXProductType setSecurities(List<InvolvedPartyXProductTypeSecurityToken> securities)

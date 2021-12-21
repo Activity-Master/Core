@@ -1,8 +1,6 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.servlet.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -14,7 +12,6 @@ public abstract class RequestScopedThread extends Thread
 	private RequestScoper.CloseableScope scoper;
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public final void run()
 	{
 		try

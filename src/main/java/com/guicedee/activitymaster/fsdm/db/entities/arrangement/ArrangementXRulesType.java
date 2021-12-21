@@ -32,10 +32,10 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class ArrangementXRulesType
 		extends WarehouseClassificationRelationshipTable<Arrangement,
-				RulesType,
-				ArrangementXRulesType,
-				ArrangementXRulesTypeQueryBuilder,
-				UUID>
+		RulesType,
+		ArrangementXRulesType,
+		ArrangementXRulesTypeQueryBuilder,
+		UUID>
 		implements Serializable
 {
 	@Serial
@@ -57,6 +57,7 @@ public class ArrangementXRulesType
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Arrangement arrangement;
 	
 	@JoinColumn(name = "RulesTypeID",
@@ -64,6 +65,7 @@ public class ArrangementXRulesType
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private RulesType rulesTypeID;
 	
 	@OneToMany(
@@ -86,26 +88,15 @@ public class ArrangementXRulesType
 		return this.id;
 	}
 	
-	public List<ArrangementXRulesTypeSecurityToken> getArrangementXRulesTypeSecurityTokenList()
-	{
-		return this.arrangementXRulesSecurityTokenList;
-	}
-	
-	public Arrangement getArrangement()
-	{
-		return this.arrangement;
-	}
-	
-
-	public List<ArrangementXRulesTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXRulesType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<ArrangementXRulesTypeSecurityToken> getArrangementXRulesTypeSecurityTokenList()
+	{
+		return this.arrangementXRulesSecurityTokenList;
 	}
 	
 	public ArrangementXRulesType setArrangementXRulesTypeSecurityTokenList(List<ArrangementXRulesTypeSecurityToken> arrangementXRulesSecurityTokenList)
@@ -114,12 +105,21 @@ public class ArrangementXRulesType
 		return this;
 	}
 	
+	public Arrangement getArrangement()
+	{
+		return this.arrangement;
+	}
+	
 	public ArrangementXRulesType setArrangement(Arrangement arrangement)
 	{
 		this.arrangement = arrangement;
 		return this;
 	}
 	
+	public List<ArrangementXRulesTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
 	
 	public ArrangementXRulesType setSecurities(List<ArrangementXRulesTypeSecurityToken> securities)
 	{

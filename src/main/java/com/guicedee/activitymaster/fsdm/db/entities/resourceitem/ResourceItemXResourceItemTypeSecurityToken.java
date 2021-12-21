@@ -67,15 +67,15 @@ public class ResourceItemXResourceItemTypeSecurityToken
 		return this.id;
 	}
 	
-	public ResourceItemXResourceItemType getBase()
-	{
-		return this.base;
-	}
-	
 	public ResourceItemXResourceItemTypeSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public ResourceItemXResourceItemType getBase()
+	{
+		return this.base;
 	}
 	
 	public ResourceItemXResourceItemTypeSecurityToken setBase(ResourceItemXResourceItemType base)
@@ -95,17 +95,13 @@ public class ResourceItemXResourceItemTypeSecurityToken
 			return false;
 		}
 		final ResourceItemXResourceItemTypeSecurityToken other = (ResourceItemXResourceItemTypeSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
 	
 	protected boolean canEqual(final Object other)

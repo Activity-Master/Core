@@ -30,7 +30,7 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 	}
 	
 	@Override
-	public ResourceItemXResourceItemTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
+	public ResourceItemXResourceItemTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

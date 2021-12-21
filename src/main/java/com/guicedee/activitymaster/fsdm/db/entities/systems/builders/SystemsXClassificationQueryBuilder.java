@@ -17,7 +17,7 @@ public class SystemsXClassificationQueryBuilder
 	{
 		return SystemsXClassification_.systemID;
 	}
-
+	
 	@SuppressWarnings("rawtypes")
 	@Override
 	public SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()

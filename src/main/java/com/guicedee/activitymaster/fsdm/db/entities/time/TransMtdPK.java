@@ -1,12 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db.entities.time;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -28,17 +25,17 @@ public class TransMtdPK
 	private static final long serialVersionUID = 1L;
 	@Basic(optional = false)
 	@Column(name = "DayID",
-			nullable = false)
+	        nullable = false)
 	private Integer dayID;
 	@Basic(optional = false)
 	@Column(name = "MtdDayID",
-			nullable = false)
+	        nullable = false)
 	private Integer mtdDayID;
-
+	
 	public TransMtdPK()
 	{
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -54,17 +51,17 @@ public class TransMtdPK
 		return getDayID().equals(that.getDayID()) &&
 		       getMtdDayID().equals(that.getMtdDayID());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getDayID(), getMtdDayID());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "timelord.entities.TransMtdPK[ dayID=" + dayID + ", mtdDayID=" + mtdDayID + " ]";
 	}
-
+	
 }

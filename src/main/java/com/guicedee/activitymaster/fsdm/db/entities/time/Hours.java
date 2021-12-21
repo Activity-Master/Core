@@ -8,13 +8,12 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.HoursQueryBuilder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -26,7 +25,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Hours",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -39,43 +38,43 @@ public class Hours
 	private static final long serialVersionUID = 1L;
 	@OneToMany(mappedBy = "Hours")
 	private List<Time> TimeList;
-
+	
 	@Id
 	@Basic(optional = false)
 	@Column(name = "HourID",
-			nullable = false)
+	        nullable = false)
 	private Integer id;
 	@Basic(optional = false)
 	@Column(name = "TwelveHourClockDesc",
-			nullable = false,
-			length = 10)
+	        nullable = false,
+	        length = 10)
 	private String twelveHour;
 	@Basic(optional = false)
 	@Column(name = "TwentyFourHourClockDesc",
-			nullable = false,
-			length = 10)
+	        nullable = false,
+	        length = 10)
 	private String twentyFourHour;
 	@Basic(optional = false)
 	@Column(name = "AmPmDesc",
-			nullable = false,
-			length = 5)
+	        nullable = false,
+	        length = 5)
 	private String amPmDesc;
 	@Basic(optional = false)
 	@Column(name = "PreviousHourID",
-			nullable = false)
+	        nullable = false)
 	private int previousHourID;
 	@OneToMany(mappedBy = "Hours")
 	private List<HalfHours> lUHalfHoursList;
-
+	
 	public Hours()
 	{
 	}
-
+	
 	public Hours(Integer id)
 	{
 		this.id = id;
 	}
-
+	
 	public Hours(Integer id, String twelveHour, String twentyFourHour, String amPmDesc, int previousHourID)
 	{
 		this.id = id;
@@ -84,7 +83,7 @@ public class Hours
 		this.amPmDesc = amPmDesc;
 		this.previousHourID = previousHourID;
 	}
-
+	
 	@XmlTransient
 	public List<HalfHours> getLUHalfHoursList()
 	{
@@ -94,13 +93,13 @@ public class Hours
 		}
 		return lUHalfHoursList;
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return twentyFourHour;
 	}
-
+	
 	public List<Time> getTimeList()
 	{
 		if (TimeList == null)
@@ -109,5 +108,5 @@ public class Hours
 		}
 		return TimeList;
 	}
-
+	
 }

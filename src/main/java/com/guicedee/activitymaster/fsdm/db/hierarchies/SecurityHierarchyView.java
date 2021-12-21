@@ -7,13 +7,9 @@ package com.guicedee.activitymaster.fsdm.db.hierarchies;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.fsdm.db.hierarchies.builders.SecurityHierarchyViewQueryBuilder;
-import org.hibernate.annotations.Immutable;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.Immutable;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -25,14 +21,14 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "SecurityHierarchy",
-		schema = "Security")
+       schema = "Security")
 @XmlRootElement
 @Immutable
 public class SecurityHierarchyView
 		extends WarehouseHierarchyView<SecurityHierarchyView, SecurityHierarchyViewQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -40,35 +36,35 @@ public class SecurityHierarchyView
 	private UUID id;
 	@OneToMany(mappedBy = "child")
 	private List<SecurityHierarchyParents> parents;
-
+	
 	public SecurityHierarchyView()
 	{
 	}
-
+	
 	@Override
 	public UUID getId()
 	{
 		return id;
 	}
-
-	public List<SecurityHierarchyParents> getParents()
-	{
-		return parents;
-	}
-
+	
 	@Override
 	public SecurityHierarchyView setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public List<SecurityHierarchyParents> getParents()
+	{
+		return parents;
+	}
+	
 	public SecurityHierarchyView setParents(List<SecurityHierarchyParents> parents)
 	{
 		this.parents = parents;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -81,24 +77,20 @@ public class SecurityHierarchyView
 			return false;
 		}
 		SecurityHierarchyView other = (SecurityHierarchyView) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		Object this$id = getId();
 		Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(Object other)
 	{
 		return other instanceof SecurityHierarchyView;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{

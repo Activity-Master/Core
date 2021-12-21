@@ -38,14 +38,15 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class ArrangementType
 		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, UUID>
-		implements IArrangementType<ArrangementType,ArrangementTypeQueryBuilder>
+		implements IArrangementType<ArrangementType, ArrangementTypeQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(nullable = false,
 	        name = "ArrangementTypeID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
@@ -68,17 +69,17 @@ public class ArrangementType
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<ArrangementTypeSecurityToken> securities;
+	private List<ArrangementTypeSecurityToken> securities;
 	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementTypeXClassification> classifications;
+	private List<ArrangementTypeXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "type",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXArrangementType> arrangementsList;
+	private List<ArrangementXArrangementType> arrangementsList;
 	
 	
 	public ArrangementType()
@@ -103,15 +104,15 @@ public class ArrangementType
 		return this.securities;
 	}
 	
-	public List<ArrangementXArrangementType> getArrangementsList()
-	{
-		return this.arrangementsList;
-	}
-	
 	public ArrangementType setSecurities(List<ArrangementTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public List<ArrangementXArrangementType> getArrangementsList()
+	{
+		return this.arrangementsList;
 	}
 	
 	public ArrangementType setArrangementsList(List<ArrangementXArrangementType> arrangementsList)
@@ -153,16 +154,6 @@ public class ArrangementType
 		return this.id;
 	}
 	
-	public String getName()
-	{
-		return this.name;
-	}
-	
-	public String getDescription()
-	{
-		return this.description;
-	}
-	
 	@Override
 	public ArrangementType setId(UUID id)
 	{
@@ -170,10 +161,20 @@ public class ArrangementType
 		return this;
 	}
 	
+	public String getName()
+	{
+		return this.name;
+	}
+	
 	public ArrangementType setName(String name)
 	{
 		this.name = name;
 		return this;
+	}
+	
+	public String getDescription()
+	{
+		return this.description;
 	}
 	
 	public ArrangementType setDescription(@NotNull @Size(min = 1,

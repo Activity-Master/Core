@@ -147,45 +147,15 @@ public class Product
 		return classifications;
 	}
 	
-	public List<ProductSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public List<ArrangementXProduct> getArrangements()
-	{
-		return arrangements;
-	}
-	
-	public List<ProductXResourceItem> getResources()
-	{
-		return resources;
-	}
-	
-	public List<InvolvedPartyXProduct> getParties()
-	{
-		return parties;
-	}
-	
-	public List<EventXProduct> getEvents()
-	{
-		return events;
-	}
-	
-	public List<ProductXProduct> getProductXProductList()
-	{
-		return productXProductList;
-	}
-	
-	public List<ProductXProduct> getProductXProductList1()
-	{
-		return productXProductList1;
-	}
-	
 	public Product setClassifications(List<ProductXClassification> classifications)
 	{
 		this.classifications = classifications;
 		return this;
+	}
+	
+	public List<ProductSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public Product setSecurities(List<ProductSecurityToken> securities)
@@ -194,10 +164,20 @@ public class Product
 		return this;
 	}
 	
+	public List<ArrangementXProduct> getArrangements()
+	{
+		return arrangements;
+	}
+	
 	public Product setArrangements(List<ArrangementXProduct> arrangements)
 	{
 		this.arrangements = arrangements;
 		return this;
+	}
+	
+	public List<ProductXResourceItem> getResources()
+	{
+		return resources;
 	}
 	
 	public Product setResources(List<ProductXResourceItem> resources)
@@ -206,10 +186,20 @@ public class Product
 		return this;
 	}
 	
+	public List<InvolvedPartyXProduct> getParties()
+	{
+		return parties;
+	}
+	
 	public Product setParties(List<InvolvedPartyXProduct> parties)
 	{
 		this.parties = parties;
 		return this;
+	}
+	
+	public List<EventXProduct> getEvents()
+	{
+		return events;
 	}
 	
 	public Product setEvents(List<EventXProduct> events)
@@ -218,10 +208,20 @@ public class Product
 		return this;
 	}
 	
+	public List<ProductXProduct> getProductXProductList()
+	{
+		return productXProductList;
+	}
+	
 	public Product setProductXProductList(List<ProductXProduct> productXProductList)
 	{
 		this.productXProductList = productXProductList;
 		return this;
+	}
+	
+	public List<ProductXProduct> getProductXProductList1()
+	{
+		return productXProductList1;
 	}
 	
 	public Product setProductXProductList1(List<ProductXProduct> productXProductList1)
@@ -264,27 +264,16 @@ public class Product
 		return id;
 	}
 	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public String getDescription()
-	{
-		return description;
-	}
-	
-	public @NotNull @Size(min = 1,
-	                      max = 10) String getProductCode()
-	{
-		return productCode;
-	}
-	
 	@Override
 	public Product setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public String getName()
+	{
+		return name;
 	}
 	
 	public Product setName(String name)
@@ -293,10 +282,21 @@ public class Product
 		return this;
 	}
 	
+	public String getDescription()
+	{
+		return description;
+	}
+	
 	public Product setDescription(String description)
 	{
 		this.description = description;
 		return this;
+	}
+	
+	public @NotNull @Size(min = 1,
+	                      max = 10) String getProductCode()
+	{
+		return productCode;
 	}
 	
 	public Product setProductCode(@NotNull @Size(min = 1,
@@ -309,7 +309,7 @@ public class Product
 	@Override
 	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
-		ProductXClassification.class.cast(linkTable)
+		((ProductXClassification) linkTable)
 		                            .setProductID(this);
 	}
 	

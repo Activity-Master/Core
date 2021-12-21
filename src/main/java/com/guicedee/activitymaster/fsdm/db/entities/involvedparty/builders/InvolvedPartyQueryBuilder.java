@@ -22,7 +22,7 @@ public class InvolvedPartyQueryBuilder
 	private IInvolvedPartyService<?> involvedPartyService;
 	
 	@Override
-	public InvolvedPartyQueryBuilder findByIdentificationType(String idType,String value,ISystems<?,?> system, UUID... identityTokens)
+	public InvolvedPartyQueryBuilder findByIdentificationType(String idType, String value, ISystems<?, ?> system, UUID... identityTokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
 		
@@ -46,7 +46,7 @@ public class InvolvedPartyQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyQueryBuilder findByType( String idType, String value,ISystems<?, ?> system, UUID... identityTokens)
+	public InvolvedPartyQueryBuilder findByType(String idType, String value, ISystems<?, ?> system, UUID... identityTokens)
 	{
 		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder();
 		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(idType, system, identityTokens);

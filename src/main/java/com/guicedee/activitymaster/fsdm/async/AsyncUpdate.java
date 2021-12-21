@@ -1,9 +1,7 @@
 package com.guicedee.activitymaster.fsdm.async;
 
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,7 +28,6 @@ public class AsyncUpdate implements Runnable {
         return ap;
     }
 
-    @Transactional(entityManagerAnnotation = ActivityMasterDB.class)
     void persist()
     {
         try {

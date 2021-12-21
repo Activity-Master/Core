@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyNonOrganicSecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyNonOrganicSecurityToken_;
-
 import jakarta.persistence.metamodel.Attribute;
 
 public class InvolvedPartyNonOrganicSecurityTokenQueryBuilder

@@ -57,6 +57,7 @@ public class ArrangementXResourceItem
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Arrangement arrangementID;
 	
 	@JoinColumn(name = "ResourceItemID",
@@ -64,6 +65,7 @@ public class ArrangementXResourceItem
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private ResourceItem resourceItemID;
 	
 	@OneToMany(
@@ -86,30 +88,15 @@ public class ArrangementXResourceItem
 		return this.id;
 	}
 	
-	public List<ArrangementXResourceItemSecurityToken> getArrangementXResourceItemSecurityTokenList()
-	{
-		return this.arrangementXResourceItemSecurityTokenList;
-	}
-	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
-	}
-	
-	public List<ArrangementXResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<ArrangementXResourceItemSecurityToken> getArrangementXResourceItemSecurityTokenList()
+	{
+		return this.arrangementXResourceItemSecurityTokenList;
 	}
 	
 	public ArrangementXResourceItem setArrangementXResourceItemSecurityTokenList(List<ArrangementXResourceItemSecurityToken> arrangementXResourceItemSecurityTokenList)
@@ -118,16 +105,31 @@ public class ArrangementXResourceItem
 		return this;
 	}
 	
+	public Arrangement getArrangementID()
+	{
+		return this.arrangementID;
+	}
+	
 	public ArrangementXResourceItem setArrangementID(Arrangement arrangementID)
 	{
 		this.arrangementID = arrangementID;
 		return this;
 	}
 	
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
+	}
+	
 	public ArrangementXResourceItem setResourceItemID(ResourceItem resourceItemID)
 	{
 		this.resourceItemID = resourceItemID;
 		return this;
+	}
+	
+	public List<ArrangementXResourceItemSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ArrangementXResourceItem setSecurities(List<ArrangementXResourceItemSecurityToken> securities)

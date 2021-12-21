@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -18,6 +19,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.logger.LogFactory;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
@@ -63,6 +65,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedPartyNameType<?, ?> createNameType(String name, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
@@ -99,6 +102,7 @@ public class InvolvedPartyService
 	
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedPartyIdentificationType<?, ?> createIdentificationType(ISystems<?, ?> system, String name, String description, UUID... identityToken)
 	{
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
@@ -132,6 +136,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedPartyType<?, ?> createType(ISystems<?, ?> system, String name, String description, UUID... identityToken)
 	{
 		InvolvedPartyType xr = new InvolvedPartyType();
@@ -166,6 +171,7 @@ public class InvolvedPartyService
 		return xr;
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public InvolvedPartyOrganicType createOrganicType(ISystems<?, ?> system, String name, String description, UUID... identityToken)
 	{
 		InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
@@ -246,6 +252,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedParty<?, ?> create(ISystems<?, ?> system, UUID key, Pair<String, String> idTypes,
 	                                   boolean isOrganic, UUID... identityToken)
 	{
@@ -283,6 +290,7 @@ public class InvolvedPartyService
 		return ip;
 	}
 	
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void setupInvolvedPartyOrganicStatus(boolean isOrganic, IInvolvedParty<?, ?> ip, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (isOrganic)

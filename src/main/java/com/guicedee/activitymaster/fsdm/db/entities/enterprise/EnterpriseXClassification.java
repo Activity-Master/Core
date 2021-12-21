@@ -33,30 +33,30 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class EnterpriseXClassification
 		extends WarehouseClassificationRelationshipTable<Enterprise,
-				                                                Classification,
-				                                                EnterpriseXClassification,
-				                                                EnterpriseXClassificationQueryBuilder,
-				                                                UUID>
+		Classification,
+		EnterpriseXClassification,
+		EnterpriseXClassificationQueryBuilder,
+		UUID>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "EnterpriseXClassificationID")
+	        name = "EnterpriseXClassificationID")
 	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<EnterpriseXClassificationSecurityToken> securities;
-
+	
 	public EnterpriseXClassification()
 	{
-
+	
 	}
-
+	
 	public EnterpriseXClassification(UUID enterpriseXClassificationID)
 	{
 		id = enterpriseXClassificationID;
@@ -67,25 +67,25 @@ public class EnterpriseXClassification
 	{
 		return id;
 	}
-
-	public List<EnterpriseXClassificationSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-
+	
 	@Override
 	public EnterpriseXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public List<EnterpriseXClassificationSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
 	public EnterpriseXClassification setSecurities(List<EnterpriseXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -100,19 +100,19 @@ public class EnterpriseXClassification
 		EnterpriseXClassification that = (EnterpriseXClassification) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public Enterprise getPrimary()
 	{
 		return getEnterpriseID();
 	}
-
+	
 	@Override
 	public Classification getSecondary()
 	{

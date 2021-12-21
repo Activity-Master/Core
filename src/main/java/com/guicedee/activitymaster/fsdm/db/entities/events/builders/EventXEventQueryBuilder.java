@@ -13,7 +13,7 @@ public class EventXEventQueryBuilder
 	{
 		return EventXEvent_.parentEventID;
 	}
-
+	
 	@Override
 	public SingularAttribute<EventXEvent, Event> getSecondaryAttribute()
 	{

@@ -39,15 +39,18 @@ public class ArrangementXArrangementType
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(nullable = false,
-	        name = "ArrangementXArrangementTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ArrangementXArrangementTypeID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	@ManyToOne
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID")
+	
 	private Arrangement arrangement;
 	@JoinColumn(name = "ArrangementTypeID",
 	            referencedColumnName = "ArrangementTypeID")
 	@ManyToOne()
+	
 	private ArrangementType type;
 	@OneToMany(
 			mappedBy = "base",
@@ -69,26 +72,16 @@ public class ArrangementXArrangementType
 		return this.id;
 	}
 	
-	public Arrangement getArrangement()
-	{
-		return this.arrangement;
-	}
-	
-	public ArrangementType getType()
-	{
-		return this.type;
-	}
-	
-	public List<ArrangementXArrangementTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	@Override
 	public ArrangementXArrangementType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public Arrangement getArrangement()
+	{
+		return this.arrangement;
 	}
 	
 	public ArrangementXArrangementType setArrangement(Arrangement arrangement)
@@ -97,10 +90,20 @@ public class ArrangementXArrangementType
 		return this;
 	}
 	
+	public ArrangementType getType()
+	{
+		return this.type;
+	}
+	
 	public ArrangementXArrangementType setType(ArrangementType type)
 	{
 		this.type = type;
 		return this;
+	}
+	
+	public List<ArrangementXArrangementTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ArrangementXArrangementType setSecurities(List<ArrangementXArrangementTypeSecurityToken> securities)

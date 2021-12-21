@@ -86,25 +86,15 @@ public class InvolvedPartyXAddress
 		return this.id;
 	}
 	
-	public Address getAddressID()
-	{
-		return this.addressID;
-	}
-	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public List<InvolvedPartyXAddressSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public InvolvedPartyXAddress setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public Address getAddressID()
+	{
+		return this.addressID;
 	}
 	
 	public InvolvedPartyXAddress setAddressID(Address addressID)
@@ -113,10 +103,20 @@ public class InvolvedPartyXAddress
 		return this;
 	}
 	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+	
 	public InvolvedPartyXAddress setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
+	}
+	
+	public List<InvolvedPartyXAddressSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public InvolvedPartyXAddress setSecurities(List<InvolvedPartyXAddressSecurityToken> securities)

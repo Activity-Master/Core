@@ -55,6 +55,7 @@ public class EventXResourceItem
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
 	@JoinColumn(name = "ResourceItemID",
 	            referencedColumnName = "ResourceItemID",
@@ -78,25 +79,15 @@ public class EventXResourceItem
 		return this.id;
 	}
 	
-	public List<EventXResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
-	}
-	
 	public EventXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<EventXResourceItemSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public EventXResourceItem setSecurities(List<EventXResourceItemSecurityToken> securities)
@@ -105,10 +96,20 @@ public class EventXResourceItem
 		return this;
 	}
 	
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+	
 	public EventXResourceItem setEventID(Event eventID)
 	{
 		this.eventID = eventID;
 		return this;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
 	}
 	
 	public EventXResourceItem setResourceItemID(ResourceItem resourceItemID)

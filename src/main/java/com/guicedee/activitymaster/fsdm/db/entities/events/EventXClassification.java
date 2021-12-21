@@ -19,7 +19,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Event",name = "EventXClassification")
+@Table(schema = "Event", name = "EventXClassification")
 @XmlRootElement
 
 @Access(FIELD)
@@ -31,37 +31,48 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class EventXClassification
 		extends WarehouseClassificationRelationshipTable<Event,
-				                                                Classification,
-				                                                EventXClassification,
-				                                                EventXClassificationQueryBuilder,
-				                                                UUID>
+		Classification,
+		EventXClassification,
+		EventXClassificationQueryBuilder,
+		UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "EventXClassificationID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventXClassificationID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<EventXClassificationSecurityToken> securities;
-
-	@JoinColumn(name = "EventID",
-			referencedColumnName = "EventID",
-			nullable = false)
+	
+	
+	@JoinColumn(name = "ClassificationID",
+	            referencedColumnName = "ClassificationID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	@JsonIdentityReference(alwaysAsId = false)
+	private Classification classificationID;
+	
+	@JoinColumn(name = "EventID",
+	            referencedColumnName = "EventID",
+	            nullable = false)
+	@ManyToOne(optional = false,
+	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
-
+	
 	public EventXClassification()
 	{
-
+	
 	}
-
+	
 	public EventXClassification(UUID eventXClassificationID)
 	{
 		this.id = eventXClassificationID;
@@ -71,35 +82,47 @@ public class EventXClassification
 	{
 		return this.id;
 	}
-
-	public List<EventXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-
+	
 	public EventXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	@Override
+	public Classification getClassificationID()
+	{
+		return classificationID;
+	}
+	
+	public EventXClassification setClassificationID(Classification classificationID)
+	{
+		this.classificationID = classificationID;
+		return this;
+	}
+	
+	public List<EventXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public EventXClassification setSecurities(List<EventXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+	
 	public EventXClassification setEventID(Event eventID)
 	{
 		this.eventID = eventID;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -114,19 +137,19 @@ public class EventXClassification
 		EventXClassification that = (EventXClassification) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public Event getPrimary()
 	{
 		return getEventID();
 	}
-
+	
 	@Override
 	public Classification getSecondary()
 	{

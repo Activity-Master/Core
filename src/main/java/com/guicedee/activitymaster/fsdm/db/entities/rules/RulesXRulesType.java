@@ -22,7 +22,8 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Rules",
        name = "RulesXRulesType")
 @XmlRootElement
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
@@ -39,9 +40,10 @@ public class RulesXRulesType
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-	        name = "RulesXRulesTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "RulesXRulesTypeID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	@OneToMany(
 			mappedBy = "base",
@@ -76,26 +78,16 @@ public class RulesXRulesType
 		return this.id;
 	}
 	
-	public List<RulesXRulesTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
-	}
-	
-	public RulesType getRulesTypeID()
-	{
-		return this.rulesTypeID;
-	}
-	
 	@Override
 	public RulesXRulesType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<RulesXRulesTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public RulesXRulesType setSecurities(List<RulesXRulesTypeSecurityToken> securities)
@@ -104,10 +96,20 @@ public class RulesXRulesType
 		return this;
 	}
 	
+	public Rules getRulesID()
+	{
+		return this.rulesID;
+	}
+	
 	public RulesXRulesType setRulesID(Rules rulesID)
 	{
 		this.rulesID = rulesID;
 		return this;
+	}
+	
+	public RulesType getRulesTypeID()
+	{
+		return this.rulesTypeID;
 	}
 	
 	public RulesXRulesType setRulesTypeID(RulesType rulesTypeID)

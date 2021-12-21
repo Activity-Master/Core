@@ -19,6 +19,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	{
 		setRunDetached(true);
 		setReturnFirst(true);
+		setUseDirectConnection(true);
 		setDetach(true);
 	}
 	

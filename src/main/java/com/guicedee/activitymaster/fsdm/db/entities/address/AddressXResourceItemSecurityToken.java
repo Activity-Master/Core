@@ -5,9 +5,9 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.address;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXResourceItemSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -23,7 +23,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Address",name = "AddressXResourceItemSecurityToken")
+@Table(schema = "Address", name = "AddressXResourceItemSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
@@ -31,60 +31,61 @@ public class AddressXResourceItemSecurityToken
 		extends WarehouseSecurityTable<AddressXResourceItemSecurityToken, AddressXResourceItemSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "AddressXResourceItemSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "AddressXResourceItemSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "AddressXResourceItemID",
-			referencedColumnName = "AddressXResourceItemID",
-			nullable = false)
+	            referencedColumnName = "AddressXResourceItemID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private AddressXResourceItem base;
-
+	
 	public AddressXResourceItemSecurityToken()
 	{
-
+	
 	}
-
+	
 	public AddressXResourceItemSecurityToken(UUID addressXResourceItemSecurityTokenID)
 	{
 		this.id = addressXResourceItemSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "AddressXResourceItemSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public AddressXResourceItem getBase()
-	{
-		return this.base;
-	}
-
+	
 	public AddressXResourceItemSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public AddressXResourceItem getBase()
+	{
+		return this.base;
+	}
+	
 	public AddressXResourceItemSecurityToken setBase(AddressXResourceItem base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -96,24 +97,20 @@ public class AddressXResourceItemSecurityToken
 			return false;
 		}
 		final AddressXResourceItemSecurityToken other = (AddressXResourceItemSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof AddressXResourceItemSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.Arrangement;
 
 public class ArrangementQueryBuilder
 		extends QueryBuilderTable<ArrangementQueryBuilder, Arrangement, java.util.UUID>
-		implements IArrangementQueryBuilder<ArrangementQueryBuilder,Arrangement>
+		implements IArrangementQueryBuilder<ArrangementQueryBuilder, Arrangement>
 {
 
 }

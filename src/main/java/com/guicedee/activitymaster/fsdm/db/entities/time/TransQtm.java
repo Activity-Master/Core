@@ -8,14 +8,11 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.TransQtmQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -26,7 +23,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "Trans_Qtm",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -39,11 +36,11 @@ public class TransQtm
 	private static final long serialVersionUID = 1L;
 	@EmbeddedId
 	protected TransQtmPK id;
-
+	
 	public TransQtm()
 	{
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -58,17 +55,17 @@ public class TransQtm
 		TransQtm transQtm = (TransQtm) o;
 		return getId().equals(transQtm.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "" + id;
 	}
-
+	
 }

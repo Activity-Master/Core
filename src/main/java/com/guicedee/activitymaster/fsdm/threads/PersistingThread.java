@@ -1,9 +1,7 @@
 package com.guicedee.activitymaster.fsdm.threads;
 
 import com.entityassist.BaseEntity;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,6 @@ public class PersistingThread
 		return null;
 	}
 
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	void run()
 	{
 		for (BaseEntity entity : entities)

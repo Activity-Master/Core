@@ -1,7 +1,8 @@
 package com.guicedee.activitymaster.fsdm.db.entities.rules.builders;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
-import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
+import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesXInvolvedPartySecurityToken;
+import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesXInvolvedPartySecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
 public class RulesXInvolvedPartySecurityTokenQueryBuilder

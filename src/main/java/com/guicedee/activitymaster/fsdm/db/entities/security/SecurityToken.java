@@ -156,30 +156,15 @@ public class SecurityToken
 		return this.id;
 	}
 	
-	public String getSecurityToken()
-	{
-		return this.securityToken;
-	}
-	
-	public @NotNull String getName()
-	{
-		return this.name;
-	}
-	
-	public @NotNull String getDescription()
-	{
-		return this.description;
-	}
-	
-	public Classification getSecurityTokenClassificationID()
-	{
-		return this.securityTokenClassificationID;
-	}
-	
 	public SecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public String getSecurityToken()
+	{
+		return this.securityToken;
 	}
 	
 	public SecurityToken setSecurityToken(String securityToken)
@@ -188,16 +173,31 @@ public class SecurityToken
 		return this;
 	}
 	
+	public @NotNull String getName()
+	{
+		return this.name;
+	}
+	
 	public SecurityToken setName(@NotNull String name)
 	{
 		this.name = name;
 		return this;
 	}
 	
+	public @NotNull String getDescription()
+	{
+		return this.description;
+	}
+	
 	public SecurityToken setDescription(@NotNull String description)
 	{
 		this.description = description;
 		return this;
+	}
+	
+	public Classification getSecurityTokenClassificationID()
+	{
+		return this.securityTokenClassificationID;
 	}
 	
 	public SecurityToken setSecurityTokenClassificationID(Classification securityTokenClassificationID)

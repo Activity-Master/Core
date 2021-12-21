@@ -81,26 +81,16 @@ public class RulesXRules
 		return id;
 	}
 	
-	public List<RulesXRulesSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public Rules getChildRulesID()
-	{
-		return childRulesID;
-	}
-	
-	public Rules getParentRulesID()
-	{
-		return parentRulesID;
-	}
-	
 	@Override
 	public RulesXRules setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<RulesXRulesSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public RulesXRules setSecurities(List<RulesXRulesSecurityToken> securities)
@@ -109,10 +99,20 @@ public class RulesXRules
 		return this;
 	}
 	
+	public Rules getChildRulesID()
+	{
+		return childRulesID;
+	}
+	
 	public RulesXRules setChildRulesID(Rules childRulesID)
 	{
 		this.childRulesID = childRulesID;
 		return this;
+	}
+	
+	public Rules getParentRulesID()
+	{
+		return parentRulesID;
 	}
 	
 	public RulesXRules setParentRulesID(Rules parentRulesID)

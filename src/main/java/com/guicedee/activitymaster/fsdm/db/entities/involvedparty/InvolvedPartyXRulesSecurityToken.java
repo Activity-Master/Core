@@ -21,66 +21,67 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Party",name = "InvolvedPartyXRulesSecurityToken")
+@Table(schema = "Party", name = "InvolvedPartyXRulesSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
 public class InvolvedPartyXRulesSecurityToken
 		extends WarehouseSecurityTable<InvolvedPartyXRulesSecurityToken, InvolvedPartyXRulesSecurityTokenQueryBuilder, UUID>
 {
-@Serial
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "InvolvedPartyXRulesSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "InvolvedPartyXRulesSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "InvolvedPartyXRulesID",
-			referencedColumnName = "InvolvedPartyXRulesID",
-			nullable = false)
+	            referencedColumnName = "InvolvedPartyXRulesID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private InvolvedPartyXRules base;
-
+	
 	public InvolvedPartyXRulesSecurityToken()
 	{
-
+	
 	}
-
+	
 	public InvolvedPartyXRulesSecurityToken(UUID involvedPartyXRulesSecurityTokenID)
 	{
 		this.id = involvedPartyXRulesSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "InvolvedPartyXRulesSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public InvolvedPartyXRules getBase()
-	{
-		return this.base;
-	}
-
+	
 	public InvolvedPartyXRulesSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public InvolvedPartyXRules getBase()
+	{
+		return this.base;
+	}
+	
 	public InvolvedPartyXRulesSecurityToken setBase(InvolvedPartyXRules base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -92,24 +93,20 @@ public class InvolvedPartyXRulesSecurityToken
 			return false;
 		}
 		final InvolvedPartyXRulesSecurityToken other = (InvolvedPartyXRulesSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof InvolvedPartyXRulesSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

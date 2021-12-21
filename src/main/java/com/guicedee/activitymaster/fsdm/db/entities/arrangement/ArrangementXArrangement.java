@@ -55,12 +55,14 @@ public class ArrangementXArrangement
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Arrangement childArrangementID;
 	@JoinColumn(name = "ParentArrangementID",
 	            referencedColumnName = "ArrangementID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Arrangement parentArrangementID;
 	
 	@OneToMany(
@@ -83,25 +85,15 @@ public class ArrangementXArrangement
 		return this.id;
 	}
 	
-	public Arrangement getChildArrangementID()
-	{
-		return this.childArrangementID;
-	}
-	
-	public Arrangement getParentArrangementID()
-	{
-		return this.parentArrangementID;
-	}
-	
-	public List<ArrangementXArrangementSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXArrangement setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public Arrangement getChildArrangementID()
+	{
+		return this.childArrangementID;
 	}
 	
 	public ArrangementXArrangement setChildArrangementID(Arrangement childArrangementID)
@@ -110,10 +102,20 @@ public class ArrangementXArrangement
 		return this;
 	}
 	
+	public Arrangement getParentArrangementID()
+	{
+		return this.parentArrangementID;
+	}
+	
 	public ArrangementXArrangement setParentArrangementID(Arrangement parentArrangementID)
 	{
 		this.parentArrangementID = parentArrangementID;
 		return this;
+	}
+	
+	public List<ArrangementXArrangementSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ArrangementXArrangement setSecurities(List<ArrangementXArrangementSecurityToken> securities)

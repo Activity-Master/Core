@@ -84,26 +84,16 @@ public class ProductXProduct
 		return id;
 	}
 	
-	public List<ProductXProductSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public Product getChildProductID()
-	{
-		return childProductID;
-	}
-	
-	public Product getParentProductID()
-	{
-		return parentProductID;
-	}
-	
 	@Override
 	public ProductXProduct setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<ProductXProductSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public ProductXProduct setSecurities(List<ProductXProductSecurityToken> securities)
@@ -112,10 +102,20 @@ public class ProductXProduct
 		return this;
 	}
 	
+	public Product getChildProductID()
+	{
+		return childProductID;
+	}
+	
 	public ProductXProduct setChildProductID(Product childProductID)
 	{
 		this.childProductID = childProductID;
 		return this;
+	}
+	
+	public Product getParentProductID()
+	{
+		return parentProductID;
 	}
 	
 	public ProductXProduct setParentProductID(Product parentProductID)

@@ -24,7 +24,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Event",name = "EventXAddress")
+@Table(schema = "Event", name = "EventXAddress")
 @XmlRootElement
 
 @Access(FIELD)
@@ -36,93 +36,95 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class EventXAddress
 		extends WarehouseClassificationRelationshipTable<Event,
-				                                                Address,
-				                                                EventXAddress,
-				                                                EventXAddressQueryBuilder,
-				                                                UUID>
+		Address,
+		EventXAddress,
+		EventXAddressQueryBuilder,
+		UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "EventXAddressID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventXAddressID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<EventXAddressSecurityToken> securities;
-
+	
 	@JoinColumn(name = "AddressID",
-			referencedColumnName = "AddressID",
-			nullable = false)
+	            referencedColumnName = "AddressID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private Address addressID;
-
+	
 	@JoinColumn(name = "EventID",
-			referencedColumnName = "EventID",
-			nullable = false)
+	            referencedColumnName = "EventID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
-
+	
 	public EventXAddress()
 	{
-
+	
 	}
-
+	
 	public EventXAddress(UUID eventXAddressID)
 	{
 		this.id = eventXAddressID;
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public List<EventXAddressSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
-	public Address getAddressID()
-	{
-		return this.addressID;
-	}
-
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-
+	
 	public EventXAddress setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public List<EventXAddressSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public EventXAddress setSecurities(List<EventXAddressSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
+	public Address getAddressID()
+	{
+		return this.addressID;
+	}
+	
 	public EventXAddress setAddressID(Address addressID)
 	{
 		this.addressID = addressID;
 		return this;
 	}
-
+	
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+	
 	public EventXAddress setEventID(Event eventID)
 	{
 		this.eventID = eventID;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -137,19 +139,19 @@ public class EventXAddress
 		EventXAddress that = (EventXAddress) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public Event getPrimary()
 	{
 		return getEventID();
 	}
-
+	
 	@Override
 	public Address getSecondary()
 	{

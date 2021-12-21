@@ -19,13 +19,13 @@ import java.util.UUID;
 @MappedSuperclass
 
 public abstract class WarehouseClassificationRelationshipTypesTable<
-		P extends WarehouseCoreTable<P,?, UUID>,
-		S extends WarehouseCoreTable<S,?,UUID>,
-		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q,  I>,
-		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J,  I>,
+		P extends WarehouseCoreTable<P, ?, UUID>,
+		S extends WarehouseCoreTable<S, ?, UUID>,
+		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, I>,
+		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, I>,
 		I extends UUID>
 		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I>
-		implements IWarehouseRelationshipClassificationTypeTable<J,Q,P,S,I>
+		implements IWarehouseRelationshipClassificationTypeTable<J, Q, P, S, I>
 {
 	
 	@Serial

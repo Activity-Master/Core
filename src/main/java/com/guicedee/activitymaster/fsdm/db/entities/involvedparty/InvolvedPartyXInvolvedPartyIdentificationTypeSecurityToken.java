@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.involvedparty;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -18,70 +17,71 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Party",name = "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken")
+@Table(schema = "Party", name = "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
 
 public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 		extends WarehouseSecurityTable<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken,
-				                              InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder, UUID>
+		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "InvolvedPartyXInvolvedPartyIdentificationTypeID",
-			referencedColumnName = "InvolvedPartyXInvolvedPartyIdentificationTypeID",
-			nullable = false)
+	            referencedColumnName = "InvolvedPartyXInvolvedPartyIdentificationTypeID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private InvolvedPartyXInvolvedPartyIdentificationType base;
-
+	
 	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken()
 	{
-
+	
 	}
-
+	
 	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken(UUID involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID)
 	{
 		this.id = involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public InvolvedPartyXInvolvedPartyIdentificationType getBase()
-	{
-		return this.base;
-	}
-
+	
 	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public InvolvedPartyXInvolvedPartyIdentificationType getBase()
+	{
+		return this.base;
+	}
+	
 	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken setBase(InvolvedPartyXInvolvedPartyIdentificationType base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -93,24 +93,20 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 			return false;
 		}
 		final InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken other = (InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

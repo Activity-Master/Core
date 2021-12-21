@@ -76,26 +76,26 @@ public class ProductTypeXClassification
 		return this.id;
 	}
 	
-	public ProductType getProductTypeID()
-	{
-		return this.productTypeID;
-	}
-	
-	public List<ProductTypeXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ProductTypeXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public ProductType getProductTypeID()
+	{
+		return this.productTypeID;
+	}
+	
 	public ProductTypeXClassification setProductTypeID(ProductType productTypeID)
 	{
 		this.productTypeID = productTypeID;
 		return this;
+	}
+	
+	public List<ProductTypeXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ProductTypeXClassification setSecurities(List<ProductTypeXClassificationSecurityToken> securities)

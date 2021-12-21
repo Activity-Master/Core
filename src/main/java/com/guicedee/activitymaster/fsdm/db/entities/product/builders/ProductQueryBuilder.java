@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 
 public class ProductQueryBuilder
 		extends QueryBuilderSCDNameDescription<ProductQueryBuilder, Product, java.util.UUID>
-		implements IProductQueryBuilder<ProductQueryBuilder,Product>
+		implements IProductQueryBuilder<ProductQueryBuilder, Product>
 {
 
 }

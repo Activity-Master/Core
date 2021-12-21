@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyN
 
 public class InvolvedPartyNameTypeQueryBuilder
 		extends QueryBuilderSCDNameDescription<InvolvedPartyNameTypeQueryBuilder, InvolvedPartyNameType, java.util.UUID>
-		implements IInvolvedPartyNameTypeQueryBuilder<InvolvedPartyNameTypeQueryBuilder,InvolvedPartyNameType>
+		implements IInvolvedPartyNameTypeQueryBuilder<InvolvedPartyNameTypeQueryBuilder, InvolvedPartyNameType>
 {
 
 }

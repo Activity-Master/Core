@@ -26,13 +26,13 @@ import java.util.UUID;
  * @since 09 Dec 2016
  */
 @MappedSuperclass
-public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,?,UUID>,
-		S extends WarehouseBaseTable<S,?,UUID>,
+public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P, ?, UUID>,
+		S extends WarehouseBaseTable<S, ?, UUID>,
 		J extends WarehouseRelationshipTable<P, S, J, Q, I>,
 		Q extends QueryBuilderRelationship<P, S, Q, J, I>,
 		I extends UUID>
 		extends WarehouseTable<J, Q, I>
-		implements IWarehouseRelationshipTable<J,Q,P,S,I>
+		implements IWarehouseRelationshipTable<J, Q, P, S, I>
 {
 	
 	@Serial
@@ -50,13 +50,13 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 	}
 	
 	@Override
-	public void createDefaultSecurity(ISystems<?,?> system, UUID... identity)
+	public void createDefaultSecurity(ISystems<?, ?> system, UUID... identity)
 	{
 	
 	}
 	
-
-	public WarehouseSecurityTable createDefaultGuestNoSecurityAccess(ISystems<?,?> system, UUID... identity)
+	
+	public WarehouseSecurityTable createDefaultGuestNoSecurityAccess(ISystems<?, ?> system, UUID... identity)
 	{
 		return null;
 	}
@@ -132,7 +132,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 	public @NotNull J update(String newValue, UUID... identifyingToken)
 	{
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-		                                         .getDeletedFlag(getEnterpriseID(), identifyingToken));
+		                            .getDeletedFlag(getEnterpriseID(), identifyingToken));
 		setEffectiveToDate(com.entityassist.RootEntity.getNow());
 		setWarehouseLastUpdatedTimestamp(com.entityassist.RootEntity.getNow());
 		update();
@@ -144,9 +144,9 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 		setWarehouseCreatedTimestamp(com.entityassist.RootEntity.getNow());
 		setWarehouseLastUpdatedTimestamp(com.entityassist.RootEntity.getNow());
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
-		                                         .getActiveFlag(getEnterpriseID(), identifyingToken));
+		                            .getActiveFlag(getEnterpriseID(), identifyingToken));
 		persist();
-			createDefaultSecurity(getSystemID());
+		createDefaultSecurity(getSystemID());
 		
 		return (J) this;
 	}

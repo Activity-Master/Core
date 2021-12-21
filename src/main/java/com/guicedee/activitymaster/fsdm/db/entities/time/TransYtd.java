@@ -2,14 +2,11 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.TransYtdQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -21,7 +18,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "Trans_Ytd",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -34,15 +31,15 @@ public class TransYtd
 	private static final long serialVersionUID = 1L;
 	@EmbeddedId
 	protected TransYtdPK id;
-
+	
 	public TransYtd()
 	{
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "" + id;
 	}
-
+	
 }

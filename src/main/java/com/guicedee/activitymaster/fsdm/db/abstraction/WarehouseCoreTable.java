@@ -11,7 +11,6 @@ import java.util.UUID;
 
 /**
  * @param <J>
- *
  * @author Marc Magon
  * @version 1.0
  * @since 06 Dec 2016
@@ -22,7 +21,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		Q extends QueryBuilderCore<Q, J, I>,
 		I extends UUID>
 		extends WarehouseBaseTable<J, Q, I>
-		implements IWarehouseCoreTable<J,Q,I>
+		implements IWarehouseCoreTable<J, Q, I>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -31,10 +30,11 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 	{
 	
 	}
-
-	public void createDefaultSecurity(ISystems<?,?> system, UUID... identity)
+	
+	public void createDefaultSecurity(ISystems<?, ?> system, UUID... identity)
 	{
-		if(ActivityMasterConfiguration.get().isSecurityEnabled())
+		if (ActivityMasterConfiguration.get()
+		                               .isSecurityEnabled())
 		{
 			/*createDefaultAdministratorSecurityAccess(system, identity);
 			createDefaultEveryoneSecurityAccess(system, identity);

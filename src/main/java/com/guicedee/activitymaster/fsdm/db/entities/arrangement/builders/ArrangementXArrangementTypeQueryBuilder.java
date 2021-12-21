@@ -18,7 +18,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 		UUID>
 {
 	@Override
-	public  SingularAttribute<ArrangementXArrangementType, Arrangement> getPrimaryAttribute()
+	public SingularAttribute<ArrangementXArrangementType, Arrangement> getPrimaryAttribute()
 	{
 		return ArrangementXArrangementType_.arrangement;
 	}
@@ -30,7 +30,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 	}
 	
 	@Override
-	public ArrangementXArrangementTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
+	public ArrangementXArrangementTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

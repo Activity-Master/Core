@@ -51,7 +51,6 @@ public class Address
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-	
 	@Column(nullable = false,
 	        name = "AddressID")
 	@JsonValue
@@ -74,6 +73,7 @@ public class Address
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Classification classificationID;
 	
 	@OneToMany(
@@ -104,6 +104,11 @@ public class Address
 	
 	}
 	
+	public Address(UUID addressID)
+	{
+		this.id = addressID;
+	}
+	
 	@Override
 	public UUID getId()
 	{
@@ -117,39 +122,9 @@ public class Address
 		return this;
 	}
 	
-	public Address(UUID addressID)
-	{
-		this.id = addressID;
-	}
-	
 	public List<AddressXClassification> getClassifications()
 	{
 		return this.classifications;
-	}
-	
-	public List<AddressSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public List<AddressXGeography> getGeographies()
-	{
-		return this.geographies;
-	}
-	
-	public List<AddressXResourceItem> getResources()
-	{
-		return this.resources;
-	}
-	
-	public List<EventXAddress> getEvents()
-	{
-		return this.events;
-	}
-	
-	public List<InvolvedPartyXAddress> getAddresses()
-	{
-		return this.addresses;
 	}
 	
 	public Address setClassifications(List<AddressXClassification> classifications)
@@ -158,10 +133,20 @@ public class Address
 		return this;
 	}
 	
+	public List<AddressSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public Address setSecurities(List<AddressSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public List<AddressXGeography> getGeographies()
+	{
+		return this.geographies;
 	}
 	
 	public Address setGeographies(List<AddressXGeography> geographies)
@@ -170,16 +155,31 @@ public class Address
 		return this;
 	}
 	
+	public List<AddressXResourceItem> getResources()
+	{
+		return this.resources;
+	}
+	
 	public Address setResources(List<AddressXResourceItem> resources)
 	{
 		this.resources = resources;
 		return this;
 	}
 	
+	public List<EventXAddress> getEvents()
+	{
+		return this.events;
+	}
+	
 	public Address setEvents(List<EventXAddress> events)
 	{
 		this.events = events;
 		return this;
+	}
+	
+	public List<InvolvedPartyXAddress> getAddresses()
+	{
+		return this.addresses;
 	}
 	
 	public Address setAddresses(List<InvolvedPartyXAddress> addresses)

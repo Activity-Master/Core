@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
+import static com.entityassist.enumerations.OrderByType.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 
 
@@ -62,6 +63,7 @@ public class ArrangementsService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IArrangement<?, ?> create(String type, UUID key,
 	                                 String arrangementTypeClassification,
 	                                 String arrangementTypeValue,
@@ -123,6 +125,7 @@ public class ArrangementsService
 	
 	@Override
 	@CacheResult(cacheName = "ArrangementTypes")
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IArrangementType<?, ?> createArrangementType(@CacheKey String type, UUID key, @CacheKey ISystems<?, ?> system, @CacheKey UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
@@ -554,6 +557,7 @@ public class ArrangementsService
 		                                                                                            .withClassification(classification)
 		                                                                                            .withValue(value)
 		                                                                                            .where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
+		                                                                                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                                            .get();
 		return arrangementXResourceItem.<IArrangement<?, ?>>map(ArrangementXResourceItem::getArrangementID).orElse(null);
 	}
@@ -573,6 +577,7 @@ public class ArrangementsService
 		                                                                           .withClassification(classification)
 		                                                                           .withValue(value)
 		                                                                           .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+		                                                                           .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                           .get();
 		return arxip.<IArrangement<?, ?>>map(ArrangementXInvolvedParty::getArrangementID).orElse(null);
 	}
@@ -592,6 +597,7 @@ public class ArrangementsService
 		                                          .withClassification(classification)
 		                                          .withValue(value)
 		                                          .where(ArrangementXRulesType_.rulesTypeID, Equals, (RulesType) ruleType)
+		                                          .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                          .get()
 		                                          .map(ArrangementXRulesType::getArrangement)
 		                                          .stream()
@@ -614,6 +620,7 @@ public class ArrangementsService
 		                                                                     .withClassification(classification)
 		                                                                     .withValue(value)
 		                                                                     .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+		                                                                     .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                     .getAll();
 		return all.stream()
 		          .map(ArrangementXInvolvedParty::getArrangementID)
@@ -635,6 +642,7 @@ public class ArrangementsService
 		                                                                     .withClassification(classification)
 		                                                                     .withValue(value)
 		                                                                     .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+		                                                                     .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                     .getAll();
 		return all.stream()
 		          .map(ArrangementXInvolvedParty::getArrangementID)
@@ -656,6 +664,7 @@ public class ArrangementsService
 		                                                                       .withClassification(classification)
 		                                                                       .withValue(value)
 		                                                                       .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
+		                                                                       .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                       .getAll();
 		return arxip.stream().<IArrangement<?, ?>>map(ArrangementXInvolvedParty::getArrangementID).collect(Collectors.toList());
 	}
@@ -675,6 +684,7 @@ public class ArrangementsService
 		                                                                       .withClassification(classification)
 		                                                                       .withValue(value)
 		                                                                       .where(ArrangementXInvolvedParty_.arrangementID, Equals, (Arrangement) arrangement)
+		                                                                       .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                       .getAll();
 		return arxip.stream().<IInvolvedParty<?, ?>>map(ArrangementXInvolvedParty::getInvolvedPartyID).collect(Collectors.toList());
 	}

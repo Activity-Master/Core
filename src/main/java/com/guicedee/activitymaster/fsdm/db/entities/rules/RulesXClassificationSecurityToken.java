@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.rules;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.builders.RulesXClassificationSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -18,7 +17,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Rules",name = "RulesXClassificationSecurityToken")
+@Table(schema = "Rules", name = "RulesXClassificationSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
@@ -26,60 +25,61 @@ public class RulesXClassificationSecurityToken
 		extends WarehouseSecurityTable<RulesXClassificationSecurityToken, RulesXClassificationSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "RulesXClassificationSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "RulesXClassificationSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "RulesXClassificationID",
-			referencedColumnName = "RulesXClassificationID",
-			nullable = false)
+	            referencedColumnName = "RulesXClassificationID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private RulesXClassification base;
-
+	
 	public RulesXClassificationSecurityToken()
 	{
-
+	
 	}
-
+	
 	public RulesXClassificationSecurityToken(UUID rulesXClassificationSecurityTokenID)
 	{
 		this.id = rulesXClassificationSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "RulesXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public RulesXClassification getBase()
-	{
-		return this.base;
-	}
-
+	
 	public RulesXClassificationSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public RulesXClassification getBase()
+	{
+		return this.base;
+	}
+	
 	public RulesXClassificationSecurityToken setBase(RulesXClassification base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -91,24 +91,20 @@ public class RulesXClassificationSecurityToken
 			return false;
 		}
 		final RulesXClassificationSecurityToken other = (RulesXClassificationSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof RulesXClassificationSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

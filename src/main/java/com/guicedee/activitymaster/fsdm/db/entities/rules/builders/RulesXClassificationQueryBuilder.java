@@ -8,14 +8,14 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class RulesXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, Classification, RulesXClassificationQueryBuilder,
-				                                              RulesXClassification, java.util.UUID>
+		RulesXClassification, java.util.UUID>
 {
 	@Override
 	public SingularAttribute<RulesXClassification, Rules> getPrimaryAttribute()
 	{
 		return RulesXClassification_.rulesID;
 	}
-
+	
 	@Override
 	public SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
 	{

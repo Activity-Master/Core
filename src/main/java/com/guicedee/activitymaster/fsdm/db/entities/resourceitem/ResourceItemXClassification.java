@@ -77,26 +77,26 @@ public class ResourceItemXClassification
 		return this.id;
 	}
 	
-	public List<ResourceItemXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
-	}
-	
 	public ResourceItemXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public List<ResourceItemXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public ResourceItemXClassification setSecurities(List<ResourceItemXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
 	}
 	
 	public ResourceItemXClassification setResourceItemID(ResourceItem resourceItemID)

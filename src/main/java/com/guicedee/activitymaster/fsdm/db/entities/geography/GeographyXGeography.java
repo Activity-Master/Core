@@ -84,25 +84,15 @@ public class GeographyXGeography
 		return this.id;
 	}
 	
-	public List<GeographyXGeographySecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Geography getParentGeographyID()
-	{
-		return this.parentGeographyID;
-	}
-	
-	public Geography getChildGeographyID()
-	{
-		return this.childGeographyID;
-	}
-	
 	public GeographyXGeography setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<GeographyXGeographySecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public GeographyXGeography setSecurities(List<GeographyXGeographySecurityToken> securities)
@@ -111,10 +101,20 @@ public class GeographyXGeography
 		return this;
 	}
 	
+	public Geography getParentGeographyID()
+	{
+		return this.parentGeographyID;
+	}
+	
 	public GeographyXGeography setParentGeographyID(Geography parentGeographyID)
 	{
 		this.parentGeographyID = parentGeographyID;
 		return this;
+	}
+	
+	public Geography getChildGeographyID()
+	{
+		return this.childGeographyID;
 	}
 	
 	public GeographyXGeography setChildGeographyID(Geography childGeographyID)

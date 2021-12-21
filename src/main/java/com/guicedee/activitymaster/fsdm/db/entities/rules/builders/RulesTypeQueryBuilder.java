@@ -12,7 +12,7 @@ import static com.entityassist.enumerations.Operand.*;
 
 public class RulesTypeQueryBuilder
 		extends QueryBuilderSCDNameDescription<RulesTypeQueryBuilder, RulesType, java.util.UUID>
-		implements IRuleTypeQueryBuilder<RulesTypeQueryBuilder,RulesType>
+		implements IRuleTypeQueryBuilder<RulesTypeQueryBuilder, RulesType>
 {
 	@jakarta.validation.constraints.NotNull
 	public RulesTypeQueryBuilder withClassification(Classification classification, String value)

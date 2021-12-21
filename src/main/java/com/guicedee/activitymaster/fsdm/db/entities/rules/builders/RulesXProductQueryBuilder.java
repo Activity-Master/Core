@@ -22,7 +22,7 @@ public class RulesXProductQueryBuilder
 	{
 		return RulesXProduct_.rulesID;
 	}
-
+	
 	@Override
 	public SingularAttribute<RulesXProduct, Product> getSecondaryAttribute()
 	{
@@ -31,13 +31,13 @@ public class RulesXProductQueryBuilder
 	
 	
 	@jakarta.validation.constraints.NotNull
-	public RulesXProductQueryBuilder withClassification(String classification, String value, ISystems<?,?> system, UUID...identityToken)
+	public RulesXProductQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		RulesXProductQueryBuilder builder =
 				new RulesXProduct()
 						.builder()
-						.withClassification(classification,system)
+						.withClassification(classification, system)
 						.withValue(value)
 						.inActiveRange()
 						.inDateRange()

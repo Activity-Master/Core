@@ -7,7 +7,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 public class EnterpriseQueryBuilder
 		extends QueryBuilderNameDescription<EnterpriseQueryBuilder, Enterprise, java.util.UUID>
 		implements
-		           IEnterpriseQueryBuilder<EnterpriseQueryBuilder,Enterprise>
+		IEnterpriseQueryBuilder<EnterpriseQueryBuilder, Enterprise>
 {
 	@jakarta.validation.constraints.NotNull
 	public EnterpriseQueryBuilder withEnterprise(Enterprise enterprise)

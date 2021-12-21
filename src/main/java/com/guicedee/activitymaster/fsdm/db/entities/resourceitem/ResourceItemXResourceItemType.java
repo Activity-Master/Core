@@ -79,25 +79,15 @@ public class ResourceItemXResourceItemType
 		return this.id;
 	}
 	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
-	}
-	
-	public ResourceItemType getResourceItemTypeID()
-	{
-		return this.resourceItemTypeID;
-	}
-	
-	public List<ResourceItemXResourceItemTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ResourceItemXResourceItemType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
 	}
 	
 	public ResourceItemXResourceItemType setResourceItemID(ResourceItem resourceItemID)
@@ -106,10 +96,20 @@ public class ResourceItemXResourceItemType
 		return this;
 	}
 	
+	public ResourceItemType getResourceItemTypeID()
+	{
+		return this.resourceItemTypeID;
+	}
+	
 	public ResourceItemXResourceItemType setResourceItemTypeID(ResourceItemType resourceItemTypeID)
 	{
 		this.resourceItemTypeID = resourceItemTypeID;
 		return this;
+	}
+	
+	public List<ResourceItemXResourceItemTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ResourceItemXResourceItemType setSecurities(List<ResourceItemXResourceItemTypeSecurityToken> securities)

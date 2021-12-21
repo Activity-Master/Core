@@ -20,7 +20,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Event",name = "EventXProduct")
+@Table(schema = "Event", name = "EventXProduct")
 @XmlRootElement
 
 @Access(FIELD)
@@ -32,43 +32,45 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class EventXProduct
 		extends WarehouseClassificationRelationshipTable<Event,
-				                                                Product,
-				                                                EventXProduct,
-				                                                EventXProductQueryBuilder,
-				                                                UUID>
+		Product,
+		EventXProduct,
+		EventXProductQueryBuilder,
+		UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "EventXProductID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventXProductID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<EventXProductSecurityToken> securities;
-
+	
 	@JoinColumn(name = "EventID",
-			referencedColumnName = "EventID",
-			nullable = false)
+	            referencedColumnName = "EventID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
 	@JoinColumn(name = "ProductID",
-			referencedColumnName = "ProductID",
-			nullable = false)
+	            referencedColumnName = "ProductID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private Product productID;
-
+	
 	public EventXProduct()
 	{
-
+	
 	}
-
+	
 	public EventXProduct(UUID eventXProductID)
 	{
 		this.id = eventXProductID;
@@ -78,52 +80,52 @@ public class EventXProduct
 	{
 		return this.id;
 	}
-
-	public List<EventXProductSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-
-	public Product getProductID()
-	{
-		return this.productID;
-	}
-
+	
 	public EventXProduct setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public List<EventXProductSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public EventXProduct setSecurities(List<EventXProductSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+	
 	public EventXProduct setEventID(Event eventID)
 	{
 		this.eventID = eventID;
 		return this;
 	}
-
+	
+	public Product getProductID()
+	{
+		return this.productID;
+	}
+	
 	public EventXProduct setProductID(Product productID)
 	{
 		this.productID = productID;
 		return this;
 	}
-
+	
 	@Override
 	public Event getPrimary()
 	{
 		return getEventID();
 	}
-
+	
 	@Override
 	public Product getSecondary()
 	{

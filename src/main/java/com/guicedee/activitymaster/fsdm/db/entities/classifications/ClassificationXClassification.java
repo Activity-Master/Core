@@ -55,6 +55,7 @@ public class ClassificationXClassification
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Classification childClassificationID;
 	
 	@JoinColumn(name = "ParentClassificationID",
@@ -62,6 +63,7 @@ public class ClassificationXClassification
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Classification parentClassificationID;
 	
 	@OneToMany(

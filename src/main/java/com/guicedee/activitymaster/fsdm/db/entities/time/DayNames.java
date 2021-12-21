@@ -2,12 +2,11 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.DayNamesQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.*;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
@@ -21,7 +20,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "DayNames",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -38,59 +37,59 @@ public class DayNames
 	
 	@Basic(optional = false)
 	@Column(name = "DayNameID",
-			nullable = false)
+	        nullable = false)
 	private Integer id;
 	@Basic(optional = false)
 	@Column(name = "DayName",
-			nullable = false,
-			length = 100)
+	        nullable = false,
+	        length = 100)
 	private String dayName;
 	@Basic(optional = false)
 	@Column(name = "DayShortName",
-			nullable = false,
-			length = 200)
+	        nullable = false,
+	        length = 200)
 	private String dayShortName;
 	@Basic(optional = false)
 	@Column(name = "DaySortOrder",
-			nullable = false)
+	        nullable = false)
 	private int daySortOrder;
 	@Basic(optional = false)
 	@Column(name = "DayIsBusinessDay",
-			nullable = false)
+	        nullable = false)
 	private short dayIsBusinessDay;
 	@Basic(optional = false)
 	@Column(name = "DayBusinessDayClassification",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String dayBusinessDayClassification;
 	@OneToMany(cascade =
 			           {
 					           CascadeType.MERGE, CascadeType.PERSIST
 			           },
-			mappedBy = "dayNameID")
+	           mappedBy = "dayNameID")
 	private List<Days> DaysList;
-
+	
 	@Basic(optional = false)
 	@Column(name = "DayAbbreviation",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String dayAbbreviation;
-
+	
 	@Basic(optional = false)
 	@Column(name = "DayLongAbbreviation",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String dayLongAbbreviation;
-
+	
 	public DayNames()
 	{
 	}
-
+	
 	public DayNames(Integer id)
 	{
 		this.id = id;
 	}
-
+	
 	public DayNames(Integer id, String dayName, String dayShortName, int daySortOrder, short dayIsBusinessDay, String dayBusinessDayClassification)
 	{
 		this.id = id;
@@ -100,7 +99,7 @@ public class DayNames
 		this.dayIsBusinessDay = dayIsBusinessDay;
 		this.dayBusinessDayClassification = dayBusinessDayClassification;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
@@ -108,7 +107,7 @@ public class DayNames
 		hash += (id != null ? id.hashCode() : 0);
 		return hash;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -123,11 +122,11 @@ public class DayNames
 		DayNames dayNames = (DayNames) o;
 		return getDayName().equals(dayNames.getDayName());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return dayName;
 	}
-
+	
 }

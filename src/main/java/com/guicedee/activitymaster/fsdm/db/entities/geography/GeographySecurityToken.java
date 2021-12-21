@@ -7,8 +7,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.geography;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.geography.builders.GeographySecurityTokenQueryBuilder;
-
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -24,7 +22,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Geography",name = "GeographySecurityToken")
+@Table(schema = "Geography", name = "GeographySecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
@@ -32,59 +30,60 @@ public class GeographySecurityToken
 		extends WarehouseSecurityTable<GeographySecurityToken, GeographySecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "GeographySecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "GeographySecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	@JoinColumn(name = "GeographyID",
-			referencedColumnName = "GeographyID",
-			nullable = false)
+	            referencedColumnName = "GeographyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private Geography base;
-
+	
 	public GeographySecurityToken()
 	{
-
+	
 	}
-
+	
 	public GeographySecurityToken(UUID geographySecurityTokenID)
 	{
 		this.id = geographySecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "GeographySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public Geography getBase()
-	{
-		return this.base;
-	}
-
+	
 	public GeographySecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public Geography getBase()
+	{
+		return this.base;
+	}
+	
 	public GeographySecurityToken setBase(Geography base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -96,24 +95,20 @@ public class GeographySecurityToken
 			return false;
 		}
 		final GeographySecurityToken other = (GeographySecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof GeographySecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

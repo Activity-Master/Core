@@ -44,9 +44,10 @@ public class InvolvedPartyXInvolvedPartyNameType
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-	        name = "InvolvedPartyXInvolvedPartyNameTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "InvolvedPartyXInvolvedPartyNameTypeID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@JoinColumn(name = "InvolvedPartyID",
@@ -82,26 +83,11 @@ public class InvolvedPartyXInvolvedPartyNameType
 		this.id = involvedPartyXInvolvedPartyNameTypeID;
 		setValue(involvedPartyName);
 	}
-
+	
 	@Override
 	public UUID getId()
 	{
 		return this.id;
-	}
-	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public InvolvedPartyNameType getInvolvedPartyNameTypeID()
-	{
-		return this.involvedPartyNameTypeID;
-	}
-	
-	public List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
 	}
 	
 	@Override
@@ -111,16 +97,31 @@ public class InvolvedPartyXInvolvedPartyNameType
 		return this;
 	}
 	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+	
 	public InvolvedPartyXInvolvedPartyNameType setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
 	}
 	
+	public InvolvedPartyNameType getInvolvedPartyNameTypeID()
+	{
+		return this.involvedPartyNameTypeID;
+	}
+	
 	public InvolvedPartyXInvolvedPartyNameType setInvolvedPartyNameTypeID(InvolvedPartyNameType involvedPartyNameTypeID)
 	{
 		this.involvedPartyNameTypeID = involvedPartyNameTypeID;
 		return this;
+	}
+	
+	public List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public InvolvedPartyXInvolvedPartyNameType setSecurities(List<InvolvedPartyXInvolvedPartyNameTypeSecurityToken> securities)

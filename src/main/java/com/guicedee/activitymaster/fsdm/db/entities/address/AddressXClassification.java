@@ -57,6 +57,7 @@ public class AddressXClassification
 	@JoinColumn(name = "AddressID",
 	            referencedColumnName = "AddressID",
 	            nullable = false)
+	
 	private Address addressID;
 	
 	@OneToMany(
@@ -79,26 +80,26 @@ public class AddressXClassification
 		return this.id;
 	}
 	
-	public Address getAddressID()
-	{
-		return this.addressID;
-	}
-	
-	public List<AddressXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public AddressXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public Address getAddressID()
+	{
+		return this.addressID;
+	}
+	
 	public AddressXClassification setAddressID(Address addressID)
 	{
 		this.addressID = addressID;
 		return this;
+	}
+	
+	public List<AddressXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public AddressXClassification setSecurities(List<AddressXClassificationSecurityToken> securities)

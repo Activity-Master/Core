@@ -107,15 +107,15 @@ public class InvolvedPartyNameType
 		return involvedPartyXInvolvedPartyNameTypeList;
 	}
 	
-	public List<InvolvedPartyNameTypeSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
 	public InvolvedPartyNameType setInvolvedPartyXInvolvedPartyNameTypeList(List<InvolvedPartyXInvolvedPartyNameType> involvedPartyXInvolvedPartyNameTypeList)
 	{
 		this.involvedPartyXInvolvedPartyNameTypeList = involvedPartyXInvolvedPartyNameTypeList;
 		return this;
+	}
+	
+	public List<InvolvedPartyNameTypeSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public InvolvedPartyNameType setSecurities(List<InvolvedPartyNameTypeSecurityToken> securities)
@@ -136,17 +136,13 @@ public class InvolvedPartyNameType
 			return false;
 		}
 		InvolvedPartyNameType other = (InvolvedPartyNameType) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		Object this$id = getId();
 		Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
 	
 	protected boolean canEqual(Object other)
@@ -171,22 +167,16 @@ public class InvolvedPartyNameType
 	}
 	
 	@Override
-	public String getName()
-	{
-		return name;
-	}
-	
-	@Override
-	public String getDescription()
-	{
-		return description;
-	}
-	
-	@Override
 	public InvolvedPartyNameType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	@Override
+	public String getName()
+	{
+		return name;
 	}
 	
 	@Override
@@ -195,6 +185,12 @@ public class InvolvedPartyNameType
 	{
 		this.name = name;
 		return this;
+	}
+	
+	@Override
+	public String getDescription()
+	{
+		return description;
 	}
 	
 	@Override

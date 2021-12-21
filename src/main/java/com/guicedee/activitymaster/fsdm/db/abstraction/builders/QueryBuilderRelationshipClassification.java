@@ -19,13 +19,13 @@ import java.util.UUID;
  * @author Marc Magon
  * @since 01 May 2017
  */
-public abstract class QueryBuilderRelationshipClassification<P extends WarehouseCoreTable<P,?, UUID>,
-		S extends WarehouseCoreTable<S,?,UUID>,
+public abstract class QueryBuilderRelationshipClassification<P extends WarehouseCoreTable<P, ?, UUID>,
+		S extends WarehouseCoreTable<S, ?, UUID>,
 		J extends QueryBuilderRelationshipClassification<P, S, J, E, I>,
 		E extends WarehouseClassificationRelationshipTable<P, S, E, J, I>,
 		I extends UUID>
 		extends QueryBuilderRelationship<P, S, J, E, I>
-		implements IQueryBuilderRelationships<J,E,P,S,I>,
-		           IQueryBuilderClassifications<J,E,I>
+		implements IQueryBuilderRelationships<J, E, P, S, I>,
+		           IQueryBuilderClassifications<J, E, I>
 {
 }

@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemTyp
 
 public class ResourceItemTypeQueryBuilder
 		extends QueryBuilderSCDNameDescription<ResourceItemTypeQueryBuilder, ResourceItemType, java.util.UUID>
-		implements IResourceItemTypeQueryBuilder<ResourceItemTypeQueryBuilder,ResourceItemType>
+		implements IResourceItemTypeQueryBuilder<ResourceItemTypeQueryBuilder, ResourceItemType>
 {
 
 }

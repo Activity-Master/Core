@@ -2,8 +2,6 @@ package com.guicedee.activitymaster.fsdm.threads;
 
 
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +46,6 @@ public abstract class IdentifiedThread<J extends IdentifiedThread<J>>
 		return (J) this;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public abstract void perform();
 
 	public Object call() throws Exception

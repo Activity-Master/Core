@@ -57,6 +57,7 @@ public class ArrangementXClassification
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID",
 	            nullable = false)
+	
 	private Arrangement arrangementID;
 	
 	@OneToMany(
@@ -79,26 +80,26 @@ public class ArrangementXClassification
 		return this.id;
 	}
 	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
-	}
-	
-	public List<ArrangementXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
 	
+	public Arrangement getArrangementID()
+	{
+		return this.arrangementID;
+	}
+	
 	public ArrangementXClassification setArrangementID(Arrangement arrangementID)
 	{
 		this.arrangementID = arrangementID;
 		return this;
+	}
+	
+	public List<ArrangementXClassificationSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ArrangementXClassification setSecurities(List<ArrangementXClassificationSecurityToken> securities)

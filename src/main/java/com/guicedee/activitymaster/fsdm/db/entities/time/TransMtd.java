@@ -2,14 +2,11 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.TransMtdQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -22,7 +19,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "Trans_Mtd",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -35,11 +32,11 @@ public class TransMtd
 	private static final long serialVersionUID = 1L;
 	@EmbeddedId
 	protected TransMtdPK id;
-
+	
 	public TransMtd()
 	{
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -54,17 +51,17 @@ public class TransMtd
 		TransMtd transMtd = (TransMtd) o;
 		return getId().equals(transMtd.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "" + id;
 	}
-
+	
 }

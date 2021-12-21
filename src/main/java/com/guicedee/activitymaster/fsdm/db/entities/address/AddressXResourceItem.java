@@ -61,6 +61,7 @@ public class AddressXResourceItem
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Address addressID;
 	
 	@JoinColumn(name = "ResourceItemID",
@@ -68,6 +69,7 @@ public class AddressXResourceItem
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private ResourceItem resourceItemID;
 	
 	public AddressXResourceItem()
@@ -85,25 +87,15 @@ public class AddressXResourceItem
 		return this.id;
 	}
 	
-	public List<AddressXResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Address getAddressID()
-	{
-		return this.addressID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
-	}
-	
 	public AddressXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<AddressXResourceItemSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public AddressXResourceItem setSecurities(List<AddressXResourceItemSecurityToken> securities)
@@ -112,10 +104,20 @@ public class AddressXResourceItem
 		return this;
 	}
 	
+	public Address getAddressID()
+	{
+		return this.addressID;
+	}
+	
 	public AddressXResourceItem setAddressID(Address addressID)
 	{
 		this.addressID = addressID;
 		return this;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return this.resourceItemID;
 	}
 	
 	public AddressXResourceItem setResourceItemID(ResourceItem resourceItemID)

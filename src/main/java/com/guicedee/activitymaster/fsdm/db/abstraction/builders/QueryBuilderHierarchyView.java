@@ -13,8 +13,8 @@ import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
 
-public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends UUID>
-	extends QueryBuilder<J,E,I>
+public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends UUID>
+		extends QueryBuilder<J, E, I>
 {
 	@Override
 	public void onSelectExecution(TypedQuery<?> query)
@@ -28,20 +28,20 @@ public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchy
 	{
 		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
 	}
-
+	
 	@Override
 	public boolean isIdGenerated()
 	{
 		return false;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public J findMyHierarchy(Serializable token)
 	{
 		where(getAttribute("path"), Like, "%" + token);
 		return (J) this;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public J findMyChildrenRecursive(Serializable token)
 	{
@@ -49,20 +49,20 @@ public abstract class QueryBuilderHierarchyView <J extends QueryBuilderHierarchy
 		where(getAttribute("path"), NotLike, "%" + token);
 		return (J) this;
 	}
-
-
+	
+	
 	@SuppressWarnings("unchecked")
 	public J findMyChildren(UUID securityTokenID)
 	{
 		where(SecurityHierarchyView_.parentID, Equals, securityTokenID);
 		return (J) this;
 	}
-
-
+	
+	
 	@SuppressWarnings("unchecked")
 	public J withValue(String value)
 	{
-		where(this.<E,String>getAttribute("value"), Equals, value);
+		where(this.<E, String>getAttribute("value"), Equals, value);
 		return (J) this;
 	}
 }

@@ -19,7 +19,7 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Event",name = "EventXGeography")
+@Table(schema = "Event", name = "EventXGeography")
 @XmlRootElement
 
 @Access(FIELD)
@@ -31,92 +31,94 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class EventXGeography
 		extends WarehouseClassificationRelationshipTable<Event,
-				                                                Geography,
-				                                                EventXGeography,
-				                                                EventXGeographyQueryBuilder,
-				                                                UUID>
+		Geography,
+		EventXGeography,
+		EventXGeographyQueryBuilder,
+		UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "EventXGeographyID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventXGeographyID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<EventXGeographySecurityToken> securities;
-
+	
 	@JoinColumn(name = "EventID",
-			referencedColumnName = "EventID",
-			nullable = false)
+	            referencedColumnName = "EventID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
 	@JoinColumn(name = "GeographyID",
-			referencedColumnName = "GeographyID",
-			nullable = false)
+	            referencedColumnName = "GeographyID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
 	private Geography geographyID;
-
+	
 	public EventXGeography()
 	{
-
+	
 	}
-
+	
 	public EventXGeography(UUID eventXGeographyID)
 	{
 		this.id = eventXGeographyID;
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public List<EventXGeographySecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-
-	public Geography getGeographyID()
-	{
-		return this.geographyID;
-	}
-
+	
 	public EventXGeography setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public List<EventXGeographySecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public EventXGeography setSecurities(List<EventXGeographySecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+	
 	public EventXGeography setEventID(Event eventID)
 	{
 		this.eventID = eventID;
 		return this;
 	}
-
+	
+	public Geography getGeographyID()
+	{
+		return this.geographyID;
+	}
+	
 	public EventXGeography setGeographyID(Geography geographyID)
 	{
 		this.geographyID = geographyID;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -131,19 +133,19 @@ public class EventXGeography
 		EventXGeography that = (EventXGeography) o;
 		return Objects.equals(getId(), that.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public Event getPrimary()
 	{
 		return getEventID();
 	}
-
+	
 	@Override
 	public Geography getSecondary()
 	{

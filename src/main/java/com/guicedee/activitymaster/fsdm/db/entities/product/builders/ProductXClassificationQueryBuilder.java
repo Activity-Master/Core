@@ -8,16 +8,16 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ProductXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Product, Classification, ProductXClassificationQueryBuilder,
-				                                              ProductXClassification, java.util.UUID>
+		ProductXClassification, java.util.UUID>
 {
 	@Override
 	public SingularAttribute<ProductXClassification, Product> getPrimaryAttribute()
 	{
 		return ProductXClassification_.productID;
 	}
-
+	
 	@Override
-	public  SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
+	public SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
 	{
 		return ProductXClassification_.classificationID;
 	}

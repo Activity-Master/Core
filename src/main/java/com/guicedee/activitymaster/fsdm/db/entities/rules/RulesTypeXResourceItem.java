@@ -23,7 +23,8 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Rules",
        name = "RulesTypeXResourceItem")
 @XmlRootElement
-@Access(FIELD)@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Access(FIELD)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
@@ -78,26 +79,16 @@ public class RulesTypeXResourceItem
 		return id;
 	}
 	
-	public List<RulesTypeXResourceItemSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public RulesType getRulesTypeID()
-	{
-		return rulesTypeID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return resourceItemID;
-	}
-	
 	@Override
 	public RulesTypeXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<RulesTypeXResourceItemSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public RulesTypeXResourceItem setSecurities(List<RulesTypeXResourceItemSecurityToken> securities)
@@ -106,10 +97,20 @@ public class RulesTypeXResourceItem
 		return this;
 	}
 	
+	public RulesType getRulesTypeID()
+	{
+		return rulesTypeID;
+	}
+	
 	public RulesTypeXResourceItem setRulesTypeID(RulesType rulesTypeID)
 	{
 		this.rulesTypeID = rulesTypeID;
 		return this;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return resourceItemID;
 	}
 	
 	public RulesTypeXResourceItem setResourceItemID(ResourceItem resourceItemID)

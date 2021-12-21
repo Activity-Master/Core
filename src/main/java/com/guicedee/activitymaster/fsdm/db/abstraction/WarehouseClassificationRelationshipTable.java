@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassification;
@@ -18,13 +19,13 @@ import java.util.UUID;
  */
 @MappedSuperclass
 
-public abstract class WarehouseClassificationRelationshipTable <P extends WarehouseCoreTable<P,?, UUID>,
-		S extends WarehouseCoreTable<S,?,UUID>,
+public abstract class WarehouseClassificationRelationshipTable<P extends WarehouseCoreTable<P, ?, UUID>,
+		S extends WarehouseCoreTable<S, ?, UUID>,
 		J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I>,
 		Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I>,
 		I extends UUID>
 		extends WarehouseRelationshipTable<P, S, J, Q, I>
-		implements IWarehouseRelationshipClassificationTable<J,Q,P,S,I>
+		implements IWarehouseRelationshipClassificationTable<J, Q, P, S, I>
 {
 	
 	@Serial
@@ -35,6 +36,7 @@ public abstract class WarehouseClassificationRelationshipTable <P extends Wareho
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Classification classificationID;
 	
 	public WarehouseClassificationRelationshipTable()
@@ -43,40 +45,15 @@ public abstract class WarehouseClassificationRelationshipTable <P extends Wareho
 	}
 	
 	@Override
-	public J setClassificationID(IClassification classificationID)
-	{
-		this.classificationID = (Classification) classificationID;
-		return (J)this;
-	}
-	
-	@Override
 	public Classification getClassificationID()
 	{
 		return classificationID;
 	}
 	
-	/*	@Override
-	@SuppressWarnings("unchecked")
-	protected @NotNull Class<Q> getClassQueryBuilderClass()
-	{
-		return (Class<Q>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
-	}
-	
 	@Override
-	@SuppressWarnings("unchecked")
-	protected @NotNull Class<ST> findPersistentSecurityClass()
-	{
-		return (Class<ST>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[5];
-	}
-	*/
-/*	public IClassification<?,?> getClassificationID()
-	{
-		return this.classificationID;
-	}
-	
-	public J setClassificationID(IClassification<?,?> classificationID)
+	public J setClassificationID(IClassification classificationID)
 	{
 		this.classificationID = (Classification) classificationID;
 		return (J) this;
-	}*/
+	}
 }

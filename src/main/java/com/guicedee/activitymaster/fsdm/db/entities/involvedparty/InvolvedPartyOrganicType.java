@@ -24,7 +24,7 @@ import static jakarta.persistence.FetchType.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(schema = "Party",
-		name = "InvolvedPartyOrganicType")
+       name = "InvolvedPartyOrganicType")
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -38,66 +38,67 @@ import static jakarta.persistence.FetchType.*;
 public class InvolvedPartyOrganicType
 		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "InvolvedPartyOrganicTypeID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "InvolvedPartyOrganicTypeID")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 200)
+	      max = 200)
 	@Column(nullable = false,
-			length = 200,
-			name = "InvolvedPartyTypeName")
-		private String name;
+	        length = 200,
+	        name = "InvolvedPartyTypeName")
+	private String name;
 	@Basic(optional = false,
-			fetch = EAGER)
+	       fetch = EAGER)
 	@NotNull
 	@Size(min = 1,
-			max = 500)
+	      max = 500)
 	@Column(nullable = false,
-			length = 500,
-			name = "InvolvedPartyTypeDesc")
-		private String description;
-
+	        length = 500,
+	        name = "InvolvedPartyTypeDesc")
+	private String description;
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<InvolvedPartyOrganicTypeSecurityToken> securities;
-
+	
 	public InvolvedPartyOrganicType()
 	{
-
+	
 	}
-
+	
 	public InvolvedPartyOrganicType(UUID involvedPartyOrganicTypeID)
 	{
 		id = involvedPartyOrganicTypeID;
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "OrganicPartyType - " + getName();
 	}
-
+	
 	public List<InvolvedPartyOrganicTypeSecurityToken> getSecurities()
 	{
 		return securities;
 	}
-
+	
 	public InvolvedPartyOrganicType setSecurities(List<InvolvedPartyOrganicTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -112,50 +113,50 @@ public class InvolvedPartyOrganicType
 		InvolvedPartyOrganicType that = (InvolvedPartyOrganicType) o;
 		return Objects.equals(getName(), that.getName());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public UUID getId()
 	{
 		return id;
 	}
-
-	@Override
-	public @NotNull @Size(min = 1,
-			max = 200) String getName()
-	{
-		return name;
-	}
-
-	@Override
-	public String getDescription()
-	{
-		return description;
-	}
-
+	
 	@Override
 	public InvolvedPartyOrganicType setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	@Override
+	public @NotNull @Size(min = 1,
+	                      max = 200) String getName()
+	{
+		return name;
+	}
+	
 	@Override
 	public InvolvedPartyOrganicType setName(@NotNull @Size(min = 1,
-			max = 200) String name)
+	                                                       max = 200) String name)
 	{
 		this.name = name;
 		return this;
 	}
-
+	
+	@Override
+	public String getDescription()
+	{
+		return description;
+	}
+	
 	@Override
 	public InvolvedPartyOrganicType setDescription(@NotNull @Size(min = 1,
-			max = 500) String description)
+	                                                              max = 500) String description)
 	{
 		this.description = description;
 		return this;

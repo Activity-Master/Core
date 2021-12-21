@@ -7,13 +7,9 @@ package com.guicedee.activitymaster.fsdm.db.hierarchies;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.fsdm.db.hierarchies.builders.ClassificationHierarchyViewQueryBuilder;
-
-import org.hibernate.annotations.Immutable;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.Immutable;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -31,28 +27,28 @@ public class ClassificationHierarchyView
 		extends WarehouseHierarchyView<ClassificationHierarchyView, ClassificationHierarchyViewQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	public ClassificationHierarchyView()
 	{
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
+	
 	public ClassificationHierarchyView setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -64,24 +60,20 @@ public class ClassificationHierarchyView
 			return false;
 		}
 		final ClassificationHierarchyView other = (ClassificationHierarchyView) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof ClassificationHierarchyView;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

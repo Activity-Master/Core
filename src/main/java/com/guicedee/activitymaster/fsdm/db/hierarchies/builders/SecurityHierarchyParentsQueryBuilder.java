@@ -16,7 +16,7 @@ public class SecurityHierarchyParentsQueryBuilder
 	{
 		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
 	}
-
+	
 	@Override
 	public boolean isIdGenerated()
 	{

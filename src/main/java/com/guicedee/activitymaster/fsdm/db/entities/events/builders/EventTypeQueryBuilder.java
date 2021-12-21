@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
 
 public class EventTypeQueryBuilder
 		extends QueryBuilderSCDNameDescription<EventTypeQueryBuilder, EventType, java.util.UUID>
-		implements IEventTypeQueryBuilder<EventTypeQueryBuilder,EventType>
+		implements IEventTypeQueryBuilder<EventTypeQueryBuilder, EventType>
 {
 
 }

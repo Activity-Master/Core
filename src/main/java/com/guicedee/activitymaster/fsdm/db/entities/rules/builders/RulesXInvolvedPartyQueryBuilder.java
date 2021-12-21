@@ -14,7 +14,7 @@ public class RulesXInvolvedPartyQueryBuilder
 	{
 		return RulesXInvolvedParty_.rulesID;
 	}
-
+	
 	@Override
 	public SingularAttribute<RulesXInvolvedParty, InvolvedParty> getSecondaryAttribute()
 	{

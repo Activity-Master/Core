@@ -49,60 +49,61 @@ import static jakarta.persistence.AccessType.*;
 		property = "id")
 public class Arrangement
 		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, UUID>
-		implements IArrangement<Arrangement,ArrangementQueryBuilder>
+		implements IArrangement<Arrangement, ArrangementQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
 	        name = "ArrangementID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXClassification> classifications;
+	private List<ArrangementXClassification> classifications;
 	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXInvolvedParty> parties;
+	private List<ArrangementXInvolvedParty> parties;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXResourceItem> resources;
+	private List<ArrangementXResourceItem> resources;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-		private List<EventXArrangement> events;
+	private List<EventXArrangement> events;
 	
 	@OneToMany(
 			mappedBy = "childArrangementID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXArrangement> arrangementXArrangementList;
+	private List<ArrangementXArrangement> arrangementXArrangementList;
 	@OneToMany(
 			mappedBy = "parentArrangementID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXArrangement> arrangementXArrangementList1;
+	private List<ArrangementXArrangement> arrangementXArrangementList1;
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
-		private List<ArrangementXProduct> products;
+	private List<ArrangementXProduct> products;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<ArrangementSecurityToken> securities;
+	private List<ArrangementSecurityToken> securities;
 	
 	@OneToMany(
 			fetch = FetchType.LAZY,
 			mappedBy = "arrangement")
-		private List<ArrangementXArrangementType> types;
+	private List<ArrangementXArrangementType> types;
 	@OneToMany(
 			fetch = FetchType.LAZY,
 			mappedBy = "arrangement")
-		private List<ArrangementXRules> rules;
+	private List<ArrangementXRules> rules;
 	
 	@OneToMany(
 			fetch = FetchType.LAZY,
@@ -119,12 +120,12 @@ public class Arrangement
 		this.id = arrangementID;
 	}
 	
-	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, InvolvedParty involvedParty, IEnterprise<?,?> enterprise)
+	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, InvolvedParty involvedParty, IEnterprise<?, ?> enterprise)
 	{
 		classificationLink.setArrangementID(this);
 		classificationLink.setInvolvedPartyID(involvedParty);
 	}
-
+	
 	
 	@Override
 	public Arrangement remove()
@@ -179,50 +180,15 @@ public class Arrangement
 		return this.classifications;
 	}
 	
-	public List<ArrangementXInvolvedParty> getParties()
-	{
-		return this.parties;
-	}
-	
-	public List<ArrangementXResourceItem> getResources()
-	{
-		return this.resources;
-	}
-	
-	public List<EventXArrangement> getEvents()
-	{
-		return this.events;
-	}
-	
-	public List<ArrangementXArrangement> getArrangementXArrangementList()
-	{
-		return this.arrangementXArrangementList;
-	}
-	
-	public List<ArrangementXArrangement> getArrangementXArrangementList1()
-	{
-		return this.arrangementXArrangementList1;
-	}
-	
-	public List<ArrangementXProduct> getProducts()
-	{
-		return this.products;
-	}
-	
-	public List<ArrangementSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public List<ArrangementXArrangementType> getTypes()
-	{
-		return this.types;
-	}
-	
 	public Arrangement setClassifications(List<ArrangementXClassification> classifications)
 	{
 		this.classifications = classifications;
 		return this;
+	}
+	
+	public List<ArrangementXInvolvedParty> getParties()
+	{
+		return this.parties;
 	}
 	
 	public Arrangement setParties(List<ArrangementXInvolvedParty> parties)
@@ -231,10 +197,20 @@ public class Arrangement
 		return this;
 	}
 	
+	public List<ArrangementXResourceItem> getResources()
+	{
+		return this.resources;
+	}
+	
 	public Arrangement setResources(List<ArrangementXResourceItem> resources)
 	{
 		this.resources = resources;
 		return this;
+	}
+	
+	public List<EventXArrangement> getEvents()
+	{
+		return this.events;
 	}
 	
 	public Arrangement setEvents(List<EventXArrangement> events)
@@ -243,10 +219,20 @@ public class Arrangement
 		return this;
 	}
 	
+	public List<ArrangementXArrangement> getArrangementXArrangementList()
+	{
+		return this.arrangementXArrangementList;
+	}
+	
 	public Arrangement setArrangementXArrangementList(List<ArrangementXArrangement> arrangementXArrangementList)
 	{
 		this.arrangementXArrangementList = arrangementXArrangementList;
 		return this;
+	}
+	
+	public List<ArrangementXArrangement> getArrangementXArrangementList1()
+	{
+		return this.arrangementXArrangementList1;
 	}
 	
 	public Arrangement setArrangementXArrangementList1(List<ArrangementXArrangement> arrangementXArrangementList1)
@@ -255,16 +241,31 @@ public class Arrangement
 		return this;
 	}
 	
+	public List<ArrangementXProduct> getProducts()
+	{
+		return this.products;
+	}
+	
 	public Arrangement setProducts(List<ArrangementXProduct> products)
 	{
 		this.products = products;
 		return this;
 	}
 	
+	public List<ArrangementSecurityToken> getSecurities()
+	{
+		return this.securities;
+	}
+	
 	public Arrangement setSecurities(List<ArrangementSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
+	}
+	
+	public List<ArrangementXArrangementType> getTypes()
+	{
+		return this.types;
 	}
 	
 	public Arrangement setTypes(List<ArrangementXArrangementType> types)
@@ -323,7 +324,7 @@ public class Arrangement
 	}
 	
 	@Override
-	public void configureArrangementTypeAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IArrangementType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureArrangementTypeAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IArrangementType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		ArrangementXArrangementType axa = (ArrangementXArrangementType) linkTable;
 		axa.setArrangement(primary);
@@ -333,13 +334,13 @@ public class Arrangement
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?,?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		((ArrangementXClassification) linkTable).setArrangementID(this);
 	}
 	
 	@Override
-	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		ArrangementXProduct axa = (ArrangementXProduct) linkTable;
 		axa.setArrangementID(primary);
@@ -349,7 +350,7 @@ public class Arrangement
 	}
 	
 	@Override
-	public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Arrangement primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
+	public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Arrangement primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
 	{
 		ArrangementXRulesType axa = (ArrangementXRulesType) linkTable;
 		axa.setArrangement(primary);
@@ -359,7 +360,7 @@ public class Arrangement
 	}
 	
 	@Override
-	public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		ArrangementXRules axa = (ArrangementXRules) linkTable;
 		axa.setArrangement(primary);

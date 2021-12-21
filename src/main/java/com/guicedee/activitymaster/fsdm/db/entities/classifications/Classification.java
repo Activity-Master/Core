@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.classifications;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.fsdm.ClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
@@ -8,7 +9,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
-import com.guicedee.activitymaster.fsdm.ClassificationService;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
@@ -55,7 +55,8 @@ public class Classification
 	
 	@Column(nullable = false,
 	        name = "ClassificationID")
-	@JsonValue@org.hibernate.annotations.Type(type = "uuid-char")
+	@JsonValue
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@Basic(optional = false,
@@ -66,7 +67,7 @@ public class Classification
 	@Column(nullable = false,
 	        length = 100,
 	        name = "ClassificationName")
-		private String name;
+	private String name;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -75,25 +76,25 @@ public class Classification
 	@Column(nullable = false,
 	        length = 500,
 	        name = "ClassificationDesc")
-		private String description;
+	private String description;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
 	@Column(nullable = false,
 	        name = "ClassificationSequenceNumber")
-		@OrderBy
+	@OrderBy
 	private int classificationSequenceNumber;
 	@JoinColumn(name = "ClassificationDataConceptID",
 	            referencedColumnName = "ClassificationDataConceptID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.EAGER)
-		private ClassificationDataConcept concept;
+	private ClassificationDataConcept concept;
 	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
-		private List<ClassificationSecurityToken> securities;
+	private List<ClassificationSecurityToken> securities;
 	
 	public Classification()
 	{
@@ -113,11 +114,11 @@ public class Classification
 		this.classificationSequenceNumber = classificationSequenceNumber;
 	}
 	
-	public void configureForClassification(ClassificationXClassification classificationLink, ISystems<?,?> system)
+	public void configureForClassification(ClassificationXClassification classificationLink, ISystems<?, ?> system)
 	{
 		Classification hierarchyClassification = (Classification) get(ClassificationService.class)
-		                                                                      .getHierarchyType(system);
-		Classification incomingClassification = (Classification) classificationLink.getClassificationID();
+				.getHierarchyType(system);
+		Classification incomingClassification = classificationLink.getClassificationID();
 		
 		classificationLink.setChildClassificationID(incomingClassification);
 		classificationLink.setParentClassificationID(this);
@@ -125,7 +126,7 @@ public class Classification
 	}
 	
 	//@Override
-	public void configureNewHierarchyItem(ClassificationXClassification newLink, IClassification<?,?> parent, IClassification<?,?> child, String value)
+	public void configureNewHierarchyItem(ClassificationXClassification newLink, IClassification<?, ?> parent, IClassification<?, ?> child, String value)
 	{
 		newLink.setParentClassificationID(this);
 		newLink.setChildClassificationID((Classification) child);
@@ -166,7 +167,7 @@ public class Classification
 	@Override
 	public String toString()
 	{
-		return  getName();
+		return getName();
 	}
 	
 	@Override
@@ -187,40 +188,16 @@ public class Classification
 		return classificationSequenceNumber;
 	}
 	
-	@Override
-	public String getName()
-	{
-		return name;
-	}
-	
 	public Classification setClassificationSequenceNumber(@NotNull Integer classificationSequenceNumber)
 	{
 		this.classificationSequenceNumber = classificationSequenceNumber;
 		return this;
 	}
 	
-	public ClassificationDataConcept getConcept()
-	{
-		return concept;
-	}
-	
 	@Override
-	public String getDescription()
+	public String getName()
 	{
-		return description;
-	}
-	
-	public Classification setConcept(ClassificationDataConcept concept)
-	{
-		this.concept = concept;
-		return this;
-	}
-	
-	//@Override
-	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?,?> classificationValue, String value, ISystems<?,?> system)
-	{
-		linkTable.setClassificationID(this);
-		linkTable.setResourceItemID(secondary);
+		return name;
 	}
 	
 	@Override
@@ -230,12 +207,36 @@ public class Classification
 		return this;
 	}
 	
+	public ClassificationDataConcept getConcept()
+	{
+		return concept;
+	}
+	
+	public Classification setConcept(ClassificationDataConcept concept)
+	{
+		this.concept = concept;
+		return this;
+	}
+	
+	@Override
+	public String getDescription()
+	{
+		return description;
+	}
+	
 	@Override
 	public Classification setDescription(@NotNull @Size(min = 1,
 	                                                    max = 500) String description)
 	{
 		this.description = description;
 		return this;
+	}
+	
+	//@Override
+	public void configureResourceItemLinkValue(ClassificationXResourceItem linkTable, Classification primary, ResourceItem secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+	{
+		linkTable.setClassificationID(this);
+		linkTable.setResourceItemID(secondary);
 	}
 	
 	//@Override
@@ -258,7 +259,7 @@ public class Classification
 	
 	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Classification primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?,?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Classification primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
 	{
 		ClassificationXResourceItem x = (ClassificationXResourceItem) linkTable;
 		x.setClassificationID(primary);
@@ -269,7 +270,7 @@ public class Classification
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable,IClassification<?,?> classificationValue, ISystems<?, ?> system)
+	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		ClassificationXClassification c = (ClassificationXClassification) linkTable;
 		c.setParentClassificationID(this);

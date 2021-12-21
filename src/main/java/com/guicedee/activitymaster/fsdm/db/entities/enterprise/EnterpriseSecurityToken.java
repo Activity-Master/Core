@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.fsdm.db.entities.enterprise;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -26,59 +26,61 @@ public class EnterpriseSecurityToken
 		extends WarehouseSecurityTable<EnterpriseSecurityToken, EnterpriseSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "EnterpriseSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EnterpriseSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "EnterpriseID",
-			referencedColumnName = "EnterpriseID",
-			nullable = false,insertable = false,updatable = false)
+	            referencedColumnName = "EnterpriseID",
+	            nullable = false, insertable = false, updatable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	
 	private Enterprise base;
-
+	
 	public EnterpriseSecurityToken()
 	{
-
+	
 	}
-
+	
 	public EnterpriseSecurityToken(UUID enterpriseSecurityTokenID)
 	{
 		this.id = enterpriseSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "EnterpriseSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public Enterprise getBase()
-	{
-		return this.base;
-	}
-
+	
 	public EnterpriseSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public Enterprise getBase()
+	{
+		return this.base;
+	}
+	
 	public EnterpriseSecurityToken setBase(Enterprise base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -90,24 +92,20 @@ public class EnterpriseSecurityToken
 			return false;
 		}
 		final EnterpriseSecurityToken other = (EnterpriseSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof EnterpriseSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

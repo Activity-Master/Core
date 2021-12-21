@@ -30,7 +30,7 @@ public class InvolvedPartyXProductTypeQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyXProductTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
+	public InvolvedPartyXProductTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -16,6 +17,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -55,6 +57,7 @@ public class AddressService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> create(String addressClassification, UUID key, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
 		Address addy = new Address();
@@ -100,6 +103,7 @@ public class AddressService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindIPAddress(String ipAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
@@ -149,6 +153,7 @@ public class AddressService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindHostName(String hostName, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		
@@ -195,6 +200,7 @@ public class AddressService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindWebAddress(String webAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		
@@ -337,6 +343,7 @@ public class AddressService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindPhoneContact(String phoneNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Classification homePhoneNumber = (Classification) classificationServiceProvider.find(
@@ -398,6 +405,7 @@ public class AddressService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindEmailContact(String emailAddressString, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Classification emailAddress = (Classification) classificationServiceProvider.find(
@@ -478,6 +486,7 @@ public class AddressService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
@@ -535,6 +544,7 @@ public class AddressService
 	}
 	
 	@Override
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		

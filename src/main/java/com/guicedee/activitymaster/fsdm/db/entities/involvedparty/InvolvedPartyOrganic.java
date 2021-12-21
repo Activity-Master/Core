@@ -109,15 +109,15 @@ public class InvolvedPartyOrganic
 		return this.id;
 	}
 	
-	public InvolvedParty getInvolvedParty()
-	{
-		return this.involvedParty;
-	}
-	
 	public InvolvedPartyOrganic setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public InvolvedParty getInvolvedParty()
+	{
+		return this.involvedParty;
 	}
 	
 	public InvolvedPartyOrganic setInvolvedParty(InvolvedParty involvedParty)

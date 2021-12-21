@@ -1,8 +1,8 @@
 package com.guicedee.activitymaster.fsdm.db.entities.classifications;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationsSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -17,66 +17,68 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Classification",name = "ClassificationSecurityToken")
+@Table(schema = "Classification", name = "ClassificationSecurityToken")
 @XmlRootElement
 @Access(FIELD)
 
 public class ClassificationSecurityToken
 		extends WarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
 	
 	@Column(nullable = false,
-			name = "ClassificationSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ClassificationSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "ClassificationID",
-			referencedColumnName = "ClassificationID",
-			nullable = false)
+	            referencedColumnName = "ClassificationID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
+	           fetch = FetchType.LAZY)
+	
 	private Classification base;
-
+	
 	public ClassificationSecurityToken()
 	{
-
+	
 	}
-
+	
 	public ClassificationSecurityToken(UUID classificationSecurityTokenID)
 	{
 		this.id = classificationSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "ClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public Classification getBase()
-	{
-		return this.base;
-	}
-
+	
 	public ClassificationSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public Classification getBase()
+	{
+		return this.base;
+	}
+	
 	public ClassificationSecurityToken setBase(Classification base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -88,24 +90,20 @@ public class ClassificationSecurityToken
 			return false;
 		}
 		final ClassificationSecurityToken other = (ClassificationSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof ClassificationSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

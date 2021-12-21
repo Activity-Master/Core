@@ -40,9 +40,10 @@ public class EventXEventType
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-	        name = "EventXEventTypeID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "EventXEventTypeID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
 	
 	@OneToMany(
@@ -55,6 +56,7 @@ public class EventXEventType
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
 	@JoinColumn(name = "EventTypeID",
 	            referencedColumnName = "EventTypeID",
@@ -79,26 +81,16 @@ public class EventXEventType
 		return this.id;
 	}
 	
-	public List<EventXEventTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-	
-	public EventType getEventTypeID()
-	{
-		return this.eventTypeID;
-	}
-	
 	@Override
 	public EventXEventType setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<EventXEventTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public EventXEventType setSecurities(List<EventXEventTypeSecurityToken> securities)
@@ -107,10 +99,20 @@ public class EventXEventType
 		return this;
 	}
 	
+	public Event getEventID()
+	{
+		return this.eventID;
+	}
+	
 	public EventXEventType setEventID(Event eventID)
 	{
 		this.eventID = eventID;
 		return this;
+	}
+	
+	public EventType getEventTypeID()
+	{
+		return this.eventTypeID;
 	}
 	
 	public EventXEventType setEventTypeID(EventType eventTypeID)

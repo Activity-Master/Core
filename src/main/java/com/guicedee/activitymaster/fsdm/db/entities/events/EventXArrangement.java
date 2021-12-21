@@ -63,6 +63,7 @@ public class EventXArrangement
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Event eventID;
 	
 	public EventXArrangement()
@@ -80,25 +81,15 @@ public class EventXArrangement
 		return this.id;
 	}
 	
-	public List<EventXArrangementsSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
-	}
-	
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-	
 	public EventXArrangement setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<EventXArrangementsSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public EventXArrangement setSecurities(List<EventXArrangementsSecurityToken> securities)
@@ -107,10 +98,20 @@ public class EventXArrangement
 		return this;
 	}
 	
+	public Arrangement getArrangementID()
+	{
+		return this.arrangementID;
+	}
+	
 	public EventXArrangement setArrangementID(Arrangement arrangementID)
 	{
 		this.arrangementID = arrangementID;
 		return this;
+	}
+	
+	public Event getEventID()
+	{
+		return this.eventID;
 	}
 	
 	public EventXArrangement setEventID(Event eventID)

@@ -71,16 +71,16 @@ public class SystemsXClassification
 		return id;
 	}
 	
-	public List<SystemsXClassificationSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
 	@Override
 	public SystemsXClassification setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<SystemsXClassificationSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public SystemsXClassification setSecurities(List<SystemsXClassificationSecurityToken> securities)

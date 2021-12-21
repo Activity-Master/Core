@@ -7,12 +7,11 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.HalfHourDayPartsQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.*;
-import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -35,7 +34,7 @@ public class HalfHourDayParts
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Basic(optional = false)
 	@Column(nullable = false,
 	        name = "halfHourDayPartID")

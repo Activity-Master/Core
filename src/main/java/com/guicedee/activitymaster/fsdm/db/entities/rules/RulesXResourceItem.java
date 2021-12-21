@@ -80,26 +80,16 @@ public class RulesXResourceItem
 		return id;
 	}
 	
-	public List<RulesXResourceItemSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public Rules getRulesID()
-	{
-		return rulesID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return resourceItemID;
-	}
-	
 	@Override
 	public RulesXResourceItem setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<RulesXResourceItemSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 	
 	public RulesXResourceItem setSecurities(List<RulesXResourceItemSecurityToken> securities)
@@ -108,10 +98,20 @@ public class RulesXResourceItem
 		return this;
 	}
 	
+	public Rules getRulesID()
+	{
+		return rulesID;
+	}
+	
 	public RulesXResourceItem setRulesID(Rules rulesID)
 	{
 		this.rulesID = rulesID;
 		return this;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return resourceItemID;
 	}
 	
 	public RulesXResourceItem setResourceItemID(ResourceItem resourceItemID)

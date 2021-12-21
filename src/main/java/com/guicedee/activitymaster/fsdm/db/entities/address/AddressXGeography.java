@@ -52,12 +52,14 @@ public class AddressXGeography
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Address addressID;
 	@JoinColumn(name = "GeographyID",
 	            referencedColumnName = "GeographyID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Geography geographyID;
 	
 	@OneToMany(
@@ -80,25 +82,15 @@ public class AddressXGeography
 		return this.id;
 	}
 	
-	public Address getAddressID()
-	{
-		return this.addressID;
-	}
-	
-	public Geography getGeographyID()
-	{
-		return this.geographyID;
-	}
-	
-	public List<AddressXGeographySecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public AddressXGeography setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public Address getAddressID()
+	{
+		return this.addressID;
 	}
 	
 	public AddressXGeography setAddressID(Address addressID)
@@ -107,10 +99,20 @@ public class AddressXGeography
 		return this;
 	}
 	
+	public Geography getGeographyID()
+	{
+		return this.geographyID;
+	}
+	
 	public AddressXGeography setGeographyID(Geography geographyID)
 	{
 		this.geographyID = geographyID;
 		return this;
+	}
+	
+	public List<AddressXGeographySecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public AddressXGeography setSecurities(List<AddressXGeographySecurityToken> securities)

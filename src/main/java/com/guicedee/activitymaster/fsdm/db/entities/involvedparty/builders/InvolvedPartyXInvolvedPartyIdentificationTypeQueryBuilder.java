@@ -48,7 +48,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
+	public InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

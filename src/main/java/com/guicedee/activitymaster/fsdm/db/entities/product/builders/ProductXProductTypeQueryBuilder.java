@@ -32,9 +32,9 @@ public class ProductXProductTypeQueryBuilder
 	}
 	
 	@Override
-	public ProductXProductTypeQueryBuilder withType(String productTypeValue, ISystems<?,?> system, UUID... identityToken)
+	public ProductXProductTypeQueryBuilder withType(String productTypeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
-		if(!Strings.isNullOrEmpty(productTypeValue))
+		if (!Strings.isNullOrEmpty(productTypeValue))
 		{
 			IProductService<?> productService = GuiceContext.get(IProductService.class);
 			ProductType pt = (ProductType) productService.findProductTypeForProduct(productTypeValue, system, identityToken);

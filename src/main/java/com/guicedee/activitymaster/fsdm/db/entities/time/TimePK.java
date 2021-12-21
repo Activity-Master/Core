@@ -6,13 +6,10 @@
 
 package com.guicedee.activitymaster.fsdm.db.entities.time;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -35,17 +32,17 @@ public class TimePK
 	@Basic(optional = false)
 	@Column(nullable = false)
 	private Integer minuteID;
-
+	
 	public TimePK()
 	{
 	}
-
+	
 	public TimePK(int hourID, int minuteID)
 	{
 		this.hourID = hourID;
 		this.minuteID = minuteID;
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
@@ -54,7 +51,7 @@ public class TimePK
 		hash += minuteID;
 		return hash;
 	}
-
+	
 	@Override
 	public boolean equals(Object object)
 	{
@@ -67,17 +64,13 @@ public class TimePK
 		{
 			return false;
 		}
-		if (minuteID.equals(other.minuteID))
-		{
-			return false;
-		}
-		return true;
+		return !minuteID.equals(other.minuteID);
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "timelord.entities.TimePK[ hourID=" + hourID + ", minuteID=" + minuteID + " ]";
 	}
-
+	
 }

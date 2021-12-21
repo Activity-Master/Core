@@ -14,7 +14,7 @@ public class EventXRulesQueryBuilder
 	{
 		return EventXRules_.eventID;
 	}
-
+	
 	@Override
 	public SingularAttribute<EventXRules, Rules> getSecondaryAttribute()
 	{

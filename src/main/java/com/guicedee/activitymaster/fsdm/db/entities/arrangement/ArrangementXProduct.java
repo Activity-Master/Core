@@ -46,7 +46,6 @@ public class ArrangementXProduct
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-	
 	@Column(nullable = false,
 	        name = "ArrangementXProductID")
 	@org.hibernate.annotations.Type(type = "uuid-char")
@@ -56,12 +55,14 @@ public class ArrangementXProduct
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Arrangement arrangementID;
 	@JoinColumn(name = "ProductID",
 	            referencedColumnName = "ProductID",
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
+	
 	private Product productID;
 	@OneToMany(
 			mappedBy = "base",
@@ -83,25 +84,15 @@ public class ArrangementXProduct
 		return this.id;
 	}
 	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
-	}
-	
-	public Product getProductID()
-	{
-		return this.productID;
-	}
-	
-	public List<ArrangementXProductSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXProduct setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public Arrangement getArrangementID()
+	{
+		return this.arrangementID;
 	}
 	
 	public ArrangementXProduct setArrangementID(Arrangement arrangementID)
@@ -110,10 +101,20 @@ public class ArrangementXProduct
 		return this;
 	}
 	
+	public Product getProductID()
+	{
+		return this.productID;
+	}
+	
 	public ArrangementXProduct setProductID(Product productID)
 	{
 		this.productID = productID;
 		return this;
+	}
+	
+	public List<ArrangementXProductSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ArrangementXProduct setSecurities(List<ArrangementXProductSecurityToken> securities)

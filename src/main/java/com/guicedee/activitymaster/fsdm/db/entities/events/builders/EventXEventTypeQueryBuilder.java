@@ -30,7 +30,7 @@ public class EventXEventTypeQueryBuilder
 	}
 	
 	@Override
-	public EventXEventTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
+	public EventXEventTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

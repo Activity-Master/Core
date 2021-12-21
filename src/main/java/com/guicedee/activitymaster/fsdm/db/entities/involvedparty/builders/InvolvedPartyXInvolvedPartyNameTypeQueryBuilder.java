@@ -24,13 +24,13 @@ public class InvolvedPartyXInvolvedPartyNameTypeQueryBuilder
 	}
 	
 	@Override
-	public  SingularAttribute<InvolvedPartyXInvolvedPartyNameType, InvolvedPartyNameType>  getSecondaryAttribute()
+	public SingularAttribute<InvolvedPartyXInvolvedPartyNameType, InvolvedPartyNameType> getSecondaryAttribute()
 	{
 		return InvolvedPartyXInvolvedPartyNameType_.involvedPartyNameTypeID;
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyNameTypeQueryBuilder withType(String typeValue, ISystems<?,?> system, UUID... identityToken)
+	public InvolvedPartyXInvolvedPartyNameTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

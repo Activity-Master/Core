@@ -106,15 +106,15 @@ public class ProductType
 		return this.productXProductTypeList;
 	}
 	
-	public List<ProductTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ProductType setProductXProductTypeList(List<ProductXProductType> productXProductTypeList)
 	{
 		this.productXProductTypeList = productXProductTypeList;
 		return this;
+	}
+	
+	public List<ProductTypeSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public ProductType setSecurities(List<ProductTypeSecurityToken> securities)
@@ -159,6 +159,14 @@ public class ProductType
 	}
 	
 	@Override
+	public ProductType setName(@NotNull @Size(min = 1,
+	                                          max = 200) String name)
+	{
+		this.name = name;
+		return this;
+	}
+	
+	@Override
 	public @NotNull @Size(min = 1,
 	                      max = 200) String getDescription()
 	{
@@ -166,9 +174,10 @@ public class ProductType
 	}
 	
 	@Override
-	public ProductType setId(UUID id)
+	public ProductType setDescription(@NotNull @Size(min = 1,
+	                                                 max = 200) String description)
 	{
-		this.id = id;
+		this.description = description;
 		return this;
 	}
 	
@@ -179,18 +188,9 @@ public class ProductType
 	}
 	
 	@Override
-	public ProductType setName(@NotNull @Size(min = 1,
-	                                          max = 200) String name)
+	public ProductType setId(UUID id)
 	{
-		this.name = name;
-		return this;
-	}
-	
-	@Override
-	public ProductType setDescription(@NotNull @Size(min = 1,
-	                                                 max = 200) String description)
-	{
-		this.description = description;
+		this.id = id;
 		return this;
 	}
 	

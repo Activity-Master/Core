@@ -7,7 +7,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemTypeSecurityTokenQueryBuilder;
-
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -22,67 +21,68 @@ import static jakarta.persistence.AccessType.*;
  * @since 07 Dec 2016
  */
 @Entity
-@Table(schema="Resource",name = "ResourceItemTypeSecurityToken")
+@Table(schema = "Resource", name = "ResourceItemTypeSecurityToken")
 @XmlRootElement
 
 @Access(FIELD)
 public class ResourceItemTypeSecurityToken
 		extends WarehouseSecurityTable<ResourceItemTypeSecurityToken, ResourceItemTypeSecurityTokenQueryBuilder, UUID>
 {
-
+	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-
+	
 	@Column(nullable = false,
-			name = "ResourceItemTypeSecurityTokenID")@org.hibernate.annotations.Type(type = "uuid-char")
+	        name = "ResourceItemTypeSecurityTokenID")
+	@org.hibernate.annotations.Type(type = "uuid-char")
 	private UUID id;
-
+	
 	@JoinColumn(name = "ResourceItemTypeID",
-			referencedColumnName = "ResourceItemTypeID",
-			nullable = false)
+	            referencedColumnName = "ResourceItemTypeID",
+	            nullable = false)
 	@ManyToOne(optional = false,
-			fetch = FetchType.LAZY)
-
+	           fetch = FetchType.LAZY)
+	
 	private ResourceItemType base;
-
+	
 	public ResourceItemTypeSecurityToken()
 	{
-
+	
 	}
-
+	
 	public ResourceItemTypeSecurityToken(UUID resourceItemTypeSecurityTokenID)
 	{
 		this.id = resourceItemTypeSecurityTokenID;
 	}
-
+	
 	public String toString()
 	{
 		return "ResourceItemTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-
+	
 	public UUID getId()
 	{
 		return this.id;
 	}
-
-	public ResourceItemType getBase()
-	{
-		return this.base;
-	}
-
+	
 	public ResourceItemTypeSecurityToken setId(UUID id)
 	{
 		this.id = id;
 		return this;
 	}
-
+	
+	public ResourceItemType getBase()
+	{
+		return this.base;
+	}
+	
 	public ResourceItemTypeSecurityToken setBase(ResourceItemType base)
 	{
 		this.base = base;
 		return this;
 	}
-
+	
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -94,24 +94,20 @@ public class ResourceItemTypeSecurityToken
 			return false;
 		}
 		final ResourceItemTypeSecurityToken other = (ResourceItemTypeSecurityToken) o;
-		if (!other.canEqual((Object) this))
+		if (!other.canEqual(this))
 		{
 			return false;
 		}
 		final Object this$id = this.getId();
 		final Object other$id = other.getId();
-		if (this$id == null ? other$id != null : !this$id.equals(other$id))
-		{
-			return false;
-		}
-		return true;
+		return this$id == null ? other$id == null : this$id.equals(other$id);
 	}
-
+	
 	protected boolean canEqual(final Object other)
 	{
 		return other instanceof ResourceItemTypeSecurityToken;
 	}
-
+	
 	public int hashCode()
 	{
 		final int PRIME = 59;

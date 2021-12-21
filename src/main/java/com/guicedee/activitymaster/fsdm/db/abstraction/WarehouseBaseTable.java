@@ -19,17 +19,17 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 	@Serial
 	private static final long serialVersionUID = 1L;
 	
-	public @NotNull J updateNow()
-	{
-		return super.builder()
-		            .updateNow((J) this);
-	}
-	
 	public J expireIn(Duration duration)
 	{
 		setEffectiveToDate(com.entityassist.RootEntity.getNow()
-		                                .plus(duration));
-		updateNow();
+		                                              .plus(duration));
+		update();
 		return (J) this;
+	}
+	
+	@Override
+	public @NotNull boolean isFake()
+	{
+		return getId() == null;
 	}
 }

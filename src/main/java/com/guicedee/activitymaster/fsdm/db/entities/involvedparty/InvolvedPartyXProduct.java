@@ -96,35 +96,15 @@ public class InvolvedPartyXProduct
 		return this.id;
 	}
 	
-	public List<InvolvedPartyXProductSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public InvolvedParty getInvolvedPartyID()
-	{
-		return this.involvedPartyID;
-	}
-	
-	public InvolvedPartyXProduct getInvolvedPartyXProduct()
-	{
-		return this.involvedPartyXProduct;
-	}
-	
-	public InvolvedPartyXProduct getInvolvedPartyXProduct1()
-	{
-		return this.involvedPartyXProduct1;
-	}
-	
-	public Product getProductID()
-	{
-		return this.productID;
-	}
-	
 	public InvolvedPartyXProduct setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<InvolvedPartyXProductSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public InvolvedPartyXProduct setSecurities(List<InvolvedPartyXProductSecurityToken> securities)
@@ -133,10 +113,20 @@ public class InvolvedPartyXProduct
 		return this;
 	}
 	
+	public InvolvedParty getInvolvedPartyID()
+	{
+		return this.involvedPartyID;
+	}
+	
 	public InvolvedPartyXProduct setInvolvedPartyID(InvolvedParty involvedPartyID)
 	{
 		this.involvedPartyID = involvedPartyID;
 		return this;
+	}
+	
+	public InvolvedPartyXProduct getInvolvedPartyXProduct()
+	{
+		return this.involvedPartyXProduct;
 	}
 	
 	public InvolvedPartyXProduct setInvolvedPartyXProduct(InvolvedPartyXProduct involvedPartyXProduct)
@@ -145,10 +135,20 @@ public class InvolvedPartyXProduct
 		return this;
 	}
 	
+	public InvolvedPartyXProduct getInvolvedPartyXProduct1()
+	{
+		return this.involvedPartyXProduct1;
+	}
+	
 	public InvolvedPartyXProduct setInvolvedPartyXProduct1(InvolvedPartyXProduct involvedPartyXProduct1)
 	{
 		this.involvedPartyXProduct1 = involvedPartyXProduct1;
 		return this;
+	}
+	
+	public Product getProductID()
+	{
+		return this.productID;
 	}
 	
 	public InvolvedPartyXProduct setProductID(Product productID)

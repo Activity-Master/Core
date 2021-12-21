@@ -2,12 +2,11 @@ package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.QuartersQueryBuilder;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.*;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
@@ -22,7 +21,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "Quarters",
-		schema = "Time")
+       schema = "Time")
 @XmlRootElement
 @Getter
 @Setter
@@ -38,72 +37,72 @@ public class Quarters
 	@Id
 	@Basic(optional = false)
 	@Column(name = "QuarterID",
-			nullable = false)
+	        nullable = false)
 	private Integer id;
 	@Basic(optional = false)
 	@Column(name = "QuarterDescription",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String quarterDescription;
 	@Basic(optional = false)
 	@Column(name = "QuarterInYear",
-			nullable = false)
+	        nullable = false)
 	private int quarterInYear;
 	@Basic(optional = false)
 	@Column(name = "LastQuarterID",
-			nullable = false)
+	        nullable = false)
 	private short lastQuarterID;
 	@Basic(optional = false)
 	@Column(name = "LastYearID",
-			nullable = false)
+	        nullable = false)
 	private short lastYearID;
 	@Basic(optional = false)
 	@Column(name = "QuarterGraphDescription",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String quarterGraphDescription;
 	@Basic(optional = false)
 	@Column(name = "QuarterGridDescription",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String quarterGridDescription;
 	@Basic(optional = false)
 	@Column(name = "QuarterSmallDescription",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String quarterSmallDescription;
 	@Basic(optional = false)
 	@Column(name = "QuarterYearDescription",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String quarterYearDescription;
 	@Basic(optional = false)
 	@Column(name = "QuarterYYMMDescription",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String quarterYYMMDescription;
 	@Basic(optional = false)
 	@Column(name = "QuarterQQMMDescription",
-			nullable = false,
-			length = 50)
+	        nullable = false,
+	        length = 50)
 	private String quarterQQMMDescription;
 	@OneToMany(fetch = FetchType.LAZY)
 	private List<Months> lUMonthsList;
 	@JoinColumn(name = "YearID",
-			referencedColumnName = "YearID",
-			nullable = false)
+	            referencedColumnName = "YearID",
+	            nullable = false)
 	@ManyToOne(optional = false)
 	private Years yearID;
-
+	
 	public Quarters()
 	{
 	}
-
+	
 	public Quarters(Integer id)
 	{
 		this.id = id;
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -118,17 +117,17 @@ public class Quarters
 		Quarters quarters = (Quarters) o;
 		return getId().equals(quarters.getId());
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getId());
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "" + id;
 	}
-
+	
 }

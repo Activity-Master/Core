@@ -80,25 +80,15 @@ public class RulesXArrangement
 		return this.id;
 	}
 	
-	public List<RulesXArrangementsSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
-	}
-	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
-	}
-	
 	public RulesXArrangement setId(UUID id)
 	{
 		this.id = id;
 		return this;
+	}
+	
+	public List<RulesXArrangementsSecurityToken> getSecurities()
+	{
+		return this.securities;
 	}
 	
 	public RulesXArrangement setSecurities(List<RulesXArrangementsSecurityToken> securities)
@@ -107,10 +97,20 @@ public class RulesXArrangement
 		return this;
 	}
 	
+	public Arrangement getArrangementID()
+	{
+		return this.arrangementID;
+	}
+	
 	public RulesXArrangement setArrangementID(Arrangement arrangementID)
 	{
 		this.arrangementID = arrangementID;
 		return this;
+	}
+	
+	public Rules getRulesID()
+	{
+		return this.rulesID;
 	}
 	
 	public RulesXArrangement setRulesID(Rules RulesID)

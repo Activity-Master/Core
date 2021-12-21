@@ -6,13 +6,10 @@
 
 package com.guicedee.activitymaster.fsdm.db.entities.time;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -32,17 +29,17 @@ public class TransQtmPK
 	private static final long serialVersionUID = 1L;
 	@Basic(optional = false)
 	@Column(name = "MonthID",
-			nullable = false)
+	        nullable = false)
 	private Integer monthID;
 	@Basic(optional = false)
 	@Column(name = "QTM_MonthID",
-			nullable = false)
+	        nullable = false)
 	private Integer qTMMonthID;
-
+	
 	public TransQtmPK()
 	{
 	}
-
+	
 	@Override
 	public boolean equals(Object o)
 	{
@@ -58,17 +55,17 @@ public class TransQtmPK
 		return getMonthID().equals(that.getMonthID()) &&
 		       qTMMonthID.equals(that.qTMMonthID);
 	}
-
+	
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(getMonthID(), qTMMonthID);
 	}
-
+	
 	@Override
 	public String toString()
 	{
 		return "timelord.entities.TransQtmPK[ monthID=" + monthID + ", qTMMonthID=" + qTMMonthID + " ]";
 	}
-
+	
 }
