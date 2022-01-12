@@ -1,13 +1,12 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.PrivateModule;
-import com.google.inject.Singleton;
+import com.guicedee.activitymaster.fsdm.ActivityMasterService;
+import com.guicedee.activitymaster.fsdm.TimeService;
 import com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService;
 import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.fsdm.ActivityMasterService;
-import com.guicedee.activitymaster.fsdm.TimeService;
-import com.guicedee.activitymaster.fsdm.services.system.*;
+import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
@@ -18,7 +17,7 @@ public class ActivityMasterBinder
 	@Override
 	protected void configure()
 	{
-		bind(ActivityMasterConfiguration.class).in(Singleton.class);
+		bind(ActivityMasterConfiguration.class).toInstance(ActivityMasterConfiguration.get());
 		expose(ActivityMasterConfiguration.class);
 		
 		bind(ITimeSystem.class)

@@ -23,9 +23,12 @@ import com.guicedee.logger.LogFactory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.extern.java.Log;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
 import java.util.*;
@@ -33,6 +36,7 @@ import java.util.logging.Level;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.*;
 import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
@@ -54,6 +58,7 @@ import static jakarta.persistence.FetchType.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Log
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, UUID>
 		implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
@@ -145,6 +150,116 @@ public class ResourceItem
 	
 	public byte[] getData(UUID... identityToken)
 	{
+		var dr = getDataRow();
+		if (flushToDisk)
+		{
+			if (dr.isPresent())
+			{
+				File searchFile = new File("data/" + dr.get()
+				                                       .getId() + ".dat");
+				if (searchFile.exists())
+				{
+					if (flushExploded)
+					{
+						File explodedFile = new File("data/" + dr.get()
+						                                         .getId() + ".exploded");
+						if (explodedFile.exists())
+						{
+							try (FileInputStream fis = new FileInputStream(explodedFile))
+							{
+								byte[] data = fis.readAllBytes();
+								return data;
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+						else
+						{
+							try (FileInputStream fis = new FileInputStream(searchFile))
+							{
+								byte[] data = fis.readAllBytes();
+								data = unzip(data);
+								if (explodedFile.createNewFile())
+								{
+									try (FileOutputStream fos = new FileOutputStream(explodedFile))
+									{
+										fos.write(data);
+									}
+								}
+								return data;
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+					}
+					else
+					{
+						try (FileInputStream fis = new FileInputStream(searchFile))
+						{
+							byte[] data = fis.readAllBytes();
+							return unzip(data);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+					}
+				}
+				else
+				{
+					try
+					{
+						//	System.out.println("Cannot find dat File - " + searchFile.getCanonicalPath());
+						if (flushExploded)
+						{
+							File explodedFile = new File("data/" + dr.get()
+							                                         .getId() + ".exploded");
+							if (explodedFile.exists())
+							{
+								try (FileInputStream fis = new FileInputStream(explodedFile))
+								{
+									byte[] data = fis.readAllBytes();
+									return data;
+								}
+								catch (Exception e)
+								{
+									e.printStackTrace();
+								}
+							}
+							else
+							{
+								try (FileInputStream fis = new FileInputStream(searchFile))
+								{
+									byte[] data = fis.readAllBytes();
+									data = unzip(data);
+									if (explodedFile.createNewFile())
+									{
+										try (FileOutputStream fos = new FileOutputStream(explodedFile))
+										{
+											fos.write(data);
+										}
+									}
+									return data;
+								}
+								catch (Exception e)
+								{
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
 		Optional<byte[]> d
 				= new ResourceItemData().builder()
 				                        .inActiveRange()
@@ -155,6 +270,28 @@ public class ResourceItem
 		if (d.isPresent())
 		{
 			byte[] data = d.get();
+			if (flushToDisk && dr.isPresent())
+			{
+				if (flushExploded)
+				{
+					try
+					{
+						data = unzip(data);
+					}
+					catch (com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException ee)
+					{
+						//not gzipped just data
+					}
+					saveDataFile(data, dr.get()
+					                     .getId());
+					return data;
+				}
+				else
+				{
+					saveDataFile(data, dr.get()
+					                     .getId());
+				}
+			}
 			return unzip(data);
 		}
 		else
@@ -163,6 +300,20 @@ public class ResourceItem
 			          .log(Level.FINE, "No resource item data exists");
 			return new byte[]{};
 		}
+		
+	}
+	
+	@Override
+	public String getFilename()
+	{
+		var dr = getDataRow();
+		if (dr.isPresent())
+		{
+			var r = dr.get();
+			var id = r.getId();
+			return "data/" + id + (flushExploded ? ".exploded" : ".dat");
+		}
+		return null;
 	}
 	
 	@Override
@@ -225,52 +376,118 @@ public class ResourceItem
 		}
 		catch (IOException e)
 		{
-			throw new ResourceItemException("Unable to decompress the resource", e);
+			log.log(Level.WARNING,"Returning default data, unable to decompress the resource",e);
+			return data;
 		}
 	}
+	
 	
 	//@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override
 	public void updateData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
 	{
-		data = zip(data);
-		
-		Optional<ResourceItemData> d
-				= new ResourceItemData().builder()
-				                        .inActiveRange()
-				                    //    .inDateRange()
-				                        .where(ResourceItemData_.resource, Equals, this)
-				                        .latestFirst()
-				                        .setReturnFirst(true)
-				                        .get();
-		if (d.isPresent())
+		//	System.out.println(LocalDateTime.now() + " start zip - " + data.length);
+		if (!flushToDisk)
 		{
-			ResourceItemData rid = d.get();
-			if (data.length == 0)
-			{
-				throw new ResourceItemException("Cannot create a resource item that has no data?");
-			}
-			if (data.length < 4096)
-			{
-				boolean noUpdate = new ResourceItemData().builder()
-				                                         .inActiveRange()
-				                                  //       .inDateRange()
-				                                         .where(ResourceItemData_.resourceItemData, Equals, data)
-				                                         .where(ResourceItemData_.resource, Equals, this)
-				                                         .getCount() > 0;
-				if (noUpdate)
-				{
-					//Identical resource data, no update to occur
-					//System.out.println("No update required to resource item data");
-					return;
-				}
-			}
-			rid.setResourceItemData(data);
-			rid.update();
+			data = zip(data);
 		}
 		else
 		{
-			throw new ResourceItemException("No resource item data found for this resource item - " + getId());
+			if (!flushExploded)
+			{
+				data = zip(data);
+			}
+			else
+			{
+				//	System.out.println("Using exploded storage");
+			}
+		}
+		//	System.out.println(LocalDateTime.now() + " end zip - " + data.length);
+		//	System.out.println(LocalDateTime.now() + " start update");
+		if (!flushToDisk)
+		{
+			//	System.out.println(LocalDateTime.now() + " start search");
+			Optional<ResourceItemData> d
+					= new ResourceItemData().builder()
+					                        .inActiveRange()
+					                        //    .inDateRange()
+					                        .where(ResourceItemData_.resource, Equals, this)
+					                        .latestFirst()
+					                        .setReturnFirst(true)
+					                        .get();
+			//	System.out.println(LocalDateTime.now() + " end search");
+			if (d.isPresent())
+			{
+				ResourceItemData rid = d.get();
+				if (data.length == 0)
+				{
+					throw new ResourceItemException("Cannot create a resource item that has no data?");
+				}
+				if (data.length < 4096)
+				{
+					boolean noUpdate = new ResourceItemData().builder()
+					                                         .inActiveRange()
+					                                         //       .inDateRange()
+					                                         .where(ResourceItemData_.resourceItemData, Equals, data)
+					                                         .where(ResourceItemData_.resource, Equals, this)
+					                                         .getCount() > 0;
+					if (noUpdate)
+					{
+						//Identical resource data, no update to occur
+						//System.out.println("No update required to resource item data");
+						return;
+					}
+				}
+				rid.setResourceItemData(data);
+				rid.update();
+			}
+		}
+		else
+		{
+			var rid = getDataRow().orElse(null);
+			if (rid != null)
+			{
+				saveDataFile(data, rid.getId());
+			}
+		}
+		//	System.out.println(LocalDateTime.now() + " end update");
+		
+	}
+	
+	private void saveDataFile(byte[] data, UUID rid)
+	{
+		File directory = new File(flushToDiskLocation);
+		if (!directory.exists())
+		{
+			try
+			{
+				FileUtils.forceMkdirParent(new File(flushToDiskLocation));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		String filename = FilenameUtils.concat(flushToDiskLocation, rid + (flushExploded ? ".exploded" : ".dat"));
+		File dataFile = new File(filename);
+		if (!dataFile.exists())
+		{
+			try
+			{
+				FileUtils.forceMkdirParent(new File(filename));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		try (FileOutputStream fileWriter = new FileOutputStream(filename))
+		{
+			fileWriter.write(data);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
 		}
 	}
 	
@@ -282,7 +499,7 @@ public class ResourceItem
 		Optional<ResourceItemData> d
 				= new ResourceItemData().builder()
 				                        .inActiveRange()
-				                       // .inDateRange()
+				                        // .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
 				                        .latestFirst()
 				                        .setReturnFirst(true)

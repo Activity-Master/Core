@@ -2,13 +2,10 @@ package com.guicedee.activitymaster.fsdm.injections;
 
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig;
-import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.client.config.ClientMetricsConfig;
+import com.hazelcast.client.config.*;
 import com.hazelcast.config.MetricsJmxConfig;
-import com.hazelcast.nio.serialization.DataSerializable;
-import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 
-import static com.guicedee.guicedinjection.json.StaticStrings.STRING_DOUBLE_COLON;
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<HazelcastClientConfig> {
 
@@ -21,6 +18,10 @@ public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<Hazel
 
         config.setClusterName(HazelcastProperties.getGroupName());
         config.setInstanceName(HazelcastProperties.getInstanceName());
+    
+        config.getConnectionStrategyConfig()
+                    .setAsyncStart(true)
+                    .setReconnectMode(ClientConnectionStrategyConfig.ReconnectMode.ASYNC);
 
         config.setMetricsConfig(new ClientMetricsConfig());
         config.getMetricsConfig()

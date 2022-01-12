@@ -25,15 +25,12 @@ public class ActivityMasterPostStartup implements IGuicePostStartup<ActivityMast
 				            .addDeserializer(IInvolvedPartyNameType.class, new InvolvedPartyNameTypeDeserializer())
 				            .addDeserializer(IInvolvedPartyIdentificationType.class, new InvolvedPartyIdentificationTypeDeserializer())
 				            .addDeserializer(IInvolvedParty.class, new InvolvedPartyDeserializer())
-				            
-				            
-				            
 		            );
 	}
 	
 	@Override
 	public Integer sortOrder()
 	{
-		return Integer.MAX_VALUE;
+		return Integer.MIN_VALUE + 10;
 	}
 }

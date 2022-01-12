@@ -27402,11 +27402,9 @@ USE [master]
 GO
 ALTER DATABASE [FSDM] SET  READ_WRITE 
 GO
-
-
-
-
-
+CREATE NONCLUSTERED INDEX IDX_Party_IPXCL_V
+ON [Party].[InvolvedPartyXClassification] ([InvolvedPartyID],[ClassificationID],[EffectiveFromDate],[EffectiveToDate],[ActiveFlagID])
+INCLUDE ([Value],[OriginalSourceSystemID],[OriginalSourceSystemUniqueID],[EnterpriseID],[SystemID])
 
 
 EXEC sp_sqljdbc_xa_install;
