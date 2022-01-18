@@ -43,6 +43,12 @@ public class ResourceItemService
 	}
 	
 	@Override
+	public IResourceData<?, ?> getData()
+	{
+		return new ResourceItemData();
+	}
+	
+	@Override
 	public IResourceItemType<?, ?> getType()
 	{
 		return new ResourceItemType();

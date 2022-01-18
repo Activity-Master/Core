@@ -165,9 +165,10 @@ public class ResourceItem
 						                                         .getId() + ".exploded");
 						if (explodedFile.exists())
 						{
-							try (FileInputStream fis = new FileInputStream(explodedFile))
+							try (FileInputStream fis = new FileInputStream(explodedFile);
+							     BufferedInputStream bis = new BufferedInputStream(fis))
 							{
-								byte[] data = fis.readAllBytes();
+								byte[] data = bis.readAllBytes();
 								return data;
 							}
 							catch (Exception e)
@@ -177,15 +178,17 @@ public class ResourceItem
 						}
 						else
 						{
-							try (FileInputStream fis = new FileInputStream(searchFile))
+							try (FileInputStream fis = new FileInputStream(searchFile);
+							     BufferedInputStream bis = new BufferedInputStream(fis))
 							{
-								byte[] data = fis.readAllBytes();
+								byte[] data = bis.readAllBytes();
 								data = unzip(data);
 								if (explodedFile.createNewFile())
 								{
-									try (FileOutputStream fos = new FileOutputStream(explodedFile))
+									try (FileOutputStream fos = new FileOutputStream(explodedFile);
+									     BufferedOutputStream bos = new BufferedOutputStream(fos))
 									{
-										fos.write(data);
+										bos.write(data);
 									}
 								}
 								return data;
@@ -198,9 +201,10 @@ public class ResourceItem
 					}
 					else
 					{
-						try (FileInputStream fis = new FileInputStream(searchFile))
+						try (FileInputStream fis = new FileInputStream(searchFile);
+						     BufferedInputStream bis = new BufferedInputStream((fis)))
 						{
-							byte[] data = fis.readAllBytes();
+							byte[] data = bis.readAllBytes();
 							return unzip(data);
 						}
 						catch (Exception e)
@@ -220,9 +224,10 @@ public class ResourceItem
 							                                         .getId() + ".exploded");
 							if (explodedFile.exists())
 							{
-								try (FileInputStream fis = new FileInputStream(explodedFile))
+								try (FileInputStream fis = new FileInputStream(explodedFile);
+								     BufferedInputStream bis = new BufferedInputStream(fis))
 								{
-									byte[] data = fis.readAllBytes();
+									byte[] data = bis.readAllBytes();
 									return data;
 								}
 								catch (Exception e)
@@ -232,15 +237,18 @@ public class ResourceItem
 							}
 							else
 							{
-								try (FileInputStream fis = new FileInputStream(searchFile))
+								try (FileInputStream fis = new FileInputStream(searchFile);
+								     BufferedInputStream bis = new BufferedInputStream(fis))
 								{
-									byte[] data = fis.readAllBytes();
+									byte[] data = bis.readAllBytes();
 									data = unzip(data);
 									if (explodedFile.createNewFile())
 									{
-										try (FileOutputStream fos = new FileOutputStream(explodedFile))
+										try (FileOutputStream fos = new FileOutputStream(explodedFile);
+										     BufferedOutputStream bos = new BufferedOutputStream(fos))
 										{
-											fos.write(data);
+											bos.write(data);
+											return data;
 										}
 									}
 									return data;
@@ -300,7 +308,6 @@ public class ResourceItem
 			          .log(Level.FINE, "No resource item data exists");
 			return new byte[]{};
 		}
-		
 	}
 	
 	@Override
@@ -376,7 +383,7 @@ public class ResourceItem
 		}
 		catch (IOException e)
 		{
-			log.log(Level.WARNING,"Returning default data, unable to decompress the resource",e);
+			log.log(Level.WARNING, "Returning default data, unable to decompress the resource", e);
 			return data;
 		}
 	}
@@ -444,10 +451,16 @@ public class ResourceItem
 		}
 		else
 		{
-			var rid = getDataRow().orElse(null);
+			ResourceItemData rid = (ResourceItemData) getDataRow().orElse(null);
 			if (rid != null)
 			{
 				saveDataFile(data, rid.getId());
+				if (flushExploded)
+				{
+					data = zip(data);
+				}
+				rid.setResourceItemData(data);
+				rid.update();
 			}
 		}
 		//	System.out.println(LocalDateTime.now() + " end update");
