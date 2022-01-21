@@ -457,6 +457,11 @@ public class ResourceItem
 				saveDataFile(data, rid.getId());
 				if (flushExploded)
 				{
+					if(data[0] == 0)
+					{
+						System.out.println("Corrupted file not writing to DB - " + rid.getId());
+						return;
+					}
 					data = zip(data);
 				}
 				rid.setResourceItemData(data);
@@ -464,7 +469,6 @@ public class ResourceItem
 			}
 		}
 		//	System.out.println(LocalDateTime.now() + " end update");
-		
 	}
 	
 	private void saveDataFile(byte[] data, UUID rid)
