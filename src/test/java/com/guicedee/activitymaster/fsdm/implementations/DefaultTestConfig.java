@@ -1,7 +1,5 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
-import com.google.inject.servlet.RequestScoper;
-import com.google.inject.servlet.ServletScopes;
 import com.guicedee.activitymaster.ActivityMasterTestBinder;
 import com.guicedee.activitymaster.fsdm.*;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
@@ -16,7 +14,8 @@ import com.guicedee.logger.logging.LogColourFormatter;
 import org.junit.jupiter.api.extension.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
@@ -28,8 +27,6 @@ public class DefaultTestConfig
 {
 	private static final String FirefoxHeaderAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; ServiceUI 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18356";
 	private static final Logger log = Logger.getLogger(DefaultTestConfig.class.getName());
-
-	private RequestScoper.CloseableScope scoper;
 
 	@Override
 	public void beforeEach(ExtensionContext extensionContext) throws Exception
@@ -56,8 +53,6 @@ public class DefaultTestConfig
 		LogFactory.configureDefaultLogHiding();
 		GuiceContext.inject();
 
-		scoper = ServletScopes.scopeRequest(new HashMap<>())
-		                      .open();
 /*		RequestScopedObject obj = GuiceContext.get(RequestScopedObject.class);
 		BasicServlet servlet = GuiceContext.get(BasicServlet.class);
 
@@ -101,7 +96,6 @@ public class DefaultTestConfig
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception
 	{
-		scoper.close();
 		GuiceContext.destroy();
 	}
 

@@ -7,9 +7,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -19,9 +16,6 @@ import java.util.Objects;
  * @author mmagon
  */
 @Embeddable
-@Getter
-@Setter
-@Accessors(chain = true)
 public class TransQtmPK
 		implements Serializable
 {
@@ -38,6 +32,28 @@ public class TransQtmPK
 	
 	public TransQtmPK()
 	{
+	}
+	
+	public Integer getMonthID()
+	{
+		return monthID;
+	}
+	
+	public TransQtmPK setMonthID(Integer monthID)
+	{
+		this.monthID = monthID;
+		return this;
+	}
+	
+	public Integer getqTMMonthID()
+	{
+		return qTMMonthID;
+	}
+	
+	public TransQtmPK setqTMMonthID(Integer qTMMonthID)
+	{
+		this.qTMMonthID = qTMMonthID;
+		return this;
 	}
 	
 	@Override

@@ -9,8 +9,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
-import static jakarta.persistence.AccessType.*;
-
 /**
  * @author Marc Magon
  * @version 1.0
@@ -20,7 +18,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Rules", name = "RulesXClassificationSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class RulesXClassificationSecurityToken
 		extends WarehouseSecurityTable<RulesXClassificationSecurityToken, RulesXClassificationSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -32,7 +30,7 @@ public class RulesXClassificationSecurityToken
 	
 	@Column(nullable = false,
 	        name = "RulesXClassificationSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "RulesXClassificationID",

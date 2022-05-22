@@ -24,7 +24,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Party", name = "InvolvedPartyXRulesSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class InvolvedPartyXRulesSecurityToken
 		extends WarehouseSecurityTable<InvolvedPartyXRulesSecurityToken, InvolvedPartyXRulesSecurityTokenQueryBuilder, UUID>
 {
@@ -34,7 +34,7 @@ public class InvolvedPartyXRulesSecurityToken
 	
 	@Column(nullable = false,
 	        name = "InvolvedPartyXRulesSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "InvolvedPartyXRulesID",

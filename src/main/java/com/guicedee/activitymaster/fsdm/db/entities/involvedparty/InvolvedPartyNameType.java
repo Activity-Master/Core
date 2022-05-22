@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
 /**
@@ -27,7 +26,7 @@ import static jakarta.persistence.FetchType.*;
 @Table(name = "InvolvedPartyNameType",
        schema = "Party")
 @XmlRootElement
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -48,7 +47,7 @@ public class InvolvedPartyNameType
 	@Column(nullable = false,
 	        name = "InvolvedPartyNameTypeID")
 	@JsonValue
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	@Basic(optional = false,
 	       fetch = EAGER)

@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -15,7 +14,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.*;
 import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTokenQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
@@ -70,6 +68,7 @@ public class SecurityTokenService
 			sta.setSystemID((Systems) system);
 			sta.setOriginalSourceSystemID((Systems) system);
 			sta.setEnterpriseID(enterprise);
+			sta.setOriginalSourceSystemUniqueID("");
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			sta.setActiveFlagID((ActiveFlag) activeFlag);

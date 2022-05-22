@@ -26,7 +26,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
 /**
@@ -40,7 +39,7 @@ import static jakarta.persistence.FetchType.*;
        name = "Geography")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
@@ -58,7 +57,7 @@ public class Geography
 	@Column(nullable = false,
 	        name = "GeographyID")
 	@JsonValue
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@Basic(optional = false,

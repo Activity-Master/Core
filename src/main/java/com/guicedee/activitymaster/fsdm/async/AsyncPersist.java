@@ -2,15 +2,13 @@ package com.guicedee.activitymaster.fsdm.async;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.guicedinjection.GuiceContext;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.function.Consumer;
 
 public class AsyncPersist implements Runnable {
-    @Getter@Setter
+    
     private WarehouseBaseTable<?,?,?> persistable;
-    @Getter@Setter
+    
     private Consumer<Throwable> onException;
 
     AsyncPersist(){}
@@ -27,7 +25,29 @@ public class AsyncPersist implements Runnable {
         ap.setOnException(throwableConsumer);
         return ap;
     }
-
+    
+    public WarehouseBaseTable<?, ?, ?> getPersistable()
+    {
+        return persistable;
+    }
+    
+    public AsyncPersist setPersistable(WarehouseBaseTable<?, ?, ?> persistable)
+    {
+        this.persistable = persistable;
+        return this;
+    }
+    
+    public Consumer<Throwable> getOnException()
+    {
+        return onException;
+    }
+    
+    public AsyncPersist setOnException(Consumer<Throwable> onException)
+    {
+        this.onException = onException;
+        return this;
+    }
+    
     void persist()
     {
         try {

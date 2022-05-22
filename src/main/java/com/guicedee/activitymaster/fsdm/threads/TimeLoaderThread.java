@@ -1,11 +1,9 @@
 package com.guicedee.activitymaster.fsdm.threads;
 
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
-import lombok.Data;
 
 import java.util.Date;
 
-@Data
 public
 class TimeLoaderThread implements Runnable
 {
@@ -14,7 +12,18 @@ class TimeLoaderThread implements Runnable
 	public TimeLoaderThread()
 	{
 	}
-
+	
+	public Date getDate()
+	{
+		return date;
+	}
+	
+	public TimeLoaderThread setDate(Date date)
+	{
+		this.date = date;
+		return this;
+	}
+	
 	public TimeLoaderThread(Date date)
 	{
 		this.date = date;

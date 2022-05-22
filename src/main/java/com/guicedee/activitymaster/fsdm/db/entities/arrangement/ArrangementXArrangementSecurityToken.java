@@ -5,7 +5,6 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXArrangementSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
@@ -26,7 +25,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Arrangement", name = "ArrangementXArrangementSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class ArrangementXArrangementSecurityToken
 		extends WarehouseSecurityTable<ArrangementXArrangementSecurityToken, ArrangementXArrangementSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -38,7 +37,7 @@ public class ArrangementXArrangementSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ArrangementXArrangementSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "ArrangementXArrangementID",

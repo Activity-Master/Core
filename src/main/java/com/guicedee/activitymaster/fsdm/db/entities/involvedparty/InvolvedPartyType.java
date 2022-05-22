@@ -26,7 +26,7 @@ import static jakarta.persistence.FetchType.*;
 @Table(name = "InvolvedPartyType",
        schema = "Party")
 @XmlRootElement
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -47,7 +47,7 @@ public class InvolvedPartyType
 	@Column(nullable = false,
 	        name = "InvolvedPartyTypeID")
 	@JsonValue
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	@Basic(optional = false,
 	       fetch = EAGER)

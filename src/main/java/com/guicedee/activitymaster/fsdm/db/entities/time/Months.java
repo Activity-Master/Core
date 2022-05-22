@@ -4,9 +4,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.MonthsQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -22,9 +19,6 @@ import java.util.Objects;
 @Table(name = "Months",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 public class Months
 		extends BaseEntity<Months, MonthsQueryBuilder, Integer>
 		implements Serializable
@@ -126,6 +120,173 @@ public class Months
 		}
 		Months months = (Months) o;
 		return Objects.equals(getId(), months.getId());
+	}
+	
+	@Override
+	public Integer getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public Months setId(Integer id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public String getMonthDescription()
+	{
+		return monthDescription;
+	}
+	
+	public Months setMonthDescription(String monthDescription)
+	{
+		this.monthDescription = monthDescription;
+		return this;
+	}
+	
+	public int getYearID()
+	{
+		return yearID;
+	}
+	
+	public Months setYearID(int yearID)
+	{
+		this.yearID = yearID;
+		return this;
+	}
+	
+	public short getMonthDayDuration()
+	{
+		return monthDayDuration;
+	}
+	
+	public Months setMonthDayDuration(short monthDayDuration)
+	{
+		this.monthDayDuration = monthDayDuration;
+		return this;
+	}
+	
+	public int getLastMonthID()
+	{
+		return lastMonthID;
+	}
+	
+	public Months setLastMonthID(int lastMonthID)
+	{
+		this.lastMonthID = lastMonthID;
+		return this;
+	}
+	
+	public int getLastQuarterID()
+	{
+		return lastQuarterID;
+	}
+	
+	public Months setLastQuarterID(int lastQuarterID)
+	{
+		this.lastQuarterID = lastQuarterID;
+		return this;
+	}
+	
+	public int getLastYearID()
+	{
+		return lastYearID;
+	}
+	
+	public Months setLastYearID(int lastYearID)
+	{
+		this.lastYearID = lastYearID;
+		return this;
+	}
+	
+	public String getMonthShortDescription()
+	{
+		return monthShortDescription;
+	}
+	
+	public Months setMonthShortDescription(String monthShortDescription)
+	{
+		this.monthShortDescription = monthShortDescription;
+		return this;
+	}
+	
+	public String getMonthYYDescription()
+	{
+		return monthYYDescription;
+	}
+	
+	public Months setMonthYYDescription(String monthYYDescription)
+	{
+		this.monthYYDescription = monthYYDescription;
+		return this;
+	}
+	
+	public String getMonthMMMYYDescription()
+	{
+		return monthMMMYYDescription;
+	}
+	
+	public Months setMonthMMMYYDescription(String monthMMMYYDescription)
+	{
+		this.monthMMMYYDescription = monthMMMYYDescription;
+		return this;
+	}
+	
+	public String getMonthMMYYYYDescription()
+	{
+		return monthMMYYYYDescription;
+	}
+	
+	public Months setMonthMMYYYYDescription(String monthMMYYYYDescription)
+	{
+		this.monthMMYYYYDescription = monthMMYYYYDescription;
+		return this;
+	}
+	
+	public String getMonthNameYYYYDescription()
+	{
+		return monthNameYYYYDescription;
+	}
+	
+	public Months setMonthNameYYYYDescription(String monthNameYYYYDescription)
+	{
+		this.monthNameYYYYDescription = monthNameYYYYDescription;
+		return this;
+	}
+	
+	public List<Days> getDaysList()
+	{
+		return DaysList;
+	}
+	
+	public Months setDaysList(List<Days> daysList)
+	{
+		DaysList = daysList;
+		return this;
+	}
+	
+	public Quarters getQuarterID()
+	{
+		return quarterID;
+	}
+	
+	public Months setQuarterID(Quarters quarterID)
+	{
+		this.quarterID = quarterID;
+		return this;
+	}
+	
+	public MonthOfYear getMonthOfYearID()
+	{
+		return MonthOfYearID;
+	}
+	
+	public Months setMonthOfYearID(MonthOfYear monthOfYearID)
+	{
+		MonthOfYearID = monthOfYearID;
+		return this;
 	}
 	
 	@Override

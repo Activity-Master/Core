@@ -23,6 +23,7 @@ module com.guicedee.activitymaster.fsdm {
 	exports com.guicedee.activitymaster.fsdm.implementations.interceptors;
 	
 	
+	requires org.postgresql.jdbc;
 	requires com.guicedee.guicedinjection;
 	requires com.guicedee.guicedpersistence;
 	
@@ -47,9 +48,6 @@ module com.guicedee.activitymaster.fsdm {
 	
 	requires com.guicedee.guicedhazelcast.hibernate;
 	requires com.guicedee.guicedhazelcast;
-	
-	
-	requires static lombok;
 	requires org.apache.commons.compress;
 
 	provides IGuiceModule with ActivityMasterDBModule,

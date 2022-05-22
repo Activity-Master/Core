@@ -43,8 +43,6 @@ public class ActivityMasterDBModule
 				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "50")))
 				.setMinPoolSize(1)
 				.setPrefill(false)
-				
-				
 				.setShareTransactionConnections(true)
 				.setAllowLocalTransactions(true)
 				
@@ -53,7 +51,7 @@ public class ActivityMasterDBModule
 			//	.setClassName("com.microsoft.sqlserver.jdbc.SQLServerXADataSource")
 			//	.setDriverClass("com.microsoft.sqlserver.jdbc.SQLServerDriver")
 				
-				.setServerName(System.getProperty("fsdm_dbserver", "localhost"))
+				/*.setServerName(System.getProperty("fsdm_dbserver", "localhost"))
 				.setDatabaseName(System.getProperty("fsdm_dbname", "FSDM"))
 			//	.setInstanceName(System.getProperty("fsdm_dbinstance", ""))
 				.setUsername(System.getProperty("fsdm_username", ""))
@@ -61,9 +59,11 @@ public class ActivityMasterDBModule
 				
 				.setUrl("jdbc:sqlserver://" + System.getProperty("fsdm_dbserver", "localhost") +
 				        ";DatabaseName=" + System.getProperty("fsdm_dbname", "FSDM")
-				        + ";integratedSecurity=" + System.getProperty("fsdm_integratedSecurity", "true") + ";")
+				        + ";integratedSecurity=" + System.getProperty("fsdm_integratedSecurity", "true") + ";" +
+				        "trustServerCertificate=true;"
+				        )*/
 				
-				.setTransactionIsolation(BTMTransactionIsolation.READ_UNCOMMITTED.toString())
+				.setTransactionIsolation(BTMTransactionIsolation.READ_COMMITTED.toString())
 				;
 	}
 	
@@ -77,5 +77,11 @@ public class ActivityMasterDBModule
 	protected @NotNull Class<? extends Annotation> getBindingAnnotation()
 	{
 		return ActivityMasterDB.class;
+	}
+	
+	@Override
+	public Integer sortOrder()
+	{
+		return 20;
 	}
 }

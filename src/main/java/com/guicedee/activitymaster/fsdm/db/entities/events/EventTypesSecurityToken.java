@@ -5,7 +5,6 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
@@ -13,8 +12,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.util.UUID;
-
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -25,7 +22,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Event", name = "EventTypesSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class EventTypesSecurityToken
 		extends WarehouseSecurityTable<EventTypesSecurityToken, EventTypeSecurityTokenQueryBuilder, UUID>
 {
@@ -36,7 +33,7 @@ public class EventTypesSecurityToken
 	
 	@Column(nullable = false,
 	        name = "EventTypesSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "EventTypesID",

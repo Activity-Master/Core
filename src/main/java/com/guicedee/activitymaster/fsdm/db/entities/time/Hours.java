@@ -11,9 +11,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.time.builders.HoursQueryBuil
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlTransient;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -27,9 +24,6 @@ import java.util.List;
 @Table(name = "Hours",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 public class Hours
 		extends BaseEntity<Hours, HoursQueryBuilder, Integer>
 		implements Serializable
@@ -109,4 +103,77 @@ public class Hours
 		return TimeList;
 	}
 	
+	public Hours setTimeList(List<Time> timeList)
+	{
+		TimeList = timeList;
+		return this;
+	}
+	
+	@Override
+	public Integer getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public Hours setId(Integer id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public String getTwelveHour()
+	{
+		return twelveHour;
+	}
+	
+	public Hours setTwelveHour(String twelveHour)
+	{
+		this.twelveHour = twelveHour;
+		return this;
+	}
+	
+	public String getTwentyFourHour()
+	{
+		return twentyFourHour;
+	}
+	
+	public Hours setTwentyFourHour(String twentyFourHour)
+	{
+		this.twentyFourHour = twentyFourHour;
+		return this;
+	}
+	
+	public String getAmPmDesc()
+	{
+		return amPmDesc;
+	}
+	
+	public Hours setAmPmDesc(String amPmDesc)
+	{
+		this.amPmDesc = amPmDesc;
+		return this;
+	}
+	
+	public int getPreviousHourID()
+	{
+		return previousHourID;
+	}
+	
+	public Hours setPreviousHourID(int previousHourID)
+	{
+		this.previousHourID = previousHourID;
+		return this;
+	}
+	
+	public List<HalfHours> getlUHalfHoursList()
+	{
+		return lUHalfHoursList;
+	}
+	
+	public Hours setlUHalfHoursList(List<HalfHours> lUHalfHoursList)
+	{
+		this.lUHalfHoursList = lUHalfHoursList;
+		return this;
+	}
 }

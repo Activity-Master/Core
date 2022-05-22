@@ -11,11 +11,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQuer
 import com.guicedee.activitymaster.fsdm.services.providers.SystemsProvider;
 import com.guicedee.activitymaster.fsdm.services.providers.SystemsTokenProvider;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import lombok.extern.java.Log;
+import com.guicedee.logger.LogFactory;
 
 import java.util.UUID;
 
-@Log
 public class SystemsBinder extends PrivateModule implements IGuiceModule<SystemsBinder>
 {
 	@Override
@@ -46,7 +45,7 @@ public class SystemsBinder extends PrivateModule implements IGuiceModule<Systems
 			bind(aSystemRealKey).toProvider(new SystemsProvider(system.getSystemName()));
 			expose(aSystemGenericKey);
 			
-			log.config("Bound System with Name - " + system.getSystemName());
+			LogFactory.getLog(getClass()).config("Bound System with Name - " + system.getSystemName());
 			
 			Key<UUID> aSystemTokenGenericKey = Key.get(UUID.class, Names.named(system.getSystemName()));
 			bind(aSystemTokenGenericKey).toProvider(new SystemsTokenProvider(system.getSystemName()));

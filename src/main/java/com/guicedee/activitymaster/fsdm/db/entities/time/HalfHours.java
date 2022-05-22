@@ -10,9 +10,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.HalfHoursQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
@@ -26,9 +23,6 @@ import java.util.Objects;
 @Table(name = "HalfHours",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class HalfHours
@@ -103,6 +97,85 @@ public class HalfHours
 		}
 		HalfHours halfHours = (HalfHours) o;
 		return id.equals(halfHours.id);
+	}
+	
+	@Override
+	public TimePK getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public HalfHours setId(TimePK id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public String getTwelveHourClockDesc()
+	{
+		return twelveHourClockDesc;
+	}
+	
+	public HalfHours setTwelveHourClockDesc(String twelveHourClockDesc)
+	{
+		this.twelveHourClockDesc = twelveHourClockDesc;
+		return this;
+	}
+	
+	public String getTwentyFourHourClockDesc()
+	{
+		return twentyFourHourClockDesc;
+	}
+	
+	public HalfHours setTwentyFourHourClockDesc(String twentyFourHourClockDesc)
+	{
+		this.twentyFourHourClockDesc = twentyFourHourClockDesc;
+		return this;
+	}
+	
+	public String getAmPmDesc()
+	{
+		return amPmDesc;
+	}
+	
+	public HalfHours setAmPmDesc(String amPmDesc)
+	{
+		this.amPmDesc = amPmDesc;
+		return this;
+	}
+	
+	public int getPreviousHourID()
+	{
+		return previousHourID;
+	}
+	
+	public HalfHours setPreviousHourID(int previousHourID)
+	{
+		this.previousHourID = previousHourID;
+		return this;
+	}
+	
+	public int getPreviousHalfHourMinuteID()
+	{
+		return previousHalfHourMinuteID;
+	}
+	
+	public HalfHours setPreviousHalfHourMinuteID(int previousHalfHourMinuteID)
+	{
+		this.previousHalfHourMinuteID = previousHalfHourMinuteID;
+		return this;
+	}
+	
+	public com.guicedee.activitymaster.fsdm.db.entities.time.Hours getHours()
+	{
+		return Hours;
+	}
+	
+	public HalfHours setHours(com.guicedee.activitymaster.fsdm.db.entities.time.Hours hours)
+	{
+		Hours = hours;
+		return this;
 	}
 	
 	@Override

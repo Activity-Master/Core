@@ -1,13 +1,11 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActiveFlagException;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -23,7 +21,6 @@ public class ActiveFlagService
 		return new ActiveFlag();
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IActiveFlag<?,?> create(IEnterprise<?,?> enterprise, String name, String description, UUID... identifyingToken)
 	{
 		ActiveFlag af = new ActiveFlag();

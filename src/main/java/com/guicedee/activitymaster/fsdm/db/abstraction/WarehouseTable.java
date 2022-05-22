@@ -101,10 +101,6 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 	public J setOriginalSourceSystemID(ISystems<?, ?> originalSourceSystemID)
 	{
 		this.originalSourceSystemID = (Systems) originalSourceSystemID;
-		if (this.originalSourceSystemID != null && !this.originalSourceSystemID.isFake())
-		{
-			originalSourceSystemID.initialize();
-		}
 		return (J) this;
 	}
 }

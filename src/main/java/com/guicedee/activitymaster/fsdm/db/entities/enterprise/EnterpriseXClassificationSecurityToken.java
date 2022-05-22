@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.fsdm.db.entities.enterprise;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
@@ -10,18 +9,17 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
-import static jakarta.persistence.AccessType.*;
-
 /**
  * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @Entity
-@Table(name = "EnterpriseXClassificationSecurityToken")
+@Table(name = "EnterpriseXClassificationSecurityToken",
+       schema = "dbo")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class EnterpriseXClassificationSecurityToken
 		extends WarehouseSecurityTable<EnterpriseXClassificationSecurityToken, EnterpriseXClassificationSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -33,7 +31,7 @@ public class EnterpriseXClassificationSecurityToken
 	
 	@Column(nullable = false,
 	        name = "EnterpriseXClassificationSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "EnterpriseXClassificationID",

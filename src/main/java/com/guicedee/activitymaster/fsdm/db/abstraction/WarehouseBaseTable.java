@@ -32,4 +32,10 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 	{
 		return getId() == null;
 	}
+	
+	@Override
+	public @NotNull J persist()
+	{
+		return super.persist();
+	}
 }

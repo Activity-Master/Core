@@ -32,7 +32,7 @@ public class SecurityHierarchyView
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	@OneToMany(mappedBy = "child")
 	private List<SecurityHierarchyParents> parents;

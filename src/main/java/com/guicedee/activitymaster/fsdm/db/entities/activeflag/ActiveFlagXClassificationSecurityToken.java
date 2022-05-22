@@ -9,18 +9,17 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
-import static jakarta.persistence.AccessType.*;
-
 /**
  * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @Entity
-@Table(name = "ActiveFlagXClassificationSecurityToken")
+@Table(name = "ActiveFlagXClassificationSecurityToken",
+       schema = "dbo")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class ActiveFlagXClassificationSecurityToken
 		extends WarehouseSecurityTable<ActiveFlagXClassificationSecurityToken, ActiveFlagXClassificationSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -32,7 +31,7 @@ public class ActiveFlagXClassificationSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ActiveFlagXClassificationSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "ActiveFlagXClassificationID",

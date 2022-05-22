@@ -4,9 +4,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.TransQtdQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -20,9 +17,6 @@ import java.io.Serializable;
 @Table(name = "Trans_Qtd",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 public class TransQtd
 		extends BaseEntity<TransQtd, TransQtdQueryBuilder, TransQtdPK>
 		implements Serializable
@@ -34,6 +28,19 @@ public class TransQtd
 	
 	public TransQtd()
 	{
+	}
+	
+	@Override
+	public TransQtdPK getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public TransQtd setId(TransQtdPK id)
+	{
+		this.id = id;
+		return this;
 	}
 	
 	@Override

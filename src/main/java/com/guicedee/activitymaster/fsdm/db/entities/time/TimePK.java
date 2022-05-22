@@ -7,9 +7,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -18,9 +15,6 @@ import java.io.Serializable;
  * @author MMagon
  */
 @Embeddable
-@Getter
-@Setter
-@Accessors(chain = true)
 public class TimePK
 		implements Serializable
 {
@@ -41,6 +35,28 @@ public class TimePK
 	{
 		this.hourID = hourID;
 		this.minuteID = minuteID;
+	}
+	
+	public Integer getHourID()
+	{
+		return hourID;
+	}
+	
+	public TimePK setHourID(Integer hourID)
+	{
+		this.hourID = hourID;
+		return this;
+	}
+	
+	public Integer getMinuteID()
+	{
+		return minuteID;
+	}
+	
+	public TimePK setMinuteID(Integer minuteID)
+	{
+		this.minuteID = minuteID;
+		return this;
 	}
 	
 	@Override

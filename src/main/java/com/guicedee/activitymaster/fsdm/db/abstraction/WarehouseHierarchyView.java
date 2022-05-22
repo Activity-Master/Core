@@ -19,7 +19,7 @@ public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J,
 	@Column
 	private String name;
 	@Column
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID parentID;
 	@Column
 	private String pather;

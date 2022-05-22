@@ -3,16 +3,15 @@ package com.guicedee.activitymaster.fsdm.services.providers;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.guicedee.guicedinjection.GuiceContext;
-import lombok.extern.java.Log;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.guicedee.activitymaster.fsdm.systems.SecurityTokenSystem;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.logger.LogFactory;
 
-@Log
 public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, EnterpriseQueryBuilder>>
 {
 	@Inject
@@ -43,7 +42,7 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, Ente
 				if (GuiceContext.get(SecurityTokenSystem.class)
 				                .hasSystemInstalled(ent))
 				{
-					log.info("Enabling Authentication Modules");
+					LogFactory.getLog(getClass()).info("Enabling Authentication Modules");
 					activityMasterConfiguration.setSecurityEnabled(true);
 				}
 			}

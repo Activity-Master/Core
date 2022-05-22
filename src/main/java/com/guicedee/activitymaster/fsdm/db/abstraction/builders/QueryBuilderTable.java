@@ -20,20 +20,7 @@ public abstract class QueryBuilderTable<J extends QueryBuilderTable<J, E, I>,
 		{
 			entity.setOriginalSourceSystemUniqueID(STRING_EMPTY);
 		}
-		/*if (entity.getOriginalSourceSystemID() == null)
-		{
-			ISystems<?, ?> system = getISystem(ActivityMasterSystemName);
-			entity.setSystemID(system);
-			if (entity.getEnterpriseID() == null)
-			{
-				entity.setEnterpriseID(system.getEnterpriseID());
-			}
-		}
-		if (entity.getSystemID() == null)
-		{
-			ISystems<?, ?> system = getISystem(ActivityMasterSystemName);
-			entity.setSystemID(system);
-		}*/
+		
 		return super.onCreate(entity);
 	}
 }

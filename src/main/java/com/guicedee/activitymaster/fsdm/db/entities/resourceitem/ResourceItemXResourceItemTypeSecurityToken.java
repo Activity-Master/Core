@@ -14,8 +14,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
-import static jakarta.persistence.AccessType.*;
-
 /**
  * @author Marc Magon
  * @version 1.0
@@ -25,7 +23,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Resource", name = "ResourceItemXResourceItemTypeSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class ResourceItemXResourceItemTypeSecurityToken
 		extends WarehouseSecurityTable<ResourceItemXResourceItemTypeSecurityToken, ResourceItemXResourceItemTypeSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -37,7 +35,7 @@ public class ResourceItemXResourceItemTypeSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ResourceItemXResourceItemTypeSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	@JoinColumn(name = "ResourceItemXResourceItemTypeID",
 	            referencedColumnName = "ResourceItemXResourceItemTypeID",

@@ -1,9 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,9 +12,6 @@ import java.util.Objects;
  */
 
 @Embeddable
-@Getter
-@Setter
-@Accessors(chain = true)
 public class TransQtdPK
 		implements Serializable
 {
@@ -34,6 +28,28 @@ public class TransQtdPK
 	
 	public TransQtdPK()
 	{
+	}
+	
+	public Integer getDayID()
+	{
+		return dayID;
+	}
+	
+	public TransQtdPK setDayID(Integer dayID)
+	{
+		this.dayID = dayID;
+		return this;
+	}
+	
+	public Integer getQtdDayID()
+	{
+		return qtdDayID;
+	}
+	
+	public TransQtdPK setQtdDayID(Integer qtdDayID)
+	{
+		this.qtdDayID = qtdDayID;
+		return this;
 	}
 	
 	@Override

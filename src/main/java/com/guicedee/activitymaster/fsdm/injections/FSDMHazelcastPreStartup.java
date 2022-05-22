@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.fsdm.injections;
 
+import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.interfaces.IGuicePreStartup;
 
 public class FSDMHazelcastPreStartup implements IGuicePreStartup<FSDMHazelcastPreStartup>
@@ -7,18 +8,21 @@ public class FSDMHazelcastPreStartup implements IGuicePreStartup<FSDMHazelcastPr
 	@Override
 	public void onStartup()
 	{
-		/*if(!System.getProperties()
-		          .containsKey("hazelcast.group"))
+		if (System.getProperty("fsdm.dev", "false")
+		          .equals("true"))
 		{
-			HazelcastProperties.setStartLocal(true);
+			if (!System.getProperties()
+			           .containsKey("hazelcast.group"))
+			{
+				HazelcastProperties.setStartLocal(true);
+			}
+			HazelcastProperties.setGroupName(System.getProperty("hazelcast.group", "local-dev"));
+			HazelcastProperties.setInstanceName(HazelcastProperties.getGroupName());
+			if (HazelcastProperties.getAddress() == null)
+			{
+				HazelcastProperties.setAddress(System.getProperty("hazelcast.serverip", "127.0.0.1"));
+			}
 		}
-		
-		HazelcastProperties.setGroupName(System.getProperty("hazelcast.group", "local-dev"));
-		HazelcastProperties.setInstanceName(HazelcastProperties.getGroupName());
-		if (HazelcastProperties.getAddress() == null)
-		{
-			HazelcastProperties.setAddress(System.getProperty("hazelcast.serverip", "127.0.0.1"));
-		}*/
 	}
 	
 	@Override

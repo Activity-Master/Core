@@ -4,9 +4,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.YearsQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
@@ -21,9 +18,6 @@ import java.util.List;
 @Table(name = "Years",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Years
@@ -76,6 +70,107 @@ public class Years
 	
 	public Years()
 	{
+	}
+	
+	@Override
+	public Short getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public Years setId(Short id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public String getyYName()
+	{
+		return yYName;
+	}
+	
+	public Years setyYName(String yYName)
+	{
+		this.yYName = yYName;
+		return this;
+	}
+	
+	public String getyYYName()
+	{
+		return yYYName;
+	}
+	
+	public Years setyYYName(String yYYName)
+	{
+		this.yYYName = yYYName;
+		return this;
+	}
+	
+	public String getYearFullName()
+	{
+		return yearFullName;
+	}
+	
+	public Years setYearFullName(String yearFullName)
+	{
+		this.yearFullName = yearFullName;
+		return this;
+	}
+	
+	public String getYearName()
+	{
+		return yearName;
+	}
+	
+	public Years setYearName(String yearName)
+	{
+		this.yearName = yearName;
+		return this;
+	}
+	
+	public short getLeapYearFlag()
+	{
+		return leapYearFlag;
+	}
+	
+	public Years setLeapYearFlag(short leapYearFlag)
+	{
+		this.leapYearFlag = leapYearFlag;
+		return this;
+	}
+	
+	public short getLastYearID()
+	{
+		return lastYearID;
+	}
+	
+	public Years setLastYearID(short lastYearID)
+	{
+		this.lastYearID = lastYearID;
+		return this;
+	}
+	
+	public List<Quarters> getQuartersList()
+	{
+		return QuartersList;
+	}
+	
+	public Years setQuartersList(List<Quarters> quartersList)
+	{
+		QuartersList = quartersList;
+		return this;
+	}
+	
+	public Short getCentury()
+	{
+		return century;
+	}
+	
+	public Years setCentury(Short century)
+	{
+		this.century = century;
+		return this;
 	}
 	
 	@Override

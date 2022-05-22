@@ -4,9 +4,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.PublicHolidaysQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -20,9 +17,6 @@ import java.util.Objects;
 @Table(schema = "Time",
        name = "PublicHolidays")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 public class PublicHolidays
 		extends BaseEntity<PublicHolidays, PublicHolidaysQueryBuilder, Integer>
 		implements Serializable
@@ -67,6 +61,52 @@ public class PublicHolidays
 		this.dayID = dayID;
 		this.publicHolidayName = publicHolidayName;
 		this.publicHolidayType = publicHolidayType;
+	}
+	
+	@Override
+	public Integer getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public PublicHolidays setId(Integer id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public int getDayID()
+	{
+		return dayID;
+	}
+	
+	public PublicHolidays setDayID(int dayID)
+	{
+		this.dayID = dayID;
+		return this;
+	}
+	
+	public String getPublicHolidayName()
+	{
+		return publicHolidayName;
+	}
+	
+	public PublicHolidays setPublicHolidayName(String publicHolidayName)
+	{
+		this.publicHolidayName = publicHolidayName;
+		return this;
+	}
+	
+	public String getPublicHolidayType()
+	{
+		return publicHolidayType;
+	}
+	
+	public PublicHolidays setPublicHolidayType(String publicHolidayType)
+	{
+		this.publicHolidayType = publicHolidayType;
+		return this;
 	}
 	
 	@Override

@@ -19,7 +19,7 @@ import static jakarta.persistence.AccessType.*;
 @Entity
 @Table(schema = "Classification", name = "ClassificationSecurityToken")
 @XmlRootElement
-@Access(FIELD)
+@Access(AccessType.FIELD)
 
 public class ClassificationSecurityToken
 		extends WarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, UUID>
@@ -31,7 +31,7 @@ public class ClassificationSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ClassificationSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "ClassificationID",

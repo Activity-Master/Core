@@ -25,7 +25,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Arrangement", name = "ArrangementTypeSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class ArrangementTypeSecurityToken
 		extends WarehouseSecurityTable<ArrangementTypeSecurityToken, ArrangementTypeSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -37,7 +37,7 @@ public class ArrangementTypeSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ArrangementTypeSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "ArrangementTypeID",

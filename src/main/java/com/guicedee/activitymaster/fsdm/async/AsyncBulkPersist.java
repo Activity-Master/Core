@@ -2,16 +2,14 @@ package com.guicedee.activitymaster.fsdm.async;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.guicedinjection.GuiceContext;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class AsyncBulkPersist implements Runnable {
-    @Getter@Setter
+    
     private List<WarehouseBaseTable<?,?,?>> persistable;
-    @Getter@Setter
+    
     private Consumer<Throwable> onException;
 
     AsyncBulkPersist(){}
@@ -28,7 +26,29 @@ public class AsyncBulkPersist implements Runnable {
         ap.setOnException(throwableConsumer);
         return ap;
     }
-
+    
+    public List<WarehouseBaseTable<?, ?, ?>> getPersistable()
+    {
+        return persistable;
+    }
+    
+    public AsyncBulkPersist setPersistable(List<WarehouseBaseTable<?, ?, ?>> persistable)
+    {
+        this.persistable = persistable;
+        return this;
+    }
+    
+    public Consumer<Throwable> getOnException()
+    {
+        return onException;
+    }
+    
+    public AsyncBulkPersist setOnException(Consumer<Throwable> onException)
+    {
+        this.onException = onException;
+        return this;
+    }
+    
     void persist()
     {
         persistable.stream().parallel().forEach(a->{

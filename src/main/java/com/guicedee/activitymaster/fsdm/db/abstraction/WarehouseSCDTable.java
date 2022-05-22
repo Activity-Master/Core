@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -93,10 +92,6 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I>,
 	public J setEnterpriseID(IEnterprise<?, ?> enterpriseID)
 	{
 		this.enterpriseID = (Enterprise) enterpriseID;
-		if (this.enterpriseID != null && !this.enterpriseID.isFake())
-		{
-			enterpriseID.initialize();
-		}
 		return (J) this;
 	}
 	
@@ -108,10 +103,6 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I>,
 	public J setSystemID(ISystems<?, ?> systemID)
 	{
 		this.systemID = (Systems) systemID;
-		if (this.systemID != null && !this.systemID.isFake())
-		{
-			systemID.initialize();
-		}
 		return (J) this;
 	}
 	

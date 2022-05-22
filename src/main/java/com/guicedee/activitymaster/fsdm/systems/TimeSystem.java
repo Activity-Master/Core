@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.fsdm.ActivityMasterService;
 import com.guicedee.activitymaster.fsdm.TimeService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
@@ -16,7 +15,6 @@ import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.threads.TimeLoaderThread;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.JobService;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -149,9 +147,9 @@ public class TimeSystem
 		year.setLastYearID((short) getLastYearID(date));
 		year.setYearName(YearIDFormat.getSimpleDateFormat()
 		                             .format(date));
-		year.setYYName(YearShortFormat.getSimpleDateFormat()
+		year.setyYName(YearShortFormat.getSimpleDateFormat()
 		                              .format(date));
-		year.setYYYName(YearYYYFormat.getSimpleDateFormat()
+		year.setyYYName(YearYYYFormat.getSimpleDateFormat()
 		                             .format(date));
 		year.setYearFullName(EnglishNumberToWords.convert(year.getId()));
 		year.setCentury(Short.parseShort(YearFullFormat.getSimpleDateFormat()
@@ -830,8 +828,10 @@ public class TimeSystem
 	public void createTime()
 	{
 		if (new Hours().builder()
+				.where(Hours_.id,Equals,1)
 		               .getCount() == 0)
 		{
+			int dayPartCount = 0;
 			for (int hr = 0; hr < 24; hr++)
 			{
 				Hours hour = new Hours(hr);
@@ -921,6 +921,8 @@ public class TimeSystem
 				{
 					half.persist();
 					HalfHourDayParts halfHourDayParts = new HalfHourDayParts();
+					halfHourDayParts.setId(dayPartCount++);
+					
 					halfHourDayParts.setHourID(half.getId()
 					                               .getHourID());
 					halfHourDayParts.setMinuteID(half.getId()

@@ -11,9 +11,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
@@ -27,9 +24,6 @@ import java.util.Set;
 @Table(name = "DayParts",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class DayParts extends BaseEntity<DayParts, DayPartsQueryBuilder, Integer> implements Serializable
@@ -69,5 +63,62 @@ public class DayParts extends BaseEntity<DayParts, DayPartsQueryBuilder, Integer
 	
 	public DayParts()
 	{
+	}
+	
+	@Override
+	public Integer getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public DayParts setId(Integer id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public String getDayPartName()
+	{
+		return dayPartName;
+	}
+	
+	public DayParts setDayPartName(String dayPartName)
+	{
+		this.dayPartName = dayPartName;
+		return this;
+	}
+	
+	public String getDayPartDescription()
+	{
+		return dayPartDescription;
+	}
+	
+	public DayParts setDayPartDescription(String dayPartDescription)
+	{
+		this.dayPartDescription = dayPartDescription;
+		return this;
+	}
+	
+	public int getDayPartSortOrder()
+	{
+		return dayPartSortOrder;
+	}
+	
+	public DayParts setDayPartSortOrder(int dayPartSortOrder)
+	{
+		this.dayPartSortOrder = dayPartSortOrder;
+		return this;
+	}
+	
+	public Set<HalfHourDayParts> getHalfHourDayPartsSet()
+	{
+		return halfHourDayPartsSet;
+	}
+	
+	public DayParts setHalfHourDayPartsSet(Set<HalfHourDayParts> halfHourDayPartsSet)
+	{
+		this.halfHourDayPartsSet = halfHourDayPartsSet;
+		return this;
 	}
 }

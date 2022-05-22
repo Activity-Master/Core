@@ -7,9 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQueryBuilder;
-import lombok.extern.java.Log;
 
-@Log
 public class SystemsProvider implements Provider<ISystems<Systems, SystemsQueryBuilder>>
 {
 	@Inject

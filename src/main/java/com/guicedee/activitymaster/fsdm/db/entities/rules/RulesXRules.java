@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -22,7 +21,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Rules",
        name = "RulesXRules")
 @XmlRootElement
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
@@ -44,7 +43,7 @@ public class RulesXRules
 	
 	@Column(nullable = false,
 	        name = "RulesXRulesID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@OneToMany(

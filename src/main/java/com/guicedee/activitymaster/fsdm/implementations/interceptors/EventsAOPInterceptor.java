@@ -9,8 +9,6 @@ import com.guicedee.activitymaster.fsdm.client.services.annotations.Event;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.guicedinjection.GuiceContext;
-import lombok.Getter;
-import lombok.extern.java.Log;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
@@ -21,7 +19,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterSe
 import static com.guicedee.activitymaster.fsdm.client.services.IEventService.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
-@Log
+
 public class EventsAOPInterceptor implements MethodInterceptor
 {
 	
@@ -37,8 +35,13 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	/**
 	 * Tracks if the unit of work was begun implicitly by this transaction.
 	 */
-	@Getter
+	
 	private static final ThreadLocal<IEvent<?, ?>> eventThreads = ThreadLocal.withInitial(com.guicedee.activitymaster.fsdm.db.entities.events.Event::new);
+	
+	public static ThreadLocal<IEvent<?, ?>> getEventThreads()
+	{
+		return eventThreads;
+	}
 	
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable

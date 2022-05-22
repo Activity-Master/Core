@@ -4,9 +4,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.TransFiscalQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -20,9 +17,6 @@ import java.io.Serializable;
 @Table(name = "Trans_Fiscal",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 public class TransFiscal
 		extends BaseEntity<TransFiscal, TransFiscalQueryBuilder, Integer>
 		implements Serializable
@@ -47,6 +41,30 @@ public class TransFiscal
 	{
 		this.id = id;
 		this.fiscalDayID = fiscalDayID;
+	}
+	
+	@Override
+	public Integer getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public TransFiscal setId(Integer id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public int getFiscalDayID()
+	{
+		return fiscalDayID;
+	}
+	
+	public TransFiscal setFiscalDayID(int fiscalDayID)
+	{
+		this.fiscalDayID = fiscalDayID;
+		return this;
 	}
 	
 	@Override

@@ -20,7 +20,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Rules", name = "RulesXResourceItemSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class RulesXResourceItemSecurityToken
 		extends WarehouseSecurityTable<RulesXResourceItemSecurityToken, RulesXResourceItemSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -32,7 +32,7 @@ public class RulesXResourceItemSecurityToken
 	
 	@Column(nullable = false,
 	        name = "RulesXResourceItemSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "RulesXResourceItemID",

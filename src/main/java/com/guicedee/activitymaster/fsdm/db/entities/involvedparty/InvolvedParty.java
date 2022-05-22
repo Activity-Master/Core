@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -46,7 +45,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Party",
        name = "InvolvedParty")
 @XmlRootElement
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
@@ -63,7 +62,7 @@ public class InvolvedParty
 	@Column(nullable = false,
 	        name = "InvolvedPartyID")
 	@JsonValue
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@OneToMany(

@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.fsdm.db.entities.activeflag;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders.ActiveFlagSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
@@ -10,17 +9,16 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
-import static jakarta.persistence.AccessType.*;
-
 /**
  * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
 @Entity
-@Table(name = "ActiveFlagSecurityToken")
+@Table(name = "ActiveFlagSecurityToken",
+       schema = "dbo")
 @XmlRootElement
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class ActiveFlagSecurityToken
 		extends WarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -32,7 +30,7 @@ public class ActiveFlagSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ActiveFlagSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "SecurityTokenActiveFlagID",

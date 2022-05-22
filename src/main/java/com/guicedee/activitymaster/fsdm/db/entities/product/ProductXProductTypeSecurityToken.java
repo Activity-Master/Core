@@ -8,8 +8,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serial;
 import java.util.UUID;
 
-import static jakarta.persistence.AccessType.*;
-
 /**
  * @author Marc Magon
  * @version 1.0
@@ -20,7 +18,7 @@ import static jakarta.persistence.AccessType.*;
        name = "ProductXProductTypeSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class ProductXProductTypeSecurityToken
 		extends WarehouseSecurityTable<ProductXProductTypeSecurityToken, ProductXProductTypeSecurityTokenQueryBuilder, UUID>
 {
@@ -31,7 +29,7 @@ public class ProductXProductTypeSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ProductXProductTypeSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "ProductXProductTypeID",

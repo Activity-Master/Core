@@ -4,9 +4,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.MonthOfYearQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
@@ -23,9 +20,6 @@ import java.util.Objects;
 @Table(name = "MonthOfYear",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class MonthOfYear
@@ -78,6 +72,74 @@ public class MonthOfYear
 		this.id = id;
 		this.monthInYearNumber = monthInYearNumber;
 		this.MonthOfYearName = MonthOfYearName;
+	}
+	
+	@Override
+	public Integer getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public MonthOfYear setId(Integer id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public int getMonthInYearNumber()
+	{
+		return monthInYearNumber;
+	}
+	
+	public MonthOfYear setMonthInYearNumber(int monthInYearNumber)
+	{
+		this.monthInYearNumber = monthInYearNumber;
+		return this;
+	}
+	
+	public String getMonthOfYearName()
+	{
+		return MonthOfYearName;
+	}
+	
+	public MonthOfYear setMonthOfYearName(String monthOfYearName)
+	{
+		MonthOfYearName = monthOfYearName;
+		return this;
+	}
+	
+	public String getMonthOfYearShortName()
+	{
+		return MonthOfYearShortName;
+	}
+	
+	public MonthOfYear setMonthOfYearShortName(String monthOfYearShortName)
+	{
+		MonthOfYearShortName = monthOfYearShortName;
+		return this;
+	}
+	
+	public String getMonthOfYearAbbreviation()
+	{
+		return MonthOfYearAbbreviation;
+	}
+	
+	public MonthOfYear setMonthOfYearAbbreviation(String monthOfYearAbbreviation)
+	{
+		MonthOfYearAbbreviation = monthOfYearAbbreviation;
+		return this;
+	}
+	
+	public List<Months> getlUMonthsList()
+	{
+		return lUMonthsList;
+	}
+	
+	public MonthOfYear setlUMonthsList(List<Months> lUMonthsList)
+	{
+		this.lUMonthsList = lUMonthsList;
+		return this;
 	}
 	
 	@Override

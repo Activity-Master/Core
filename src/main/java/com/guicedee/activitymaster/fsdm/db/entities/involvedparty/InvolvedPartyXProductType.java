@@ -23,7 +23,7 @@ import static jakarta.persistence.AccessType.*;
        name = "InvolvedPartyXProductType")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
@@ -43,7 +43,7 @@ public class InvolvedPartyXProductType
 	
 	@Column(nullable = false,
 	        name = "InvolvedPartyXProductTypeID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "InvolvedPartyID",

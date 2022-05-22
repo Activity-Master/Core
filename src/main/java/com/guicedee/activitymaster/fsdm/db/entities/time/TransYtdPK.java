@@ -1,9 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.time;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,9 +12,6 @@ import java.util.Objects;
  */
 
 @Embeddable
-@Getter
-@Setter
-@Accessors(chain = true)
 public class TransYtdPK
 		implements Serializable
 {
@@ -34,6 +28,28 @@ public class TransYtdPK
 	
 	public TransYtdPK()
 	{
+	}
+	
+	public Integer getDayID()
+	{
+		return dayID;
+	}
+	
+	public TransYtdPK setDayID(Integer dayID)
+	{
+		this.dayID = dayID;
+		return this;
+	}
+	
+	public Integer getYtdDayID()
+	{
+		return ytdDayID;
+	}
+	
+	public TransYtdPK setYtdDayID(Integer ytdDayID)
+	{
+		this.ytdDayID = ytdDayID;
+		return this;
 	}
 	
 	@Override

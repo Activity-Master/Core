@@ -23,7 +23,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Rules", name = "RulesXClassification")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
@@ -45,7 +45,7 @@ public class RulesXClassification
 	
 	@Column(nullable = false,
 	        name = "RulesXClassificationID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "RulesID",

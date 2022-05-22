@@ -12,8 +12,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serial;
 import java.util.*;
 
-import static jakarta.persistence.AccessType.*;
-
 /**
  * @author Marc Magon
  * @version 1.0
@@ -23,7 +21,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Resource",
        name = "ResourceItemData")
 @XmlRootElement
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class ResourceItemData
 		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, UUID>
 		implements IResourceData<ResourceItemData, ResourceItemDataQueryBuilder>
@@ -35,7 +33,7 @@ public class ResourceItemData
 	
 	@Column(nullable = false,
 	        name = "ResourceItemDataID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id = UUID.randomUUID();
 	@Lob()
 	@Column(nullable = false,

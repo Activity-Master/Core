@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-     <groupId>com.guicedee.activitymaster</groupId>
+        <groupId>com.guicedee.activitymaster</groupId>
         <artifactId>activitymaster-group</artifactId>
         <version>0.0.0_0-SNAPSHOT</version>
     </parent>
@@ -13,6 +13,13 @@
     <name>Activity Master</name>
 
     <dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.3.5</version>
+        </dependency>
+
+
         <dependency>
             <groupId>com.entityassist</groupId>
             <artifactId>entity-assist</artifactId>
@@ -26,17 +33,11 @@
         <dependency>
             <groupId>com.guicedee.activitymaster</groupId>
             <artifactId>activity-master-client</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.persistence</groupId>
             <artifactId>guiced-persistence</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.servlets</groupId>
-            <artifactId>guiced-servlets</artifactId>
         </dependency>
 
         <dependency>
@@ -53,30 +54,14 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>guava</artifactId>
-            <type>jar</type>
         </dependency>
 
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>javax.inject</artifactId>
-            <type>jar</type>
         </dependency>
 
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>uadetector-core</artifactId>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>uadetector-resources</artifactId>
-            <scope>test</scope>
-            <type>jar</type>
-        </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
@@ -118,15 +103,10 @@
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
-            <artifactId>guice-servlet</artifactId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <scope>provided</scope>
         </dependency>
 
- <!--       <dependency>
-            <groupId>com.guicedee.servlets</groupId>
-            <artifactId>guiced-rest-services</artifactId>
-            <optional>true</optional>
-        </dependency>
--->
     </dependencies>
 
     <build>
@@ -147,8 +127,8 @@
                 <configuration>
                     <failOnError>false</failOnError>
                     <enableLazyInitialization>true</enableLazyInitialization>
-                    <enableDirtyTracking>false</enableDirtyTracking>
-                    <enableAssociationManagement>false</enableAssociationManagement>
+                    <enableDirtyTracking>true</enableDirtyTracking>
+                    <enableAssociationManagement>true</enableAssociationManagement>
                     <enableExtendedEnhancement>true</enableExtendedEnhancement>
                 </configuration>
             </plugin>
@@ -156,7 +136,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
                 <configuration>
                     <release>${jdk.release}</release>
                     <annotationProcessorPaths>
@@ -175,16 +154,17 @@
                             <artifactId>mapstruct-processor</artifactId>
                             <version>${mapstruct.version}</version>
                         </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
+                        <!--  <path>
+                              <groupId>org.projectlombok</groupId>
+                              <artifactId>lombok</artifactId>
+                              <version>${lombok.version}</version>
+                          </path>-->
                     </annotationProcessorPaths>
                     <annotationProcessors>
-                        <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
-                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+                        <!--<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
                         </annotationProcessor>
+                        -->
+                        <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
                         <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
                     </annotationProcessors>
                     <compilerArguments>
@@ -196,7 +176,7 @@
                     <dependency>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm</artifactId>
-                        <version>${asm.version}</version>
+                        <version>${maven.asm.version}</version>
                         <type>jar</type>
                     </dependency>
                     <dependency>
@@ -204,11 +184,11 @@
                         <artifactId>hibernate-jpamodelgen</artifactId>
                         <version>${guicedee.version}</version>
                     </dependency>
-                    <dependency>
-                        <groupId>org.projectlombok</groupId>
-                        <artifactId>lombok</artifactId>
-                        <version>${lombok.version}</version>
-                    </dependency>
+                    <!-- <dependency>
+                         <groupId>org.projectlombok</groupId>
+                         <artifactId>lombok</artifactId>
+                         <version>${lombok.version}</version>
+                     </dependency>-->
                     <dependency>
                         <groupId>com.guicedee.services</groupId>
                         <artifactId>jakarta.xml.bind-api</artifactId>

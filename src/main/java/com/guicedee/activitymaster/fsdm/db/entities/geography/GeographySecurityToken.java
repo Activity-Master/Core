@@ -14,8 +14,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
-import static jakarta.persistence.AccessType.*;
-
 /**
  * @author Marc Magon
  * @version 1.0
@@ -25,7 +23,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Geography", name = "GeographySecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class GeographySecurityToken
 		extends WarehouseSecurityTable<GeographySecurityToken, GeographySecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -37,7 +35,7 @@ public class GeographySecurityToken
 	
 	@Column(nullable = false,
 	        name = "GeographySecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	@JoinColumn(name = "GeographyID",
 	            referencedColumnName = "GeographyID",

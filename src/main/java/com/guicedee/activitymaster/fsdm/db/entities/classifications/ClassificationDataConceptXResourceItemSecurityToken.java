@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.fsdm.db.entities.classifications;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationDataConceptXResourceItemSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
@@ -9,8 +8,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
-
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -21,7 +18,7 @@ import static jakarta.persistence.AccessType.*;
 @Table(schema = "Classification", name = "ClassificationDataConceptXResourceItemSecurityToken")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 public class ClassificationDataConceptXResourceItemSecurityToken
 		extends WarehouseSecurityTable<ClassificationDataConceptXResourceItemSecurityToken, ClassificationDataConceptXResourceItemSecurityTokenQueryBuilder, UUID>
 		implements Serializable
@@ -33,7 +30,7 @@ public class ClassificationDataConceptXResourceItemSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ClassificationDataConceptXResourceItemSecurityTokenID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id;
 	
 	@JoinColumn(name = "ClassificationDataConceptXResourceItemID",

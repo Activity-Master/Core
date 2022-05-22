@@ -33,7 +33,6 @@ public class ClassificationsSystem
 	public void createDefaults(IEnterprise<?,?> enterprise)
 	{
 		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);;
-		activityMasterSystem.initialize();
 		//Create Root Enterprise Name
 		service.create(enterprise.getName(),enterprise.getName(),
 				EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, activityMasterSystem);

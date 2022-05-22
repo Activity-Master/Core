@@ -8,18 +8,20 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.logger.LogFactory;
-import lombok.extern.java.Log;
 
 import java.sql.Connection;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
-@Log
+
 public class ActivityMasterService
 		implements IProgressable,
 		           IActivityMasterService
 {
+	private static final Logger log = LogFactory.getLog(ActivityMasterService.class);
+	
 	@Inject
 	private IEnterpriseService<?> enterpriseService;
 	

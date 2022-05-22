@@ -14,7 +14,7 @@ import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.guicedinjection.representations.IJsonRepresentation;
 import com.guicedee.guicedinjection.representations.IXmlRepresentation;
-import lombok.extern.java.Log;
+import com.guicedee.logger.LogFactory;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
@@ -28,7 +28,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterSe
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 import static com.guicedee.guicedinjection.interfaces.ObjectBinderKeys.*;
 
-@Log
+
 public class LogItemEventAOPInterceptor implements MethodInterceptor
 {
 	@Inject
@@ -166,7 +166,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 				}
 				catch (JsonProcessingException e)
 				{
-					log.log(Level.SEVERE, "Unable to decode LogEventItem to JSON", e);
+					LogFactory.getLog(getClass()).log(Level.SEVERE, "Unable to decode LogEventItem to JSON", e);
 					break;
 				}
 		}

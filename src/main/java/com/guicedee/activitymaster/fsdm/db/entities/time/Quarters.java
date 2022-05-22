@@ -4,9 +4,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.QuartersQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
@@ -23,9 +20,6 @@ import java.util.Objects;
 @Table(name = "Quarters",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Quarters
@@ -101,6 +95,151 @@ public class Quarters
 	public Quarters(Integer id)
 	{
 		this.id = id;
+	}
+	
+	@Override
+	public Integer getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public Quarters setId(Integer id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public String getQuarterDescription()
+	{
+		return quarterDescription;
+	}
+	
+	public Quarters setQuarterDescription(String quarterDescription)
+	{
+		this.quarterDescription = quarterDescription;
+		return this;
+	}
+	
+	public int getQuarterInYear()
+	{
+		return quarterInYear;
+	}
+	
+	public Quarters setQuarterInYear(int quarterInYear)
+	{
+		this.quarterInYear = quarterInYear;
+		return this;
+	}
+	
+	public short getLastQuarterID()
+	{
+		return lastQuarterID;
+	}
+	
+	public Quarters setLastQuarterID(short lastQuarterID)
+	{
+		this.lastQuarterID = lastQuarterID;
+		return this;
+	}
+	
+	public short getLastYearID()
+	{
+		return lastYearID;
+	}
+	
+	public Quarters setLastYearID(short lastYearID)
+	{
+		this.lastYearID = lastYearID;
+		return this;
+	}
+	
+	public String getQuarterGraphDescription()
+	{
+		return quarterGraphDescription;
+	}
+	
+	public Quarters setQuarterGraphDescription(String quarterGraphDescription)
+	{
+		this.quarterGraphDescription = quarterGraphDescription;
+		return this;
+	}
+	
+	public String getQuarterGridDescription()
+	{
+		return quarterGridDescription;
+	}
+	
+	public Quarters setQuarterGridDescription(String quarterGridDescription)
+	{
+		this.quarterGridDescription = quarterGridDescription;
+		return this;
+	}
+	
+	public String getQuarterSmallDescription()
+	{
+		return quarterSmallDescription;
+	}
+	
+	public Quarters setQuarterSmallDescription(String quarterSmallDescription)
+	{
+		this.quarterSmallDescription = quarterSmallDescription;
+		return this;
+	}
+	
+	public String getQuarterYearDescription()
+	{
+		return quarterYearDescription;
+	}
+	
+	public Quarters setQuarterYearDescription(String quarterYearDescription)
+	{
+		this.quarterYearDescription = quarterYearDescription;
+		return this;
+	}
+	
+	public String getQuarterYYMMDescription()
+	{
+		return quarterYYMMDescription;
+	}
+	
+	public Quarters setQuarterYYMMDescription(String quarterYYMMDescription)
+	{
+		this.quarterYYMMDescription = quarterYYMMDescription;
+		return this;
+	}
+	
+	public String getQuarterQQMMDescription()
+	{
+		return quarterQQMMDescription;
+	}
+	
+	public Quarters setQuarterQQMMDescription(String quarterQQMMDescription)
+	{
+		this.quarterQQMMDescription = quarterQQMMDescription;
+		return this;
+	}
+	
+	public List<Months> getlUMonthsList()
+	{
+		return lUMonthsList;
+	}
+	
+	public Quarters setlUMonthsList(List<Months> lUMonthsList)
+	{
+		this.lUMonthsList = lUMonthsList;
+		return this;
+	}
+	
+	public Years getYearID()
+	{
+		return yearID;
+	}
+	
+	public Quarters setYearID(Years yearID)
+	{
+		this.yearID = yearID;
+		return this;
 	}
 	
 	@Override

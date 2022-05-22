@@ -4,9 +4,6 @@ import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.db.entities.time.builders.WeeksQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -20,9 +17,6 @@ import java.util.Objects;
 @Table(name = "Weeks",
        schema = "Time")
 @XmlRootElement
-@Getter
-@Setter
-@Accessors(chain = true)
 public class Weeks
 		extends BaseEntity<Weeks, WeeksQueryBuilder, Integer>
 		implements Serializable
@@ -71,6 +65,107 @@ public class Weeks
 	
 	public Weeks()
 	{
+	}
+	
+	@Override
+	public Integer getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public Weeks setId(Integer id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public int getWeekOfMonth()
+	{
+		return weekOfMonth;
+	}
+	
+	public Weeks setWeekOfMonth(int weekOfMonth)
+	{
+		this.weekOfMonth = weekOfMonth;
+		return this;
+	}
+	
+	public int getWeekOfYear()
+	{
+		return weekOfYear;
+	}
+	
+	public Weeks setWeekOfYear(int weekOfYear)
+	{
+		this.weekOfYear = weekOfYear;
+		return this;
+	}
+	
+	public String getWeekShortDescription()
+	{
+		return weekShortDescription;
+	}
+	
+	public Weeks setWeekShortDescription(String weekShortDescription)
+	{
+		this.weekShortDescription = weekShortDescription;
+		return this;
+	}
+	
+	public String getWeekDescription()
+	{
+		return weekDescription;
+	}
+	
+	public Weeks setWeekDescription(String weekDescription)
+	{
+		this.weekDescription = weekDescription;
+		return this;
+	}
+	
+	public int getMonthID()
+	{
+		return monthID;
+	}
+	
+	public Weeks setMonthID(int monthID)
+	{
+		this.monthID = monthID;
+		return this;
+	}
+	
+	public int getQuarterID()
+	{
+		return quarterID;
+	}
+	
+	public Weeks setQuarterID(int quarterID)
+	{
+		this.quarterID = quarterID;
+		return this;
+	}
+	
+	public int getYearID()
+	{
+		return yearID;
+	}
+	
+	public Weeks setYearID(int yearID)
+	{
+		this.yearID = yearID;
+		return this;
+	}
+	
+	public List<Days> getDaysList()
+	{
+		return DaysList;
+	}
+	
+	public Weeks setDaysList(List<Days> daysList)
+	{
+		DaysList = daysList;
+		return this;
 	}
 	
 	@Override

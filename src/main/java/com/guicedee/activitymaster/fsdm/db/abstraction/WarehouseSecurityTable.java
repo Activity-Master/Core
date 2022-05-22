@@ -10,9 +10,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.JoinFormula;
 
 import java.io.Serial;
+import java.sql.Types;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
 import static jakarta.persistence.FetchType.*;
@@ -34,21 +36,25 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	@NotNull
 	@Column(nullable = false,
 	        name = "CreateAllowed")
+	@JdbcTypeCode(Types.INTEGER)
 	private boolean createAllowed;
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 	        name = "UpdateAllowed")
+	@JdbcTypeCode(Types.INTEGER)
 	private boolean updateAllowed;
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 	        name = "DeleteAllowed")
+	@JdbcTypeCode(Types.INTEGER)
 	private boolean deleteAllowed;
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 	        name = "ReadAllowed")
+	@JdbcTypeCode(Types.INTEGER)
 	private boolean readAllowed;
 	
 	@JoinColumn(name = "SecurityTokenID",

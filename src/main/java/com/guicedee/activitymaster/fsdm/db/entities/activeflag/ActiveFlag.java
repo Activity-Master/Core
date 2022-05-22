@@ -14,13 +14,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.JdbcTypeCode;
 
 import java.io.Serial;
+import java.sql.Types;
 import java.util.List;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -33,7 +34,7 @@ import static jakarta.persistence.AccessType.*;
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
@@ -49,7 +50,7 @@ public class ActiveFlag
 	@Id
 	@Column(nullable = false,
 	        name = "ActiveFlagID")
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.util.UUID id;
 	
 	@JoinColumn(name = "EnterpriseID",
@@ -83,6 +84,7 @@ public class ActiveFlag
 	@NotNull
 	@Column(nullable = false,
 	        name = "AllowAccess")
+	@JdbcTypeCode(Types.INTEGER)
 	private boolean allowAccess;
 	
 	@SuppressWarnings("unused")

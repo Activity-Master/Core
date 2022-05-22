@@ -23,10 +23,6 @@ import com.guicedee.logger.LogFactory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.extern.java.Log;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -37,7 +33,6 @@ import java.util.logging.Level;
 import static com.entityassist.enumerations.Operand.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.*;
-import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
 /**
@@ -51,14 +46,13 @@ import static jakarta.persistence.FetchType.*;
        name = "ResourceItem")
 @XmlRootElement
 
-@Access(FIELD)
+@Access(AccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@Log
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, UUID>
 		implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
@@ -70,7 +64,7 @@ public class ResourceItem
 	@Column(nullable = false,
 	        name = "ResourceItemID")
 	@JsonValue
-	@org.hibernate.annotations.Type(type = "uuid-char")
+	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private UUID id = UUID.randomUUID();
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -349,7 +343,7 @@ public class ResourceItem
 		}
 		
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		     GzipCompressorOutputStream gzipOutput = new GzipCompressorOutputStream(baos))
+		     org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream gzipOutput = new org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream(baos))
 		{
 			gzipOutput.write(data);
 			gzipOutput.finish();
@@ -370,10 +364,10 @@ public class ResourceItem
 	byte[] unzip(byte[] data)
 	{
 		try (ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		     GzipCompressorInputStream archive = new GzipCompressorInputStream(bais);
+		     org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream archive = new org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream(bais);
 		     ByteArrayOutputStream output = new ByteArrayOutputStream())
 		{
-			IOUtils.copy(archive, output);
+			org.apache.commons.compress.utils.IOUtils.copy(archive, output);
 			byte[] outcome = output.toByteArray();
 			if ("true".equals(System.getProperty("encrypt", "true")))
 			{
@@ -383,7 +377,7 @@ public class ResourceItem
 		}
 		catch (IOException e)
 		{
-			log.log(Level.WARNING, "Returning default data, unable to decompress the resource", e);
+			LogFactory.getLog(getClass()).log(Level.WARNING, "Returning default data, unable to decompress the resource", e);
 			return data;
 		}
 	}
