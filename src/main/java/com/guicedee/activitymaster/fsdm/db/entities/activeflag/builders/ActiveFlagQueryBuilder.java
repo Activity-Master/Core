@@ -7,7 +7,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 
 @SuppressWarnings("Duplicates")
 public class ActiveFlagQueryBuilder
-		extends QueryBuilderNameDescription<ActiveFlagQueryBuilder, ActiveFlag, java.util.UUID>
+		extends QueryBuilderNameDescription<ActiveFlagQueryBuilder, ActiveFlag, java.lang.String>
 		implements IActiveFlagQueryBuilder<ActiveFlagQueryBuilder, ActiveFlag>
 {
 	

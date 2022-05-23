@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -20,7 +19,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class ClassificationDataConceptXResourceItemSecurityToken
-		extends WarehouseSecurityTable<ClassificationDataConceptXResourceItemSecurityToken, ClassificationDataConceptXResourceItemSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ClassificationDataConceptXResourceItemSecurityToken, ClassificationDataConceptXResourceItemSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -31,7 +30,7 @@ public class ClassificationDataConceptXResourceItemSecurityToken
 	@Column(nullable = false,
 	        name = "ClassificationDataConceptXResourceItemSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ClassificationDataConceptXResourceItemID",
 	            referencedColumnName = "ClassificationDataConceptXResourceItemID",
@@ -46,7 +45,7 @@ public class ClassificationDataConceptXResourceItemSecurityToken
 	
 	}
 	
-	public ClassificationDataConceptXResourceItemSecurityToken(UUID classificationDataConceptXResourceItemSecurityTokenID)
+	public ClassificationDataConceptXResourceItemSecurityToken(java.lang.String classificationDataConceptXResourceItemSecurityTokenID)
 	{
 		this.id = classificationDataConceptXResourceItemSecurityTokenID;
 	}
@@ -56,12 +55,12 @@ public class ClassificationDataConceptXResourceItemSecurityToken
 		return "ClassificationDataConceptXResourceItemSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ClassificationDataConceptXResourceItemSecurityToken setId(UUID id)
+	public ClassificationDataConceptXResourceItemSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

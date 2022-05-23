@@ -13,7 +13,7 @@ import org.hibernate.annotations.Immutable;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Immutable
 public class GeographyHierarchyView
-		extends WarehouseHierarchyView<GeographyHierarchyView, GeographyHierarchyViewQueryBuilder, UUID>
+		extends WarehouseHierarchyView<GeographyHierarchyView, GeographyHierarchyViewQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -32,18 +32,18 @@ public class GeographyHierarchyView
 	private static final long serialVersionUID = 1L;
 	@Id
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	public GeographyHierarchyView()
 	{
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public GeographyHierarchyView setId(UUID id)
+	public GeographyHierarchyView setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

@@ -5,7 +5,6 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
@@ -13,9 +12,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
-
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -28,7 +24,7 @@ import static jakarta.persistence.AccessType.*;
 
 @Access(AccessType.FIELD)
 public class ArrangementSecurityToken
-		extends WarehouseSecurityTable<ArrangementSecurityToken, ArrangementSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ArrangementSecurityToken, ArrangementSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -39,7 +35,7 @@ public class ArrangementSecurityToken
 	@Column(nullable = false,
 	        name = "ArrangementSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID",
@@ -54,7 +50,7 @@ public class ArrangementSecurityToken
 	
 	}
 	
-	public ArrangementSecurityToken(UUID arrangementSecurityTokenID)
+	public ArrangementSecurityToken(java.lang.String arrangementSecurityTokenID)
 	{
 		this.id = arrangementSecurityTokenID;
 	}
@@ -64,12 +60,12 @@ public class ArrangementSecurityToken
 		return "ArrangementSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ArrangementSecurityToken setId(UUID id)
+	public ArrangementSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

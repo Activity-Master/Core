@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 
 import java.util.UUID;
 
+
 public class SystemsTokenProvider implements Provider<UUID>
 {
 	@Inject

@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -39,7 +38,7 @@ public class AddressXResourceItem
 		ResourceItem,
 		AddressXResourceItem,
 		AddressXResourceItemQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -50,7 +49,7 @@ public class AddressXResourceItem
 	@Column(nullable = false,
 	        name = "AddressXResourceItemID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -77,17 +76,17 @@ public class AddressXResourceItem
 	
 	}
 	
-	public AddressXResourceItem(UUID addressXResourceItemID)
+	public AddressXResourceItem(java.lang.String addressXResourceItemID)
 	{
 		this.id = addressXResourceItemID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public AddressXResourceItem setId(UUID id)
+	public AddressXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

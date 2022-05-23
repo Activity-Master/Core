@@ -34,26 +34,26 @@ public class SystemsSystem
 	private Provider<ISystemsService<?>> systemsService;
 	
 	@Override
-	public ISystems<?,?>  registerSystem(IEnterprise<?, ?> enterprise)
+	public ISystems<?, ?> registerSystem(IEnterprise<?, ?> enterprise)
 	{
 		Map<IEnterprise<?, ?>, ISystems<?, ?>> systemsMap = new HashMap<>();
 		ISystems<?, ?> entSystem = systemsService.get()
 		                                         .create(enterprise, EnterpriseSystemName, "The system for handling enterprises");
 		systemsMap.put(enterprise, entSystem);
-	//	Pair p = Pair.of(EnterpriseSystem.class, systemsMap);
+		//	Pair p = Pair.of(EnterpriseSystem.class, systemsMap);
 		
-
+		
 		Map<IEnterprise<?, ?>, ISystems<?, ?>> flagSystemsMap = new HashMap<>();
 		ISystems<?, ?> flagSystem = systemsService.get()
-		                                        .create(enterprise, ActivateFlagSystemName, "The system for the active flag management");
+		                                          .create(enterprise, ActivateFlagSystemName, "The system for the active flag management");
 		flagSystemsMap.put(enterprise, flagSystem);
-	//	Pair ap = Pair.of(ActiveFlagSystem.class, flagSystemsMap);
-
+		//	Pair ap = Pair.of(ActiveFlagSystem.class, flagSystemsMap);
+		
 		Map<IEnterprise<?, ?>, ISystems<?, ?>> actSystemsMap = new HashMap<>();
 		ISystems<?, ?> activityMasterSystem = systemsService.get()
-		                                               .create(enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master");
+		                                                    .create(enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master");
 		actSystemsMap.put(enterprise, activityMasterSystem);
-	//	Pair pAct = Pair.of(SystemsSystem.class, actSystemsMap);
+		//	Pair pAct = Pair.of(SystemsSystem.class, actSystemsMap);
 		
 		return activityMasterSystem;
 	}
@@ -70,7 +70,7 @@ public class SystemsSystem
 		return 2;
 	}
 	
-	public IInvolvedParty<?, ?> createInvolvedPartyForNewSystem(ISystems<?, ?> system, UUID... identityToken)
+	public IInvolvedParty<?, ?> createInvolvedPartyForNewSystem(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ISystems<?, ?> activityMasterSystem = systemsService.get()
 		                                                    .getActivityMaster(system.getEnterpriseID());

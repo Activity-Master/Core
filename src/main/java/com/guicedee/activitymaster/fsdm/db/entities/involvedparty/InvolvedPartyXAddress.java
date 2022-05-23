@@ -39,7 +39,7 @@ public class InvolvedPartyXAddress
 		Address,
 		InvolvedPartyXAddress,
 		InvolvedPartyXAddressQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class InvolvedPartyXAddress
 	        name = "InvolvedPartyXAddressID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "AddressID",
 	            referencedColumnName = "AddressID",
@@ -75,17 +75,17 @@ public class InvolvedPartyXAddress
 	
 	}
 	
-	public InvolvedPartyXAddress(UUID involvedPartyXAddressID)
+	public InvolvedPartyXAddress(java.lang.String involvedPartyXAddressID)
 	{
 		this.id = involvedPartyXAddressID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyXAddress setId(UUID id)
+	public InvolvedPartyXAddress setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

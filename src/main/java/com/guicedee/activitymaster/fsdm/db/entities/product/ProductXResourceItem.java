@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -35,7 +34,7 @@ public class ProductXResourceItem
 		ResourceItem,
 		ProductXResourceItem,
 		ProductXResourceItemQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -46,7 +45,7 @@ public class ProductXResourceItem
 	@Column(nullable = false,
 	        name = "ProductXResourceItemID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -69,19 +68,19 @@ public class ProductXResourceItem
 	
 	}
 	
-	public ProductXResourceItem(UUID productXResourceItemID)
+	public ProductXResourceItem(java.lang.String productXResourceItemID)
 	{
 		id = productXResourceItemID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public ProductXResourceItem setId(UUID id)
+	public ProductXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

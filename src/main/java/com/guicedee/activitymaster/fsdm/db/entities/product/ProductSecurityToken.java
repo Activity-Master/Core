@@ -7,7 +7,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class ProductSecurityToken
-		extends WarehouseSecurityTable<ProductSecurityToken, ProductSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ProductSecurityToken, ProductSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -31,7 +31,7 @@ public class ProductSecurityToken
 	@Column(nullable = false,
 	        name = "ProductSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ProductID",
 	            referencedColumnName = "ProductID",
@@ -46,7 +46,7 @@ public class ProductSecurityToken
 	
 	}
 	
-	public ProductSecurityToken(UUID productSecurityTokenID)
+	public ProductSecurityToken(java.lang.String productSecurityTokenID)
 	{
 		this.id = productSecurityTokenID;
 	}
@@ -56,12 +56,12 @@ public class ProductSecurityToken
 		return "ProductSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ProductSecurityToken setId(UUID id)
+	public ProductSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

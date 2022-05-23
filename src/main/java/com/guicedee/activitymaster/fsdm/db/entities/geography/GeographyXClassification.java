@@ -39,7 +39,7 @@ public class GeographyXClassification
 		Classification,
 		GeographyXClassification,
 		GeographyXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -50,7 +50,7 @@ public class GeographyXClassification
 	@Column(nullable = false,
 	        name = "GeographyXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "GeographyID",
 	            referencedColumnName = "GeographyID",
@@ -69,18 +69,18 @@ public class GeographyXClassification
 	
 	}
 	
-	public GeographyXClassification(UUID geographyXClassificationID)
+	public GeographyXClassification(java.lang.String geographyXClassificationID)
 	{
 		this.id = geographyXClassificationID;
 	}
 	
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public GeographyXClassification setId(UUID id)
+	public GeographyXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

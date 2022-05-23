@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -21,7 +20,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class EnterpriseXClassificationSecurityToken
-		extends WarehouseSecurityTable<EnterpriseXClassificationSecurityToken, EnterpriseXClassificationSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<EnterpriseXClassificationSecurityToken, EnterpriseXClassificationSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -32,7 +31,7 @@ public class EnterpriseXClassificationSecurityToken
 	@Column(nullable = false,
 	        name = "EnterpriseXClassificationSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "EnterpriseXClassificationID",
 	            referencedColumnName = "EnterpriseXClassificationID",
@@ -47,7 +46,7 @@ public class EnterpriseXClassificationSecurityToken
 	
 	}
 	
-	public EnterpriseXClassificationSecurityToken(UUID classificationXResourceItemSecurityTokenID)
+	public EnterpriseXClassificationSecurityToken(java.lang.String classificationXResourceItemSecurityTokenID)
 	{
 		this.id = classificationXResourceItemSecurityTokenID;
 	}
@@ -57,12 +56,12 @@ public class EnterpriseXClassificationSecurityToken
 		return "EnterpriseXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EnterpriseXClassificationSecurityToken setId(UUID id)
+	public EnterpriseXClassificationSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

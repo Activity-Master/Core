@@ -33,7 +33,7 @@ public class ResourceItemXResourceItemType
 		ResourceItemType,
 		ResourceItemXResourceItemType,
 		ResourceItemXResourceItemTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -42,7 +42,7 @@ public class ResourceItemXResourceItemType
 	@Column(nullable = false,
 	        name = "ResourceItemXResourceItemTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ResourceItemID",
 	            referencedColumnName = "ResourceItemID",
@@ -68,17 +68,17 @@ public class ResourceItemXResourceItemType
 	
 	}
 	
-	public ResourceItemXResourceItemType(UUID resourceItemXResourceItemTypeID)
+	public ResourceItemXResourceItemType(java.lang.String resourceItemXResourceItemTypeID)
 	{
 		this.id = resourceItemXResourceItemTypeID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ResourceItemXResourceItemType setId(UUID id)
+	public ResourceItemXResourceItemType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class RulesXRulesTypeSecurityToken
-		extends WarehouseSecurityTable<RulesXRulesTypeSecurityToken, RulesXRulesTypeSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<RulesXRulesTypeSecurityToken, RulesXRulesTypeSecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -30,7 +30,7 @@ public class RulesXRulesTypeSecurityToken
 	@Column(nullable = false,
 	        name = "RulesXRulesTypeSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "RulesXRulesTypeID",
 	            referencedColumnName = "RulesXRulesTypeID",
@@ -45,7 +45,7 @@ public class RulesXRulesTypeSecurityToken
 	
 	}
 	
-	public RulesXRulesTypeSecurityToken(UUID rulesXRulesTypeSecurityTokenID)
+	public RulesXRulesTypeSecurityToken(java.lang.String rulesXRulesTypeSecurityTokenID)
 	{
 		this.id = rulesXRulesTypeSecurityTokenID;
 	}
@@ -57,13 +57,13 @@ public class RulesXRulesTypeSecurityToken
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public RulesXRulesTypeSecurityToken setId(UUID id)
+	public RulesXRulesTypeSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

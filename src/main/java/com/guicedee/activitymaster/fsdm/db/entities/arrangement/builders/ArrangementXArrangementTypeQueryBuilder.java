@@ -8,14 +8,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.util.UUID;
+
 
 public class ArrangementXArrangementTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<Arrangement,
 		ArrangementType,
 		ArrangementXArrangementTypeQueryBuilder,
 		ArrangementXArrangementType,
-		UUID>
+		java.lang.String>
 {
 	@Override
 	public SingularAttribute<ArrangementXArrangementType, Arrangement> getPrimaryAttribute()
@@ -30,7 +30,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 	}
 	
 	@Override
-	public ArrangementXArrangementTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
+	public ArrangementXArrangementTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

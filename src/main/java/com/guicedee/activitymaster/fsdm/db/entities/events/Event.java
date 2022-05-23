@@ -51,7 +51,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Event
-		extends WarehouseTable<Event, EventQueryBuilder, UUID>
+		extends WarehouseTable<Event, EventQueryBuilder, java.lang.String>
 		implements IEvent<Event, EventQueryBuilder>
 {
 	
@@ -74,7 +74,7 @@ public class Event
 	        name = "EventID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "eventID",
@@ -126,7 +126,7 @@ public class Event
 	
 	}
 	
-	public Event(UUID eventID)
+	public Event(java.lang.String eventID)
 	{
 		this.id = eventID;
 	}
@@ -291,13 +291,13 @@ public class Event
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public Event setId(UUID id)
+	public Event setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

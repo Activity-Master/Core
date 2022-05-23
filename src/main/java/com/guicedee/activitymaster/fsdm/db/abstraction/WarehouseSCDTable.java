@@ -25,7 +25,7 @@ import java.io.Serial;
 
 public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I>,
 		Q extends QueryBuilderSCD<Q, J, I>,
-		I extends java.util.UUID>
+		I extends java.lang.String>
 		extends WarehouseCoreTable<J, Q, I>
 		implements IWarehouseTable<J, Q, I>,
 		           IContainsActiveFlags<J>,

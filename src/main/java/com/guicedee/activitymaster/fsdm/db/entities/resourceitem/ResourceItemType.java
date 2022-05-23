@@ -11,7 +11,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.FetchType.*;
@@ -35,7 +36,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ResourceItemType
-		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, java.lang.String>
 		implements IResourceItemType<ResourceItemType, ResourceItemTypeQueryBuilder>
 {
 	
@@ -47,7 +48,7 @@ public class ResourceItemType
 	        name = "ResourceItemTypeID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -79,12 +80,12 @@ public class ResourceItemType
 	
 	}
 	
-	public ResourceItemType(UUID resourceItemTypeID)
+	public ResourceItemType(java.lang.String resourceItemTypeID)
 	{
 		id = resourceItemTypeID;
 	}
 	
-	public ResourceItemType(UUID resourceItemTypeID, String resourceItemTypeName, String resourceItemTypeDesc)
+	public ResourceItemType(java.lang.String resourceItemTypeID, String resourceItemTypeName, String resourceItemTypeDesc)
 	{
 		id = resourceItemTypeID;
 		name = resourceItemTypeName;
@@ -141,13 +142,13 @@ public class ResourceItemType
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public ResourceItemType setId(UUID id)
+	public ResourceItemType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

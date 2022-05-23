@@ -7,9 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
-
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -22,7 +19,7 @@ import static jakarta.persistence.AccessType.*;
 
 @Access(AccessType.FIELD)
 public class ProductXProductSecurityToken
-		extends WarehouseSecurityTable<ProductXProductSecurityToken, ProductXProductSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ProductXProductSecurityToken, ProductXProductSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -33,7 +30,7 @@ public class ProductXProductSecurityToken
 	@Column(nullable = false,
 	        name = "ProductXProductSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ProductXProductID",
 	            referencedColumnName = "ProductXProductID",
@@ -48,7 +45,7 @@ public class ProductXProductSecurityToken
 	
 	}
 	
-	public ProductXProductSecurityToken(UUID productXProductSecurityTokenID)
+	public ProductXProductSecurityToken(java.lang.String productXProductSecurityTokenID)
 	{
 		this.id = productXProductSecurityTokenID;
 	}
@@ -58,12 +55,12 @@ public class ProductXProductSecurityToken
 		return "ProductXProductSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ProductXProductSecurityToken setId(UUID id)
+	public ProductXProductSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

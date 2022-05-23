@@ -11,7 +11,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -34,7 +33,7 @@ public class EventXResourceItem
 		ResourceItem,
 		EventXResourceItem,
 		EventXResourceItemQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -44,7 +43,7 @@ public class EventXResourceItem
 	@Column(nullable = false,
 	        name = "EventXResourceItemID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -69,17 +68,17 @@ public class EventXResourceItem
 	
 	}
 	
-	public EventXResourceItem(UUID eventXResourceItemID)
+	public EventXResourceItem(java.lang.String eventXResourceItemID)
 	{
 		this.id = eventXResourceItemID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXResourceItem setId(UUID id)
+	public EventXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

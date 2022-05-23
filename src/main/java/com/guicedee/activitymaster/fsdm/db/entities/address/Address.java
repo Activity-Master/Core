@@ -43,7 +43,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Address
-		extends WarehouseTable<Address, AddressQueryBuilder, UUID>
+		extends WarehouseTable<Address, AddressQueryBuilder, java.lang.String>
 		implements IAddress<Address, AddressQueryBuilder>
 {
 	
@@ -54,7 +54,7 @@ public class Address
 	        name = "AddressID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "addressID",
@@ -103,19 +103,19 @@ public class Address
 	
 	}
 	
-	public Address(UUID addressID)
+	public Address(java.lang.String addressID)
 	{
 		this.id = addressID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public Address setId(UUID id)
+	public Address setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

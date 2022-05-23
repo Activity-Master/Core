@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class EventXRulesSecurityToken
-		extends WarehouseSecurityTable<EventXRulesSecurityToken, EventXRulesSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<EventXRulesSecurityToken, EventXRulesSecurityTokenQueryBuilder, java.lang.String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -33,7 +33,7 @@ public class EventXRulesSecurityToken
 	@Column(nullable = false,
 	        name = "EventXRulesSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "EventXRulesID",
 	            referencedColumnName = "EventXRulesID",
@@ -48,7 +48,7 @@ public class EventXRulesSecurityToken
 	
 	}
 	
-	public EventXRulesSecurityToken(UUID eventXRulesSecurityTokenID)
+	public EventXRulesSecurityToken(java.lang.String eventXRulesSecurityTokenID)
 	{
 		this.id = eventXRulesSecurityTokenID;
 	}
@@ -58,12 +58,12 @@ public class EventXRulesSecurityToken
 		return "EventXRulesSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXRulesSecurityToken setId(UUID id)
+	public EventXRulesSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

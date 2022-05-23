@@ -34,7 +34,7 @@ public class ProductXClassification
 		Classification,
 		ProductXClassification,
 		ProductXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -45,7 +45,7 @@ public class ProductXClassification
 	@Column(nullable = false,
 	        name = "ProductXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ProductID",
 	            referencedColumnName = "ProductID",
@@ -64,18 +64,18 @@ public class ProductXClassification
 	
 	}
 	
-	public ProductXClassification(UUID productXClassificationID)
+	public ProductXClassification(java.lang.String productXClassificationID)
 	{
 		this.id = productXClassificationID;
 	}
 	
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ProductXClassification setId(UUID id)
+	public ProductXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

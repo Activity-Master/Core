@@ -33,7 +33,7 @@ public class EventXClassification
 		Classification,
 		EventXClassification,
 		EventXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -43,7 +43,7 @@ public class EventXClassification
 	@Column(nullable = false,
 	        name = "EventXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -72,17 +72,17 @@ public class EventXClassification
 	
 	}
 	
-	public EventXClassification(UUID eventXClassificationID)
+	public EventXClassification(java.lang.String eventXClassificationID)
 	{
 		this.id = eventXClassificationID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXClassification setId(UUID id)
+	public EventXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

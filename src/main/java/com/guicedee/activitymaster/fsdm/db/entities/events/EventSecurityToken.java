@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -19,7 +18,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class EventSecurityToken
-		extends WarehouseSecurityTable<EventSecurityToken, EventSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<EventSecurityToken, EventSecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -29,7 +28,7 @@ public class EventSecurityToken
 	@Column(nullable = false,
 	        name = "EventsSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "EventsID",
 	            referencedColumnName = "EventID",
@@ -44,7 +43,7 @@ public class EventSecurityToken
 	
 	}
 	
-	public EventSecurityToken(UUID eventsSecurityTokenID)
+	public EventSecurityToken(java.lang.String eventsSecurityTokenID)
 	{
 		this.id = eventsSecurityTokenID;
 	}
@@ -54,12 +53,12 @@ public class EventSecurityToken
 		return "EventSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventSecurityToken setId(UUID id)
+	public EventSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

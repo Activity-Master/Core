@@ -5,11 +5,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.util.UUID;
+
 
 public class RulesXRulesTypeQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, RulesType, RulesXRulesTypeQueryBuilder,
-		RulesXRulesType, UUID>
+		RulesXRulesType, java.lang.String>
 {
 	@Override
 	public SingularAttribute<RulesXRulesType, Rules> getPrimaryAttribute()
@@ -25,7 +25,7 @@ public class RulesXRulesTypeQueryBuilder
 	
 	
 	@jakarta.validation.constraints.NotNull
-	public RulesXRulesTypeQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, UUID... identityToken)
+	public RulesXRulesTypeQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		withClassification(classification, system);
 		withValue(value);

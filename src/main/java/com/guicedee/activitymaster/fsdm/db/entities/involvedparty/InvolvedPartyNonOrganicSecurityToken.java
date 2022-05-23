@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class InvolvedPartyNonOrganicSecurityToken
-		extends WarehouseSecurityTable<InvolvedPartyNonOrganicSecurityToken, InvolvedPartyNonOrganicSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<InvolvedPartyNonOrganicSecurityToken, InvolvedPartyNonOrganicSecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -29,7 +29,7 @@ public class InvolvedPartyNonOrganicSecurityToken
 	@Column(nullable = false,
 	        name = "InvolvedPartyNonOrganicSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyNonOrganicID",
 	            referencedColumnName = "InvolvedPartyNonOrganicID",
@@ -44,7 +44,7 @@ public class InvolvedPartyNonOrganicSecurityToken
 	
 	}
 	
-	public InvolvedPartyNonOrganicSecurityToken(UUID involvedPartyNonOrganicSecurityTokenID)
+	public InvolvedPartyNonOrganicSecurityToken(java.lang.String involvedPartyNonOrganicSecurityTokenID)
 	{
 		this.id = involvedPartyNonOrganicSecurityTokenID;
 	}
@@ -54,12 +54,12 @@ public class InvolvedPartyNonOrganicSecurityToken
 		return "InvolvedPartyNonOrganicSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyNonOrganicSecurityToken setId(UUID id)
+	public InvolvedPartyNonOrganicSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

@@ -11,7 +11,7 @@ import java.time.Duration;
 
 @MappedSuperclass()
 public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
-		Q extends QueryBuilderDefault<Q, J, I>, I extends java.util.UUID>
+		Q extends QueryBuilderDefault<Q, J, I>, I extends java.lang.String>
 		extends SCDEntity<J, Q, I>
 		implements IWarehouseBaseTable<J, Q, I>
 {

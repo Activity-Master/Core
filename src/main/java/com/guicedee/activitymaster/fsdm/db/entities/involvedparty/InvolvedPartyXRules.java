@@ -16,7 +16,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -39,7 +38,7 @@ public class InvolvedPartyXRules
 		Rules,
 		InvolvedPartyXRules,
 		InvolvedPartyXRulesQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -49,7 +48,7 @@ public class InvolvedPartyXRules
 	@Column(nullable = false,
 	        name = "InvolvedPartyXRulesID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -86,17 +85,17 @@ public class InvolvedPartyXRules
 	
 	}
 	
-	public InvolvedPartyXRules(UUID involvedPartyXRulesID)
+	public InvolvedPartyXRules(java.lang.String involvedPartyXRulesID)
 	{
 		this.id = involvedPartyXRulesID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyXRules setId(UUID id)
+	public InvolvedPartyXRules setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

@@ -10,7 +10,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -30,7 +29,7 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyOrganic
-		extends WarehouseTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, UUID>
+		extends WarehouseTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, java.lang.String>
 
 {
 	@Serial
@@ -40,7 +39,7 @@ public class InvolvedPartyOrganic
 	        name = "InvolvedPartyOrganicID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyOrganicID",
 	            referencedColumnName = "InvolvedPartyID",
@@ -61,7 +60,7 @@ public class InvolvedPartyOrganic
 	
 	}
 	
-	public InvolvedPartyOrganic(UUID involvedPartyOrganicID)
+	public InvolvedPartyOrganic(java.lang.String involvedPartyOrganicID)
 	{
 		this.id = involvedPartyOrganicID;
 	}
@@ -104,12 +103,12 @@ public class InvolvedPartyOrganic
 		return "OrganicParty - " + getId();
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyOrganic setId(UUID id)
+	public InvolvedPartyOrganic setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

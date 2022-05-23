@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -21,7 +20,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class SystemsXClassificationSecurityToken
-		extends WarehouseSecurityTable<SystemsXClassificationSecurityToken, SystemXClassificationSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<SystemsXClassificationSecurityToken, SystemXClassificationSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -32,7 +31,7 @@ public class SystemsXClassificationSecurityToken
 	@Column(nullable = false,
 	        name = "SystemXClassificationSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "SystemXClassificationID",
 	            referencedColumnName = "SystemXClassificationID",
@@ -47,7 +46,7 @@ public class SystemsXClassificationSecurityToken
 	
 	}
 	
-	public SystemsXClassificationSecurityToken(UUID systemXClassificationSecurityTokenID)
+	public SystemsXClassificationSecurityToken(java.lang.String systemXClassificationSecurityTokenID)
 	{
 		this.id = systemXClassificationSecurityTokenID;
 	}
@@ -57,12 +56,12 @@ public class SystemsXClassificationSecurityToken
 		return "SystemXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public SystemsXClassificationSecurityToken setId(UUID id)
+	public SystemsXClassificationSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

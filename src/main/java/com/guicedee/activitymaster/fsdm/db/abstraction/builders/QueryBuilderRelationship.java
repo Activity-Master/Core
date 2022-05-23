@@ -9,7 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderRe
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseRelationshipTable;
 
-import java.util.UUID;
+
 
 /**
  * Default query builder for relationship tables
@@ -21,11 +21,11 @@ import java.util.UUID;
  * @param <I> the type parameter
  * @author Marc Magon
  */
-public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P, ?, UUID>,
-		S extends WarehouseBaseTable<S, ?, UUID>,
+public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P, ?, java.lang.String>,
+		S extends WarehouseBaseTable<S, ?, java.lang.String>,
 		J extends QueryBuilderRelationship<P, S, J, E, I>,
 		E extends WarehouseRelationshipTable<P, S, E, J, I>,
-		I extends UUID>
+		I extends java.lang.String>
 		extends QueryBuilderTable<J, E, I>
 		implements IQueryBuilderRelationships<J, E, P, S, I>
 {

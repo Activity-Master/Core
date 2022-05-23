@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlagXClassi
 import jakarta.persistence.metamodel.Attribute;
 
 public class ActiveFlagXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ActiveFlagXClassificationSecurityTokenQueryBuilder, ActiveFlagXClassificationSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<ActiveFlagXClassificationSecurityTokenQueryBuilder, ActiveFlagXClassificationSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

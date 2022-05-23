@@ -9,13 +9,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.UUID;
-
 import static com.entityassist.enumerations.Operand.*;
 
 public class ResourceItemQueryBuilder
-		extends QueryBuilderTable<ResourceItemQueryBuilder, ResourceItem, UUID>
-		implements IQueryBuilderClassifications<ResourceItemQueryBuilder, ResourceItem, UUID>,
+		extends QueryBuilderTable<ResourceItemQueryBuilder, ResourceItem, java.lang.String>
+		implements IQueryBuilderClassifications<ResourceItemQueryBuilder, ResourceItem, java.lang.String>,
 		           IResourceItemQueryBuilder<ResourceItemQueryBuilder, ResourceItem>
 {
 	
@@ -25,7 +23,7 @@ public class ResourceItemQueryBuilder
 		return this;
 	}
 	
-	public ResourceItemQueryBuilder withType(String type, String typeValue, ISystems<?, ?> system, UUID... identityToken)
+	public ResourceItemQueryBuilder withType(String type, String typeValue, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		

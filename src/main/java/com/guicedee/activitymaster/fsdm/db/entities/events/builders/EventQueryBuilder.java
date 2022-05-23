@@ -11,7 +11,7 @@ import java.sql.Date;
 import java.time.ZoneOffset;
 
 public class EventQueryBuilder
-		extends QueryBuilderTable<EventQueryBuilder, Event, java.util.UUID>
+		extends QueryBuilderTable<EventQueryBuilder, Event, java.lang.String>
 		implements IEventQueryBuilder<EventQueryBuilder, Event>
 {
 	

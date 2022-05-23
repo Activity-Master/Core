@@ -33,7 +33,7 @@ public class EventXRules
 		Rules,
 		EventXRules,
 		EventXRulesQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -42,7 +42,7 @@ public class EventXRules
 	@Column(nullable = false,
 	        name = "EventXRulesID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -67,17 +67,17 @@ public class EventXRules
 	
 	}
 	
-	public EventXRules(UUID eventXRulesID)
+	public EventXRules(java.lang.String eventXRulesID)
 	{
 		this.id = eventXRulesID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXRules setId(UUID id)
+	public EventXRules setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

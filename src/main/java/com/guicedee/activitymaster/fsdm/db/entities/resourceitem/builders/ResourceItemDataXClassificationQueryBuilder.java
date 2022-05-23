@@ -8,7 +8,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ResourceItemDataXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ResourceItemData, Classification, ResourceItemDataXClassificationQueryBuilder,
-		ResourceItemDataXClassification, java.util.UUID>
+		ResourceItemDataXClassification, java.lang.String>
 {
 	
 	@Override

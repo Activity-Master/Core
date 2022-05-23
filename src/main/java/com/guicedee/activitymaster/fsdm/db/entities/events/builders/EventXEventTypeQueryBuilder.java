@@ -8,14 +8,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.util.UUID;
+
 
 public class EventXEventTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<Event,
 		EventType,
 		EventXEventTypeQueryBuilder,
 		EventXEventType,
-		UUID>
+		java.lang.String>
 {
 	@Override
 	public SingularAttribute<EventXEventType, Event> getPrimaryAttribute()
@@ -30,7 +30,7 @@ public class EventXEventTypeQueryBuilder
 	}
 	
 	@Override
-	public EventXEventTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
+	public EventXEventTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

@@ -11,7 +11,6 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -24,7 +23,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class EventXGeographySecurityToken
-		extends WarehouseSecurityTable<EventXGeographySecurityToken, EventXGeographySecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<EventXGeographySecurityToken, EventXGeographySecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -34,7 +33,7 @@ public class EventXGeographySecurityToken
 	@Column(nullable = false,
 	        name = "EventXGeographySecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "EventXGeographyID",
 	            referencedColumnName = "EventXGeographyID",
@@ -49,7 +48,7 @@ public class EventXGeographySecurityToken
 	
 	}
 	
-	public EventXGeographySecurityToken(UUID eventXGeographySecurityTokenID)
+	public EventXGeographySecurityToken(java.lang.String eventXGeographySecurityTokenID)
 	{
 		this.id = eventXGeographySecurityTokenID;
 	}
@@ -59,12 +58,12 @@ public class EventXGeographySecurityToken
 		return "EventXGeographySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXGeographySecurityToken setId(UUID id)
+	public EventXGeographySecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

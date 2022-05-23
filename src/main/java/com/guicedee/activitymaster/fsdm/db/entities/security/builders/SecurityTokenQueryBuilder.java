@@ -23,10 +23,10 @@ import static com.entityassist.enumerations.Operand.*;
  * @since 30 Apr 2017
  */
 public class SecurityTokenQueryBuilder
-		extends QueryBuilderTable<SecurityTokenQueryBuilder, SecurityToken, UUID>
+		extends QueryBuilderTable<SecurityTokenQueryBuilder, SecurityToken, java.lang.String>
 		implements ISecurityTokenQueryBuilder<SecurityTokenQueryBuilder, SecurityToken>
 {
-	public SecurityTokenQueryBuilder findFolder(String securityTokenClassification, ISystems<?, ?> system, UUID... identityToken)
+	public SecurityTokenQueryBuilder findFolder(String securityTokenClassification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		SecurityTokenXSecurityToken hierarchySystem = new SecurityTokenXSecurityToken();
 		SecurityTokenXSecurityTokenQueryBuilder hierarchyBuilder = hierarchySystem.builder();
@@ -63,36 +63,36 @@ public class SecurityTokenQueryBuilder
 		                                .get();
 	}
 	
-	public SecurityTokenQueryBuilder findBySecurityToken(String token, IEnterprise<?, ?> enterprise)
+	public SecurityTokenQueryBuilder findBySecurityToken(String identityToken, IEnterprise<?, ?> enterprise)
 	{
-		where(getAttribute("securityToken"), Equals, token);
+		where(getAttribute("securityToken"), Equals, identityToken);
 		return this;
 	}
 	
-	public SecurityTokenQueryBuilder findBySecurityTokenActive(String token, IEnterprise<?, ?> enterprise)
+	public SecurityTokenQueryBuilder findBySecurityTokenActive(String identityToken, IEnterprise<?, ?> enterprise)
 	{
-		where(getAttribute("securityToken"), Equals, token);
+		where(getAttribute("securityToken"), Equals, identityToken);
 		inActiveRange();
 		inDateRange();
 		return this;
 	}
 	
-	public SecurityTokenQueryBuilder findBySecurityToken(String token)
+	public SecurityTokenQueryBuilder findBySecurityToken(String identityToken)
 	{
-		where(getAttribute("securityToken"), InList, token);
+		where(getAttribute("securityToken"), InList, identityToken);
 		return this;
 	}
 	
-	public SecurityTokenQueryBuilder findBySecurityTokenActive(String token)
+	public SecurityTokenQueryBuilder findBySecurityTokenActive(String identityToken)
 	{
-		where(getAttribute("securityToken"), InList, token);
+		where(getAttribute("securityToken"), InList, identityToken);
 		inDateRange();
 		return this;
 	}
 	
-	public SecurityTokenQueryBuilder findBySecurityTokenVisibleRange(String token)
+	public SecurityTokenQueryBuilder findBySecurityTokenVisibleRange(String identityToken)
 	{
-		where(getAttribute("securityToken"), InList, token);
+		where(getAttribute("securityToken"), InList, identityToken);
 		inDateRange();
 		return this;
 	}

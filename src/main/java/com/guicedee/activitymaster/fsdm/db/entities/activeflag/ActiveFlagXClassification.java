@@ -35,7 +35,7 @@ public class ActiveFlagXClassification
 		Classification,
 		ActiveFlagXClassification,
 		ActiveFlagXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -46,7 +46,7 @@ public class ActiveFlagXClassification
 	@Column(nullable = false,
 	        name = "ActiveFlagXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "SystemID",
 	            referencedColumnName = "SystemID",
@@ -66,18 +66,18 @@ public class ActiveFlagXClassification
 	
 	}
 	
-	public ActiveFlagXClassification(UUID activeFlagXClassificationID)
+	public ActiveFlagXClassification(java.lang.String activeFlagXClassificationID)
 	{
 		this.id = activeFlagXClassificationID;
 	}
 	
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ActiveFlagXClassification setId(UUID id)
+	public ActiveFlagXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

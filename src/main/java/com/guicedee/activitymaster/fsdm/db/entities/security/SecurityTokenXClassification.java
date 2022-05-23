@@ -34,7 +34,7 @@ public class SecurityTokenXClassification
 		Classification,
 		SecurityTokenXClassification,
 		SecurityTokenXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -45,7 +45,7 @@ public class SecurityTokenXClassification
 	@Column(nullable = false,
 	        name = "SecurityTokenXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "SecurityTokenID",
 	            referencedColumnName = "SecurityTokenID",
@@ -64,17 +64,17 @@ public class SecurityTokenXClassification
 	
 	}
 	
-	public SecurityTokenXClassification(UUID securityTokenXClassificationID)
+	public SecurityTokenXClassification(java.lang.String securityTokenXClassificationID)
 	{
 		this.id = securityTokenXClassificationID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public SecurityTokenXClassification setId(UUID id)
+	public SecurityTokenXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

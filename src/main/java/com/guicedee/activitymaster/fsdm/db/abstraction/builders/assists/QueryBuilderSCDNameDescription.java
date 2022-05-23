@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTabl
 
 public abstract class QueryBuilderSCDNameDescription<J extends QueryBuilderSCDNameDescription<J, E, I>,
 		E extends WarehouseSCDNameDescriptionTable<E, J, I>,
-		I extends java.util.UUID>
+		I extends java.lang.String>
 		extends QueryBuilderTable<J, E, I>
 		implements IQueryBuilderNamesAndDescriptions<J, E, I>
 {

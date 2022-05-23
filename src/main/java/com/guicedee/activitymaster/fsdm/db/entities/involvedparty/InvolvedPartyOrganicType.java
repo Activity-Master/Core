@@ -13,7 +13,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
 /**
@@ -36,7 +35,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyOrganicType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<InvolvedPartyOrganicType, InvolvedPartyOrganicTypeQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -47,7 +46,7 @@ public class InvolvedPartyOrganicType
 	        name = "InvolvedPartyOrganicTypeID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -77,7 +76,7 @@ public class InvolvedPartyOrganicType
 	
 	}
 	
-	public InvolvedPartyOrganicType(UUID involvedPartyOrganicTypeID)
+	public InvolvedPartyOrganicType(java.lang.String involvedPartyOrganicTypeID)
 	{
 		id = involvedPartyOrganicTypeID;
 	}
@@ -121,13 +120,13 @@ public class InvolvedPartyOrganicType
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public InvolvedPartyOrganicType setId(UUID id)
+	public InvolvedPartyOrganicType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

@@ -33,7 +33,7 @@ public class ArrangementXInvolvedParty
 		InvolvedParty,
 		ArrangementXInvolvedParty,
 		ArrangementXInvolvedPartyQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -44,7 +44,7 @@ public class ArrangementXInvolvedParty
 	@Column(nullable = false,
 	        name = "ArrangementXInvolvedPartyID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID",
@@ -72,17 +72,17 @@ public class ArrangementXInvolvedParty
 	
 	}
 	
-	public ArrangementXInvolvedParty(UUID arrangementXInvolvedPartyID)
+	public ArrangementXInvolvedParty(java.lang.String arrangementXInvolvedPartyID)
 	{
 		this.id = arrangementXInvolvedPartyID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ArrangementXInvolvedParty setId(UUID id)
+	public ArrangementXInvolvedParty setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

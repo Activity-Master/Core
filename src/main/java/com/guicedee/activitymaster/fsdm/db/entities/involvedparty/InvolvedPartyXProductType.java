@@ -11,7 +11,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -35,7 +34,7 @@ public class InvolvedPartyXProductType
 		ProductType,
 		InvolvedPartyXProductType,
 		InvolvedPartyXProductTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -44,7 +43,7 @@ public class InvolvedPartyXProductType
 	@Column(nullable = false,
 	        name = "InvolvedPartyXProductTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyID",
 	            referencedColumnName = "InvolvedPartyID",
@@ -69,19 +68,19 @@ public class InvolvedPartyXProductType
 	
 	}
 	
-	public InvolvedPartyXProductType(UUID involvedPartyXProductTypeID)
+	public InvolvedPartyXProductType(java.lang.String involvedPartyXProductTypeID)
 	{
 		this.id = involvedPartyXProductTypeID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public InvolvedPartyXProductType setId(UUID id)
+	public InvolvedPartyXProductType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

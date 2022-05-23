@@ -33,7 +33,7 @@ public class AddressXGeography
 		Geography,
 		AddressXGeography,
 		AddressXGeographyQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -44,7 +44,7 @@ public class AddressXGeography
 	@Column(nullable = false,
 	        name = "AddressXGeographyID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "AddressID",
 	            referencedColumnName = "AddressID",
@@ -71,17 +71,17 @@ public class AddressXGeography
 	
 	}
 	
-	public AddressXGeography(UUID addressXGeographyID)
+	public AddressXGeography(java.lang.String addressXGeographyID)
 	{
 		this.id = addressXGeographyID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public AddressXGeography setId(UUID id)
+	public AddressXGeography setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

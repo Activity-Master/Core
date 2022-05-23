@@ -13,7 +13,7 @@ import org.hibernate.annotations.Immutable;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Immutable
 public class SecurityHierarchyParents
-		extends BaseEntity<SecurityHierarchyParents, SecurityHierarchyParentsQueryBuilder, UUID>
+		extends BaseEntity<SecurityHierarchyParents, SecurityHierarchyParentsQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -33,7 +33,7 @@ public class SecurityHierarchyParents
 	private static final long serialVersionUID = 1L;
 	@Id
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@ManyToOne()
 	@JoinColumn(name = "id", insertable = false, updatable = false, referencedColumnName = "id")
@@ -47,12 +47,12 @@ public class SecurityHierarchyParents
 	}
 	
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public SecurityHierarchyParents setId(UUID id)
+	public SecurityHierarchyParents setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

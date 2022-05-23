@@ -16,7 +16,7 @@ import java.io.Serial;
 @MappedSuperclass()
 public abstract class WarehouseSCDNameDescriptionTable<J extends WarehouseSCDNameDescriptionTable<J, Q, I>,
 		Q extends QueryBuilderSCDNameDescription<Q, J, I>,
-		I extends java.util.UUID>
+		I extends java.lang.String>
 		extends WarehouseTable<J, Q, I>
 		implements IWarehouseNameAndDescriptionTable<J, Q, I>
 {

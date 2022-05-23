@@ -4,7 +4,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTabl
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyOrganic;
 
 public class InvolvedPartyOrganicQueryBuilder
-		extends QueryBuilderTable<InvolvedPartyOrganicQueryBuilder, InvolvedPartyOrganic, java.util.UUID>
+		extends QueryBuilderTable<InvolvedPartyOrganicQueryBuilder, InvolvedPartyOrganic, java.lang.String>
 {
 	
 	@Override

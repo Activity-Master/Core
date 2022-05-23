@@ -45,7 +45,7 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Systems
-		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, UUID>
+		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.lang.String>
 		implements ISystems<Systems, SystemsQueryBuilder>
 {
 	@Serial
@@ -55,7 +55,7 @@ public class Systems
 	        name = "SystemID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -106,12 +106,12 @@ public class Systems
 	
 	}
 	
-	public Systems(UUID systemID)
+	public Systems(java.lang.String systemID)
 	{
 		id = systemID;
 	}
 	
-	public Systems(UUID systemID, String systemName, String systemDesc, String systemHistoryName)
+	public Systems(java.lang.String systemID, String systemName, String systemDesc, String systemHistoryName)
 	{
 		id = systemID;
 		name = systemName;
@@ -171,13 +171,13 @@ public class Systems
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public Systems setId(UUID id)
+	public Systems setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

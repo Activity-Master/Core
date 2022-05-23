@@ -23,7 +23,7 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
 @MappedSuperclass
 public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 		Q extends QueryBuilderTable<Q, J, I>,
-		I extends java.util.UUID>
+		I extends java.lang.String>
 		extends WarehouseSCDTable<J, Q, I>
 		implements IContainsActiveFlags<J>,
 		           IWarehouseTable<J, Q, I>

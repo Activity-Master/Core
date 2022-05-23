@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -39,7 +38,7 @@ public class GeographyXGeography
 		Geography,
 		GeographyXGeography,
 		GeographyXGeographyQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -50,7 +49,7 @@ public class GeographyXGeography
 	@Column(nullable = false,
 	        name = "GeographyXGeographyID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -74,17 +73,17 @@ public class GeographyXGeography
 	
 	}
 	
-	public GeographyXGeography(UUID geographyXGeographyID)
+	public GeographyXGeography(java.lang.String geographyXGeographyID)
 	{
 		this.id = geographyXGeographyID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public GeographyXGeography setId(UUID id)
+	public GeographyXGeography setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

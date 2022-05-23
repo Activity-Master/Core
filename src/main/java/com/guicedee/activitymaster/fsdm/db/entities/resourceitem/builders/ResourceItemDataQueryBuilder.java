@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTabl
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemData;
 
 public class ResourceItemDataQueryBuilder
-		extends QueryBuilderTable<ResourceItemDataQueryBuilder, ResourceItemData, java.util.UUID>
+		extends QueryBuilderTable<ResourceItemDataQueryBuilder, ResourceItemData, java.lang.String>
 		implements IResourceDataQueryBuilder<ResourceItemDataQueryBuilder, ResourceItemData>
 {
 }

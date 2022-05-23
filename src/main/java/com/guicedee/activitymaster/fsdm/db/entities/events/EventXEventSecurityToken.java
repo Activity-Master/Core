@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -20,7 +19,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class EventXEventSecurityToken
-		extends WarehouseSecurityTable<EventXEventSecurityToken, EventXEventSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<EventXEventSecurityToken, EventXEventSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -31,7 +30,7 @@ public class EventXEventSecurityToken
 	@Column(nullable = false,
 	        name = "EventXEventSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "EventXEventID",
 	            referencedColumnName = "EventXEventID",
@@ -46,7 +45,7 @@ public class EventXEventSecurityToken
 	
 	}
 	
-	public EventXEventSecurityToken(UUID productXEventSecurityTokenID)
+	public EventXEventSecurityToken(java.lang.String productXEventSecurityTokenID)
 	{
 		this.id = productXEventSecurityTokenID;
 	}
@@ -56,12 +55,12 @@ public class EventXEventSecurityToken
 		return "EventXEventSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXEventSecurityToken setId(UUID id)
+	public EventXEventSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

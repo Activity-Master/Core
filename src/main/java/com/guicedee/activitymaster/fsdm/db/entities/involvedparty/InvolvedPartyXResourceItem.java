@@ -39,7 +39,7 @@ public class InvolvedPartyXResourceItem
 		ResourceItem,
 		InvolvedPartyXResourceItem,
 		InvolvedPartyXResourceItemQueryBuilder,
-		UUID>
+		java.lang.String>
 
 {
 	
@@ -50,7 +50,7 @@ public class InvolvedPartyXResourceItem
 	@Column(nullable = false,
 	        name = "InvolvedPartyXResourceItemID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyID",
 	            referencedColumnName = "InvolvedPartyID",
@@ -75,17 +75,17 @@ public class InvolvedPartyXResourceItem
 	
 	}
 	
-	public InvolvedPartyXResourceItem(UUID involvedPartyXResourceItemID)
+	public InvolvedPartyXResourceItem(java.lang.String involvedPartyXResourceItemID)
 	{
 		this.id = involvedPartyXResourceItemID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyXResourceItem setId(UUID id)
+	public InvolvedPartyXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

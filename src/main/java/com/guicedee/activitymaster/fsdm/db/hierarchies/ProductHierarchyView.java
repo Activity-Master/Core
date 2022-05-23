@@ -13,7 +13,6 @@ import org.hibernate.annotations.Immutable;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -24,7 +23,7 @@ import java.util.UUID;
 
 @Immutable
 public class ProductHierarchyView
-		extends WarehouseHierarchyView<ProductHierarchyView, ProductHierarchyViewQueryBuilder, UUID>
+		extends WarehouseHierarchyView<ProductHierarchyView, ProductHierarchyViewQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -32,19 +31,19 @@ public class ProductHierarchyView
 	private static final long serialVersionUID = 1L;
 	@Id
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	
 	public ProductHierarchyView()
 	{
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ProductHierarchyView setId(UUID id)
+	public ProductHierarchyView setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

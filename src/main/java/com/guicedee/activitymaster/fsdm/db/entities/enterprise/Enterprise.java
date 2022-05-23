@@ -38,7 +38,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Enterprise
-		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.util.UUID>
+		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.lang.String>
 		implements //IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise, IClassification<?,?>, Enterprise>,
 		IEnterprise<Enterprise, EnterpriseQueryBuilder>
 {
@@ -51,7 +51,7 @@ public class Enterprise
 	        name = "EnterpriseID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.util.UUID id;
+	private java.lang.String id;
 	
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
@@ -81,12 +81,12 @@ public class Enterprise
 	
 	}
 	
-	public Enterprise(java.util.UUID id)
+	public Enterprise(java.lang.String id)
 	{
 		this.id = id;
 	}
 	
-	public Enterprise(java.util.UUID id, String enterpriseName, String enterpriseDesc)
+	public Enterprise(java.lang.String id, String enterpriseName, String enterpriseDesc)
 	{
 		this.id = id;
 		name = enterpriseName;
@@ -132,13 +132,13 @@ public class Enterprise
 	}
 	
 	@Override
-	public java.util.UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public Enterprise setId(java.util.UUID id)
+	public Enterprise setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

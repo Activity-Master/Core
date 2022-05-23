@@ -4,7 +4,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBui
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyOrganicType;
 
 public class InvolvedPartyOrganicTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<InvolvedPartyOrganicTypeQueryBuilder, InvolvedPartyOrganicType, java.util.UUID>
+		extends QueryBuilderSCDNameDescription<InvolvedPartyOrganicTypeQueryBuilder, InvolvedPartyOrganicType, java.lang.String>
 {
 
 }

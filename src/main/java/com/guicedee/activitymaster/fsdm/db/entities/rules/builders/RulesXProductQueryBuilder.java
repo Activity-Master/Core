@@ -9,13 +9,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.util.UUID;
-
 import static com.entityassist.enumerations.Operand.*;
 
 public class RulesXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, Product, RulesXProductQueryBuilder,
-		RulesXProduct, UUID>
+		RulesXProduct, java.lang.String>
 {
 	@Override
 	public SingularAttribute<RulesXProduct, Rules> getPrimaryAttribute()
@@ -31,7 +29,7 @@ public class RulesXProductQueryBuilder
 	
 	
 	@jakarta.validation.constraints.NotNull
-	public RulesXProductQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, UUID... identityToken)
+	public RulesXProductQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		RulesXProductQueryBuilder builder =

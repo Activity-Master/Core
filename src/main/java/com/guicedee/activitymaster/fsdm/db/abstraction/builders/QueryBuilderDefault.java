@@ -11,9 +11,10 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
+
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
 		E extends WarehouseBaseTable<E, J, I>,
-		I extends UUID>
+		I extends java.lang.String>
 		extends QueryBuilderSCD<J, E, I>
 		implements IQueryBuilderClassifications<J, E, I>
 {
@@ -31,7 +32,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 		if (entity.getId() == null)
 		{
 			//noinspection unchecked
-			entity.setId((I) UUID.randomUUID());
+			entity.setId((I) UUID.randomUUID().toString());
 		}
 		return super.onCreate(entity);
 	}

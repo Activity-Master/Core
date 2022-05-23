@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.util.UUID;
+
 
 import static com.entityassist.enumerations.Operand.*;
 
@@ -17,7 +17,7 @@ public class ProductXProductTypeQueryBuilder
 		ProductType,
 		ProductXProductTypeQueryBuilder,
 		ProductXProductType,
-		UUID>
+		java.lang.String>
 {
 	@Override
 	public SingularAttribute<ProductXProductType, Product> getPrimaryAttribute()
@@ -32,7 +32,7 @@ public class ProductXProductTypeQueryBuilder
 	}
 	
 	@Override
-	public ProductXProductTypeQueryBuilder withType(String productTypeValue, ISystems<?, ?> system, UUID... identityToken)
+	public ProductXProductTypeQueryBuilder withType(String productTypeValue, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (!Strings.isNullOrEmpty(productTypeValue))
 		{

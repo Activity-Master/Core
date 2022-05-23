@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
-import java.util.UUID;
+
 
 /**
  * @param <S>
@@ -26,11 +26,11 @@ import java.util.UUID;
  * @since 09 Dec 2016
  */
 @MappedSuperclass
-public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P, ?, UUID>,
-		S extends WarehouseBaseTable<S, ?, UUID>,
+public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P, ?, java.lang.String>,
+		S extends WarehouseBaseTable<S, ?, java.lang.String>,
 		J extends WarehouseRelationshipTable<P, S, J, Q, I>,
 		Q extends QueryBuilderRelationship<P, S, Q, J, I>,
-		I extends UUID>
+		I extends java.lang.String>
 		extends WarehouseTable<J, Q, I>
 		implements IWarehouseRelationshipTable<J, Q, P, S, I>
 {
@@ -50,13 +50,13 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 	}
 	
 	@Override
-	public void createDefaultSecurity(ISystems<?, ?> system, UUID... identity)
+	public void createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 	
 	}
 	
 	
-	public WarehouseSecurityTable createDefaultGuestNoSecurityAccess(ISystems<?, ?> system, UUID... identity)
+	public WarehouseSecurityTable createDefaultGuestNoSecurityAccess(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return null;
 	}
@@ -129,7 +129,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 	}
 	
 	@SuppressWarnings("unchecked")
-	public @NotNull J update(String newValue, UUID... identifyingToken)
+	public @NotNull J update(String newValue, java.util.UUID... identifyingToken)
 	{
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), identifyingToken));

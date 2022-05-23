@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
-import java.util.UUID;
+
 
 /**
  * @param <S>
@@ -19,11 +19,11 @@ import java.util.UUID;
 @MappedSuperclass
 
 public abstract class WarehouseClassificationRelationshipTypesTable<
-		P extends WarehouseCoreTable<P, ?, UUID>,
-		S extends WarehouseCoreTable<S, ?, UUID>,
+		P extends WarehouseCoreTable<P, ?, java.lang.String>,
+		S extends WarehouseCoreTable<S, ?, java.lang.String>,
 		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, I>,
 		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, I>,
-		I extends UUID>
+		I extends java.lang.String>
 		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I>
 		implements IWarehouseRelationshipClassificationTypeTable<J, Q, P, S, I>
 {

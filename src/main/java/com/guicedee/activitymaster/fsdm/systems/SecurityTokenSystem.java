@@ -21,7 +21,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemTyp
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
-import com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.UUID;
@@ -72,7 +71,7 @@ public class SecurityTokenSystem
 		                                 .getSecurityIdentityToken(activityMasterSystem);
 		
 		SecurityToken activityMasterToken = (SecurityToken) GuiceContext.get(SystemsService.class)
-		                                                                .getSecurityToken(newSystemUUID, activityMasterSystem, newSystemUUID);
+		                                                                .getSecurityToken(newSystemUUID.toString(), activityMasterSystem, newSystemUUID);
 		
 		logProgress("Security Management", "Setting Security Configurator to Activity Master");
 		
@@ -102,7 +101,7 @@ public class SecurityTokenSystem
 		            .setSecurityEnabled(true);
 	}
 	
-	void createSecurityDefaults(String enterpriseName, ISystems<?,?> system, UUID... identityToken)
+	void createSecurityDefaults(String enterpriseName, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> entClassification = classificationService.create(enterpriseName, system, identityToken);
 		
@@ -421,7 +420,7 @@ public class SecurityTokenSystem
 		createDefaultSecurityForTable(new ArrangementXProduct(), activityMasterSystem);
 	}
 	
-	void createDefaultSecurityForTable(WarehouseCoreTable< ?, ?, ?> table, ISystems<?,?> system, UUID... identityToken)
+	void createDefaultSecurityForTable(WarehouseCoreTable< ?, ?, ?> table, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		/*for (WarehouseCoreTable next : table.builder()
 		                                    .withEnterprise(system.getEnterpriseID())

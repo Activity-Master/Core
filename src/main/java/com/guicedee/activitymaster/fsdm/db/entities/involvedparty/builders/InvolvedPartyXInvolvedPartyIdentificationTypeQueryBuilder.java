@@ -10,14 +10,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.util.UUID;
+
 
 public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<InvolvedParty,
 		InvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
 		InvolvedPartyXInvolvedPartyIdentificationType,
-		UUID>
+		java.lang.String>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXInvolvedPartyIdentificationType, InvolvedParty> getPrimaryAttribute()
@@ -48,7 +48,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
+	public InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

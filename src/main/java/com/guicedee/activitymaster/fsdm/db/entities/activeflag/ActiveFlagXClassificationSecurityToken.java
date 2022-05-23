@@ -7,7 +7,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class ActiveFlagXClassificationSecurityToken
-		extends WarehouseSecurityTable<ActiveFlagXClassificationSecurityToken, ActiveFlagXClassificationSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ActiveFlagXClassificationSecurityToken, ActiveFlagXClassificationSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -32,7 +32,7 @@ public class ActiveFlagXClassificationSecurityToken
 	@Column(nullable = false,
 	        name = "ActiveFlagXClassificationSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ActiveFlagXClassificationID",
 	            referencedColumnName = "ActiveFlagXClassificationID",
@@ -46,7 +46,7 @@ public class ActiveFlagXClassificationSecurityToken
 	
 	}
 	
-	public ActiveFlagXClassificationSecurityToken(UUID activeFlagXClassificationSecurityTokenID)
+	public ActiveFlagXClassificationSecurityToken(java.lang.String activeFlagXClassificationSecurityTokenID)
 	{
 		this.id = activeFlagXClassificationSecurityTokenID;
 	}
@@ -56,12 +56,12 @@ public class ActiveFlagXClassificationSecurityToken
 		return "ActiveFlagXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ActiveFlagXClassificationSecurityToken setId(UUID id)
+	public ActiveFlagXClassificationSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

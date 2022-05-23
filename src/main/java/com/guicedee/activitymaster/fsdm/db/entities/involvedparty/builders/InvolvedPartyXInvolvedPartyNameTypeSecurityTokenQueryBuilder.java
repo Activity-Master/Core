@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyX
 import jakarta.persistence.metamodel.Attribute;
 
 public class InvolvedPartyXInvolvedPartyNameTypeSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<InvolvedPartyXInvolvedPartyNameTypeSecurityTokenQueryBuilder, InvolvedPartyXInvolvedPartyNameTypeSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<InvolvedPartyXInvolvedPartyNameTypeSecurityTokenQueryBuilder, InvolvedPartyXInvolvedPartyNameTypeSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

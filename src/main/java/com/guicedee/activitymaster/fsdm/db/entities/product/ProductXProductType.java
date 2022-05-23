@@ -11,7 +11,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -34,7 +33,7 @@ public class ProductXProductType
 		ProductType,
 		ProductXProductType,
 		ProductXProductTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -44,7 +43,7 @@ public class ProductXProductType
 	@Column(nullable = false,
 	        name = "ProductXProductTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -67,19 +66,19 @@ public class ProductXProductType
 	
 	}
 	
-	public ProductXProductType(UUID productXProductTypeID)
+	public ProductXProductType(java.lang.String productXProductTypeID)
 	{
 		this.id = productXProductTypeID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public ProductXProductType setId(UUID id)
+	public ProductXProductType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

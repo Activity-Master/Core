@@ -10,7 +10,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRelationshipTypesTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 
-import java.util.UUID;
+
 
 /**
  * @param <P>
@@ -20,15 +20,15 @@ import java.util.UUID;
  * @since 01 May 2017
  */
 public abstract class QueryBuilderRelationshipClassificationTypes<
-		P extends WarehouseCoreTable<P, ?, UUID>,
-		S extends WarehouseCoreTable<S, ?, UUID>,
+		P extends WarehouseCoreTable<P, ?, java.lang.String>,
+		S extends WarehouseCoreTable<S, ?, java.lang.String>,
 		J extends QueryBuilderRelationshipClassificationTypes<P, S, J, E, I>,
 		E extends WarehouseClassificationRelationshipTypesTable<P, S, E, J, I>,
-		I extends UUID>
+		I extends java.lang.String>
 		extends QueryBuilderRelationshipClassification<P, S, J, E, I>
 		implements IQueryBuilderClassifications<J, E, I>
 {
 	
-	public abstract J withType(String typeValue, ISystems<?, ?> system, UUID... identityToken);
+	public abstract J withType(String typeValue, ISystems<?, ?> system, java.util.UUID... identityToken);
 	
 }

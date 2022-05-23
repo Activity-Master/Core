@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.enterprise.EnterpriseXClassi
 import jakarta.persistence.metamodel.Attribute;
 
 public class EnterpriseXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EnterpriseXClassificationSecurityTokenQueryBuilder, EnterpriseXClassificationSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<EnterpriseXClassificationSecurityTokenQueryBuilder, EnterpriseXClassificationSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

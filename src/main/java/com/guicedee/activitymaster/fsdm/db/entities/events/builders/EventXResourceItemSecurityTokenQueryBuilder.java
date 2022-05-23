@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.EventXResourceItemSec
 import jakarta.persistence.metamodel.Attribute;
 
 public class EventXResourceItemSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EventXResourceItemSecurityTokenQueryBuilder, EventXResourceItemSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<EventXResourceItemSecurityTokenQueryBuilder, EventXResourceItemSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

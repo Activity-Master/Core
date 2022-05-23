@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
 /**
@@ -39,7 +38,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class SecurityToken
-		extends WarehouseTable<SecurityToken, SecurityTokenQueryBuilder, UUID>
+		extends WarehouseTable<SecurityToken, SecurityTokenQueryBuilder, java.lang.String>
 		implements ISecurityToken<SecurityToken, SecurityTokenQueryBuilder>
 {
 	private static final Logger log = LogFactory.getLog("SecurityToken");
@@ -52,7 +51,7 @@ public class SecurityToken
 	        name = "SecurityTokenID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -100,12 +99,12 @@ public class SecurityToken
 	
 	}
 	
-	public SecurityToken(UUID securityTokenID)
+	public SecurityToken(java.lang.String securityTokenID)
 	{
 		this.id = securityTokenID;
 	}
 	
-	public SecurityToken(UUID securityTokenID, String securityToken, String securityTokenFriendlyName, String securityTokenFriendlyDescription, String originalSourceSystemUniqueID)
+	public SecurityToken(java.lang.String securityTokenID, String securityToken, String securityTokenFriendlyName, String securityTokenFriendlyDescription, String originalSourceSystemUniqueID)
 	{
 		this.id = securityTokenID;
 		this.securityToken = securityToken;
@@ -151,12 +150,12 @@ public class SecurityToken
 		return Objects.hash(getSecurityToken());
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public SecurityToken setId(UUID id)
+	public SecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
@@ -208,7 +207,7 @@ public class SecurityToken
 	
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, SecurityToken, SecurityToken, UUID> newLink, SecurityToken parent, SecurityToken child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, SecurityToken, SecurityToken, java.lang.String> newLink, SecurityToken parent, SecurityToken child, String value)
 	{
 		((SecurityTokenXSecurityToken) newLink).setParentSecurityTokenID(parent);
 		((SecurityTokenXSecurityToken) newLink).setChildSecurityTokenID(child);

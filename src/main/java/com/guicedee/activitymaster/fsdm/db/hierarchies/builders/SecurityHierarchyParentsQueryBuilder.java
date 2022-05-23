@@ -6,10 +6,8 @@ import com.guicedee.activitymaster.fsdm.db.hierarchies.SecurityHierarchyParents;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.EntityManager;
 
-import java.util.UUID;
-
 public class SecurityHierarchyParentsQueryBuilder
-		extends QueryBuilder<SecurityHierarchyParentsQueryBuilder, SecurityHierarchyParents, UUID>
+		extends QueryBuilder<SecurityHierarchyParentsQueryBuilder, SecurityHierarchyParents, java.lang.String>
 {
 	@Override
 	public EntityManager getEntityManager()

@@ -21,7 +21,7 @@ public class ActiveFlagService
 		return new ActiveFlag();
 	}
 	
-	public IActiveFlag<?,?> create(IEnterprise<?,?> enterprise, String name, String description, UUID... identifyingToken)
+	public IActiveFlag<?,?> create(IEnterprise<?,?> enterprise, String name, String description, java.util.UUID... identifyingToken)
 	{
 		ActiveFlag af = new ActiveFlag();
 		if (!doesFlagExist(name, enterprise, identifyingToken))
@@ -40,7 +40,7 @@ public class ActiveFlagService
 		}
 	}
 	
-	private boolean doesFlagExist(String flagName, IEnterprise<?,?> enterprise, UUID... identifyingToken)
+	private boolean doesFlagExist(String flagName, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		return new ActiveFlag().builder()
 		                       .withName(flagName)
@@ -51,14 +51,14 @@ public class ActiveFlagService
 	}
 	
 	@Override
-	public IActiveFlag<?,?> findFlagByName(com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?,?> enterprise, UUID... identifyingToken)
+	public IActiveFlag<?,?> findFlagByName(com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		return findFlagByName(flag.name(), enterprise, identifyingToken);
 	}
 	
 	@CacheResult(cacheName = "FindActiveByName")
 	@Override
-	public IActiveFlag<?,?> findFlagByName(@CacheKey String flag, @CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public IActiveFlag<?,?> findFlagByName(@CacheKey String flag, @CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return new ActiveFlag().builder()
 		                       .withName(flag)
@@ -71,12 +71,12 @@ public class ActiveFlagService
 	
 	@Override
 	@CacheResult(cacheName = "FindActiveFlagRange")
-	public List<IActiveFlag<?,?>> findActiveRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?,?>> findActiveRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return (List) find(getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
 	}
 	
-	private List<ActiveFlag> find(String[] name, IEnterprise<?,?> enterprise, UUID... identifyingToken)
+	private List<ActiveFlag> find(String[] name, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		ActiveFlag search = new ActiveFlag();
 		List<ActiveFlag> l = search.builder()
@@ -100,49 +100,49 @@ public class ActiveFlagService
 	
 	@Override
 	@CacheResult(cacheName = "GetVisibleRange")
-	public List<IActiveFlag<?,?>> getVisibleRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?,?>> getVisibleRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return (List) find(getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()), enterprise, identifyingToken);
 	}
 	
 	@Override
 	@CacheResult
-	public List<IActiveFlag<?,?>> getRemovedRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?,?>> getRemovedRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return (List) find(getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getRemovedRange()), enterprise, identifyingToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetArchivedRange")
-	public List<IActiveFlag<?,?>> getArchiveRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?,?>> getArchiveRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return (List) find(getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getArchivedRange()), enterprise, identifyingToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetHighlightedRange")
-	public List<IActiveFlag<?,?>> getHighlightedRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public List<IActiveFlag<?,?>> getHighlightedRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return (List) find(getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getHighlightedRange()), enterprise, identifyingToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetActiveFlag")
-	public IActiveFlag<?,?> getActiveFlag(@CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public IActiveFlag<?,?> getActiveFlag(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return findFlagByName(com.entityassist.enumerations.ActiveFlag.Active, enterprise, identifyingToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetArchivedFlag")
-	public IActiveFlag<?,?> getArchivedFlag(@CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public IActiveFlag<?,?> getArchivedFlag(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return findFlagByName(com.entityassist.enumerations.ActiveFlag.Archived, enterprise, identifyingToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetDeletedFlag")
-	public IActiveFlag<?,?> getDeletedFlag(@CacheKey IEnterprise<?,?> enterprise, @CacheKey UUID... identifyingToken)
+	public IActiveFlag<?,?> getDeletedFlag(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return findFlagByName(com.entityassist.enumerations.ActiveFlag.Deleted, enterprise, identifyingToken);
 	}

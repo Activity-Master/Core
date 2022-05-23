@@ -12,7 +12,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -25,7 +24,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class GeographyXGeographySecurityToken
-		extends WarehouseSecurityTable<GeographyXGeographySecurityToken, GeographyXGeographySecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<GeographyXGeographySecurityToken, GeographyXGeographySecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -36,7 +35,7 @@ public class GeographyXGeographySecurityToken
 	@Column(nullable = false,
 	        name = "GeographyXGeographySecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "GeographyXGeographyID",
 	            referencedColumnName = "GeographyXGeographyID",
@@ -51,7 +50,7 @@ public class GeographyXGeographySecurityToken
 	
 	}
 	
-	public GeographyXGeographySecurityToken(UUID geographyXGeographySecurityTokenID)
+	public GeographyXGeographySecurityToken(java.lang.String geographyXGeographySecurityTokenID)
 	{
 		this.id = geographyXGeographySecurityTokenID;
 	}
@@ -61,12 +60,12 @@ public class GeographyXGeographySecurityToken
 		return "GeographyXGeographySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public GeographyXGeographySecurityToken setId(UUID id)
+	public GeographyXGeographySecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

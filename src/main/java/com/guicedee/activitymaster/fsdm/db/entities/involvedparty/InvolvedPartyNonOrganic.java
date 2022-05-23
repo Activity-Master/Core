@@ -32,7 +32,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyNonOrganic
-		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, UUID>
+		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -42,7 +42,7 @@ public class InvolvedPartyNonOrganic
 	        name = "InvolvedPartyNonOrganicID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyNonOrganicID",
 	            referencedColumnName = "InvolvedPartyID",
@@ -63,7 +63,7 @@ public class InvolvedPartyNonOrganic
 	
 	}
 	
-	public InvolvedPartyNonOrganic(UUID involvedPartyNonOrganicID)
+	public InvolvedPartyNonOrganic(java.lang.String involvedPartyNonOrganicID)
 	{
 		id = involvedPartyNonOrganicID;
 	}
@@ -107,13 +107,13 @@ public class InvolvedPartyNonOrganic
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public InvolvedPartyNonOrganic setId(UUID id)
+	public InvolvedPartyNonOrganic setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

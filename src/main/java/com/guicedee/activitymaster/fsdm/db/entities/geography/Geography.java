@@ -47,7 +47,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Geography
-		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, java.lang.String>
 		implements IGeography<Geography, GeographyQueryBuilder>
 {
 	@Serial
@@ -58,7 +58,7 @@ public class Geography
 	        name = "GeographyID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -119,12 +119,12 @@ public class Geography
 	
 	}
 	
-	public Geography(UUID geographyID)
+	public Geography(java.lang.String geographyID)
 	{
 		this.id = geographyID;
 	}
 	
-	public Geography(UUID geographyID, String geographyName, String geographyDesc)
+	public Geography(java.lang.String geographyID, String geographyName, String geographyDesc)
 	{
 		this.id = geographyID;
 		this.name = geographyName;
@@ -256,13 +256,13 @@ public class Geography
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public Geography setId(UUID id)
+	public Geography setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
@@ -287,7 +287,7 @@ public class Geography
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Geography, Geography, UUID> newLink, Geography parent, Geography child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Geography, Geography, java.lang.String> newLink, Geography parent, Geography child, String value)
 	{
 		GeographyXGeography g = (GeographyXGeography) newLink;
 		g.setParentGeographyID(parent);

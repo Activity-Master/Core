@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class EventXClassificationSecurityToken
-		extends WarehouseSecurityTable<EventXClassificationSecurityToken, EventXClassificationSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<EventXClassificationSecurityToken, EventXClassificationSecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -29,7 +29,7 @@ public class EventXClassificationSecurityToken
 	@Column(nullable = false,
 	        name = "EventXClassificationsSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "EventXClassificationsID",
 	            referencedColumnName = "EventXClassificationID",
@@ -44,7 +44,7 @@ public class EventXClassificationSecurityToken
 	
 	}
 	
-	public EventXClassificationSecurityToken(UUID eventXClassificationsSecurityTokenID)
+	public EventXClassificationSecurityToken(java.lang.String eventXClassificationsSecurityTokenID)
 	{
 		this.id = eventXClassificationsSecurityTokenID;
 	}
@@ -54,12 +54,12 @@ public class EventXClassificationSecurityToken
 		return "EventXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXClassificationSecurityToken setId(UUID id)
+	public EventXClassificationSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

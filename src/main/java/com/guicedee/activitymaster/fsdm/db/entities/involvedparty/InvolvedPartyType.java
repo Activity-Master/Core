@@ -14,7 +14,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
 /**
@@ -36,7 +35,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, java.lang.String>
 		implements IInvolvedPartyType<InvolvedPartyType, InvolvedPartyTypeQueryBuilder>
 {
 	
@@ -48,7 +47,7 @@ public class InvolvedPartyType
 	        name = "InvolvedPartyTypeID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -80,12 +79,12 @@ public class InvolvedPartyType
 	
 	}
 	
-	public InvolvedPartyType(UUID involvedPartyTypeID)
+	public InvolvedPartyType(java.lang.String involvedPartyTypeID)
 	{
 		id = involvedPartyTypeID;
 	}
 	
-	public InvolvedPartyType(UUID involvedPartyTypeID, String involvedPartyTypeName, String involvedPartyTypeDesc)
+	public InvolvedPartyType(java.lang.String involvedPartyTypeID, String involvedPartyTypeName, String involvedPartyTypeDesc)
 	{
 		id = involvedPartyTypeID;
 		name = involvedPartyTypeName;
@@ -142,13 +141,13 @@ public class InvolvedPartyType
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public InvolvedPartyType setId(UUID id)
+	public InvolvedPartyType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

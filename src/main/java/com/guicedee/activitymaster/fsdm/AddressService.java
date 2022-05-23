@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -17,12 +16,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,14 +48,14 @@ public class AddressService
 	}
 	
 	@Override
-	public IAddress<?, ?> create(String addressClassification, ISystems<?, ?> system, String value, UUID... identifyingToken)
+	public IAddress<?, ?> create(String addressClassification, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
 	{
 		return create(addressClassification, null, system, value, identifyingToken);
 	}
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IAddress<?, ?> create(String addressClassification, UUID key, ISystems<?, ?> system, String value, UUID... identifyingToken)
+	public IAddress<?, ?> create(String addressClassification, java.lang.String key, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
 	{
 		Address addy = new Address();
 		
@@ -75,7 +72,7 @@ public class AddressService
 		
 		if (!found)
 		{
-			addy.setId(key);
+			addy.setId(key.toString());
 			addy.setEnterpriseID(system.getEnterpriseID());
 			addy.setClassificationID(classification);
 			addy.setValue(value);
@@ -104,7 +101,7 @@ public class AddressService
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IAddress<?, ?> addOrFindIPAddress(String ipAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindIPAddress(String ipAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
 		                     .matches())
@@ -154,7 +151,7 @@ public class AddressService
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IAddress<?, ?> addOrFindHostName(String hostName, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindHostName(String hostName, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
 		Address address = new Address();
@@ -201,7 +198,7 @@ public class AddressService
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IAddress<?, ?> addOrFindWebAddress(String webAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindWebAddress(String webAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
 		Address address = new Address();
@@ -344,7 +341,7 @@ public class AddressService
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IAddress<?, ?> addOrFindPhoneContact(String phoneNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindPhoneContact(String phoneNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Classification homePhoneNumber = (Classification) classificationServiceProvider.find(
 				TelephoneNumber.name(),
@@ -406,7 +403,7 @@ public class AddressService
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IAddress<?, ?> addOrFindEmailContact(String emailAddressString, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindEmailContact(String emailAddressString, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Classification emailAddress = (Classification) classificationServiceProvider.find(
 				AddressEmailClassifications.EmailAddress.name(),
@@ -480,14 +477,14 @@ public class AddressService
 	}
 	
 	@Override
-	public Optional<? extends IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public Optional<? extends IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		return involvedParty.findAddress(HomeCellNumber.name(), null, system, true, true, identityToken);
 	}
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IAddress<?, ?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
 		Classification buildingNumberClassification = (Classification) classificationServiceProvider.find(
@@ -545,7 +542,7 @@ public class AddressService
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IAddress<?, ?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
+	public IAddress<?, ?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
 		Address address = new Address();

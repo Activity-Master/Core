@@ -28,7 +28,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -48,7 +47,7 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Arrangement
-		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, UUID>
+		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, java.lang.String>
 		implements IArrangement<Arrangement, ArrangementQueryBuilder>
 {
 	@Serial
@@ -59,7 +58,7 @@ public class Arrangement
 	        name = "ArrangementID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "arrangementID",
@@ -115,7 +114,7 @@ public class Arrangement
 	
 	}
 	
-	public Arrangement(UUID arrangementID)
+	public Arrangement(java.lang.String arrangementID)
 	{
 		this.id = arrangementID;
 	}
@@ -302,20 +301,20 @@ public class Arrangement
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public Arrangement setId(UUID id)
+	public Arrangement setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Arrangement, Arrangement, UUID> newLink, Arrangement parent, Arrangement child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Arrangement, Arrangement, java.lang.String> newLink, Arrangement parent, Arrangement child, String value)
 	{
 		ArrangementXArrangement axa = (ArrangementXArrangement) newLink;
 		axa.setParentArrangementID(parent);

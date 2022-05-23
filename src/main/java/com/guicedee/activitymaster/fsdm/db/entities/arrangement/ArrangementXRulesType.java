@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -35,7 +34,7 @@ public class ArrangementXRulesType
 		RulesType,
 		ArrangementXRulesType,
 		ArrangementXRulesTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	@Serial
@@ -45,7 +44,7 @@ public class ArrangementXRulesType
 	@Column(nullable = false,
 	        name = "ArrangementXRulesTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -78,17 +77,17 @@ public class ArrangementXRulesType
 	
 	}
 	
-	public ArrangementXRulesType(UUID arrangementXRulesID)
+	public ArrangementXRulesType(java.lang.String arrangementXRulesID)
 	{
 		this.id = arrangementXRulesID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ArrangementXRulesType setId(UUID id)
+	public ArrangementXRulesType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

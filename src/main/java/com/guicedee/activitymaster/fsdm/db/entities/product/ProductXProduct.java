@@ -36,7 +36,7 @@ public class ProductXProduct
 		Product,
 		ProductXProduct,
 		ProductXProductQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -47,7 +47,7 @@ public class ProductXProduct
 	@Column(nullable = false,
 	        name = "ProductXProductID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -72,19 +72,19 @@ public class ProductXProduct
 	
 	}
 	
-	public ProductXProduct(UUID productXProductID)
+	public ProductXProduct(java.lang.String productXProductID)
 	{
 		id = productXProductID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public ProductXProduct setId(UUID id)
+	public ProductXProduct setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

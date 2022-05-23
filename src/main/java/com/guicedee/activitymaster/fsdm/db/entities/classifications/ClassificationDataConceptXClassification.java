@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -33,7 +32,7 @@ public class ClassificationDataConceptXClassification
 		Classification,
 		ClassificationDataConceptXClassification,
 		ClassificationDataConceptXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -44,7 +43,7 @@ public class ClassificationDataConceptXClassification
 	@Column(nullable = false,
 	        name = "ClassificationDataConceptXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -63,17 +62,17 @@ public class ClassificationDataConceptXClassification
 	
 	}
 	
-	public ClassificationDataConceptXClassification(UUID classificationDataConceptXClassificationID)
+	public ClassificationDataConceptXClassification(java.lang.String classificationDataConceptXClassificationID)
 	{
 		this.id = classificationDataConceptXClassificationID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ClassificationDataConceptXClassification setId(UUID id)
+	public ClassificationDataConceptXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

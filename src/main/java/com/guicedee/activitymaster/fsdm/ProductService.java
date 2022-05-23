@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -14,7 +13,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,7 +37,7 @@ public class ProductService
 	}
 	
 	@Override
-	public IProduct<?, ?> find(UUID id)
+	public IProduct<?, ?> find(java.lang.String id)
 	{
 		return new Product().builder()
 		                    .find(id)
@@ -49,7 +47,7 @@ public class ProductService
 	
 	
 	@Override
-	public IProductType<?, ?> findType(UUID id)
+	public IProductType<?, ?> findType(java.lang.String id)
 	{
 		return new ProductType().builder()
 		                        .find(id)
@@ -64,14 +62,14 @@ public class ProductService
 	}
 	
 	@Override
-	public IProduct<?, ?> createProduct(String productType, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken)
+	public IProduct<?, ?> createProduct(String productType, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return createProduct(productType, null, name, description, code, system, identityToken);
 	}
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IProduct<?, ?> createProduct(String productType, UUID key, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken)
+	public IProduct<?, ?> createProduct(String productType, java.lang.String key, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		
 		boolean exists = new Product().builder()
@@ -114,7 +112,7 @@ public class ProductService
 	}
 	
 	@Override
-	public IProduct<?, ?> findProduct(String name, ISystems<?, ?> system, UUID... identityToken)
+	public IProduct<?, ?> findProduct(String name, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return new Product().builder()
 		                    .withName(name)
@@ -126,7 +124,7 @@ public class ProductService
 	}
 	
 	@Override
-	public List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>> findProductByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
+	public List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>> findProductByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -146,14 +144,14 @@ public class ProductService
 	
 	
 	@Override
-	public IProductType<?, ?> createProductType(String productsType, String description, ISystems<?, ?> system, UUID... identityToken)
+	public IProductType<?, ?> createProductType(String productsType, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return createProductType(productsType, null, description, system, identityToken);
 	}
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IProductType<?, ?> createProductType(String productsType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
+	public IProductType<?, ?> createProductType(String productsType, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ProductType et = new ProductType();
 		
@@ -187,7 +185,7 @@ public class ProductService
 	}
 	
 	@Override
-	public IProductType<?, ?> findProductTypeForProduct(String productType, ISystems<?, ?> system, UUID... identityToken)
+	public IProductType<?, ?> findProductTypeForProduct(String productType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return new ProductType().builder()
 		                        .withName(productType)
@@ -200,7 +198,7 @@ public class ProductService
 	}
 	
 	@Override
-	public IProduct<?, ?> findProduct(String productName, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken)
+	public IProduct<?, ?> findProduct(String productName, IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return new Product().builder()
 		                    .withName(productName)
@@ -213,13 +211,13 @@ public class ProductService
 	}
 	
 	@Override
-	public IProductType<?, ?> findProductTypeForProduct(IProduct<?, ?> product, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken)
+	public IProductType<?, ?> findProductTypeForProduct(IProduct<?, ?> product, IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return findProductTypeForProduct(product, classification.getName(), system, identityToken);
 	}
 	
 	@Override
-	public IProductType<?, ?> findProductTypeForProduct(IProduct<?, ?> product, String classification, ISystems<?, ?> system, UUID... identityToken)
+	public IProductType<?, ?> findProductTypeForProduct(IProduct<?, ?> product, String classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification1 = classificationService.find(classification, system, identityToken);
 		return new ProductXProductType().builder()
@@ -233,13 +231,13 @@ public class ProductService
 		                                .getSecondary();
 	}
 	
-	public List<IProductType<?, ?>> findProductTypes(IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken)
+	public List<IProductType<?, ?>> findProductTypes(IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return findProductTypes(classification.getName(), system, identityToken);
 	}
 	
 	@Override
-	public List<IProductType<?, ?>> findProductTypes(String classification, ISystems<?, ?> system, UUID... identityToken)
+	public List<IProductType<?, ?>> findProductTypes(String classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		List<IProductType<?, ?>> list = new ArrayList<>();
 		List<IRelationshipValue<ProductType, IClassification<?, ?>, ?>> classifications = new ProductType().findClassifications(classification, system, identityToken);
@@ -252,13 +250,13 @@ public class ProductService
 	}
 	
 	@Override
-	public List<IProduct<?, ?>> findByProductTypes(IProductType<?, ?> type, ISystems<?, ?> system, UUID... identityToken)
+	public List<IProduct<?, ?>> findByProductTypes(IProductType<?, ?> type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return findByProductTypes(type.getName(), system, identityToken);
 	}
 	
 	@Override
-	public List<IProduct<?, ?>> findByProductTypes(String type, ISystems<?, ?> system, UUID... identityToken)
+	public List<IProduct<?, ?>> findByProductTypes(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return new ProductXProductType().builder()
 		                                .withEnterprise(enterprise)

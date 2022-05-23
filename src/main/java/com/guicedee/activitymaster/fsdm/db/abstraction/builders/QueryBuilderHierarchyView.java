@@ -9,11 +9,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
 
-public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends UUID>
+public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends java.lang.String>
 		extends QueryBuilder<J, E, I>
 {
 	@Override
@@ -52,7 +51,7 @@ public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyV
 	
 	
 	@SuppressWarnings("unchecked")
-	public J findMyChildren(UUID securityTokenID)
+	public J findMyChildren(java.lang.String securityTokenID)
 	{
 		where(SecurityHierarchyView_.parentID, Equals, securityTokenID);
 		return (J) this;

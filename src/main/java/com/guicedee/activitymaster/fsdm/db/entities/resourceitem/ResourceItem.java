@@ -54,7 +54,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ResourceItem
-		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, UUID>
+		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.lang.String>
 		implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
 {
 	@Serial
@@ -65,7 +65,7 @@ public class ResourceItem
 	        name = "ResourceItemID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id = UUID.randomUUID();
+	private String id;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@Column(nullable = false,
@@ -142,7 +142,7 @@ public class ResourceItem
 		return this;
 	}
 	
-	public byte[] getData(UUID... identityToken)
+	public byte[] getData(java.util.UUID... identityToken)
 	{
 		var dr = getDataRow();
 		if (flushToDisk)
@@ -284,14 +284,14 @@ public class ResourceItem
 					{
 						//not gzipped just data
 					}
-					saveDataFile(data, dr.get()
-					                     .getId());
+					saveDataFile(data, UUID.fromString(dr.get()
+					                                     .getId()));
 					return data;
 				}
 				else
 				{
-					saveDataFile(data, dr.get()
-					                     .getId());
+					saveDataFile(data, UUID.fromString(dr.get()
+					                                     .getId()));
 				}
 			}
 			return unzip(data);
@@ -318,7 +318,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public Optional<IResourceData<?, ?>> getDataRow(UUID... identityToken)
+	public Optional<IResourceData<?, ?>> getDataRow(java.util.UUID... identityToken)
 	{
 		return (Optional) new ResourceItemData().builder()
 		                                        .inActiveRange()
@@ -385,7 +385,7 @@ public class ResourceItem
 	
 	//@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override
-	public void updateData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
+	public void updateData(byte[] data, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		//	System.out.println(LocalDateTime.now() + " start zip - " + data.length);
 		if (!flushToDisk)
@@ -448,7 +448,7 @@ public class ResourceItem
 			ResourceItemData rid = (ResourceItemData) getDataRow().orElse(null);
 			if (rid != null)
 			{
-				saveDataFile(data, rid.getId());
+				saveDataFile(data, UUID.fromString(rid.getId()));
 				if (flushExploded)
 				{
 					if(data[0] == 0)
@@ -503,7 +503,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void updateAndKeepHistoryData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
+	public void updateAndKeepHistoryData(byte[] data, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		data = zip(data);
 		
@@ -563,12 +563,12 @@ public class ResourceItem
 		return getId() + "";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ResourceItem setId(UUID id)
+	public ResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
@@ -586,7 +586,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, ResourceItem, ResourceItem, UUID> newLink, ResourceItem parent, ResourceItem child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, ResourceItem, ResourceItem, java.lang.String> newLink, ResourceItem parent, ResourceItem child, String value)
 	{
 		ResourceItemXResourceItem ri = (ResourceItemXResourceItem) newLink;
 		ri.setParentResourceItemID(parent);

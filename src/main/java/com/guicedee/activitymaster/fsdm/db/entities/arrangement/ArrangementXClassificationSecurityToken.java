@@ -7,7 +7,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class ArrangementXClassificationSecurityToken
-		extends WarehouseSecurityTable<ArrangementXClassificationSecurityToken, ArrangementXClassificationSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ArrangementXClassificationSecurityToken, ArrangementXClassificationSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -31,7 +31,7 @@ public class ArrangementXClassificationSecurityToken
 	@Column(nullable = false,
 	        name = "ArrangementXClassificationSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ArrangementXClassificationID",
 	            referencedColumnName = "ArrangementXClassificationID",
@@ -46,7 +46,7 @@ public class ArrangementXClassificationSecurityToken
 	
 	}
 	
-	public ArrangementXClassificationSecurityToken(UUID arrangementXClassificationSecurityTokenID)
+	public ArrangementXClassificationSecurityToken(java.lang.String arrangementXClassificationSecurityTokenID)
 	{
 		this.id = arrangementXClassificationSecurityTokenID;
 	}
@@ -56,12 +56,12 @@ public class ArrangementXClassificationSecurityToken
 		return "ArrangementXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ArrangementXClassificationSecurityToken setId(UUID id)
+	public ArrangementXClassificationSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

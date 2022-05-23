@@ -55,14 +55,14 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public IResourceItemType<?, ?> createType(String value, String description, ISystems<?, ?> system, UUID... identityToken)
+	public IResourceItemType<?, ?> createType(String value, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return createType(value, null, description, system, identityToken);
 	}
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IResourceItemType<?, ?> createType(String value, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
+	public IResourceItemType<?, ?> createType(String value, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
 		boolean exists = xr.builder()
@@ -98,14 +98,14 @@ public class ResourceItemService
 	
 	@Override
 	public IResourceItem<?, ?> create(String identityResourceType, String resourceItemDataValue,
-	                                  ISystems<?, ?> system, UUID... identityToken)
+	                                  ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return create(identityResourceType, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
 	}
 	
 	@Override
-	public IResourceItem<?, ?> create(String identityResourceType, UUID key, String resourceItemDataValue,
-	                                  ISystems<?, ?> system, UUID... identityToken)
+	public IResourceItem<?, ?> create(String identityResourceType, java.lang.String key, String resourceItemDataValue,
+	                                  ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return create(identityResourceType, key, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
 	}
@@ -114,16 +114,16 @@ public class ResourceItemService
 	@Override
 	public IResourceItem<?, ?> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
 	                                  LocalDateTime effectiveFromDate,
-	                                  ISystems<?, ?> system, UUID... identityToken)
+	                                  ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return create(identityResourceType, null, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, system, identityToken);
 	}
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IResourceItem<?, ?> create(String identityResourceType, UUID key, String resourceItemDataValue, String originalSourceSystemUniqueID,
+	public IResourceItem<?, ?> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, String originalSourceSystemUniqueID,
 	                                  LocalDateTime effectiveFromDate,
-	                                  ISystems<?, ?> system, UUID... identityToken)
+	                                  ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (!Strings.isNullOrEmpty(originalSourceSystemUniqueID))
 		{
@@ -230,7 +230,7 @@ public class ResourceItemService
 	                                                String classification,
 	                                                String value,
 	                                                ISystems<?, ?> systems,
-	                                                UUID... identityToken)
+	                                                java.util.UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
 		ResourceItemXClassificationQueryBuilder builder = res.builder();
@@ -266,7 +266,7 @@ public class ResourceItemService
 	                                                                                                       String classification,
 	                                                                                                       String value,
 	                                                                                                       ISystems<?, ?> systems,
-	                                                                                                       UUID... identityToken)
+	                                                                                                       java.util.UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
 		ResourceItemXClassificationQueryBuilder builder = res.builder();
@@ -300,7 +300,7 @@ public class ResourceItemService
 	{
 		ResourceItem res = new ResourceItem();
 		ResourceItemQueryBuilder builder = res.builder();
-		builder.where(ResourceItem_.id, Equals, uuid);
+		builder.where(ResourceItem_.id, Equals, uuid.toString());
 		builder.inActiveRange();
 		builder.inDateRange();
 		Optional<ResourceItem> exists = builder.get();
@@ -310,7 +310,7 @@ public class ResourceItemService
 	@Override
 	public IResourceItem<?, ?> findByOriginalSourceUniqueID(@CacheKey String originalSourceUniqueID,
 	                                                        @CacheKey ISystems<?, ?> systems,
-	                                                        @CacheKey UUID... identityToken)
+	                                                        @CacheKey java.util.UUID... identityToken)
 	{
 		ResourceItem res = new ResourceItem();
 		ResourceItemQueryBuilder builder = res.builder();
@@ -330,7 +330,7 @@ public class ResourceItemService
 	
 	@Override
 	@CacheResult(cacheName = "FindResourceItemTypeString")
-	public IResourceItemType<?, ?> findResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> system, @CacheKey UUID... identityToken)
+	public IResourceItemType<?, ?> findResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
 		Optional<ResourceItemType> exists = xr.builder()
@@ -344,13 +344,13 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> systems, @CacheKey UUID... identityToken)
+	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> systems, @CacheKey java.util.UUID... identityToken)
 	{
 		return findByResourceItemType(type, null, systems, identityToken);
 	}
 	
 	@Override
-	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, String value, @CacheKey ISystems<?, ?> systems, @CacheKey UUID... identityToken)
+	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, String value, @CacheKey ISystems<?, ?> systems, @CacheKey java.util.UUID... identityToken)
 	{
 		return new ResourceItemXResourceItemType().builder()
 		                                          .withEnterprise(enterprise)

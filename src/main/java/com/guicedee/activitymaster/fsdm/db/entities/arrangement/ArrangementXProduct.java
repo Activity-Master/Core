@@ -38,7 +38,7 @@ public class ArrangementXProduct
 		Product,
 		ArrangementXProduct,
 		ArrangementXProductQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -48,7 +48,7 @@ public class ArrangementXProduct
 	@Column(nullable = false,
 	        name = "ArrangementXProductID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID",
 	            nullable = false)
@@ -73,17 +73,17 @@ public class ArrangementXProduct
 	
 	}
 	
-	public ArrangementXProduct(UUID arrangementXProductID)
+	public ArrangementXProduct(java.lang.String arrangementXProductID)
 	{
 		this.id = arrangementXProductID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ArrangementXProduct setId(UUID id)
+	public ArrangementXProduct setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

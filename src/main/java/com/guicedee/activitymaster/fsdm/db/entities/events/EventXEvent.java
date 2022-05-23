@@ -33,7 +33,7 @@ public class EventXEvent
 		Event,
 		EventXEvent,
 		EventXEventQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -44,7 +44,7 @@ public class EventXEvent
 	@Column(nullable = false,
 	        name = "EventXEventID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -71,19 +71,19 @@ public class EventXEvent
 	
 	}
 	
-	public EventXEvent(UUID productXEventID)
+	public EventXEvent(java.lang.String productXEventID)
 	{
 		id = productXEventID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public EventXEvent setId(UUID id)
+	public EventXEvent setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

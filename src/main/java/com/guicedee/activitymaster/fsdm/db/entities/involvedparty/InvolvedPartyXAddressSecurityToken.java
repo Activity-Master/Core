@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class InvolvedPartyXAddressSecurityToken
-		extends WarehouseSecurityTable<InvolvedPartyXAddressSecurityToken, InvolvedPartyXAddressSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<InvolvedPartyXAddressSecurityToken, InvolvedPartyXAddressSecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -34,7 +34,7 @@ public class InvolvedPartyXAddressSecurityToken
 	@Column(nullable = false,
 	        name = "InvolvedPartyXAddressSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyXAddressID",
 	            referencedColumnName = "InvolvedPartyXAddressID",
@@ -49,7 +49,7 @@ public class InvolvedPartyXAddressSecurityToken
 	
 	}
 	
-	public InvolvedPartyXAddressSecurityToken(UUID involvedPartyXAddressSecurityTokenID)
+	public InvolvedPartyXAddressSecurityToken(java.lang.String involvedPartyXAddressSecurityTokenID)
 	{
 		this.id = involvedPartyXAddressSecurityTokenID;
 	}
@@ -59,12 +59,12 @@ public class InvolvedPartyXAddressSecurityToken
 		return "InvolvedPartyXAddressSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyXAddressSecurityToken setId(UUID id)
+	public InvolvedPartyXAddressSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

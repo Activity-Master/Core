@@ -33,7 +33,7 @@ public class RulesXArrangement
 		Arrangement,
 		RulesXArrangement,
 		RulesXArrangementQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -43,7 +43,7 @@ public class RulesXArrangement
 	@Column(nullable = false,
 	        name = "RulesXArrangementsID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -69,17 +69,17 @@ public class RulesXArrangement
 	
 	}
 	
-	public RulesXArrangement(UUID RulesXArrangementsID)
+	public RulesXArrangement(java.lang.String RulesXArrangementsID)
 	{
 		this.id = RulesXArrangementsID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public RulesXArrangement setId(UUID id)
+	public RulesXArrangement setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

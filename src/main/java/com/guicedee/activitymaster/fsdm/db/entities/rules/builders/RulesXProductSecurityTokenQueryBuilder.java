@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesXProductSecurityT
 import jakarta.persistence.metamodel.Attribute;
 
 public class RulesXProductSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<RulesXProductSecurityTokenQueryBuilder, RulesXProductSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<RulesXProductSecurityTokenQueryBuilder, RulesXProductSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

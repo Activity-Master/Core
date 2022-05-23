@@ -42,7 +42,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ActiveFlag
-		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.util.UUID>
+		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.lang.String>
 		implements IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>
 {
 	@Serial
@@ -51,7 +51,7 @@ public class ActiveFlag
 	@Column(nullable = false,
 	        name = "ActiveFlagID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.util.UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "EnterpriseID",
 	            referencedColumnName = "EnterpriseID",
@@ -98,12 +98,12 @@ public class ActiveFlag
 	
 	}
 	
-	public ActiveFlag(java.util.UUID id)
+	public ActiveFlag(java.lang.String id)
 	{
 		this.id = id;
 	}
 	
-	public ActiveFlag(java.util.UUID id, String activeFlagName, boolean allowAccess)
+	public ActiveFlag(java.lang.String id, String activeFlagName, boolean allowAccess)
 	{
 		this.id = id;
 		name = activeFlagName;
@@ -138,14 +138,14 @@ public class ActiveFlag
 	}
 	
 	@Override
-	public java.util.UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	
 	@Override
-	public ActiveFlag setId(java.util.UUID id)
+	public ActiveFlag setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

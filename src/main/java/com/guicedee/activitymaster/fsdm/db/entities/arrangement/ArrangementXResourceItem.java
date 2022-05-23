@@ -33,7 +33,7 @@ public class ArrangementXResourceItem
 		ResourceItem,
 		ArrangementXResourceItem,
 		ArrangementXResourceItemQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -44,7 +44,7 @@ public class ArrangementXResourceItem
 	@Column(nullable = false,
 	        name = "ArrangementXResourceItemID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -77,17 +77,17 @@ public class ArrangementXResourceItem
 	
 	}
 	
-	public ArrangementXResourceItem(UUID arrangementXResourceItemID)
+	public ArrangementXResourceItem(java.lang.String arrangementXResourceItemID)
 	{
 		this.id = arrangementXResourceItemID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ArrangementXResourceItem setId(UUID id)
+	public ArrangementXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

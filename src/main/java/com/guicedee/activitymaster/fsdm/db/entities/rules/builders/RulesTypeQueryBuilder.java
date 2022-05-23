@@ -11,7 +11,7 @@ import jakarta.persistence.criteria.JoinType;
 import static com.entityassist.enumerations.Operand.*;
 
 public class RulesTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<RulesTypeQueryBuilder, RulesType, java.util.UUID>
+		extends QueryBuilderSCDNameDescription<RulesTypeQueryBuilder, RulesType, java.lang.String>
 		implements IRuleTypeQueryBuilder<RulesTypeQueryBuilder, RulesType>
 {
 	@jakarta.validation.constraints.NotNull

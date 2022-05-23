@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXRulesSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
@@ -8,9 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
-
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -23,7 +19,7 @@ import static jakarta.persistence.AccessType.*;
 
 @Access(AccessType.FIELD)
 public class ArrangementXRulesSecurityToken
-		extends WarehouseSecurityTable<ArrangementXRulesSecurityToken, ArrangementXRulesSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ArrangementXRulesSecurityToken, ArrangementXRulesSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -34,7 +30,7 @@ public class ArrangementXRulesSecurityToken
 	@Column(nullable = false,
 	        name = "ArrangementXRulesSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ArrangementXRulesID",
 	            referencedColumnName = "ArrangementXRulesID",
@@ -49,7 +45,7 @@ public class ArrangementXRulesSecurityToken
 	
 	}
 	
-	public ArrangementXRulesSecurityToken(UUID arrangementXRulesSecurityTokenID)
+	public ArrangementXRulesSecurityToken(java.lang.String arrangementXRulesSecurityTokenID)
 	{
 		this.id = arrangementXRulesSecurityTokenID;
 	}
@@ -59,12 +55,12 @@ public class ArrangementXRulesSecurityToken
 		return "ArrangementXRulesSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ArrangementXRulesSecurityToken setId(UUID id)
+	public ArrangementXRulesSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

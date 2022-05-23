@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.EventXGeographySecuri
 import jakarta.persistence.metamodel.Attribute;
 
 public class EventXGeographySecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EventXGeographySecurityTokenQueryBuilder, EventXGeographySecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<EventXGeographySecurityTokenQueryBuilder, EventXGeographySecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

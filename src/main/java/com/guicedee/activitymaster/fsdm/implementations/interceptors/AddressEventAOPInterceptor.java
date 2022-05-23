@@ -63,7 +63,8 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 			String classification = pair.getKey()
 			                                 .value();
 			checkClassificationExists(classification);
-			this.event.addAddress(pair.getValue(), classification, event.classificationName(), getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName));
+			this.event.addAddress(pair.getValue(), classification, event.classificationName(), getISystem(ActivityMasterSystemName),
+					getISystemToken(ActivityMasterSystemName));
 		}
 		
 		Object o = null;

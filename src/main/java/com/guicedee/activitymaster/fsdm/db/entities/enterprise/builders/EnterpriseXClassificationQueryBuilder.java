@@ -9,7 +9,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EnterpriseXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Enterprise, Classification, EnterpriseXClassificationQueryBuilder,
-		EnterpriseXClassification, java.util.UUID>
+		EnterpriseXClassification, java.lang.String>
 {
 	@Override
 	public SingularAttribute<WarehouseSCDTable, Enterprise> getPrimaryAttribute()

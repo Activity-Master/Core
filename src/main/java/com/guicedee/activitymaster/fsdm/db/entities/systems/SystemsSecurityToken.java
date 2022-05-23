@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class SystemsSecurityToken
-		extends WarehouseSecurityTable<SystemsSecurityToken, SystemsSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<SystemsSecurityToken, SystemsSecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -30,7 +30,7 @@ public class SystemsSecurityToken
 	@Column(nullable = false,
 	        name = "SystemsSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "SystemID",
 	            referencedColumnName = "SystemID",
@@ -46,7 +46,7 @@ public class SystemsSecurityToken
 	
 	}
 	
-	public SystemsSecurityToken(UUID systemsSecurityTokenID)
+	public SystemsSecurityToken(java.lang.String systemsSecurityTokenID)
 	{
 		this.id = systemsSecurityTokenID;
 	}
@@ -56,12 +56,12 @@ public class SystemsSecurityToken
 		return "SystemsSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public SystemsSecurityToken setId(UUID id)
+	public SystemsSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

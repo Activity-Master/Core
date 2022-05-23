@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.geography.GeographyXClassifi
 import jakarta.persistence.metamodel.Attribute;
 
 public class GeographyXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<GeographyXClassificationSecurityTokenQueryBuilder, GeographyXClassificationSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<GeographyXClassificationSecurityTokenQueryBuilder, GeographyXClassificationSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

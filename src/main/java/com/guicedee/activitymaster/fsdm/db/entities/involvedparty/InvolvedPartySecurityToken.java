@@ -7,9 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
-
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -22,7 +19,7 @@ import static jakarta.persistence.AccessType.*;
 
 @Access(AccessType.FIELD)
 public class InvolvedPartySecurityToken
-		extends WarehouseSecurityTable<InvolvedPartySecurityToken, InvolvedPartySecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<InvolvedPartySecurityToken, InvolvedPartySecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -33,7 +30,7 @@ public class InvolvedPartySecurityToken
 	@Column(nullable = false,
 	        name = "InvolvedPartySecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyID",
 	            referencedColumnName = "InvolvedPartyID",
@@ -48,7 +45,7 @@ public class InvolvedPartySecurityToken
 	
 	}
 	
-	public InvolvedPartySecurityToken(UUID involvedPartySecurityTokenID)
+	public InvolvedPartySecurityToken(java.lang.String involvedPartySecurityTokenID)
 	{
 		this.id = involvedPartySecurityTokenID;
 	}
@@ -58,12 +55,12 @@ public class InvolvedPartySecurityToken
 		return "InvolvedPartySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartySecurityToken setId(UUID id)
+	public InvolvedPartySecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

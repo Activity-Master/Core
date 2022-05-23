@@ -11,10 +11,10 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 import static jakarta.persistence.FetchType.*;
 
 /**
@@ -37,7 +37,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyIdentificationType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder, java.lang.String>
 		implements IInvolvedPartyIdentificationType<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder>
 {
 	@Serial
@@ -48,7 +48,7 @@ public class InvolvedPartyIdentificationType
 	        name = "InvolvedPartyIdentificationTypeID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -83,12 +83,12 @@ public class InvolvedPartyIdentificationType
 	
 	}
 	
-	public InvolvedPartyIdentificationType(UUID involvedPartyIdentificationTypeID)
+	public InvolvedPartyIdentificationType(java.lang.String involvedPartyIdentificationTypeID)
 	{
 		id = involvedPartyIdentificationTypeID;
 	}
 	
-	public InvolvedPartyIdentificationType(UUID involvedPartyIdentificationTypeID, String involvedPartyIdentificationName, String involvedPartyIdentificationDesc)
+	public InvolvedPartyIdentificationType(java.lang.String involvedPartyIdentificationTypeID, String involvedPartyIdentificationName, String involvedPartyIdentificationDesc)
 	{
 		id = involvedPartyIdentificationTypeID;
 		name = involvedPartyIdentificationName;
@@ -145,13 +145,13 @@ public class InvolvedPartyIdentificationType
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public InvolvedPartyIdentificationType setId(UUID id)
+	public InvolvedPartyIdentificationType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

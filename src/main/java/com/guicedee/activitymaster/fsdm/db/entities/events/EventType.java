@@ -10,10 +10,10 @@ import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -34,7 +34,7 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class EventType
-		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, java.lang.String>
 		implements IEventType<EventType, EventTypeQueryBuilder>
 {
 	@Serial
@@ -45,7 +45,7 @@ public class EventType
 	        name = "EventTypeID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -78,12 +78,12 @@ public class EventType
 	
 	}
 	
-	public EventType(UUID eventTypeID)
+	public EventType(java.lang.String eventTypeID)
 	{
 		this.id = eventTypeID;
 	}
 	
-	public EventType(UUID eventTypeID, String eventTypName, String eventTypeDesc)
+	public EventType(java.lang.String eventTypeID, String eventTypName, String eventTypeDesc)
 	{
 		this.id = eventTypeID;
 		this.name = eventTypName;
@@ -139,12 +139,12 @@ public class EventType
 		return getName();
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventType setId(UUID id)
+	public EventType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

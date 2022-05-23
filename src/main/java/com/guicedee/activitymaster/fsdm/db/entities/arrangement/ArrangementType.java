@@ -36,7 +36,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ArrangementType
-		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, java.lang.String>
 		implements IArrangementType<ArrangementType, ArrangementTypeQueryBuilder>
 {
 	@Serial
@@ -46,7 +46,7 @@ public class ArrangementType
 	        name = "ArrangementTypeID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -86,12 +86,12 @@ public class ArrangementType
 	
 	}
 	
-	public ArrangementType(UUID arrangementTypeID)
+	public ArrangementType(java.lang.String arrangementTypeID)
 	{
 		this.id = arrangementTypeID;
 	}
 	
-	public ArrangementType(UUID arrangementTypeID, String arrangementTypeName, String arrangementTypeDescription)
+	public ArrangementType(java.lang.String arrangementTypeID, String arrangementTypeName, String arrangementTypeDescription)
 	{
 		this.id = arrangementTypeID;
 		this.name = arrangementTypeName;
@@ -148,13 +148,13 @@ public class ArrangementType
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public ArrangementType setId(UUID id)
+	public ArrangementType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

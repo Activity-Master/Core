@@ -7,7 +7,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 		extends WarehouseSecurityTable<InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken,
-		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder, UUID>
+		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -33,7 +33,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 	@Column(nullable = false,
 	        name = "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyXInvolvedPartyIdentificationTypeID",
 	            referencedColumnName = "InvolvedPartyXInvolvedPartyIdentificationTypeID",
@@ -48,7 +48,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 	
 	}
 	
-	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken(UUID involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID)
+	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken(java.lang.String involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID)
 	{
 		this.id = involvedPartyXInvolvedPartyIdentificationTypeSecurityTokenID;
 	}
@@ -58,12 +58,12 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken
 		return "InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken setId(UUID id)
+	public InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

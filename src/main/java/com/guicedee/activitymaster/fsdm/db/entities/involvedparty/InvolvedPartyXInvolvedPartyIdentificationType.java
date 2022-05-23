@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -35,7 +34,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 		extends WarehouseClassificationRelationshipTypesTable<InvolvedParty, InvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -46,7 +45,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	@Column(nullable = false,
 	        name = "InvolvedPartyXInvolvedPartyIdentificationTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -72,12 +71,12 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	
 	}
 	
-	public InvolvedPartyXInvolvedPartyIdentificationType(UUID involvedPartyXInvolvedPartyIdentificationTypeID)
+	public InvolvedPartyXInvolvedPartyIdentificationType(java.lang.String involvedPartyXInvolvedPartyIdentificationTypeID)
 	{
 		this.id = involvedPartyXInvolvedPartyIdentificationTypeID;
 	}
 	
-	public InvolvedPartyXInvolvedPartyIdentificationType(UUID involvedPartyXInvolvedPartyIdentificationTypeID, String value)
+	public InvolvedPartyXInvolvedPartyIdentificationType(java.lang.String involvedPartyXInvolvedPartyIdentificationTypeID, String value)
 	{
 		this.id = involvedPartyXInvolvedPartyIdentificationTypeID;
 		setValue(value);
@@ -85,13 +84,13 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 	
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyIdentificationType setId(UUID id)
+	public InvolvedPartyXInvolvedPartyIdentificationType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

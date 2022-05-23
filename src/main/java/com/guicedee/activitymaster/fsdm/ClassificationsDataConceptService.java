@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -11,12 +10,10 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 
@@ -36,7 +33,7 @@ public class ClassificationsDataConceptService
 	public ClassificationDataConcept createDataConcept(EnterpriseClassificationDataConcepts name,
 	                                                   String description,
 	                                                   ISystems<?,?> system,
-	                                                   UUID... identityToken)
+	                                                   java.util.UUID... identityToken)
 	{
 		ClassificationDataConcept newConcept = new ClassificationDataConcept();
 		boolean exists = newConcept.builder()
@@ -69,20 +66,20 @@ public class ClassificationsDataConceptService
 	
 	@Override
 	@CacheResult(cacheName = "GetGlobalConcept")
-	public ClassificationDataConcept getGlobalConcept(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getGlobalConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(GlobalClassificationsDataConceptName, system, identityToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystem")
-	public ClassificationDataConcept find(@CacheKey EnterpriseClassificationDataConcepts name, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept find(@CacheKey EnterpriseClassificationDataConcepts name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(name.classificationValue(), system, identityToken);
 	}
 
 	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
-	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
 		cdc = cdc.builder()
@@ -98,14 +95,14 @@ public class ClassificationsDataConceptService
 	
 	@Override
 	@CacheResult(cacheName = "NoDataConcept")
-	public ClassificationDataConcept getNoConcept(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getNoConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(NoClassificationDataConceptName, system, identityToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "SecurityHierarchyConcept")
-	public ClassificationDataConcept getSecurityHierarchyConcept(@CacheKey ISystems<?,?> system, @CacheKey UUID... identityToken)
+	public ClassificationDataConcept getSecurityHierarchyConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken, system, identityToken);
 	}

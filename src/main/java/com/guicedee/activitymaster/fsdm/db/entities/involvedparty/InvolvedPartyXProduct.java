@@ -38,7 +38,7 @@ public class InvolvedPartyXProduct
 		Product,
 		InvolvedPartyXProduct,
 		InvolvedPartyXProductQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -48,7 +48,7 @@ public class InvolvedPartyXProduct
 	@Column(nullable = false,
 	        name = "InvolvedPartyXProductID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -85,17 +85,17 @@ public class InvolvedPartyXProduct
 	
 	}
 	
-	public InvolvedPartyXProduct(UUID involvedPartyXProductID)
+	public InvolvedPartyXProduct(java.lang.String involvedPartyXProductID)
 	{
 		this.id = involvedPartyXProductID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyXProduct setId(UUID id)
+	public InvolvedPartyXProduct setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

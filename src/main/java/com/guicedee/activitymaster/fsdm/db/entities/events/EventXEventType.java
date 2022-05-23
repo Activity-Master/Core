@@ -10,7 +10,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -34,7 +33,7 @@ public class EventXEventType
 		EventType,
 		EventXEventType,
 		EventXEventTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -44,7 +43,7 @@ public class EventXEventType
 	@Column(nullable = false,
 	        name = "EventXEventTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -70,19 +69,19 @@ public class EventXEventType
 	
 	}
 	
-	public EventXEventType(UUID eventXEventTypeID)
+	public EventXEventType(java.lang.String eventXEventTypeID)
 	{
 		this.id = eventXEventTypeID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public EventXEventType setId(UUID id)
+	public EventXEventType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

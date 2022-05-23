@@ -51,21 +51,21 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	
 	
 	@Override
-	public IInvolvedParty<?, ?> findByUsername(String username, ISystems<?, ?> system, UUID... token)
+	public IInvolvedParty<?, ?> findByUsername(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		IInvolvedParty<?, ?> party = new InvolvedParty().builder()
 		                                                .withEnterprise(enterprise)
 		                                                .findByIdentificationType(IdentificationTypeUserName, username,
-				                                                system, token)
+				                                                system, identityToken)
 		                                                .get()
 		                                                .orElseThrow(() -> new SecurityAccessException("Involved Party Does Not Exist"));
 		return party;
 	}
 	
 	@Override
-	public IInvolvedParty<?, ?> findByUsernameAndPassword(String username, String password, ISystems<?, ?> system, boolean throwForNoUser, UUID... token)
+	public IInvolvedParty<?, ?> findByUsernameAndPassword(String username, String password, ISystems<?, ?> system, boolean throwForNoUser, java.util.UUID... identityToken)
 	{
-		if (!doesUsernameExist(username, system, token))
+		if (!doesUsernameExist(username, system, identityToken))
 		{
 			if (throwForNoUser)
 			{
@@ -77,11 +77,11 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 			}
 		}
 		
-		UUID identityToken = get(InvolvedPartySystem.class).getSystemToken(system.getEnterpriseID());
+		UUID systemToken = get(InvolvedPartySystem.class).getSystemToken(system.getEnterpriseID());
 		InvolvedParty foundPart = new InvolvedParty().builder()
 		                                             .findByIdentificationType(IdentificationTypeUserName,
 				                                             username, system,
-				                                             identityToken)
+				                                             systemToken)
 		                                             .get()
 		                                             .orElse(null);
 		if (foundPart == null)
@@ -89,8 +89,8 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 			throw new SecurityAccessException("Unable to find any Involved Party with that username");
 		}
 		
-		Optional<IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?>> saltEntity = foundPart.findClassification(SecurityPasswordSalt, system, identityToken);
-		Optional<IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?>> passEntity = foundPart.findClassification(SecurityPassword, system, identityToken);
+		Optional<IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?>> saltEntity = foundPart.findClassification(SecurityPasswordSalt, system, systemToken);
+		Optional<IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?>> passEntity = foundPart.findClassification(SecurityPassword, system, systemToken);
 		if (saltEntity.isEmpty() || passEntity.isEmpty())
 		{
 			if (throwForNoUser)
@@ -116,7 +116,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@CacheResult(cacheName = "UsersList")
 	@Override
-	public List<IInvolvedParty<?, ?>> getAllUsers(ISystems<?, ?> system, UUID... identityToken)
+	public List<IInvolvedParty<?, ?>> getAllUsers(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return (List) new InvolvedParty().builder()
 		                                 .findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
@@ -126,7 +126,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	@Override
 	@CacheRemove(cacheName = "UsersList")
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public IInvolvedParty<?, ?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken)
+	public IInvolvedParty<?, ?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		byte[] salt = System.getProperty("systemSalt") != null ? System.getProperty("systemSalt")
 		                                                               .getBytes() : new Passwords().getNextSalt();
@@ -145,7 +145,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	}
 	
 	@Override
-	public boolean doesUsernameExist(String username, ISystems<?, ?> system, UUID... identityToken)
+	public boolean doesUsernameExist(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return new InvolvedParty().builder()
 		                          .withEnterprise(enterprise)
@@ -162,7 +162,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	{
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1);
 		
-		UUID token = get(ISystemsService.class).getSecurityIdentityToken(system);
+		UUID identityToken = get(ISystemsService.class).getSecurityIdentityToken(system);
 		
 		SecurityToken administratorsGroup = (SecurityToken) get(SecurityTokenService.class).getAdministratorsFolder(system);
 		
@@ -182,23 +182,23 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 			IInvolvedParty<?, ?> adminUser = service.create(system, pair, true);
 			
 			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeUserName.toString(),
-					adminUserName, system, token);
+					adminUserName, system, identityToken);
 			
-			adminUser.addOrReuseInvolvedPartyType(NoClassification.toString(), IPTypes.TypeIndividual.toString(), "Creator Individual", system, token);
-			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), PreferredNameType.toString(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), CommonNameType.toString(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FullNameType.toString(), "Enterprise Creator", system, token);
-			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FirstNameType.toString(), "Administrator", system, token);
+			adminUser.addOrReuseInvolvedPartyType(NoClassification.toString(), IPTypes.TypeIndividual.toString(), "Creator Individual", system, identityToken);
+			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), PreferredNameType.toString(), "Enterprise Creator", system, identityToken);
+			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), CommonNameType.toString(), "Enterprise Creator", system, identityToken);
+			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FullNameType.toString(), "Enterprise Creator", system, identityToken);
+			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FirstNameType.toString(), "Administrator", system, identityToken);
 			
 			get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity.toString(),
 					adminUserName,
-					"The creator of the enterprise", system, administratorsGroup, token);
+					"The creator of the enterprise", system, administratorsGroup, identityToken);
 			
 			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(),
-					adminUserName, system, token);
+					adminUserName, system, identityToken);
 			
-			addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, system, token);
-			adminUser.createDefaultSecurity(system, token);
+			addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, system, identityToken);
+			adminUser.createDefaultSecurity(system, identityToken);
 			administratorUser = adminUser;
 		}
 		else

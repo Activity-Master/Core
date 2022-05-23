@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import jakarta.persistence.metamodel.Attribute;
 
 public class ClassificationXResourceItemSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ClassificationXResourceItemSecurityTokenQueryBuilder, ClassificationXResourceItemSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<ClassificationXResourceItemSecurityTokenQueryBuilder, ClassificationXResourceItemSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

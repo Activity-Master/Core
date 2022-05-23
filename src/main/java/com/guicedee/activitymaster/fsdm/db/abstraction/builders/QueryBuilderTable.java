@@ -7,7 +7,7 @@ import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 public abstract class QueryBuilderTable<J extends QueryBuilderTable<J, E, I>,
 		E extends WarehouseTable<E, J, I>,
-		I extends java.util.UUID>
+		I extends java.lang.String>
 		extends QueryBuilderSCD<J, E, I>
 		implements IQueryBuilderDefault<J, E, I>,
 		           IQueryBuilderEnterprise<J, E, I>,

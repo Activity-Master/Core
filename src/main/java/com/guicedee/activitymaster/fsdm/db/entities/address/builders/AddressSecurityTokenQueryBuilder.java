@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.AddressSecurityToken
 import jakarta.persistence.metamodel.Attribute;
 
 public class AddressSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<AddressSecurityTokenQueryBuilder, AddressSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<AddressSecurityTokenQueryBuilder, AddressSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

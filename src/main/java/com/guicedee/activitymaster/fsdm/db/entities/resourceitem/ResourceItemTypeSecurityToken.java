@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class ResourceItemTypeSecurityToken
-		extends WarehouseSecurityTable<ResourceItemTypeSecurityToken, ResourceItemTypeSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ResourceItemTypeSecurityToken, ResourceItemTypeSecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -34,7 +34,7 @@ public class ResourceItemTypeSecurityToken
 	@Column(nullable = false,
 	        name = "ResourceItemTypeSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ResourceItemTypeID",
 	            referencedColumnName = "ResourceItemTypeID",
@@ -49,7 +49,7 @@ public class ResourceItemTypeSecurityToken
 	
 	}
 	
-	public ResourceItemTypeSecurityToken(UUID resourceItemTypeSecurityTokenID)
+	public ResourceItemTypeSecurityToken(java.lang.String resourceItemTypeSecurityTokenID)
 	{
 		this.id = resourceItemTypeSecurityTokenID;
 	}
@@ -59,12 +59,12 @@ public class ResourceItemTypeSecurityToken
 		return "ResourceItemTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ResourceItemTypeSecurityToken setId(UUID id)
+	public ResourceItemTypeSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

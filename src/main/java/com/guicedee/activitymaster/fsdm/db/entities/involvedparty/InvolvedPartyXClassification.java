@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -35,7 +34,7 @@ public class InvolvedPartyXClassification
 		Classification,
 		InvolvedPartyXClassification,
 		InvolvedPartyXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -46,7 +45,7 @@ public class InvolvedPartyXClassification
 	@Column(nullable = false,
 	        name = "InvolvedPartyXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@JoinColumn(name = "InvolvedPartyID",
 	            referencedColumnName = "InvolvedPartyID",
 	            nullable = false)
@@ -64,17 +63,17 @@ public class InvolvedPartyXClassification
 	
 	}
 	
-	public InvolvedPartyXClassification(UUID involvedPartyXClassificationID)
+	public InvolvedPartyXClassification(java.lang.String involvedPartyXClassificationID)
 	{
 		this.id = involvedPartyXClassificationID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyXClassification setId(UUID id)
+	public InvolvedPartyXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

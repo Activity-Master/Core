@@ -4,10 +4,8 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arran
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBuilderSCDNameDescription;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType;
 
-import java.util.UUID;
-
 public class ArrangementTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<ArrangementTypeQueryBuilder, ArrangementType, UUID>
+		extends QueryBuilderSCDNameDescription<ArrangementTypeQueryBuilder, ArrangementType, java.lang.String>
 		implements IArrangementTypesQueryBuilder<ArrangementTypeQueryBuilder, ArrangementType>
 {
 

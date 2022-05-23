@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementTypeS
 import jakarta.persistence.metamodel.Attribute;
 
 public class ArrangementTypeSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ArrangementTypeSecurityTokenQueryBuilder, ArrangementTypeSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<ArrangementTypeSecurityTokenQueryBuilder, ArrangementTypeSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

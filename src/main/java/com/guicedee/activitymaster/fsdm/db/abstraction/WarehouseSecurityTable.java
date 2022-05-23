@@ -26,7 +26,7 @@ import static jakarta.persistence.FetchType.*;
 @MappedSuperclass
 
 public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
-		Q extends QueryBuilderSecurities<Q, J, I>, I extends java.util.UUID>
+		Q extends QueryBuilderSecurities<Q, J, I>, I extends java.lang.String>
 		extends WarehouseBaseTable<J, Q, I>
 {
 	

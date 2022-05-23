@@ -22,7 +22,8 @@ import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.FetchType.*;
@@ -45,7 +46,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Rules
-		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, java.lang.String>
 		implements IRules<Rules, RulesQueryBuilder>
 {
 	@Serial
@@ -56,7 +57,7 @@ public class Rules
 	        name = "RulesID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -116,12 +117,12 @@ public class Rules
 	
 	}
 	
-	public Rules(UUID rulesID)
+	public Rules(java.lang.String rulesID)
 	{
 		id = rulesID;
 	}
 	
-	public Rules(UUID rulesID, String rulesName, String rulesDesc)
+	public Rules(java.lang.String rulesID, String rulesName, String rulesDesc)
 	{
 		id = rulesID;
 		name = rulesName;
@@ -211,13 +212,13 @@ public class Rules
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public Rules setId(UUID id)
+	public Rules setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
@@ -247,7 +248,7 @@ public class Rules
 	
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Rules, Rules, UUID> newLink, Rules parent, Rules child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Rules, Rules, java.lang.String> newLink, Rules parent, Rules child, String value)
 	{
 		RulesXRules r = (RulesXRules) newLink;
 		r.setParentRulesID(parent);

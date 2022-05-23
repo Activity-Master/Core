@@ -33,7 +33,7 @@ public class EventXArrangement
 		Arrangement,
 		EventXArrangement,
 		EventXArrangementQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -43,7 +43,7 @@ public class EventXArrangement
 	@Column(nullable = false,
 	        name = "EventXArrangementsID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -70,17 +70,17 @@ public class EventXArrangement
 	
 	}
 	
-	public EventXArrangement(UUID eventXArrangementsID)
+	public EventXArrangement(java.lang.String eventXArrangementsID)
 	{
 		this.id = eventXArrangementsID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXArrangement setId(UUID id)
+	public EventXArrangement setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

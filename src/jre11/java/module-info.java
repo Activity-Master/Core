@@ -211,7 +211,7 @@ module com.guicedee.activitymaster.fsdm {
 	opens com.guicedee.activitymaster.fsdm.systems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	
 	
-	opens com.guicedee.activitymaster.fsdm.services.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind;
+	//opens com.guicedee.activitymaster.fsdm.services.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.fsdm.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind;
 	
 	opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice;

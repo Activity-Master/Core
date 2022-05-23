@@ -7,20 +7,20 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Immutable;
 
-import java.util.UUID;
+
 
 @XmlRootElement
 
 @Immutable
 @MappedSuperclass
-public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends UUID>
+public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends java.lang.String>
 		extends BaseEntity<J, Q, I>
 {
 	@Column
 	private String name;
 	@Column
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID parentID;
+	private String parentID;
 	@Column
 	private String pather;
 	@Column
@@ -41,12 +41,12 @@ public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J,
 		return this;
 	}
 	
-	public UUID getParentID()
+	public String getParentID()
 	{
 		return this.parentID;
 	}
 	
-	public WarehouseHierarchyView<J, Q, I> setParentID(UUID parentID)
+	public WarehouseHierarchyView<J, Q, I> setParentID(java.lang.String parentID)
 	{
 		this.parentID = parentID;
 		return this;

@@ -45,7 +45,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Classification
-		extends WarehouseTable<Classification, ClassificationQueryBuilder, UUID>
+		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.lang.String>
 		implements IClassification<Classification, ClassificationQueryBuilder>
 {
 	@Serial
@@ -56,7 +56,7 @@ public class Classification
 	        name = "ClassificationID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -100,12 +100,12 @@ public class Classification
 	
 	}
 	
-	public Classification(UUID classificationID)
+	public Classification(java.lang.String classificationID)
 	{
 		id = classificationID;
 	}
 	
-	public Classification(UUID classificationID, String classificationName, String classificationDesc, int classificationSequenceNumber)
+	public Classification(java.lang.String classificationID, String classificationName, String classificationDesc, int classificationSequenceNumber)
 	{
 		id = classificationID;
 		name = classificationName;
@@ -134,7 +134,7 @@ public class Classification
 	
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Classification, Classification, UUID> newLink, Classification parent, Classification child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Classification, Classification, java.lang.String> newLink, Classification parent, Classification child, String value)
 	{
 		ClassificationXClassification c = (ClassificationXClassification) newLink;
 		c.setParentClassificationID(this);
@@ -170,13 +170,13 @@ public class Classification
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public Classification setId(UUID id)
+	public Classification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

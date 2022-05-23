@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -17,7 +16,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -46,20 +44,20 @@ public class SystemsService
 	
 	@Override
 	@CacheResult(cacheName = "GetActivityMaster")
-	public ISystems<?,?> getActivityMaster(@CacheKey ISystems<?,?> requestingSystem, @CacheKey UUID... token)
+	public ISystems<?,?> getActivityMaster(@CacheKey ISystems<?,?> requestingSystem, @CacheKey java.util.UUID... identityToken)
 	{
-		return findSystem(requestingSystem, ActivityMasterSystemName, token);
+		return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetActivityMasterEnterprise")
-	public ISystems<?,?> getActivityMaster(@CacheKey IEnterprise<?,?> requestingSystem, UUID... token)
+	public ISystems<?,?> getActivityMaster(@CacheKey IEnterprise<?,?> requestingSystem, java.util.UUID... identityToken)
 	{
-		return findSystem(requestingSystem, ActivityMasterSystemName, token);
+		return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
 	}
 	
 	@Override
-	public boolean doesSystemExist(IEnterprise<?,?> enterprise, String systemName, UUID... token)
+	public boolean doesSystemExist(IEnterprise<?,?> enterprise, String systemName, java.util.UUID... identityToken)
 	{
 		return new Systems().builder()
 		                    .withName(systemName)
@@ -71,7 +69,7 @@ public class SystemsService
 	
 	@CacheResult(cacheName = "FindSystemEnterpriseLevel")
 	@Override
-	public ISystems<?,?> findSystem(@CacheKey IEnterprise<?,?> enterprise, @CacheKey String systemName, UUID... token)
+	public ISystems<?,?> findSystem(@CacheKey IEnterprise<?,?> enterprise, @CacheKey String systemName, java.util.UUID... identityToken)
 	{
 		Systems search = new Systems();
 		return search.builder()
@@ -79,30 +77,15 @@ public class SystemsService
 		             .withEnterprise(enterprise)
 		            // .inActiveRange()
 		             .inDateRange()
-		             //.canRead(enterprise, token)
+		             //.canRead(enterprise, identityToken)
 		             .get()
 		             .orElseThrow(() -> new SystemsException("Cannot find a system named - " + systemName + " - in enterprise - " + enterprise));
 	}
 	
-	
-	@CacheResult(cacheName = "FindSystem")
-	@Override
-	public ISystems<?,?> findSystem(ISystems<?,?> requestingSystem, @CacheKey String systemName, UUID... token)
-	{
-		Systems search = new Systems();
-		return search.builder()
-		             .withName(systemName)
-		             .withEnterprise(enterprise)
-		            // .inActiveRange()
-		             .inDateRange()
-		             //.canRead(enterprise, token)
-		             .get()
-		             .orElseThrow(() -> new SystemsException("Cannot find a system named - " + systemName + " - in enterprise - " + enterprise));
-	}
 	
 	@CacheResult(cacheName = "FindSystemByIdentityClassification")
 	@Override
-	public ISystems<?,?> findSystem(@CacheKey ISystems<?,?> requestingSystem, @CacheKey UUID token, UUID... identityToken)
+	public ISystems<?,?> findSystem(@CacheKey ISystems<?,?> requestingSystem, @CacheKey String token, java.util.UUID... identityToken)
 	{
 		SystemsXClassification systemClassifications = new SystemsXClassification();
 		Classification identifyClassification = (Classification) classificationService.getIdentityType(requestingSystem, identityToken);
@@ -120,7 +103,7 @@ public class SystemsService
 	
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public UUID registerNewSystem(IEnterprise<?,?> enterprise, ISystems<?,?> newSystem)
+	public String registerNewSystem(IEnterprise<?,?> enterprise, ISystems<?,?> newSystem)
 	{
 		//Create Security Token for the created system row
 		ISystems<?, ?> activityMasterSystem = getISystem(ActivityMasterSystemName);
@@ -150,18 +133,18 @@ public class SystemsService
 		GuiceContext.get(SystemsSystem.class)
 		            .createInvolvedPartyForNewSystem(newSystem);
 		
-		return newSystemUUID;
+		return newSystemUUID.toString();
 	}
 	
 	@Override
-	public ISystems<?,?> create(IEnterprise<?,?> enterprise, String systemName, String systemDesc, UUID... identityToken)
+	public ISystems<?,?> create(IEnterprise<?,?> enterprise, String systemName, String systemDesc, java.util.UUID... identityToken)
 	{
-		return create(enterprise, systemName, systemDesc, systemName, identityToken);
+		return create(enterprise, systemName, systemDesc,systemName, identityToken);
 	}
-	
+
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public ISystems<?,?> create(IEnterprise<?,?> enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
+	public ISystems<?,?> create(IEnterprise<?, ?> enterprise, String systemName, String systemDesc, String historyName, java.util.UUID... identityToken)
 	{
 		Systems newSystem = new Systems();
 		Optional<Systems> exists = newSystem.builder()
@@ -190,7 +173,7 @@ public class SystemsService
 	}
 	
 	@CacheResult(cacheName = "SystemGetSecurityToken")
-	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID uuidIdentity, @CacheKey ISystems<?,?> system, UUID... identityToken)
+	public ISecurityToken<?,?> getSecurityToken(@CacheKey String uuidIdentity, @CacheKey ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		Optional<SecurityToken> token = new SecurityToken().builder()
 		                                                   .findBySecurityToken(uuidIdentity.toString(), enterprise)
@@ -212,7 +195,7 @@ public class SystemsService
 	
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
 	@Override
-	public UUID getSecurityIdentityToken(@CacheKey ISystems<?,?> system, UUID... identityToken)
+	public UUID getSecurityIdentityToken(@CacheKey ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		Optional<? extends IRelationshipValue<?, IClassification<?, ?>, ?>> systemToken = system.findClassification(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())

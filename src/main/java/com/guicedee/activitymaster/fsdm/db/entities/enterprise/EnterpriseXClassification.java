@@ -36,7 +36,7 @@ public class EnterpriseXClassification
 		Classification,
 		EnterpriseXClassification,
 		EnterpriseXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class EnterpriseXClassification
 	@Column(nullable = false,
 	        name = "EnterpriseXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -57,19 +57,19 @@ public class EnterpriseXClassification
 	
 	}
 	
-	public EnterpriseXClassification(UUID enterpriseXClassificationID)
+	public EnterpriseXClassification(java.lang.String enterpriseXClassificationID)
 	{
 		id = enterpriseXClassificationID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public EnterpriseXClassification setId(UUID id)
+	public EnterpriseXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

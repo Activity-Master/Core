@@ -33,7 +33,7 @@ public class RulesXRulesType
 		RulesType,
 		RulesXRulesType,
 		RulesXRulesTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -43,7 +43,7 @@ public class RulesXRulesType
 	@Column(nullable = false,
 	        name = "RulesXRulesTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -66,19 +66,19 @@ public class RulesXRulesType
 	
 	}
 	
-	public RulesXRulesType(UUID rulesXRulesTypeID)
+	public RulesXRulesType(java.lang.String rulesXRulesTypeID)
 	{
 		this.id = rulesXRulesTypeID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public RulesXRulesType setId(UUID id)
+	public RulesXRulesType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

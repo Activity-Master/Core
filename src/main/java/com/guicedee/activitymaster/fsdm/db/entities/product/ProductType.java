@@ -17,7 +17,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -39,7 +38,7 @@ import static jakarta.persistence.AccessType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ProductType
-		extends WarehouseTable<ProductType, ProductTypeQueryBuilder, UUID>
+		extends WarehouseTable<ProductType, ProductTypeQueryBuilder, java.lang.String>
 		implements IProductType<ProductType, ProductTypeQueryBuilder>
 {
 	@Serial
@@ -50,7 +49,7 @@ public class ProductType
 	        name = "ProductTypeID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -89,12 +88,12 @@ public class ProductType
 	
 	}
 	
-	public ProductType(UUID productTypeID)
+	public ProductType(java.lang.String productTypeID)
 	{
 		this.id = productTypeID;
 	}
 	
-	public ProductType(UUID productTypeID, String productTypName, String productTypeDesc)
+	public ProductType(java.lang.String productTypeID, String productTypName, String productTypeDesc)
 	{
 		this.id = productTypeID;
 		this.name = productTypName;
@@ -182,13 +181,13 @@ public class ProductType
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public ProductType setId(UUID id)
+	public ProductType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

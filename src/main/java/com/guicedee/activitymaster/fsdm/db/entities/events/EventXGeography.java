@@ -11,7 +11,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -34,7 +33,7 @@ public class EventXGeography
 		Geography,
 		EventXGeography,
 		EventXGeographyQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -44,7 +43,7 @@ public class EventXGeography
 	@Column(nullable = false,
 	        name = "EventXGeographyID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -70,17 +69,17 @@ public class EventXGeography
 	
 	}
 	
-	public EventXGeography(UUID eventXGeographyID)
+	public EventXGeography(java.lang.String eventXGeographyID)
 	{
 		this.id = eventXGeographyID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXGeography setId(UUID id)
+	public EventXGeography setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

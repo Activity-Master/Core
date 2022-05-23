@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBui
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 
 public class EnterpriseQueryBuilder
-		extends QueryBuilderNameDescription<EnterpriseQueryBuilder, Enterprise, java.util.UUID>
+		extends QueryBuilderNameDescription<EnterpriseQueryBuilder, Enterprise, java.lang.String>
 		implements
 		IEnterpriseQueryBuilder<EnterpriseQueryBuilder, Enterprise>
 {

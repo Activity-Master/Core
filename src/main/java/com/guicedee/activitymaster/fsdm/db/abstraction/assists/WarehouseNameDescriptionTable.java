@@ -18,7 +18,7 @@ import java.lang.reflect.ParameterizedType;
 @MappedSuperclass()
 public abstract class WarehouseNameDescriptionTable<J extends WarehouseNameDescriptionTable<J, Q, I>,
 		Q extends QueryBuilderNameDescription<Q, J, I>,
-		I extends java.util.UUID>
+		I extends java.lang.String>
 		extends WarehouseCoreTable<J, Q, I>
 		implements IWarehouseNameAndDescriptionTable<J, Q, I>
 {

@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBui
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyType;
 
 public class InvolvedPartyTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<InvolvedPartyTypeQueryBuilder, InvolvedPartyType, java.util.UUID>
+		extends QueryBuilderSCDNameDescription<InvolvedPartyTypeQueryBuilder, InvolvedPartyType, java.lang.String>
 		implements IInvolvedPartyTypeQueryBuilder<InvolvedPartyTypeQueryBuilder, InvolvedPartyType>
 {
 

@@ -23,14 +23,14 @@ import static com.entityassist.enumerations.Operand.*;
  */
 public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J, E, I>,
 		E extends WarehouseSecurityTable<E, J, I>,
-		I extends java.util.UUID>
+		I extends java.lang.String>
 		extends QueryBuilderDefault<J, E, I>
 {
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public J findLinkedSecurityToken(SecurityToken token, I id)
+	public J findLinkedSecurityToken(SecurityToken identityToken, I id)
 	{
-		where(getSecurityTokenAttribute(), Equals, token);
+		where(getSecurityTokenAttribute(), Equals, identityToken);
 		where(getMyAttribute(), Equals, id);
 		return (J) this;
 	}
@@ -55,11 +55,11 @@ public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J,
 	
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public J findLinkedSecurityToken(SecurityToken token, WarehouseBaseTable id)
+	public J findLinkedSecurityToken(SecurityToken identityToken, WarehouseBaseTable id)
 	{
 		findLinkedSecurityTokens(id);
 		Attribute securityAttribute = getSecurityTokenAttribute();
-		where(securityAttribute, Equals, token);
+		where(securityAttribute, Equals, identityToken);
 		return (J) this;
 	}
 	

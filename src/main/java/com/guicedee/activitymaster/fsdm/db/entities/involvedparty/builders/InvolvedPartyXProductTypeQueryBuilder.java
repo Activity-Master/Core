@@ -9,13 +9,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.ProductType;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.util.UUID;
+
 
 public class InvolvedPartyXProductTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<InvolvedParty, ProductType,
 		InvolvedPartyXProductTypeQueryBuilder,
 		InvolvedPartyXProductType,
-		UUID>
+		java.lang.String>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXProductType, InvolvedParty> getPrimaryAttribute()
@@ -30,7 +30,7 @@ public class InvolvedPartyXProductTypeQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyXProductTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
+	public InvolvedPartyXProductTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

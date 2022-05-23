@@ -12,7 +12,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class InvolvedPartyXProductTypeSecurityToken
-		extends WarehouseSecurityTable<InvolvedPartyXProductTypeSecurityToken, InvolvedPartyXProductTypeSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<InvolvedPartyXProductTypeSecurityToken, InvolvedPartyXProductTypeSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -36,7 +36,7 @@ public class InvolvedPartyXProductTypeSecurityToken
 	@Column(nullable = false,
 	        name = "InvolvedPartyXProductTypeSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@JoinColumn(name = "InvolvedPartyXProductTypeID",
 	            referencedColumnName = "InvolvedPartyXProductTypeID",
 	            nullable = false)
@@ -50,7 +50,7 @@ public class InvolvedPartyXProductTypeSecurityToken
 	
 	}
 	
-	public InvolvedPartyXProductTypeSecurityToken(UUID involvedPartyXProductTypeSecurityTokenID)
+	public InvolvedPartyXProductTypeSecurityToken(java.lang.String involvedPartyXProductTypeSecurityTokenID)
 	{
 		this.id = involvedPartyXProductTypeSecurityTokenID;
 	}
@@ -60,12 +60,12 @@ public class InvolvedPartyXProductTypeSecurityToken
 		return "InvolvedPartyXProductTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public InvolvedPartyXProductTypeSecurityToken setId(UUID id)
+	public InvolvedPartyXProductTypeSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

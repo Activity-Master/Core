@@ -38,7 +38,7 @@ public class AddressXClassification
 		Classification,
 		AddressXClassification,
 		AddressXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -49,7 +49,7 @@ public class AddressXClassification
 	@Column(nullable = false,
 	        name = "AddressXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
@@ -69,17 +69,17 @@ public class AddressXClassification
 	
 	}
 	
-	public AddressXClassification(UUID addressXClassificationID)
+	public AddressXClassification(java.lang.String addressXClassificationID)
 	{
 		this.id = addressXClassificationID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public AddressXClassification setId(UUID id)
+	public AddressXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

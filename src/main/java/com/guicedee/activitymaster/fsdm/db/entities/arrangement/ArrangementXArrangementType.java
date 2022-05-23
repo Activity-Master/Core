@@ -10,7 +10,6 @@ import java.io.Serial;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.AccessType.*;
 
 /**
  * @author Marc Magon
@@ -33,7 +32,7 @@ public class ArrangementXArrangementType
 		ArrangementType,
 		ArrangementXArrangementType,
 		ArrangementXArrangementTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -41,7 +40,7 @@ public class ArrangementXArrangementType
 	@Column(nullable = false,
 	        name = "ArrangementXArrangementTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@ManyToOne
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID")
@@ -61,19 +60,19 @@ public class ArrangementXArrangementType
 	{
 	}
 	
-	public ArrangementXArrangementType(UUID arrangementXArrangementTypeID)
+	public ArrangementXArrangementType(java.lang.String arrangementXArrangementTypeID)
 	{
 		this.id = arrangementXArrangementTypeID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public ArrangementXArrangementType setId(UUID id)
+	public ArrangementXArrangementType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

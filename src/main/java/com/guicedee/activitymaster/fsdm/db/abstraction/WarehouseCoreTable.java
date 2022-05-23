@@ -7,7 +7,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderCore
 import jakarta.persistence.MappedSuperclass;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @param <J>
@@ -19,7 +19,7 @@ import java.util.UUID;
 @MappedSuperclass()
 public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		Q extends QueryBuilderCore<Q, J, I>,
-		I extends UUID>
+		I extends java.lang.String>
 		extends WarehouseBaseTable<J, Q, I>
 		implements IWarehouseCoreTable<J, Q, I>
 {
@@ -31,7 +31,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 	
 	}
 	
-	public void createDefaultSecurity(ISystems<?, ?> system, UUID... identity)
+	public void createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (ActivityMasterConfiguration.get()
 		                               .isSecurityEnabled())
@@ -72,7 +72,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		createDefaultGuestReadSecurityAccess(system);
 	}
 	
-	private S createDefaultAdministratorSecurityAccess(ISystems<?,?> system, UUID... identity)
+	private S createDefaultAdministratorSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) GuiceContext.get(SecurityTokenService.class)
@@ -104,7 +104,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultEveryoneSecurityAccess(ISystems<?,?> system, UUID... identity)
+	private S createDefaultEveryoneSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
@@ -136,7 +136,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultEverywhereSecurityAccess(ISystems<?,?> system, UUID... identity)
+	private S createDefaultEverywhereSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
@@ -169,7 +169,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultSystemsSecurityAccess(ISystems<?,?> system, UUID... identity)
+	private S createDefaultSystemsSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
@@ -203,7 +203,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultApplicationsSecurityAccess(ISystems<?,?> system, UUID... identity)
+	private S createDefaultApplicationsSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
@@ -237,7 +237,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultPluginsSecurityAccess(ISystems<?,?> system, UUID... identity)
+	private S createDefaultPluginsSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
@@ -270,7 +270,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultGuestReadSecurityAccess(ISystems<?,?> system, UUID... identity)
+	private S createDefaultGuestReadSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
@@ -322,7 +322,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	public S createDefaultGuestNoSecurityAccess(ISystems<?,?> system, UUID... identity)
+	public S createDefaultGuestNoSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		S stAdmin = GuiceContext.get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)

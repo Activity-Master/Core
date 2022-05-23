@@ -53,7 +53,7 @@ import static com.guicedee.guicedinjection.GuiceContext.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedParty
-		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, UUID>
+		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, java.lang.String>
 		implements IInvolvedParty<InvolvedParty, InvolvedPartyQueryBuilder>
 {
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
@@ -63,7 +63,7 @@ public class InvolvedParty
 	        name = "InvolvedPartyID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "involvedPartyID",
@@ -119,7 +119,7 @@ public class InvolvedParty
 	
 	}
 	
-	public InvolvedParty(UUID involvedPartyID)
+	public InvolvedParty(java.lang.String involvedPartyID)
 	{
 		this.id = involvedPartyID;
 	}
@@ -136,13 +136,13 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public InvolvedParty setId(UUID id)
+	public InvolvedParty setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
@@ -176,7 +176,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, InvolvedParty, InvolvedParty, UUID> newLink, InvolvedParty parent, InvolvedParty child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, InvolvedParty, InvolvedParty, java.lang.String> newLink, InvolvedParty parent, InvolvedParty child, String value)
 	{
 		InvolvedPartyXInvolvedParty i = (InvolvedPartyXInvolvedParty) newLink;
 		i.setParentInvolvedPartyID(parent);

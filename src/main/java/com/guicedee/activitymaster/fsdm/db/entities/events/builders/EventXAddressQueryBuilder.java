@@ -7,7 +7,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class EventXAddressQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Address, EventXAddressQueryBuilder,
-		EventXAddress, java.util.UUID>
+		EventXAddress, java.lang.String>
 {
 	@Override
 	public SingularAttribute<EventXAddress, Event> getPrimaryAttribute()

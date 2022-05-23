@@ -36,7 +36,7 @@ public class ArrangementXArrangement
 		Arrangement,
 		ArrangementXArrangement,
 		ArrangementXArrangementQueryBuilder,
-		UUID>
+		java.lang.String>
 
 {
 	
@@ -47,7 +47,7 @@ public class ArrangementXArrangement
 	@Column(nullable = false,
 	        name = "ArrangementXArrangementID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ChildArrangementID",
 	            referencedColumnName = "ArrangementID",
@@ -74,17 +74,17 @@ public class ArrangementXArrangement
 	
 	}
 	
-	public ArrangementXArrangement(UUID arrangementXArrangementID)
+	public ArrangementXArrangement(java.lang.String arrangementXArrangementID)
 	{
 		this.id = arrangementXArrangementID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ArrangementXArrangement setId(UUID id)
+	public ArrangementXArrangement setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

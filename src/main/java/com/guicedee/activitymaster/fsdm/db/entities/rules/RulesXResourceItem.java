@@ -34,7 +34,7 @@ public class RulesXResourceItem
 		ResourceItem,
 		RulesXResourceItem,
 		RulesXResourceItemQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -45,7 +45,7 @@ public class RulesXResourceItem
 	@Column(nullable = false,
 	        name = "RulesXResourceItemID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -68,19 +68,19 @@ public class RulesXResourceItem
 	
 	}
 	
-	public RulesXResourceItem(UUID rulesXResourceItemID)
+	public RulesXResourceItem(java.lang.String rulesXResourceItemID)
 	{
 		id = rulesXResourceItemID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public RulesXResourceItem setId(UUID id)
+	public RulesXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

@@ -14,7 +14,7 @@ import org.hibernate.annotations.Immutable;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -25,7 +25,7 @@ import java.util.UUID;
 @XmlRootElement
 @Immutable
 public class SecurityHierarchyView
-		extends WarehouseHierarchyView<SecurityHierarchyView, SecurityHierarchyViewQueryBuilder, UUID>
+		extends WarehouseHierarchyView<SecurityHierarchyView, SecurityHierarchyViewQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -33,7 +33,7 @@ public class SecurityHierarchyView
 	private static final long serialVersionUID = 1L;
 	@Id
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@OneToMany(mappedBy = "child")
 	private List<SecurityHierarchyParents> parents;
 	
@@ -42,13 +42,13 @@ public class SecurityHierarchyView
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public SecurityHierarchyView setId(UUID id)
+	public SecurityHierarchyView setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

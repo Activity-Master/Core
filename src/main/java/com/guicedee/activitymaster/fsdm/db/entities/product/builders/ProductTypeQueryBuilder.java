@@ -4,10 +4,8 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.produ
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductType;
 
-import java.util.UUID;
-
 public class ProductTypeQueryBuilder
-		extends QueryBuilderTable<ProductTypeQueryBuilder, ProductType, UUID>
+		extends QueryBuilderTable<ProductTypeQueryBuilder, ProductType, java.lang.String>
 		implements IProductTypeQueryBuilder<ProductTypeQueryBuilder, ProductType>
 {
 

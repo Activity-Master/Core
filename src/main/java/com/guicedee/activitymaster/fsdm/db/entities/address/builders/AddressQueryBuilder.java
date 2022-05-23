@@ -9,7 +9,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.Address_;
 import jakarta.validation.constraints.NotNull;
 
 public class AddressQueryBuilder
-		extends QueryBuilderTable<AddressQueryBuilder, Address, java.util.UUID>
+		extends QueryBuilderTable<AddressQueryBuilder, Address, java.lang.String>
 		implements IAddressQueryBuilder<AddressQueryBuilder, Address>
 {
 	@Override

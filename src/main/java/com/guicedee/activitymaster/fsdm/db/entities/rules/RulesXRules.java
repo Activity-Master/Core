@@ -33,7 +33,7 @@ public class RulesXRules
 		Rules,
 		RulesXRules,
 		RulesXRulesQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -44,7 +44,7 @@ public class RulesXRules
 	@Column(nullable = false,
 	        name = "RulesXRulesID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -69,19 +69,19 @@ public class RulesXRules
 	
 	}
 	
-	public RulesXRules(UUID rulesXRulesID)
+	public RulesXRules(java.lang.String rulesXRulesID)
 	{
 		id = rulesXRulesID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public RulesXRules setId(UUID id)
+	public RulesXRules setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

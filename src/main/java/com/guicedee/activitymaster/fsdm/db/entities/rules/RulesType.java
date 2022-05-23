@@ -39,7 +39,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class RulesType
-		extends WarehouseSCDNameDescriptionTable<RulesType, RulesTypeQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<RulesType, RulesTypeQueryBuilder, java.lang.String>
 		implements IRulesType<RulesType, RulesTypeQueryBuilder>
 {
 	@Serial
@@ -50,7 +50,7 @@ public class RulesType
 	        name = "RulesTypeID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 1,
@@ -92,12 +92,12 @@ public class RulesType
 	
 	}
 	
-	public RulesType(UUID rulesTypeID)
+	public RulesType(java.lang.String rulesTypeID)
 	{
 		this.id = rulesTypeID;
 	}
 	
-	public RulesType(UUID rulesTypeID, String rulesTypName, String rulesTypeDesc)
+	public RulesType(java.lang.String rulesTypeID, String rulesTypName, String rulesTypeDesc)
 	{
 		this.id = rulesTypeID;
 		this.name = rulesTypName;
@@ -164,13 +164,13 @@ public class RulesType
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public RulesType setId(UUID id)
+	public RulesType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

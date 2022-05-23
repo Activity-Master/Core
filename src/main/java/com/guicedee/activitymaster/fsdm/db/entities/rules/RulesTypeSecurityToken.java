@@ -11,7 +11,6 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -25,7 +24,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class RulesTypeSecurityToken
-		extends WarehouseSecurityTable<RulesTypeSecurityToken, RulesTypeSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<RulesTypeSecurityToken, RulesTypeSecurityTokenQueryBuilder, java.lang.String>
 {
 	
 	@Serial
@@ -35,7 +34,7 @@ public class RulesTypeSecurityToken
 	@Column(nullable = false,
 	        name = "RulesTypesSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "RulesTypesID",
 	            referencedColumnName = "RulesTypeID",
@@ -50,7 +49,7 @@ public class RulesTypeSecurityToken
 	
 	}
 	
-	public RulesTypeSecurityToken(UUID rulesTypesSecurityTokenID)
+	public RulesTypeSecurityToken(java.lang.String rulesTypesSecurityTokenID)
 	{
 		this.id = rulesTypesSecurityTokenID;
 	}
@@ -62,13 +61,13 @@ public class RulesTypeSecurityToken
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public RulesTypeSecurityToken setId(UUID id)
+	public RulesTypeSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

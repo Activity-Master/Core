@@ -8,14 +8,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.util.UUID;
+
 
 public class ResourceItemXResourceItemTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<ResourceItem,
 		ResourceItemType,
 		ResourceItemXResourceItemTypeQueryBuilder,
 		ResourceItemXResourceItemType,
-		UUID>
+		java.lang.String>
 {
 	@Override
 	public SingularAttribute<ResourceItemXResourceItemType, ResourceItem> getPrimaryAttribute()
@@ -30,7 +30,7 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 	}
 	
 	@Override
-	public ResourceItemXResourceItemTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, UUID... identityToken)
+	public ResourceItemXResourceItemTypeQueryBuilder withType(String typeValue, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (typeValue != null)
 		{

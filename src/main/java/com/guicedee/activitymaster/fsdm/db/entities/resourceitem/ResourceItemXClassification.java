@@ -35,9 +35,9 @@ public class ResourceItemXClassification
 		Classification,
 		ResourceItemXClassification,
 		ResourceItemXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable,
-		           IWarehouseRelationshipClassificationTable<ResourceItemXClassification, ResourceItemXClassificationQueryBuilder, ResourceItem, Classification, UUID>
+		           IWarehouseRelationshipClassificationTable<ResourceItemXClassification, ResourceItemXClassificationQueryBuilder, ResourceItem, Classification, java.lang.String>
 {
 	
 	@Serial
@@ -47,7 +47,7 @@ public class ResourceItemXClassification
 	@Column(nullable = false,
 	        name = "ResourceItemXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -66,17 +66,17 @@ public class ResourceItemXClassification
 	
 	}
 	
-	public ResourceItemXClassification(UUID resourceItemXClassificationID)
+	public ResourceItemXClassification(java.lang.String resourceItemXClassificationID)
 	{
 		this.id = resourceItemXClassificationID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ResourceItemXClassification setId(UUID id)
+	public ResourceItemXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

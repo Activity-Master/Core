@@ -34,7 +34,7 @@ public class ResourceItemDataXClassification
 		Classification,
 		ResourceItemDataXClassification,
 		ResourceItemDataXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -45,7 +45,7 @@ public class ResourceItemDataXClassification
 	@Column(nullable = false,
 	        name = "ResourceItemDataXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ResourceItemDataID",
 	            referencedColumnName = "ResourceItemDataID",
@@ -65,17 +65,17 @@ public class ResourceItemDataXClassification
 	
 	}
 	
-	public ResourceItemDataXClassification(UUID resourceItemDataXClassificationID)
+	public ResourceItemDataXClassification(java.lang.String resourceItemDataXClassificationID)
 	{
 		this.id = resourceItemDataXClassificationID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ResourceItemDataXClassification setId(UUID id)
+	public ResourceItemDataXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

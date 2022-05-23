@@ -10,7 +10,8 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Marc Magon
@@ -23,7 +24,7 @@ import java.util.*;
 @XmlRootElement
 @Access(AccessType.FIELD)
 public class ResourceItemData
-		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, UUID>
+		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, java.lang.String>
 		implements IResourceData<ResourceItemData, ResourceItemDataQueryBuilder>
 {
 	
@@ -34,7 +35,7 @@ public class ResourceItemData
 	@Column(nullable = false,
 	        name = "ResourceItemDataID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id = UUID.randomUUID();
+	private String id;
 	@Lob()
 	@Column(nullable = false,
 	        name = "ResourceItemData")
@@ -62,7 +63,7 @@ public class ResourceItemData
 	
 	}
 	
-	public ResourceItemData(UUID resourceItemDataID)
+	public ResourceItemData(java.lang.String resourceItemDataID)
 	{
 		id = resourceItemDataID;
 	}
@@ -117,13 +118,13 @@ public class ResourceItemData
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public ResourceItemData setId(UUID id)
+	public ResourceItemData setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

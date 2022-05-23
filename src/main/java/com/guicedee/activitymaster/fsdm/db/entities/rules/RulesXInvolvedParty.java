@@ -33,7 +33,7 @@ public class RulesXInvolvedParty
 		InvolvedParty,
 		RulesXInvolvedParty,
 		RulesXInvolvedPartyQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -43,7 +43,7 @@ public class RulesXInvolvedParty
 	@Column(nullable = false,
 	        name = "RulesXInvolvedPartyID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "RulesID",
 	            referencedColumnName = "RulesID",
@@ -68,17 +68,17 @@ public class RulesXInvolvedParty
 	
 	}
 	
-	public RulesXInvolvedParty(UUID RulesXInvolvedPartyID)
+	public RulesXInvolvedParty(java.lang.String RulesXInvolvedPartyID)
 	{
 		this.id = RulesXInvolvedPartyID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public RulesXInvolvedParty setId(UUID id)
+	public RulesXInvolvedParty setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

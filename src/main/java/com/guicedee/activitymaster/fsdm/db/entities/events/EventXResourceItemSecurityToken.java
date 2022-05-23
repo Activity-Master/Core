@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.UUID;
+
 
 /**
  * @author Marc Magon
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Access(AccessType.FIELD)
 public class EventXResourceItemSecurityToken
-		extends WarehouseSecurityTable<EventXResourceItemSecurityToken, EventXResourceItemSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<EventXResourceItemSecurityToken, EventXResourceItemSecurityTokenQueryBuilder, java.lang.String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -33,7 +33,7 @@ public class EventXResourceItemSecurityToken
 	@Column(nullable = false,
 	        name = "EventXResourceItemSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "EventXResourceItemID",
 	            referencedColumnName = "EventXResourceItemID",
@@ -48,7 +48,7 @@ public class EventXResourceItemSecurityToken
 	
 	}
 	
-	public EventXResourceItemSecurityToken(UUID eventXResourceItemSecurityTokenID)
+	public EventXResourceItemSecurityToken(java.lang.String eventXResourceItemSecurityTokenID)
 	{
 		this.id = eventXResourceItemSecurityTokenID;
 	}
@@ -58,12 +58,12 @@ public class EventXResourceItemSecurityToken
 		return "EventXResourceItemSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXResourceItemSecurityToken setId(UUID id)
+	public EventXResourceItemSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

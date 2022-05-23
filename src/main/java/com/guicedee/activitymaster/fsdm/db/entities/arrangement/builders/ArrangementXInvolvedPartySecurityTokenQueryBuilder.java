@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementXInvo
 import jakarta.persistence.metamodel.Attribute;
 
 public class ArrangementXInvolvedPartySecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ArrangementXInvolvedPartySecurityTokenQueryBuilder, ArrangementXInvolvedPartySecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<ArrangementXInvolvedPartySecurityTokenQueryBuilder, ArrangementXInvolvedPartySecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

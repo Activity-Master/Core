@@ -37,7 +37,7 @@ public class InvolvedPartyXInvolvedPartyNameType
 		extends WarehouseClassificationRelationshipTypesTable<InvolvedParty, InvolvedPartyNameType,
 		InvolvedPartyXInvolvedPartyNameType,
 		InvolvedPartyXInvolvedPartyNameTypeQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -47,7 +47,7 @@ public class InvolvedPartyXInvolvedPartyNameType
 	@Column(nullable = false,
 	        name = "InvolvedPartyXInvolvedPartyNameTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "InvolvedPartyID",
 	            referencedColumnName = "InvolvedPartyID",
@@ -72,25 +72,25 @@ public class InvolvedPartyXInvolvedPartyNameType
 	
 	}
 	
-	public InvolvedPartyXInvolvedPartyNameType(UUID involvedPartyXInvolvedPartyNameTypeID)
+	public InvolvedPartyXInvolvedPartyNameType(java.lang.String involvedPartyXInvolvedPartyNameTypeID)
 	{
 		this.id = involvedPartyXInvolvedPartyNameTypeID;
 	}
 	
-	public InvolvedPartyXInvolvedPartyNameType(UUID involvedPartyXInvolvedPartyNameTypeID, String involvedPartyName)
+	public InvolvedPartyXInvolvedPartyNameType(java.lang.String involvedPartyXInvolvedPartyNameTypeID, String involvedPartyName)
 	{
 		this.id = involvedPartyXInvolvedPartyNameTypeID;
 		setValue(involvedPartyName);
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
 	@Override
-	public InvolvedPartyXInvolvedPartyNameType setId(UUID id)
+	public InvolvedPartyXInvolvedPartyNameType setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

@@ -9,7 +9,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -34,7 +33,7 @@ public class SecurityTokenXSecurityToken
 		SecurityToken,
 		SecurityTokenXSecurityToken,
 		SecurityTokenXSecurityTokenQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -45,7 +44,7 @@ public class SecurityTokenXSecurityToken
 	@Column(nullable = false,
 	        name = "SecurityTokenXSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "ParentSecurityTokenID",
 	            referencedColumnName = "SecurityTokenID",
@@ -66,18 +65,18 @@ public class SecurityTokenXSecurityToken
 	
 	}
 	
-	public SecurityTokenXSecurityToken(UUID securityTokenXSecurityTokenID)
+	public SecurityTokenXSecurityToken(java.lang.String securityTokenXSecurityTokenID)
 	{
 		this.id = securityTokenXSecurityTokenID;
 	}
 	
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public SecurityTokenXSecurityToken setId(UUID id)
+	public SecurityTokenXSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

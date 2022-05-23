@@ -9,7 +9,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.util.List;
-import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -34,7 +33,7 @@ public class EventXProduct
 		Product,
 		EventXProduct,
 		EventXProductQueryBuilder,
-		UUID>
+		java.lang.String>
 {
 	
 	@Serial
@@ -44,7 +43,7 @@ public class EventXProduct
 	@Column(nullable = false,
 	        name = "EventXProductID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -70,17 +69,17 @@ public class EventXProduct
 	
 	}
 	
-	public EventXProduct(UUID eventXProductID)
+	public EventXProduct(java.lang.String eventXProductID)
 	{
 		this.id = eventXProductID;
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public EventXProduct setId(UUID id)
+	public EventXProduct setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

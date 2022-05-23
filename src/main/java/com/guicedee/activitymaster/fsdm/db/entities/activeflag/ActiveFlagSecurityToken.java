@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -20,7 +19,7 @@ import java.util.UUID;
 @XmlRootElement
 @Access(AccessType.FIELD)
 public class ActiveFlagSecurityToken
-		extends WarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, UUID>
+		extends WarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, java.lang.String>
 		implements Serializable
 {
 	
@@ -31,7 +30,7 @@ public class ActiveFlagSecurityToken
 	@Column(nullable = false,
 	        name = "ActiveFlagSecurityTokenID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@JoinColumn(name = "SecurityTokenActiveFlagID",
 	            referencedColumnName = "ActiveFlagID",
@@ -47,7 +46,7 @@ public class ActiveFlagSecurityToken
 	
 	}
 	
-	public ActiveFlagSecurityToken(UUID activeFlagSecurityTokenID)
+	public ActiveFlagSecurityToken(java.lang.String activeFlagSecurityTokenID)
 	{
 		this.id = activeFlagSecurityTokenID;
 	}
@@ -57,12 +56,12 @@ public class ActiveFlagSecurityToken
 		return "ActiveFlagSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return this.id;
 	}
 	
-	public ActiveFlagSecurityToken setId(UUID id)
+	public ActiveFlagSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

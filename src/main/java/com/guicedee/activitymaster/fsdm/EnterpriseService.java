@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -19,7 +18,6 @@ import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedinjection.json.LocalDateSerializer;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import io.github.classgraph.ClassInfo;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
@@ -210,12 +208,12 @@ public class EnterpriseService
 	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
 	public List<IEnterprise<?,?>> findEnterprisesWithClassification(@CacheKey IClassification<?,?> classification)
 	{
-		List<UUID> classy = new EnterpriseXClassification().builder()
+		List<java.lang.String> classy = new EnterpriseXClassification().builder()
 		                                                   .withClassification(classification)
 		                                                   .inActiveRange()
 		                                                   .inDateRange()
 		                                                   .selectColumn(EnterpriseXClassification_.enterpriseID)
-		                                                   .getAll(UUID.class);
+		                                                   .getAll(String.class);
 		
 		EnterpriseQueryBuilder builder = new Enterprise().builder();
 		builder = builder.where(Enterprise_.id, InList, classy);
@@ -248,7 +246,7 @@ public class EnterpriseService
 	public IEnterprise<?,?> getEnterprise(@CacheKey UUID uuid)
 	{
 		return new Enterprise().builder()
-		                       .find(uuid)
+		                       .find(uuid.toString())
 		                       .inDateRange()
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Such Enterprise - " + uuid));
@@ -286,7 +284,7 @@ public class EnterpriseService
 	public IEnterprise<?,?> getIEnterpriseFromID(@CacheKey UUID enterprise)
 	{
 		return new Enterprise().builder()
-		                       .find(enterprise)
+		                       .find(enterprise.toString())
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Enterprise for the given UUID"));
 	}

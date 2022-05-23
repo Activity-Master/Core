@@ -17,7 +17,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.FetchType.*;
@@ -42,7 +43,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ClassificationDataConcept
-		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, java.lang.String>
 		implements// IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
 		//IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, String, IClassificationDataConcept<?>, IResourceItem<?,?>, ClassificationDataConcept>,
 		//IActivityMasterEntity<ClassificationDataConcept>,
@@ -58,7 +59,7 @@ public class ClassificationDataConcept
 	        name = "ClassificationDataConceptID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -105,12 +106,12 @@ public class ClassificationDataConcept
 	
 	}
 	
-	public ClassificationDataConcept(UUID classificationDataConceptID)
+	public ClassificationDataConcept(java.lang.String classificationDataConceptID)
 	{
 		id = classificationDataConceptID;
 	}
 	
-	public ClassificationDataConcept(UUID classificationDataConceptID, String classificationDataConceptName, String classificationDataConceptDesc, String originalSourceSystemUniqueID)
+	public ClassificationDataConcept(java.lang.String classificationDataConceptID, String classificationDataConceptName, String classificationDataConceptDesc, String originalSourceSystemUniqueID)
 	{
 		id = classificationDataConceptID;
 		name = classificationDataConceptName;
@@ -196,13 +197,13 @@ public class ClassificationDataConcept
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public ClassificationDataConcept setId(UUID id)
+	public ClassificationDataConcept setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

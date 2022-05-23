@@ -6,7 +6,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.EventTypesSecurityTok
 import jakarta.persistence.metamodel.Attribute;
 
 public class EventTypeSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EventTypeSecurityTokenQueryBuilder, EventTypesSecurityToken, java.util.UUID>
+		extends QueryBuilderSecurities<EventTypeSecurityTokenQueryBuilder, EventTypesSecurityToken, java.lang.String>
 {
 	@Override
 	protected Attribute getMyAttribute()

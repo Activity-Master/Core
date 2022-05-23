@@ -23,7 +23,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.FetchType.*;
@@ -48,7 +49,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Product
-		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, UUID>
+		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, java.lang.String>
 		implements IProduct<Product, ProductQueryBuilder>
 {
 	@Serial
@@ -59,7 +60,7 @@ public class Product
 	        name = "ProductID")
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	@Basic(optional = false,
 	       fetch = EAGER)
 	@NotNull
@@ -128,14 +129,14 @@ public class Product
 	
 	}
 	
-	public Product(UUID productID)
+	public Product(java.lang.String id)
 	{
-		id = productID;
+		this.id = id;
 	}
 	
-	public Product(UUID productID, String productName, String productDesc, String productCode)
+	public Product(java.lang.String id, String productName, String productDesc, String productCode)
 	{
-		id = productID;
+		this.id = id;
 		name = productName;
 		description = productDesc;
 		this.productCode = productCode;
@@ -258,13 +259,13 @@ public class Product
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public Product setId(UUID id)
+	public Product setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

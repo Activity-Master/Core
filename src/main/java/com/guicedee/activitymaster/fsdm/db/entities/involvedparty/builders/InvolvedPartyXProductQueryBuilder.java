@@ -7,7 +7,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class InvolvedPartyXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, Product, InvolvedPartyXProductQueryBuilder,
-		InvolvedPartyXProduct, java.util.UUID>
+		InvolvedPartyXProduct, java.lang.String>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXProduct, InvolvedParty> getPrimaryAttribute()

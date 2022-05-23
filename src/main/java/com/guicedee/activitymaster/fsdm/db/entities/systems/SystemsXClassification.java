@@ -37,7 +37,7 @@ public class SystemsXClassification
 		Classification,
 		SystemsXClassification,
 		SystemsXClassificationQueryBuilder,
-		UUID>
+		java.lang.String>
 		implements Serializable
 {
 	
@@ -48,7 +48,7 @@ public class SystemsXClassification
 	@Column(nullable = false,
 	        name = "SystemXClassificationID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private UUID id;
+	private java.lang.String id;
 	
 	@OneToMany(
 			mappedBy = "base",
@@ -60,19 +60,19 @@ public class SystemsXClassification
 	
 	}
 	
-	public SystemsXClassification(UUID systemXClassificationID)
+	public SystemsXClassification(java.lang.String systemXClassificationID)
 	{
 		id = systemXClassificationID;
 	}
 	
 	@Override
-	public UUID getId()
+	public java.lang.String getId()
 	{
 		return id;
 	}
 	
 	@Override
-	public SystemsXClassification setId(UUID id)
+	public SystemsXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;

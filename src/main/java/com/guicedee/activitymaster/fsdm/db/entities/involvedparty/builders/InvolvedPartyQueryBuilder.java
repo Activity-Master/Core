@@ -10,19 +10,17 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTabl
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
 import jakarta.persistence.criteria.JoinType;
 
-import java.util.UUID;
-
 import static com.entityassist.enumerations.Operand.*;
 
 public class InvolvedPartyQueryBuilder
-		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, UUID>
+		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, java.lang.String>
 		implements IInvolvedPartyQueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty>
 {
 	@Inject
 	private IInvolvedPartyService<?> involvedPartyService;
 	
 	@Override
-	public InvolvedPartyQueryBuilder findByIdentificationType(String idType, String value, ISystems<?, ?> system, UUID... identityTokens)
+	public InvolvedPartyQueryBuilder findByIdentificationType(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
 		
@@ -46,7 +44,7 @@ public class InvolvedPartyQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyQueryBuilder findByType(String idType, String value, ISystems<?, ?> system, UUID... identityTokens)
+	public InvolvedPartyQueryBuilder findByType(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
 		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder();
 		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(idType, system, identityTokens);
@@ -67,7 +65,7 @@ public class InvolvedPartyQueryBuilder
 	}
 	
 	@Override
-	public InvolvedPartyQueryBuilder findByTypeAll(String idType, String value, ISystems<?, ?> system, UUID... identityTokens)
+	public InvolvedPartyQueryBuilder findByTypeAll(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
 		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder();
 		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(idType, system, identityTokens);
