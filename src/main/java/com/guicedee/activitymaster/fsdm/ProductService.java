@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -13,6 +14,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +37,7 @@ public class ProductService
 	{
 		return new Product();
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IProduct<?, ?> find(java.lang.String id)
 	{
@@ -45,7 +47,7 @@ public class ProductService
 		                    .orElse(null);
 	}
 	
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IProductType<?, ?> findType(java.lang.String id)
 	{
@@ -68,7 +70,7 @@ public class ProductService
 	}
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IProduct<?, ?> createProduct(String productType, java.lang.String key, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		
@@ -110,7 +112,7 @@ public class ProductService
 		
 		return product;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IProduct<?, ?> findProduct(String name, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -122,7 +124,7 @@ public class ProductService
 		                    .get()
 		                    .orElseThrow();
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>> findProductByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -150,7 +152,7 @@ public class ProductService
 	}
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IProductType<?, ?> createProductType(String productsType, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ProductType et = new ProductType();
@@ -184,6 +186,7 @@ public class ProductService
 		}
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IProductType<?, ?> findProductTypeForProduct(String productType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -197,6 +200,7 @@ public class ProductService
 		                        .orElseThrow(() -> new NoSuchElementException("Product Type - " + productType + " not found"));
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IProduct<?, ?> findProduct(String productName, IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -210,12 +214,14 @@ public class ProductService
 		                    .orElseThrow();
 	}
 	
+	
 	@Override
 	public IProductType<?, ?> findProductTypeForProduct(IProduct<?, ?> product, IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return findProductTypeForProduct(product, classification.getName(), system, identityToken);
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IProductType<?, ?> findProductTypeForProduct(IProduct<?, ?> product, String classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -235,7 +241,7 @@ public class ProductService
 	{
 		return findProductTypes(classification.getName(), system, identityToken);
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IProductType<?, ?>> findProductTypes(String classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -254,7 +260,7 @@ public class ProductService
 	{
 		return findByProductTypes(type.getName(), system, identityToken);
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IProduct<?, ?>> findByProductTypes(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{

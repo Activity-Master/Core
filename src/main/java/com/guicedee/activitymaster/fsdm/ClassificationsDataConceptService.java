@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -10,6 +11,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -29,7 +31,8 @@ public class ClassificationsDataConceptService
 	{
 		return new ClassificationDataConcept();
 	}
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public ClassificationDataConcept createDataConcept(EnterpriseClassificationDataConcepts name,
 	                                                   String description,
 	                                                   ISystems<?,?> system,
@@ -77,7 +80,7 @@ public class ClassificationsDataConceptService
 	{
 		return find(name.classificationValue(), system, identityToken);
 	}
-
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
 	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{

@@ -1,8 +1,10 @@
 package com.guicedee.activitymaster.fsdm;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -10,6 +12,7 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.Enterpri
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.EnterpriseException;
+import com.guicedee.activitymaster.fsdm.client.services.exceptions.SystemsException;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
@@ -18,6 +21,8 @@ import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedinjection.json.LocalDateSerializer;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
+import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
@@ -31,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications.*;
 import static com.guicedee.activitymaster.fsdm.services.ActivityMasterSystemsManager.*;
 
@@ -49,7 +55,7 @@ public class EnterpriseService
 		return new Enterprise();
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public Enterprise create(@NotNull String name, @NotNull String description)
 	{
 		Enterprise enterprise = new Enterprise();
@@ -70,7 +76,7 @@ public class EnterpriseService
 		EnterpriseProvider.loadedEnterprise = enterprise;
 		return enterprise;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public void loadUpdates(IEnterprise<?,?> enterprise)
 	{
@@ -122,7 +128,7 @@ public class EnterpriseService
 		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(LocalDate.now()));
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void performUpdate(ISystemUpdate o, IEnterprise<?,?> enterprise)
 	{
 		@SuppressWarnings({ "unchecked"})
@@ -150,9 +156,7 @@ public class EnterpriseService
 	public Map<Integer, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?,?> enterprise)
 	{
 		Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
-		for (ClassInfo classInfo : GuiceContext.instance()
-		                                       .getScanResult()
-		                                       .getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
+		for (ClassInfo classInfo :new ClassGraph().enableAllInfo().scan().getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
 		{
 			if (classInfo.isAbstract() || classInfo.isInterface())
 			{
@@ -182,9 +186,7 @@ public class EnterpriseService
 	public Map<Integer, Class<? extends ISystemUpdate>> getAllUpdates()
 	{
 		Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
-		for (ClassInfo classInfo : GuiceContext.instance()
-		                                       .getScanResult()
-		                                       .getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
+		for (ClassInfo classInfo : new ClassGraph().enableAllInfo().scan().getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
 		{
 			if (classInfo.isAbstract() || classInfo.isInterface())
 			{
@@ -203,7 +205,7 @@ public class EnterpriseService
 		});
 		return applicableUpdates;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
 	public List<IEnterprise<?,?>> findEnterprisesWithClassification(@CacheKey IClassification<?,?> classification)
@@ -219,7 +221,7 @@ public class EnterpriseService
 		builder = builder.where(Enterprise_.id, InList, classy);
 		return new ArrayList<>(builder.getAll());
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Optional<IEnterprise<?,?>> findEnterprise(String name)
 	{
@@ -228,7 +230,7 @@ public class EnterpriseService
 		                                  .inDateRange()
 		                                  .get();
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
 	public IEnterprise<?,?> getEnterprise(@CacheKey String name)
@@ -240,7 +242,7 @@ public class EnterpriseService
 		                       .orElseThrow(() -> new EnterpriseException("No Such Enterprise - " + name));
 	}
 	
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
 	public IEnterprise<?,?> getEnterprise(@CacheKey UUID uuid)
@@ -251,7 +253,7 @@ public class EnterpriseService
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Such Enterprise - " + uuid));
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public boolean doesEnterpriseExist(String name)
 	{
@@ -260,7 +262,7 @@ public class EnterpriseService
 		                       .inDateRange()
 		                       .getCount() > 0;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public Set<IEnterprise<?,?>> getIEnterprises()
 	{
@@ -268,7 +270,7 @@ public class EnterpriseService
 		                                     .inDateRange()
 		                                     .getAll());
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult
 	@Override
 	public IEnterprise<?,?> getIEnterpriseFromName(@CacheKey String enterprise)
@@ -278,7 +280,7 @@ public class EnterpriseService
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Enterprise for the given name"));
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult
 	@Override
 	public IEnterprise<?,?> getIEnterpriseFromID(@CacheKey UUID enterprise)
@@ -296,8 +298,8 @@ public class EnterpriseService
 		return startNewEnterprise(enterpriseName, adminUserName, adminPassword, null);
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class,timeout = 9000)
 	public IEnterprise<?,?> startNewEnterprise(String enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier)
 	{
@@ -326,6 +328,7 @@ public class EnterpriseService
 		return enterprise;
 	}
 	
+	
 	private Enterprise installEnterprise(String enterpriseName)
 	{
 		Enterprise enterprise = create(enterpriseName, enterpriseName);
@@ -333,9 +336,9 @@ public class EnterpriseService
 				.setApplicationEnterpriseName(enterpriseName);
 		return enterprise;
 	}
-
+	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createNewEnterprise(@NotNull IEnterprise<?,?> enterprise)
 	{
 		GuiceContext.get(ActivityMasterConfiguration.class)
@@ -355,7 +358,36 @@ public class EnterpriseService
 		logProgress("System Configuration", "Done", 1);
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	public boolean isEnterpriseReady()
+	{
+		if (!Strings.isNullOrEmpty(applicationEnterpriseName))
+		{
+			IEnterpriseService<?> enterpriseService = GuiceContext.get(IEnterpriseService.class);
+			try
+			{
+				IEnterprise<?, ?> enterprise = enterpriseService.getEnterprise(applicationEnterpriseName);
+				ISystems<?, ?> system = GuiceContext.get(IActivityMasterSystem.class)
+				                                    .getSystem(applicationEnterpriseName);
+				return enterprise.builder()
+				                                   .hasClassification(EnterpriseClassifications.LastUpdateDate.toString(), system)
+				                                   .getCount() > 0;
+				
+			}
+			catch (SystemsException e)
+			{
+				log.log(Level.WARNING, "System is not ready");
+			}
+			catch (EnterpriseException e)
+			{
+				log.log(Level.WARNING, "Enterprise is not ready");
+			}
+		}
+		return false;
+	}
+	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void installSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		//then from classifications data service do both
@@ -377,7 +409,7 @@ public class EnterpriseService
 		}
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void performSystemInstall( IEnterprise<?,?> enterprise, IActivityMasterSystem<?> allSystem)
 	{
 		String nameC = cleanName(allSystem.getClass()
@@ -399,7 +431,7 @@ public class EnterpriseService
 		logProgress("Installed System", nameC, 1);
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void createBaseSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Base Systems", "Initializing Base Systems");
@@ -415,7 +447,7 @@ public class EnterpriseService
 		}
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void createBase( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Core", "Initializing Core Systems");

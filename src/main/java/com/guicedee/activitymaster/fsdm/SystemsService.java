@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -16,6 +17,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -56,6 +58,7 @@ public class SystemsService
 		return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public boolean doesSystemExist(IEnterprise<?,?> enterprise, String systemName, java.util.UUID... identityToken)
 	{
@@ -66,7 +69,7 @@ public class SystemsService
 		                    .inDateRange()
 		                    .getCount() > 0;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "FindSystemEnterpriseLevel")
 	@Override
 	public ISystems<?,?> findSystem(@CacheKey IEnterprise<?,?> enterprise, @CacheKey String systemName, java.util.UUID... identityToken)
@@ -82,7 +85,7 @@ public class SystemsService
 		             .orElseThrow(() -> new SystemsException("Cannot find a system named - " + systemName + " - in enterprise - " + enterprise));
 	}
 	
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "FindSystemByIdentityClassification")
 	@Override
 	public ISystems<?,?> findSystem(@CacheKey ISystems<?,?> requestingSystem, @CacheKey String token, java.util.UUID... identityToken)
@@ -102,7 +105,7 @@ public class SystemsService
 	}
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public String registerNewSystem(IEnterprise<?,?> enterprise, ISystems<?,?> newSystem)
 	{
 		//Create Security Token for the created system row
@@ -143,7 +146,7 @@ public class SystemsService
 	}
 
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public ISystems<?,?> create(IEnterprise<?, ?> enterprise, String systemName, String systemDesc, String historyName, java.util.UUID... identityToken)
 	{
 		Systems newSystem = new Systems();
@@ -171,7 +174,7 @@ public class SystemsService
 		
 		return newSystem;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "SystemGetSecurityToken")
 	public ISecurityToken<?,?> getSecurityToken(@CacheKey String uuidIdentity, @CacheKey ISystems<?,?> system, java.util.UUID... identityToken)
 	{

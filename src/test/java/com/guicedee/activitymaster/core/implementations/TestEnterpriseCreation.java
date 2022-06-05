@@ -1,8 +1,5 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
-import com.guicedee.activitymaster.fsdm.DefaultEnterprise;
-import com.guicedee.activitymaster.fsdm.EnterpriseService;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.logger.LogFactory;
 import com.guicedee.logger.logging.LogColourFormatter;
 import org.junit.jupiter.api.Test;
@@ -24,8 +21,8 @@ public class TestEnterpriseCreation
 		LogFactory.configureConsoleColourOutput(Level.FINE);
 
 		//done in the before each
-		GuiceContext.get(EnterpriseService.class)
+		/*GuiceContext.get(EnterpriseService.class)
 		            .startNewEnterprise(DefaultEnterprise.TestEnterprise.toString(), "admin", "admin"
-				            );
+				            );*/
 	}
 }

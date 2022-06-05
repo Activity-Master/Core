@@ -1,13 +1,12 @@
 package com.guicedee.activitymaster.fsdm.systems;
 
 import com.entityassist.enumerations.ActiveFlag;
+import com.guicedee.activitymaster.fsdm.ActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterProgressMonitor;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.activitymaster.fsdm.ActiveFlagService;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.*;
@@ -57,5 +56,4 @@ public class ActiveFlagSystem
 	{
 		return "The system for the active flag management";
 	}
-
 }

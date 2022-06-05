@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMast
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.logger.LogFactory;
 
 import java.sql.Connection;
@@ -36,7 +37,7 @@ public class ActivityMasterService
 	{
 		enterpriseService.loadUpdates(enterprise);
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public void runScript(String script)
 	{
@@ -51,7 +52,7 @@ public class ActivityMasterService
 			          .log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public void updatePartitionBases()
 	{

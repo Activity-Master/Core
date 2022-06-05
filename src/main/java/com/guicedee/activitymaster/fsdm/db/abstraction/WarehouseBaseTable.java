@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.abstraction;
 import com.entityassist.SCDEntity;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
@@ -21,8 +22,8 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 	
 	public J expireIn(Duration duration)
 	{
-		setEffectiveToDate(com.entityassist.RootEntity.getNow()
-		                                              .plus(duration));
+		setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow())
+		                                                              .plus(duration));
 		update();
 		return (J) this;
 	}

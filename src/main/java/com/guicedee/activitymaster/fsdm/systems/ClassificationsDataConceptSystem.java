@@ -9,7 +9,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.activitymaster.fsdm.implementations.interceptors.EventsAOPInterceptor;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService.*;

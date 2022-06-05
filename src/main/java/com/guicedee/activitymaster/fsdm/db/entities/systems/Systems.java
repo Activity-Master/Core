@@ -20,7 +20,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
@@ -135,7 +136,7 @@ public class Systems
 	{
 		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
 		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-		setEffectiveToDate(com.entityassist.RootEntity.getNow());
+		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		update();
 		return this;
 	}

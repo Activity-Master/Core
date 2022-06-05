@@ -42,7 +42,7 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, Ente
 				if (GuiceContext.get(SecurityTokenSystem.class)
 				                .hasSystemInstalled(ent))
 				{
-					LogFactory.getLog(getClass()).info("Enabling Authentication Modules");
+					LogFactory.getLog(getClass()).info("Enabling Enterprise Security Stack.....");
 					activityMasterConfiguration.setSecurityEnabled(true);
 				}
 			}

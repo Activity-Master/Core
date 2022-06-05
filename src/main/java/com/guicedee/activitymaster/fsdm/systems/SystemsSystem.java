@@ -123,5 +123,4 @@ public class SystemsSystem
 	{
 		return "The Core Enterprise Activity Monitoring Application";
 	}
-	
 }

@@ -524,10 +524,10 @@ public class ResourceItem
 		
 		ResourceItemData rid = new ResourceItemData();
 		rid.setResource(this);
-		rid.setEffectiveFromDate(com.entityassist.RootEntity.getNow());
-		rid.setWarehouseCreatedTimestamp(com.entityassist.RootEntity.getNow());
-		rid.setEffectiveToDate(EndOfTime);
-		rid.setWarehouseLastUpdatedTimestamp(EndOfTime);
+		rid.setEffectiveFromDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		rid.setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		rid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
+		rid.setWarehouseLastUpdatedTimestamp(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
 		rid.setResourceItemData(data);
 		rid.setActiveFlagID(getActiveFlagID());
 		rid.setOriginalSourceSystemID(getSystemID());

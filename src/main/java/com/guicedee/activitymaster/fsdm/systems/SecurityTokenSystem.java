@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
 
 
 public class SecurityTokenSystem
@@ -76,12 +75,12 @@ public class SecurityTokenSystem
 		logProgress("Security Management", "Setting Security Configurator to Activity Master");
 		
 		//Load all the systems system tokens that are created before I am
-		EnterpriseSystem enterpriseSystem = get(EnterpriseSystem.class);
-		ActiveFlagSystem afs = get(ActiveFlagSystem.class);
-		ClassificationsSystem cfs = get(ClassificationsSystem.class);
-		ClassificationsDataConceptSystem cdcs = get(ClassificationsDataConceptSystem.class);
-		SystemsSystem ss = get(SystemsSystem.class);
-		InvolvedPartySystem ips = get(InvolvedPartySystem.class);
+		EnterpriseSystem enterpriseSystem = GuiceContext.get(EnterpriseSystem.class);
+		ActiveFlagSystem afs = GuiceContext.get(ActiveFlagSystem.class);
+		ClassificationsSystem cfs = GuiceContext.get(ClassificationsSystem.class);
+		ClassificationsDataConceptSystem cdcs = GuiceContext.get(ClassificationsDataConceptSystem.class);
+		SystemsSystem ss = GuiceContext.get(SystemsSystem.class);
+		InvolvedPartySystem ips = GuiceContext.get(InvolvedPartySystem.class);
 		systemsService
 		              .registerNewSystem(enterprise, enterpriseSystem.getSystem(enterprise));
 		systemsService
@@ -379,7 +378,7 @@ public class SecurityTokenSystem
 	void createActivityMasterInvolvedParty(IEnterprise<?,?> enterprise)
 	{
 		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
-		get(SystemsSystem.class)
+		GuiceContext.get(SystemsSystem.class)
 				.createInvolvedPartyForNewSystem(activityMasterSystem);
 	}
 	

@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db;
 
 import bitronix.tm.TransactionManagerServices;
+import com.guicedee.activitymaster.fsdm.ActivityMasterStatics;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.guicedpersistence.btm.BTMConnectionBaseInfo;
 import com.guicedee.guicedpersistence.btm.BTMTransactionIsolation;
@@ -26,16 +27,17 @@ public class ActivityMasterDBModule
 	@Override
 	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(ParsedPersistenceXmlDescriptor persistenceUnit, Properties properties)
 	{
-		if (System.getProperty("fsdm_integratedSecurity") == null)
+/*		if (System.getProperty("fsdm_integratedSecurity") == null)
 		{
 			System.setProperty("fsdm_integratedSecurity", "true");
-		}
+		}*/
 		TransactionManagerServices.getConfiguration()
 		                          .setAllowMultipleLrc(true)
 		                          .setAsynchronous2Pc(true)
 		                          .setDisableJmx(true)
 		                          .setMaxLogSizeInMb(20)
 		                          .setSkipCorruptedLogs(true)
+		                          .setDefaultTransactionTimeout(ActivityMasterStatics.transactionDebugTimeout)
 		                          .setWarnAboutZeroResourceTransaction(true);
 		
 		return new BTMConnectionBaseInfo()
@@ -45,24 +47,6 @@ public class ActivityMasterDBModule
 				.setPrefill(false)
 				.setShareTransactionConnections(true)
 				.setAllowLocalTransactions(true)
-				
-				
-				//.setXa(true)
-			//	.setClassName("com.microsoft.sqlserver.jdbc.SQLServerXADataSource")
-			//	.setDriverClass("com.microsoft.sqlserver.jdbc.SQLServerDriver")
-				
-				/*.setServerName(System.getProperty("fsdm_dbserver", "localhost"))
-				.setDatabaseName(System.getProperty("fsdm_dbname", "FSDM"))
-			//	.setInstanceName(System.getProperty("fsdm_dbinstance", ""))
-				.setUsername(System.getProperty("fsdm_username", ""))
-				.setPassword(System.getProperty("fsdm_password", ""))
-				
-				.setUrl("jdbc:sqlserver://" + System.getProperty("fsdm_dbserver", "localhost") +
-				        ";DatabaseName=" + System.getProperty("fsdm_dbname", "FSDM")
-				        + ";integratedSecurity=" + System.getProperty("fsdm_integratedSecurity", "true") + ";" +
-				        "trustServerCertificate=true;"
-				        )*/
-				
 				.setTransactionIsolation(BTMTransactionIsolation.READ_COMMITTED.toString())
 				;
 	}

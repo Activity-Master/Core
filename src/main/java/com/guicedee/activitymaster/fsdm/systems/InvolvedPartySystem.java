@@ -126,5 +126,4 @@ public class InvolvedPartySystem
 	{
 		return "The system for managing Involved Parties";
 	}
-	
 }

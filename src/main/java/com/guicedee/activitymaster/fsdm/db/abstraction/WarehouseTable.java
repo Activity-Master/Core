@@ -65,7 +65,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 	{
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-		setEffectiveToDate(com.entityassist.RootEntity.getNow());
+		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		update();
 		return (J) this;
 	}

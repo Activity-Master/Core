@@ -5,6 +5,7 @@ import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType;
@@ -15,6 +16,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resou
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ArrangementException;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.*;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
@@ -22,6 +24,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
@@ -42,26 +45,28 @@ public class ArrangementsService
 {
 	@Inject
 	private IClassificationService<?> classificationService;
-
+	
 	@Inject
-	private IEnterprise<?,?> enterprise;
+	private IEnterprise<?, ?> enterprise;
 	
 	@Override
-	public IArrangement<?,?> get()
+	public IArrangement<?, ?> get()
 	{
 		return new Arrangement();
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IArrangement<?, ?> create(String type,
 	                                 String arrangementTypeClassification,
 	                                 String arrangementTypeValue,
-	                                 ISystems<?,?> system,
+	                                 ISystems<?, ?> system,
 	                                 java.util.UUID... identityToken)
 	{
-		return create(type,null, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
+		return create(type, null, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IArrangement<?, ?> create(String type, java.lang.String key,
@@ -101,7 +106,7 @@ public class ArrangementsService
 		xr.setOriginalSourceSystemID(system);
 		xr.setEnterpriseID(enterprise);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		xr.setActiveFlagID(activeFlag);
 		xr.persist();
 		
@@ -110,19 +115,19 @@ public class ArrangementsService
 		IArrangementType<?, ?> arrangementType = findArrangementType(type, system, identityToken);
 		
 		var xarxr = xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
-				arrangementTypeValue,arrangementTypeValue, system, identityToken);
+				arrangementTypeValue, arrangementTypeValue, system, identityToken);
 		
 		//xarxr.createDefaultSecurity(system, identityToken);
 		return xr;
 	}
 	
 	@Override
-	public IArrangementType<?, ?> createArrangementType(String type, ISystems<?,?> system, java.util.UUID... identityToken)
+	public IArrangementType<?, ?> createArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		return createArrangementType(type, null,system, identityToken);
+		return createArrangementType(type, null, system, identityToken);
 	}
 	
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "ArrangementTypes")
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -146,7 +151,7 @@ public class ArrangementsService
 			xr.setOriginalSourceSystemID(system);
 			xr.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			xr.createDefaultSecurity(system, identityToken);
@@ -159,21 +164,23 @@ public class ArrangementsService
 		return xr;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public IArrangementType<?, ?> findArrangementType(String type, ISystems<?,?> system, java.util.UUID... identityToken)
+	public IArrangementType<?, ?> findArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
-		return  xr.builder()
-		                   .withName(type)
-		                   .inActiveRange()
-		                   .inDateRange()
-		                   .withEnterprise(enterprise)
-		                   .get()
-				.orElseThrow(()-> new ArrangementException("Unable to find arrangement type - " + type));
+		return xr.builder()
+		         .withName(type)
+		         .inActiveRange()
+		         .inDateRange()
+		         .withEnterprise(enterprise)
+		         .get()
+		         .orElseThrow(() -> new ArrangementException("Unable to find arrangement type - " + type));
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findInvolvedPartyArrangements(IInvolvedParty<?, ?> ip, String arrType, ISystems<?,?> systems, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findInvolvedPartyArrangements(IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		List<ArrangementXInvolvedParty> xips =
 				new ArrangementXInvolvedParty()
@@ -187,13 +194,14 @@ public class ArrangementsService
 		
 		return xips.stream()
 		           .map(ArrangementXInvolvedParty::getArrangementID)
-		           .filter(a -> com.entityassist.RootEntity.getNow()
-		                                     .isBefore(a.getEffectiveToDate()))
+		           .filter(a -> QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow())
+		                                       .isBefore(a.getEffectiveToDate()))
 		           .collect(Collectors.toList());
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByClassification(String classificationName, String value, ISystems<?,?> systems, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByClassification(String classificationName, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(classificationName, systems, identityToken);
 		
@@ -219,8 +227,9 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByClassificationGT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?,?> systems, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByClassificationGT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
@@ -261,8 +270,9 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByClassificationGTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?,?> systems, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByClassificationGTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
@@ -303,6 +313,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationGTEWithIP(String arrangementType, String classificationName,
 	                                                                          IInvolvedParty<?, ?> withInvolvedParty,
@@ -310,7 +321,7 @@ public class ArrangementsService
 	                                                                          IArrangement<?, ?> withParent,
 	                                                                          IResourceItem<?, ?> resourceItem,
 	                                                                          String resourceItemClassification,
-	                                                                          String value, ISystems<?,?> system,
+	                                                                          String value, ISystems<?, ?> system,
 	                                                                          java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
@@ -411,8 +422,9 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByClassificationLT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?,?> systems, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByClassificationLT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
@@ -453,8 +465,9 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByClassificationLTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?,?> systems, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByClassificationLTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
@@ -495,8 +508,9 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByClassification(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?,?> systems, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByClassification(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
@@ -542,8 +556,9 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public IArrangement<?, ?> findArrangementByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
+	public IArrangement<?, ?> findArrangementByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -559,11 +574,13 @@ public class ArrangementsService
 		                                                                                            .where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
 		                                                                                            .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                                            .get();
-		return arrangementXResourceItem.<IArrangement<?, ?>>map(ArrangementXResourceItem::getArrangementID).orElse(null);
+		return arrangementXResourceItem.<IArrangement<?, ?>>map(ArrangementXResourceItem::getArrangementID)
+		                               .orElse(null);
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public IArrangement<?, ?> findArrangementByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
+	public IArrangement<?, ?> findArrangementByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -579,11 +596,13 @@ public class ArrangementsService
 		                                                                           .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
 		                                                                           .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                           .get();
-		return arxip.<IArrangement<?, ?>>map(ArrangementXInvolvedParty::getArrangementID).orElse(null);
+		return arxip.<IArrangement<?, ?>>map(ArrangementXInvolvedParty::getArrangementID)
+		            .orElse(null);
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByRulesType(IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByRulesType(IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -605,8 +624,9 @@ public class ArrangementsService
 		return collect;
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?,?> system, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -627,8 +647,9 @@ public class ArrangementsService
 		          .collect(Collectors.toList());
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?,?> system, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -649,8 +670,9 @@ public class ArrangementsService
 		          .collect(Collectors.toList());
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -666,11 +688,14 @@ public class ArrangementsService
 		                                                                       .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
 		                                                                       .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                       .getAll();
-		return arxip.stream().<IArrangement<?, ?>>map(ArrangementXInvolvedParty::getArrangementID).collect(Collectors.toList());
+		return arxip.stream()
+		            .<IArrangement<?, ?>>map(ArrangementXInvolvedParty::getArrangementID)
+		            .collect(Collectors.toList());
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IInvolvedParty<?, ?>> findArrangementInvolvedParties(IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
+	public List<IInvolvedParty<?, ?>> findArrangementInvolvedParties(IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -686,12 +711,15 @@ public class ArrangementsService
 		                                                                       .where(ArrangementXInvolvedParty_.arrangementID, Equals, (Arrangement) arrangement)
 		                                                                       .orderBy(ArrangementXInvolvedParty_.effectiveFromDate, DESC)
 		                                                                       .getAll();
-		return arxip.stream().<IInvolvedParty<?, ?>>map(ArrangementXInvolvedParty::getInvolvedPartyID).collect(Collectors.toList());
+		return arxip.stream()
+		            .<IInvolvedParty<?, ?>>map(ArrangementXInvolvedParty::getInvolvedPartyID)
+		            .collect(Collectors.toList());
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "ArrangementArrangementTypeString")
 	@Override
-	public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
 		return xr.builder()
@@ -704,9 +732,10 @@ public class ArrangementsService
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement type - " + idType));
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult
-	public IArrangement<?, ?> find(@CacheKey java.util.UUID id,  ISystems<?,?> system, java.util.UUID... identityToken)
+	public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Arrangement xr = new Arrangement();
 		return xr.builder()
@@ -715,6 +744,7 @@ public class ArrangementsService
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement with ID " + id));
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.lang.String id)
@@ -726,8 +756,9 @@ public class ArrangementsService
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement with ID " + id));
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	public List<IArrangement<?, ?>> findAll(String arrangementType, ISystems<?,?> system, java.util.UUID... identityToken)
+	public List<IArrangement<?, ?>> findAll(String arrangementType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		IArrangementType<?, ?> type = find(arrangementType, system, identityToken);
 		List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder()
@@ -746,7 +777,7 @@ public class ArrangementsService
 	}
 	
 	@Override
-	public IArrangement<?, ?> completeArrangement(IArrangement<?, ?> arrangement, ISystems<?,?> system, java.util.UUID... identityToken)
+	public IArrangement<?, ?> completeArrangement(IArrangement<?, ?> arrangement, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Arrangement arr = (Arrangement) arrangement;
 		arr.expireIn(Duration.ZERO);

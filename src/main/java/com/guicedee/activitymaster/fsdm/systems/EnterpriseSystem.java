@@ -53,5 +53,4 @@ public class EnterpriseSystem
 	{
 		return "The system for handling enterprises";
 	}
-	
 }

@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -15,6 +16,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -46,7 +48,7 @@ public class RulesService
 	}
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IRules<?,?> createRules(String rulesType, java.lang.String key, String name, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		boolean exists = new Rules().builder()
@@ -67,6 +69,7 @@ public class RulesService
 		}
 		
 		Rules rules = new Rules();
+		if(key != null)
 		rules.setId(key.toString());
 		rules.setName(name);
 		rules.setDescription(description);
@@ -86,7 +89,7 @@ public class RulesService
 		
 		return rules;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IRules<?,?> find(java.lang.String identity)
 	{
@@ -95,7 +98,7 @@ public class RulesService
 		                  .get()
 		                  .orElse(null);
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IRulesType<?,?> findType(java.lang.String identity)
 	{
@@ -104,7 +107,7 @@ public class RulesService
 		                  .get()
 		                  .orElse(null);
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IRules<?,?> findRules(String name, IEnterprise<?,?> enterprise, java.util.UUID... identityToken)
 	{
@@ -116,7 +119,7 @@ public class RulesService
 		                  .get()
 		                  .orElse(null);
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IRules<?,?> findRules(String productName, IClassification<?,?> classification, IEnterprise<?,?> enterprise, java.util.UUID... identityToken)
 	{
@@ -143,7 +146,7 @@ public class RulesService
 	}
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IRulesType<?,?> createRulesType(String rulesType, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		RulesType et = new RulesType();
@@ -157,6 +160,7 @@ public class RulesService
 		
 		if (!exists)
 		{
+			if(key != null)
 			et.setId(key.toString());
 			et.setName(rulesType);
 			et.setDescription(description);
@@ -176,7 +180,7 @@ public class RulesService
 			return findRulesTypes(rulesType, system, identityToken);
 		}
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "RulesTypesString")
 	public IRulesType<?,?> findRulesTypes(@CacheKey String rulesType, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
@@ -190,7 +194,7 @@ public class RulesService
 		                      .get()
 		                      .orElseThrow();
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRulesType<?,?>> findRulesTypes(String classifications, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
@@ -206,7 +210,7 @@ public class RulesService
 		//noinspection unchecked
 		return all;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRules<?,?>> findByRulesTypes(IRulesType<?,?> rulesType, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
@@ -223,7 +227,7 @@ public class RulesService
 		                                .collect(Collectors.toList());
 		return res;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRulesType<?,?>> findRuleTypesByRules(IRules<?,?> rulesType, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
@@ -240,7 +244,7 @@ public class RulesService
 		                                .collect(Collectors.toList());
 		return res;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRelationshipValue<IRules<?,?>,IRulesType<?,?>,?>> findRuleTypeValuesByRules(IRules<?,?> rulesType, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
@@ -254,7 +258,7 @@ public class RulesService
 		                                .getAll();
 		return res;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRules<?,?>> findRulesByProduct(IProduct<?,?> product, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
@@ -272,7 +276,7 @@ public class RulesService
 		return res;
 	}
 	
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRelationshipValue<IRules<?,?>,IResourceItem<?,?>,?>> findRulesByResourceItem(IResourceItem<?,?> resourceItem, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{

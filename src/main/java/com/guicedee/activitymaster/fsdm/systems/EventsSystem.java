@@ -95,5 +95,4 @@ public class EventsSystem
 	{
 		return "The system for managing events";
 	}
-	
 }

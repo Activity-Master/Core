@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -18,6 +19,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.logger.LogFactory;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
@@ -51,7 +53,7 @@ public class InvolvedPartyService
 	{
 		return new InvolvedParty();
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "InvovledPartyByID")
 	public IInvolvedParty<?, ?> findByID(@CacheKey UUID id)
@@ -63,7 +65,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedPartyNameType<?, ?> createNameType(String name, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		InvolvedPartyNameType xr = new InvolvedPartyNameType();
@@ -100,7 +102,7 @@ public class InvolvedPartyService
 	
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedPartyIdentificationType<?, ?> createIdentificationType(ISystems<?, ?> system, String name, String description, java.util.UUID... identityToken)
 	{
 		InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
@@ -134,7 +136,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedPartyType<?, ?> createType(ISystems<?, ?> system, String name, String description, java.util.UUID... identityToken)
 	{
 		InvolvedPartyType xr = new InvolvedPartyType();
@@ -209,7 +211,7 @@ public class InvolvedPartyService
 		
 		return xr;
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
 	@Override
 	public IInvolvedPartyIdentificationType<?, ?> findInvolvedPartyIdentificationType(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -223,7 +225,7 @@ public class InvolvedPartyService
 		         .get()
 		         .orElseThrow(() -> new ActivityMasterException("No Read Access or No Item Found"));
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
 	public IInvolvedParty<?, ?> findByResourceItem(@CacheKey IResourceItem<?, ?> idType, @CacheKey String value, ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -250,7 +252,7 @@ public class InvolvedPartyService
 	}
 	
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedParty<?, ?> create(ISystems<?, ?> system, java.lang.String key, Pair<String, String> idTypes,
 	                                   boolean isOrganic, java.util.UUID... identityToken)
 	{
@@ -288,7 +290,6 @@ public class InvolvedPartyService
 		return ip;
 	}
 	
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void setupInvolvedPartyOrganicStatus(boolean isOrganic, IInvolvedParty<?, ?> ip, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		if (isOrganic)
@@ -324,7 +325,7 @@ public class InvolvedPartyService
 			
 		}
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
 	@Override
 	public IInvolvedPartyType<?, ?> findType(@CacheKey String nameType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -339,7 +340,7 @@ public class InvolvedPartyService
 		         .get()
 		         .orElse(null);
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
 	@Override
 	public IInvolvedPartyNameType<?, ?> findInvolvedPartyNameType(@CacheKey String nameType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -354,7 +355,7 @@ public class InvolvedPartyService
 		         .get()
 		         .orElse(null);
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByToken")
 	public IInvolvedParty<?, ?> findByToken(@CacheKey ISecurityToken<?, ?> token, @CacheKey java.util.UUID... identityToken)
@@ -372,7 +373,7 @@ public class InvolvedPartyService
 		                .orElse(null);
 		
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedParty<?, ?> find(@CacheKey UUID uuid)
 	{
@@ -381,7 +382,7 @@ public class InvolvedPartyService
 		                          .get()
 		                          .orElseThrow(() -> new InvolvedPartyException("The IP does not exist - " + uuid));
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedPartyType<?, ?> findType(@CacheKey UUID uuid)
 	{
@@ -390,7 +391,7 @@ public class InvolvedPartyService
 		                              .get()
 		                              .orElseThrow(() -> new InvolvedPartyException("The IP Type does not exist - " + uuid));
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedPartyNameType<?, ?> findNameType(@CacheKey UUID uuid)
 	{
@@ -399,7 +400,7 @@ public class InvolvedPartyService
 		                                  .get()
 		                                  .orElseThrow(() -> new InvolvedPartyException("The IP Name Type does not exist - " + uuid));
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedPartyIdentificationType<?, ?> findIdentificationType(@CacheKey UUID uuid)
 	{
@@ -408,7 +409,7 @@ public class InvolvedPartyService
 		                                            .get()
 		                                            .orElseThrow(() -> new InvolvedPartyException("The IP Name Type does not exist - " + uuid));
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByUUID")
 	public IInvolvedParty<?, ?> findByUUID(@CacheKey UUID token, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -427,6 +428,7 @@ public class InvolvedPartyService
 		                .orElse(null);
 	}
 	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public List<IRelationshipValue<IInvolvedParty<?, ?>, IInvolvedPartyIdentificationType<?, ?>, ?>> findAllByIdentificationType(String identificationType, String value)
@@ -457,7 +459,7 @@ public class InvolvedPartyService
 			return null;
 		}
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<IInvolvedParty<?, ?>> findByRulesClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
@@ -477,7 +479,7 @@ public class InvolvedPartyService
 		return collect;
 		
 	}
-	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedParty<?, ?> findByClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{

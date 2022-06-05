@@ -56,4 +56,5 @@ public class ArrangementsSystem
 	{
 		return "The system for the arrangement management";
 	}
+	
 }
