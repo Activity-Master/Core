@@ -14,9 +14,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.postgresql</groupId>
+            <groupId>com.guicedee.services</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.5</version>
         </dependency>
 
 

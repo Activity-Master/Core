@@ -36,7 +36,6 @@ public class ResourceItemData
 	        name = "ResourceItemDataID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private String id;
-	@Lob()
 	@Column(nullable = false,
 	        name = "ResourceItemData")
 	private byte[] resourceItemData;

@@ -262,16 +262,17 @@ public class ResourceItem
 			}
 		}
 		
-		Optional<byte[]> d
+		Optional<Object[]> d
 				= new ResourceItemData().builder()
 				                        .inActiveRange()
 				                        .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
 				                        .selectColumn(ResourceItemData_.resourceItemData)
-				                        .get(byte[].class);
+				                        .get(Object[].class);
 		if (d.isPresent())
 		{
-			byte[] data = d.get();
+			Object[] dataObject = d.get();
+			byte[] data = (byte[]) dataObject[0];
 			if (flushToDisk && dr.isPresent())
 			{
 				if (flushExploded)
@@ -388,6 +389,10 @@ public class ResourceItem
 	public void updateData(byte[] data, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		//	System.out.println(LocalDateTime.now() + " start zip - " + data.length);
+		if(data == null || data.length == 0)
+		{
+			throw new RuntimeException("Cannot store 0 data into a resource item");
+		}
 		if (!flushToDisk)
 		{
 			data = zip(data);
@@ -423,21 +428,6 @@ public class ResourceItem
 				if (data.length == 0)
 				{
 					throw new ResourceItemException("Cannot create a resource item that has no data?");
-				}
-				if (data.length < 4096)
-				{
-					boolean noUpdate = new ResourceItemData().builder()
-					                                         .inActiveRange()
-					                                         //       .inDateRange()
-					                                         .where(ResourceItemData_.resourceItemData, Equals, data)
-					                                         .where(ResourceItemData_.resource, Equals, this)
-					                                         .getCount() > 0;
-					if (noUpdate)
-					{
-						//Identical resource data, no update to occur
-						//System.out.println("No update required to resource item data");
-						return;
-					}
 				}
 				rid.setResourceItemData(data);
 				rid.update();

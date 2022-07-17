@@ -128,26 +128,6 @@ public class ResourceItemService
 	                                  LocalDateTime effectiveFromDate,
 	                                  ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		if (!Strings.isNullOrEmpty(originalSourceSystemUniqueID))
-		{
-			if (new ResourceItem().builder()
-			                      .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
-			                      .withValue(resourceItemDataValue)
-			                      .withType(identityResourceType, null, system, identityToken)
-			                      .inDateRange()
-			                      .inActiveRange()
-			                      .getCount() > 0)
-			{
-				return new ResourceItem().builder()
-				                         .where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceSystemUniqueID)
-				                         .withValue(resourceItemDataValue)
-				                         .inDateRange()
-				                         .withType(identityResourceType, null, system, identityToken)
-				                         .inActiveRange()
-				                         .get()
-				                         .orElseThrow();
-			}
-		}
 		ResourceItem xr = new ResourceItem();
 		xr.setId(key);
 		boolean exists = xr.builder()
@@ -159,40 +139,14 @@ public class ResourceItemService
 		                   .getCount() > 0;
 		if (exists)
 		{
-			if (key != null)
-			{
-				Optional<ResourceItem> found = xr.builder()
-				                                 .find(key)
-				                                 .get();
-				if (found.isPresent())
-				{
-					return found.get();
-				}
-				else
-				{
-					//expire current record, wrong UUID
-					var result = xr.builder()
-					               .withValue(resourceItemDataValue)
-					               .inActiveRange()
-					               .inDateRange()
-					               .withType(identityResourceType, null, system, identityToken)
-					               .withEnterprise(enterprise)
-					               .get()
-					               .get();
-					result.expire();
-				}
-			}
-			else
-			{
-				return xr.builder()
-				         .withValue(resourceItemDataValue)
-				         .inActiveRange()
-				         .inDateRange()
-				         .withType(identityResourceType, null, system, identityToken)
-				         .withEnterprise(enterprise)
-				         .get()
-				         .orElseThrow();
-			}
+			return xr.builder()
+			         .withValue(resourceItemDataValue)
+			         .inActiveRange()
+			         .inDateRange()
+			         .withType(identityResourceType, null, system, identityToken)
+			         .withEnterprise(enterprise)
+			         .get()
+			         .orElseThrow();
 		}
 		xr.setOriginalSourceSystemID(system);
 		xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
@@ -355,6 +309,7 @@ public class ResourceItemService
 	{
 		return findByResourceItemType(type, null, systems, identityToken);
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, String value, @CacheKey ISystems<?, ?> systems, @CacheKey java.util.UUID... identityToken)
