@@ -58,7 +58,6 @@ public class ActiveFlag
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
-	
 	private Enterprise enterpriseID;
 	
 	@Basic(optional = false)

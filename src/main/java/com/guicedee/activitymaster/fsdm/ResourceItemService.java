@@ -130,24 +130,6 @@ public class ResourceItemService
 	{
 		ResourceItem xr = new ResourceItem();
 		xr.setId(key);
-		boolean exists = xr.builder()
-		                   .withValue(resourceItemDataValue)
-		                   .inActiveRange()
-		                   .withType(identityResourceType, null, system, identityToken)
-		                   .inDateRange()
-		                   .withEnterprise(enterprise)
-		                   .getCount() > 0;
-		if (exists)
-		{
-			return xr.builder()
-			         .withValue(resourceItemDataValue)
-			         .inActiveRange()
-			         .inDateRange()
-			         .withType(identityResourceType, null, system, identityToken)
-			         .withEnterprise(enterprise)
-			         .get()
-			         .orElseThrow();
-		}
 		xr.setOriginalSourceSystemID(system);
 		xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		xr.setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(effectiveFromDate));

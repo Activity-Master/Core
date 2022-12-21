@@ -2,14 +2,7 @@ package com.guicedee.activitymaster.fsdm.injections;
 
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedhazelcast.services.IGuicedHazelcastServerConfig;
-import com.guicedee.guicedinjection.GuiceContext;
-import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.MetricsConfig;
-import com.hazelcast.config.MetricsJmxConfig;
-import com.hazelcast.config.MetricsManagementCenterConfig;
-
-import jakarta.cache.CacheManager;
+import com.hazelcast.config.*;
 
 public class HazelcastServerConfig
         implements IGuicedHazelcastServerConfig<HazelcastServerConfig> {
@@ -20,10 +13,11 @@ public class HazelcastServerConfig
             config.getNetworkConfig()
                     .getJoin()
                     .getMulticastConfig()
-                    .setEnabled(false);
+                    .setEnabled(true);
         }
         config.getManagementCenterConfig()
-                .setScriptingEnabled(false);
+                .setScriptingEnabled(true);
+        
         config.setClusterName(HazelcastProperties.getGroupName());
         config.setInstanceName(HazelcastProperties.getInstanceName());
 

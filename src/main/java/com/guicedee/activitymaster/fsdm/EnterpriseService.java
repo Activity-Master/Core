@@ -76,7 +76,7 @@ public class EnterpriseService
 		EnterpriseProvider.loadedEnterprise = enterprise;
 		return enterprise;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+
 	@Override
 	public void loadUpdates(IEnterprise<?,?> enterprise)
 	{
@@ -100,7 +100,11 @@ public class EnterpriseService
 		Set<IOnSystemUpdate> systemUpdateEventHandlers = IDefaultService.loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
 		
 		setTotalTasks(tasks);
-		availableUpdates.forEach((key, value) -> {
+		
+		for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
+		{
+			Integer key = entry.getKey();
+			Class<? extends ISystemUpdate> value = entry.getValue();
 			try
 			{
 				logProgress("Update System", "Starting updates for " + value.getSimpleName());
@@ -114,15 +118,16 @@ public class EnterpriseService
 				{
 					a.onSystemUpdateEnd(value);
 				}
-			}catch (Throwable T)
+			}
+			catch (Throwable T)
 			{
-				log.log(Level.SEVERE,"Unable to perform update",T);
+				log.log(Level.SEVERE, "Unable to perform update", T);
 				for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
 				{
 					a.onSystemUpdateFail(value);
 				}
 			}
-		});
+		}
 		enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
 		                                                                                  .format(LocalDate.now()), system);
 		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(LocalDate.now()));
@@ -172,12 +177,15 @@ public class EnterpriseService
 		Set<String> enterpriseAppliedUpdates = getEnterpriseAppliedUpdates(enterprise);
 		Map<Integer, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
 		
-		availableUpdates.forEach((key, value) -> {
+		for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
+		{
+			Integer key = entry.getKey();
+			Class<? extends ISystemUpdate> value = entry.getValue();
 			if (!enterpriseAppliedUpdates.contains(value.getCanonicalName()))
 			{
 				applicableUpdates.put(key, value);
 			}
-		});
+		}
 		return applicableUpdates;
 	}
 	
@@ -199,10 +207,12 @@ public class EnterpriseService
 			availableUpdates.put(du.sortOrder(), clazz);
 		}
 		Map<Integer, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
-		availableUpdates.forEach((key, value) -> {
-				applicableUpdates.put(key, value);
-			
-		});
+		for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
+		{
+			Integer key = entry.getKey();
+			Class<? extends ISystemUpdate> value = entry.getValue();
+			applicableUpdates.put(key, value);
+		}
 		return applicableUpdates;
 	}
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -298,7 +308,6 @@ public class EnterpriseService
 		return startNewEnterprise(enterpriseName, adminUserName, adminPassword, null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IEnterprise<?,?> startNewEnterprise(String enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier)
@@ -337,14 +346,12 @@ public class EnterpriseService
 		return enterprise;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public void createNewEnterprise(@NotNull IEnterprise<?,?> enterprise)
 	{
 		GuiceContext.get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
-		
 		wipeCaches();
 		createBase(allSystems, enterprise);
 		wipeCaches();
@@ -387,7 +394,6 @@ public class EnterpriseService
 		return false;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void installSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		//then from classifications data service do both
@@ -404,9 +410,17 @@ public class EnterpriseService
 			{
 				logProgress("Running System ", allSystem.getClass()
 				                                       .getSimpleName());
-				performSystemInstall(enterprise, allSystem);
+				installSystem(allSystem,enterprise);
 			}
 		}
+	}
+	
+	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	private void installSystem(IActivityMasterSystem<?> system, IEnterprise<?,?> enterprise)
+	{
+		logProgress("Running System ", system.getClass()
+		                                        .getSimpleName());
+		performSystemInstall(enterprise, system);
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -418,20 +432,21 @@ public class EnterpriseService
 		
 		@SuppressWarnings({"rawtypes", "unchecked"})
 		Set<IOnSystemInstall> systemInstallEventListeners = IDefaultService.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
-		systemInstallEventListeners.forEach(a->{
-			a.onSystemInstallStart(registeredSystem.getSystemName());
-		});
+		for (IOnSystemInstall systemInstallEventListener : systemInstallEventListeners)
+		{
+			systemInstallEventListener.onSystemInstallStart(registeredSystem.getSystemName());
+		}
 		ISystems<?, ?> registerSystem = registeredSystem.registerSystem(enterprise);
 		
 		registeredSystem.createDefaults(enterprise);
-		systemInstallEventListeners.forEach(a->{
+		for (IOnSystemInstall a : systemInstallEventListeners)
+		{
 			a.onSystemInstallEnd(registeredSystem.getSystemName());
-		});
+		}
 		
 		logProgress("Installed System", nameC, 1);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void createBaseSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Base Systems", "Initializing Base Systems");
@@ -447,7 +462,6 @@ public class EnterpriseService
 		}
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void createBase( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Core", "Initializing Core Systems");

@@ -53,6 +53,7 @@ public class InvolvedPartyService
 	{
 		return new InvolvedParty();
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "InvovledPartyByID")
@@ -85,7 +86,7 @@ public class InvolvedPartyService
 			xr.setOriginalSourceSystemID(system);
 			xr.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			
@@ -122,7 +123,7 @@ public class InvolvedPartyService
 			xr.setOriginalSourceSystemID(system);
 			xr.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			xr.createDefaultSecurity(system, identityToken);
@@ -156,7 +157,7 @@ public class InvolvedPartyService
 			xr.setOriginalSourceSystemID(system);
 			xr.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
 			ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
@@ -172,45 +173,26 @@ public class InvolvedPartyService
 	}
 	
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	public InvolvedPartyOrganicType createOrganicType(ISystems<?, ?> system, String name, String description, java.util.UUID... identityToken)
+	public InvolvedPartyOrganicType createOrganicType(ISystems<?, ?> system, String key, String name, String description, java.util.UUID... identityToken)
 	{
 		InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
-		boolean exists = xr.builder()
-		                   .withName(name)
-		                   .inActiveRange()
-		                   .inDateRange()
-		                   .withEnterprise(enterprise)
-		                   .getCount() > 0;
-		
-		if (!exists)
-		{
-			xr.setName(name);
-			xr.setDescription(description);
-			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
-			xr.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
-			xr.setActiveFlagID(activeFlag);
-			xr.persist();
-			ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
-			//UUID activityMasterSystemUUID = IActivityMasterService.getISystemToken(ActivityMasterSystemName);
-			xr.createDefaultSecurity(activityMasterSystem, identityToken);
-			
-		}
-		else
-		{
-			xr = xr.builder()
-			       .withName(name)
-			       .inActiveRange()
-			       .inDateRange()
-			       .withEnterprise(enterprise)
-			       .get()
-			       .orElseThrow();
-		}
+		xr.setId(key);
+		xr.setName(name);
+		xr.setDescription(description);
+		xr.setSystemID(system);
+		xr.setOriginalSourceSystemID(system);
+		xr.setEnterpriseID(enterprise);
+		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		xr.setActiveFlagID(activeFlag);
+		xr.persist();
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
+		//UUID activityMasterSystemUUID = IActivityMasterService.getISystemToken(ActivityMasterSystemName);
+		xr.createDefaultSecurity(activityMasterSystem, identityToken);
 		
 		return xr;
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
 	@Override
@@ -225,6 +207,7 @@ public class InvolvedPartyService
 		         .get()
 		         .orElseThrow(() -> new ActivityMasterException("No Read Access or No Item Found"));
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
@@ -248,7 +231,7 @@ public class InvolvedPartyService
 	public IInvolvedParty<?, ?> create(ISystems<?, ?> system, Pair<String, String> idTypes,
 	                                   boolean isOrganic, java.util.UUID... identityToken)
 	{
-		return create(system,null, idTypes, isOrganic, identityToken);
+		return create(system, null, idTypes, isOrganic, identityToken);
 	}
 	
 	@Override
@@ -257,36 +240,23 @@ public class InvolvedPartyService
 	                                   boolean isOrganic, java.util.UUID... identityToken)
 	{
 		InvolvedParty ip = new InvolvedParty();
-		Optional<InvolvedParty> exists = ip.builder()
-		                                   .withEnterprise(enterprise)
-		                                   .findByIdentificationType(idTypes.getKey(), idTypes.getValue(), system, identityToken)
-		                                   .get();
+		ip.setEnterpriseID(enterprise);
+		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		
-		if (exists.isEmpty())
-		{
-			ip.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
-			
-			ip.setId(key);
-			ip.setActiveFlagID(activeFlag);
-			ip.setSystemID(system);
-			ip.setOriginalSourceSystemID(system);
-			ip.persist();
-			
-			ip.createDefaultSecurity(system, identityToken);
-			
-			IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(idTypes.getKey(), system, identityToken);
-			ip.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType, idTypes.getValue(), idTypes.getValue(), system, identityToken);
-			InvolvedParty finalIp = ip;
-			
-			setupInvolvedPartyOrganicStatus(isOrganic, finalIp, system, identityToken);
-		}
-		else
-		{
-			ip = exists.get();
-		}
+		ip.setId(key);
+		ip.setActiveFlagID(activeFlag);
+		ip.setSystemID(system);
+		ip.setOriginalSourceSystemID(system);
+		ip.persist();
 		
+		ip.createDefaultSecurity(system, identityToken);
+		
+		IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(idTypes.getKey(), system, identityToken);
+		ip.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType, idTypes.getValue(), idTypes.getValue(), system, identityToken);
+		InvolvedParty finalIp = ip;
+		
+		setupInvolvedPartyOrganicStatus(isOrganic, finalIp, system, identityToken);
 		return ip;
 	}
 	
@@ -299,7 +269,7 @@ public class InvolvedPartyService
 			ipo.setId(ip.getId());
 			ipo.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			ipo.setActiveFlagID(activeFlag);
 			ipo.setSystemID(system);
 			ipo.setOriginalSourceSystemID(system);
@@ -315,7 +285,7 @@ public class InvolvedPartyService
 			ipo.setId(ip.getId());
 			ipo.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			ipo.setActiveFlagID(activeFlag);
 			ipo.setSystemID(system);
 			ipo.setOriginalSourceSystemID(system);
@@ -325,6 +295,7 @@ public class InvolvedPartyService
 			
 		}
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
 	@Override
@@ -340,6 +311,7 @@ public class InvolvedPartyService
 		         .get()
 		         .orElse(null);
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
 	@Override
@@ -355,6 +327,7 @@ public class InvolvedPartyService
 		         .get()
 		         .orElse(null);
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByToken")
@@ -373,6 +346,7 @@ public class InvolvedPartyService
 		                .orElse(null);
 		
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedParty<?, ?> find(@CacheKey UUID uuid)
@@ -382,6 +356,7 @@ public class InvolvedPartyService
 		                          .get()
 		                          .orElseThrow(() -> new InvolvedPartyException("The IP does not exist - " + uuid));
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedPartyType<?, ?> findType(@CacheKey UUID uuid)
@@ -391,6 +366,7 @@ public class InvolvedPartyService
 		                              .get()
 		                              .orElseThrow(() -> new InvolvedPartyException("The IP Type does not exist - " + uuid));
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedPartyNameType<?, ?> findNameType(@CacheKey UUID uuid)
@@ -400,6 +376,7 @@ public class InvolvedPartyService
 		                                  .get()
 		                                  .orElseThrow(() -> new InvolvedPartyException("The IP Name Type does not exist - " + uuid));
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedPartyIdentificationType<?, ?> findIdentificationType(@CacheKey UUID uuid)
@@ -409,6 +386,7 @@ public class InvolvedPartyService
 		                                            .get()
 		                                            .orElseThrow(() -> new InvolvedPartyException("The IP Name Type does not exist - " + uuid));
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "InvolvedPartyFindByUUID")
@@ -459,6 +437,7 @@ public class InvolvedPartyService
 			return null;
 		}
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@SuppressWarnings("unchecked")
 	@Override
@@ -479,6 +458,7 @@ public class InvolvedPartyService
 		return collect;
 		
 	}
+	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedParty<?, ?> findByClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)

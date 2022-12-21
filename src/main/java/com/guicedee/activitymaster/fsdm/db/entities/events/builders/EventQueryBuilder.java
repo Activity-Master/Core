@@ -8,7 +8,7 @@ import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.sql.Date;
-import java.time.ZoneOffset;
+import java.time.LocalDateTime;
 
 public class EventQueryBuilder
 		extends QueryBuilderTable<EventQueryBuilder, Event, java.lang.String>
@@ -19,12 +19,17 @@ public class EventQueryBuilder
 	public boolean onCreate(Event entity)
 	{
 		ITimeService time = GuiceContext.get(ITimeService.class);
-		GuiceContext.get(ITimeSystem.class)
-		            .getDay(Date.from(entity.getEffectiveFromDate().withOffsetSameInstant(ZoneOffset.of(ZoneOffset.systemDefault().getId())).toInstant()));
 		
-		entity.setDayID(time.getDayID(entity.getEffectiveFromDate().withOffsetSameInstant(ZoneOffset.of(ZoneOffset.systemDefault().getId())).toLocalDateTime()));
-		entity.setHourID(time.getHourID(entity.getEffectiveFromDate().withOffsetSameInstant(ZoneOffset.of(ZoneOffset.systemDefault().getId())).toLocalDateTime()));
-		entity.setMinuteID(time.getMinuteID(entity.getEffectiveFromDate().withOffsetSameInstant(ZoneOffset.of(ZoneOffset.systemDefault().getId())).toLocalDateTime()));
+		LocalDateTime localDateTime = convertToLocalDateTime(entity.getEffectiveFromDate());
+		
+		GuiceContext.get(ITimeSystem.class)
+		            .getDay(Date.from(entity.getEffectiveFromDate().toInstant()));
+		
+		entity.setDayID(time.getDayID(localDateTime));
+		entity.setHourID(time.getHourID(localDateTime));
+		entity.setMinuteID(time.getMinuteID(localDateTime));
 		return super.onCreate(entity);
 	}
+	
+
 }

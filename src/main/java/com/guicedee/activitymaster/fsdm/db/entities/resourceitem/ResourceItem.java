@@ -1,14 +1,12 @@
 package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.AddressXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementXResourceItem;
@@ -23,16 +21,13 @@ import com.guicedee.logger.LogFactory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
-import java.io.*;
+import java.io.Serial;
 import java.util.*;
 import java.util.logging.Level;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.*;
 import static jakarta.persistence.FetchType.*;
 
 /**
@@ -145,123 +140,6 @@ public class ResourceItem
 	public byte[] getData(java.util.UUID... identityToken)
 	{
 		var dr = getDataRow();
-		if (flushToDisk)
-		{
-			if (dr.isPresent())
-			{
-				File searchFile = new File("data/" + dr.get()
-				                                       .getId() + ".dat");
-				if (searchFile.exists())
-				{
-					if (flushExploded)
-					{
-						File explodedFile = new File("data/" + dr.get()
-						                                         .getId() + ".exploded");
-						if (explodedFile.exists())
-						{
-							try (FileInputStream fis = new FileInputStream(explodedFile);
-							     BufferedInputStream bis = new BufferedInputStream(fis))
-							{
-								byte[] data = bis.readAllBytes();
-								return data;
-							}
-							catch (Exception e)
-							{
-								e.printStackTrace();
-							}
-						}
-						else
-						{
-							try (FileInputStream fis = new FileInputStream(searchFile);
-							     BufferedInputStream bis = new BufferedInputStream(fis))
-							{
-								byte[] data = bis.readAllBytes();
-								data = unzip(data);
-								if (explodedFile.createNewFile())
-								{
-									try (FileOutputStream fos = new FileOutputStream(explodedFile);
-									     BufferedOutputStream bos = new BufferedOutputStream(fos))
-									{
-										bos.write(data);
-									}
-								}
-								return data;
-							}
-							catch (Exception e)
-							{
-								e.printStackTrace();
-							}
-						}
-					}
-					else
-					{
-						try (FileInputStream fis = new FileInputStream(searchFile);
-						     BufferedInputStream bis = new BufferedInputStream((fis)))
-						{
-							byte[] data = bis.readAllBytes();
-							return unzip(data);
-						}
-						catch (Exception e)
-						{
-							e.printStackTrace();
-						}
-					}
-				}
-				else
-				{
-					try
-					{
-						//	System.out.println("Cannot find dat File - " + searchFile.getCanonicalPath());
-						if (flushExploded)
-						{
-							File explodedFile = new File("data/" + dr.get()
-							                                         .getId() + ".exploded");
-							if (explodedFile.exists())
-							{
-								try (FileInputStream fis = new FileInputStream(explodedFile);
-								     BufferedInputStream bis = new BufferedInputStream(fis))
-								{
-									byte[] data = bis.readAllBytes();
-									return data;
-								}
-								catch (Exception e)
-								{
-									e.printStackTrace();
-								}
-							}
-							else
-							{
-								try (FileInputStream fis = new FileInputStream(searchFile);
-								     BufferedInputStream bis = new BufferedInputStream(fis))
-								{
-									byte[] data = bis.readAllBytes();
-									data = unzip(data);
-									if (explodedFile.createNewFile())
-									{
-										try (FileOutputStream fos = new FileOutputStream(explodedFile);
-										     BufferedOutputStream bos = new BufferedOutputStream(fos))
-										{
-											bos.write(data);
-											return data;
-										}
-									}
-									return data;
-								}
-								catch (Exception e)
-								{
-									e.printStackTrace();
-								}
-							}
-						}
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		
 		Optional<Object[]> d
 				= new ResourceItemData().builder()
 				                        .inActiveRange()
@@ -273,28 +151,6 @@ public class ResourceItem
 		{
 			Object[] dataObject = d.get();
 			byte[] data = (byte[]) dataObject[0];
-			if (flushToDisk && dr.isPresent())
-			{
-				if (flushExploded)
-				{
-					try
-					{
-						data = unzip(data);
-					}
-					catch (com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException ee)
-					{
-						//not gzipped just data
-					}
-					saveDataFile(data, UUID.fromString(dr.get()
-					                                     .getId()));
-					return data;
-				}
-				else
-				{
-					saveDataFile(data, UUID.fromString(dr.get()
-					                                     .getId()));
-				}
-			}
 			return unzip(data);
 		}
 		else
@@ -313,7 +169,7 @@ public class ResourceItem
 		{
 			var r = dr.get();
 			var id = r.getId();
-			return "data/" + id + (flushExploded ? ".exploded" : ".dat");
+			return "data/" + id + ".dat";
 		}
 		return null;
 	}
@@ -337,23 +193,7 @@ public class ResourceItem
 	 */
 	byte[] zip(byte[] data)
 	{
-		if ("true".equals(System.getProperty("encrypt", "true")))
-		{
-			data = new Passwords().integerEncrypt(data)
-			                      .getBytes();
-		}
-		
-		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		     org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream gzipOutput = new org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream(baos))
-		{
-			gzipOutput.write(data);
-			gzipOutput.finish();
-			return baos.toByteArray();
-		}
-		catch (IOException e)
-		{
-			throw new ResourceItemException("Unable to compress the resource", e);
-		}
+		return data;
 	}
 	
 	/**
@@ -364,23 +204,8 @@ public class ResourceItem
 	 */
 	byte[] unzip(byte[] data)
 	{
-		try (ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		     org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream archive = new org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream(bais);
-		     ByteArrayOutputStream output = new ByteArrayOutputStream())
-		{
-			org.apache.commons.compress.utils.IOUtils.copy(archive, output);
-			byte[] outcome = output.toByteArray();
-			if ("true".equals(System.getProperty("encrypt", "true")))
-			{
-				outcome = new Passwords().integerDecrypt(new String(outcome));
-			}
-			return outcome;
-		}
-		catch (IOException e)
-		{
-			LogFactory.getLog(getClass()).log(Level.WARNING, "Returning default data, unable to decompress the resource", e);
-			return data;
-		}
+		byte[] outcome = data;
+		return outcome;
 	}
 	
 	
@@ -389,107 +214,26 @@ public class ResourceItem
 	public void updateData(byte[] data, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		//	System.out.println(LocalDateTime.now() + " start zip - " + data.length);
-		if(data == null || data.length == 0)
+		if (data == null || data.length == 0)
 		{
 			throw new RuntimeException("Cannot store 0 data into a resource item");
 		}
-		if (!flushToDisk)
+		//	System.out.println(LocalDateTime.now() + " start search");
+		Optional<ResourceItemData> d
+				= new ResourceItemData().builder()
+				                        .inActiveRange()
+				                        //    .inDateRange()
+				                        .where(ResourceItemData_.resource, Equals, this)
+				                        .latestFirst()
+				                        .setReturnFirst(true)
+				                        .get();
+		if (d.isPresent())
 		{
-			data = zip(data);
+			ResourceItemData rid = d.get();
+			rid.setResourceItemData(data);
+			rid.update();
 		}
-		else
-		{
-			if (!flushExploded)
-			{
-				data = zip(data);
-			}
-			else
-			{
-				//	System.out.println("Using exploded storage");
-			}
-		}
-		//	System.out.println(LocalDateTime.now() + " end zip - " + data.length);
-		//	System.out.println(LocalDateTime.now() + " start update");
-		if (!flushToDisk)
-		{
-			//	System.out.println(LocalDateTime.now() + " start search");
-			Optional<ResourceItemData> d
-					= new ResourceItemData().builder()
-					                        .inActiveRange()
-					                        //    .inDateRange()
-					                        .where(ResourceItemData_.resource, Equals, this)
-					                        .latestFirst()
-					                        .setReturnFirst(true)
-					                        .get();
-			//	System.out.println(LocalDateTime.now() + " end search");
-			if (d.isPresent())
-			{
-				ResourceItemData rid = d.get();
-				if (data.length == 0)
-				{
-					throw new ResourceItemException("Cannot create a resource item that has no data?");
-				}
-				rid.setResourceItemData(data);
-				rid.update();
-			}
-		}
-		else
-		{
-			ResourceItemData rid = (ResourceItemData) getDataRow().orElse(null);
-			if (rid != null)
-			{
-				saveDataFile(data, UUID.fromString(rid.getId()));
-				if (flushExploded)
-				{
-					if(data[0] == 0)
-					{
-						System.out.println("Corrupted file not writing to DB - " + rid.getId());
-						return;
-					}
-					data = zip(data);
-				}
-				rid.setResourceItemData(data);
-				rid.update();
-			}
-		}
-		//	System.out.println(LocalDateTime.now() + " end update");
-	}
-	
-	private void saveDataFile(byte[] data, UUID rid)
-	{
-		File directory = new File(flushToDiskLocation);
-		if (!directory.exists())
-		{
-			try
-			{
-				FileUtils.forceMkdirParent(new File(flushToDiskLocation));
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		String filename = FilenameUtils.concat(flushToDiskLocation, rid + (flushExploded ? ".exploded" : ".dat"));
-		File dataFile = new File(filename);
-		if (!dataFile.exists())
-		{
-			try
-			{
-				FileUtils.forceMkdirParent(new File(filename));
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		try (FileOutputStream fileWriter = new FileOutputStream(filename))
-		{
-			fileWriter.write(data);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		
 	}
 	
 	@Override

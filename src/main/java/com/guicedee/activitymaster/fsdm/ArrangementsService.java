@@ -75,49 +75,23 @@ public class ArrangementsService
 	                                 ISystems<?, ?> system,
 	                                 java.util.UUID... identityToken)
 	{
-		ArrangementType tt = (ArrangementType) find(type, system);
-		boolean exists = new ArrangementXArrangementType().builder()
-		                                                  .withValue(arrangementTypeValue)
-		                                                  .inActiveRange()
-		                                                  .inDateRange()
-		                                                  .where(ArrangementXArrangementType_.type, Equals, tt)
-		                                                  //  .where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
-		                                                  .withClassification(arrangementTypeClassification, system)
-		                                                  .withEnterprise(enterprise)
-		                                                  .getCount() > 0;
-		if (exists)
-		{
-			return new ArrangementXArrangementType().builder()
-			                                        .withValue(arrangementTypeValue)
-			                                        .inActiveRange()
-			                                        .inDateRange()
-			                                        .where(ArrangementXArrangementType_.type, Equals, tt)
-			                                        //.where(ArrangementXArrangementType_.effectiveFromDate, Equals, createdDate)
-			                                        .withClassification(arrangementTypeClassification, system)
-			                                        .withEnterprise(enterprise)
-			                                        .get()
-			                                        .orElseThrow()
-			                                        .getArrangement();
-		}
-		
+		ArrangementType arrangementType = (ArrangementType) find(type, system);
 		Arrangement xr = new Arrangement();
 		xr.setId(key);
 		xr.setSystemID(system);
 		xr.setOriginalSourceSystemID(system);
-		xr.setEnterpriseID(enterprise);
+		xr.setEnterpriseID(arrangementType.getEnterpriseID());
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(arrangementType.getEnterprise());
 		xr.setActiveFlagID(activeFlag);
 		xr.persist();
 		
 		xr.createDefaultSecurity(system, identityToken);
 		
-		IArrangementType<?, ?> arrangementType = findArrangementType(type, system, identityToken);
+		var xarxr =
+				xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
+						arrangementTypeValue, arrangementTypeValue, system, identityToken);
 		
-		var xarxr = xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
-				arrangementTypeValue, arrangementTypeValue, system, identityToken);
-		
-		//xarxr.createDefaultSecurity(system, identityToken);
 		return xr;
 	}
 	
@@ -134,33 +108,18 @@ public class ArrangementsService
 	public IArrangementType<?, ?> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
+		xr.setId(key);
+		xr.setName(type);
+		xr.setDescription(type);
+		xr.setSystemID(system);
+		xr.setOriginalSourceSystemID(system);
+		xr.setEnterpriseID(enterprise);
+		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		xr.setActiveFlagID(activeFlag);
+		xr.persist();
+		xr.createDefaultSecurity(system, identityToken);
 		
-		boolean exists = xr.builder()
-		                   .withName(type)
-		                   .inActiveRange()
-		                   .inDateRange()
-		                   .withEnterprise(enterprise)
-		                   .getCount() > 0;
-		
-		if (!exists)
-		{
-			xr.setId(key);
-			xr.setName(type);
-			xr.setDescription(type);
-			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
-			xr.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-			xr.setActiveFlagID(activeFlag);
-			xr.persist();
-			xr.createDefaultSecurity(system, identityToken);
-			
-		}
-		else
-		{
-			return find(type, system, identityToken);
-		}
 		return xr;
 	}
 	
@@ -753,7 +712,7 @@ public class ArrangementsService
 		return xr.builder()
 		         .where(Arrangement_.id, Equals, id)
 		         .get()
-		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement with ID " + id));
+		         .orElse(null);
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlagSecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTokenQueryBuilder;
 import com.guicedee.logger.LogFactory;
@@ -13,7 +14,8 @@ import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
@@ -93,6 +95,15 @@ public class SecurityToken
 			mappedBy = "childSecurityTokenID",
 			fetch = FetchType.LAZY)
 	private List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenChildList;
+	
+	
+	//===================================================================================================================================================
+	
+	@OneToMany(
+			mappedBy = "securityTokenID",
+			fetch = FetchType.LAZY)
+	private List<ActiveFlagSecurityToken> activeFlagSecurityTokens;
+	
 	
 	public SecurityToken()
 	{

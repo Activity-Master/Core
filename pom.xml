@@ -126,8 +126,8 @@
                 <configuration>
                     <failOnError>false</failOnError>
                     <enableLazyInitialization>true</enableLazyInitialization>
-                    <enableDirtyTracking>true</enableDirtyTracking>
-                    <enableAssociationManagement>true</enableAssociationManagement>
+                    <enableDirtyTracking>false</enableDirtyTracking>
+                    <enableAssociationManagement>false</enableAssociationManagement>
                     <enableExtendedEnhancement>true</enableExtendedEnhancement>
                 </configuration>
             </plugin>

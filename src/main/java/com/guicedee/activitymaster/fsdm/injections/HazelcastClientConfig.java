@@ -12,13 +12,9 @@ public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<Hazel
     @Override
     public ClientConfig buildConfig(ClientConfig config) {
         config.getNetworkConfig()
-                .addAddress(HazelcastProperties.getAddress())
                 .setRedoOperation(true)
                 .setSmartRouting(true);
-
-        config.setClusterName(HazelcastProperties.getGroupName());
-        config.setInstanceName(HazelcastProperties.getInstanceName());
-    
+        
         config.getConnectionStrategyConfig()
                     .setAsyncStart(true)
                     .setReconnectMode(ClientConnectionStrategyConfig.ReconnectMode.ASYNC);
@@ -36,9 +32,6 @@ public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<Hazel
             config.getNetworkConfig()
                     .addOutboundPort(Integer.parseInt(port));
         }
-
-        System.setProperty("client.address", HazelcastProperties.getAddress());
-
         return config;
     }
 }

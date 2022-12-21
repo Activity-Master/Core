@@ -38,11 +38,11 @@ public class ActivityMasterDBModule
 		                          .setMaxLogSizeInMb(20)
 		                          .setSkipCorruptedLogs(true)
 		                          .setDefaultTransactionTimeout(ActivityMasterStatics.transactionDebugTimeout)
-		                          .setWarnAboutZeroResourceTransaction(true);
+		                          .setWarnAboutZeroResourceTransaction(false);
 		
 		return new BTMConnectionBaseInfo()
 				.setEnableJdbc4ConnectionTest(true)
-				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "50")))
+				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "5000")))
 				.setMinPoolSize(1)
 				.setPrefill(false)
 				.setShareTransactionConnections(true)

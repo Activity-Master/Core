@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -46,7 +47,6 @@ public class Enterprise
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	
 	@Column(nullable = false,
 	        name = "EnterpriseID")
 	@JsonValue
@@ -75,6 +75,12 @@ public class Enterprise
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
 	private List<EnterpriseXClassification> classifications;
+	
+	@OneToMany(
+			mappedBy = "enterpriseID",
+			fetch = FetchType.LAZY)
+	private List<ActiveFlag> activeFlags;
+	
 	
 	public Enterprise()
 	{

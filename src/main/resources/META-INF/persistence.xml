@@ -240,21 +240,22 @@
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
 
-            <property name="hibernate.show_sql" value="${fsdm.showsql}"/>
-            <property name="hibernate.format_sql" value="${fsdm.formatsql}"/>
+            <property name="hibernate.show_sql" value="${FSDM_SHOWSQL}"/>
+            <property name="hibernate.format_sql" value="${FSDM_FORMATSQL}"/>
             <property name="hibernate.use_sql_comments" value="false"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="none"/>
 
             <property name="hibernate.connection.autocommit" value="false"/>
 
             <property name="hibernate.connection.useUnicode" value="yes"/>
+            <property name="hibernate.cache.use_query_cache" value="false"/>
             <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
 
-            <property name="javax.persistence.jdbc.user" value="${fsdm.user}" /> <!-- DB User -->
-            <property name="javax.persistence.jdbc.password" value="${fsdm.password}" /> <!-- DB Password -->
+            <property name="javax.persistence.jdbc.user" value="${FSDM_USER}" /> <!-- DB User -->
+            <property name="javax.persistence.jdbc.password" value="${FSDM_PASSWORD}" /> <!-- DB Password -->
 
-             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://${fsdm.dbserver}/${fsdm.dbname}"/>
+             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://${FSDM_DBSERVER}/${FSDM_DBNAME}"/>
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.max_fetch_depth" value="1"/>
 

@@ -111,12 +111,16 @@ public class ClassificationService
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			rootCl.setActiveFlagID(activeFlag);
 			rootCl.setConcept(dataConcept);
-			rootCl.persist();
+			rootCl.persistNow();
+			if(!rootCl.builder().isRunDetached())
+			rootCl.builder().getEntityManager().flush();
 			
 				rootCl.createDefaultSecurity(system, identityToken);
 				
 			if (parent != null && !NoClassification.toString().equals(name))
 			{
+				parent = (Classification) find(parent.getName(), system, identityToken);
+				rootCl = (Classification) find(name, system, identityToken);
 				@SuppressWarnings("unchecked")
 				IClassification<Classification, ClassificationQueryBuilder> pp = (IClassification<Classification, ClassificationQueryBuilder>) parent;
 				pp.addChild(rootCl,NoClassification.toString(),null, system, identityToken);

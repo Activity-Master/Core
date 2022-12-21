@@ -11,7 +11,6 @@ import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.JoinFormula;
 
 import java.io.Serial;
 import java.sql.Types;
@@ -62,8 +61,6 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = LAZY)
-	@JoinFormula(value = "SecurityTokenID")
-	
 	private SecurityToken securityTokenID;
 	
 	@JoinColumn(name = "ActiveFlagID",
@@ -71,7 +68,6 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = LAZY)
-	
 	private ActiveFlag activeFlagID;
 	
 	@JoinColumn(name = "EnterpriseID",
@@ -102,6 +98,10 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	@ManyToOne(optional = false,
 	           fetch = LAZY)
 	private Systems originalSourceSystemID;
+	
+	
+	//===========================================================================================================================
+	
 	
 	public WarehouseSecurityTable()
 	{

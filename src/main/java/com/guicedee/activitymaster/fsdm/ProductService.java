@@ -73,24 +73,6 @@ public class ProductService
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IProduct<?, ?> createProduct(String productType, java.lang.String key, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		
-		boolean exists = new Product().builder()
-		                              .withName(name)
-		                              .inActiveRange()
-		                              .inDateRange()
-		                              .withEnterprise(enterprise)
-		                              .getCount() > 0;
-		if (exists)
-		{
-			return new Product().builder()
-			                    .withName(name)
-			                    .inActiveRange()
-			                    .inDateRange()
-			                    .withEnterprise(enterprise)
-			                    .get()
-			                    .orElseThrow();
-		}
-		
 		Product product = new Product();
 		product.setId(key);
 		product.setName(name);

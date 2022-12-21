@@ -51,23 +51,6 @@ public class RulesService
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IRules<?,?> createRules(String rulesType, java.lang.String key, String name, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		boolean exists = new Rules().builder()
-		                            .withName(name)
-		                            .inActiveRange()
-		                            .inDateRange()
-		                            .withEnterprise(enterprise)
-		                            .getCount() > 0;
-		if (exists)
-		{
-			return new Rules().builder()
-			                  .withName(name)
-			                  .inActiveRange()
-			                  .inDateRange()
-			                  .withEnterprise(enterprise)
-			                  .get()
-			                  .orElseThrow();
-		}
-		
 		Rules rules = new Rules();
 		if(key != null)
 		rules.setId(key.toString());
