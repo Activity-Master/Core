@@ -5,12 +5,13 @@ import com.google.inject.name.Named;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.address.*;
-import com.guicedee.activitymaster.fsdm.client.services.systems.*;
+import com.guicedee.activitymaster.fsdm.client.services.systems.ISystemUpdate;
+import com.guicedee.activitymaster.fsdm.client.services.systems.SortedUpdate;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.address.*;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressClassifications.*;
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressTelephoneClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.address.AddressClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.address.AddressTelephoneClassifications.*;
 
 @SortedUpdate(sortOrder = -400, taskCount = 15)
 public class AddressBaseSetup implements ISystemUpdate

@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -16,14 +15,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.DefaultClassifications.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 
@@ -31,10 +30,11 @@ public class RulesService
 		implements IRulesService<RulesService>
 {
 	@Inject
-	private IEnterprise<?,?> enterprise;
+	private IClassificationService<?> classificationService;
 	
 	@Inject
-	private IClassificationService<?> classificationService;
+	@com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB
+	private EntityManager entityManager;
 	
 	public IRules<?,?> get()
 	{
@@ -48,7 +48,7 @@ public class RulesService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IRules<?,?> createRules(String rulesType, java.lang.String key, String name, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Rules rules = new Rules();
@@ -57,13 +57,13 @@ public class RulesService
 		rules.setName(name);
 		rules.setDescription(description);
 		
-		rules.setEnterpriseID(enterprise);
+		rules.setEnterpriseID(system.getEnterpriseID());
 		rules.setSystemID(system);
 		rules.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 		rules.setActiveFlagID(activeFlag);
-		rules.persist();
+		rules.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		rules.createDefaultSecurity(system, identityToken);
 		
 		IRulesType<?,?> pType = createRulesType(rulesType, rulesType, system, identityToken);
@@ -72,29 +72,29 @@ public class RulesService
 		
 		return rules;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IRules<?,?> find(java.lang.String identity)
 	{
-		return new Rules().builder()
+		return new Rules().builder(entityManager)
 		                  .find(identity)
 		                  .get()
 		                  .orElse(null);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IRulesType<?,?> findType(java.lang.String identity)
 	{
-		return new RulesType().builder()
+		return new RulesType().builder(entityManager)
 		                  .find(identity)
 		                  .get()
 		                  .orElse(null);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IRules<?,?> findRules(String name, IEnterprise<?,?> enterprise, java.util.UUID... identityToken)
 	{
-		return new Rules().builder()
+		return new Rules().builder(entityManager)
 		                  .withName(name)
 		                  .inActiveRange()
 		                  .inDateRange()
@@ -102,11 +102,11 @@ public class RulesService
 		                  .get()
 		                  .orElse(null);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IRules<?,?> findRules(String productName, IClassification<?,?> classification, IEnterprise<?,?> enterprise, java.util.UUID... identityToken)
 	{
-		return new Rules().builder()
+		return new Rules().builder(entityManager)
 		                  .withName(productName)
 		                  .withClassification(classification)
 		                  .inActiveRange()
@@ -129,14 +129,14 @@ public class RulesService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IRulesType<?,?> createRulesType(String rulesType, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		RulesType et = new RulesType();
 		
-		boolean exists = et.builder()
+		boolean exists = et.builder(entityManager)
 		                   .withName(rulesType)
-		                   .withEnterprise(enterprise)
+		                   .withEnterprise(system.getEnterpriseID())
 		                   .inActiveRange()
 		                   .inDateRange()
 		                   .getCount() > 0;
@@ -148,12 +148,12 @@ public class RulesService
 			et.setName(rulesType);
 			et.setDescription(description);
 			et.setSystemID(system);
-			et.setEnterpriseID(enterprise);
+			et.setEnterpriseID(system.getEnterpriseID());
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID(system);
-			et.persist();
+			et.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 				et.createDefaultSecurity(system, identityToken);
 			
 			return et;
@@ -163,29 +163,29 @@ public class RulesService
 			return findRulesTypes(rulesType, system, identityToken);
 		}
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "RulesTypesString")
 	public IRulesType<?,?> findRulesTypes(@CacheKey String rulesType, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		return new RulesType().builder()
+		return new RulesType().builder(entityManager)
 		                      .withName(rulesType)
-		                      .withEnterprise(enterprise)
+		                      .withEnterprise(system.getEnterpriseID())
 		                      .inActiveRange()
 		                      .inDateRange()
 		                //      .canRead(system, identityToken)
 		                      .get()
 		                      .orElseThrow();
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRulesType<?,?>> findRulesTypes(String classifications, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		IClassification<?,?> classification = classificationService.find(classifications, system, identityToken);
 		@SuppressWarnings({"UnnecessaryLocalVariable", "rawtypes"})
-		List all = new RulesType().builder()
+		List all = new RulesType().builder(entityManager)
 		                          .withClassification((Classification) classification, value)
-		                          .withEnterprise(enterprise)
+		                          .withEnterprise(system.getEnterpriseID())
 		                          .inActiveRange()
 		                          .inDateRange()
 		                     //     .canRead(system, identityToken)
@@ -193,14 +193,14 @@ public class RulesService
 		//noinspection unchecked
 		return all;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRules<?,?>> findByRulesTypes(IRulesType<?,?> rulesType, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
-		List res = new RulesXRulesType().builder()
+		List res = new RulesXRulesType().builder(entityManager)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink(null,(RulesType) rulesType, value)
-		                                .withEnterprise(enterprise)
+		                                .withEnterprise(system.getEnterpriseID())
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
@@ -210,14 +210,14 @@ public class RulesService
 		                                .collect(Collectors.toList());
 		return res;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRulesType<?,?>> findRuleTypesByRules(IRules<?,?> rulesType, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
-		List res = new RulesXRulesType().builder()
+		List res = new RulesXRulesType().builder(entityManager)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink((Rules) rulesType,null, value)
-		                                .withEnterprise(enterprise)
+		                                .withEnterprise(system.getEnterpriseID())
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
@@ -227,28 +227,28 @@ public class RulesService
 		                                .collect(Collectors.toList());
 		return res;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRelationshipValue<IRules<?,?>,IRulesType<?,?>,?>> findRuleTypeValuesByRules(IRules<?,?> rulesType, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
-		List res = new RulesXRulesType().builder()
+		List res = new RulesXRulesType().builder(entityManager)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink((Rules) rulesType,null, value)
-		                                .withEnterprise(enterprise)
+		                                .withEnterprise(system.getEnterpriseID())
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
 		                                .getAll();
 		return res;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRules<?,?>> findRulesByProduct(IProduct<?,?> product, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
-		List res = new RulesXProduct().builder()
+		List res = new RulesXProduct().builder(entityManager)
 		                              .withClassification(classificationName, value, system, identityToken)
 		                              .findLink(null,(Product) product, value)
-		                              .withEnterprise(enterprise)
+		                              .withEnterprise(system.getEnterpriseID())
 		                              .inActiveRange()
 		                              .inDateRange()
 		                              .canRead(system, identityToken)
@@ -259,14 +259,14 @@ public class RulesService
 		return res;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRelationshipValue<IRules<?,?>,IResourceItem<?,?>,?>> findRulesByResourceItem(IResourceItem<?,?> resourceItem, String classificationName, String value, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
-		List res = new RulesXResourceItem().builder()
+		List res = new RulesXResourceItem().builder(entityManager)
 		                              .withClassification(classificationName,  system)
 		                              .findLink(null,(ResourceItem) resourceItem, value)
-		                              .withEnterprise(enterprise)
+		                              .withEnterprise(system.getEnterpriseID())
 		                              .inActiveRange()
 		                              .inDateRange()
 		                              .canRead(system, identityToken)

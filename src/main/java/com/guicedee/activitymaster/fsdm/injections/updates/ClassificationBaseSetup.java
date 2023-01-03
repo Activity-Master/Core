@@ -5,12 +5,12 @@ import com.google.inject.name.Named;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.DefaultClassifications;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.InvolvedPartyClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.ResourceItemClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.InvolvedPartyClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.ResourceItemClassifications.*;
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 
 @SortedUpdate(sortOrder = -500, taskCount = 3)

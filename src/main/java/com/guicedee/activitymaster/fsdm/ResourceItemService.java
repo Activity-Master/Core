@@ -4,22 +4,20 @@ import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.DefaultClassifications;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 
 import java.time.LocalDateTime;
@@ -34,11 +32,13 @@ import static jakarta.persistence.criteria.JoinType.*;
 public class ResourceItemService
 		implements IResourceItemService<ResourceItemService>
 {
-	@Inject
-	private IEnterprise<?, ?> enterprise;
-	
+
 	@Inject
 	private IClassificationService<?> classificationService;
+	
+	@Inject
+	@com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB
+	private EntityManager entityManager;
 	
 	public IResourceItem<?, ?> get()
 	{
@@ -64,15 +64,15 @@ public class ResourceItemService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IResourceItemType<?, ?> createType(String value, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
-		boolean exists = xr.builder()
+		boolean exists = xr.builder(entityManager)
 		                   .withName(value)
 		                   .inActiveRange()
 		                   .inDateRange()
-		                   .withEnterprise(enterprise)
+		                   .withEnterprise(system.getEnterpriseID())
 		                   .getCount() > 0;
 		
 		if (!exists)
@@ -82,11 +82,11 @@ public class ResourceItemService
 			xr.setDescription(value);
 			xr.setOriginalSourceSystemID(system);
 			xr.setSystemID(system);
-			xr.setEnterpriseID(enterprise);
+			xr.setEnterpriseID(system.getEnterpriseID());
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 			xr.setActiveFlagID(activeFlag);
-			xr.persist();
+			xr.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 			
 			xr.createDefaultSecurity(system, identityToken);
 			
@@ -123,7 +123,7 @@ public class ResourceItemService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IResourceItem<?, ?> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, String originalSourceSystemUniqueID,
 	                                  LocalDateTime effectiveFromDate,
 	                                  ISystems<?, ?> system, java.util.UUID... identityToken)
@@ -134,12 +134,12 @@ public class ResourceItemService
 		xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
 		xr.setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(effectiveFromDate));
 		xr.setSystemID(system);
-		xr.setEnterpriseID(enterprise);
+		xr.setEnterpriseID(system.getEnterpriseID());
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 		xr.setActiveFlagID(activeFlag);
 		xr.setResourceItemDataType(resourceItemDataValue);
-		xr.persist();
+		xr.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		
 		xr.createDefaultSecurity(system, identityToken);
 		
@@ -156,14 +156,14 @@ public class ResourceItemService
 		rid.setOriginalSourceSystemID(system);
 		rid.setSystemID(system);
 		rid.setEnterpriseID(system.getEnterpriseID());
-		rid.persist();
+		rid.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		
 		rid.createDefaultSecurity(system, identityToken);
 		
 		return xr;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IResourceItem<?, ?> findByClassification(String resourceType,
 	                                                String classification,
@@ -172,7 +172,7 @@ public class ResourceItemService
 	                                                java.util.UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
-		ResourceItemXClassificationQueryBuilder builder = res.builder();
+		ResourceItemXClassificationQueryBuilder builder = res.builder(entityManager);
 		
 		Classification clazz = (Classification) classificationService.find(classification, systems, identityToken);
 		
@@ -183,7 +183,7 @@ public class ResourceItemService
 		}
 		
 		JoinExpression<ResourceItem, ResourceItem, ResourceItemXClassification> resourceJoin = new JoinExpression<>();
-		ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder();
+		ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder(entityManager);
 		builder.join(ResourceItemXClassification_.resourceItemID, itemQueryBuilder, JoinType.INNER, resourceJoin);
 		
 		ListJoin<ResourceItem, ResourceItemXResourceItemType> resourceItemTypesJoin = resourceJoin.getGeneratedRoot()
@@ -200,7 +200,7 @@ public class ResourceItemService
 		             .orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IRelationshipValue<IResourceItem<?, ?>, IClassification<?, ?>, ?>> findByClassificationAll(String resourceType,
 	                                                                                                       String classification,
@@ -209,7 +209,7 @@ public class ResourceItemService
 	                                                                                                       java.util.UUID... identityToken)
 	{
 		ResourceItemXClassification res = new ResourceItemXClassification();
-		ResourceItemXClassificationQueryBuilder builder = res.builder();
+		ResourceItemXClassificationQueryBuilder builder = res.builder(entityManager);
 		
 		Classification clazz = (Classification) classificationService.find(classification, systems, identityToken);
 		
@@ -220,7 +220,7 @@ public class ResourceItemService
 		}
 		
 		JoinExpression<ResourceItem, ResourceItem, ResourceItemXClassification> resourceJoin = new JoinExpression<>();
-		ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder();
+		ResourceItemQueryBuilder itemQueryBuilder = new ResourceItem().builder(entityManager);
 		builder.join(ResourceItemXClassification_.resourceItemID, itemQueryBuilder, JoinType.INNER, resourceJoin);
 		
 		ListJoin<ResourceItem, ResourceItemXResourceItemType> resourceItemTypesJoin = resourceJoin.getGeneratedRoot()
@@ -235,12 +235,12 @@ public class ResourceItemService
 		return (List) builder.getAll();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IResourceItem<?, ?> findByUUID(@CacheKey UUID uuid)
 	{
 		ResourceItem res = new ResourceItem();
-		ResourceItemQueryBuilder builder = res.builder();
+		ResourceItemQueryBuilder builder = res.builder(entityManager);
 		builder.where(ResourceItem_.id, Equals, uuid.toString());
 		builder.inActiveRange();
 		builder.inDateRange();
@@ -248,14 +248,14 @@ public class ResourceItemService
 		return exists.orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IResourceItem<?, ?> findByOriginalSourceUniqueID(@CacheKey String originalSourceUniqueID,
 	                                                        @CacheKey ISystems<?, ?> systems,
 	                                                        @CacheKey java.util.UUID... identityToken)
 	{
 		ResourceItem res = new ResourceItem();
-		ResourceItemQueryBuilder builder = res.builder();
+		ResourceItemQueryBuilder builder = res.builder(entityManager);
 		builder.where(ResourceItem_.originalSourceSystemUniqueID, Equals, originalSourceUniqueID);
 		builder.inActiveRange();
 		builder.inDateRange();
@@ -270,14 +270,14 @@ public class ResourceItemService
 		return d.getResourceItemData();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "FindResourceItemTypeString")
 	public IResourceItemType<?, ?> findResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
-		Optional<ResourceItemType> exists = xr.builder()
-		                                      .withEnterprise(enterprise)
+		Optional<ResourceItemType> exists = xr.builder(entityManager)
+		                                      .withEnterprise(system.getEnterpriseID())
 		                                      .withName(type)
 		                                      .inActiveRange()
 		                                      //       .canRead(system, identityToken)
@@ -287,17 +287,30 @@ public class ResourceItemService
 	}
 	
 	@Override
+	public boolean doesResourceItemTypExist(String type,ISystems<?, ?> system,java.util.UUID... identityToken)
+	{
+		ResourceItemType xr = new ResourceItemType();
+		return xr.builder(entityManager)
+		                                      .withEnterprise(system.getEnterpriseID())
+		                                      .withName(type)
+		                                      .inActiveRange()
+		                                      //       .canRead(system, identityToken)
+		                                      .inDateRange()
+		                                      .getCount() > 0;
+	}
+	
+	@Override
 	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> systems, @CacheKey java.util.UUID... identityToken)
 	{
 		return findByResourceItemType(type, null, systems, identityToken);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, String value, @CacheKey ISystems<?, ?> systems, @CacheKey java.util.UUID... identityToken)
 	{
-		return new ResourceItemXResourceItemType().builder()
-		                                          .withEnterprise(enterprise)
+		return new ResourceItemXResourceItemType().builder(entityManager)
+		                                          .withEnterprise(systems.getEnterpriseID())
 		                                          .inActiveRange()
 		                                          .inDateRange()
 		                                          .canRead(systems, identityToken)

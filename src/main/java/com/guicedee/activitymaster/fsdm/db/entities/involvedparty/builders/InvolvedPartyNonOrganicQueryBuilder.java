@@ -6,10 +6,5 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyN
 public class InvolvedPartyNonOrganicQueryBuilder
 		extends QueryBuilderTable<InvolvedPartyNonOrganicQueryBuilder, InvolvedPartyNonOrganic, java.lang.String>
 {
-	
-	@Override
-	public boolean isIdGenerated()
-	{
-		return false;
-	}
+
 }

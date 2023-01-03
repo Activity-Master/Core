@@ -132,7 +132,7 @@ public class ResourceItem
 	public IResourceItem<?, ?> updateDataTypeValue(String newValue)
 	{
 		setResourceItemDataType(newValue);
-		builder().find(getId())
+		builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get()).find(getId())
 		         .update(this);
 		return this;
 	}
@@ -141,7 +141,7 @@ public class ResourceItem
 	{
 		var dr = getDataRow();
 		Optional<Object[]> d
-				= new ResourceItemData().builder()
+				= new ResourceItemData().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 				                        .inActiveRange()
 				                        .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
@@ -177,7 +177,7 @@ public class ResourceItem
 	@Override
 	public Optional<IResourceData<?, ?>> getDataRow(java.util.UUID... identityToken)
 	{
-		return (Optional) new ResourceItemData().builder()
+		return (Optional) new ResourceItemData().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 		                                        .inActiveRange()
 		                                        .inDateRange()
 		                                        .where(ResourceItemData_.resource, Equals, this)
@@ -220,7 +220,7 @@ public class ResourceItem
 		}
 		//	System.out.println(LocalDateTime.now() + " start search");
 		Optional<ResourceItemData> d
-				= new ResourceItemData().builder()
+				= new ResourceItemData().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 				                        .inActiveRange()
 				                        //    .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
@@ -231,7 +231,7 @@ public class ResourceItem
 		{
 			ResourceItemData rid = d.get();
 			rid.setResourceItemData(data);
-			rid.update();
+			rid.update(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		
 	}
@@ -242,7 +242,7 @@ public class ResourceItem
 		data = zip(data);
 		
 		Optional<ResourceItemData> d
-				= new ResourceItemData().builder()
+				= new ResourceItemData().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 				                        .inActiveRange()
 				                        // .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
@@ -267,7 +267,7 @@ public class ResourceItem
 		rid.setOriginalSourceSystemID(getSystemID());
 		rid.setSystemID(getSystemID());
 		rid.setEnterpriseID(system.getEnterpriseID());
-		rid.persist();
+		rid.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 	}
 	
 	@Override

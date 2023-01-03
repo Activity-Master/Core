@@ -5,7 +5,7 @@ import com.google.inject.name.Named;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.ProductClassifications;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.ProductClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;

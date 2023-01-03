@@ -66,7 +66,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		update();
+		update(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		return (J) this;
 	}
 	
@@ -77,7 +77,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                            .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
 				                            .getSystemToken(getEnterpriseID())));
-		update();
+		update(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		return (J) this;
 	}
 	

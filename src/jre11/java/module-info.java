@@ -12,8 +12,6 @@ module com.guicedee.activitymaster.fsdm {
 	requires transitive com.guicedee.activitymaster.fsdm.client;
 	
 	exports com.guicedee.activitymaster.fsdm;
-	
-	exports com.guicedee.activitymaster.fsdm.async;
 	exports com.guicedee.activitymaster.fsdm.services;
 	
 	exports com.guicedee.activitymaster.fsdm.services.system;
@@ -21,6 +19,8 @@ module com.guicedee.activitymaster.fsdm {
 	
 	exports com.guicedee.activitymaster.fsdm.threads;
 	exports com.guicedee.activitymaster.fsdm.implementations.interceptors;
+	
+	requires com.guicedee.activitymaster.fsdm.client.types;
 	
 	
 	requires org.postgresql.jdbc;
@@ -66,7 +66,8 @@ module com.guicedee.activitymaster.fsdm {
 			ProductsBinder,
 			RulesBinder,
 			ActivityMasterSystemBinder,
-			PasswordsServiceBinder;
+			PasswordsServiceBinder,
+			GeographyBinder;
 	
 	provides IGuiceDefaultBinder with EventInterceptorsBinder;
 	
@@ -99,7 +100,7 @@ module com.guicedee.activitymaster.fsdm {
 	
 	
 	opens com.guicedee.activitymaster.fsdm to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
-	opens com.guicedee.activitymaster.fsdm.async to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
+	//opens com.guicedee.activitymaster.fsdm.async to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.fsdm.implementations to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography;
 	opens com.guicedee.activitymaster.fsdm.db to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection, com.fasterxml.jackson.databind;
 	opens com.guicedee.activitymaster.fsdm.db.abstraction to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection, com.fasterxml.jackson.databind;
@@ -216,14 +217,14 @@ module com.guicedee.activitymaster.fsdm {
 	
 	opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice;
 	
-	exports com.guicedee.activitymaster.fsdm.db.entities.systems to com.guicedee.activitymaster.geography;
-	exports com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.guicedee.activitymaster.geography;
+	exports com.guicedee.activitymaster.fsdm.db.entities.systems to com.guicedee.activitymaster.geography, com.guicedee.activitymaster.fsdm.server;
+	exports com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.guicedee.activitymaster.geography, com.guicedee.activitymaster.fsdm.server;
 	exports com.guicedee.activitymaster.fsdm.db.entities.classifications to com.guicedee.activitymaster.geography;
 
 	exports com.guicedee.activitymaster.fsdm.db.entities.geography to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.fsdm.db.entities.rules to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.fsdm.db.entities.resourceitem to com.guicedee.activitymaster.geography;
-	exports com.guicedee.activitymaster.fsdm.implementations to com.guicedee.activitymaster.geography;
-
+	
 	exports com.guicedee.activitymaster.fsdm.db;
+	exports com.guicedee.activitymaster.fsdm.implementations;
 }

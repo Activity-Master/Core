@@ -34,7 +34,7 @@ public class RulesXProductQueryBuilder
 		JoinExpression joinExpression = new JoinExpression();
 		RulesXProductQueryBuilder builder =
 				new RulesXProduct()
-						.builder()
+						.builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 						.withClassification(classification, system)
 						.withValue(value)
 						.inActiveRange()

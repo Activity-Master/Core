@@ -3,11 +3,13 @@ package com.guicedee.activitymaster.fsdm.implementations.interceptors;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.*;
+import com.guicedee.activitymaster.fsdm.client.services.annotations.RulesEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRules;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.ClassificationException;
+import com.guicedee.activitymaster.fsdm.client.types.annotations.LogItem;
+import com.guicedee.activitymaster.fsdm.client.types.annotations.RuleSet;
+import com.guicedee.activitymaster.fsdm.client.types.exceptions.ActivityMasterException;
+import com.guicedee.activitymaster.fsdm.client.types.exceptions.ClassificationException;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -19,7 +21,7 @@ import java.util.List;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.EnterpriseClassificationDataConcepts.*;
 
 public class RulesEventAOPInterceptor implements MethodInterceptor
 {

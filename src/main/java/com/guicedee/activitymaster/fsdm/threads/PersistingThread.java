@@ -28,7 +28,7 @@ public class PersistingThread
 		{
 			try
 			{
-				entity.persist();
+				entity.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 			}
 			catch (Throwable T)
 			{

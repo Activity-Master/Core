@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.fsdm.ActivityMasterService;
 import com.guicedee.activitymaster.fsdm.TimeService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
@@ -16,7 +15,6 @@ import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.threads.TimeLoaderThread;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.JobService;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
 
@@ -27,8 +25,8 @@ import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.fsdm.client.services.ITimeService.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.DateTimeFormats.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.NumberFormats.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.types.DateTimeFormats.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.types.NumberFormats.*;
 import static java.time.temporal.ChronoUnit.*;
 
 
@@ -120,7 +118,7 @@ public class TimeSystem
 		GuiceContext.get(ActivityMasterService.class)
 		            .updatePartitionBases();
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "Years")
 	public Years getYear(@CacheKey Date date)
 	{
@@ -137,7 +135,7 @@ public class TimeSystem
 		return year;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Years createYear(Date date)
 	{
 		Years year = new Years().setId(Short.parseShort(YearIDFormat.getSimpleDateFormat()
@@ -157,19 +155,19 @@ public class TimeSystem
 		year.setCentury(Short.parseShort(YearFullFormat.getSimpleDateFormat()
 		                                               .format(date)
 		                                               .substring(0, 2)));
-		year.persist();
+		year.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		return year;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Years getYearFromID(Date date)
 	{
-		return new Years().builder()
+		return new Years().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 		                  .find(Short.parseShort(YearIDFormat.getSimpleDateFormat()
 		                                                     .format(date)))
 		                  .get()
 		                  .orElse(null);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private int getLastYearID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -183,7 +181,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Quarters createQuarter(Date date)
 	{
 		Quarters quarter = new Quarters(getQuarterID(date));
@@ -228,7 +226,7 @@ public class TimeSystem
 		return quarter;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult
 	public Quarters getQuarter(@CacheKey Date date)
 	{
@@ -244,14 +242,14 @@ public class TimeSystem
 		if (month == null)
 		{
 			month = createQuarter(date);
-			month.persist();
+			month.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		return month;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Quarters getQuarterFromID(Date date) throws Exception
 	{
-		return new Quarters().builder()
+		return new Quarters().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 		                     .find(getQuarterID(date))
 		                     .get()
 		                     .orElse(null);
@@ -301,7 +299,7 @@ public class TimeSystem
 		gc.add(Calendar.YEAR, -1);
 		return getQuarterID(gc.getTime());
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	/**
 	 * @param date
 	 * @return
@@ -317,21 +315,21 @@ public class TimeSystem
 			logProgress("Time Lord", "Creating Month [" +
 			                         month.getMonthDescription() +
 			                         "]", 1);
-			month.persist();
+			month.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		return month;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult
 	private MonthOfYear getMonthOfYear(@CacheKey Integer MonthOfYear)
 	{
-		return new MonthOfYear().builder()
+		return new MonthOfYear().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 		                        .where(MonthOfYear_.monthInYearNumber, Equals, MonthOfYear)
 		                        .get()
 		                        .orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	Months createMonth(Date date)
 	{
 		Months month = new Months(Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
@@ -400,10 +398,10 @@ public class TimeSystem
 		return Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
 		                                     .format(gc.getTime()));
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Months getMonthFromID(Date date)
 	{
-		return new Months().builder()
+		return new Months().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 		                   .find(Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
 		                                                       .format(date)))
 		                   .get()
@@ -429,15 +427,15 @@ public class TimeSystem
 		if (month == null)
 		{
 			month = createWeek(date);
-			month.persist();
+			month.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		return month;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Weeks getWeekFromID(Date date)
 	{
 		int weekID = getWeekID(date);
-		return new Weeks().builder()
+		return new Weeks().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 		                  .find(weekID)
 		                  .get()
 		                  .orElse(null);
@@ -454,7 +452,7 @@ public class TimeSystem
 		return weekID;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Weeks createWeek(Date date)
 	{
 		Weeks week = new Weeks();
@@ -479,7 +477,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult
 	@Override
 	public boolean getDay(@CacheKey Date date)
@@ -497,7 +495,7 @@ public class TimeSystem
 		if (day == null)
 		{
 			day = createDay(date);
-			day.persist();
+			day.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 			TimeLoaderThread thread = GuiceContext.get(TimeLoaderThread.class);
 			thread.setDate(date);
 			JobService.getInstance()
@@ -505,19 +503,19 @@ public class TimeSystem
 		}
 		return true;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult
 	private DayNames getDayName(@CacheKey String dayName)
 	{
-		return new DayNames().builder()
+		return new DayNames().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 		                     .where(DayNames_.dayName, Equals, dayName)
 		                     .get()
 		                     .orElse(null);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Days getDayFromID(Date date)
 	{
-		return new Days().builder()
+		return new Days().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 		                 .find(Integer.parseInt(DayIDFormat.getSimpleDateFormat()
 		                                                   .format(date)))
 		                 .get()
@@ -560,7 +558,7 @@ public class TimeSystem
 		                                   .format(gc.getTime()));
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private Days createDay(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -647,7 +645,7 @@ public class TimeSystem
 		getDayFiscal(date, fiscalLag);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void getDayYTD(Date date)
 	{
 		
@@ -688,12 +686,12 @@ public class TimeSystem
 		
 		for (TransYtd transYtd : arr)
 		{
-			transYtd.persist();
+			transYtd.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		arr.clear();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void getDayMTD(Date date)
 	{
 		
@@ -731,12 +729,12 @@ public class TimeSystem
 		}
 		for (TransMtd transYtd : arr)
 		{
-			transYtd.persist();
+			transYtd.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		arr.clear();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private TransFiscal getDayFiscal(Date date, int fiscalMonthLag)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -748,11 +746,11 @@ public class TimeSystem
 		TransFiscal tran = new TransFiscal(Integer.parseInt(DayIDFormat.getSimpleDateFormat()
 		                                                               .format(date)), Integer.parseInt(DayIDFormat.getSimpleDateFormat()
 		                                                                                                           .format(startYearGC.getTime())));
-		tran.persist();
+		tran.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		return tran;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	private void getDayQTD(Date date)
 	{
 		
@@ -819,16 +817,16 @@ public class TimeSystem
 		}
 		for (TransQtd transYtd : arr)
 		{
-			transYtd.persist();
+			transYtd.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		arr.clear();
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public void createTime()
 	{
-		if (new Hours().builder()
+		if (new Hours().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 				.where(Hours_.id,Equals,1)
 		               .getCount() == 0)
 		{
@@ -913,14 +911,14 @@ public class TimeSystem
 					}
 				}
 				
-				hour.persist();
+				hour.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 				for (Time time : hour.getTimeList())
 				{
-					time.persist();
+					time.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 				}
 				for (HalfHours half : halfs)
 				{
-					half.persist();
+					half.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 					HalfHourDayParts halfHourDayParts = new HalfHourDayParts();
 					halfHourDayParts.setId(dayPartCount++);
 					
@@ -933,7 +931,7 @@ public class TimeSystem
 					                                                         .getHourID(),
 							half.getId()
 							    .getMinuteID()));
-					halfHourDayParts.persist();
+					halfHourDayParts.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 				}
 			}
 		}

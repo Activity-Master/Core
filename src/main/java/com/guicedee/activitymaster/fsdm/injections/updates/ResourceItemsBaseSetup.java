@@ -6,8 +6,8 @@ import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.ResourceItemClassifications;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.ResourceItemTypes;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.ResourceItemClassifications;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.ResourceItemTypes;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;

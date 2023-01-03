@@ -3,21 +3,19 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressBuildingClassifications;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressEmailClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.dto.PhoneNumberDTO;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.AddressException;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.address.AddressBuildingClassifications;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.address.AddressEmailClassifications;
+import com.guicedee.activitymaster.fsdm.client.types.exceptions.AddressException;
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
+import jakarta.persistence.EntityManager;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,10 +23,10 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressBoxClassifications.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressRemoteSystemClassifications.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressTelephoneClassifications.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.address.AddressWebClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.address.AddressBoxClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.address.AddressRemoteSystemClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.address.AddressTelephoneClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.address.AddressWebClassifications.*;
 
 @SuppressWarnings("Duplicates")
 
@@ -39,9 +37,10 @@ public class AddressService
 	
 	@Inject
 	private IClassificationService<?> classificationServiceProvider;
-	
+
 	@Inject
-	private IEnterprise<?, ?> enterprise;
+	@com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB
+	private EntityManager entityManager;
 	
 	@Override
 	public IAddress<?, ?> get()
@@ -54,9 +53,9 @@ public class AddressService
 	{
 		return create(addressClassification, null, system, value, identifyingToken);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> create(String addressClassification, java.lang.String key, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
 	{
 		Address addy = new Address();
@@ -64,10 +63,10 @@ public class AddressService
 		Classification classification = (Classification) classificationServiceProvider.find(addressClassification,
 				system, identifyingToken);
 		
-		boolean found = addy.builder()
+		boolean found = addy.builder(entityManager)
 		                    .withClassification(addressClassification, system)
 		                    .withValue(value)
-		                    .withEnterprise(enterprise)
+		                    .withEnterprise(system.getEnterpriseID())
 		                    .inDateRange()
 		                    .inActiveRange()
 		                    .getCount() > 0;
@@ -82,28 +81,28 @@ public class AddressService
 			addy.setSystemID(system);
 			addy.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 			addy.setActiveFlagID(activeFlag);
-			addy.persist();
+			addy.persist(entityManager);
 			
 			addy.createDefaultSecurity(system, identifyingToken);
 		}
 		else
 		{
-			addy = addy.builder()
+			addy = addy.builder(entityManager)
 			           .withClassification(addressClassification, system)
-			           .withEnterprise(enterprise)
+			           .withEnterprise(system.getEnterpriseID())
 			           .withValue(value)
 			           .inDateRange()
-			           .withEnterprise(enterprise)
+			           .withEnterprise(system.getEnterpriseID())
 			           .get()
 			           .orElseThrow(() -> new AddressException("Cannot find an address that was already confirmed to exist - " + value));
 		}
 		return addy;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindIPAddress(String ipAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
@@ -117,10 +116,10 @@ public class AddressService
 				system,
 				identityToken);
 		
-		boolean found = address.builder()
+		boolean found = address.builder(entityManager)
 		                       .withClassification(ipAddressClassification)
 		                       .withValue(ipAddress)
-		                       .withEnterprise(enterprise)
+		                       .withEnterprise(system.getEnterpriseID())
 		                       .inDateRange()
 		                       .inActiveRange()
 		                       .getCount() > 0;
@@ -129,21 +128,21 @@ public class AddressService
 		{
 			address.setValue(ipAddress);
 			address.setClassificationID(ipAddressClassification);
-			address.setEnterpriseID(enterprise);
+			address.setEnterpriseID(system.getEnterpriseID());
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 			address.setActiveFlagID(activeFlag);
-			address.persist();
+			address.persist(entityManager);
 			address.createDefaultSecurity(system, identityToken);
 		}
 		else
 		{
-			address = address.builder()
+			address = address.builder(entityManager)
 			                 .withClassification(ipAddressClassification)
 			                 .withValue(ipAddress)
-			                 .withEnterprise(enterprise)
+			                 .withEnterprise(system.getEnterpriseID())
 			                 .inDateRange()
 			                 .inActiveRange()
 			                 .get()
@@ -151,9 +150,9 @@ public class AddressService
 		}
 		return address;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindHostName(String hostName, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
@@ -163,10 +162,10 @@ public class AddressService
 				system,
 				identityToken);
 		
-		boolean found = address.builder()
+		boolean found = address.builder(entityManager)
 		                       .withClassification(ipAddressClassification)
 		                       .withValue(hostName)
-		                       .withEnterprise(enterprise)
+		                       .withEnterprise(system.getEnterpriseID())
 		                       .inDateRange()
 		                       .inActiveRange()
 		                       .getCount() > 0;
@@ -175,21 +174,21 @@ public class AddressService
 		{
 			address.setValue(hostName);
 			address.setClassificationID(ipAddressClassification);
-			address.setEnterpriseID(enterprise);
+			address.setEnterpriseID(system.getEnterpriseID());
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 			address.setActiveFlagID(activeFlag);
-			address.persist();
+			address.persist(entityManager);
 			address.createDefaultSecurity(system, identityToken);
 		}
 		else
 		{
-			address = address.builder()
+			address = address.builder(entityManager)
 			                 .withClassification(ipAddressClassification)
 			                 .withValue(hostName)
-			                 .withEnterprise(enterprise)
+			                 .withEnterprise(system.getEnterpriseID())
 			                 .inDateRange()
 			                 .inActiveRange()
 			                 .get()
@@ -198,9 +197,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindWebAddress(String webAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
@@ -211,10 +210,10 @@ public class AddressService
 				identityToken);
 		
 		
-		boolean found = address.builder()
+		boolean found = address.builder(entityManager)
 		                       .withClassification(WebAddress.name(), system)
 		                       .withValue(webAddress)
-		                       .withEnterprise(enterprise)
+		                       .withEnterprise(system.getEnterpriseID())
 		                       .inDateRange()
 		                       .inActiveRange()
 		                       .getCount() > 0;
@@ -222,13 +221,13 @@ public class AddressService
 		{
 			address.setValue(webAddress);
 			address.setClassificationID(ipAddressClassification);
-			address.setEnterpriseID(enterprise);
+			address.setEnterpriseID(system.getEnterpriseID());
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 			address.setActiveFlagID(activeFlag);
-			address.persist();
+			address.persist(entityManager);
 			address.createDefaultSecurity(system, identityToken);
 			
 			try
@@ -271,7 +270,7 @@ public class AddressService
 				String port = matcher.group(3);
 				String uri = matcher.group(4);
 				Address webDetails = new Address();
-				webDetails.setEnterpriseID(enterprise);
+				webDetails.setEnterpriseID(system.getEnterpriseID());
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setOriginalSourceSystemID(system);
@@ -285,7 +284,7 @@ public class AddressService
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
-				webDetails.persist();
+				webDetails.persist(entityManager);
 				webDetails.createDefaultSecurity(system, identityToken);
 				
 				
@@ -296,7 +295,7 @@ public class AddressService
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
-				webDetails.persist();
+				webDetails.persist(entityManager);
 				webDetails.createDefaultSecurity(system, identityToken);
 				
 				
@@ -307,7 +306,7 @@ public class AddressService
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
-				webDetails.persist();
+				webDetails.persist(entityManager);
 				webDetails.createDefaultSecurity(system, identityToken);
 				
 				webDetails = new Address();
@@ -317,7 +316,7 @@ public class AddressService
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
-				webDetails.persist();
+				webDetails.persist(entityManager);
 				webDetails.createDefaultSecurity(system, identityToken);
 				
 			}
@@ -329,10 +328,10 @@ public class AddressService
 		}
 		else
 		{
-			address = address.builder()
+			address = address.builder(entityManager)
 			                 .withClassification(ipAddressClassification)
 			                 .withValue(webAddress)
-			                 .withEnterprise(enterprise)
+			                 .withEnterprise(system.getEnterpriseID())
 			                 .inDateRange()
 			                 .inActiveRange()
 			                 .get()
@@ -341,9 +340,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindPhoneContact(String phoneNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Classification homePhoneNumber = (Classification) classificationServiceProvider.find(
@@ -367,7 +366,7 @@ public class AddressService
 		PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phoneNumber);
 		
 		Address streetAddress = new Address();
-		if (streetAddress.builder()
+		if (streetAddress.builder(entityManager)
 		                 .hasClassification(homePhoneNumberCountryCodeClassification, phoneNumberDTO.getCountryCode())
 		                 .hasClassification(homePhoneExtensionNumberClassification, Strings.nullToEmpty(phoneNumberDTO.getExtension()))
 		                 .hasClassification(homePhoneAreaCodeClassification, phoneNumberDTO.getAreaCode())
@@ -375,7 +374,7 @@ public class AddressService
 		                 .withValue(phoneNumber)
 		                 .getCount() > 0)
 		{
-			return streetAddress.builder()
+			return streetAddress.builder(entityManager)
 			                    .hasClassification(homePhoneNumberCountryCodeClassification, phoneNumberDTO.getCountryCode())
 			                    .hasClassification(homePhoneExtensionNumberClassification, Strings.nullToEmpty(phoneNumberDTO.getExtension()))
 			                    .hasClassification(homePhoneAreaCodeClassification, phoneNumberDTO.getAreaCode())
@@ -387,13 +386,13 @@ public class AddressService
 		
 		streetAddress.setValue(phoneNumber);
 		streetAddress.setClassificationID(homePhoneNumber);
-		streetAddress.setEnterpriseID(enterprise);
+		streetAddress.setEnterpriseID(system.getEnterpriseID());
 		streetAddress.setSystemID(system);
 		streetAddress.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 		streetAddress.setActiveFlagID(activeFlag);
-		streetAddress.persist();
+		streetAddress.persist(entityManager);
 		streetAddress.createDefaultSecurity(system, identityToken);
 		
 		
@@ -403,9 +402,9 @@ public class AddressService
 		
 		return streetAddress;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindEmailContact(String emailAddressString, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Classification emailAddress = (Classification) classificationServiceProvider.find(
@@ -438,14 +437,14 @@ public class AddressService
 			user = emailAddressString.substring(0, emailAddressString.indexOf('@'));
 			domain = emailAddressString.substring(emailAddressString.indexOf('.') + 1);
 			
-			if (emailAddy.builder()
+			if (emailAddy.builder(entityManager)
 			             .hasClassification(emailAddressHost, host)
 			             .hasClassification(emailAddressDomain, domain)
 			             .withClassification(emailAddress)
 			             .withValue(emailAddressString)
 			             .getCount() > 0)
 			{
-				return emailAddy.builder()
+				return emailAddy.builder(entityManager)
 				                .hasClassification(emailAddressHost, host)
 				                .hasClassification(emailAddressDomain, domain)
 				                .withClassification(emailAddress)
@@ -457,13 +456,13 @@ public class AddressService
 			emailAddy.setValue(emailAddressString);
 			
 			emailAddy.setClassificationID(emailAddress);
-			emailAddy.setEnterpriseID(enterprise);
+			emailAddy.setEnterpriseID(system.getEnterpriseID());
 			emailAddy.setSystemID(system);
 			emailAddy.setOriginalSourceSystemID(system);
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 			emailAddy.setActiveFlagID(activeFlag);
-			emailAddy.persist();
+			emailAddy.persist(entityManager);
 			emailAddy.createDefaultSecurity(system, identityToken);
 			
 		}
@@ -478,15 +477,15 @@ public class AddressService
 		
 		return emailAddy;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public Optional<? extends IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		return involvedParty.findAddress(HomeCellNumber.name(), null, system, true, true, identityToken);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
@@ -508,14 +507,14 @@ public class AddressService
 				system,
 				identityToken);
 		
-		if (streetAddress.builder()
+		if (streetAddress.builder(entityManager)
 		                 .hasClassification(buildingStreetClassification, street)
 		                 .hasClassification(buildingNumberClassification, number)
 		                 .hasClassification(buildingStreetTypeClassification, streetType)
 		                 .withClassification(buildingAddressClassification)
 		                 .getCount() > 0)
 		{
-			return streetAddress.builder()
+			return streetAddress.builder(entityManager)
 			                    .hasClassification(buildingStreetClassification, street)
 			                    .hasClassification(buildingNumberClassification, number)
 			                    .hasClassification(buildingStreetTypeClassification, streetType)
@@ -527,13 +526,13 @@ public class AddressService
 		Address address = new Address();
 		address.setValue(number + " " + street + " " + streetType);
 		address.setClassificationID(buildingAddressClassification);
-		address.setEnterpriseID(enterprise);
+		address.setEnterpriseID(system.getEnterpriseID());
 		address.setSystemID(system);
 		address.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 		address.setActiveFlagID(activeFlag);
-		address.persist();
+		address.persist(entityManager);
 		address.createDefaultSecurity(system, identityToken);
 		
 		address.addClassification(buildingNumberClassification.getName(), number, system, identityToken);
@@ -542,9 +541,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IAddress<?, ?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
@@ -563,13 +562,13 @@ public class AddressService
 				system,
 				identityToken);
 		
-		if (address.builder()
+		if (address.builder(entityManager)
 		           .hasClassification(boxidentifierClassification, boxIdentifier)
 		           .hasClassification(boxNumberClassification, boxNumber)
 		           .withClassification(boxAddressClassification)
 		           .getCount() > 0)
 		{
-			return address.builder()
+			return address.builder(entityManager)
 			              .hasClassification(boxidentifierClassification, boxIdentifier)
 			              .hasClassification(boxNumberClassification, boxNumber)
 			              .withClassification(boxAddressClassification)
@@ -579,13 +578,13 @@ public class AddressService
 		
 		address.setValue(boxIdentifier + " " + boxNumber);
 		address.setClassificationID(boxAddressClassification);
-		address.setEnterpriseID(enterprise);
+		address.setEnterpriseID(system.getEnterpriseID());
 		address.setSystemID(system);
 		address.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 		address.setActiveFlagID(activeFlag);
-		address.persist();
+		address.persist(entityManager);
 		address.createDefaultSecurity(system, identityToken);
 		
 		address.addClassification(boxNumberClassification.getName(), boxNumber, system, identityToken);

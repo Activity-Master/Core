@@ -20,7 +20,7 @@ public class RulesTypeQueryBuilder
 		JoinExpression joinExpression = new JoinExpression();
 		RulesTypeXClassificationQueryBuilder builder =
 				new RulesTypeXClassification()
-						.builder()
+						.builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 						.inActiveRange()
 						.inDateRange()
 						.where(RulesTypeXClassification_.classificationID, Equals, classification);

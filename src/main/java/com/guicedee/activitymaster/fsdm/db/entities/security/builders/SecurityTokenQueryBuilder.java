@@ -29,7 +29,7 @@ public class SecurityTokenQueryBuilder
 	public SecurityTokenQueryBuilder findFolder(String securityTokenClassification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		SecurityTokenXSecurityToken hierarchySystem = new SecurityTokenXSecurityToken();
-		SecurityTokenXSecurityTokenQueryBuilder hierarchyBuilder = hierarchySystem.builder();
+		SecurityTokenXSecurityTokenQueryBuilder hierarchyBuilder = hierarchySystem.builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		hierarchyBuilder.withClassification(securityTokenClassification, system);
 		inActiveRange();
 		hierarchyBuilder.inDateRange();

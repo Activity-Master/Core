@@ -5,17 +5,15 @@ import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.ArrangementException;
+import com.guicedee.activitymaster.fsdm.client.types.exceptions.ArrangementException;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.*;
@@ -24,9 +22,9 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.JoinType;
 
 import java.time.Duration;
@@ -37,7 +35,7 @@ import java.util.stream.Collectors;
 import static com.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.DefaultClassifications.*;
 
 
 public class ArrangementsService
@@ -45,9 +43,10 @@ public class ArrangementsService
 {
 	@Inject
 	private IClassificationService<?> classificationService;
-	
+
 	@Inject
-	private IEnterprise<?, ?> enterprise;
+	@com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB
+	private EntityManager entityManager;
 	
 	@Override
 	public IArrangement<?, ?> get()
@@ -55,7 +54,7 @@ public class ArrangementsService
 		return new Arrangement();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IArrangement<?, ?> create(String type,
 	                                 String arrangementTypeClassification,
@@ -66,9 +65,9 @@ public class ArrangementsService
 		return create(type, null, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@Override
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Override
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IArrangement<?, ?> create(String type, java.lang.String key,
 	                                 String arrangementTypeClassification,
 	                                 String arrangementTypeValue,
@@ -84,7 +83,7 @@ public class ArrangementsService
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(arrangementType.getEnterprise());
 		xr.setActiveFlagID(activeFlag);
-		xr.persist();
+		xr.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		
 		xr.createDefaultSecurity(system, identityToken);
 		
@@ -101,10 +100,10 @@ public class ArrangementsService
 		return createArrangementType(type, null, system, identityToken);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "ArrangementTypes")
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IArrangementType<?, ?> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
@@ -113,38 +112,38 @@ public class ArrangementsService
 		xr.setDescription(type);
 		xr.setSystemID(system);
 		xr.setOriginalSourceSystemID(system);
-		xr.setEnterpriseID(enterprise);
+		xr.setEnterpriseID(system.getEnterpriseID());
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 		xr.setActiveFlagID(activeFlag);
-		xr.persist();
+		xr.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		xr.createDefaultSecurity(system, identityToken);
 		
 		return xr;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IArrangementType<?, ?> findArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
-		return xr.builder()
+		return xr.builder(entityManager)
 		         .withName(type)
 		         .inActiveRange()
 		         .inDateRange()
-		         .withEnterprise(enterprise)
+		         .withEnterprise(system.getEnterpriseID())
 		         .get()
 		         .orElseThrow(() -> new ArrangementException("Unable to find arrangement type - " + type));
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findInvolvedPartyArrangements(IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		List<ArrangementXInvolvedParty> xips =
 				new ArrangementXInvolvedParty()
-						.builder()
-						.withEnterprise(enterprise)
+						.builder(entityManager)
+						.withEnterprise(systems.getEnterpriseID())
 						.findLink(null, (InvolvedParty) ip, null)
 						.withValue(arrType)
 						.inActiveRange()
@@ -158,21 +157,21 @@ public class ArrangementsService
 		           .collect(Collectors.toList());
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassification(String classificationName, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(classificationName, systems, identityToken);
 		
-		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(enterprise)
+		ArrangementQueryBuilder aqb = new Arrangement().builder(entityManager);
+		aqb.withEnterprise(systems.getEnterpriseID())
 		   .inActiveRange()
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
-		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(enterprise)
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(entityManager);
+		qb.withEnterprise(systems.getEnterpriseID())
 		  .withClassification(classification)
 		  .withValue(value)
 		  .inActiveRange()
@@ -186,21 +185,21 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationGT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
-		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(enterprise)
+		ArrangementQueryBuilder aqb = new Arrangement().builder(entityManager);
+		aqb.withEnterprise(systems.getEnterpriseID())
 		   .inActiveRange()
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
-		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(enterprise)
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(entityManager);
+		qb.withEnterprise(systems.getEnterpriseID())
 		  .withClassification(classification)
 		  .withValue(GreaterThan, value)
 		  .inActiveRange()
@@ -213,7 +212,7 @@ public class ArrangementsService
 			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
@@ -229,21 +228,21 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationGTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
-		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(enterprise)
+		ArrangementQueryBuilder aqb = new Arrangement().builder(entityManager);
+		aqb.withEnterprise(systems.getEnterpriseID())
 		   .inActiveRange()
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
-		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(enterprise)
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(entityManager);
+		qb.withEnterprise(systems.getEnterpriseID())
 		  .withClassification(classification)
 		  .withValue(GreaterThanEqualTo, value)
 		  .inActiveRange()
@@ -256,7 +255,7 @@ public class ArrangementsService
 			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
@@ -272,7 +271,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationGTEWithIP(String arrangementType, String classificationName,
 	                                                                          IInvolvedParty<?, ?> withInvolvedParty,
@@ -285,8 +284,8 @@ public class ArrangementsService
 	{
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
 		
-		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(enterprise)
+		ArrangementQueryBuilder aqb = new Arrangement().builder(entityManager);
+		aqb.withEnterprise(system.getEnterpriseID())
 		   .inActiveRange()
 		   .inDateRange();
 		
@@ -294,8 +293,8 @@ public class ArrangementsService
 		{
 			JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 			
-			ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-			qb.withEnterprise(enterprise)
+			ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(entityManager);
+			qb.withEnterprise(system.getEnterpriseID())
 			  .withClassification(classification)
 			  .withValue(GreaterThanEqualTo, value)
 			  .inActiveRange()
@@ -312,7 +311,7 @@ public class ArrangementsService
 			}
 			ArrangementXInvolvedPartyQueryBuilder builder =
 					new ArrangementXInvolvedParty()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.withClassification(ipClassification, system)
 							.inDateRange()
@@ -332,7 +331,7 @@ public class ArrangementsService
 			}
 			ArrangementXResourceItemQueryBuilder builder =
 					new ArrangementXResourceItem()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.withClassification(resourceItemClassification, system)
 							.inDateRange()
@@ -348,7 +347,7 @@ public class ArrangementsService
 			JoinExpression<Arrangement, ArrangementType, ?> joinExpressionAt = new JoinExpression<>();
 			ArrangementXArrangementTypeQueryBuilder builderAT =
 					new ArrangementXArrangementType()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.withType(arrangementType, system, identityToken)
 							.inDateRange();
@@ -364,7 +363,7 @@ public class ArrangementsService
 			JoinExpression<Arrangement, Arrangement, ?> joinExpressionParentJoin = new JoinExpression<>();
 			ArrangementXArrangementQueryBuilder builderParent =
 					new ArrangementXArrangement()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
@@ -381,21 +380,21 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationLT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
-		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(enterprise)
+		ArrangementQueryBuilder aqb = new Arrangement().builder(entityManager);
+		aqb.withEnterprise(systems.getEnterpriseID())
 		   .inActiveRange()
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
-		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(enterprise)
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(entityManager);
+		qb.withEnterprise(systems.getEnterpriseID())
 		  .withClassification(classification)
 		  .withValue(LessThan, value)
 		  .inActiveRange()
@@ -408,7 +407,7 @@ public class ArrangementsService
 			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
@@ -424,21 +423,21 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationLTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
-		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(enterprise)
+		ArrangementQueryBuilder aqb = new Arrangement().builder(entityManager);
+		aqb.withEnterprise(systems.getEnterpriseID())
 		   .inActiveRange()
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
-		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(enterprise)
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(entityManager);
+		qb.withEnterprise(systems.getEnterpriseID())
 		  .withClassification(classification)
 		  .withValue(LessThanEqualTo, value)
 		  .inActiveRange()
@@ -451,7 +450,7 @@ public class ArrangementsService
 			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
@@ -467,21 +466,21 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassification(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
 		IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 		
-		ArrangementQueryBuilder aqb = new Arrangement().builder();
-		aqb.withEnterprise(enterprise)
+		ArrangementQueryBuilder aqb = new Arrangement().builder(entityManager);
+		aqb.withEnterprise(systems.getEnterpriseID())
 		   .inActiveRange()
 		   .inDateRange();
 		JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 		
 		
-		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
-		qb.withEnterprise(enterprise)
+		ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder(entityManager);
+		qb.withEnterprise(systems.getEnterpriseID())
 		  .withClassification(classification)
 		  .withValue(value)
 		  .inActiveRange()
@@ -494,7 +493,7 @@ public class ArrangementsService
 			JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
 			ArrangementXArrangementQueryBuilder builder =
 					new ArrangementXArrangement()
-							.builder()
+							.builder(entityManager)
 							.inActiveRange()
 							.inDateRange()
 							.where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
@@ -515,7 +514,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IArrangement<?, ?> findArrangementByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -524,10 +523,10 @@ public class ArrangementsService
 			classificationName = NoClassification.toString();
 		}
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
-		Optional<ArrangementXResourceItem> arrangementXResourceItem = new ArrangementXResourceItem().builder()
+		Optional<ArrangementXResourceItem> arrangementXResourceItem = new ArrangementXResourceItem().builder(entityManager)
 		                                                                                            .inActiveRange()
 		                                                                                            .inDateRange()
-		                                                                                            .withEnterprise(enterprise)
+		                                                                                            .withEnterprise(system.getEnterpriseID())
 		                                                                                            .withClassification(classification)
 		                                                                                            .withValue(value)
 		                                                                                            .where(ArrangementXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
@@ -537,7 +536,7 @@ public class ArrangementsService
 		                               .orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IArrangement<?, ?> findArrangementByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -546,10 +545,10 @@ public class ArrangementsService
 			classificationName = NoClassification.toString();
 		}
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
-		Optional<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
+		Optional<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder(entityManager)
 		                                                                           .inActiveRange()
 		                                                                           .inDateRange()
-		                                                                           .withEnterprise(enterprise)
+		                                                                           .withEnterprise(system.getEnterpriseID())
 		                                                                           .withClassification(classification)
 		                                                                           .withValue(value)
 		                                                                           .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
@@ -559,7 +558,7 @@ public class ArrangementsService
 		            .orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByRulesType(IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -568,10 +567,10 @@ public class ArrangementsService
 			classificationName = NoClassification.toString();
 		}
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
-		List collect = new ArrangementXRulesType().builder()
+		List collect = new ArrangementXRulesType().builder(entityManager)
 		                                          .inActiveRange()
 		                                          .inDateRange()
-		                                          .withEnterprise(enterprise)
+		                                          .withEnterprise(system.getEnterpriseID())
 		                                          .withClassification(classification)
 		                                          .withValue(value)
 		                                          .where(ArrangementXRulesType_.rulesTypeID, Equals, (RulesType) ruleType)
@@ -583,7 +582,7 @@ public class ArrangementsService
 		return collect;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -592,10 +591,10 @@ public class ArrangementsService
 			classificationName = NoClassification.toString();
 		}
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
-		List<ArrangementXInvolvedParty> all = new ArrangementXInvolvedParty().builder()
+		List<ArrangementXInvolvedParty> all = new ArrangementXInvolvedParty().builder(entityManager)
 		                                                                     .inActiveRange()
 		                                                                     .inDateRange(startDate, EndOfTime)
-		                                                                     .withEnterprise(enterprise)
+		                                                                     .withEnterprise(system.getEnterpriseID())
 		                                                                     .withClassification(classification)
 		                                                                     .withValue(value)
 		                                                                     .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
@@ -606,7 +605,7 @@ public class ArrangementsService
 		          .collect(Collectors.toList());
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -615,10 +614,10 @@ public class ArrangementsService
 			classificationName = NoClassification.toString();
 		}
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
-		List<ArrangementXInvolvedParty> all = new ArrangementXInvolvedParty().builder()
+		List<ArrangementXInvolvedParty> all = new ArrangementXInvolvedParty().builder(entityManager)
 		                                                                     .inActiveRange()
 		                                                                     .inDateRange(startDate, endDate)
-		                                                                     .withEnterprise(enterprise)
+		                                                                     .withEnterprise(system.getEnterpriseID())
 		                                                                     .withClassification(classification)
 		                                                                     .withValue(value)
 		                                                                     .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
@@ -629,7 +628,7 @@ public class ArrangementsService
 		          .collect(Collectors.toList());
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -638,10 +637,10 @@ public class ArrangementsService
 			classificationName = NoClassification.toString();
 		}
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
-		List<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
+		List<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder(entityManager)
 		                                                                       .inActiveRange()
 		                                                                       .inDateRange()
-		                                                                       .withEnterprise(enterprise)
+		                                                                       .withEnterprise(system.getEnterpriseID())
 		                                                                       .withClassification(classification)
 		                                                                       .withValue(value)
 		                                                                       .where(ArrangementXInvolvedParty_.involvedPartyID, Equals, (InvolvedParty) involvedParty)
@@ -652,7 +651,7 @@ public class ArrangementsService
 		            .collect(Collectors.toList());
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IInvolvedParty<?, ?>> findArrangementInvolvedParties(IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -661,10 +660,10 @@ public class ArrangementsService
 			classificationName = NoClassification.toString();
 		}
 		IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
-		List<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder()
+		List<ArrangementXInvolvedParty> arxip = new ArrangementXInvolvedParty().builder(entityManager)
 		                                                                       .inActiveRange()
 		                                                                       .inDateRange()
-		                                                                       .withEnterprise(enterprise)
+		                                                                       .withEnterprise(system.getEnterpriseID())
 		                                                                       .withClassification(classification)
 		                                                                       .withValue(value)
 		                                                                       .where(ArrangementXInvolvedParty_.arrangementID, Equals, (Arrangement) arrangement)
@@ -675,52 +674,52 @@ public class ArrangementsService
 		            .collect(Collectors.toList());
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "ArrangementArrangementTypeString")
 	@Override
 	public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
-		return xr.builder()
+		return xr.builder(entityManager)
 		         .withName(idType)
 		         .inActiveRange()
 		         .inDateRange()
-		         .withEnterprise(enterprise)
+		         .withEnterprise(system.getEnterpriseID())
 		         //   .canRead(system, tokens)
 		         .get()
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement type - " + idType));
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Arrangement xr = new Arrangement();
-		return xr.builder()
+		return xr.builder(entityManager)
 		         .where(Arrangement_.id, Equals, id.toString())
 		         .get()
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement with ID " + id));
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.lang.String id)
 	{
 		Arrangement xr = new Arrangement();
-		return xr.builder()
+		return xr.builder(entityManager)
 		         .where(Arrangement_.id, Equals, id)
 		         .get()
 		         .orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public List<IArrangement<?, ?>> findAll(String arrangementType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		IArrangementType<?, ?> type = find(arrangementType, system, identityToken);
-		List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder()
+		List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder(entityManager)
 		                                                                          .inActiveRange()
 		                                                                          .inDateRange()
 		                                                                          .canRead(system, identityToken)

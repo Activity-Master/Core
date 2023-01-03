@@ -95,7 +95,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(true);
 			stAdmin.setReadAllowed(true);
-			stAdmin.persist();
+			stAdmin.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		else
 		{
@@ -127,7 +127,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(false);
-			stAdmin.persist();
+			stAdmin.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		else
 		{
@@ -159,7 +159,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
-			stAdmin.persist();
+			stAdmin.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		else
 		{
@@ -194,7 +194,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
-			stAdmin.persist();
+			stAdmin.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		else
 		{
@@ -228,7 +228,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
-			stAdmin.persist();
+			stAdmin.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		else
 		{
@@ -261,7 +261,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
-			stAdmin.persist();
+			stAdmin.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		else
 		{
@@ -294,7 +294,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
-			stAdmin.persist();
+			stAdmin.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		else
 		{
@@ -348,7 +348,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(false);
-			stAdmin.persist();
+			stAdmin.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		}
 		else
 		{

@@ -5,11 +5,11 @@ import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItem;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.*;
+import com.guicedee.activitymaster.fsdm.client.types.annotations.LogItem;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.LogItemTypes;
+import com.guicedee.activitymaster.fsdm.client.types.exceptions.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.guicedinjection.representations.IJsonRepresentation;
@@ -25,7 +25,7 @@ import java.util.logging.Level;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.EnterpriseClassificationDataConcepts.*;
 import static com.guicedee.guicedinjection.interfaces.ObjectBinderKeys.*;
 
 

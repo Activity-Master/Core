@@ -3,40 +3,40 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyIdentificationType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.types.IPTypes;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.types.IdentificationTypes;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.SecurityAccessException;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.SecurityTokenClassifications;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.types.IPTypes;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.types.IdentificationTypes;
+import com.guicedee.activitymaster.fsdm.client.types.exceptions.SecurityAccessException;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.pairing.Pair;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheRemove;
 import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.*;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.IdentificationTypes.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.NameTypes.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.DefaultClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.InvolvedPartyClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.types.IdentificationTypes.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.types.NameTypes.*;
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
 public class PasswordsService implements IPasswordsService<PasswordsService>
 {
-	@Inject
-	private IEnterprise<?, ?> enterprise;
-	
+
 	@Inject
 	private IInvolvedPartyService<?> involvedPartyService;
+	
+	@Inject
+	@com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB
+	private EntityManager entityManager;
 	
 	private String encrypt(String toEncrypt, byte[] salt)
 	{
@@ -51,12 +51,12 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return passEncrypted;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedParty<?, ?> findByUsername(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		IInvolvedParty<?, ?> party = new InvolvedParty().builder()
-		                                                .withEnterprise(enterprise)
+		IInvolvedParty<?, ?> party = new InvolvedParty().builder(entityManager)
+		                                                .withEnterprise(system.getEnterpriseID())
 		                                                .findByIdentificationType(IdentificationTypeUserName, username,
 				                                                system, identityToken)
 		                                                .get()
@@ -64,7 +64,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return party;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IInvolvedParty<?, ?> findByUsernameAndPassword(String username, String password, ISystems<?, ?> system, boolean throwForNoUser, java.util.UUID... identityToken)
 	{
@@ -81,7 +81,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		}
 		
 		UUID systemToken = get(InvolvedPartySystem.class).getSystemToken(system.getEnterpriseID());
-		InvolvedParty foundPart = new InvolvedParty().builder()
+		InvolvedParty foundPart = new InvolvedParty().builder(entityManager)
 		                                             .findByIdentificationType(IdentificationTypeUserName,
 				                                             username, system,
 				                                             systemToken)
@@ -116,20 +116,20 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return foundPart;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@CacheResult(cacheName = "UsersList")
 	@Override
 	public List<IInvolvedParty<?, ?>> getAllUsers(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		return (List) new InvolvedParty().builder()
+		return (List) new InvolvedParty().builder(entityManager)
 		                                 .findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
 		                                 .getAll();
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheRemove(cacheName = "UsersList")
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	////@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedParty<?, ?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		byte[] salt = System.getProperty("systemSalt") != null ? System.getProperty("systemSalt")
@@ -147,12 +147,12 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		
 		return involvedParty;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public boolean doesUsernameExist(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		return new InvolvedParty().builder()
-		                          .withEnterprise(enterprise)
+		return new InvolvedParty().builder(entityManager)
+		                          .withEnterprise(system.getEnterpriseID())
 		                          .inActiveRange()
 		                          .inDateRange()
 		                          .findByIdentificationType(IdentificationTypeUserName, username, system, identityToken)
@@ -160,7 +160,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IInvolvedParty<?, ?> createAdminAndCreatorUserForEnterprise(ISystems<?, ?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey)
 	{
@@ -174,7 +174,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		
 		Pair<String, String> pair = new Pair<>(
 				IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(), adminUserName);
-		Optional<InvolvedParty> exists = new InvolvedParty().builder()
+		Optional<InvolvedParty> exists = new InvolvedParty().builder(entityManager)
 		                                                    .findByIdentificationType(
 				                                                    IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
 				                                                    adminUserName, system)
@@ -185,7 +185,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		{
 			IInvolvedParty<?, ?> adminUser = service.create(system, pair, true);
 			
-			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeUserName.toString(),
+			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypeUserName.toString(),
 					adminUserName, system, identityToken);
 			
 			adminUser.addOrReuseInvolvedPartyType(NoClassification.toString(), IPTypes.TypeIndividual.toString(), "Creator Individual", system, identityToken);

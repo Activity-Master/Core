@@ -8,8 +8,8 @@ import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityM
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.*;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
@@ -105,7 +105,7 @@ public class SecurityTokenSystem
 		IClassification<?, ?> entClassification = classificationService.create(enterpriseName, system, identityToken);
 		
 		classificationService.create(SecurityTokenClassifications.UserGroup.toString(),SecurityTokenClassifications.UserGroup.toString(),
-				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 1,entClassification,  identityToken);
+				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken.classificationValue() ,system, 1,entClassification,  identityToken);
 		
 		classificationService.create(SecurityTokenClassifications.User.toString(),SecurityTokenClassifications.User.toString(),
 				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 2,  identityToken);
@@ -128,7 +128,7 @@ public class SecurityTokenSystem
 		classificationService.create(SecurityTokenClassifications.Plugin.toString(),SecurityTokenClassifications.Plugin.toString(),
 				EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken ,system, 5,  identityToken);
 
-		classificationService.create(SecurityTokenClassifications.Identity.toString(),"A security token identity",EnterpriseClassificationDataConcepts.SecurityTokenXClassification,
+		classificationService.create(SecurityTokenClassifications.Identity.toString(),"A security token identity",EnterpriseClassificationDataConcepts.SecurityTokenXClassification.classificationValue(),
 				system,1,entClassification, identityToken);
 		
 		logProgress("Security Token Service", "Security Classifications Installed", 11);

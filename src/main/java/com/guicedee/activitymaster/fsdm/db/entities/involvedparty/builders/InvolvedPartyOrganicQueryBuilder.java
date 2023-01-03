@@ -6,10 +6,5 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyO
 public class InvolvedPartyOrganicQueryBuilder
 		extends QueryBuilderTable<InvolvedPartyOrganicQueryBuilder, InvolvedPartyOrganic, java.lang.String>
 {
-	
-	@Override
-	public boolean isIdGenerated()
-	{
-		return false;
-	}
+
 }

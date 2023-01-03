@@ -45,7 +45,7 @@ public class ActivityMasterDBModule
 				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "5000")))
 				.setMinPoolSize(1)
 				.setPrefill(false)
-				.setShareTransactionConnections(true)
+				//.setShareTransactionConnections(true)
 				.setAllowLocalTransactions(true)
 				.setTransactionIsolation(BTMTransactionIsolation.READ_COMMITTED.toString())
 				;
@@ -61,6 +61,12 @@ public class ActivityMasterDBModule
 	protected @NotNull Class<? extends Annotation> getBindingAnnotation()
 	{
 		return ActivityMasterDB.class;
+	}
+	
+	@Override
+	protected boolean isDefault()
+	{
+		return true;
 	}
 	
 	@Override

@@ -1,23 +1,27 @@
 package com.guicedee.activitymaster.fsdm;
 
+import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.db.entities.time.DayParts;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.EntityManager;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.Date;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.DateTimeFormats.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.types.DateTimeFormats.*;
 
 
 public class TimeService<J extends TimeService<J>>
 		implements ITimeService
 {
+	@Inject
+	@com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB
+	private EntityManager entityManager;
+	
 	@Override
 	public int getDayID(LocalDateTime dateTime)
 	{
@@ -76,7 +80,7 @@ public class TimeService<J extends TimeService<J>>
 		return dateTime.toInstant()
 		               .get(ChronoField.MINUTE_OF_HOUR);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "TimeDayParts")
 	public DayParts getDayPart(@CacheKey int hour, @CacheKey int minute)
 	{
@@ -84,21 +88,21 @@ public class TimeService<J extends TimeService<J>>
 		{
 			if (hour == 3 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Midnight Morning")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else if (hour < 3)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Midnight Morning")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Early Morning")
 				                     .get()
 				                     .orElseThrow();
@@ -108,21 +112,21 @@ public class TimeService<J extends TimeService<J>>
 		{
 			if (hour == 6 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Early Morning")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else if (hour < 6)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Early Morning")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Morning")
 				                     .get()
 				                     .orElseThrow();
@@ -130,7 +134,7 @@ public class TimeService<J extends TimeService<J>>
 		}
 		else if (hour <= 9)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(entityManager)
 			                     .findByName("Morning")
 			                     .get()
 			                     .orElseThrow();
@@ -139,21 +143,21 @@ public class TimeService<J extends TimeService<J>>
 		{
 			if (hour == 10 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Late Morning")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else if (hour < 10)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Late Morning")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Early Afternoon")
 				                     .get()
 				                     .orElseThrow();
@@ -162,14 +166,14 @@ public class TimeService<J extends TimeService<J>>
 		}
 		else if (hour < 12)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(entityManager)
 			                     .findByName("Early Afternoon")
 			                     .get()
 			                     .orElseThrow();
 		}
 		else if (hour <= 14)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(entityManager)
 			                     .findByName("Afternoon")
 			                     .get()
 			                     .orElseThrow();
@@ -178,21 +182,21 @@ public class TimeService<J extends TimeService<J>>
 		{
 			if (hour == 15 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Late Afternoon")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else if (hour < 10)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Late Afternoon")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Early Evening")
 				                     .get()
 				                     .orElseThrow();
@@ -202,21 +206,21 @@ public class TimeService<J extends TimeService<J>>
 		{
 			if (hour == 16 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Early Evening")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else if (hour < 16)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Early Evening")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Evening")
 				                     .get()
 				                     .orElseThrow();
@@ -224,7 +228,7 @@ public class TimeService<J extends TimeService<J>>
 		}
 		else if (hour <= 19)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(entityManager)
 			                     .findByName("Evening")
 			                     .get()
 			                     .orElseThrow();
@@ -233,21 +237,21 @@ public class TimeService<J extends TimeService<J>>
 		{
 			if (hour == 21 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Late Evening")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else if (hour < 21)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Late Evening")
 				                     .get()
 				                     .orElseThrow();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(entityManager)
 				                     .findByName("Midnight Evening")
 				                     .get()
 				                     .orElseThrow();
@@ -255,7 +259,7 @@ public class TimeService<J extends TimeService<J>>
 		}
 		else if (hour <= 24)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(entityManager)
 			                     .findByName("Midnight Evening")
 			                     .get()
 			                     .orElseThrow();
@@ -263,7 +267,7 @@ public class TimeService<J extends TimeService<J>>
 		
 		else
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(entityManager)
 			                     .findByName("Midnight Morning")
 			                     .get()
 			                     .orElseThrow();

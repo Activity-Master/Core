@@ -37,7 +37,7 @@ public class ActivityMasterService
 	{
 		enterpriseService.loadUpdates(enterprise);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public void runScript(String script)
 	{
@@ -52,7 +52,7 @@ public class ActivityMasterService
 			          .log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public void updatePartitionBases()
 	{

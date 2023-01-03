@@ -27,7 +27,7 @@ public class ResourceItemQueryBuilder
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		
-		ResourceItemXResourceItemTypeQueryBuilder table = new ResourceItemXResourceItemType().builder();
+		ResourceItemXResourceItemTypeQueryBuilder table = new ResourceItemXResourceItemType().builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		table.inActiveRange();
 		table.inDateRange();
 		table.withEnterprise(system.getEnterprise());

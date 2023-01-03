@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
@@ -114,7 +115,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 				.getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
 						.getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		update();
+		update(ActivityMasterConfiguration.entityManager().get());
 		return (J) this;
 	}
 	

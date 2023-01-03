@@ -26,7 +26,7 @@ public class GeographyQueryBuilder
 		JoinExpression joinExpression = new JoinExpression();
 		GeographyXGeographyQueryBuilder builder =
 				new GeographyXGeography()
-						.builder()
+						.builder(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get())
 						.inActiveRange()
 						.inDateRange()
 						.where(GeographyXGeography_.parentGeographyID, Equals, ((Geography) parent));

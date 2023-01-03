@@ -134,7 +134,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 		                            .getDeletedFlag(getEnterpriseID(), identifyingToken));
 		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		update();
+		update(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		
 		setId(null);
 		setValue(newValue);
@@ -144,7 +144,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 		setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
 		                            .getActiveFlag(getEnterpriseID(), identifyingToken));
-		persist();
+		persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		createDefaultSecurity(getSystemID());
 		
 		return (J) this;

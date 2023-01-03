@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.entityassist.SCDEntity;
+import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
@@ -24,7 +25,7 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 	{
 		setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow())
 		                                                              .plus(duration));
-		update();
+		update(ActivityMasterConfiguration.entityManager().get());
 		return (J) this;
 	}
 	
@@ -34,9 +35,4 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 		return getId() == null;
 	}
 	
-	@Override
-	public @NotNull J persist()
-	{
-		return super.persist();
-	}
 }

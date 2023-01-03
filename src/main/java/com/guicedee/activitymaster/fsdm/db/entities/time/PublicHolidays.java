@@ -28,7 +28,7 @@ public class PublicHolidays
 	@Basic(optional = false)
 	@Column(nullable = false,
 	        name = "PublicHolidayID")
-	
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Integer id;
 	@Basic(optional = false)
 	@Column(nullable = false,

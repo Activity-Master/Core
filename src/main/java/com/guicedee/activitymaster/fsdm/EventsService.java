@@ -3,45 +3,45 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEventType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.EventException;
+import com.guicedee.activitymaster.fsdm.client.types.exceptions.EventException;
 import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.cache.annotation.CacheKey;
 import jakarta.cache.annotation.CacheResult;
+import jakarta.persistence.EntityManager;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.DefaultClassifications.*;
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 
 public class EventsService
 		implements IEventService<EventsService>
 {
+
 	@Inject
-	private IEnterprise<?, ?> enterprise;
+	@com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB
+	private EntityManager entityManager;
 	
 	@Override
 	public IEvent<?, ?> get()
 	{
 		return new Event();
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IEvent<?, ?> find(java.lang.String id)
 	{
-		return new Event().builder()
+		return new Event().builder(entityManager)
 		                  .find(id)
 		                  .get()
 		                  .orElse(null);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	public IEvent<?, ?> createEvent(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -49,19 +49,19 @@ public class EventsService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IEvent<?, ?> createEvent(String eventType, java.lang.String key, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Event event = new Event();
 		if(key != null)
 		event.setId(key);
-		event.setEnterpriseID(enterprise);
+		event.setEnterpriseID(system.getEnterpriseID());
 		event.setSystemID(system);
 		event.setOriginalSourceSystemID(system);
 		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 		event.setActiveFlagID(activeFlag);
-		event.persist();
+		event.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 		event.createDefaultSecurity(system, identityToken);
 		
 		event.addEventTypes(eventType, STRING_EMPTY, NoClassification.toString(), system, identityToken);
@@ -69,14 +69,14 @@ public class EventsService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IEventType<?, ?> createEventType(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		EventType et = new EventType();
 		
-		boolean exists = et.builder()
+		boolean exists = et.builder(entityManager)
 		                   .withName(eventType)
-		                   .withEnterprise(enterprise)
+		                   .withEnterprise(system.getEnterpriseID())
 		                   .inActiveRange()
 		                   .inDateRange()
 		                   .getCount() > 0;
@@ -86,12 +86,12 @@ public class EventsService
 			et.setName(eventType);
 			et.setDescription(eventType);
 			et.setSystemID(system);
-			et.setEnterpriseID(enterprise);
+			et.setEnterpriseID(system.getEnterpriseID());
 			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterpriseID());
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID(system);
-			et.persist();
+			et.persist(com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.entityManager().get());
 			et.createDefaultSecurity(system, identityToken);
 			
 			return et;
@@ -102,14 +102,14 @@ public class EventsService
 		}
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
 	@CacheResult(cacheName = "EventTypesStrings")
 	public IEventType<?, ?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		return new EventType().builder()
+		return new EventType().builder(entityManager)
 		                      .withName(eventType)
-		                      .withEnterprise(enterprise)
+		                      .withEnterprise(system.getEnterpriseID())
 		                      .inActiveRange()
 		                      .inDateRange()
 		                      //  .canRead(system, identityToken)

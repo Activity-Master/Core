@@ -3,17 +3,17 @@ package com.guicedee.activitymaster.fsdm.systems;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.LogItemTypes;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.Date;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IEventService.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
+import static com.guicedee.activitymaster.fsdm.client.types.classifications.EnterpriseClassificationDataConcepts.*;
 
 
 public class EventsSystem

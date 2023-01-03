@@ -2,7 +2,7 @@ package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType;
-import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
+import com.guicedee.activitymaster.fsdm.client.types.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementTypeQueryBuilder;
 import jakarta.persistence.*;

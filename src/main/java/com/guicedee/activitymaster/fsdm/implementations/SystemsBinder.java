@@ -1,19 +1,9 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.google.inject.*;
-import com.google.inject.name.Names;
 import com.guicedee.activitymaster.fsdm.SystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQueryBuilder;
-import com.guicedee.activitymaster.fsdm.services.providers.SystemsProvider;
-import com.guicedee.activitymaster.fsdm.services.providers.SystemsTokenProvider;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import com.guicedee.logger.LogFactory;
-
-import java.util.UUID;
 
 
 public class SystemsBinder extends PrivateModule implements IGuiceModule<SystemsBinder>
@@ -35,7 +25,7 @@ public class SystemsBinder extends PrivateModule implements IGuiceModule<Systems
 		expose(ISystemsService.class);
 
 		//All systems named bindings
-		for (IActivityMasterSystem<?> system : IActivityMasterSystem.allSystems())
+		/*for (IActivityMasterSystem<?> system : IActivityMasterSystem.allSystems())
 		{
 			@SuppressWarnings("Convert2Diamond")
 			Key<ISystems<?,?>> aSystemGenericKey = Key.get(new TypeLiteral<ISystems<?,?>>() {}, Names.named(system.getSystemName()));
@@ -51,6 +41,6 @@ public class SystemsBinder extends PrivateModule implements IGuiceModule<Systems
 			Key<UUID> aSystemTokenGenericKey = Key.get(UUID.class, Names.named(system.getSystemName()));
 			bind(aSystemTokenGenericKey).toProvider(new SystemsTokenProvider(system.getSystemName()));
 			expose(aSystemTokenGenericKey);
-		}
+		}*/
 	}
 }
