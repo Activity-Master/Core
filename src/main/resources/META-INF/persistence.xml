@@ -255,9 +255,12 @@
             <property name="javax.persistence.jdbc.user" value="${FSDM_USER}" /> <!-- DB User -->
             <property name="javax.persistence.jdbc.password" value="${FSDM_PASSWORD}" /> <!-- DB Password -->
 
-             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://${FSDM_DBSERVER}/${FSDM_DBNAME}"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://${FSDM_DBSERVER}/${FSDM_DBNAME}"/>
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.max_fetch_depth" value="1"/>
+
+            <property name="hibernate.enhancer.enableLazyInitialization" value="false"/>
+            <property name="hibernate.enhancer.enableDirtyTracking" value="false"/>
 
         </properties>
 

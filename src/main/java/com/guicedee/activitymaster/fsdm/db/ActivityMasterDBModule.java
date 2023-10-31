@@ -35,14 +35,14 @@ public class ActivityMasterDBModule
 		                          .setAllowMultipleLrc(true)
 		                          .setAsynchronous2Pc(true)
 		                          .setDisableJmx(true)
-		                          .setMaxLogSizeInMb(20)
+		                          .setMaxLogSizeInMb(40)
 		                          .setSkipCorruptedLogs(true)
 		                          .setDefaultTransactionTimeout(ActivityMasterStatics.transactionDebugTimeout)
 		                          .setWarnAboutZeroResourceTransaction(false);
 		
 		return new BTMConnectionBaseInfo()
 				.setEnableJdbc4ConnectionTest(true)
-				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "5000")))
+				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "500")))
 				.setMinPoolSize(1)
 				.setPrefill(false)
 				.setShareTransactionConnections(true)

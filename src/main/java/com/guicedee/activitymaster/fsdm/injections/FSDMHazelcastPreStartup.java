@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.injections;
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.interfaces.IGuicePreStartup;
 import com.guicedee.guicedinjection.properties.GlobalProperties;
+import org.hibernate.cfg.AvailableSettings;
 
 public class FSDMHazelcastPreStartup implements IGuicePreStartup<FSDMHazelcastPreStartup>
 {
@@ -27,7 +28,6 @@ public class FSDMHazelcastPreStartup implements IGuicePreStartup<FSDMHazelcastPr
 		{
 			HazelcastProperties.setAddress(GlobalProperties.getSystemPropertyOrEnvironment("CLIENT_ADDRESS", "localhost"));
 		}
-		
 	}
 	
 	@Override

@@ -78,7 +78,7 @@ public class EnterpriseService
 	}
 
 	@Override
-	public void loadUpdates(IEnterprise<?,?> enterprise)
+	public int loadUpdates(IEnterprise<?,?> enterprise)
 	{
 		Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = getUpdates(enterprise);
 		
@@ -131,6 +131,7 @@ public class EnterpriseService
 		enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
 		                                                                                  .format(LocalDate.now()), system);
 		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(LocalDate.now()));
+		return availableUpdates.size();
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -152,7 +153,12 @@ public class EnterpriseService
 		List<? extends IRelationshipValue<?, IClassification<?, ?>, ?>> classificationsAll = enterprise.findClassifications(UpdateClass.toString(), system);
 		for (IRelationshipValue<?, IClassification<?, ?>, ?> rel : classificationsAll)
 		{
-			set.add(rel.getValue());
+			String classValue = rel.getValue();
+			if(classValue.contains("$$EnhancerByGuice$$"))
+			{
+				classValue = classValue.substring(0, classValue.indexOf("$$EnhancerByGuice$$") - 1);
+			}
+			set.add(classValue);
 		}
 		return set;
 	}
@@ -161,7 +167,7 @@ public class EnterpriseService
 	public Map<Integer, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?,?> enterprise)
 	{
 		Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
-		for (ClassInfo classInfo :new ClassGraph().enableAllInfo().scan().getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
+		for (ClassInfo classInfo : GuiceContext.instance().getScanResult().getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
 		{
 			if (classInfo.isAbstract() || classInfo.isInterface())
 			{
@@ -175,13 +181,17 @@ public class EnterpriseService
 		}
 		
 		Set<String> enterpriseAppliedUpdates = getEnterpriseAppliedUpdates(enterprise);
+		for (String enterpriseAppliedUpdate : enterpriseAppliedUpdates)
+		{
+			log.config("System Installed Update [" + enterpriseAppliedUpdate+ "]");
+		}
 		Map<Integer, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
-		
 		for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
 		{
 			Integer key = entry.getKey();
 			Class<? extends ISystemUpdate> value = entry.getValue();
-			if (!enterpriseAppliedUpdates.contains(value.getCanonicalName()))
+			SortedUpdate du = value.getAnnotation(SortedUpdate.class);
+			if (!enterpriseAppliedUpdates.contains(value.getCanonicalName()) || du.force())
 			{
 				applicableUpdates.put(key, value);
 			}
@@ -194,7 +204,7 @@ public class EnterpriseService
 	public Map<Integer, Class<? extends ISystemUpdate>> getAllUpdates()
 	{
 		Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
-		for (ClassInfo classInfo : new ClassGraph().enableAllInfo().scan().getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
+		for (ClassInfo classInfo : GuiceContext.instance().getScanResult().getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
 		{
 			if (classInfo.isAbstract() || classInfo.isInterface())
 			{
