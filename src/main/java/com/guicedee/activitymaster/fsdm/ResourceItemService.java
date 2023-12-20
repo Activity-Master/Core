@@ -23,6 +23,7 @@ import jakarta.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.*;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -150,7 +151,7 @@ public class ResourceItemService
 		rid.setEffectiveFromDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		rid.setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		rid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-		rid.setWarehouseLastUpdatedTimestamp(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
+		rid.setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		rid.setResourceItemData("".getBytes());
 		rid.setActiveFlagID(activeFlag);
 		rid.setOriginalSourceSystemID(system);

@@ -23,6 +23,7 @@ import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -261,7 +262,7 @@ public class ResourceItem
 		rid.setEffectiveFromDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		rid.setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		rid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-		rid.setWarehouseLastUpdatedTimestamp(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
+		rid.setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		rid.setResourceItemData(data);
 		rid.setActiveFlagID(getActiveFlagID());
 		rid.setOriginalSourceSystemID(getSystemID());
