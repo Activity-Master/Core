@@ -1,12 +1,13 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
-import com.guicedee.guicedinjection.GuiceConfig;
+import com.guicedee.guicedinjection.interfaces.IGuiceConfig;
 import com.guicedee.guicedinjection.interfaces.IGuiceConfigurator;
 
-public class ActivityMasterScanConfiguration implements IGuiceConfigurator
+public class ActivityMasterScanConfiguration
+		implements IGuiceConfigurator
 {
 	@Override
-	public GuiceConfig<?> configure(GuiceConfig config)
+	public IGuiceConfig<?> configure(IGuiceConfig<?> config)
 	{
 		config.setIncludeModuleAndJars(true)
 		      .setClasspathScanning(true)

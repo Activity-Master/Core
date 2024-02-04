@@ -7,7 +7,6 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlagSecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTokenQueryBuilder;
-import com.guicedee.logger.LogFactory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,7 +15,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.FetchType.*;
@@ -43,8 +41,6 @@ public class SecurityToken
 		extends WarehouseTable<SecurityToken, SecurityTokenQueryBuilder, java.lang.String>
 		implements ISecurityToken<SecurityToken, SecurityTokenQueryBuilder>
 {
-	private static final Logger log = LogFactory.getLog("SecurityToken");
-	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id

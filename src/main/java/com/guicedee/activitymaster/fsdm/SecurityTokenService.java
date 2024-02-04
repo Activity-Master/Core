@@ -16,8 +16,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTo
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.*;

@@ -31,20 +31,24 @@ public class ActivityMasterDBModule
 		{
 			System.setProperty("fsdm_integratedSecurity", "true");
 		}*/
+		
+		//properties.put("hibernate.enhancer.enableDirtyTracking", "false");
+		//properties.put("hibernate.enhancer.enableLazyInitialization", "false");
 		TransactionManagerServices.getConfiguration()
 		                          .setAllowMultipleLrc(true)
 		                          .setAsynchronous2Pc(true)
 		                          .setDisableJmx(true)
-		                          .setMaxLogSizeInMb(40)
+		                          .setMaxLogSizeInMb(100)
 		                          .setSkipCorruptedLogs(true)
 		                          .setDefaultTransactionTimeout(ActivityMasterStatics.transactionDebugTimeout)
 		                          .setWarnAboutZeroResourceTransaction(false);
 		
 		return new BTMConnectionBaseInfo()
 				.setEnableJdbc4ConnectionTest(true)
-				.setMaxPoolSize(Integer.parseInt(System.getProperty("fsdm_db_connections", "500")))
+				.setMaxPoolSize(600)
 				.setMinPoolSize(1)
 				.setPrefill(false)
+				.setMaxIdleTime(10)
 				.setShareTransactionConnections(true)
 				.setAllowLocalTransactions(true)
 				.setTransactionIsolation(BTMTransactionIsolation.READ_COMMITTED.toString())

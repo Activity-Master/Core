@@ -12,8 +12,8 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.Enterpri
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 
 import java.util.NoSuchElementException;
 

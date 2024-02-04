@@ -8,21 +8,18 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import com.guicedee.logger.LogFactory;
+import lombok.extern.java.Log;
 
 import java.sql.Connection;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.guicedee.guicedinjection.GuiceContext.*;
 
-
+@Log
 public class ActivityMasterService
 		implements IProgressable,
 		           IActivityMasterService
 {
-	private static final Logger log = LogFactory.getLog(ActivityMasterService.class);
-	
 	@Inject
 	private IEnterpriseService<?> enterpriseService;
 	
@@ -48,8 +45,7 @@ public class ActivityMasterService
 		}
 		catch (java.sql.SQLException e)
 		{
-			LogFactory.getLog("ActivityMasterService")
-			          .log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
+			log.log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}
 	}
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -125,8 +121,7 @@ public class ActivityMasterService
 		}
 		catch (java.sql.SQLException e)
 		{
-			LogFactory.getLog("ActivityMasterService")
-			          .log(Level.SEVERE, "Unable to execute updates to partitions file structure", e);
+			log.log(Level.SEVERE, "Unable to execute updates to partitions file structure", e);
 		}
 	}
 	

@@ -18,8 +18,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassificati
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 
 import java.util.Optional;
 import java.util.UUID;

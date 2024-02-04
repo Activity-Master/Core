@@ -15,13 +15,14 @@ import com.guicedee.activitymaster.fsdm.db.timelord.EnglishNumberToWords;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.threads.TimeLoaderThread;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedinjection.interfaces.JobService;
+import com.guicedee.guicedinjection.JobService;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -119,6 +120,13 @@ public class TimeSystem
 		//Create data storage partitions
 		GuiceContext.get(ActivityMasterService.class)
 		            .updatePartitionBases();
+		
+		System.out.println("Waiting for Time Range Loading... 1 Hour");
+		JobService.getInstance()
+		          .waitForJob("TimeRangeLoading", 1, TimeUnit.HOURS);
+		System.out.println("Removing Executor Service...");
+		JobService.getInstance()
+		          .removeJob("TimeRangeLoading");
 	}
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@CacheResult(cacheName = "Years")

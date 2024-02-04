@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.guicedee.activitymaster</groupId>
         <artifactId>activitymaster-group</artifactId>
-        <version>0.0.0_0-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>activity-master</artifactId>
@@ -18,14 +18,13 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>com.entityassist</groupId>
             <artifactId>entity-assist</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.guicedee.services</groupId>
+            <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
         </dependency>
 
@@ -41,13 +40,7 @@
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
             <artifactId>cache-api</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
@@ -55,29 +48,24 @@
             <artifactId>guava</artifactId>
         </dependency>
 
-
         <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>javax.inject</artifactId>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>hibernate-core</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
-            <groupId>com.guicedee.services</groupId>
+            <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
@@ -101,19 +89,27 @@
         </dependency>
 
         <dependency>
-            <groupId>com.guicedee.services</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
-            <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>json-representation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>xml-representation</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.guicedee.services</groupId>
+            <!--<plugin>
+                <groupId>org.hibernate.orm.tooling</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>${guicedee.version}</version>
+                <version>${maven.hibernate.enhance.version}</version>
                 <executions>
                     <execution>
                         <id>enhance</id>
@@ -128,9 +124,9 @@
                     <enableLazyInitialization>true</enableLazyInitialization>
                     <enableDirtyTracking>true</enableDirtyTracking>
                     <enableAssociationManagement>false</enableAssociationManagement>
-                    <enableExtendedEnhancement>true</enableExtendedEnhancement>
+                    <enableExtendedEnhancement>false</enableExtendedEnhancement>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -139,30 +135,29 @@
                     <release>${jdk.release}</release>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
-                            <groupId>com.guicedee.services</groupId>
+                            <groupId>org.hibernate.orm</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${guicedee.version}</version>
+                            <version>${maven.hibernate.version}</version>
                         </annotationProcessorPath>
-                        <annotationProcessorPath>
-                            <groupId>com.guicedee.services</groupId>
+                        <path>
+                            <groupId>jakarta.xml.bind</groupId>
                             <artifactId>jakarta.xml.bind-api</artifactId>
-                            <version>${guicedee.version}</version>
-                        </annotationProcessorPath>
+                            <version>${jakarta.xml.jaxb.api.version}</version>
+                        </path>
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
                             <version>${mapstruct.version}</version>
                         </path>
-                        <!--  <path>
+                          <path>
                               <groupId>org.projectlombok</groupId>
                               <artifactId>lombok</artifactId>
                               <version>${lombok.version}</version>
-                          </path>-->
+                          </path>
                     </annotationProcessorPaths>
                     <annotationProcessors>
-                        <!--<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
                         </annotationProcessor>
-                        -->
                         <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
                         <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
                     </annotationProcessors>
@@ -183,15 +178,15 @@
                         <artifactId>hibernate-jpamodelgen</artifactId>
                         <version>${guicedee.version}</version>
                     </dependency>
-                    <!-- <dependency>
+                     <dependency>
                          <groupId>org.projectlombok</groupId>
                          <artifactId>lombok</artifactId>
                          <version>${lombok.version}</version>
-                     </dependency>-->
+                     </dependency>
                     <dependency>
-                        <groupId>com.guicedee.services</groupId>
+                        <groupId>jakarta.xml.bind</groupId>
                         <artifactId>jakarta.xml.bind-api</artifactId>
-                        <version>${guicedee.version}</version>
+                        <version>${jakarta.xml.jaxb.api.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

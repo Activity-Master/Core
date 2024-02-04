@@ -13,7 +13,7 @@ public abstract class DefaultTimeQueryBuilder<J extends DefaultTimeQueryBuilder<
 {
 	public DefaultTimeQueryBuilder()
 	{
-		setRunDetached(true);
+	//	setRunDetached(true);
 		//setReturnFirst(true);
 	//	setUseDirectConnection(true);
 	//	setDetach(true);

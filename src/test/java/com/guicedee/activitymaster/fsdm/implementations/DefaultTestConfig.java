@@ -9,14 +9,11 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterProgressMonitor;
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.logger.LogFactory;
-import com.guicedee.logger.logging.LogColourFormatter;
 import org.junit.jupiter.api.extension.*;
 
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
 import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.*;
@@ -48,9 +45,9 @@ public class DefaultTestConfig
 				.setAnnotationScanning(true)
 				.setPathScanning(true);
 
-		LogFactory.configureConsoleColourOutput(Level.FINE);
+	//	LogFactory.configureConsoleColourOutput(Level.FINE);
 	//	LogColourFormatter.setRenderBlack(false);
-		LogFactory.configureDefaultLogHiding();
+	//	LogFactory.configureDefaultLogHiding();
 		GuiceContext.inject();
 
 /*		RequestScopedObject obj = GuiceContext.get(RequestScopedObject.class);
@@ -89,8 +86,8 @@ public class DefaultTestConfig
 		            .loadSystems(TestEnterprise.name());
 
 		config.setSecurityEnabled(false);
-		defaultWaitUnit = TimeUnit.HOURS;
-		defaultWaitTime = 1;
+	//	defaultWaitUnit = TimeUnit.HOURS;
+	//	defaultWaitTime = 1;
 	}
 
 	@Override
@@ -139,7 +136,7 @@ public class DefaultTestConfig
 				return this;
 			}
 		};
-		LogColourFormatter.setRenderBlack(false);
+	//	LogColourFormatter.setRenderBlack(false);
 		FileHandler fh;
 		try
 		{

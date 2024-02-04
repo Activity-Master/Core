@@ -25,8 +25,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+//import javax.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
 
 import java.time.Duration;
@@ -103,7 +103,7 @@ public class ArrangementsService
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	@CacheResult(cacheName = "ArrangementTypes")
+	//@CacheResult(cacheName = "ArrangementTypes")
 	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IArrangementType<?, ?> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -676,7 +676,7 @@ public class ArrangementsService
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@CacheResult(cacheName = "ArrangementArrangementTypeString")
+	//@CacheResult(cacheName = "ArrangementArrangementTypeString")
 	@Override
 	public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -693,7 +693,7 @@ public class ArrangementsService
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	@CacheResult
+	//@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Arrangement xr = new Arrangement();
@@ -705,7 +705,7 @@ public class ArrangementsService
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	@CacheResult
+	//@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.lang.String id)
 	{
 		Arrangement xr = new Arrangement();

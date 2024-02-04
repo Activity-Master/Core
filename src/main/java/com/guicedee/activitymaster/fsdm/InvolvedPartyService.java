@@ -20,14 +20,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import com.guicedee.logger.LogFactory;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
+import lombok.extern.java.Log;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -37,11 +36,10 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.IdentificationTypes.*;
 
 @SuppressWarnings("Duplicates")
+@Log
 public class InvolvedPartyService
 		implements IInvolvedPartyService<InvolvedPartyService>
 {
-	private static final Logger log = LogFactory.getLog("InvolvedPartyService");
-	
 	@Inject
 	private IEnterprise<?, ?> enterprise;
 	

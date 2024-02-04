@@ -17,13 +17,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.geography.GeographyXResource
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
-import com.guicedee.logger.LogFactory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.extern.java.Log;
 
 import java.io.Serial;
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -49,6 +48,7 @@ import static jakarta.persistence.FetchType.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Log
 public class ResourceItem
 		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.lang.String>
 		implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
@@ -141,23 +141,22 @@ public class ResourceItem
 	public byte[] getData(java.util.UUID... identityToken)
 	{
 		var dr = getDataRow();
-		Optional<Object[]> d
+		Optional<byte[]> d
 				= new ResourceItemData().builder()
 				                        .inActiveRange()
 				                        .inDateRange()
 				                        .where(ResourceItemData_.resource, Equals, this)
 				                        .selectColumn(ResourceItemData_.resourceItemData)
-				                        .get(Object[].class);
+				                        .get(byte[].class);
 		if (d.isPresent())
 		{
-			Object[] dataObject = d.get();
-			byte[] data = (byte[]) dataObject[0];
+			byte[] data = d.get();
+			//	byte[] data = (byte[]) dataObject[0];
 			return unzip(data);
 		}
 		else
 		{
-			LogFactory.getLog("ResourceItemDataFetch")
-			          .log(Level.FINE, "No resource item data exists");
+			log.log(Level.FINE, "No resource item data exists");
 			return new byte[]{};
 		}
 	}

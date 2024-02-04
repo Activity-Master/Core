@@ -5,8 +5,6 @@ import com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig;
 import com.hazelcast.client.config.*;
 import com.hazelcast.config.MetricsJmxConfig;
 
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
-
 public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<HazelcastClientConfig> {
 
     @Override
@@ -26,9 +24,9 @@ public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<Hazel
                 .setCollectionFrequencySeconds(5);
 
         String address = HazelcastProperties.getAddress();
-        if (address.contains(STRING_DOUBLE_COLON))
+        if (address.contains(":"))
         {
-            String port = address.substring(address.indexOf(STRING_DOUBLE_COLON) + 1);
+            String port = address.substring(address.indexOf(":") + 1);
             config.getNetworkConfig()
                     .addOutboundPort(Integer.parseInt(port));
         }

@@ -12,9 +12,9 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resou
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
-import com.guicedee.guicedinjection.representations.IJsonRepresentation;
-import com.guicedee.guicedinjection.representations.IXmlRepresentation;
-import com.guicedee.logger.LogFactory;
+import com.guicedee.services.jsonrepresentation.IJsonRepresentation;
+import com.guicedee.services.xmlrepresentation.IXmlRepresentation;
+import lombok.extern.java.Log;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
@@ -28,7 +28,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterSe
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 import static com.guicedee.guicedinjection.interfaces.ObjectBinderKeys.*;
 
-
+@Log
 public class LogItemEventAOPInterceptor implements MethodInterceptor
 {
 	@Inject
@@ -121,7 +121,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 		switch (pair.getValue())
 		{
 			case Xml:
-				if (key instanceof IXmlRepresentation)
+				if (key instanceof IXmlRepresentation<?>)
 				{
 					IXmlRepresentation<?> xml = (IXmlRepresentation<?>) key;
 					return xml.toXml()
@@ -152,7 +152,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 				          .getBytes();
 			case Json:
 			default:
-				if (key instanceof IJsonRepresentation)
+				if (key instanceof IJsonRepresentation<?>)
 				{
 					IJsonRepresentation<?> rep = (IJsonRepresentation<?>) key;
 					return rep.toJson()
@@ -166,7 +166,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 				}
 				catch (JsonProcessingException e)
 				{
-					LogFactory.getLog(getClass()).log(Level.SEVERE, "Unable to decode LogEventItem to JSON", e);
+					log.log(Level.SEVERE, "Unable to decode LogEventItem to JSON", e);
 					break;
 				}
 		}

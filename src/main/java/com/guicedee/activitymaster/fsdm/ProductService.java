@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 public class ProductService
 		implements IProductService<ProductService>
@@ -90,7 +89,7 @@ public class ProductService
 		
 		IProductType<?, ?> pType = createProductType(productType, productType, system, identityToken);
 		
-		product.addProductTypes(productType, STRING_EMPTY, NoClassification.toString(), system, identityToken);
+		product.addProductTypes(productType, "", NoClassification.toString(), system, identityToken);
 		
 		return product;
 	}

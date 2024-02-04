@@ -19,13 +19,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.Enterpri
 import com.guicedee.activitymaster.fsdm.services.providers.EnterpriseProvider;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedinjection.interfaces.IDefaultService;
-import com.guicedee.guicedinjection.json.LocalDateSerializer;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
 import java.text.MessageFormat;
@@ -97,7 +94,7 @@ public class EnterpriseService
 		ISystems<?,?> system = GuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
 		
 		@SuppressWarnings({"rawtypes", "unchecked"})
-		Set<IOnSystemUpdate> systemUpdateEventHandlers = IDefaultService.loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
+		Set<IOnSystemUpdate> systemUpdateEventHandlers = GuiceContext.instance().loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
 		
 		setTotalTasks(tasks);
 		
@@ -130,7 +127,7 @@ public class EnterpriseService
 		}
 		enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
 		                                                                                  .format(LocalDate.now()), system);
-		logProgress("Update System", "Finished Updates. Last Update Date - " + new LocalDateSerializer().convert(LocalDate.now()));
+		logProgress("Update System", "Finished Updates. Last Update Date - " + DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now()));
 		return availableUpdates.size();
 	}
 	
@@ -156,7 +153,7 @@ public class EnterpriseService
 			String classValue = rel.getValue();
 			if(classValue.contains("$$EnhancerByGuice$$"))
 			{
-				classValue = classValue.substring(0, classValue.indexOf("$$EnhancerByGuice$$") - 1);
+				classValue = classValue.substring(0, classValue.indexOf("$$EnhancerByGuice$$"));
 			}
 			set.add(classValue);
 		}
@@ -441,7 +438,7 @@ public class EnterpriseService
 		IActivityMasterSystem<?> registeredSystem = GuiceContext.get(allSystem.getClass());
 		
 		@SuppressWarnings({"rawtypes", "unchecked"})
-		Set<IOnSystemInstall> systemInstallEventListeners = IDefaultService.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
+		Set<IOnSystemInstall> systemInstallEventListeners = GuiceContext.instance().loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
 		for (IOnSystemInstall systemInstallEventListener : systemInstallEventListeners)
 		{
 			systemInstallEventListener.onSystemInstallStart(registeredSystem.getSystemName());

@@ -17,14 +17,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
 
 
 public class RulesService
@@ -68,7 +67,7 @@ public class RulesService
 		
 		IRulesType<?,?> pType = createRulesType(rulesType, rulesType, system, identityToken);
 		
-		rules.addRuleTypes(pType.getName(),STRING_EMPTY,NoClassification.toString(),  system, identityToken);
+		rules.addRuleTypes(pType.getName(),"",NoClassification.toString(),  system, identityToken);
 		
 		return rules;
 	}

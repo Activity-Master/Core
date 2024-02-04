@@ -10,8 +10,9 @@ import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.guicedee.activitymaster.fsdm.systems.SecurityTokenSystem;
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.logger.LogFactory;
+import lombok.extern.java.Log;
 
+@Log
 public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, EnterpriseQueryBuilder>>
 {
 	@Inject
@@ -42,7 +43,7 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, Ente
 				if (GuiceContext.get(SecurityTokenSystem.class)
 				                .hasSystemInstalled(ent))
 				{
-					LogFactory.getLog(getClass()).info("Enabling Enterprise Security Stack.....");
+					log.info("Enabling Enterprise Security Stack.....");
 					activityMasterConfiguration.setSecurityEnabled(true);
 				}
 			}

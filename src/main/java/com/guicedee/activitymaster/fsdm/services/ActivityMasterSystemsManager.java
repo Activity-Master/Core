@@ -1,9 +1,10 @@
 package com.guicedee.activitymaster.fsdm.services;
 
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.logger.LogFactory;
-import jakarta.cache.CacheManager;
+import javax.cache.CacheManager;
+import lombok.extern.java.Log;
 
+@Log
 public class ActivityMasterSystemsManager
 {
 	private ActivityMasterSystemsManager()
@@ -15,8 +16,7 @@ public class ActivityMasterSystemsManager
 	 */
 	public static void wipeCaches()
 	{
-		LogFactory.getLog("ActivityMasterSystemsManager")
-		          .info("Wiping Caches");
+		log.info("Wiping Caches");
 		CacheManager cacheManager = GuiceContext.get(CacheManager.class);
 		try
 		{

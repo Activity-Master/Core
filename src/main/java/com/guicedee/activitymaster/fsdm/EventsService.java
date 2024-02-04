@@ -14,12 +14,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import jakarta.cache.annotation.CacheKey;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
-
 
 public class EventsService
 		implements IEventService<EventsService>
@@ -64,7 +62,7 @@ public class EventsService
 		event.persist();
 		event.createDefaultSecurity(system, identityToken);
 		
-		event.addEventTypes(eventType, STRING_EMPTY, NoClassification.toString(), system, identityToken);
+		event.addEventTypes(eventType, "", NoClassification.toString(), system, identityToken);
 		return event;
 	}
 	

@@ -18,8 +18,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import jakarta.cache.annotation.CacheRemove;
-import jakarta.cache.annotation.CacheResult;
+import javax.cache.annotation.CacheRemove;
+import javax.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.*;

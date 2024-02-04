@@ -2,9 +2,6 @@ package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
 import com.guicedee.activitymaster.fsdm.client.services.builders.*;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
-
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
-
 public abstract class QueryBuilderTable<J extends QueryBuilderTable<J, E, I>,
 		E extends WarehouseTable<E, J, I>,
 		I extends java.lang.String>
@@ -18,7 +15,7 @@ public abstract class QueryBuilderTable<J extends QueryBuilderTable<J, E, I>,
 	{
 		if (entity.getOriginalSourceSystemUniqueID() == null)
 		{
-			entity.setOriginalSourceSystemUniqueID(STRING_EMPTY);
+			entity.setOriginalSourceSystemUniqueID("");
 		}
 		
 		return super.onCreate(entity);
