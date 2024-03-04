@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 import com.entityassist.BaseEntity;
 import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.EntityManager;
 
 import java.io.Serializable;
@@ -22,7 +21,7 @@ public abstract class DefaultTimeQueryBuilder<J extends DefaultTimeQueryBuilder<
 	@Override
 	public EntityManager getEntityManager()
 	{
-		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
+		return com.guicedee.client.IGuiceContext.get(EntityManager.class, ActivityMasterDB.class);
 	}
 	
 	@Override

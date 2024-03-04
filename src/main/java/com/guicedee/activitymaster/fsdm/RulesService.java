@@ -15,11 +15,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
+
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,7 @@ public class RulesService
 		rules.setEnterpriseID(enterprise);
 		rules.setSystemID(system);
 		rules.setOriginalSourceSystemID(system);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 		rules.setActiveFlagID(activeFlag);
 		rules.persist();
@@ -148,7 +147,7 @@ public class RulesService
 			et.setDescription(description);
 			et.setSystemID(system);
 			et.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID(system);

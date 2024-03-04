@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.Date;
 
@@ -49,7 +48,7 @@ public class EventsSystem
 	
 		logProgress("Loading Time", "Loading in Today");
 		
-		GuiceContext.get(ITimeSystem.class)
+		com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
 		            .getDay(new Date());
 		
 		IClassificationService<?> iClassificationService = classificationServiceProvider;
@@ -68,7 +67,7 @@ public class EventsSystem
 		resourceItemServiceProvider.createType("LogItem", "An attached log item", getSystem(enterprise), getSystemToken(enterprise));
 		
 		logProgress("Loading Time", "Creating Hours and Minutes");
-		GuiceContext.get(ITimeSystem.class)
+		com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
 		            .createTime();
 	}
 	

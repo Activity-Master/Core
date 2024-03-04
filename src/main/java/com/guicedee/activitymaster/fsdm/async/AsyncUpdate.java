@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.async;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.function.Consumer;
 
@@ -20,7 +19,7 @@ public class AsyncUpdate implements Runnable {
 
     public static AsyncUpdate getInstance(WarehouseBaseTable<?,?,?> persistable, Consumer<Throwable> throwableConsumer)
     {
-        AsyncUpdate ap = GuiceContext.get(AsyncUpdate.class);
+        AsyncUpdate ap = com.guicedee.client.IGuiceContext.get(AsyncUpdate.class);
         ap.setPersistable(persistable);
         ap.setOnException(throwableConsumer);
         return ap;

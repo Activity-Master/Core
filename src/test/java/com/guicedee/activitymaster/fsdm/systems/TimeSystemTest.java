@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.systems;
 
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 import org.junit.jupiter.api.Test;
 
 public class TimeSystemTest
@@ -12,7 +11,7 @@ public class TimeSystemTest
 	{
 	//	LogFactory.configureConsoleColourOutput(Level.FINE);
 	//	LogFactory.configureDefaultLogHiding();
-		ITimeSystem timeSystem = GuiceContext.get(ITimeSystem.class);
+		ITimeSystem timeSystem = com.guicedee.client.IGuiceContext.get(ITimeSystem.class);
 		timeSystem.loadTimeRange(1990, 2020);
 	}
 
@@ -21,7 +20,7 @@ public class TimeSystemTest
 	{
 	//	LogFactory.configureConsoleColourOutput(Level.FINE);
 	//	LogFactory.configureDefaultLogHiding();
-		ITimeSystem timeSystem = GuiceContext.get(ITimeSystem.class);
+		ITimeSystem timeSystem = com.guicedee.client.IGuiceContext.get(ITimeSystem.class);
 		timeSystem.createTime();
 	}
 }

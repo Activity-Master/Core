@@ -16,11 +16,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
+
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -126,14 +125,14 @@ public class SystemsService
 		newSystem.addOrReuseClassification(SystemsClassifications.SystemIdentity, newSystemsSecurityToken.getSecurityToken(), newSystem,
 				activityMasterSystemUUID);
 		
-		UUID newSystemUUID = GuiceContext.get(SystemsService.class)
+		UUID newSystemUUID = com.guicedee.client.IGuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(newSystem, activityMasterSystemUUID);
 		newSystemsSecurityToken.createDefaultSecurity(activityMasterSystem, activityMasterSystemUUID);
 		
 		systemsToken.createDefaultSecurity(activityMasterSystem, activityMasterSystemUUID);
 		
 		
-		GuiceContext.get(SystemsSystem.class)
+		com.guicedee.client.IGuiceContext.get(SystemsSystem.class)
 		            .createInvolvedPartyForNewSystem(newSystem);
 		
 		return newSystemUUID.toString();
@@ -160,7 +159,7 @@ public class SystemsService
 			newSystem.setDescription(systemDesc);
 			newSystem.setSystemHistoryName(historyName);
 			newSystem.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			newSystem.setActiveFlagID(activeFlag);
 			newSystem.persist();

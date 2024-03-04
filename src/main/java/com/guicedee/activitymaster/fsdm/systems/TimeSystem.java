@@ -14,12 +14,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.time.*;
 import com.guicedee.activitymaster.fsdm.db.timelord.EnglishNumberToWords;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.threads.TimeLoaderThread;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.JobService;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 
+import javax.cache.annotation.CacheKey;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -88,7 +86,7 @@ public class TimeSystem
 	
 	public void loadTimeRange(int startYear, int endYear)
 	{
-		JobService.getInstance()
+		JobService.INSTANCE
 		          .setMaxQueueCount("TimeRangeLoading", 500);
 		
 		logProgress("Starting Time Load", "Time load is starting from " + startYear + " + to " + endYear);
@@ -118,18 +116,18 @@ public class TimeSystem
 		setTotalTasks(difference * 12);
 		
 		//Create data storage partitions
-		GuiceContext.get(ActivityMasterService.class)
+		com.guicedee.client.IGuiceContext.get(ActivityMasterService.class)
 		            .updatePartitionBases();
 		
 		System.out.println("Waiting for Time Range Loading... 1 Hour");
-		JobService.getInstance()
+		JobService.INSTANCE
 		          .waitForJob("TimeRangeLoading", 1, TimeUnit.HOURS);
 		System.out.println("Removing Executor Service...");
-		JobService.getInstance()
+		JobService.INSTANCE
 		          .removeJob("TimeRangeLoading");
 	}
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@CacheResult(cacheName = "Years")
+	////@CacheResult(cacheName = "Years")
 	public Years getYear(@CacheKey Date date)
 	{
 		Years year = null;
@@ -166,6 +164,8 @@ public class TimeSystem
 		                                               .format(date)
 		                                               .substring(0, 2)));
 		year.persist();
+		year.builder()
+		    .getEntityManager().flush();
 		return year;
 	}
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
@@ -237,7 +237,7 @@ public class TimeSystem
 	}
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@CacheResult
+	//@CacheResult
 	public Quarters getQuarter(@CacheKey Date date)
 	{
 		Quarters month = null;
@@ -253,6 +253,9 @@ public class TimeSystem
 		{
 			month = createQuarter(date);
 			month.persist();
+			month.builder()
+			     .getEntityManager()
+			     .flush();
 		}
 		return month;
 	}
@@ -314,7 +317,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	@CacheResult
+	//@CacheResult
 	public Months getMonth(@CacheKey Date date)
 	{
 		Months month = null;
@@ -326,11 +329,14 @@ public class TimeSystem
 			                         month.getMonthDescription() +
 			                         "]", 1);
 			month.persist();
+			month.builder()
+			     .getEntityManager()
+			     .flush();
 		}
 		return month;
 	}
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@CacheResult
+	//@CacheResult
 	private MonthOfYear getMonthOfYear(@CacheKey Integer MonthOfYear)
 	{
 		return new MonthOfYear().builder()
@@ -422,7 +428,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	@CacheResult
+	//@CacheResult
 	public Weeks getWeek(@CacheKey Date date)
 	{
 		Weeks month = null;
@@ -438,6 +444,9 @@ public class TimeSystem
 		{
 			month = createWeek(date);
 			month.persist();
+			month.builder()
+			     .getEntityManager()
+			     .flush();
 		}
 		return month;
 	}
@@ -488,7 +497,7 @@ public class TimeSystem
 	 * @return
 	 */
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@CacheResult
+	//@CacheResult
 	@Override
 	public boolean getDay(@CacheKey Date date)
 	{
@@ -506,15 +515,20 @@ public class TimeSystem
 		{
 			day = createDay(date);
 			day.persist();
-			TimeLoaderThread thread = GuiceContext.get(TimeLoaderThread.class);
+			day.builder().getEntityManager().flush();
+			TimeLoaderThread thread = com.guicedee.client.IGuiceContext.get(TimeLoaderThread.class);
 			thread.setDate(date);
-			JobService.getInstance()
+			JobService.INSTANCE
 			          .addJob("TimeRangeLoading", thread);
+			JobService.INSTANCE
+			          .waitForJob("TimeRangeLoading",15,TimeUnit.MINUTES);
+			JobService.INSTANCE
+			          .removeJob("TimeRangeLoading");
 		}
 		return true;
 	}
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
-	@CacheResult
+	//@CacheResult
 	private DayNames getDayName(@CacheKey String dayName)
 	{
 		return new DayNames().builder()
@@ -936,7 +950,7 @@ public class TimeSystem
 					                               .getHourID());
 					halfHourDayParts.setMinuteID(half.getId()
 					                                 .getMinuteID());
-					TimeService<?> timeService = GuiceContext.get(TimeService.class);
+					TimeService<?> timeService = com.guicedee.client.IGuiceContext.get(TimeService.class);
 					halfHourDayParts.setDayPartID(timeService.getDayPart(half.getId()
 					                                                         .getHourID(),
 							half.getId()

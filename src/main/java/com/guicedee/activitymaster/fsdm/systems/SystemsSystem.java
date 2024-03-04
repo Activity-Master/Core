@@ -11,7 +11,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.types.*;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 
 import java.util.*;
@@ -83,7 +82,7 @@ public class SystemsSystem
 		{
 			throw new ActivityMasterException("No UUID for newly created system");
 		}
-		InvolvedPartyService ipService = GuiceContext.get(InvolvedPartyService.class);
+		InvolvedPartyService ipService = com.guicedee.client.IGuiceContext.get(InvolvedPartyService.class);
 		try
 		{
 			IInvolvedParty<?, ?> ip = ipService.create(system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), newSystemUUID.toString()), false, activityMasterSystemUUID);

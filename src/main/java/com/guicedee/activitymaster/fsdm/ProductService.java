@@ -13,7 +13,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resou
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.*;
@@ -81,7 +80,7 @@ public class ProductService
 		product.setEnterpriseID(enterprise);
 		product.setSystemID(system);
 		product.setOriginalSourceSystemID(system);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		product.setActiveFlagID(activeFlag);
 		product.persist();
@@ -152,7 +151,7 @@ public class ProductService
 			et.setDescription(description);
 			et.setSystemID(system);
 			et.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID(system);

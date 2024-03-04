@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.*;
 import com.guicedee.activitymaster.fsdm.client.services.deserializers.*;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
 import lombok.extern.java.Log;
 
@@ -18,7 +17,7 @@ public class ActivityMasterPostStartup implements IGuicePostStartup<ActivityMast
 	public void postLoad()
 	{
 		log.info("Configuration Jackson JSON for types in FSDM");
-		GuiceContext.get(DefaultObjectMapper)
+		com.guicedee.client.IGuiceContext.get(DefaultObjectMapper)
 		            .registerModule(new SimpleModule("ActivityMasterJsonModule", Version.unknownVersion())
 				            .addDeserializer(IEnterprise.class, new EnterpriseDeserializer())
 				            .addDeserializer(IInvolvedPartyType.class, new InvolvedPartyTypeDeserializer())

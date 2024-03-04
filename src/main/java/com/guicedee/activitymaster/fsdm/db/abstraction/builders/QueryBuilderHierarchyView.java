@@ -4,7 +4,6 @@ import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.fsdm.db.hierarchies.SecurityHierarchyView_;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
@@ -25,7 +24,7 @@ public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyV
 	@Override
 	public EntityManager getEntityManager()
 	{
-		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
+		return com.guicedee.client.IGuiceContext.get(EntityManager.class, ActivityMasterDB.class);
 	}
 	
 	@Override

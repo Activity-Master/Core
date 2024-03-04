@@ -10,7 +10,6 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 
 import java.io.Serial;
@@ -67,7 +66,7 @@ public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I>,
 	protected J configureDefaultsSystemValues(Systems requestingSystem)
 	{
 		setSystemID(requestingSystem);
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                            .getActiveFlag(requestingSystem.getEnterpriseID()));
 		setEnterpriseID(requestingSystem.getEnterpriseID());
 		return (J) this;

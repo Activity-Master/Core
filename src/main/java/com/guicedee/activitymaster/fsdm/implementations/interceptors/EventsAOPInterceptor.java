@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityM
 import com.guicedee.activitymaster.fsdm.client.services.annotations.Event;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.guicedinjection.GuiceContext;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
@@ -17,7 +16,7 @@ import java.util.UUID;
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IEventService.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.client.IGuiceContext.*;
 
 
 public class EventsAOPInterceptor implements MethodInterceptor
@@ -48,7 +47,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 	{
 		if (systemProvider == null)
 		{
-			GuiceContext.inject()
+			com.guicedee.client.IGuiceContext.instance().inject()
 			            .injectMembers(this);
 		}
 		ISystems<?, ?> system = systemProvider.get();

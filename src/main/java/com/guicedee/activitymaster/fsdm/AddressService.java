@@ -16,7 +16,6 @@ import com.guicedee.activitymaster.fsdm.client.services.exceptions.AddressExcept
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.net.MalformedURLException;
@@ -81,7 +80,7 @@ public class AddressService
 			addy.setValue(value);
 			addy.setSystemID(system);
 			addy.setOriginalSourceSystemID(system);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			addy.setActiveFlagID(activeFlag);
 			addy.persist();
@@ -132,7 +131,7 @@ public class AddressService
 			address.setEnterpriseID(enterprise);
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
@@ -178,7 +177,7 @@ public class AddressService
 			address.setEnterpriseID(enterprise);
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
@@ -225,7 +224,7 @@ public class AddressService
 			address.setEnterpriseID(enterprise);
 			address.setSystemID(system);
 			address.setOriginalSourceSystemID(system);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
 			address.persist();
@@ -390,7 +389,7 @@ public class AddressService
 		streetAddress.setEnterpriseID(enterprise);
 		streetAddress.setSystemID(system);
 		streetAddress.setOriginalSourceSystemID(system);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		streetAddress.setActiveFlagID(activeFlag);
 		streetAddress.persist();
@@ -460,7 +459,7 @@ public class AddressService
 			emailAddy.setEnterpriseID(enterprise);
 			emailAddy.setSystemID(system);
 			emailAddy.setOriginalSourceSystemID(system);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			emailAddy.setActiveFlagID(activeFlag);
 			emailAddy.persist();
@@ -530,7 +529,7 @@ public class AddressService
 		address.setEnterpriseID(enterprise);
 		address.setSystemID(system);
 		address.setOriginalSourceSystemID(system);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		address.setActiveFlagID(activeFlag);
 		address.persist();
@@ -582,7 +581,7 @@ public class AddressService
 		address.setEnterpriseID(enterprise);
 		address.setSystemID(system);
 		address.setOriginalSourceSystemID(system);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		address.setActiveFlagID(activeFlag);
 		address.persist();

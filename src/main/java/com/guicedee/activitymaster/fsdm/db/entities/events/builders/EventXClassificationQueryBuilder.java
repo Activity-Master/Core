@@ -18,6 +18,6 @@ public class EventXClassificationQueryBuilder
 	@Override
 	public SingularAttribute<EventXClassification, Classification> getSecondaryAttribute()
 	{
-		return EventXClassification_.classificationID;
+		return (SingularAttribute) getAttribute("classificationID");
 	}
 }

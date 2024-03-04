@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 
@@ -33,7 +32,7 @@ public class InvolvedPartyXInvolvedPartyTypeQueryBuilder
 	{
 		if (typeValue != null)
 		{
-			IInvolvedPartyService<?> service = GuiceContext.get(IInvolvedPartyService.class);
+			IInvolvedPartyService<?> service = com.guicedee.client.IGuiceContext.get(IInvolvedPartyService.class);
 			InvolvedPartyType at = (InvolvedPartyType) service.findType(typeValue, system, identityToken);
 			where(InvolvedPartyXInvolvedPartyType_.involvedPartyTypeID, Operand.Equals, at);
 		}

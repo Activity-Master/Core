@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.services;
 
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.function.Supplier;
@@ -12,7 +11,7 @@ public class RunnableTransaction implements Runnable
 	
 	public static RunnableTransaction get(Supplier<?> consumer)
 	{
-		RunnableTransaction runnableTransaction = GuiceContext.get(RunnableTransaction.class);
+		RunnableTransaction runnableTransaction = com.guicedee.client.IGuiceContext.get(RunnableTransaction.class);
 		runnableTransaction.consumer = consumer;
 		return runnableTransaction;
 	}

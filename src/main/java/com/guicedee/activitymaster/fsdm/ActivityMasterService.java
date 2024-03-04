@@ -6,14 +6,13 @@ import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import lombok.extern.java.Log;
 
 import java.sql.Connection;
 import java.util.logging.Level;
 
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.client.IGuiceContext.*;
 
 @Log
 public class ActivityMasterService
@@ -38,7 +37,7 @@ public class ActivityMasterService
 	@Override
 	public void runScript(String script)
 	{
-		try (java.sql.Statement st = GuiceContext.get(Connection.class, ActivityMasterDB.class)
+		try (java.sql.Statement st = com.guicedee.client.IGuiceContext.get(Connection.class, ActivityMasterDB.class)
 		                                         .createStatement())
 		{
 			st.executeUpdate(script);
@@ -53,7 +52,7 @@ public class ActivityMasterService
 	public void updatePartitionBases()
 	{
 		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
-		var c = GuiceContext.get(Connection.class, ActivityMasterDB.class);
+		var c = com.guicedee.client.IGuiceContext.get(Connection.class, ActivityMasterDB.class);
 		try (
 				java.sql.CallableStatement st = c.prepareCall("{call CreateResourceDataPartitions (?)}");
 				java.sql.CallableStatement stPar = c.prepareCall("{call CreateEventDataPartitions (?)}");

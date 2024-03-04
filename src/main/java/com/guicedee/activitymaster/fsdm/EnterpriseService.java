@@ -18,13 +18,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.guicedee.activitymaster.fsdm.services.providers.EnterpriseProvider;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
+import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import io.github.classgraph.ClassInfo;
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -91,10 +92,10 @@ public class EnterpriseService
 		}
 		
 		@SuppressWarnings({"unchecked"})
-		ISystems<?,?> system = GuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
+		ISystems<?,?> system = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
 		
 		@SuppressWarnings({"rawtypes", "unchecked"})
-		Set<IOnSystemUpdate> systemUpdateEventHandlers = GuiceContext.instance().loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
+		Set<IOnSystemUpdate> systemUpdateEventHandlers = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
 		
 		setTotalTasks(tasks);
 		
@@ -109,7 +110,7 @@ public class EnterpriseService
 				{
 					systemUpdateEventHandler.onSystemUpdateStart(value);
 				}
-				ISystemUpdate o = GuiceContext.get(value);
+				ISystemUpdate o = com.guicedee.client.IGuiceContext.get(value);
 				performUpdate(o, enterprise);
 				for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
 				{
@@ -135,7 +136,7 @@ public class EnterpriseService
 	private void performUpdate(ISystemUpdate o, IEnterprise<?,?> enterprise)
 	{
 		@SuppressWarnings({ "unchecked"})
-		ISystems<?,?> system = GuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
+		ISystems<?,?> system = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
 		o.update(enterprise);
 		enterprise.addClassification(UpdateClass.toString(), o.getClass()
 		                             .getCanonicalName(), system);
@@ -146,7 +147,7 @@ public class EnterpriseService
 	{
 		Set<String> set = new LinkedHashSet<>();
 		@SuppressWarnings({"unchecked"})
-		ISystems<?,?> system = GuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
+		ISystems<?,?> system = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
 		List<? extends IRelationshipValue<?, IClassification<?, ?>, ?>> classificationsAll = enterprise.findClassifications(UpdateClass.toString(), system);
 		for (IRelationshipValue<?, IClassification<?, ?>, ?> rel : classificationsAll)
 		{
@@ -319,7 +320,7 @@ public class EnterpriseService
 	public IEnterprise<?,?> startNewEnterprise(String enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier)
 	{
-		GuiceContext.get(ActivityMasterConfiguration.class)
+		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		
 		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
@@ -333,8 +334,8 @@ public class EnterpriseService
 		Enterprise enterprise = installEnterprise(enterpriseName);
 		createNewEnterprise(enterprise);
 		
-		ISystems<?,?> activityMasterSystem = GuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
-		IPasswordsService<?> passwordsService = GuiceContext.get(IPasswordsService.class);
+		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
+		IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
 		passwordsService.createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, uuidIdentifier);
 		wipeCaches();
 		
@@ -348,7 +349,7 @@ public class EnterpriseService
 	private Enterprise installEnterprise(String enterpriseName)
 	{
 		Enterprise enterprise = create(enterpriseName, enterpriseName);
-		GuiceContext.get(ActivityMasterConfiguration.class)
+		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
 				.setApplicationEnterpriseName(enterpriseName);
 		return enterprise;
 	}
@@ -356,7 +357,7 @@ public class EnterpriseService
 	@Override
 	public void createNewEnterprise(@NotNull IEnterprise<?,?> enterprise)
 	{
-		GuiceContext.get(ActivityMasterConfiguration.class)
+		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
 		wipeCaches();
@@ -378,11 +379,11 @@ public class EnterpriseService
 	{
 		if (!Strings.isNullOrEmpty(applicationEnterpriseName))
 		{
-			IEnterpriseService<?> enterpriseService = GuiceContext.get(IEnterpriseService.class);
+			IEnterpriseService<?> enterpriseService = com.guicedee.client.IGuiceContext.get(IEnterpriseService.class);
 			try
 			{
 				IEnterprise<?, ?> enterprise = enterpriseService.getEnterprise(applicationEnterpriseName);
-				ISystems<?, ?> system = GuiceContext.get(IActivityMasterSystem.class)
+				ISystems<?, ?> system = com.guicedee.client.IGuiceContext.get(IActivityMasterSystem.class)
 				                                    .getSystem(applicationEnterpriseName);
 				return enterprise.builder()
 				                                   .hasClassification(EnterpriseClassifications.LastUpdateDate.toString(), system)
@@ -435,10 +436,10 @@ public class EnterpriseService
 	{
 		String nameC = cleanName(allSystem.getClass()
 		                                  .getSimpleName());
-		IActivityMasterSystem<?> registeredSystem = GuiceContext.get(allSystem.getClass());
+		IActivityMasterSystem<?> registeredSystem = com.guicedee.client.IGuiceContext.get(allSystem.getClass());
 		
 		@SuppressWarnings({"rawtypes", "unchecked"})
-		Set<IOnSystemInstall> systemInstallEventListeners = GuiceContext.instance().loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
+		Set<IOnSystemInstall> systemInstallEventListeners = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
 		for (IOnSystemInstall systemInstallEventListener : systemInstallEventListeners)
 		{
 			systemInstallEventListener.onSystemInstallStart(registeredSystem.getSystemName());

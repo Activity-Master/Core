@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.*;
-import com.guicedee.guicedinjection.GuiceContext;
 
 
 
@@ -20,7 +19,7 @@ public class ClassificationQueryBuilder
 {
 	public ClassificationQueryBuilder withConcept(EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		IClassificationDataConceptService<?> service = GuiceContext.get(IClassificationDataConceptService.class);
+		IClassificationDataConceptService<?> service = com.guicedee.client.IGuiceContext.get(IClassificationDataConceptService.class);
 		ClassificationDataConcept dc = (ClassificationDataConcept) service.find(concept, system, identityToken);
 		where(Classification_.concept, Operand.Equals, dc);
 		return this;

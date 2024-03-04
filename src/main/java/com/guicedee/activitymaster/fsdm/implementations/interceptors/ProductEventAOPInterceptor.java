@@ -4,14 +4,12 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.Product;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProduct;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ClassificationException;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -46,7 +44,7 @@ public class ProductEventAOPInterceptor implements MethodInterceptor
 	{
 		if (system == null)
 		{
-			GuiceContext.inject().injectMembers(this);
+			com.guicedee.client.IGuiceContext.instance().inject().injectMembers(this);
 		}
 		if (!configuration.isEnterpriseReady() || system.isFake())
 		{
@@ -86,7 +84,7 @@ public class ProductEventAOPInterceptor implements MethodInterceptor
 		if (methodInvocation.getMethod()
 		                    .isAnnotationPresent(LogItem.class))
 		{
-			LogItemEventAOPInterceptor logItemEventAOPInterceptor = GuiceContext.get(LogItemEventAOPInterceptor.class);
+			LogItemEventAOPInterceptor logItemEventAOPInterceptor = com.guicedee.client.IGuiceContext.get(LogItemEventAOPInterceptor.class);
 			logItemEventAOPInterceptor.processLogItemEntry(Pair.of(methodInvocation.getMethod().getAnnotation(LogItem.class),o));
 		}
 		return o;

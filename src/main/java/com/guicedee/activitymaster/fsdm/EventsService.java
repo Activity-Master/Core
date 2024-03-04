@@ -12,8 +12,8 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.EventException;
 import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
+
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 
@@ -56,7 +56,7 @@ public class EventsService
 		event.setEnterpriseID(enterprise);
 		event.setSystemID(system);
 		event.setOriginalSourceSystemID(system);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		event.setActiveFlagID(activeFlag);
 		event.persist();
@@ -85,7 +85,7 @@ public class EventsService
 			et.setDescription(eventType);
 			et.setSystemID(system);
 			et.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			et.setActiveFlagID(activeFlag);
 			et.setOriginalSourceSystemID(system);

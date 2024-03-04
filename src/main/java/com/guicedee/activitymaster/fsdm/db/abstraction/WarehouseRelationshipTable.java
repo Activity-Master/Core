@@ -6,7 +6,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWare
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationship;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -130,7 +129,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 	@SuppressWarnings("unchecked")
 	public @NotNull J update(String newValue, java.util.UUID... identifyingToken)
 	{
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), identifyingToken));
 		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
@@ -142,7 +141,7 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 		setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
 		setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                            .getActiveFlag(getEnterpriseID(), identifyingToken));
 		persist();
 		createDefaultSecurity(getSystemID());

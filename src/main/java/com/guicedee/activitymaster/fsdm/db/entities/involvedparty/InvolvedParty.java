@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.client.IGuiceContext.*;
 
 /**
  * @author Marc Magon

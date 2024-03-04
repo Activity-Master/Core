@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.logging.*;
 
 import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.client.IGuiceContext.*;
 
 public class DefaultTestConfig
 		implements BeforeEachCallback, AfterEachCallback
@@ -48,17 +48,17 @@ public class DefaultTestConfig
 	//	LogFactory.configureConsoleColourOutput(Level.FINE);
 	//	LogColourFormatter.setRenderBlack(false);
 	//	LogFactory.configureDefaultLogHiding();
-		GuiceContext.inject();
+		com.guicedee.client.IGuiceContext.instance().inject();
 
-/*		RequestScopedObject obj = GuiceContext.get(RequestScopedObject.class);
-		BasicServlet servlet = GuiceContext.get(BasicServlet.class);
+/*		RequestScopedObject obj = com.guicedee.client.IGuiceContext.get(RequestScopedObject.class);
+		BasicServlet servlet = com.guicedee.client.IGuiceContext.get(BasicServlet.class);
 
-		MockResponse resp = (MockResponse) GuiceContext.get(GuicedServletKeys.getHttpServletResponseKey());
-		MockRequest req = (MockRequest) GuiceContext.get(GuicedServletKeys.getHttpServletRequestKey());
+		MockResponse resp = (MockResponse) com.guicedee.client.IGuiceContext.get(GuicedServletKeys.getHttpServletResponseKey());
+		MockRequest req = (MockRequest) com.guicedee.client.IGuiceContext.get(GuicedServletKeys.getHttpServletRequestKey());
 
 		req.setHeader("User-Agent", FirefoxHeaderAgent);*/
 		
-		ActivityMasterConfiguration config = GuiceContext.get(ActivityMasterConfiguration.class);
+		ActivityMasterConfiguration config = com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class);
 		
 		config.setApplicationEnterpriseName(TestEnterprise.name());
 		EnterpriseService service = get(EnterpriseService.class);
@@ -71,18 +71,18 @@ public class DefaultTestConfig
 		}
 		enterprise = enterpriseO.get();
 
-		ActivityMasterConfiguration securityConfiguration = GuiceContext.get(ActivityMasterConfiguration.class);
+		ActivityMasterConfiguration securityConfiguration = com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class);
 
 		
 		config.setSecurityEnabled(false);
 		config.setApplicationEnterpriseName(TestEnterprise.name());
 
-		ISystems<?,?> systems = GuiceContext.get(ISystemsService.class)
+		ISystems<?,?> systems = com.guicedee.client.IGuiceContext.get(ISystemsService.class)
 		                               .getActivityMaster(enterprise);
-		UUID identityToken = GuiceContext.get(SystemsService.class)
+		UUID identityToken = com.guicedee.client.IGuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(systems);
 		
-		GuiceContext.get(ActivityMasterService.class)
+		com.guicedee.client.IGuiceContext.get(ActivityMasterService.class)
 		            .loadSystems(TestEnterprise.name());
 
 		config.setSecurityEnabled(false);
@@ -93,7 +93,7 @@ public class DefaultTestConfig
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception
 	{
-		GuiceContext.destroy();
+		GuiceContext.instance().destroy();
 	}
 
 	private IActivityMasterProgressMonitor getSoutMonitor()

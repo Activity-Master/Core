@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.event
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ClassificationException;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -38,7 +37,7 @@ public class RulesEventAOPInterceptor implements MethodInterceptor
 	{
 		if (event == null)
 		{
-			GuiceContext.inject()
+			com.guicedee.client.IGuiceContext.instance().inject()
 			            .injectMembers(this);
 		}
 		if (!configuration.isEnterpriseReady() || getISystem(ActivityMasterSystemName) == null)
@@ -79,7 +78,7 @@ public class RulesEventAOPInterceptor implements MethodInterceptor
 		if (methodInvocation.getMethod()
 		                    .isAnnotationPresent(LogItem.class))
 		{
-			LogItemEventAOPInterceptor logItemEventAOPInterceptor = GuiceContext.get(LogItemEventAOPInterceptor.class);
+			LogItemEventAOPInterceptor logItemEventAOPInterceptor = com.guicedee.client.IGuiceContext.get(LogItemEventAOPInterceptor.class);
 			logItemEventAOPInterceptor.processLogItemEntry(Pair.of(methodInvocation.getMethod()
 			                                                                       .getAnnotation(LogItem.class), o));
 		}

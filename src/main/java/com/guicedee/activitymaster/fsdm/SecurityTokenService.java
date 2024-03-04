@@ -14,16 +14,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
 import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTokenQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.*;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.UserGroupSecurityTokenClassifications.System;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.UserGroupSecurityTokenClassifications.*;
 
 @SuppressWarnings("Duplicates")
@@ -71,7 +69,7 @@ public class SecurityTokenService
 			sta.setOriginalSourceSystemID((Systems) system);
 			sta.setEnterpriseID(enterprise);
 			sta.setOriginalSourceSystemUniqueID("");
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			sta.setActiveFlagID((ActiveFlag) activeFlag);
 			sta.setSecurityTokenID((SecurityToken) fromToken);
@@ -125,7 +123,7 @@ public class SecurityTokenService
 				                        .toString());
 				st.setEnterpriseID(enterprise);
 				st.setSystemID(classification.getSystemID());
-				IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+				IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 				IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 				st.setActiveFlagID(activeFlag);
 				st.setOriginalSourceSystemID(classification.getSystemID());
@@ -173,7 +171,7 @@ public class SecurityTokenService
 			root.setOriginalSourceSystemID(((SecurityToken) parent).getSystemID());
 			root.setValue(child.getSecurityToken());
 			root.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			root.setActiveFlagID(activeFlag);
 			root.persist();

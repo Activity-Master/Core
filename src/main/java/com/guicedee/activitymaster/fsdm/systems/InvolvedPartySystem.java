@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.types.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService.*;
@@ -99,7 +98,7 @@ public class InvolvedPartySystem
 	
 	private void createDefaultUsers(IEnterprise<?,?> enterprise)
 	{
-		InvolvedPartyService service = GuiceContext.get(InvolvedPartyService.class);
+		InvolvedPartyService service = com.guicedee.client.IGuiceContext.get(InvolvedPartyService.class);
 	}
 	
 	

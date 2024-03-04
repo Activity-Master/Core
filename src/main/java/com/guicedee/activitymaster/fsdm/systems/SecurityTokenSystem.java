@@ -21,7 +21,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemTyp
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -66,21 +65,21 @@ public class SecurityTokenSystem
 		createActivityMasterInvolvedParty(enterprise);
 		applyDefaultsToNewEnterpriseAfterActivityMaster(enterprise);
 		
-		UUID newSystemUUID = GuiceContext.get(SystemsService.class)
+		UUID newSystemUUID = com.guicedee.client.IGuiceContext.get(SystemsService.class)
 		                                 .getSecurityIdentityToken(activityMasterSystem);
 		
-		SecurityToken activityMasterToken = (SecurityToken) GuiceContext.get(SystemsService.class)
+		SecurityToken activityMasterToken = (SecurityToken) com.guicedee.client.IGuiceContext.get(SystemsService.class)
 		                                                                .getSecurityToken(newSystemUUID.toString(), activityMasterSystem, newSystemUUID);
 		
 		logProgress("Security Management", "Setting Security Configurator to Activity Master");
 		
 		//Load all the systems system tokens that are created before I am
-		EnterpriseSystem enterpriseSystem = GuiceContext.get(EnterpriseSystem.class);
-		ActiveFlagSystem afs = GuiceContext.get(ActiveFlagSystem.class);
-		ClassificationsSystem cfs = GuiceContext.get(ClassificationsSystem.class);
-		ClassificationsDataConceptSystem cdcs = GuiceContext.get(ClassificationsDataConceptSystem.class);
-		SystemsSystem ss = GuiceContext.get(SystemsSystem.class);
-		InvolvedPartySystem ips = GuiceContext.get(InvolvedPartySystem.class);
+		EnterpriseSystem enterpriseSystem = com.guicedee.client.IGuiceContext.get(EnterpriseSystem.class);
+		ActiveFlagSystem afs = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
+		ClassificationsSystem cfs = com.guicedee.client.IGuiceContext.get(ClassificationsSystem.class);
+		ClassificationsDataConceptSystem cdcs = com.guicedee.client.IGuiceContext.get(ClassificationsDataConceptSystem.class);
+		SystemsSystem ss = com.guicedee.client.IGuiceContext.get(SystemsSystem.class);
+		InvolvedPartySystem ips = com.guicedee.client.IGuiceContext.get(InvolvedPartySystem.class);
 		systemsService
 		              .registerNewSystem(enterprise, enterpriseSystem.getSystem(enterprise));
 		systemsService
@@ -96,7 +95,7 @@ public class SecurityTokenSystem
 		
 		logProgress("Security Token Service", "Enabling Security System");
 		System.out.println("Enabling Authentication Modules");
-		GuiceContext.get(ActivityMasterConfiguration.class)
+		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
 		            .setSecurityEnabled(true);
 	}
 	
@@ -378,7 +377,7 @@ public class SecurityTokenSystem
 	void createActivityMasterInvolvedParty(IEnterprise<?,?> enterprise)
 	{
 		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
-		GuiceContext.get(SystemsSystem.class)
+		com.guicedee.client.IGuiceContext.get(SystemsSystem.class)
 				.createInvolvedPartyForNewSystem(activityMasterSystem);
 	}
 	

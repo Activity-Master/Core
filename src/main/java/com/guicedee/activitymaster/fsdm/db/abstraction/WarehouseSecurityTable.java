@@ -15,7 +15,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import java.io.Serial;
 import java.sql.Types;
 
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.client.IGuiceContext.*;
 import static jakarta.persistence.FetchType.*;
 
 /**

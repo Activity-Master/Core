@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 
@@ -34,7 +33,7 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 	{
 		if (typeValue != null)
 		{
-			IResourceItemService<?> service = GuiceContext.get(IResourceItemService.class);
+			IResourceItemService<?> service = com.guicedee.client.IGuiceContext.get(IResourceItemService.class);
 			ResourceItemType at = (ResourceItemType) service.findResourceItemType(typeValue, system, identityToken);
 			where(ResourceItemXResourceItemType_.resourceItemTypeID, Operand.Equals, at);
 		}

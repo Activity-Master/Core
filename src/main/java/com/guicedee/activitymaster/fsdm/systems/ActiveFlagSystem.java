@@ -7,7 +7,6 @@ import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityM
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.*;
 
@@ -28,7 +27,7 @@ public class ActiveFlagSystem
 		logProgress("Active Flag Service", "Loading Active Flags");
 		for (ActiveFlag activeFlag : ActiveFlag.values())
 		{
-			((ActiveFlagService)GuiceContext.get(IActiveFlagService.class))
+			((ActiveFlagService)com.guicedee.client.IGuiceContext.get(IActiveFlagService.class))
 			            .create(enterprise, activeFlag.name(), activeFlag.getDescription());
 		}
 	}

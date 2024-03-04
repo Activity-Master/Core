@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 
@@ -34,7 +33,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 	{
 		if (typeValue != null)
 		{
-			IArrangementsService<?> service = GuiceContext.get(IArrangementsService.class);
+			IArrangementsService<?> service = com.guicedee.client.IGuiceContext.get(IArrangementsService.class);
 			ArrangementType at = (ArrangementType) service.find(typeValue, system, identityToken);
 			where(ArrangementXArrangementType_.type, Operand.Equals, at);
 		}

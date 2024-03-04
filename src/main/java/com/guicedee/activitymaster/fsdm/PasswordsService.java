@@ -28,7 +28,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.IdentificationTypes.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.NameTypes.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.client.IGuiceContext.*;
 
 public class PasswordsService implements IPasswordsService<PasswordsService>
 {

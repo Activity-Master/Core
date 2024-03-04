@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.threads;
 
 import com.entityassist.BaseEntity;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +44,6 @@ public class PersistingThread
 
 	public static PersistingThread newInstance()
 	{
-		return GuiceContext.get(PersistingThread.class);
+		return com.guicedee.client.IGuiceContext.get(PersistingThread.class);
 	}
 }

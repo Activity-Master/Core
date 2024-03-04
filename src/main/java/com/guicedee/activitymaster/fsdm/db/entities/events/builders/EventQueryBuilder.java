@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.event
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -18,11 +17,11 @@ public class EventQueryBuilder
 	@Override
 	public boolean onCreate(Event entity)
 	{
-		ITimeService time = GuiceContext.get(ITimeService.class);
+		ITimeService time = com.guicedee.client.IGuiceContext.get(ITimeService.class);
 		
 		LocalDateTime localDateTime = convertToLocalDateTime(entity.getEffectiveFromDate());
 		
-		GuiceContext.get(ITimeSystem.class)
+		com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
 		            .getDay(Date.from(entity.getEffectiveFromDate().toInstant()));
 		
 		entity.setDayID(time.getDayID(localDateTime));

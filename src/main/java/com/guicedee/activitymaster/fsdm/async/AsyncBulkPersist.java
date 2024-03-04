@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.async;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -21,7 +20,7 @@ public class AsyncBulkPersist implements Runnable {
 
     public static AsyncBulkPersist getInstance(List<WarehouseBaseTable<?,?,?>> persistable, Consumer<Throwable> throwableConsumer)
     {
-        AsyncBulkPersist ap = GuiceContext.get(AsyncBulkPersist.class);
+        AsyncBulkPersist ap = com.guicedee.client.IGuiceContext.get(AsyncBulkPersist.class);
         ap.setPersistable(persistable);
         ap.setOnException(throwableConsumer);
         return ap;

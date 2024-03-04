@@ -23,12 +23,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import javax.cache.annotation.CacheKey;
-//import javax.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
 
+import javax.cache.annotation.CacheKey;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -68,7 +66,6 @@ public class ArrangementsService
 	
 	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
 	public IArrangement<?, ?> create(String type, java.lang.String key,
 	                                 String arrangementTypeClassification,
 	                                 String arrangementTypeValue,
@@ -81,7 +78,7 @@ public class ArrangementsService
 		xr.setSystemID(system);
 		xr.setOriginalSourceSystemID(system);
 		xr.setEnterpriseID(arrangementType.getEnterpriseID());
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(arrangementType.getEnterprise());
 		xr.setActiveFlagID(activeFlag);
 		xr.persist();
@@ -114,7 +111,7 @@ public class ArrangementsService
 		xr.setSystemID(system);
 		xr.setOriginalSourceSystemID(system);
 		xr.setEnterpriseID(enterprise);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		xr.setActiveFlagID(activeFlag);
 		xr.persist();

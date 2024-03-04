@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.services;
 
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.util.concurrent.Callable;
@@ -13,7 +12,7 @@ public class CallableTransaction<V> implements Callable<V>
 	
 	public static <V> CallableTransaction<V> get(Supplier<V> consumer)
 	{
-		CallableTransaction runnableTransaction = GuiceContext.get(CallableTransaction.class);
+		CallableTransaction runnableTransaction = com.guicedee.client.IGuiceContext.get(CallableTransaction.class);
 		runnableTransaction.consumer = consumer;
 		return runnableTransaction;
 	}

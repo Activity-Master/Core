@@ -16,14 +16,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.*;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,7 +82,7 @@ public class ResourceItemService
 			xr.setOriginalSourceSystemID(system);
 			xr.setSystemID(system);
 			xr.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
@@ -136,7 +134,7 @@ public class ResourceItemService
 		xr.setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(effectiveFromDate));
 		xr.setSystemID(system);
 		xr.setEnterpriseID(enterprise);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		xr.setActiveFlagID(activeFlag);
 		xr.setResourceItemDataType(resourceItemDataValue);

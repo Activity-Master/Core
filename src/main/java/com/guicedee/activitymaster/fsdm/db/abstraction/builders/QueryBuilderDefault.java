@@ -4,7 +4,6 @@ import com.entityassist.querybuilder.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderClassifications;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotNull;
@@ -47,7 +46,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	@Override
 	public EntityManager getEntityManager()
 	{
-		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
+		return com.guicedee.client.IGuiceContext.get(EntityManager.class, ActivityMasterDB.class);
 	}
 	
 	@Override

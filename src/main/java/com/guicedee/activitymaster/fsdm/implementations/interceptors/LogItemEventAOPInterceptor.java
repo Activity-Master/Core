@@ -10,7 +10,6 @@ import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.*;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.services.jsonrepresentation.IJsonRepresentation;
 import com.guicedee.services.xmlrepresentation.IXmlRepresentation;
@@ -49,7 +48,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 	{
 		if (event == null)
 		{
-			GuiceContext.inject()
+			com.guicedee.client.IGuiceContext.instance().inject()
 			            .injectMembers(this);
 		}
 		if (!configuration.isEnterpriseReady() || getISystem(ActivityMasterSystemName) == null)
@@ -160,7 +159,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 				}
 				try
 				{
-					return GuiceContext.get(DefaultObjectMapper)
+					return com.guicedee.client.IGuiceContext.get(DefaultObjectMapper)
 					                   .writerWithDefaultPrettyPrinter()
 					                   .writeValueAsBytes(key);
 				}

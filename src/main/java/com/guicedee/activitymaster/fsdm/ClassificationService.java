@@ -13,8 +13,8 @@ import com.guicedee.activitymaster.fsdm.client.services.exceptions.Classificatio
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationQueryBuilder;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
+
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 
@@ -107,7 +107,7 @@ public class ClassificationService
 			rootCl.setOriginalSourceSystemID(system);
 			rootCl.setOriginalSourceSystemUniqueID("");
 			rootCl.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			rootCl.setActiveFlagID(activeFlag);
 			rootCl.setConcept(dataConcept);

@@ -7,13 +7,12 @@ import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IC
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
 
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.client.IGuiceContext.*;
 
 /**
  * @author Marc Magon
@@ -63,7 +62,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 	@SuppressWarnings("unchecked")
 	public J remove()
 	{
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		update();
@@ -74,7 +73,7 @@ public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
 	@SuppressWarnings("unchecked")
 	public J archive()
 	{
-		setActiveFlagID(GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                            .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
 				                            .getSystemToken(getEnterpriseID())));
 		update();

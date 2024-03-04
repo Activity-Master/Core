@@ -10,11 +10,10 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
+
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-
 import java.util.NoSuchElementException;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
@@ -51,7 +50,7 @@ public class ClassificationsDataConceptService
 			newConcept.setName(name.classificationValue());
 			newConcept.setSystemID(system);
 			newConcept.setOriginalSourceSystemID(system);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			newConcept.setActiveFlagID(activeFlag);
 			newConcept.setEnterpriseID(enterprise);

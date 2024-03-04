@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassificationTypes;
 import com.guicedee.activitymaster.fsdm.db.entities.events.*;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 
@@ -34,7 +33,7 @@ public class EventXEventTypeQueryBuilder
 	{
 		if (typeValue != null)
 		{
-			IEventService<?> service = GuiceContext.get(IEventService.class);
+			IEventService<?> service = com.guicedee.client.IGuiceContext.get(IEventService.class);
 			EventType at = (EventType) service.findEventType(typeValue, system, identityToken);
 			where(EventXEventType_.eventTypeID, Operand.Equals, at);
 		}

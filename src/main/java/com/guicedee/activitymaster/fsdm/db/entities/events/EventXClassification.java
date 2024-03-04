@@ -8,7 +8,8 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -50,7 +51,7 @@ public class EventXClassification
 			fetch = FetchType.LAZY)
 	private List<EventXClassificationSecurityToken> securities;
 	
-	
+/*
 	@JoinColumn(name = "ClassificationID",
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
@@ -58,7 +59,7 @@ public class EventXClassification
 	           fetch = FetchType.LAZY)
 	@JsonIdentityReference(alwaysAsId = false)
 	private Classification classificationID;
-	
+	*/
 	@JoinColumn(name = "EventID",
 	            referencedColumnName = "EventID",
 	            nullable = false)
@@ -88,7 +89,7 @@ public class EventXClassification
 		return this;
 	}
 	
-	@Override
+/*	@Override
 	public Classification getClassificationID()
 	{
 		return classificationID;
@@ -99,7 +100,7 @@ public class EventXClassification
 		this.classificationID = classificationID;
 		return this;
 	}
-	
+	*/
 	public List<EventXClassificationSecurityToken> getSecurities()
 	{
 		return this.securities;

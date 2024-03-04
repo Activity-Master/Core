@@ -12,7 +12,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQueryBuilder;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static com.guicedee.guicedinjection.GuiceContext.*;
+import static com.guicedee.client.IGuiceContext.*;
 
 /**
  * @author Marc Magon
@@ -134,7 +133,7 @@ public class Systems
 	
 	public Systems remove()
 	{
-		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID((ActiveFlag) com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                                         .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		update();
@@ -144,7 +143,7 @@ public class Systems
 	
 	public Systems archive()
 	{
-		setActiveFlagID((ActiveFlag) GuiceContext.get(IActiveFlagService.class)
+		setActiveFlagID((ActiveFlag) com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                                         .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
 		update();
 		return this;

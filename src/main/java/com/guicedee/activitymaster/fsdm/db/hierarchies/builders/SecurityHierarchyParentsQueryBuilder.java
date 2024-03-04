@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm.db.hierarchies.builders;
 import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.db.hierarchies.SecurityHierarchyParents;
-import com.guicedee.guicedinjection.GuiceContext;
 import jakarta.persistence.EntityManager;
 
 public class SecurityHierarchyParentsQueryBuilder
@@ -12,7 +11,7 @@ public class SecurityHierarchyParentsQueryBuilder
 	@Override
 	public EntityManager getEntityManager()
 	{
-		return GuiceContext.get(EntityManager.class, ActivityMasterDB.class);
+		return com.guicedee.client.IGuiceContext.get(EntityManager.class, ActivityMasterDB.class);
 	}
 	
 	@Override

@@ -8,7 +8,6 @@ import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityM
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.guicedinjection.GuiceContext;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IRulesService.*;
 
@@ -36,10 +35,10 @@ public class RulesSystem
 	@Override
 	public void createDefaults(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?,?> activityMasterSystem = GuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
 		                                               .getActivityMaster(enterprise);
 		
-		ClassificationService service = GuiceContext.get(ClassificationService.class);
+		ClassificationService service = com.guicedee.client.IGuiceContext.get(ClassificationService.class);
 
 		/*service.create(ProductClassifications.Products, activityMasterSystem);
 		service.create(ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.ProductGroup);

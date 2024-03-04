@@ -17,14 +17,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.Invol
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
-import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import jakarta.persistence.criteria.JoinType;
 import lombok.extern.java.Log;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -83,7 +82,7 @@ public class InvolvedPartyService
 			xr.setSystemID(system);
 			xr.setOriginalSourceSystemID(system);
 			xr.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
@@ -120,7 +119,7 @@ public class InvolvedPartyService
 			xr.setSystemID(system);
 			xr.setOriginalSourceSystemID(system);
 			xr.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
@@ -154,7 +153,7 @@ public class InvolvedPartyService
 			xr.setSystemID(system);
 			xr.setOriginalSourceSystemID(system);
 			xr.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
 			xr.persist();
@@ -180,7 +179,7 @@ public class InvolvedPartyService
 		xr.setSystemID(system);
 		xr.setOriginalSourceSystemID(system);
 		xr.setEnterpriseID(enterprise);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		xr.setActiveFlagID(activeFlag);
 		xr.persist();
@@ -239,7 +238,7 @@ public class InvolvedPartyService
 	{
 		InvolvedParty ip = new InvolvedParty();
 		ip.setEnterpriseID(enterprise);
-		IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		
 		ip.setId(key);
@@ -266,7 +265,7 @@ public class InvolvedPartyService
 			ipo.setInvolvedParty((InvolvedParty) ip);
 			ipo.setId(ip.getId());
 			ipo.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			ipo.setActiveFlagID(activeFlag);
 			ipo.setSystemID(system);
@@ -282,7 +281,7 @@ public class InvolvedPartyService
 			ipo.setInvolvedParty((InvolvedParty) ip);
 			ipo.setId(ip.getId());
 			ipo.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = GuiceContext.get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			ipo.setActiveFlagID(activeFlag);
 			ipo.setSystemID(system);
