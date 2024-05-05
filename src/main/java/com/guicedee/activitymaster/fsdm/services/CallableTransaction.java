@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.services;
 
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
+import com.google.inject.persist.Transactional;
 
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -18,7 +17,7 @@ public class CallableTransaction<V> implements Callable<V>
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public V call() throws Exception
 	{
 		return consumer.get();

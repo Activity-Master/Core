@@ -1,10 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
 import com.entityassist.querybuilder.QueryBuilderSCD;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderClassifications;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotNull;
 
@@ -37,7 +36,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public @NotNull J persist(E entity)
 	{
 		return super.persist(entity);
@@ -46,7 +45,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	@Override
 	public EntityManager getEntityManager()
 	{
-		return com.guicedee.client.IGuiceContext.get(EntityManager.class, ActivityMasterDB.class);
+		return com.guicedee.client.IGuiceContext.get(EntityManager.class);
 	}
 	
 	@Override

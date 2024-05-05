@@ -1,19 +1,17 @@
 package com.guicedee.activitymaster.fsdm;
 
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActiveFlagException;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
+
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-
 import java.util.*;
 
-@SuppressWarnings("unchecked")
 public class ActiveFlagService
 		implements IActiveFlagService<ActiveFlagService>
 {
@@ -23,7 +21,7 @@ public class ActiveFlagService
 		return new ActiveFlag();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public IActiveFlag<?,?> create(IEnterprise<?,?> enterprise, String name, String description, java.util.UUID... identifyingToken)
 	{
 		ActiveFlag af = new ActiveFlag();
@@ -43,7 +41,7 @@ public class ActiveFlagService
 		}
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	private boolean doesFlagExist(String flagName, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		return new ActiveFlag().builder()
@@ -54,14 +52,14 @@ public class ActiveFlagService
 		                       .getCount() > 0;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public IActiveFlag<?,?> findFlagByName(com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		return findFlagByName(flag.name(), enterprise, identifyingToken);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@CacheResult(cacheName = "FindActiveByName")
 	@Override
 	public IActiveFlag<?,?> findFlagByName(@CacheKey String flag, @CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
@@ -74,14 +72,15 @@ public class ActiveFlagService
 		                       .get()
 		                       .orElseThrow(() -> new ActiveFlagException("Unable to find a flag by name of - " + flag + " - in enterprise - " + enterprise));
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	@CacheResult(cacheName = "FindActiveFlagRange")
 	public List<IActiveFlag<?,?>> findActiveRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
 	{
 		return (List) find(getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	
+	@Transactional()
 	private List<ActiveFlag> find(String[] name, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		ActiveFlag search = new ActiveFlag();

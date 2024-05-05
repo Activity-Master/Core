@@ -3,8 +3,8 @@ package com.guicedee.activitymaster.fsdm;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -16,7 +16,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import jakarta.persistence.criteria.*;
 
 import javax.cache.annotation.CacheKey;
@@ -63,7 +62,7 @@ public class ResourceItemService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public IResourceItemType<?, ?> createType(String value, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();
@@ -122,7 +121,7 @@ public class ResourceItemService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public IResourceItem<?, ?> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, String originalSourceSystemUniqueID,
 	                                  LocalDateTime effectiveFromDate,
 	                                  ISystems<?, ?> system, java.util.UUID... identityToken)
@@ -162,7 +161,7 @@ public class ResourceItemService
 		return xr;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public IResourceItem<?, ?> findByClassification(String resourceType,
 	                                                String classification,
@@ -199,7 +198,7 @@ public class ResourceItemService
 		             .orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public List<IRelationshipValue<IResourceItem<?, ?>, IClassification<?, ?>, ?>> findByClassificationAll(String resourceType,
 	                                                                                                       String classification,
@@ -234,7 +233,7 @@ public class ResourceItemService
 		return (List) builder.getAll();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public IResourceItem<?, ?> findByUUID(@CacheKey UUID uuid)
 	{
@@ -247,7 +246,7 @@ public class ResourceItemService
 		return exists.orElse(null);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public IResourceItem<?, ?> findByOriginalSourceUniqueID(@CacheKey String originalSourceUniqueID,
 	                                                        @CacheKey ISystems<?, ?> systems,
@@ -269,7 +268,7 @@ public class ResourceItemService
 		return d.getResourceItemData();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	@CacheResult(cacheName = "FindResourceItemTypeString")
 	public IResourceItemType<?, ?> findResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -291,7 +290,7 @@ public class ResourceItemService
 		return findByResourceItemType(type, null, systems, identityToken);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public List<IResourceItem<?, ?>> findByResourceItemType(@CacheKey String type, String value, @CacheKey ISystems<?, ?> systems, @CacheKey java.util.UUID... identityToken)
 	{

@@ -176,9 +176,9 @@
                         <type>jar</type>
                     </dependency>
                     <dependency>
-                        <groupId>com.guicedee.services</groupId>
+                        <groupId>org.hibernate.orm</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>${guicedee.version}</version>
+                        <version>${maven.hibernate.version}</version>
                     </dependency>
                      <dependency>
                          <groupId>org.projectlombok</groupId>

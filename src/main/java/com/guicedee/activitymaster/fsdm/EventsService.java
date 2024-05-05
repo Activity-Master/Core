@@ -1,9 +1,9 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
@@ -12,7 +12,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.EventException;
 import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -30,7 +29,7 @@ public class EventsService
 	{
 		return new Event();
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public IEvent<?, ?> find(java.lang.String id)
 	{
@@ -39,7 +38,7 @@ public class EventsService
 		                  .get()
 		                  .orElse(null);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public IEvent<?, ?> createEvent(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -47,7 +46,7 @@ public class EventsService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public IEvent<?, ?> createEvent(String eventType, java.lang.String key, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Event event = new Event();
@@ -67,7 +66,7 @@ public class EventsService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public IEventType<?, ?> createEventType(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		EventType et = new EventType();
@@ -100,7 +99,7 @@ public class EventsService
 		}
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	@CacheResult(cacheName = "EventTypesStrings")
 	public IEventType<?, ?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)

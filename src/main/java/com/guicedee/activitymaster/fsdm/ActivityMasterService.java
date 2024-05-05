@@ -1,12 +1,11 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService;
 import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import lombok.extern.java.Log;
 
 import java.sql.Connection;
@@ -33,11 +32,11 @@ public class ActivityMasterService
 	{
 		enterpriseService.loadUpdates(enterprise);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public void runScript(String script)
 	{
-		try (java.sql.Statement st = com.guicedee.client.IGuiceContext.get(Connection.class, ActivityMasterDB.class)
+		try (java.sql.Statement st = com.guicedee.client.IGuiceContext.get(Connection.class)
 		                                         .createStatement())
 		{
 			st.executeUpdate(script);
@@ -47,12 +46,12 @@ public class ActivityMasterService
 			log.log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public void updatePartitionBases()
 	{
-		javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
-		var c = com.guicedee.client.IGuiceContext.get(Connection.class, ActivityMasterDB.class);
+		javax.sql.DataSource ds = get(javax.sql.DataSource.class);
+		var c = com.guicedee.client.IGuiceContext.get(Connection.class);
 		try (
 				java.sql.CallableStatement st = c.prepareCall("{call CreateResourceDataPartitions (?)}");
 				java.sql.CallableStatement stPar = c.prepareCall("{call CreateEventDataPartitions (?)}");

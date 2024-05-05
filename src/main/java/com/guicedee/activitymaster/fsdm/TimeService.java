@@ -1,12 +1,11 @@
 package com.guicedee.activitymaster.fsdm;
 
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.db.entities.time.DayParts;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
+
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
@@ -76,7 +75,7 @@ public class TimeService<J extends TimeService<J>>
 		return dateTime.toInstant()
 		               .get(ChronoField.MINUTE_OF_HOUR);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@CacheResult(cacheName = "TimeDayParts")
 	public DayParts getDayPart(@CacheKey int hour, @CacheKey int minute)
 	{

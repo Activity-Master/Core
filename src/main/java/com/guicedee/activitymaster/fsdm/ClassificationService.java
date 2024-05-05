@@ -1,9 +1,9 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -13,7 +13,6 @@ import com.guicedee.activitymaster.fsdm.client.services.exceptions.Classificatio
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationQueryBuilder;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -74,7 +73,7 @@ public class ClassificationService
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public IClassification<?, ?> create(String name, String description, EnterpriseClassificationDataConcepts conceptName,
 	                                    ISystems<?, ?> system,
 	                                    Integer sequenceNumber, IClassification<?, ?> parent, java.util.UUID... identityToken)
@@ -143,7 +142,7 @@ public class ClassificationService
 		return find(name, null, system, identityToken);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
 	@Override
 	public IClassification<?, ?> find(@CacheKey String name, @CacheKey EnterpriseClassificationDataConcepts concept, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -160,7 +159,7 @@ public class ClassificationService
 		return search;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@CacheResult(cacheName = "GetHierarchyTypeClassification")
 	@Override
 	public IClassification<?, ?> getHierarchyType(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -170,7 +169,7 @@ public class ClassificationService
 				identityToken);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@CacheResult(cacheName = "GetNoClassification")
 	@Override
 	public IClassification<?, ?> getNoClassification(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -180,7 +179,7 @@ public class ClassificationService
 				identityToken);
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@CacheResult(cacheName = "IdentityTypeClassification")
 	@Override
 	public IClassification<?, ?> getIdentityType(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)

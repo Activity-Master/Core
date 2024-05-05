@@ -1,9 +1,9 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
@@ -17,11 +17,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
 import com.guicedee.guicedinjection.pairing.Pair;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import javax.cache.annotation.CacheRemove;
-import javax.cache.annotation.CacheResult;
 import jakarta.validation.constraints.NotNull;
 
+import javax.cache.annotation.CacheRemove;
+import javax.cache.annotation.CacheResult;
 import java.util.*;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
@@ -51,7 +50,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return passEncrypted;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public IInvolvedParty<?, ?> findByUsername(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -64,7 +63,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return party;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public IInvolvedParty<?, ?> findByUsernameAndPassword(String username, String password, ISystems<?, ?> system, boolean throwForNoUser, java.util.UUID... identityToken)
 	{
@@ -116,7 +115,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return foundPart;
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@CacheResult(cacheName = "UsersList")
 	@Override
@@ -126,10 +125,10 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		                                 .findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
 		                                 .getAll();
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	@CacheRemove(cacheName = "UsersList")
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IInvolvedParty<?, ?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		byte[] salt = System.getProperty("systemSalt") != null ? System.getProperty("systemSalt")
@@ -147,7 +146,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		
 		return involvedParty;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public boolean doesUsernameExist(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -160,7 +159,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	}
 	
 	@Override
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public IInvolvedParty<?, ?> createAdminAndCreatorUserForEnterprise(ISystems<?, ?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey)
 	{

@@ -1,16 +1,15 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationDataConceptService;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -31,7 +30,7 @@ public class ClassificationsDataConceptService
 		return new ClassificationDataConcept();
 	}
 	
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	public ClassificationDataConcept createDataConcept(EnterpriseClassificationDataConcepts name,
 	                                                   String description,
 	                                                   ISystems<?,?> system,
@@ -79,7 +78,7 @@ public class ClassificationsDataConceptService
 	{
 		return find(name.classificationValue(), system, identityToken);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
 	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{

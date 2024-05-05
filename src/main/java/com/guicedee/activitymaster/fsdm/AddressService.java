@@ -2,8 +2,8 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.annotations.ActivityMasterDB;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -16,7 +16,6 @@ import com.guicedee.activitymaster.fsdm.client.services.exceptions.AddressExcept
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.guicedpersistence.db.annotations.Transactional;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -53,9 +52,9 @@ public class AddressService
 	{
 		return create(addressClassification, null, system, value, identifyingToken);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IAddress<?, ?> create(String addressClassification, java.lang.String key, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
 	{
 		Address addy = new Address();
@@ -100,9 +99,9 @@ public class AddressService
 		}
 		return addy;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IAddress<?, ?> addOrFindIPAddress(String ipAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
@@ -150,9 +149,9 @@ public class AddressService
 		}
 		return address;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IAddress<?, ?> addOrFindHostName(String hostName, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
@@ -197,9 +196,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IAddress<?, ?> addOrFindWebAddress(String webAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
@@ -340,9 +339,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IAddress<?, ?> addOrFindPhoneContact(String phoneNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Classification homePhoneNumber = (Classification) classificationServiceProvider.find(
@@ -402,9 +401,9 @@ public class AddressService
 		
 		return streetAddress;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IAddress<?, ?> addOrFindEmailContact(String emailAddressString, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Classification emailAddress = (Classification) classificationServiceProvider.find(
@@ -477,15 +476,15 @@ public class AddressService
 		
 		return emailAddy;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
 	public Optional<? extends IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		return involvedParty.findAddress(HomeCellNumber.name(), null, system, true, true, identityToken);
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IAddress<?, ?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
@@ -541,9 +540,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	@Transactional()
 	@Override
-	//@Transactional(entityManagerAnnotation = ActivityMasterDB.class)
+	//@Transactional()
 	public IAddress<?, ?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
