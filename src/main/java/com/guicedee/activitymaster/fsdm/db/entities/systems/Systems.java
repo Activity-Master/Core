@@ -45,7 +45,7 @@ import static com.guicedee.client.IGuiceContext.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Systems
-		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.lang.String>
+		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.lang.String, SystemsSecurityToken>
 		implements ISystems<Systems, SystemsQueryBuilder>
 {
 	@Serial

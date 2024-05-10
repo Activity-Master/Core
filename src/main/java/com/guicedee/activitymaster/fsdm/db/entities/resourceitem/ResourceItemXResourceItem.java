@@ -9,7 +9,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -36,7 +37,8 @@ public class ResourceItemXResourceItem
 		ResourceItem,
 		ResourceItemXResourceItem,
 		ResourceItemXResourceItemQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ResourceItemXResourceItemSecurityToken>
 		implements Serializable
 {
 	

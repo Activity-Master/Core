@@ -5,7 +5,7 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.involvedparty;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyOrganicTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -23,7 +23,7 @@ import java.io.Serial;
 
 @Access(AccessType.FIELD)
 public class InvolvedPartyOrganicTypeSecurityToken
-		extends WarehouseSecurityTable<InvolvedPartyOrganicTypeSecurityToken, InvolvedPartyOrganicTypeSecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<InvolvedPartyOrganicTypeSecurityToken, InvolvedPartyOrganicTypeSecurityTokenQueryBuilder, String>
 {
 	
 	@Serial

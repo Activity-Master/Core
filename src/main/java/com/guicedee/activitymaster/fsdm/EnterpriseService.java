@@ -334,6 +334,8 @@ public class EnterpriseService
 		createNewEnterprise(enterprise);
 		
 		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
+		
+		
 		IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
 		passwordsService.createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, uuidIdentifier);
 		wipeCaches();
@@ -359,13 +361,9 @@ public class EnterpriseService
 		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
 		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
-		wipeCaches();
 		createBase(allSystems, enterprise);
-		wipeCaches();
 		createBaseSystems(allSystems, enterprise);
-		wipeCaches();
 		installSystems(allSystems, enterprise);
-		wipeCaches();
 		setCurrentTask(0);
 		logProgress("System Configuration", "Starting system updates", 1);
 		loadUpdates(enterprise);

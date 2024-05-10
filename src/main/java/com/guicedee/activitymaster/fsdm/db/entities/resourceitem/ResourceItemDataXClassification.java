@@ -9,7 +9,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -34,7 +35,8 @@ public class ResourceItemDataXClassification
 		Classification,
 		ResourceItemDataXClassification,
 		ResourceItemDataXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ResourceItemDataXClassificationSecurityToken>
 		implements Serializable
 {
 	

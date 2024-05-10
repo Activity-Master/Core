@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBui
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 
 public class ClassificationDataConceptQueryBuilder
-		extends QueryBuilderSCDNameDescription<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, java.lang.String>
+		extends QueryBuilderSCDNameDescription<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, java.lang.String,ClassificationDataConceptSecurityTokenQueryBuilder>
 		implements IClassificationDataConceptQueryBuilder<ClassificationDataConceptQueryBuilder, ClassificationDataConcept>
 {
 }

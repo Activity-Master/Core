@@ -14,7 +14,8 @@ public class InvolvedPartyXProductTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<InvolvedParty, ProductType,
 		InvolvedPartyXProductTypeQueryBuilder,
 		InvolvedPartyXProductType,
-		java.lang.String>
+		java.lang.String,
+		InvolvedPartyXProductTypeSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXProductType, InvolvedParty> getPrimaryAttribute()

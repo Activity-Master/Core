@@ -43,7 +43,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ClassificationDataConcept
-		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, java.lang.String>
+		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, java.lang.String,ClassificationDataConceptSecurityToken>
 		implements// IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
 		//IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, String, IClassificationDataConcept<?>, IResourceItem<?,?>, ClassificationDataConcept>,
 		//IActivityMasterEntity<ClassificationDataConcept>,

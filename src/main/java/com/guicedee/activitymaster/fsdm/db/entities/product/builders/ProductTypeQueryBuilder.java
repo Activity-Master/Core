@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTabl
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductType;
 
 public class ProductTypeQueryBuilder
-		extends QueryBuilderTable<ProductTypeQueryBuilder, ProductType, java.lang.String>
+		extends QueryBuilderTable<ProductTypeQueryBuilder, ProductType, java.lang.String,ProductTypeSecurityTokenQueryBuilder>
 		implements IProductTypeQueryBuilder<ProductTypeQueryBuilder, ProductType>
 {
 

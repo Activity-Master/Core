@@ -14,7 +14,8 @@ public class ProductXProductTypeQueryBuilder
 		ProductType,
 		ProductXProductTypeQueryBuilder,
 		ProductXProductType,
-		java.lang.String>
+		java.lang.String,
+		ProductXProductTypeSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<ProductXProductType, Product> getPrimaryAttribute()

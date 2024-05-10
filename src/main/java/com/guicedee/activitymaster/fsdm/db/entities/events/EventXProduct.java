@@ -33,7 +33,9 @@ public class EventXProduct
 		Product,
 		EventXProduct,
 		EventXProductQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		EventXProductSecurityToken
+		>
 {
 	
 	@Serial

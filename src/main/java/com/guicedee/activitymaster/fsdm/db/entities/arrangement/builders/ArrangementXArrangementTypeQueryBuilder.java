@@ -14,7 +14,8 @@ public class ArrangementXArrangementTypeQueryBuilder
 		ArrangementType,
 		ArrangementXArrangementTypeQueryBuilder,
 		ArrangementXArrangementType,
-		java.lang.String>
+		java.lang.String,
+		ArrangementXArrangementTypeSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<ArrangementXArrangementType, Arrangement> getPrimaryAttribute()

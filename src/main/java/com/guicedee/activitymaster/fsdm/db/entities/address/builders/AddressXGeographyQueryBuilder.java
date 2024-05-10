@@ -7,7 +7,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class AddressXGeographyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Address, Geography, AddressXGeographyQueryBuilder,
-		AddressXGeography, java.lang.String>
+		AddressXGeography, java.lang.String,AddressXGeographySecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<AddressXGeography, Address> getPrimaryAttribute()

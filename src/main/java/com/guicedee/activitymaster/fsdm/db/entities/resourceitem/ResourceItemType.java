@@ -36,7 +36,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ResourceItemType
-		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, java.lang.String>
+		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, java.lang.String, ResourceItemTypeSecurityToken>
 		implements IResourceItemType<ResourceItemType, ResourceItemTypeQueryBuilder>
 {
 	

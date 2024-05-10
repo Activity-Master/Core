@@ -24,7 +24,7 @@ import java.util.Objects;
 @XmlRootElement
 @Access(AccessType.FIELD)
 public class ResourceItemData
-		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, java.lang.String>
+		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, java.lang.String, ResourceItemDataSecurityToken>
 		implements IResourceData<ResourceItemData, ResourceItemDataQueryBuilder>
 {
 	

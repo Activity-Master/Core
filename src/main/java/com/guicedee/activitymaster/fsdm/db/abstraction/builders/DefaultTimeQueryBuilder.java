@@ -6,7 +6,10 @@ import jakarta.persistence.EntityManager;
 
 import java.io.Serializable;
 
-public abstract class DefaultTimeQueryBuilder<J extends DefaultTimeQueryBuilder<J, E, I>, E extends BaseEntity<E, J, I>, I extends Serializable>
+public abstract class DefaultTimeQueryBuilder<
+		J extends DefaultTimeQueryBuilder<J, E, I>,
+		E extends BaseEntity<E, J, I>,
+		I extends Serializable>
 		extends QueryBuilder<J, E, I>
 {
 	public DefaultTimeQueryBuilder()

@@ -11,10 +11,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXRes
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -23,6 +25,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Address", name = "AddressXResourceItem")
 @XmlRootElement
@@ -33,12 +36,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class AddressXResourceItem
 		extends WarehouseClassificationRelationshipTable<Address,
 		ResourceItem,
 		AddressXResourceItem,
 		AddressXResourceItemQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		AddressXResourceItemSecurityToken
+		>
 		implements Serializable
 {
 	
@@ -81,20 +87,10 @@ public class AddressXResourceItem
 		this.id = addressXResourceItemID;
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public AddressXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public List<AddressXResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
 	}
 	
 	public AddressXResourceItem setSecurities(List<AddressXResourceItemSecurityToken> securities)
@@ -103,20 +99,10 @@ public class AddressXResourceItem
 		return this;
 	}
 	
-	public Address getAddressID()
-	{
-		return this.addressID;
-	}
-	
 	public AddressXResourceItem setAddressID(Address addressID)
 	{
 		this.addressID = addressID;
 		return this;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
 	}
 	
 	public AddressXResourceItem setResourceItemID(ResourceItem resourceItemID)
@@ -124,28 +110,6 @@ public class AddressXResourceItem
 		this.resourceItemID = resourceItemID;
 		return this;
 	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		AddressXResourceItem that = (AddressXResourceItem) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
 	@Override
 	public Address getPrimary()
 	{

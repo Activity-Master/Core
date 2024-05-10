@@ -5,10 +5,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationDataConceptXClassificationQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -27,12 +28,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class ClassificationDataConceptXClassification
 		extends WarehouseClassificationRelationshipTable<ClassificationDataConcept,
 		Classification,
 		ClassificationDataConceptXClassification,
 		ClassificationDataConceptXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ClassificationDataConceptXClassificationSecurityToken>
 		implements Serializable
 {
 	
@@ -98,28 +101,6 @@ public class ClassificationDataConceptXClassification
 	{
 		this.classificationDataConceptID = classificationDataConceptID;
 		return this;
-	}
-	
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ClassificationDataConceptXClassification that = (ClassificationDataConceptXClassification) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
 	}
 	
 	@Override

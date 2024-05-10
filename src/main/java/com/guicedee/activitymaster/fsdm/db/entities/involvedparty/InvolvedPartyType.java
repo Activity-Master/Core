@@ -11,7 +11,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.FetchType.*;
@@ -35,7 +36,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, java.lang.String>
+		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, java.lang.String,InvolvedPartyTypeSecurityToken>
 		implements IInvolvedPartyType<InvolvedPartyType, InvolvedPartyTypeQueryBuilder>
 {
 	

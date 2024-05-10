@@ -370,7 +370,7 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Starting Final Enterprise checks", 1);
 		createDefaultSecurityForTable(new EnterpriseXClassification(), activityMasterSystem);
 		
-		createDefaultSecurityForTable((WarehouseCoreTable<?, ?, ?>) enterprise, activityMasterSystem);
+		createDefaultSecurityForTable((WarehouseCoreTable<?, ?, ?,?>) enterprise, activityMasterSystem);
 		logProgress("Security Token Service", "Completed Checks", 1);
 	}
 	
@@ -418,7 +418,7 @@ public class SecurityTokenSystem
 		createDefaultSecurityForTable(new ArrangementXProduct(), activityMasterSystem);
 	}
 	
-	void createDefaultSecurityForTable(WarehouseCoreTable< ?, ?, ?> table, ISystems<?,?> system, java.util.UUID... identityToken)
+	void createDefaultSecurityForTable(WarehouseCoreTable< ?, ?, ?,?> table, ISystems<?,?> system, java.util.UUID... identityToken)
 	{
 		/*for (WarehouseCoreTable next : table.builder()
 		                                    .withEnterprise(system.getEnterpriseID())

@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTabl
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.Arrangement;
 
 public class ArrangementQueryBuilder
-		extends QueryBuilderTable<ArrangementQueryBuilder, Arrangement, java.lang.String>
+		extends QueryBuilderTable<ArrangementQueryBuilder, Arrangement, java.lang.String,ArrangementSecurityTokenQueryBuilder>
 		implements IArrangementQueryBuilder<ArrangementQueryBuilder, Arrangement>
 {
 

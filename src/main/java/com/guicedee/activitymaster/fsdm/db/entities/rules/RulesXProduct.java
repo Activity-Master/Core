@@ -33,7 +33,8 @@ public class RulesXProduct
 		Product,
 		RulesXProduct,
 		RulesXProductQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		RulesXProductSecurityToken>
 {
 	
 	@Serial

@@ -5,9 +5,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXArrangementTypeQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -27,12 +29,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXArrangementType
 		extends WarehouseClassificationRelationshipTypesTable<Arrangement,
 		ArrangementType,
 		ArrangementXArrangementType,
 		ArrangementXArrangementTypeQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ArrangementXArrangementTypeSecurityToken
+		>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -41,16 +46,19 @@ public class ArrangementXArrangementType
 	        name = "ArrangementXArrangementTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
+	@Getter
 	@ManyToOne
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID")
 	
 	private Arrangement arrangement;
+	@Getter
 	@JoinColumn(name = "ArrangementTypeID",
 	            referencedColumnName = "ArrangementTypeID")
 	@ManyToOne()
 	
 	private ArrangementType type;
+	@Getter
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -78,20 +86,10 @@ public class ArrangementXArrangementType
 		return this;
 	}
 	
-	public Arrangement getArrangement()
-	{
-		return this.arrangement;
-	}
-	
 	public ArrangementXArrangementType setArrangement(Arrangement arrangement)
 	{
 		this.arrangement = arrangement;
 		return this;
-	}
-	
-	public ArrangementType getType()
-	{
-		return this.type;
 	}
 	
 	public ArrangementXArrangementType setType(ArrangementType type)
@@ -100,38 +98,11 @@ public class ArrangementXArrangementType
 		return this;
 	}
 	
-	public List<ArrangementXArrangementTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXArrangementType setSecurities(List<ArrangementXArrangementTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ArrangementXArrangementType that = (ArrangementXArrangementType) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
 	@Override
 	public Arrangement getPrimary()
 	{

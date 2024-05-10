@@ -1,7 +1,10 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
@@ -22,11 +25,13 @@ import static jakarta.persistence.FetchType.*;
  * @author Marc Magon
  * @since 08 Dec 2016
  */
+@SuppressWarnings("unchecked")
 @MappedSuperclass
 
-public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
+public abstract class IWarehouseSecurityTable<J extends IWarehouseSecurityTable<J, Q, I>,
 		Q extends QueryBuilderSecurities<Q, J, I>, I extends java.lang.String>
 		extends WarehouseBaseTable<J, Q, I>
+		implements com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable<J, Q>
 {
 	
 	@Serial
@@ -103,14 +108,20 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	//===========================================================================================================================
 	
 	
-	public WarehouseSecurityTable()
+	public IWarehouseSecurityTable()
 	{
 	
 	}
 	
+	/**
+	 * Marks the row as removed active flag, does not delete the record from the db
+	 *
+	 * @return
+	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public J remove()
 	{
-		setActiveFlagID((ActiveFlag) get(IActiveFlagService.class)
+		setActiveFlagID(get(IActiveFlagService.class)
 				.getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
 						.getSystemToken(getEnterpriseID())));
 		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
@@ -118,113 +129,133 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 		return (J) this;
 	}
 	
+	@Override
 	public @NotNull boolean isCreateAllowed()
 	{
 		return createAllowed;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setCreateAllowed(@NotNull boolean createAllowed)
+	@Override
+	public J setCreateAllowed(@NotNull boolean createAllowed)
 	{
 		this.createAllowed = createAllowed;
-		return this;
+		return (J) this;
 	}
 	
+	@Override
 	public @NotNull boolean isUpdateAllowed()
 	{
 		return updateAllowed;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setUpdateAllowed(@NotNull boolean updateAllowed)
+	@Override
+	public J setUpdateAllowed(@NotNull boolean updateAllowed)
 	{
 		this.updateAllowed = updateAllowed;
-		return this;
+		return (J) this;
 	}
 	
+	@Override
 	public @NotNull boolean isDeleteAllowed()
 	{
 		return deleteAllowed;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setDeleteAllowed(@NotNull boolean deleteAllowed)
+	@Override
+	public J setDeleteAllowed(@NotNull boolean deleteAllowed)
 	{
 		this.deleteAllowed = deleteAllowed;
-		return this;
+		return (J) this;
 	}
 	
+	@Override
 	public @NotNull boolean isReadAllowed()
 	{
 		return readAllowed;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setReadAllowed(@NotNull boolean readAllowed)
+	@Override
+	public J setReadAllowed(@NotNull boolean readAllowed)
 	{
 		this.readAllowed = readAllowed;
-		return this;
+		return (J) this;
 	}
 	
+	@Override
 	public SecurityToken getSecurityTokenID()
 	{
 		return securityTokenID;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setSecurityTokenID(SecurityToken securityTokenID)
+	@Override
+	public J setSecurityTokenID(ISecurityToken<?,?> securityTokenID)
 	{
-		this.securityTokenID = securityTokenID;
-		return this;
+		this.securityTokenID = (SecurityToken) securityTokenID;
+		return (J) this;
 	}
 	
+	@Override
 	public ActiveFlag getActiveFlagID()
 	{
 		return activeFlagID;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setActiveFlagID(ActiveFlag activeFlagID)
+	@Override
+	public J setActiveFlagID(IActiveFlag<?, ?> activeFlagID)
 	{
-		this.activeFlagID = activeFlagID;
-		return this;
+		this.activeFlagID = (ActiveFlag) activeFlagID;
+		return (J) this;
 	}
 	
+	@Override
 	public Enterprise getEnterpriseID()
 	{
 		return enterpriseID;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setEnterpriseID(IEnterprise<?, ?> enterpriseID)
+	@Override
+	public J setEnterpriseID(IEnterprise<?, ?> enterpriseID)
 	{
 		this.enterpriseID = (Enterprise) enterpriseID;
-		return this;
+		return (J) this;
 	}
 	
+	@Override
 	public Systems getSystemID()
 	{
 		return systemID;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setSystemID(Systems systemID)
+	@Override
+	public J setSystemID(ISystems<?, ?> systemID)
 	{
-		this.systemID = systemID;
-		return this;
+		this.systemID = (Systems) systemID;
+		return (J) this;
 	}
 	
+	@Override
 	public @NotNull String getOriginalSourceSystemUniqueID()
 	{
 		return originalSourceSystemUniqueID;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
+	@Override
+	public J setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
 	{
 		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
-		return this;
+		return (J) this;
 	}
 	
+	@Override
 	public Systems getOriginalSourceSystemID()
 	{
 		return originalSourceSystemID;
 	}
 	
-	public WarehouseSecurityTable<J, Q, I> setOriginalSourceSystemID(Systems originalSourceSystemID)
+	@Override
+	public J setOriginalSourceSystemID(ISystems<?, ?> originalSourceSystemID)
 	{
-		this.originalSourceSystemID = originalSourceSystemID;
-		return this;
+		this.originalSourceSystemID = (Systems) originalSourceSystemID;
+		return (J) this;
 	}
 }

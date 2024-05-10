@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBui
 import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 
 public class RulesQueryBuilder
-		extends QueryBuilderSCDNameDescription<RulesQueryBuilder, Rules, java.lang.String>
+		extends QueryBuilderSCDNameDescription<RulesQueryBuilder, Rules, java.lang.String,RulesSecurityTokenQueryBuilder>
 		implements IRulesQueryBuilder<RulesQueryBuilder, Rules>
 {
 

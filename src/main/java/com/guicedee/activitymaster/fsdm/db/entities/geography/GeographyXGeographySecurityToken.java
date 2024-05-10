@@ -5,7 +5,7 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.geography;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.geography.builders.GeographyXGeographySecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -24,7 +24,7 @@ import java.io.Serializable;
 
 @Access(AccessType.FIELD)
 public class GeographyXGeographySecurityToken
-		extends WarehouseSecurityTable<GeographyXGeographySecurityToken, GeographyXGeographySecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<GeographyXGeographySecurityToken, GeographyXGeographySecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	

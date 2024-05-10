@@ -5,10 +5,11 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.Getter;
 
 import java.io.Serial;
 
@@ -18,13 +19,14 @@ import java.io.Serial;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Event", name = "EventTypesSecurityToken")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
 public class EventTypesSecurityToken
-		extends WarehouseSecurityTable<EventTypesSecurityToken, EventTypeSecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<EventTypesSecurityToken, EventTypeSecurityTokenQueryBuilder, String>
 {
 	
 	@Serial
@@ -59,20 +61,10 @@ public class EventTypesSecurityToken
 		return "EventTypesSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public EventTypesSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public EventType getBase()
-	{
-		return this.base;
 	}
 	
 	public EventTypesSecurityToken setBase(EventType base)

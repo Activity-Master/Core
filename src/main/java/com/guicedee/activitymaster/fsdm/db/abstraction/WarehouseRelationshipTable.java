@@ -3,9 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.abstraction;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationship;
-import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -24,12 +22,14 @@ import java.math.BigDecimal;
  * @since 09 Dec 2016
  */
 @MappedSuperclass
-public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P, ?, java.lang.String>,
+public abstract class WarehouseRelationshipTable<
+		P extends WarehouseBaseTable<P, ?, java.lang.String>,
 		S extends WarehouseBaseTable<S, ?, java.lang.String>,
-		J extends WarehouseRelationshipTable<P, S, J, Q, I>,
-		Q extends QueryBuilderRelationship<P, S, Q, J, I>,
-		I extends java.lang.String>
-		extends WarehouseTable<J, Q, I>
+		J extends WarehouseRelationshipTable<P, S, J, Q, I,QS>,
+		Q extends QueryBuilderRelationship<P, S, Q, J, I,?>,
+		I extends java.lang.String,
+		QS extends com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable<QS,?>>
+		extends WarehouseTable<J, Q, I,QS>
 		implements IWarehouseRelationshipTable<J, Q, P, S, I>
 {
 	
@@ -45,23 +45,6 @@ public abstract class WarehouseRelationshipTable<P extends WarehouseBaseTable<P,
 	public WarehouseRelationshipTable()
 	{
 		//No configuration needed
-	}
-	
-	@Override
-	public void createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identityToken)
-	{
-	
-	}
-	
-	
-	public WarehouseSecurityTable createDefaultGuestNoSecurityAccess(ISystems<?, ?> system, java.util.UUID... identityToken)
-	{
-		return null;
-	}
-	
-	public void updateSecurity(J newCoreTable, Systems system)
-	{
-	
 	}
 	
 	@Override

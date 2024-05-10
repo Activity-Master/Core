@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Null;
 import static com.entityassist.enumerations.Operand.*;
 
 public class GeographyQueryBuilder
-		extends QueryBuilderSCDNameDescription<GeographyQueryBuilder, Geography, java.lang.String>
+		extends QueryBuilderSCDNameDescription<GeographyQueryBuilder, Geography, java.lang.String,GeographySecurityTokenQueryBuilder>
 		implements IGeographyQueryBuilder<GeographyQueryBuilder, Geography>
 {
 	

@@ -9,10 +9,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -35,8 +37,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id",callSuper = false)
 public class ArrangementType
-		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, java.lang.String>
+		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, java.lang.String, ArrangementTypeSecurityToken>
 		implements IArrangementType<ArrangementType, ArrangementTypeQueryBuilder>
 {
 	@Serial
@@ -47,6 +50,7 @@ public class ArrangementType
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
+	@Getter
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -56,6 +60,7 @@ public class ArrangementType
 	        length = 150,
 	        name = "ArrangementTypeName")
 	private String name;
+	@Getter
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -65,6 +70,7 @@ public class ArrangementType
 	        length = 500,
 	        name = "ArrangementTypeDescription")
 	private String description;
+	@Getter
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -75,6 +81,7 @@ public class ArrangementType
 			fetch = FetchType.LAZY)
 	private List<ArrangementTypeXClassification> classifications;
 	
+	@Getter
 	@OneToMany(
 			mappedBy = "type",
 			fetch = FetchType.LAZY)
@@ -98,20 +105,10 @@ public class ArrangementType
 		this.description = arrangementTypeDescription;
 	}
 	
-	public List<ArrangementTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementType setSecurities(List<ArrangementTypeSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
-	}
-	
-	public List<ArrangementXArrangementType> getArrangementsList()
-	{
-		return this.arrangementsList;
 	}
 	
 	public ArrangementType setArrangementsList(List<ArrangementXArrangementType> arrangementsList)
@@ -127,27 +124,6 @@ public class ArrangementType
 	}
 	
 	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ArrangementType that = (ArrangementType) o;
-		return Objects.equals(getName(), that.getName());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
-	@Override
 	public java.lang.String getId()
 	{
 		return this.id;
@@ -160,20 +136,10 @@ public class ArrangementType
 		return this;
 	}
 	
-	public String getName()
-	{
-		return this.name;
-	}
-	
 	public ArrangementType setName(String name)
 	{
 		this.name = name;
 		return this;
-	}
-	
-	public String getDescription()
-	{
-		return this.description;
 	}
 	
 	public ArrangementType setDescription(@NotNull @Size(min = 1,

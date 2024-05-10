@@ -10,7 +10,7 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 
 public class EventQueryBuilder
-		extends QueryBuilderTable<EventQueryBuilder, Event, java.lang.String>
+		extends QueryBuilderTable<EventQueryBuilder, Event, java.lang.String,EventSecurityTokenQueryBuilder>
 		implements IEventQueryBuilder<EventQueryBuilder, Event>
 {
 	

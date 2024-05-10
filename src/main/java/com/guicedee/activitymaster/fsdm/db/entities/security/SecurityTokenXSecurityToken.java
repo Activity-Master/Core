@@ -33,7 +33,7 @@ public class SecurityTokenXSecurityToken
 		SecurityToken,
 		SecurityTokenXSecurityToken,
 		SecurityTokenXSecurityTokenQueryBuilder,
-		java.lang.String>
+		java.lang.String, SecurityTokenXSecurityTokenSecurityToken>
 		implements Serializable
 {
 	

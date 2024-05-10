@@ -1,11 +1,9 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
 import com.guicedee.activitymaster.ActivityMasterTestBinder;
-import com.guicedee.activitymaster.fsdm.*;
-import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
+import com.guicedee.activitymaster.fsdm.EnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterProgressMonitor;
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -13,7 +11,6 @@ import org.junit.jupiter.api.extension.*;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.logging.*;
 
 import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.*;
@@ -63,8 +60,9 @@ public class DefaultTestConfig
 		config.setApplicationEnterpriseName(TestEnterprise.name());
 		EnterpriseService service = get(EnterpriseService.class);
 		Optional<IEnterprise<?,?>> enterpriseO = service.findEnterprise(TestEnterprise.name());
+		enterpriseO.ifPresent(a-> System.out.println("Enterprise found: " + a.getName()));
 		IEnterprise<?,?> enterprise = null;
-		if (enterpriseO.isEmpty())
+		/*if (enterpriseO.isEmpty())
 		{
 			enterpriseO = Optional.ofNullable(service.startNewEnterprise(TestEnterprise.name(),
 					                                                      "admin", "admin"));
@@ -74,9 +72,9 @@ public class DefaultTestConfig
 		ActivityMasterConfiguration securityConfiguration = com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class);
 
 		
-		config.setSecurityEnabled(false);
+		config.setSecurityEnabled(false);*/
 		config.setApplicationEnterpriseName(TestEnterprise.name());
-
+/*
 		ISystems<?,?> systems = com.guicedee.client.IGuiceContext.get(ISystemsService.class)
 		                               .getActivityMaster(enterprise);
 		UUID identityToken = com.guicedee.client.IGuiceContext.get(SystemsService.class)
@@ -85,7 +83,7 @@ public class DefaultTestConfig
 		com.guicedee.client.IGuiceContext.get(ActivityMasterService.class)
 		            .loadSystems(TestEnterprise.name());
 
-		config.setSecurityEnabled(false);
+		config.setSecurityEnabled(false);*/
 	//	defaultWaitUnit = TimeUnit.HOURS;
 	//	defaultWaitTime = 1;
 	}

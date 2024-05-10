@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import static com.entityassist.enumerations.Operand.*;
 
 public class ResourceItemQueryBuilder
-		extends QueryBuilderTable<ResourceItemQueryBuilder, ResourceItem, java.lang.String>
+		extends QueryBuilderTable<ResourceItemQueryBuilder, ResourceItem, java.lang.String,ResourceItemSecurityTokenQueryBuilder>
 		implements IQueryBuilderClassifications<ResourceItemQueryBuilder, ResourceItem, java.lang.String>,
 		           IResourceItemQueryBuilder<ResourceItemQueryBuilder, ResourceItem>
 {

@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
@@ -18,12 +19,14 @@ import java.io.Serial;
  */
 @MappedSuperclass
 
-public abstract class WarehouseClassificationRelationshipTable<P extends WarehouseCoreTable<P, ?, java.lang.String>,
-		S extends WarehouseCoreTable<S, ?, java.lang.String>,
-		J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I>,
-		Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I>,
-		I extends java.lang.String>
-		extends WarehouseRelationshipTable<P, S, J, Q, I>
+public abstract class WarehouseClassificationRelationshipTable<
+		P extends WarehouseCoreTable<P, ?, java.lang.String,?>,
+		S extends WarehouseCoreTable<S, ?, java.lang.String,?>,
+		J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I,QS>,
+		Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I,?>,
+		I extends java.lang.String,
+		QS extends IWarehouseSecurityTable<QS,?>>
+		extends WarehouseRelationshipTable<P, S, J, Q, I,QS>
 		implements IWarehouseRelationshipClassificationTable<J, Q, P, S, I>
 {
 	

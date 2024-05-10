@@ -19,7 +19,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.guicedee.client.IGuiceContext.*;
@@ -45,7 +46,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Classification
-		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.lang.String>
+		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.lang.String, ClassificationSecurityToken>
 		implements IClassification<Classification, ClassificationQueryBuilder>
 {
 	@Serial

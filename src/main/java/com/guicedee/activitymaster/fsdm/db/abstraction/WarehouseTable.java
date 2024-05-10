@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IContainsActiveFlags;
@@ -20,10 +21,13 @@ import static com.guicedee.client.IGuiceContext.*;
  * @since 07 Dec 2016
  */
 @MappedSuperclass
-public abstract class WarehouseTable<J extends WarehouseTable<J, Q, I>,
-		Q extends QueryBuilderTable<Q, J, I>,
-		I extends java.lang.String>
-		extends WarehouseSCDTable<J, Q, I>
+public abstract class WarehouseTable<
+		J extends WarehouseTable<J, Q, I,S>,
+		Q extends QueryBuilderTable<Q, J, I,?>,
+		I extends java.lang.String,
+		S extends IWarehouseSecurityTable<S,?>
+		>
+		extends WarehouseSCDTable<J, Q, I,S>
 		implements IContainsActiveFlags<J>,
 		           IWarehouseTable<J, Q, I>
 {

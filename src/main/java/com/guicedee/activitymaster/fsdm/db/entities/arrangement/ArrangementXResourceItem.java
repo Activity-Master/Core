@@ -6,10 +6,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -18,6 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Arrangement", name = "ArrangementXResourceItem")
 @XmlRootElement
@@ -28,12 +31,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXResourceItem
 		extends WarehouseClassificationRelationshipTable<Arrangement,
 		ResourceItem,
 		ArrangementXResourceItem,
 		ArrangementXResourceItemQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ArrangementXResourceItemSecurityToken
+		>
 		implements Serializable
 {
 	
@@ -82,20 +88,10 @@ public class ArrangementXResourceItem
 		this.id = arrangementXResourceItemID;
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public ArrangementXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public List<ArrangementXResourceItemSecurityToken> getArrangementXResourceItemSecurityTokenList()
-	{
-		return this.arrangementXResourceItemSecurityTokenList;
 	}
 	
 	public ArrangementXResourceItem setArrangementXResourceItemSecurityTokenList(List<ArrangementXResourceItemSecurityToken> arrangementXResourceItemSecurityTokenList)
@@ -104,20 +100,10 @@ public class ArrangementXResourceItem
 		return this;
 	}
 	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
-	}
-	
 	public ArrangementXResourceItem setArrangementID(Arrangement arrangementID)
 	{
 		this.arrangementID = arrangementID;
 		return this;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return this.resourceItemID;
 	}
 	
 	public ArrangementXResourceItem setResourceItemID(ResourceItem resourceItemID)
@@ -126,38 +112,11 @@ public class ArrangementXResourceItem
 		return this;
 	}
 	
-	public List<ArrangementXResourceItemSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXResourceItem setSecurities(List<ArrangementXResourceItemSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ArrangementXResourceItem that = (ArrangementXResourceItem) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
 	@Override
 	public Arrangement getPrimary()
 	{

@@ -9,7 +9,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ActiveFlagXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ActiveFlag, Classification, ActiveFlagXClassificationQueryBuilder,
-		ActiveFlagXClassification, java.lang.String>
+		ActiveFlagXClassification, java.lang.String,ActiveFlagXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<WarehouseSCDTable, ActiveFlag> getPrimaryAttribute()

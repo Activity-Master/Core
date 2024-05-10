@@ -10,7 +10,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -35,7 +36,7 @@ public class ResourceItemXClassification
 		Classification,
 		ResourceItemXClassification,
 		ResourceItemXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String, ResourceItemXClassificationSecurityToken>
 		implements Serializable,
 		           IWarehouseRelationshipClassificationTable<ResourceItemXClassification, ResourceItemXClassificationQueryBuilder, ResourceItem, Classification, java.lang.String>
 {

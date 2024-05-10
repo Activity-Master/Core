@@ -53,7 +53,9 @@ import static com.guicedee.client.IGuiceContext.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedParty
-		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, java.lang.String>
+		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, java.lang.String,
+		InvolvedPartySecurityToken
+		>
 		implements IInvolvedParty<InvolvedParty, InvolvedPartyQueryBuilder>
 {
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());

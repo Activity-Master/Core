@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXInvolvedPartySecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -19,7 +19,7 @@ import java.io.Serial;
 
 @Access(AccessType.FIELD)
 public class EventXInvolvedPartySecurityToken
-		extends WarehouseSecurityTable<EventXInvolvedPartySecurityToken, EventXInvolvedPartySecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<EventXInvolvedPartySecurityToken, EventXInvolvedPartySecurityTokenQueryBuilder, String>
 {
 	
 	@Serial

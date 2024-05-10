@@ -5,7 +5,8 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXResourceItemSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -24,7 +25,7 @@ import java.io.Serial;
 
 @Access(AccessType.FIELD)
 public class EventXResourceItemSecurityToken
-		extends WarehouseSecurityTable<EventXResourceItemSecurityToken, EventXResourceItemSecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<EventXResourceItemSecurityToken, EventXResourceItemSecurityTokenQueryBuilder, String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

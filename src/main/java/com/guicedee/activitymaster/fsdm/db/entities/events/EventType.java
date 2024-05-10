@@ -34,7 +34,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class EventType
-		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, java.lang.String>
+		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, java.lang.String,EventTypesSecurityToken>
 		implements IEventType<EventType, EventTypeQueryBuilder>
 {
 	@Serial

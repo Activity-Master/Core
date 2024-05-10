@@ -13,7 +13,9 @@ public class InvolvedPartyXInvolvedPartyTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<InvolvedParty, InvolvedPartyType,
 		InvolvedPartyXInvolvedPartyTypeQueryBuilder,
 		InvolvedPartyXInvolvedPartyType,
-		java.lang.String>
+		java.lang.String,
+		InvolvedPartyXInvolvedPartyTypeSecurityTokenQueryBuilder
+		>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXInvolvedPartyType, InvolvedParty> getPrimaryAttribute()

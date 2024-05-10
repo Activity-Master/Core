@@ -35,7 +35,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyNameType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, java.lang.String>
+		extends WarehouseSCDNameDescriptionTable<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder, java.lang.String, InvolvedPartyNameTypeSecurityToken>
 		implements IInvolvedPartyNameType<InvolvedPartyNameType, InvolvedPartyNameTypeQueryBuilder>
 
 {

@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBui
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementType;
 
 public class ArrangementTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<ArrangementTypeQueryBuilder, ArrangementType, java.lang.String>
+		extends QueryBuilderSCDNameDescription<ArrangementTypeQueryBuilder, ArrangementType, java.lang.String,ArrangementTypeSecurityTokenQueryBuilder>
 		implements IArrangementTypesQueryBuilder<ArrangementTypeQueryBuilder, ArrangementType>
 {
 

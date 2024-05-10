@@ -5,7 +5,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists.QueryBui
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemType;
 
 public class ResourceItemTypeQueryBuilder
-		extends QueryBuilderSCDNameDescription<ResourceItemTypeQueryBuilder, ResourceItemType, java.lang.String>
+		extends QueryBuilderSCDNameDescription<ResourceItemTypeQueryBuilder, ResourceItemType, java.lang.String,ResourceItemTypeSecurityTokenQueryBuilder>
 		implements IResourceItemTypeQueryBuilder<ResourceItemTypeQueryBuilder, ResourceItemType>
 {
 

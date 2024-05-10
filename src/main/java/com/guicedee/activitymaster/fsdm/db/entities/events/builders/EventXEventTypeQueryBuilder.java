@@ -14,7 +14,9 @@ public class EventXEventTypeQueryBuilder
 		EventType,
 		EventXEventTypeQueryBuilder,
 		EventXEventType,
-		java.lang.String>
+		java.lang.String,
+		EventXEventTypeSecurityTokenQueryBuilder
+		>
 {
 	@Override
 	public SingularAttribute<EventXEventType, Event> getPrimaryAttribute()

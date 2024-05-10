@@ -5,10 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyNonOrganicQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -30,7 +30,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyNonOrganic
-		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, java.lang.String>
+		extends WarehouseTable<InvolvedPartyNonOrganic, InvolvedPartyNonOrganicQueryBuilder, java.lang.String,InvolvedPartyNonOrganicSecurityToken>
 {
 	
 	@Serial

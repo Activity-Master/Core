@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.rules;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.builders.RulesTypeXResourceItemSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 @Access(AccessType.FIELD)
 public class RulesTypeXResourceItemSecurityToken
-		extends WarehouseSecurityTable<RulesTypeXResourceItemSecurityToken, RulesTypeXResourceItemSecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<RulesTypeXResourceItemSecurityToken, RulesTypeXResourceItemSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	

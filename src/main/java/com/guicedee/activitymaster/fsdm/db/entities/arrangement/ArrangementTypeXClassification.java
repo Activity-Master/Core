@@ -11,10 +11,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -34,12 +36,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementTypeXClassification
 		extends WarehouseClassificationRelationshipTable<ArrangementType,
 		Classification,
 		ArrangementTypeXClassification,
 		ArrangementTypeXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ArrangementTypeXClassificationSecurityToken
+		>
 		implements Serializable
 {
 	
@@ -60,6 +65,7 @@ public class ArrangementTypeXClassification
 	
 	private ArrangementType arrangementID;
 	
+	@Getter
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -100,36 +106,10 @@ public class ArrangementTypeXClassification
 		return this;
 	}
 	
-	public List<ArrangementTypeXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementTypeXClassification setSecurities(List<ArrangementTypeXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ArrangementTypeXClassification that = (ArrangementTypeXClassification) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
 	}
 	
 	@Override

@@ -23,9 +23,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -46,8 +48,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class Arrangement
-		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, java.lang.String>
+		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, java.lang.String, ArrangementSecurityToken>
 		implements IArrangement<Arrangement, ArrangementQueryBuilder>
 {
 	@Serial
@@ -60,41 +63,50 @@ public class Arrangement
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
+	@Getter
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXClassification> classifications;
 	
+	@Getter
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXInvolvedParty> parties;
+	@Getter
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXResourceItem> resources;
+	@Getter
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<EventXArrangement> events;
 	
+	@Getter
 	@OneToMany(
 			mappedBy = "childArrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXArrangement> arrangementXArrangementList;
+	@Getter
 	@OneToMany(
 			mappedBy = "parentArrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXArrangement> arrangementXArrangementList1;
+	@Getter
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXProduct> products;
+	@Getter
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<ArrangementSecurityToken> securities;
 	
+	@Getter
 	@OneToMany(
 			fetch = FetchType.LAZY,
 			mappedBy = "arrangement")
@@ -174,20 +186,10 @@ public class Arrangement
 		return super.remove();
 	}
 	
-	public List<ArrangementXClassification> getClassifications()
-	{
-		return this.classifications;
-	}
-	
 	public Arrangement setClassifications(List<ArrangementXClassification> classifications)
 	{
 		this.classifications = classifications;
 		return this;
-	}
-	
-	public List<ArrangementXInvolvedParty> getParties()
-	{
-		return this.parties;
 	}
 	
 	public Arrangement setParties(List<ArrangementXInvolvedParty> parties)
@@ -196,20 +198,10 @@ public class Arrangement
 		return this;
 	}
 	
-	public List<ArrangementXResourceItem> getResources()
-	{
-		return this.resources;
-	}
-	
 	public Arrangement setResources(List<ArrangementXResourceItem> resources)
 	{
 		this.resources = resources;
 		return this;
-	}
-	
-	public List<EventXArrangement> getEvents()
-	{
-		return this.events;
 	}
 	
 	public Arrangement setEvents(List<EventXArrangement> events)
@@ -218,20 +210,10 @@ public class Arrangement
 		return this;
 	}
 	
-	public List<ArrangementXArrangement> getArrangementXArrangementList()
-	{
-		return this.arrangementXArrangementList;
-	}
-	
 	public Arrangement setArrangementXArrangementList(List<ArrangementXArrangement> arrangementXArrangementList)
 	{
 		this.arrangementXArrangementList = arrangementXArrangementList;
 		return this;
-	}
-	
-	public List<ArrangementXArrangement> getArrangementXArrangementList1()
-	{
-		return this.arrangementXArrangementList1;
 	}
 	
 	public Arrangement setArrangementXArrangementList1(List<ArrangementXArrangement> arrangementXArrangementList1)
@@ -240,20 +222,10 @@ public class Arrangement
 		return this;
 	}
 	
-	public List<ArrangementXProduct> getProducts()
-	{
-		return this.products;
-	}
-	
 	public Arrangement setProducts(List<ArrangementXProduct> products)
 	{
 		this.products = products;
 		return this;
-	}
-	
-	public List<ArrangementSecurityToken> getSecurities()
-	{
-		return this.securities;
 	}
 	
 	public Arrangement setSecurities(List<ArrangementSecurityToken> securities)
@@ -262,36 +234,10 @@ public class Arrangement
 		return this;
 	}
 	
-	public List<ArrangementXArrangementType> getTypes()
-	{
-		return this.types;
-	}
-	
 	public Arrangement setTypes(List<ArrangementXArrangementType> types)
 	{
 		this.types = types;
 		return this;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		Arrangement that = (Arrangement) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
 	}
 	
 	@Override

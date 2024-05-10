@@ -1,12 +1,24 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
+import com.guicedee.activitymaster.fsdm.SecurityTokenService;
+import com.guicedee.activitymaster.fsdm.SystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseCoreTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderCore;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
+import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
+import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
+
+import static com.guicedee.client.IGuiceContext.*;
 
 
 /**
@@ -17,9 +29,11 @@ import java.io.Serial;
  */
 @SuppressWarnings({"Duplicates", "unchecked"})
 @MappedSuperclass()
-public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
+public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>,
 		Q extends QueryBuilderCore<Q, J, I>,
-		I extends java.lang.String>
+		I extends java.lang.String,
+		S extends IWarehouseSecurityTable<S,?>
+		>
 		extends WarehouseBaseTable<J, Q, I>
 		implements IWarehouseCoreTable<J, Q, I>
 {
@@ -31,63 +45,55 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 	
 	}
 	
-	public void createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identityToken)
+	public void createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identity)
 	{
 		if (ActivityMasterConfiguration.get()
 		                               .isSecurityEnabled())
 		{
-			/*createDefaultAdministratorSecurityAccess(system, identity);
+			createDefaultAdministratorSecurityAccess(system, identity);
 			createDefaultEveryoneSecurityAccess(system, identity);
 			createDefaultEverywhereSecurityAccess(system, identity);
 			createDefaultSystemsSecurityAccess(system, identity);
 			createDefaultApplicationsSecurityAccess(system, identity);
 			createDefaultPluginsSecurityAccess(system, identity);
-			createDefaultGuestReadSecurityAccess(system, identity);*/
+			createDefaultGuestReadSecurityAccess(system, identity);
 		}
 	}
-	/*
 	public void updateSecurity(J newCoreTable, Systems system)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		List<S> exists = securities.findLinkedSecurityTokens(this)
-		                         //  .inActiveRange()
+		                           //  .inActiveRange()
 		                           .inDateRange()
 		                           .getAll();
 		List<S> persistNewTokens = new ArrayList<>();
-		
 		for (S exist : exists)
 		{
+			//audit security change
 			exist.setId(null);
+			
 			configureDefaultsForNewToken(exist, system, system);
 		}
-		
-		createDefaultAdministratorSecurityAccess(system);
-		createDefaultEveryoneSecurityAccess(system);
-		createDefaultEverywhereSecurityAccess(system);
-		createDefaultSystemsSecurityAccess(system);
-		createDefaultApplicationsSecurityAccess(system);
-		createDefaultPluginsSecurityAccess(system);
-		createDefaultGuestReadSecurityAccess(system);
 	}
 	
-	private S createDefaultAdministratorSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
+	private S createDefaultAdministratorSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
-		SecurityToken administrators = (SecurityToken) com.guicedee.client.IGuiceContext.get(SecurityTokenService.class)
+		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 		                                                           .getAdministratorsFolder(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
-				          //.inActiveRange(enterprise)
-				          .inDateRange()
-				          .setReturnFirst(true)
-				          .get();
+		                               //.inActiveRange(enterprise)
+		                               .inDateRange()
+		                               .setReturnFirst(true)
+		                               .get();
 		
 		if (exists.isEmpty())
 		{
-			ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+			ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 			                                               .getActivityMaster(system, identity);
 			stAdmin = configureDefaultsForNewToken(stAdmin, system, activityMasterSystem);
 			stAdmin.setSecurityTokenID(administrators);
@@ -104,13 +110,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultEveryoneSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
+	private S createDefaultEveryoneSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
-		S stAdmin = com.guicedee.client.IGuiceContext.get(findPersistentSecurityClass());
+		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getEveryoneGroup(system, identity);
 		
-		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder();
@@ -136,12 +142,12 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultEverywhereSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
+	private S createDefaultEverywhereSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
-		S stAdmin = com.guicedee.client.IGuiceContext.get(findPersistentSecurityClass());
+		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getEverywhereGroup(system, identity);
-		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
@@ -169,13 +175,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultSystemsSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
+	private S createDefaultSystemsSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
-		S stAdmin = com.guicedee.client.IGuiceContext.get(findPersistentSecurityClass());
+		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getSystemsFolder(system, identity);
 		
-		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
@@ -203,13 +209,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultApplicationsSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
+	private S createDefaultApplicationsSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
-		S stAdmin = com.guicedee.client.IGuiceContext.get(findPersistentSecurityClass());
+		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getApplicationsFolder(system, identity);
 		
-		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
@@ -237,13 +243,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultPluginsSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
+	private S createDefaultPluginsSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
-		S stAdmin = com.guicedee.client.IGuiceContext.get(findPersistentSecurityClass());
+		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getPluginsFolder(system, identity);
 		
-		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
@@ -270,13 +276,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	private S createDefaultGuestReadSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
+	private S createDefaultGuestReadSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
-		S stAdmin = com.guicedee.client.IGuiceContext.get(findPersistentSecurityClass());
+		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getGuestsFolder(system, identity);
 		
-		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 		                                               .getActivityMaster(system, identity);
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
@@ -322,13 +328,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		return stAdmin;
 	}
 	
-	public S createDefaultGuestNoSecurityAccess(ISystems<?,?> system, java.util.UUID... identityToken)
+	public S createDefaultGuestNoSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
-		S stAdmin = com.guicedee.client.IGuiceContext.get(findPersistentSecurityClass());
+		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getGuestsFolder(system, identity);
 		
-		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+		ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 		                                               .getActivityMaster(system, identity);
 		
 		@SuppressWarnings("rawtypes")
@@ -356,5 +362,5 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I>,
 		}
 		
 		return stAdmin;
-	}*/
+	}
 }

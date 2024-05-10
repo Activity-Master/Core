@@ -36,7 +36,8 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 		extends WarehouseClassificationRelationshipTypesTable<InvolvedParty, InvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken>
 		implements Serializable
 {
 	

@@ -23,10 +23,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseRelationshipTabl
  */
 public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P, ?, java.lang.String>,
 		S extends WarehouseBaseTable<S, ?, java.lang.String>,
-		J extends QueryBuilderRelationship<P, S, J, E, I>,
-		E extends WarehouseRelationshipTable<P, S, E, J, I>,
-		I extends java.lang.String>
-		extends QueryBuilderTable<J, E, I>
+		J extends QueryBuilderRelationship<P, S, J, E, I,QS>,
+		E extends WarehouseRelationshipTable<P, S, E, J, I,?>,
+		I extends java.lang.String,
+		QS extends QueryBuilderSecurities<QS,?,?>>
+		extends QueryBuilderTable<J, E, I,QS>
 		implements IQueryBuilderRelationships<J, E, P, S, I>
 {
 	public QueryBuilderRelationship()

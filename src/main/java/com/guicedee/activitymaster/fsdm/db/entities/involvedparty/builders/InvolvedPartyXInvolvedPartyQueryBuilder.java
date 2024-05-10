@@ -6,7 +6,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class InvolvedPartyXInvolvedPartyQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, InvolvedParty, InvolvedPartyXInvolvedPartyQueryBuilder,
-		InvolvedPartyXInvolvedParty, java.lang.String>
+		InvolvedPartyXInvolvedParty, java.lang.String,InvolvedPartyXInvolvedPartySecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXInvolvedParty, InvolvedParty> getPrimaryAttribute()

@@ -5,10 +5,11 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXAddressSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.Getter;
 
 import java.io.Serial;
 
@@ -17,13 +18,14 @@ import java.io.Serial;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Event", name = "EventXAddressSecurityToken")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
 public class EventXAddressSecurityToken
-		extends WarehouseSecurityTable<EventXAddressSecurityToken, EventXAddressSecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<EventXAddressSecurityToken, EventXAddressSecurityTokenQueryBuilder, String>
 {
 	
 	@Serial
@@ -58,20 +60,10 @@ public class EventXAddressSecurityToken
 		return "EventXAddressSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public EventXAddressSecurityToken setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public EventXAddress getBase()
-	{
-		return this.base;
 	}
 	
 	public EventXAddressSecurityToken setBase(EventXAddress base)

@@ -11,10 +11,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXCla
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -23,6 +25,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Address", name = "AddressXClassification")
 @XmlRootElement
@@ -33,12 +36,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class AddressXClassification
 		extends WarehouseClassificationRelationshipTable<Address,
 		Classification,
 		AddressXClassification,
 		AddressXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		AddressXClassificationSecurityToken>
 		implements Serializable
 {
 	
@@ -74,20 +79,10 @@ public class AddressXClassification
 		this.id = addressXClassificationID;
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public AddressXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public Address getAddressID()
-	{
-		return this.addressID;
 	}
 	
 	public AddressXClassification setAddressID(Address addressID)
@@ -96,36 +91,10 @@ public class AddressXClassification
 		return this;
 	}
 	
-	public List<AddressXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public AddressXClassification setSecurities(List<AddressXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		AddressXClassification that = (AddressXClassification) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
 	}
 	
 	@Override

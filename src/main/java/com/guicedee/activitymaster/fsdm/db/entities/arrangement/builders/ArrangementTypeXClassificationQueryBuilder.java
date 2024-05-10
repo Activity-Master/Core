@@ -8,7 +8,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class ArrangementTypeXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ArrangementType, Classification, ArrangementTypeXClassificationQueryBuilder,
-		ArrangementTypeXClassification, java.lang.String>
+		ArrangementTypeXClassification, java.lang.String,ArrangementTypeXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<ArrangementTypeXClassification, ArrangementType> getPrimaryAttribute()

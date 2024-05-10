@@ -32,6 +32,12 @@ public class SystemsSystem
 	@Inject
 	private Provider<ISystemsService<?>> systemsService;
 	
+	/**
+	 * Creates all the applicable systems that are required before the actual activity master system can be created.
+	 * After the user groups setup then security controls kick in
+	 * @param enterprise
+	 * @return
+	 */
 	@Override
 	public ISystems<?, ?> registerSystem(IEnterprise<?, ?> enterprise)
 	{

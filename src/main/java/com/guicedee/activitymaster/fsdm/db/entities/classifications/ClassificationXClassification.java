@@ -5,11 +5,12 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationXClassificationQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -29,12 +30,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of="id",callSuper = false)
 public class ClassificationXClassification
 		extends WarehouseClassificationRelationshipTable<Classification,
 		Classification,
 		ClassificationXClassification,
 		ClassificationXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ClassificationXClassificationSecurityToken>
 		implements Serializable
 {
 	
@@ -47,6 +50,7 @@ public class ClassificationXClassification
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
+	@Getter
 	@JoinColumn(name = "ChildClassificationID",
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
@@ -55,6 +59,7 @@ public class ClassificationXClassification
 	
 	private Classification childClassificationID;
 	
+	@Getter
 	@JoinColumn(name = "ParentClassificationID",
 	            referencedColumnName = "ClassificationID",
 	            nullable = false)
@@ -63,6 +68,7 @@ public class ClassificationXClassification
 	
 	private Classification parentClassificationID;
 	
+	@Getter
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -78,38 +84,11 @@ public class ClassificationXClassification
 		id = classificationXClassificationID;
 	}
 	
-	public List<ClassificationXClassificationSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
 	public ClassificationXClassification setSecurities(List<ClassificationXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ClassificationXClassification that = (ClassificationXClassification) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
 	@Override
 	public java.lang.String getId()
 	{
@@ -129,11 +108,6 @@ public class ClassificationXClassification
 		return getParentClassificationID();
 	}
 	
-	public Classification getParentClassificationID()
-	{
-		return parentClassificationID;
-	}
-	
 	public ClassificationXClassification setParentClassificationID(Classification parentClassificationID)
 	{
 		this.parentClassificationID = parentClassificationID;
@@ -144,11 +118,6 @@ public class ClassificationXClassification
 	public Classification getSecondary()
 	{
 		return getChildClassificationID();
-	}
-	
-	public Classification getChildClassificationID()
-	{
-		return childClassificationID;
 	}
 	
 	public ClassificationXClassification setChildClassificationID(Classification childClassificationID)

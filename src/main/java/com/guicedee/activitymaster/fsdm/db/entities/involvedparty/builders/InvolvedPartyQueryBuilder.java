@@ -13,7 +13,7 @@ import jakarta.persistence.criteria.JoinType;
 import static com.entityassist.enumerations.Operand.*;
 
 public class InvolvedPartyQueryBuilder
-		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, java.lang.String>
+		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, java.lang.String,InvolvedPartySecurityTokenQueryBuilder>
 		implements IInvolvedPartyQueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty>
 {
 	@Inject

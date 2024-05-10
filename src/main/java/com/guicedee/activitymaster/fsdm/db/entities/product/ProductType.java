@@ -14,7 +14,8 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -38,7 +39,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ProductType
-		extends WarehouseTable<ProductType, ProductTypeQueryBuilder, java.lang.String>
+		extends WarehouseTable<ProductType, ProductTypeQueryBuilder, java.lang.String, ProductTypeSecurityToken>
 		implements IProductType<ProductType, ProductTypeQueryBuilder>
 {
 	@Serial

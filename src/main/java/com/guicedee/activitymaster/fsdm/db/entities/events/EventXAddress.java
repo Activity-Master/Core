@@ -11,9 +11,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXAddressQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.Getter;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -22,6 +24,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Event", name = "EventXAddress")
 @XmlRootElement
@@ -38,7 +41,9 @@ public class EventXAddress
 		Address,
 		EventXAddress,
 		EventXAddressQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		EventXAddressSecurityToken
+		>
 {
 	
 	@Serial
@@ -80,20 +85,10 @@ public class EventXAddress
 		this.id = eventXAddressID;
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public EventXAddress setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public List<EventXAddressSecurityToken> getSecurities()
-	{
-		return this.securities;
 	}
 	
 	public EventXAddress setSecurities(List<EventXAddressSecurityToken> securities)
@@ -102,20 +97,10 @@ public class EventXAddress
 		return this;
 	}
 	
-	public Address getAddressID()
-	{
-		return this.addressID;
-	}
-	
 	public EventXAddress setAddressID(Address addressID)
 	{
 		this.addressID = addressID;
 		return this;
-	}
-	
-	public Event getEventID()
-	{
-		return this.eventID;
 	}
 	
 	public EventXAddress setEventID(Event eventID)

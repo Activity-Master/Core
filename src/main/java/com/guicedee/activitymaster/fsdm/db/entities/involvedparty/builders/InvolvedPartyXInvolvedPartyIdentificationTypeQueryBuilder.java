@@ -16,7 +16,8 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 		InvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
 		InvolvedPartyXInvolvedPartyIdentificationType,
-		java.lang.String>
+		java.lang.String,
+		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXInvolvedPartyIdentificationType, InvolvedParty> getPrimaryAttribute()

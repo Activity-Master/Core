@@ -1,9 +1,11 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementTypeXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -19,8 +21,9 @@ import java.io.Serializable;
 @XmlRootElement
 
 @Access(AccessType.FIELD)
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementTypeXClassificationSecurityToken
-		extends WarehouseSecurityTable<ArrangementTypeXClassificationSecurityToken, ArrangementTypeXClassificationSecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<ArrangementTypeXClassificationSecurityToken, ArrangementTypeXClassificationSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	
@@ -33,6 +36,7 @@ public class ArrangementTypeXClassificationSecurityToken
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
+	@Getter
 	@JoinColumn(name = "ArrangementTypeXClassificationID",
 	            referencedColumnName = "ArrangementTypeXClassificationID",
 	            nullable = false)
@@ -70,50 +74,10 @@ public class ArrangementTypeXClassificationSecurityToken
 		return this;
 	}
 	
-	public ArrangementTypeXClassification getBase()
-	{
-		return this.base;
-	}
-	
 	public ArrangementTypeXClassificationSecurityToken setBase(ArrangementTypeXClassification base)
 	{
 		this.base = base;
 		return this;
 	}
 	
-	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-		{
-			return true;
-		}
-		if (!(o instanceof ArrangementTypeXClassificationSecurityToken))
-		{
-			return false;
-		}
-		final ArrangementTypeXClassificationSecurityToken other = (ArrangementTypeXClassificationSecurityToken) o;
-		if (!other.canEqual(this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		return this$id == null ? other$id == null : this$id.equals(other$id);
-	}
-	
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof ArrangementTypeXClassificationSecurityToken;
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
-	}
 }

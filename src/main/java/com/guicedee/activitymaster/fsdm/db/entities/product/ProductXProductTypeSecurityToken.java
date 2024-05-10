@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.product;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.product.builders.ProductXProductTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -19,7 +20,7 @@ import java.io.Serial;
 
 @Access(AccessType.FIELD)
 public class ProductXProductTypeSecurityToken
-		extends WarehouseSecurityTable<ProductXProductTypeSecurityToken, ProductXProductTypeSecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<ProductXProductTypeSecurityToken, ProductXProductTypeSecurityTokenQueryBuilder, String>
 {
 	
 	@Serial

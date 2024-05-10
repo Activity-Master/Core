@@ -11,10 +11,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -23,6 +25,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Arrangement", name = "ArrangementXProduct")
 @XmlRootElement
@@ -33,12 +36,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXProduct
 		extends WarehouseClassificationRelationshipTable<Arrangement,
 		Product,
 		ArrangementXProduct,
 		ArrangementXProductQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ArrangementXProductSecurityToken
+		>
 		implements Serializable
 {
 	
@@ -78,20 +84,10 @@ public class ArrangementXProduct
 		this.id = arrangementXProductID;
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public ArrangementXProduct setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
 	}
 	
 	public ArrangementXProduct setArrangementID(Arrangement arrangementID)
@@ -100,20 +96,10 @@ public class ArrangementXProduct
 		return this;
 	}
 	
-	public Product getProductID()
-	{
-		return this.productID;
-	}
-	
 	public ArrangementXProduct setProductID(Product productID)
 	{
 		this.productID = productID;
 		return this;
-	}
-	
-	public List<ArrangementXProductSecurityToken> getSecurities()
-	{
-		return this.securities;
 	}
 	
 	public ArrangementXProduct setSecurities(List<ArrangementXProductSecurityToken> securities)
@@ -121,28 +107,6 @@ public class ArrangementXProduct
 		this.securities = securities;
 		return this;
 	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ArrangementXProduct that = (ArrangementXProduct) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
 	@Override
 	public Arrangement getPrimary()
 	{

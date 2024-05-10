@@ -13,13 +13,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.JdbcTypeCode;
 
 import java.io.Serial;
 import java.sql.Types;
 import java.util.List;
-import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -41,8 +42,10 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@EqualsAndHashCode(of = {"id"},callSuper = false)
 public class ActiveFlag
-		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.lang.String>
+		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.lang.String, ActiveFlagSecurityToken>
 		implements IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>
 {
 	@Serial
@@ -110,81 +113,44 @@ public class ActiveFlag
 	}
 	
 	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getName());
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ActiveFlag that = (ActiveFlag) o;
-		return getName().equals(that.getName());
-	}
-	
-	@Override
-	public String toString()
-	{
-		return getName();
-	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return id;
-	}
-	
-	
-	@Override
 	public ActiveFlag setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
 	}
 	
-	@Override
-	public Enterprise getEnterpriseID()
-	{
-		return enterpriseID;
-	}
 	
-	public ActiveFlag setEnterpriseID(IEnterprise<?, ?> enterpriseID)
+	public ActiveFlag setEnterpriseID(Enterprise enterpriseID)
 	{
-		this.enterpriseID = (Enterprise) enterpriseID;
+		this.enterpriseID = enterpriseID;
 		return this;
 	}
 	
 	@Override
-	public String getName()
-	{
-		return name;
-	}
-	
-	@Override
-	public ActiveFlag setName(String name)
+	public ActiveFlag setName(@NotNull @Size(min = 1,
+	                                         max = 100) String name)
 	{
 		this.name = name;
 		return this;
 	}
 	
 	@Override
-	public String getDescription()
-	{
-		return description;
-	}
-	
-	@Override
-	public ActiveFlag setDescription(String description)
+	public ActiveFlag setDescription(@NotNull @Size(min = 1,
+	                                                max = 100) String description)
 	{
 		this.description = description;
+		return this;
+	}
+	
+	public ActiveFlag setSecurities(List<ActiveFlagSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+	
+	public ActiveFlag setEnterpriseID(IEnterprise<?, ?> enterpriseID)
+	{
+		this.enterpriseID = (Enterprise) enterpriseID;
 		return this;
 	}
 	

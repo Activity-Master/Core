@@ -50,7 +50,7 @@ import static jakarta.persistence.FetchType.*;
 		property = "id")
 @Log
 public class ResourceItem
-		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.lang.String>
+		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.lang.String, ResourceItemSecurityToken>
 		implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
 {
 	@Serial

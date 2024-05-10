@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.involvedparty;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartySecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 @Access(AccessType.FIELD)
 public class InvolvedPartySecurityToken
-		extends WarehouseSecurityTable<InvolvedPartySecurityToken, InvolvedPartySecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<InvolvedPartySecurityToken, InvolvedPartySecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	

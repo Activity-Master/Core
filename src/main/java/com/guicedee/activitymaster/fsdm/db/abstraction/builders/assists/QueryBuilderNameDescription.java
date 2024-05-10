@@ -4,7 +4,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseNameDesc
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderCore;
 
 public abstract class QueryBuilderNameDescription<J extends QueryBuilderNameDescription<J, E, I>,
-		E extends WarehouseNameDescriptionTable<E, J, I>,
+		E extends WarehouseNameDescriptionTable<E, J, I,?>,
 		I extends java.lang.String>
 		extends QueryBuilderCore<J, E, I>
 {

@@ -46,7 +46,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Rules
-		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, java.lang.String>
+		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, java.lang.String,RulesSecurityToken>
 		implements IRules<Rules, RulesQueryBuilder>
 {
 	@Serial

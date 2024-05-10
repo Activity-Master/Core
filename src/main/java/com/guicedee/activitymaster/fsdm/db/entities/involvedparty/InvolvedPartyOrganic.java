@@ -7,7 +7,8 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -29,7 +30,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyOrganic
-		extends WarehouseTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, java.lang.String>
+		extends WarehouseTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, java.lang.String,InvolvedPartyOrganicSecurityToken>
 
 {
 	@Serial

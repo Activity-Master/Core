@@ -23,7 +23,7 @@ import static com.entityassist.enumerations.Operand.*;
  * @since 30 Apr 2017
  */
 public class SecurityTokenQueryBuilder
-		extends QueryBuilderTable<SecurityTokenQueryBuilder, SecurityToken, java.lang.String>
+		extends QueryBuilderTable<SecurityTokenQueryBuilder, SecurityToken, java.lang.String,SecurityTokensSecurityTokenQueryBuilder>
 		implements ISecurityTokenQueryBuilder<SecurityTokenQueryBuilder, SecurityToken>
 {
 	public SecurityTokenQueryBuilder findFolder(String securityTokenClassification, ISystems<?, ?> system, java.util.UUID... identityToken)

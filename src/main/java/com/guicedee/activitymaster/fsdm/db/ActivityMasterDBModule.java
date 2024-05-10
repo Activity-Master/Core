@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm.db;
 
 import bitronix.tm.TransactionManagerServices;
 import com.guicedee.activitymaster.fsdm.ActivityMasterStatics;
+import com.guicedee.client.Environment;
 import com.guicedee.guicedpersistence.btm.BTMConnectionBaseInfo;
 import com.guicedee.guicedpersistence.btm.BTMTransactionIsolation;
 import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
@@ -43,13 +44,24 @@ public class ActivityMasterDBModule
 		
 		return new BTMConnectionBaseInfo()
 				.setEnableJdbc4ConnectionTest(true)
-				.setMaxPoolSize(600)
+				.setMaxPoolSize(200)
 				.setMinPoolSize(1)
 				.setPrefill(false)
 				.setMaxIdleTime(10)
 				.setShareTransactionConnections(true)
 				.setAllowLocalTransactions(true)
+				.setUrl("jdbc:postgresql://localhost:5432/testdb")
+				//.setPersistenceUnitName("postgres")
 				.setTransactionIsolation(BTMTransactionIsolation.READ_COMMITTED.toString())
+				.setXa(true)
+				.setDriver("org.postgresql.Driver")
+				.setClassName("org.postgresql.xa.PGXADataSource")
+				//.setDriverClass("org.postgresql.xa.PGXADataSource")
+				.setUsername("postgres")
+				.setServerName("localhost")
+				.setDatabaseName("testdb")
+				//.setPort("5432")
+				.setPassword(Environment.getProperty("PG_PASSWORD","nopassword"))
 				;
 	}
 	

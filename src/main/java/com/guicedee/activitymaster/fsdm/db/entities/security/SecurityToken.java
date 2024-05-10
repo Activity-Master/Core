@@ -38,7 +38,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class SecurityToken
-		extends WarehouseTable<SecurityToken, SecurityTokenQueryBuilder, java.lang.String>
+		extends WarehouseTable<SecurityToken, SecurityTokenQueryBuilder, java.lang.String, SecurityTokensSecurityToken>
 		implements ISecurityToken<SecurityToken, SecurityTokenQueryBuilder>
 {
 	@Serial

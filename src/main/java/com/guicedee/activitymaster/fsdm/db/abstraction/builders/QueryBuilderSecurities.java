@@ -5,8 +5,9 @@
  */
 package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
+import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSecurity;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
@@ -22,9 +23,10 @@ import static com.entityassist.enumerations.Operand.*;
  * @author Marc Magon
  */
 public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J, E, I>,
-		E extends WarehouseSecurityTable<E, J, I>,
+		E extends IWarehouseSecurityTable<E, J, I>,
 		I extends java.lang.String>
 		extends QueryBuilderDefault<J, E, I>
+		implements IQueryBuilderSecurity<J,E,I>
 {
 	@SuppressWarnings("unchecked")
 	@NotNull

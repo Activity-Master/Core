@@ -6,10 +6,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseXClassificationQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -31,12 +32,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class EnterpriseXClassification
 		extends WarehouseClassificationRelationshipTable<Enterprise,
 		Classification,
 		EnterpriseXClassification,
 		EnterpriseXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		EnterpriseXClassificationSecurityToken
+		>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -85,28 +89,6 @@ public class EnterpriseXClassification
 		this.securities = securities;
 		return this;
 	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		EnterpriseXClassification that = (EnterpriseXClassification) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
 	@Override
 	public Enterprise getPrimary()
 	{

@@ -14,7 +14,8 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 		ResourceItemType,
 		ResourceItemXResourceItemTypeQueryBuilder,
 		ResourceItemXResourceItemType,
-		java.lang.String>
+		java.lang.String,
+		ResourceItemXResourceItemTypeSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<ResourceItemXResourceItemType, ResourceItem> getPrimaryAttribute()

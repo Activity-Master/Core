@@ -6,10 +6,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXGeo
 import com.guicedee.activitymaster.fsdm.db.entities.geography.Geography;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -18,6 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Address", name = "AddressXGeography")
 @XmlRootElement
@@ -28,12 +31,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class AddressXGeography
 		extends WarehouseClassificationRelationshipTable<Address,
 		Geography,
 		AddressXGeography,
 		AddressXGeographyQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		AddressXGeographySecurityToken
+		>
 		implements Serializable
 {
 	
@@ -76,20 +82,10 @@ public class AddressXGeography
 		this.id = addressXGeographyID;
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public AddressXGeography setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public Address getAddressID()
-	{
-		return this.addressID;
 	}
 	
 	public AddressXGeography setAddressID(Address addressID)
@@ -98,20 +94,10 @@ public class AddressXGeography
 		return this;
 	}
 	
-	public Geography getGeographyID()
-	{
-		return this.geographyID;
-	}
-	
 	public AddressXGeography setGeographyID(Geography geographyID)
 	{
 		this.geographyID = geographyID;
 		return this;
-	}
-	
-	public List<AddressXGeographySecurityToken> getSecurities()
-	{
-		return this.securities;
 	}
 	
 	public AddressXGeography setSecurities(List<AddressXGeographySecurityToken> securities)
@@ -119,28 +105,6 @@ public class AddressXGeography
 		this.securities = securities;
 		return this;
 	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		AddressXGeography that = (AddressXGeography) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
 	@Override
 	public Address getPrimary()
 	{

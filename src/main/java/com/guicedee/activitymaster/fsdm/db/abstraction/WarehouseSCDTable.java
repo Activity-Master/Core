@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -22,10 +23,13 @@ import java.io.Serial;
  */
 @MappedSuperclass
 
-public abstract class WarehouseSCDTable<J extends WarehouseSCDTable<J, Q, I>,
-		Q extends QueryBuilderSCD<Q, J, I>,
-		I extends java.lang.String>
-		extends WarehouseCoreTable<J, Q, I>
+public abstract class WarehouseSCDTable<
+		J extends WarehouseSCDTable<J, Q, I,S>,
+		Q extends QueryBuilderSCD<Q, J, I,?>,
+		I extends java.lang.String,
+		S extends IWarehouseSecurityTable<S,?>
+		>
+		extends WarehouseCoreTable<J, Q, I,S>
 		implements IWarehouseTable<J, Q, I>,
 		           IContainsActiveFlags<J>,
 		           IContainsEnterprise<J>,

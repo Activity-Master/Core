@@ -7,10 +7,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -19,6 +21,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
+@EqualsAndHashCode(of = "id",callSuper = false)
 @Entity
 @Table(name = "ActiveFlagXClassification",
        schema = "dbo")
@@ -31,11 +35,13 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ActiveFlagXClassification
-		extends WarehouseClassificationRelationshipTable<ActiveFlag,
+		extends WarehouseClassificationRelationshipTable<
+		ActiveFlag,
 		Classification,
 		ActiveFlagXClassification,
 		ActiveFlagXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ActiveFlagXClassificationSecurityToken>
 		implements Serializable
 {
 	
@@ -70,22 +76,10 @@ public class ActiveFlagXClassification
 	{
 		this.id = activeFlagXClassificationID;
 	}
-	
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public ActiveFlagXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public Systems getSystemID()
-	{
-		return this.systemID;
 	}
 	
 	public ActiveFlagXClassification setSystemID(Systems systemID)
@@ -94,37 +88,10 @@ public class ActiveFlagXClassification
 		return this;
 	}
 	
-	public List<ActiveFlagXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ActiveFlagXClassification setSecurities(List<ActiveFlagXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
-	}
-	
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ActiveFlagXClassification that = (ActiveFlagXClassification) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
 	}
 	
 	@Override

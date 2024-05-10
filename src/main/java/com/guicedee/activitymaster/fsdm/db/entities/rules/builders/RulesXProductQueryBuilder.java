@@ -13,7 +13,7 @@ import static com.entityassist.enumerations.Operand.*;
 
 public class RulesXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, Product, RulesXProductQueryBuilder,
-		RulesXProduct, java.lang.String>
+		RulesXProduct, java.lang.String,RulesXProductSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<RulesXProduct, Rules> getPrimaryAttribute()

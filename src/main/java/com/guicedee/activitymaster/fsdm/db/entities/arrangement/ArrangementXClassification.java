@@ -11,10 +11,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -23,6 +25,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
+@Getter
 @Entity
 @Table(schema = "Arrangement", name = "ArrangementXClassification")
 @XmlRootElement
@@ -33,12 +36,15 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXClassification
 		extends WarehouseClassificationRelationshipTable<Arrangement,
 		Classification,
 		ArrangementXClassification,
 		ArrangementXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		ArrangementXClassificationSecurityToken
+		>
 		implements Serializable
 {
 	
@@ -74,20 +80,10 @@ public class ArrangementXClassification
 		this.id = arrangementXClassificationID;
 	}
 	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
 	public ArrangementXClassification setId(java.lang.String id)
 	{
 		this.id = id;
 		return this;
-	}
-	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
 	}
 	
 	public ArrangementXClassification setArrangementID(Arrangement arrangementID)
@@ -96,38 +92,11 @@ public class ArrangementXClassification
 		return this;
 	}
 	
-	public List<ArrangementXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
 	public ArrangementXClassification setSecurities(List<ArrangementXClassificationSecurityToken> securities)
 	{
 		this.securities = securities;
 		return this;
 	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ArrangementXClassification that = (ArrangementXClassification) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
 	@Override
 	public Arrangement getPrimary()
 	{

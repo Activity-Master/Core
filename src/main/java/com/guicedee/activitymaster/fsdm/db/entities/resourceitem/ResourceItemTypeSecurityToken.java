@@ -5,7 +5,7 @@
  */
 package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -24,7 +24,7 @@ import java.io.Serial;
 
 @Access(AccessType.FIELD)
 public class ResourceItemTypeSecurityToken
-		extends WarehouseSecurityTable<ResourceItemTypeSecurityToken, ResourceItemTypeSecurityTokenQueryBuilder, java.lang.String>
+		extends IWarehouseSecurityTable<ResourceItemTypeSecurityToken, ResourceItemTypeSecurityTokenQueryBuilder, String>
 {
 	
 	@Serial

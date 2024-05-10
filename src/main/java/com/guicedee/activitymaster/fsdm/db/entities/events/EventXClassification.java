@@ -34,7 +34,9 @@ public class EventXClassification
 		Classification,
 		EventXClassification,
 		EventXClassificationQueryBuilder,
-		java.lang.String>
+		java.lang.String,
+		EventXClassificationSecurityToken
+		>
 {
 	
 	@Serial

@@ -9,7 +9,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 
 public class SystemsXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Systems, Classification, SystemsXClassificationQueryBuilder,
-		SystemsXClassification, java.lang.String>
+		SystemsXClassification, java.lang.String,SystemXClassificationSecurityTokenQueryBuilder>
 {
 	@SuppressWarnings("rawtypes")
 	@Override

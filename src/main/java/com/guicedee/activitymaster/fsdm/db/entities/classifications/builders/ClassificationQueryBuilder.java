@@ -10,9 +10,8 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTabl
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.*;
 
 
-
 public class ClassificationQueryBuilder
-		extends QueryBuilderTable<ClassificationQueryBuilder, Classification, java.lang.String>
+		extends QueryBuilderTable<ClassificationQueryBuilder, Classification, java.lang.String,ClassificationsSecurityTokenQueryBuilder>
 		implements IClassificationQueryBuilder<ClassificationQueryBuilder, Classification>,
 		           IQueryBuilderNamesAndDescriptions<ClassificationQueryBuilder, Classification, java.lang.String>
 

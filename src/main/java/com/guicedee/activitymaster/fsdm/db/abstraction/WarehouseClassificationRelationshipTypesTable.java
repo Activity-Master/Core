@@ -19,12 +19,13 @@ import java.lang.reflect.ParameterizedType;
 @MappedSuperclass
 
 public abstract class WarehouseClassificationRelationshipTypesTable<
-		P extends WarehouseCoreTable<P, ?, java.lang.String>,
-		S extends WarehouseCoreTable<S, ?, java.lang.String>,
-		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, I>,
-		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, I>,
-		I extends java.lang.String>
-		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I>
+		P extends WarehouseCoreTable<P, ?, java.lang.String,?>,
+		S extends WarehouseCoreTable<S, ?, java.lang.String,?>,
+		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, I,QS>,
+		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, I,?>,
+		I extends java.lang.String,
+		QS extends IWarehouseSecurityTable<QS,?,String>>
+		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I,QS>
 		implements IWarehouseRelationshipClassificationTypeTable<J, Q, P, S, I>
 {
 	

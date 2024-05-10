@@ -49,7 +49,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Product
-		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, java.lang.String>
+		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, java.lang.String, ProductSecurityToken>
 		implements IProduct<Product, ProductQueryBuilder>
 {
 	@Serial
