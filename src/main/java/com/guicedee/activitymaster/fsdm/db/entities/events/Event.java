@@ -15,7 +15,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.produ
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.Arrangement;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventQueryBuilder;
@@ -52,7 +52,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Event
-		extends WarehouseTable<Event, EventQueryBuilder, java.lang.String,EventSecurityToken>
+		extends WarehouseSCDTable<Event, EventQueryBuilder, String,EventSecurityToken>
 		implements IEvent<Event, EventQueryBuilder>
 {
 	

@@ -6,6 +6,5 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>,
 		E extends WarehouseCoreTable<E, J, I,?>,
 		I extends java.lang.String>
 		extends QueryBuilderDefault<J, E, I>
-
 {
 }

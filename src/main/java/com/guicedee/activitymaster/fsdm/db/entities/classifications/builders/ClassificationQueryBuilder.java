@@ -6,12 +6,12 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderNa
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationQueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
-import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.*;
 
 
 public class ClassificationQueryBuilder
-		extends QueryBuilderTable<ClassificationQueryBuilder, Classification, java.lang.String,ClassificationsSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<ClassificationQueryBuilder, Classification, String,ClassificationsSecurityTokenQueryBuilder>
 		implements IClassificationQueryBuilder<ClassificationQueryBuilder, Classification>,
 		           IQueryBuilderNamesAndDescriptions<ClassificationQueryBuilder, Classification, java.lang.String>
 

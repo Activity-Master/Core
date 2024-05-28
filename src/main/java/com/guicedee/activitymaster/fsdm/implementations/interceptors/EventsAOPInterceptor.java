@@ -6,6 +6,7 @@ import com.google.inject.name.Named;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.Event;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -82,7 +83,7 @@ public class EventsAOPInterceptor implements MethodInterceptor
 			event = eventService.createEvent(eventAnnotation.value(), system, identityToken);
 			eventThreads.set(event);
 			
-			previousEvent.addChild(event, eventAnnotation.parentHierarchyClassificationName(), null, system, identityToken);
+			previousEvent.addChild((IWarehouseTable<?, ?, String, ?>) event, eventAnnotation.parentHierarchyClassificationName(), null, system, identityToken);
 		}
 		Object o = null;
 		try

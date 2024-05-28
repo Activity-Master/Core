@@ -4,7 +4,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWare
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceData;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemDataQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -24,8 +24,8 @@ import java.util.Objects;
 @XmlRootElement
 @Access(AccessType.FIELD)
 public class ResourceItemData
-		extends WarehouseTable<ResourceItemData, ResourceItemDataQueryBuilder, java.lang.String, ResourceItemDataSecurityToken>
-		implements IResourceData<ResourceItemData, ResourceItemDataQueryBuilder>
+		extends WarehouseSCDTable<ResourceItemData, ResourceItemDataQueryBuilder, String, ResourceItemDataSecurityToken>
+		implements IResourceData<ResourceItemData, ResourceItemDataQueryBuilder,ResourceItemDataSecurityToken>
 {
 	
 	@Serial

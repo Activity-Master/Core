@@ -2,15 +2,14 @@ package com.guicedee.activitymaster.fsdm.db.entities.product;
 
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProduct;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProductType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementXProduct;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventXProduct;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXProduct;
@@ -49,8 +48,9 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Product
-		extends WarehouseSCDNameDescriptionTable<Product, ProductQueryBuilder, java.lang.String, ProductSecurityToken>
-		implements IProduct<Product, ProductQueryBuilder>
+		extends WarehouseSCDTable<Product, ProductQueryBuilder, String, ProductSecurityToken>
+		implements IProduct<Product, ProductQueryBuilder>,
+		           IWarehouseNameAndDescriptionTable<Product,ProductQueryBuilder,String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

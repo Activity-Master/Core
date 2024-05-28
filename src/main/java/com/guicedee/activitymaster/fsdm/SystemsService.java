@@ -29,7 +29,7 @@ public class SystemsService
 		implements ISystemsService<SystemsService>
 {
 	@Inject
-	private IEnterprise<?,?> enterprise;
+	private IEnterprise<?, ?> enterprise;
 	
 	@Inject
 	private IClassificationService<?> classificationService;
@@ -37,46 +37,47 @@ public class SystemsService
 	@Inject
 	private ISecurityTokenService<?> securityTokenService;
 	
-	public ISystems<?,?> get()
+	public ISystems<?, ?> get()
 	{
 		return new Systems();
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetActivityMaster")
-	public ISystems<?,?> getActivityMaster(@CacheKey ISystems<?,?> requestingSystem, @CacheKey java.util.UUID... identityToken)
+	public ISystems<?, ?> getActivityMaster(@CacheKey ISystems<?, ?> requestingSystem, @CacheKey java.util.UUID... identityToken)
 	{
 		return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
 	}
 	
 	@Override
 	@CacheResult(cacheName = "GetActivityMasterEnterprise")
-	public ISystems<?,?> getActivityMaster(@CacheKey IEnterprise<?,?> requestingSystem, java.util.UUID... identityToken)
+	public ISystems<?, ?> getActivityMaster(@CacheKey IEnterprise<?, ?> requestingSystem, java.util.UUID... identityToken)
 	{
 		return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
 	}
 	
 	@Transactional()
 	@Override
-	public boolean doesSystemExist(IEnterprise<?,?> enterprise, String systemName, java.util.UUID... identityToken)
+	public boolean doesSystemExist(IEnterprise<?, ?> enterprise, String systemName, java.util.UUID... identityToken)
 	{
 		return new Systems().builder()
 		                    .withName(systemName)
 		                    .withEnterprise(enterprise)
-		                    //    .inActiveRange()
+		                    .inActiveRange()
 		                    .inDateRange()
 		                    .getCount() > 0;
 	}
+	
 	@Transactional()
 	@CacheResult(cacheName = "FindSystemEnterpriseLevel")
 	@Override
-	public ISystems<?,?> findSystem(@CacheKey IEnterprise<?,?> enterprise, @CacheKey String systemName, java.util.UUID... identityToken)
+	public ISystems<?, ?> findSystem(@CacheKey IEnterprise<?, ?> enterprise, @CacheKey String systemName, java.util.UUID... identityToken)
 	{
 		Systems search = new Systems();
 		return search.builder()
 		             .withName(systemName)
 		             .withEnterprise(enterprise)
-		            // .inActiveRange()
+		             .inActiveRange()
 		             .inDateRange()
 		             //.canRead(enterprise, identityToken)
 		             .get()
@@ -86,14 +87,14 @@ public class SystemsService
 	@Transactional()
 	@CacheResult(cacheName = "FindSystemByIdentityClassification")
 	@Override
-	public ISystems<?,?> findSystem(@CacheKey ISystems<?,?> requestingSystem, @CacheKey String token, java.util.UUID... identityToken)
+	public ISystems<?, ?> findSystem(@CacheKey ISystems<?, ?> requestingSystem, @CacheKey String parentSystem, java.util.UUID... identityToken)
 	{
 		SystemsXClassification systemClassifications = new SystemsXClassification();
 		Classification identifyClassification = (Classification) classificationService.getIdentityType(requestingSystem, identityToken);
 		
 		return systemClassifications.builder()
-		                            .findLink(null,identifyClassification, token.toString())
-		                          //  .inActiveRange()
+		                            .findLink(null, identifyClassification, parentSystem.toString())
+		                            //  .inActiveRange()
 		                            .inDateRange()
 		                            .withEnterprise(enterprise)
 		                            .canRead(requestingSystem, identityToken)
@@ -104,7 +105,7 @@ public class SystemsService
 	
 	@Override
 	@Transactional()
-	public String registerNewSystem(IEnterprise<?,?> enterprise, ISystems<?,?> newSystem)
+	public String registerNewSystem(IEnterprise<?, ?> enterprise, ISystems<?, ?> newSystem)
 	{
 		//Create Security Token for the created system row
 		ISystems<?, ?> activityMasterSystem = getISystem(ActivityMasterSystemName);
@@ -125,27 +126,27 @@ public class SystemsService
 				activityMasterSystemUUID);
 		
 		UUID newSystemUUID = com.guicedee.client.IGuiceContext.get(SystemsService.class)
-		                                 .getSecurityIdentityToken(newSystem, activityMasterSystemUUID);
+		                                                      .getSecurityIdentityToken(newSystem, activityMasterSystemUUID);
 		newSystemsSecurityToken.createDefaultSecurity(activityMasterSystem, activityMasterSystemUUID);
 		
 		systemsToken.createDefaultSecurity(activityMasterSystem, activityMasterSystemUUID);
 		
 		
 		com.guicedee.client.IGuiceContext.get(SystemsSystem.class)
-		            .createInvolvedPartyForNewSystem(newSystem);
+		                                 .createInvolvedPartyForNewSystem(newSystem);
 		
 		return newSystemUUID.toString();
 	}
 	
 	@Override
-	public ISystems<?,?> create(IEnterprise<?,?> enterprise, String systemName, String systemDesc, java.util.UUID... identityToken)
+	public ISystems<?, ?> create(IEnterprise<?, ?> enterprise, String systemName, String systemDesc, java.util.UUID... identityToken)
 	{
-		return create(enterprise, systemName, systemDesc,systemName, identityToken);
+		return create(enterprise, systemName, systemDesc, systemName, identityToken);
 	}
-
+	
 	@Override
 	@Transactional()
-	public ISystems<?,?> create(IEnterprise<?, ?> enterprise, String systemName, String systemDesc, String historyName, java.util.UUID... identityToken)
+	public ISystems<?, ?> create(IEnterprise<?, ?> enterprise, String systemName, String systemDesc, String historyName, java.util.UUID... identityToken)
 	{
 		Systems newSystem = new Systems();
 		Optional<Systems> exists = newSystem.builder()
@@ -159,29 +160,32 @@ public class SystemsService
 			newSystem.setSystemHistoryName(historyName);
 			newSystem.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			newSystem.setActiveFlagID(activeFlag);
 			newSystem.persist();
 			
-			newSystem.createDefaultSecurity(newSystem, identityToken);
+			ISystems<?, ?> activityMaster;
+			activityMaster = getActivityMaster(enterprise);
+			newSystem.createDefaultSecurity(activityMaster, identityToken);
 		}
 		else
 		{
-			return findSystem(newSystem, systemName, identityToken);
+			return findSystem(enterprise, systemName, identityToken);
 		}
 		
 		return newSystem;
 	}
+	
 	@Transactional()
 	@CacheResult(cacheName = "SystemGetSecurityToken")
-	public ISecurityToken<?,?> getSecurityToken(@CacheKey String uuidIdentity, @CacheKey ISystems<?,?> system, java.util.UUID... identityToken)
+	public ISecurityToken<?, ?> getSecurityToken(@CacheKey String uuidIdentity, @CacheKey ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Optional<SecurityToken> token = new SecurityToken().builder()
 		                                                   .findBySecurityToken(uuidIdentity.toString(), enterprise)
 		                                                   .inActiveRange()
 		                                                   .inDateRange()
 		                                                   .withEnterprise(enterprise)
-		                                             //      .canRead(system, identityToken)
+		                                                   //      .canRead(system, identityToken)
 		                                                   .get();
 		if (token.isEmpty())
 		{
@@ -196,7 +200,7 @@ public class SystemsService
 	
 	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
 	@Override
-	public UUID getSecurityIdentityToken(@CacheKey ISystems<?,?> system, java.util.UUID... identityToken)
+	public UUID getSecurityIdentityToken(@CacheKey ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Optional<? extends IRelationshipValue<?, IClassification<?, ?>, ?>> systemToken = system.findClassification(SystemIdentity, system, identityToken);
 		if (systemToken.isEmpty())

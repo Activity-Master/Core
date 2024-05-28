@@ -3,7 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.entities.security;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlagSecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTokenQueryBuilder;
@@ -38,7 +38,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class SecurityToken
-		extends WarehouseTable<SecurityToken, SecurityTokenQueryBuilder, java.lang.String, SecurityTokensSecurityToken>
+		extends WarehouseSCDTable<SecurityToken, SecurityTokenQueryBuilder, String, SecurityTokensSecurityToken>
 		implements ISecurityToken<SecurityToken, SecurityTokenQueryBuilder>
 {
 	@Serial
@@ -214,7 +214,7 @@ public class SecurityToken
 	
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, SecurityToken, SecurityToken, java.lang.String> newLink, SecurityToken parent, SecurityToken child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, SecurityToken, SecurityToken, java.lang.String,?> newLink, SecurityToken parent, SecurityToken child, String value)
 	{
 		((SecurityTokenXSecurityToken) newLink).setParentSecurityTokenID(parent);
 		((SecurityTokenXSecurityToken) newLink).setChildSecurityTokenID(child);

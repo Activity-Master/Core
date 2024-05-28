@@ -33,6 +33,8 @@ module com.guicedee.activitymaster.fsdm {
 	requires com.entityassist;
 	
 	requires com.google.common;
+	
+	requires static lombok;
 
 	
 	requires jakarta.activation;
@@ -45,9 +47,6 @@ module com.guicedee.activitymaster.fsdm {
 	requires java.logging;
 	
 	requires com.google.guice;
-	
-	requires static lombok;
-	
 	requires org.hibernate.validator;
 	
 	requires com.guicedee.guicedhazelcast.hibernate;
@@ -97,7 +96,7 @@ module com.guicedee.activitymaster.fsdm {
 	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 	
 	provides IGuicePreStartup with FSDMHazelcastPreStartup;
-	provides IGuicePostStartup with ActivityMasterPostStartup;
+	provides IGuicePostStartup with ActivityMasterPostStartup,DataCleanupPostStartup;
 	
 	
 	uses IOnSystemUpdate;
@@ -109,13 +108,13 @@ module com.guicedee.activitymaster.fsdm {
 	opens com.guicedee.activitymaster.fsdm.implementations to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography;
 	opens com.guicedee.activitymaster.fsdm.db to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind,net.bytebuddy;
 	opens com.guicedee.activitymaster.fsdm.db.abstraction to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind,net.bytebuddy;
-	opens com.guicedee.activitymaster.fsdm.db.abstraction.assists to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind,net.bytebuddy;
+	//opens com.guicedee.activitymaster.fsdm.db.abstraction.assists to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind,net.bytebuddy;
 	
 	exports com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 	opens com.guicedee.activitymaster.fsdm.db.abstraction.builders to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind,net.bytebuddy;
 	
-	exports com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists;
-	opens com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client,com.fasterxml.jackson.databind,net.bytebuddy;
+//	exports com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists;
+//	opens com.guicedee.activitymaster.fsdm.db.abstraction.builders.assists to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client,com.fasterxml.jackson.databind,net.bytebuddy;
 	
 	
 	opens com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography,net.bytebuddy;

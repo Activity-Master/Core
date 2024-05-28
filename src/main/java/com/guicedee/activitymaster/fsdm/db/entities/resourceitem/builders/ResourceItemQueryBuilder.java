@@ -4,7 +4,7 @@ import com.entityassist.querybuilder.builders.JoinExpression;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemQueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import static com.entityassist.enumerations.Operand.*;
 
 public class ResourceItemQueryBuilder
-		extends QueryBuilderTable<ResourceItemQueryBuilder, ResourceItem, java.lang.String,ResourceItemSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<ResourceItemQueryBuilder, ResourceItem, String,ResourceItemSecurityTokenQueryBuilder>
 		implements IQueryBuilderClassifications<ResourceItemQueryBuilder, ResourceItem, java.lang.String>,
 		           IResourceItemQueryBuilder<ResourceItemQueryBuilder, ResourceItem>
 {

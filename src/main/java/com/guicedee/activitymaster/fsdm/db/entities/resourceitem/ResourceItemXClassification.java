@@ -38,7 +38,7 @@ public class ResourceItemXClassification
 		ResourceItemXClassificationQueryBuilder,
 		java.lang.String, ResourceItemXClassificationSecurityToken>
 		implements Serializable,
-		           IWarehouseRelationshipClassificationTable<ResourceItemXClassification, ResourceItemXClassificationQueryBuilder, ResourceItem, Classification, java.lang.String>
+		           IWarehouseRelationshipClassificationTable<ResourceItemXClassification, ResourceItemXClassificationQueryBuilder, ResourceItem, Classification, java.lang.String,ResourceItemXClassificationSecurityToken>
 {
 	
 	@Serial

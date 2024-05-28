@@ -1,8 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseNameAndDescriptionTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemTypeQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -36,8 +37,9 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ResourceItemType
-		extends WarehouseSCDNameDescriptionTable<ResourceItemType, ResourceItemTypeQueryBuilder, java.lang.String, ResourceItemTypeSecurityToken>
-		implements IResourceItemType<ResourceItemType, ResourceItemTypeQueryBuilder>
+		extends WarehouseSCDTable<ResourceItemType, ResourceItemTypeQueryBuilder, String, ResourceItemTypeSecurityToken>
+		implements IResourceItemType<ResourceItemType, ResourceItemTypeQueryBuilder>,
+		           IWarehouseNameAndDescriptionTable<ResourceItemType,ResourceItemTypeQueryBuilder,String>
 {
 	
 	@Serial

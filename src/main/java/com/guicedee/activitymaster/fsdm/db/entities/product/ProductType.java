@@ -1,11 +1,12 @@
 package com.guicedee.activitymaster.fsdm.db.entities.product;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseNameAndDescriptionTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProductType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.product.builders.ProductTypeQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -39,8 +40,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ProductType
-		extends WarehouseTable<ProductType, ProductTypeQueryBuilder, java.lang.String, ProductTypeSecurityToken>
-		implements IProductType<ProductType, ProductTypeQueryBuilder>
+		extends WarehouseSCDTable<ProductType, ProductTypeQueryBuilder, String, ProductTypeSecurityToken>
+		implements IProductType<ProductType, ProductTypeQueryBuilder>,
+		           IWarehouseNameAndDescriptionTable<ProductType,ProductTypeQueryBuilder,String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

@@ -11,7 +11,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resou
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.Arrangement;
 import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
@@ -46,7 +46,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Rules
-		extends WarehouseSCDNameDescriptionTable<Rules, RulesQueryBuilder, java.lang.String,RulesSecurityToken>
+		extends WarehouseSCDTable<Rules, RulesQueryBuilder, String,RulesSecurityToken>
 		implements IRules<Rules, RulesQueryBuilder>
 {
 	@Serial
@@ -248,7 +248,7 @@ public class Rules
 	
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Rules, Rules, java.lang.String> newLink, Rules parent, Rules child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Rules, Rules, java.lang.String,?> newLink, Rules parent, Rules child, String value)
 	{
 		RulesXRules r = (RulesXRules) newLink;
 		r.setParentRulesID(parent);

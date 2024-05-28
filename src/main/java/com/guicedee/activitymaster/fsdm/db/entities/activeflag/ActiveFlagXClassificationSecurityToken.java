@@ -1,14 +1,13 @@
 package com.guicedee.activitymaster.fsdm.db.entities.activeflag;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders.ActiveFlagXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 
 /**
@@ -16,8 +15,6 @@ import java.io.Serializable;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
-@EqualsAndHashCode(of = {"id"},callSuper = false)
 @Entity
 @Table(name = "ActiveFlagXClassificationSecurityToken",
        schema = "dbo")
@@ -25,7 +22,7 @@ import java.io.Serializable;
 
 @Access(AccessType.FIELD)
 public class ActiveFlagXClassificationSecurityToken
-		extends IWarehouseSecurityTable<ActiveFlagXClassificationSecurityToken, ActiveFlagXClassificationSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ActiveFlagXClassificationSecurityToken, ActiveFlagXClassificationSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	
@@ -70,5 +67,37 @@ public class ActiveFlagXClassificationSecurityToken
 	{
 		this.base = base;
 		return this;
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	public ActiveFlagXClassification getBase()
+	{
+		return base;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ActiveFlagXClassificationSecurityToken that = (ActiveFlagXClassificationSecurityToken) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

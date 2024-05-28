@@ -1,11 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db.entities.activeflag;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders.ActiveFlagSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -20,10 +18,8 @@ import java.io.Serializable;
        schema = "dbo")
 @XmlRootElement
 @Access(AccessType.FIELD)
-@Getter
-@Setter
 public class ActiveFlagSecurityToken
-		extends IWarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	
@@ -48,5 +44,29 @@ public class ActiveFlagSecurityToken
 	public ActiveFlagSecurityToken()
 	{
 	
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public ActiveFlagSecurityToken setId(String id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public ActiveFlag getBase()
+	{
+		return base;
+	}
+	
+	public ActiveFlagSecurityToken setBase(ActiveFlag base)
+	{
+		this.base = base;
+		return this;
 	}
 }

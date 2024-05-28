@@ -5,11 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXArrangementTypeQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -29,7 +28,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXArrangementType
 		extends WarehouseClassificationRelationshipTypesTable<Arrangement,
 		ArrangementType,
@@ -46,19 +44,16 @@ public class ArrangementXArrangementType
 	        name = "ArrangementXArrangementTypeID")
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
-	@Getter
 	@ManyToOne
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID")
 	
 	private Arrangement arrangement;
-	@Getter
 	@JoinColumn(name = "ArrangementTypeID",
 	            referencedColumnName = "ArrangementTypeID")
 	@ManyToOne()
 	
 	private ArrangementType type;
-	@Getter
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -113,5 +108,41 @@ public class ArrangementXArrangementType
 	public ArrangementType getSecondary()
 	{
 		return getType();
+	}
+	
+	public Arrangement getArrangement()
+	{
+		return arrangement;
+	}
+	
+	public ArrangementType getType()
+	{
+		return type;
+	}
+	
+	public List<ArrangementXArrangementTypeSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ArrangementXArrangementType that = (ArrangementXArrangementType) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

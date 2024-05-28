@@ -7,11 +7,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -30,7 +30,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXRulesType
 		extends WarehouseClassificationRelationshipTable<Arrangement,
 		RulesType,
@@ -43,7 +42,7 @@ public class ArrangementXRulesType
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	@Getter
+
 	@Id
 	
 	@Column(nullable = false,
@@ -56,7 +55,6 @@ public class ArrangementXRulesType
 			fetch = FetchType.LAZY)
 	private List<ArrangementXRulesTypeSecurityToken> arrangementXRulesSecurityTokenList;
 	
-	@Getter
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID",
 	            nullable = false)
@@ -65,8 +63,6 @@ public class ArrangementXRulesType
 	
 	private Arrangement arrangement;
 	
-	@Setter
-	@Getter
 	@JoinColumn(name = "RulesTypeID",
 	            referencedColumnName = "RulesTypeID",
 	            nullable = false)
@@ -75,7 +71,6 @@ public class ArrangementXRulesType
 	
 	private RulesType rulesTypeID;
 	
-	@Getter
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -130,5 +125,64 @@ public class ArrangementXRulesType
 	public RulesType getSecondary()
 	{
 		return getRulesTypeID();
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	public List<ArrangementXRulesTypeSecurityToken> getArrangementXRulesSecurityTokenList()
+	{
+		return arrangementXRulesSecurityTokenList;
+	}
+	
+	public ArrangementXRulesType setArrangementXRulesSecurityTokenList(List<ArrangementXRulesTypeSecurityToken> arrangementXRulesSecurityTokenList)
+	{
+		this.arrangementXRulesSecurityTokenList = arrangementXRulesSecurityTokenList;
+		return this;
+	}
+	
+	public Arrangement getArrangement()
+	{
+		return arrangement;
+	}
+	
+	public RulesType getRulesTypeID()
+	{
+		return rulesTypeID;
+	}
+	
+	public ArrangementXRulesType setRulesTypeID(RulesType rulesTypeID)
+	{
+		this.rulesTypeID = rulesTypeID;
+		return this;
+	}
+	
+	public List<ArrangementXRulesTypeSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ArrangementXRulesType that = (ArrangementXRulesType) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

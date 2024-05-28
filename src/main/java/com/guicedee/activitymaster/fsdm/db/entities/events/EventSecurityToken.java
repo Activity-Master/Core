@@ -1,26 +1,25 @@
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
 
 import java.io.Serial;
+import java.util.Objects;
 
 /**
  * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
 @Entity
 @Table(schema = "Event", name = "EventSecurityToken")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
 public class EventSecurityToken
-		extends IWarehouseSecurityTable<EventSecurityToken, EventSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<EventSecurityToken, EventSecurityTokenQueryBuilder, String>
 {
 	
 	@Serial
@@ -67,37 +66,35 @@ public class EventSecurityToken
 		return this;
 	}
 	
-	public boolean equals(final Object o)
+	@Override
+	public String getId()
 	{
-		if (o == this)
+		return id;
+	}
+	
+	public Event getBase()
+	{
+		return base;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof EventSecurityToken))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final EventSecurityToken other = (EventSecurityToken) o;
-		if (!other.canEqual(this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		return this$id == null ? other$id == null : this$id.equals(other$id);
+		EventSecurityToken that = (EventSecurityToken) o;
+		return Objects.equals(getId(), that.getId());
 	}
 	
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof EventSecurityToken;
-	}
-	
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hashCode(getId());
 	}
 }

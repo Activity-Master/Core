@@ -25,7 +25,7 @@ public abstract class QueryBuilderRelationshipClassificationTypes<
 		J extends QueryBuilderRelationshipClassificationTypes<P, S, J, E, I,QS>,
 		E extends WarehouseClassificationRelationshipTypesTable<P, S, E, J, I,?>,
 		I extends java.lang.String,
-		QS extends QueryBuilderSecurities<QS,?,?>
+		QS extends QueryBuilderSecurities<QS,?,I>
 		>
 		extends QueryBuilderRelationshipClassification<P, S, J, E, I,QS>
 		implements IQueryBuilderClassifications<J, E, I>

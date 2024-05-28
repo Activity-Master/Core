@@ -1,8 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db.entities.involvedparty;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseNameAndDescriptionTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyType;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyTypeQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -36,8 +37,9 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedPartyType
-		extends WarehouseSCDNameDescriptionTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, java.lang.String,InvolvedPartyTypeSecurityToken>
-		implements IInvolvedPartyType<InvolvedPartyType, InvolvedPartyTypeQueryBuilder>
+		extends WarehouseSCDTable<InvolvedPartyType, InvolvedPartyTypeQueryBuilder, String,InvolvedPartyTypeSecurityToken>
+		implements IInvolvedPartyType<InvolvedPartyType, InvolvedPartyTypeQueryBuilder>,
+		           IWarehouseNameAndDescriptionTable<InvolvedPartyType,InvolvedPartyTypeQueryBuilder,String>
 {
 	
 	@Serial

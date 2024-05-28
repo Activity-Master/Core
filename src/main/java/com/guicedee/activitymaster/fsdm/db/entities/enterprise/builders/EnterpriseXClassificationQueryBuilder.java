@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRelationshipTable;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
@@ -12,7 +12,7 @@ public class EnterpriseXClassificationQueryBuilder
 		EnterpriseXClassification, java.lang.String,EnterpriseXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
-	public SingularAttribute<WarehouseSCDTable, Enterprise> getPrimaryAttribute()
+	public SingularAttribute<WarehouseTable, Enterprise> getPrimaryAttribute()
 	{
 		return EnterpriseXClassification_.enterpriseID;
 	}

@@ -1,8 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
 import com.entityassist.querybuilder.QueryBuilderSCD;
-import com.google.inject.persist.Transactional;
-import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderClassifications;
+import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +13,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 		E extends WarehouseBaseTable<E, J, I>,
 		I extends java.lang.String>
 		extends QueryBuilderSCD<J, E, I>
-		implements IQueryBuilderClassifications<J, E, I>
+		implements IQueryBuilderDefault<J, E, I>
 {
 	public QueryBuilderDefault()
 	{
@@ -30,13 +29,13 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 		if (entity.getId() == null)
 		{
 			//noinspection unchecked
-			entity.setId((I) UUID.randomUUID().toString());
+			entity.setId((I) UUID.randomUUID()
+			                     .toString());
 		}
 		return super.onCreate(entity);
 	}
 	
 	@Override
-	@Transactional()
 	public @NotNull J persist(E entity)
 	{
 		return super.persist(entity);

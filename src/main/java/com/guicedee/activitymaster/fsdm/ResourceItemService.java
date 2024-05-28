@@ -44,7 +44,7 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public IResourceData<?, ?> getData()
+	public IResourceData<?, ?,?> getData()
 	{
 		return new ResourceItemData();
 	}
@@ -262,7 +262,7 @@ public class ResourceItemService
 	}
 	
 	@Override
-	public byte[] getDataForResourceItemValue(IRelationshipValue<IResourceItem<?, ?>, IResourceData<?, ?>, ?> data)
+	public byte[] getDataForResourceItemValue(IRelationshipValue<IResourceItem<?, ?>, IResourceData<?, ?,?>, ?> data)
 	{
 		ResourceItemData d = (ResourceItemData) data.getSecondary();
 		return d.getResourceItemData();

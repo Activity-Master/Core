@@ -10,10 +10,10 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXArrangementQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -32,7 +32,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXArrangement
 		extends WarehouseClassificationRelationshipTable<Arrangement,
 		Arrangement,
@@ -137,5 +136,26 @@ public class ArrangementXArrangement
 	public Arrangement getSecondary()
 	{
 		return getChildArrangementID();
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ArrangementXArrangement that = (ArrangementXArrangement) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

@@ -13,7 +13,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resou
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventXArrangement;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
@@ -23,11 +23,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -48,9 +47,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of = "id", callSuper = false)
+
 public class Arrangement
-		extends WarehouseTable<Arrangement, ArrangementQueryBuilder, java.lang.String, ArrangementSecurityToken>
+		extends WarehouseSCDTable<Arrangement, ArrangementQueryBuilder, String, ArrangementSecurityToken>
 		implements IArrangement<Arrangement, ArrangementQueryBuilder>
 {
 	@Serial
@@ -63,50 +62,50 @@ public class Arrangement
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXClassification> classifications;
 	
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXInvolvedParty> parties;
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXResourceItem> resources;
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<EventXArrangement> events;
 	
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "childArrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXArrangement> arrangementXArrangementList;
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "parentArrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXArrangement> arrangementXArrangementList1;
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "arrangementID",
 			fetch = FetchType.LAZY)
 	private List<ArrangementXProduct> products;
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
 	private List<ArrangementSecurityToken> securities;
 	
-	@Getter
+	
 	@OneToMany(
 			fetch = FetchType.LAZY,
 			mappedBy = "arrangement")
@@ -260,7 +259,7 @@ public class Arrangement
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Arrangement, Arrangement, java.lang.String> newLink, Arrangement parent, Arrangement child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Arrangement, Arrangement, java.lang.String,?> newLink, Arrangement parent, Arrangement child, String value)
 	{
 		ArrangementXArrangement axa = (ArrangementXArrangement) newLink;
 		axa.setParentArrangementID(parent);
@@ -332,5 +331,93 @@ public class Arrangement
 		axi.setInvolvedPartyID((InvolvedParty) secondary);
 		axi.setClassificationID(classificationValue);
 		axi.setValue(value);
+	}
+	
+	public List<ArrangementXClassification> getClassifications()
+	{
+		return classifications;
+	}
+	
+	public List<ArrangementXInvolvedParty> getParties()
+	{
+		return parties;
+	}
+	
+	public List<ArrangementXResourceItem> getResources()
+	{
+		return resources;
+	}
+	
+	public List<EventXArrangement> getEvents()
+	{
+		return events;
+	}
+	
+	public List<ArrangementXArrangement> getArrangementXArrangementList()
+	{
+		return arrangementXArrangementList;
+	}
+	
+	public List<ArrangementXArrangement> getArrangementXArrangementList1()
+	{
+		return arrangementXArrangementList1;
+	}
+	
+	public List<ArrangementXProduct> getProducts()
+	{
+		return products;
+	}
+	
+	public List<ArrangementSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	public List<ArrangementXArrangementType> getTypes()
+	{
+		return types;
+	}
+	
+	public List<ArrangementXRules> getRules()
+	{
+		return rules;
+	}
+	
+	public Arrangement setRules(List<ArrangementXRules> rules)
+	{
+		this.rules = rules;
+		return this;
+	}
+	
+	public List<ArrangementXRulesType> getRuleTypes()
+	{
+		return ruleTypes;
+	}
+	
+	public Arrangement setRuleTypes(List<ArrangementXRulesType> ruleTypes)
+	{
+		this.ruleTypes = ruleTypes;
+		return this;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Arrangement that = (Arrangement) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

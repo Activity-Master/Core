@@ -7,12 +7,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -21,8 +20,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
-@EqualsAndHashCode(of = "id",callSuper = false)
 @Entity
 @Table(name = "ActiveFlagXClassification",
        schema = "dbo")
@@ -104,5 +101,43 @@ public class ActiveFlagXClassification
 	public Classification getSecondary()
 	{
 		return getClassificationID();
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public Systems getSystemID()
+	{
+		return systemID;
+	}
+	
+	public List<ActiveFlagXClassificationSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ActiveFlagXClassification that = (ActiveFlagXClassification) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

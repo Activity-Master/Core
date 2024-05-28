@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.security.builders;
 
+import com.entityassist.services.querybuilders.IQueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderEnterprise;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
@@ -9,7 +10,8 @@ import static com.entityassist.enumerations.Operand.*;
 
 public class SecurityTokensSecurityTokenQueryBuilder
 		extends QueryBuilderSecurities<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, java.lang.String>
-		implements IQueryBuilderEnterprise<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, java.lang.String>
+		implements IQueryBuilderEnterprise<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, java.lang.String>,
+		           IQueryBuilderSCD<SecurityTokensSecurityTokenQueryBuilder,SecurityTokensSecurityToken,String>
 {
 	public SecurityTokensSecurityTokenQueryBuilder findBySecurityToken(SecurityToken fromToken, SecurityToken forToken)
 	{

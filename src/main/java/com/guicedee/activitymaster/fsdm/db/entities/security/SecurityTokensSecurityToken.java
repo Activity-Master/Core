@@ -1,14 +1,13 @@
 package com.guicedee.activitymaster.fsdm.db.entities.security;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTokensSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Marc Magon
@@ -18,13 +17,11 @@ import java.io.Serializable;
 @Entity
 @Table(schema = "Security", name = "SecurityTokensSecurityToken")
 @XmlRootElement
-@Getter
-@Setter
 
 @Access(AccessType.FIELD)
 public class SecurityTokensSecurityToken
-		extends IWarehouseSecurityTable<SecurityTokensSecurityToken,
-		SecurityTokensSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<SecurityTokensSecurityToken,
+				SecurityTokensSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	
@@ -50,4 +47,48 @@ public class SecurityTokensSecurityToken
 	
 	}
 	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	@Override
+	public SecurityTokensSecurityToken setId(String id)
+	{
+		this.id = id;
+		return this;
+	}
+	
+	public SecurityToken getBase()
+	{
+		return base;
+	}
+	
+	public SecurityTokensSecurityToken setBase(SecurityToken base)
+	{
+		this.base = base;
+		return this;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		SecurityTokensSecurityToken that = (SecurityTokensSecurityToken) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
+	}
 }

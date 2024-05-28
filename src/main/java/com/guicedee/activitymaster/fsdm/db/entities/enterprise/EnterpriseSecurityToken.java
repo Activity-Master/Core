@@ -1,14 +1,13 @@
 package com.guicedee.activitymaster.fsdm.db.entities.enterprise;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 
 /**
@@ -16,16 +15,14 @@ import java.io.Serializable;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
 @Entity
 @Table(name = "EnterpriseSecurityToken",
        schema = "dbo")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
-@EqualsAndHashCode(of="id",callSuper = false)
 public class EnterpriseSecurityToken
-		extends IWarehouseSecurityTable<EnterpriseSecurityToken, EnterpriseSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<EnterpriseSecurityToken, EnterpriseSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	
@@ -71,5 +68,37 @@ public class EnterpriseSecurityToken
 	{
 		this.base = base;
 		return this;
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	public Enterprise getBase()
+	{
+		return base;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		EnterpriseSecurityToken that = (EnterpriseSecurityToken) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

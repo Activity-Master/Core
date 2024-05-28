@@ -1,14 +1,13 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementTypeXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Marc Magon
@@ -19,11 +18,9 @@ import java.io.Serializable;
 @Table(schema = "Arrangement",
        name = "ArrangementTypeXClassificationSecurityToken")
 @XmlRootElement
-
 @Access(AccessType.FIELD)
-@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementTypeXClassificationSecurityToken
-		extends IWarehouseSecurityTable<ArrangementTypeXClassificationSecurityToken, ArrangementTypeXClassificationSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ArrangementTypeXClassificationSecurityToken, ArrangementTypeXClassificationSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	
@@ -36,7 +33,6 @@ public class ArrangementTypeXClassificationSecurityToken
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
-	@Getter
 	@JoinColumn(name = "ArrangementTypeXClassificationID",
 	            referencedColumnName = "ArrangementTypeXClassificationID",
 	            nullable = false)
@@ -80,4 +76,29 @@ public class ArrangementTypeXClassificationSecurityToken
 		return this;
 	}
 	
+	public ArrangementTypeXClassification getBase()
+	{
+		return base;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ArrangementTypeXClassificationSecurityToken that = (ArrangementTypeXClassificationSecurityToken) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
+	}
 }

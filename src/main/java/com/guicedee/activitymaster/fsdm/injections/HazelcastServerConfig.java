@@ -18,6 +18,9 @@ public class HazelcastServerConfig
         config.getManagementCenterConfig()
                 .setScriptingEnabled(true);
         
+        config.getJetConfig().setEnabled(true);
+        config.setIntegrityCheckerConfig(new IntegrityCheckerConfig().setEnabled(false));
+        
         config.setClusterName(HazelcastProperties.getGroupName());
         config.setInstanceName(HazelcastProperties.getInstanceName());
 

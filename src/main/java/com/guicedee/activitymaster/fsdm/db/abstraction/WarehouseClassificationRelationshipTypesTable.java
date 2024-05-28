@@ -24,9 +24,9 @@ public abstract class WarehouseClassificationRelationshipTypesTable<
 		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, I,QS>,
 		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, I,?>,
 		I extends java.lang.String,
-		QS extends IWarehouseSecurityTable<QS,?,String>>
+		QS extends WarehouseSecurityTable<QS,?,I>>
 		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I,QS>
-		implements IWarehouseRelationshipClassificationTypeTable<J, Q, P, S, I>
+		implements IWarehouseRelationshipClassificationTypeTable<J, Q, P, S, I,QS>
 {
 	
 	@Serial
@@ -46,9 +46,9 @@ public abstract class WarehouseClassificationRelationshipTypesTable<
 	}
 	
 	@NotNull
-	public Class<S> findSecurityClass()
+	public Class<QS> findSecurityClass()
 	{
-		return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[6];
+		return (Class<QS>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[6];
 	}
 	
 	@Override

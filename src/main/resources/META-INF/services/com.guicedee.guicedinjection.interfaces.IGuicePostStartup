@@ -1,1 +1,2 @@
 com.guicedee.activitymaster.fsdm.injections.ActivityMasterPostStartup
+com.guicedee.activitymaster.fsdm.injections.DataCleanupPostStartup

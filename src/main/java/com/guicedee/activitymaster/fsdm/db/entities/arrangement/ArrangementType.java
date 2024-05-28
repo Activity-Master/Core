@@ -1,20 +1,20 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseNameAndDescriptionTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementTypeQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -37,10 +37,10 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of = "id",callSuper = false)
 public class ArrangementType
-		extends WarehouseSCDNameDescriptionTable<ArrangementType, ArrangementTypeQueryBuilder, java.lang.String, ArrangementTypeSecurityToken>
-		implements IArrangementType<ArrangementType, ArrangementTypeQueryBuilder>
+		extends WarehouseSCDTable<ArrangementType, ArrangementTypeQueryBuilder, String, ArrangementTypeSecurityToken>
+		implements IArrangementType<ArrangementType, ArrangementTypeQueryBuilder>,
+		           IWarehouseNameAndDescriptionTable<ArrangementType,ArrangementTypeQueryBuilder,String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -50,7 +50,6 @@ public class ArrangementType
 	@JsonValue
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
-	@Getter
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -60,7 +59,6 @@ public class ArrangementType
 	        length = 150,
 	        name = "ArrangementTypeName")
 	private String name;
-	@Getter
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -70,7 +68,7 @@ public class ArrangementType
 	        length = 500,
 	        name = "ArrangementTypeDescription")
 	private String description;
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY)
@@ -81,7 +79,7 @@ public class ArrangementType
 			fetch = FetchType.LAZY)
 	private List<ArrangementTypeXClassification> classifications;
 	
-	@Getter
+	
 	@OneToMany(
 			mappedBy = "type",
 			fetch = FetchType.LAZY)
@@ -152,5 +150,61 @@ public class ArrangementType
 	public EnterpriseClassificationDataConcepts concept()
 	{
 		return EnterpriseClassificationDataConcepts.ArrangementType;
+	}
+	
+	@Override
+	public @NotNull @Size(min = 1,
+	                      max = 150) String getName()
+	{
+		return name;
+	}
+	
+	@Override
+	public @NotNull @Size(min = 1,
+	                      max = 500) String getDescription()
+	{
+		return description;
+	}
+	
+	public List<ArrangementTypeSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	public List<ArrangementTypeXClassification> getClassifications()
+	{
+		return classifications;
+	}
+	
+	public ArrangementType setClassifications(List<ArrangementTypeXClassification> classifications)
+	{
+		this.classifications = classifications;
+		return this;
+	}
+	
+	public List<ArrangementXArrangementType> getArrangementsList()
+	{
+		return arrangementsList;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ArrangementType that = (ArrangementType) o;
+		return Objects.equals(getName(), that.getName());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getName());
 	}
 }

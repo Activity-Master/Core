@@ -1,14 +1,13 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 
 /**
@@ -16,15 +15,12 @@ import java.io.Serializable;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
 @Entity
 @Table(schema = "Arrangement", name = "ArrangementXClassificationSecurityToken")
 @XmlRootElement
-
 @Access(AccessType.FIELD)
-@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXClassificationSecurityToken
-		extends IWarehouseSecurityTable<ArrangementXClassificationSecurityToken, ArrangementXClassificationSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ArrangementXClassificationSecurityToken, ArrangementXClassificationSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	
@@ -70,5 +66,37 @@ public class ArrangementXClassificationSecurityToken
 	{
 		this.base = base;
 		return this;
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	public ArrangementXClassification getBase()
+	{
+		return base;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ArrangementXClassificationSecurityToken that = (ArrangementXClassificationSecurityToken) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

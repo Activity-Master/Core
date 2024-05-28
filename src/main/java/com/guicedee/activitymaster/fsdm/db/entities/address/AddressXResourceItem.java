@@ -11,12 +11,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXRes
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -25,7 +24,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
 @Entity
 @Table(schema = "Address", name = "AddressXResourceItem")
 @XmlRootElement
@@ -36,7 +34,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of = "id", callSuper = false)
 public class AddressXResourceItem
 		extends WarehouseClassificationRelationshipTable<Address,
 		ResourceItem,
@@ -120,5 +117,47 @@ public class AddressXResourceItem
 	public ResourceItem getSecondary()
 	{
 		return getResourceItemID();
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	public List<AddressXResourceItemSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	public Address getAddressID()
+	{
+		return addressID;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return resourceItemID;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		AddressXResourceItem that = (AddressXResourceItem) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

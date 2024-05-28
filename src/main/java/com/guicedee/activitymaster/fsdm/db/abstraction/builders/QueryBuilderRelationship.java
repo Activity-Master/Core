@@ -26,8 +26,8 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P, ?
 		J extends QueryBuilderRelationship<P, S, J, E, I,QS>,
 		E extends WarehouseRelationshipTable<P, S, E, J, I,?>,
 		I extends java.lang.String,
-		QS extends QueryBuilderSecurities<QS,?,?>>
-		extends QueryBuilderTable<J, E, I,QS>
+		QS extends QueryBuilderSecurities<QS,?,I>>
+		extends QueryBuilderSCD<J, E, I,QS>
 		implements IQueryBuilderRelationships<J, E, P, S, I>
 {
 	public QueryBuilderRelationship()

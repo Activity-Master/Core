@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.entityassist.SCDEntity;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseBaseTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import jakarta.persistence.MappedSuperclass;

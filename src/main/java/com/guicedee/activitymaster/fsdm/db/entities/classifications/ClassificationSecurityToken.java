@@ -1,27 +1,24 @@
 package com.guicedee.activitymaster.fsdm.db.entities.classifications;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationsSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
+import java.util.Objects;
 
 /**
  * @author Marc Magon
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
 @Entity
 @Table(schema = "Classification", name = "ClassificationSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
-@EqualsAndHashCode(of="id",callSuper = false)
 public class ClassificationSecurityToken
-		extends IWarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -65,5 +62,36 @@ public class ClassificationSecurityToken
 	{
 		this.base = base;
 		return this;
+	}
+	
+	public String getId()
+	{
+		return id;
+	}
+	
+	public Classification getBase()
+	{
+		return base;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ClassificationSecurityToken that = (ClassificationSecurityToken) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

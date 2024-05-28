@@ -1,8 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseNameAndDescriptionTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEventType;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventTypeQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -34,8 +35,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class EventType
-		extends WarehouseSCDNameDescriptionTable<EventType, EventTypeQueryBuilder, java.lang.String,EventTypesSecurityToken>
-		implements IEventType<EventType, EventTypeQueryBuilder>
+		extends WarehouseSCDTable<EventType, EventTypeQueryBuilder, String,EventTypesSecurityToken>
+		implements IEventType<EventType, EventTypeQueryBuilder>,
+		           IWarehouseNameAndDescriptionTable<EventType,EventTypeQueryBuilder,String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

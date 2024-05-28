@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.entities.systems;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 @Access(AccessType.FIELD)
 public class SystemsXClassificationSecurityToken
-		extends IWarehouseSecurityTable<SystemsXClassificationSecurityToken, SystemXClassificationSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<SystemsXClassificationSecurityToken, SystemXClassificationSecurityTokenQueryBuilder, String>
 		implements Serializable
 {
 	

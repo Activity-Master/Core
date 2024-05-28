@@ -6,21 +6,20 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activ
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders.ActiveFlagQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.JdbcTypeCode;
 
 import java.io.Serial;
 import java.sql.Types;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -42,10 +41,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@Getter
-@EqualsAndHashCode(of = {"id"},callSuper = false)
 public class ActiveFlag
-		extends WarehouseNameDescriptionTable<ActiveFlag, ActiveFlagQueryBuilder, java.lang.String, ActiveFlagSecurityToken>
+		extends WarehouseCoreTable<ActiveFlag, ActiveFlagQueryBuilder, String, ActiveFlagSecurityToken>
 		implements IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>
 {
 	@Serial
@@ -112,6 +109,11 @@ public class ActiveFlag
 		this.allowAccess = allowAccess;
 	}
 	
+	public String getId()
+	{
+		return id;
+	}
+	
 	@Override
 	public ActiveFlag setId(java.lang.String id)
 	{
@@ -171,5 +173,51 @@ public class ActiveFlag
 	{
 		ActiveFlagXClassification x = (ActiveFlagXClassification) linkTable;
 		x.setActiveFlagID(this);
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ActiveFlag that = (ActiveFlag) o;
+		return Objects.equals(getName(), that.getName());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getName());
+	}
+	
+	@Override
+	public @NotNull @Size(min = 1,
+	                      max = 100) String getName()
+	{
+		return name;
+	}
+	
+	@Override
+	public @NotNull @Size(min = 1,
+	                      max = 100) String getDescription()
+	{
+		return description;
+	}
+	
+	@Override
+	public Enterprise getEnterpriseID()
+	{
+		return enterpriseID;
+	}
+	
+	public List<ActiveFlagSecurityToken> getSecurities()
+	{
+		return securities;
 	}
 }

@@ -1,15 +1,10 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
-import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
-import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -19,7 +14,6 @@ import java.io.Serial;
 import java.sql.Types;
 
 import static com.guicedee.client.IGuiceContext.*;
-import static jakarta.persistence.FetchType.*;
 
 /**
  * @author Marc Magon
@@ -28,10 +22,12 @@ import static jakarta.persistence.FetchType.*;
 @SuppressWarnings("unchecked")
 @MappedSuperclass
 
-public abstract class IWarehouseSecurityTable<J extends IWarehouseSecurityTable<J, Q, I>,
-		Q extends QueryBuilderSecurities<Q, J, I>, I extends java.lang.String>
-		extends WarehouseBaseTable<J, Q, I>
-		implements com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable<J, Q>
+public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
+		Q extends QueryBuilderSecurities<Q, J, I>,
+		I extends java.lang.String
+		>
+		extends WarehouseSCDTable<J, Q, I,J>
+		implements IWarehouseSecurityTable<J, Q,I>
 {
 	
 	@Serial
@@ -60,14 +56,14 @@ public abstract class IWarehouseSecurityTable<J extends IWarehouseSecurityTable<
 	        name = "ReadAllowed")
 	@JdbcTypeCode(Types.INTEGER)
 	private boolean readAllowed;
-	
+
 	@JoinColumn(name = "SecurityTokenID",
 	            referencedColumnName = "SecurityTokenID",
 	            nullable = false)
 	@ManyToOne(optional = false,
-	           fetch = LAZY)
+	           fetch = FetchType.LAZY)
 	private SecurityToken securityTokenID;
-	
+		/*
 	@JoinColumn(name = "ActiveFlagID",
 	            referencedColumnName = "ActiveFlagID",
 	            nullable = false)
@@ -103,12 +99,12 @@ public abstract class IWarehouseSecurityTable<J extends IWarehouseSecurityTable<
 	@ManyToOne(optional = false,
 	           fetch = LAZY)
 	private Systems originalSourceSystemID;
-	
+	*/
 	
 	//===========================================================================================================================
 	
 	
-	public IWarehouseSecurityTable()
+	public WarehouseSecurityTable()
 	{
 	
 	}
@@ -180,7 +176,7 @@ public abstract class IWarehouseSecurityTable<J extends IWarehouseSecurityTable<
 		this.readAllowed = readAllowed;
 		return (J) this;
 	}
-	
+
 	@Override
 	public SecurityToken getSecurityTokenID()
 	{
@@ -193,7 +189,7 @@ public abstract class IWarehouseSecurityTable<J extends IWarehouseSecurityTable<
 		this.securityTokenID = (SecurityToken) securityTokenID;
 		return (J) this;
 	}
-	
+		/*
 	@Override
 	public ActiveFlag getActiveFlagID()
 	{
@@ -257,5 +253,5 @@ public abstract class IWarehouseSecurityTable<J extends IWarehouseSecurityTable<
 	{
 		this.originalSourceSystemID = (Systems) originalSourceSystemID;
 		return (J) this;
-	}
+	}*/
 }

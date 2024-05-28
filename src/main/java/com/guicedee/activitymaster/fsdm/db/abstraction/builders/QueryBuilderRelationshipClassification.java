@@ -19,13 +19,13 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
  * @author Marc Magon
  * @since 01 May 2017
  */
-public abstract class QueryBuilderRelationshipClassification<P extends WarehouseCoreTable<
-		P, ?, java.lang.String,?>,
+public abstract class QueryBuilderRelationshipClassification<
+		P extends WarehouseCoreTable<P, ?, java.lang.String,?>,
 		S extends WarehouseCoreTable<S, ?, java.lang.String,?>,
 		J extends QueryBuilderRelationshipClassification<P, S, J, E, I,QS>,
 		E extends WarehouseClassificationRelationshipTable<P, S, E, J, I,?>,
 		I extends java.lang.String,
-		QS extends QueryBuilderSecurities<QS,?,?>>
+		QS extends QueryBuilderSecurities<QS,?,I>>
 		extends QueryBuilderRelationship<P, S, J, E, I,QS>
 		implements IQueryBuilderRelationships<J, E, P, S, I>,
 		           IQueryBuilderClassifications<J, E, I>

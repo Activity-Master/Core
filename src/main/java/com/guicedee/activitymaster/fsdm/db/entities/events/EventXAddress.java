@@ -11,7 +11,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXAddressQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.util.List;
@@ -24,7 +23,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
 @Entity
 @Table(schema = "Event", name = "EventXAddress")
 @XmlRootElement
@@ -110,6 +108,39 @@ public class EventXAddress
 	}
 	
 	@Override
+	public Event getPrimary()
+	{
+		return getEventID();
+	}
+	
+	@Override
+	public Address getSecondary()
+	{
+		return getAddressID();
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	public List<EventXAddressSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	public Address getAddressID()
+	{
+		return addressID;
+	}
+	
+	public Event getEventID()
+	{
+		return eventID;
+	}
+	
+	@Override
 	public boolean equals(Object o)
 	{
 		if (this == o)
@@ -127,18 +158,6 @@ public class EventXAddress
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(getId());
-	}
-	
-	@Override
-	public Event getPrimary()
-	{
-		return getEventID();
-	}
-	
-	@Override
-	public Address getSecondary()
-	{
-		return getAddressID();
+		return Objects.hashCode(getId());
 	}
 }

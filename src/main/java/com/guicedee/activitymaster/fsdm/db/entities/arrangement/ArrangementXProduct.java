@@ -11,12 +11,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -25,7 +24,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
 @Entity
 @Table(schema = "Arrangement", name = "ArrangementXProduct")
 @XmlRootElement
@@ -36,7 +34,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of = "id", callSuper = false)
 public class ArrangementXProduct
 		extends WarehouseClassificationRelationshipTable<Arrangement,
 		Product,
@@ -117,5 +114,47 @@ public class ArrangementXProduct
 	public Product getSecondary()
 	{
 		return getProductID();
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	public Arrangement getArrangementID()
+	{
+		return arrangementID;
+	}
+	
+	public Product getProductID()
+	{
+		return productID;
+	}
+	
+	public List<ArrangementXProductSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ArrangementXProduct that = (ArrangementXProduct) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

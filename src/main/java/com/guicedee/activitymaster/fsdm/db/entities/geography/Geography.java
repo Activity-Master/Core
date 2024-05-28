@@ -6,13 +6,12 @@
 package com.guicedee.activitymaster.fsdm.db.entities.geography;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.geography.IGeography;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.AddressXGeography;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.geography.builders.GeographyQueryBuilder;
@@ -48,8 +47,9 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Geography
-		extends WarehouseSCDNameDescriptionTable<Geography, GeographyQueryBuilder, java.lang.String, GeographySecurityToken>
-		implements IGeography<Geography, GeographyQueryBuilder>
+		extends WarehouseSCDTable<Geography, GeographyQueryBuilder, String, GeographySecurityToken>
+		implements IGeography<Geography, GeographyQueryBuilder>,
+		           IWarehouseNameAndDescriptionTable<Geography, GeographyQueryBuilder, String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -288,7 +288,7 @@ public class Geography
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Geography, Geography, java.lang.String> newLink, Geography parent, Geography child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Geography, Geography, java.lang.String,?> newLink, Geography parent, Geography child, String value)
 	{
 		GeographyXGeography g = (GeographyXGeography) newLink;
 		g.setParentGeographyID(parent);

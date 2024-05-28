@@ -7,7 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.AddressXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConceptXResourceItem;
@@ -50,7 +50,7 @@ import static jakarta.persistence.FetchType.*;
 		property = "id")
 @Log
 public class ResourceItem
-		extends WarehouseTable<ResourceItem, ResourceItemQueryBuilder, java.lang.String, ResourceItemSecurityToken>
+		extends WarehouseSCDTable<ResourceItem, ResourceItemQueryBuilder, String, ResourceItemSecurityToken>
 		implements IResourceItem<ResourceItem, ResourceItemQueryBuilder>
 {
 	@Serial
@@ -167,7 +167,7 @@ public class ResourceItem
 		var dr = getDataRow();
 		if (dr.isPresent())
 		{
-			var r = dr.get();
+			ResourceItemData r = (ResourceItemData) dr.get();
 			var id = r.getId();
 			return "data/" + id + ".dat";
 		}
@@ -175,7 +175,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public Optional<IResourceData<?, ?>> getDataRow(java.util.UUID... identityToken)
+	public Optional<IResourceData<?, ?, ?>> getDataRow(UUID... identityToken)
 	{
 		return (Optional) new ResourceItemData().builder()
 		                                        .inActiveRange()
@@ -320,7 +320,7 @@ public class ResourceItem
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, ResourceItem, ResourceItem, java.lang.String> newLink, ResourceItem parent, ResourceItem child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, ResourceItem, ResourceItem, java.lang.String, ?> newLink, ResourceItem parent, ResourceItem child, String value)
 	{
 		ResourceItemXResourceItem ri = (ResourceItemXResourceItem) newLink;
 		ri.setParentResourceItemID(parent);

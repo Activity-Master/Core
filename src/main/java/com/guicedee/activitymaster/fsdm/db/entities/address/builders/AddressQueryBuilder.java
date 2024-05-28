@@ -3,13 +3,13 @@ package com.guicedee.activitymaster.fsdm.db.entities.address.builders;
 import com.entityassist.enumerations.Operand;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddressQueryBuilder;
-import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address_;
 import jakarta.validation.constraints.NotNull;
 
 public class AddressQueryBuilder
-		extends QueryBuilderTable<AddressQueryBuilder, Address, java.lang.String,AddressSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<AddressQueryBuilder, Address, String,AddressSecurityTokenQueryBuilder>
 		implements IAddressQueryBuilder<AddressQueryBuilder, Address>
 {
 	@Override

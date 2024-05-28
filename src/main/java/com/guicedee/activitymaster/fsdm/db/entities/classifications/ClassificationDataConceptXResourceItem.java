@@ -6,12 +6,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.Cla
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -20,7 +19,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  * @version 1.0
  * @since 07 Dec 2016
  */
-@Getter
 @Entity
 @Table(schema = "Classification", name = "ClassificationDataConceptXResourceItem")
 @XmlRootElement
@@ -31,7 +29,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of = "id", callSuper = false)
 public class ClassificationDataConceptXResourceItem
 		extends WarehouseClassificationRelationshipTable<ClassificationDataConcept,
 		ResourceItem,
@@ -117,5 +114,47 @@ public class ClassificationDataConceptXResourceItem
 	public ResourceItem getSecondary()
 	{
 		return getResourceItemID();
+	}
+	
+	@Override
+	public String getId()
+	{
+		return id;
+	}
+	
+	public ClassificationDataConcept getClassificationDataConceptID()
+	{
+		return classificationDataConceptID;
+	}
+	
+	public ResourceItem getResourceItemID()
+	{
+		return resourceItemID;
+	}
+	
+	public List<ClassificationDataConceptXResourceItemSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		ClassificationDataConceptXResourceItem that = (ClassificationDataConceptXResourceItem) o;
+		return Objects.equals(getId(), that.getId());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getId());
 	}
 }

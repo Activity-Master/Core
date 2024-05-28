@@ -9,7 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
@@ -46,7 +46,7 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Classification
-		extends WarehouseTable<Classification, ClassificationQueryBuilder, java.lang.String, ClassificationSecurityToken>
+		extends WarehouseSCDTable<Classification, ClassificationQueryBuilder, String, ClassificationSecurityToken>
 		implements IClassification<Classification, ClassificationQueryBuilder>
 {
 	@Serial
@@ -135,7 +135,7 @@ public class Classification
 	
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Classification, Classification, java.lang.String> newLink, Classification parent, Classification child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Classification, Classification, java.lang.String,?> newLink, Classification parent, Classification child, String value)
 	{
 		ClassificationXClassification c = (ClassificationXClassification) newLink;
 		c.setParentClassificationID(this);

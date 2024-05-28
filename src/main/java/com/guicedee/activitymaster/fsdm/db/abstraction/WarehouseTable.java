@@ -1,19 +1,16 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
-import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IContainsActiveFlags;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
-
-import static com.guicedee.client.IGuiceContext.*;
+import java.lang.reflect.ParameterizedType;
 
 /**
  * @author Marc Magon
@@ -25,11 +22,10 @@ public abstract class WarehouseTable<
 		J extends WarehouseTable<J, Q, I,S>,
 		Q extends QueryBuilderTable<Q, J, I,?>,
 		I extends java.lang.String,
-		S extends IWarehouseSecurityTable<S,?>
+		S extends WarehouseSecurityTable<S,?,I>
 		>
-		extends WarehouseSCDTable<J, Q, I,S>
-		implements IContainsActiveFlags<J>,
-		           IWarehouseTable<J, Q, I>
+		extends WarehouseCoreTable<J, Q, I,S>
+		implements IWarehouseTable<J, Q, I,S>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -45,42 +41,32 @@ public abstract class WarehouseTable<
 	            nullable = false)
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
-	
 	private Systems originalSourceSystemID;
+	
+	@JoinColumn(name = "EnterpriseID",
+	            referencedColumnName = "EnterpriseID",
+	            nullable = false)
+	@ManyToOne(optional = false,
+	           fetch = FetchType.LAZY)
+	
+	private Enterprise enterpriseID;
 	
 	public WarehouseTable()
 	{
 	
 	}
 	
-	@Override
+	@NotNull
+	public Class<S> findSecurityClass()
+	{
+		return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
+	}
+	
 	@NotNull
 	@SuppressWarnings("unchecked")
 	protected J configureDefaultsSystemValues(Systems requestingSystem)
 	{
-		super.configureDefaultsSystemValues(requestingSystem);
 		setOriginalSourceSystemID(requestingSystem);
-		return (J) this;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public J remove()
-	{
-		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-		                            .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		update();
-		return (J) this;
-	}
-	
-	
-	@SuppressWarnings("unchecked")
-	public J archive()
-	{
-		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-		                            .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
-				                            .getSystemToken(getEnterpriseID())));
-		update();
 		return (J) this;
 	}
 	
@@ -106,4 +92,16 @@ public abstract class WarehouseTable<
 		this.originalSourceSystemID = (Systems) originalSourceSystemID;
 		return (J) this;
 	}
+	
+	public Enterprise getEnterpriseID()
+	{
+		return this.enterpriseID;
+	}
+	
+	public J setEnterpriseID(IEnterprise<?, ?> enterpriseID)
+	{
+		this.enterpriseID = (Enterprise) enterpriseID;
+		return (J) this;
+	}
+	
 }

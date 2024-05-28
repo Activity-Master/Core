@@ -182,7 +182,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		IInvolvedParty<?, ?> administratorUser;
 		if (exists.isEmpty())
 		{
-			IInvolvedParty<?, ?> adminUser = service.create(system, pair, true);
+			InvolvedParty adminUser = (InvolvedParty) service.create(system, pair, true);
 			
 			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeUserName.toString(),
 					adminUserName, system, identityToken);

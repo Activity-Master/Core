@@ -1,11 +1,12 @@
 package com.guicedee.activitymaster.fsdm.db.entities.events;
 
-import com.guicedee.activitymaster.fsdm.db.abstraction.IWarehouseSecurityTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXEventTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
+import java.util.Objects;
 
 
 /**
@@ -19,7 +20,7 @@ import java.io.Serial;
 
 @Access(AccessType.FIELD)
 public class EventXEventTypeSecurityToken
-		extends IWarehouseSecurityTable<EventXEventTypeSecurityToken, EventXEventTypeSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<EventXEventTypeSecurityToken, EventXEventTypeSecurityTokenQueryBuilder, String>
 {
 	
 	@Serial
@@ -76,37 +77,24 @@ public class EventXEventTypeSecurityToken
 		return this;
 	}
 	
-	public boolean equals(final Object o)
+	@Override
+	public boolean equals(Object o)
 	{
-		if (o == this)
+		if (this == o)
 		{
 			return true;
 		}
-		if (!(o instanceof EventXEventTypeSecurityToken))
+		if (o == null || getClass() != o.getClass())
 		{
 			return false;
 		}
-		final EventXEventTypeSecurityToken other = (EventXEventTypeSecurityToken) o;
-		if (!other.canEqual(this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		return this$id == null ? other$id == null : this$id.equals(other$id);
+		EventXEventTypeSecurityToken that = (EventXEventTypeSecurityToken) o;
+		return Objects.equals(getId(), that.getId());
 	}
 	
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof EventXEventTypeSecurityToken;
-	}
-	
+	@Override
 	public int hashCode()
 	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
+		return Objects.hashCode(getId());
 	}
 }

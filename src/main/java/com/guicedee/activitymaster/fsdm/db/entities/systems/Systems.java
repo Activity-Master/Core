@@ -7,7 +7,8 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activ
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IContainsNameAndDescription;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQueryBuilder;
@@ -45,8 +46,9 @@ import static com.guicedee.client.IGuiceContext.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class Systems
-		extends WarehouseNameDescriptionTable<Systems, SystemsQueryBuilder, java.lang.String, SystemsSecurityToken>
-		implements ISystems<Systems, SystemsQueryBuilder>
+		extends WarehouseCoreTable<Systems, SystemsQueryBuilder, String, SystemsSecurityToken>
+		implements ISystems<Systems, SystemsQueryBuilder>,
+		           IContainsNameAndDescription<Systems>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

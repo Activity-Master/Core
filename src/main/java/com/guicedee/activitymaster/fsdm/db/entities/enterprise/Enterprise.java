@@ -5,18 +5,17 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWare
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -39,11 +38,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
-@EqualsAndHashCode(of="id",callSuper = false)
 public class Enterprise
-		extends WarehouseNameDescriptionTable<Enterprise, EnterpriseQueryBuilder, java.lang.String,EnterpriseSecurityToken>
-		implements //IContainsClassifications<Enterprise, Classification, EnterpriseXClassification, IEnterpriseClassification<?>, IEnterprise, IClassification<?,?>, Enterprise>,
-		IEnterprise<Enterprise, EnterpriseQueryBuilder>
+		extends WarehouseCoreTable<Enterprise, EnterpriseQueryBuilder, String,EnterpriseSecurityToken>
+		implements IEnterprise<Enterprise, EnterpriseQueryBuilder>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -67,8 +64,7 @@ public class Enterprise
 	@Column(nullable = false,
 	        name = "EnterpriseDesc")
 	private String description;
-	
-	@Getter
+
 	@OneToMany(
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY)
@@ -174,5 +170,59 @@ public class Enterprise
 	public @NotNull boolean isFake()
 	{
 		return getId() == null;
+	}
+	
+	public List<EnterpriseSecurityToken> getSecurities()
+	{
+		return securities;
+	}
+	
+	public Enterprise setSecurities(List<EnterpriseSecurityToken> securities)
+	{
+		this.securities = securities;
+		return this;
+	}
+	
+	public List<EnterpriseXClassification> getClassifications()
+	{
+		return classifications;
+	}
+	
+	public Enterprise setClassifications(List<EnterpriseXClassification> classifications)
+	{
+		this.classifications = classifications;
+		return this;
+	}
+	
+	public List<ActiveFlag> getActiveFlags()
+	{
+		return activeFlags;
+	}
+	
+	public Enterprise setActiveFlags(List<ActiveFlag> activeFlags)
+	{
+		this.activeFlags = activeFlags;
+		return this;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Enterprise that = (Enterprise) o;
+		return Objects.equals(getName(), that.getName());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(getName());
 	}
 }

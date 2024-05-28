@@ -28,9 +28,9 @@ public abstract class WarehouseRelationshipTable<
 		J extends WarehouseRelationshipTable<P, S, J, Q, I,QS>,
 		Q extends QueryBuilderRelationship<P, S, Q, J, I,?>,
 		I extends java.lang.String,
-		QS extends com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseSecurityTable<QS,?>>
-		extends WarehouseTable<J, Q, I,QS>
-		implements IWarehouseRelationshipTable<J, Q, P, S, I>
+		QS extends WarehouseSecurityTable<QS,?,I>>
+		extends WarehouseSCDTable<J, Q, I,QS>
+		implements IWarehouseRelationshipTable<J, Q, P, S, I,QS>
 {
 	
 	@Serial
@@ -41,6 +41,13 @@ public abstract class WarehouseRelationshipTable<
 	@Column(nullable = false,
 	        name = "Value")
 	private String value;
+	
+	@NotNull
+	public Class<QS> findSecurityClass()
+	{
+		return (Class<QS>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[4];
+	}
+	
 	
 	public WarehouseRelationshipTable()
 	{

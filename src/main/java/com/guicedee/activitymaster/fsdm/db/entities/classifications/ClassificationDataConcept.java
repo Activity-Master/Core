@@ -7,7 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationDataConceptQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
@@ -43,12 +43,8 @@ import static jakarta.persistence.FetchType.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class ClassificationDataConcept
-		extends WarehouseSCDNameDescriptionTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, java.lang.String,ClassificationDataConceptSecurityToken>
-		implements// IContainsClassifications<ClassificationDataConcept, Classification, ClassificationDataConceptXClassification, IClassificationClassificationDataConceptTypes<?>>,
-		//IContainsResourceItems<ClassificationDataConcept, ResourceItem, ClassificationDataConceptXResourceItem, String, IClassificationDataConcept<?>, IResourceItem<?,?>, ClassificationDataConcept>,
-		//IActivityMasterEntity<ClassificationDataConcept>,
-		IClassificationDataConcept<ClassificationDataConcept, ClassificationDataConceptQueryBuilder>
-		//IContainsNameAndDescription<ClassificationDataConcept>
+		extends WarehouseSCDTable<ClassificationDataConcept, ClassificationDataConceptQueryBuilder, String,ClassificationDataConceptSecurityToken>
+		implements IClassificationDataConcept<ClassificationDataConcept, ClassificationDataConceptQueryBuilder>
 {
 	
 	@Serial

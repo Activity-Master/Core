@@ -12,7 +12,7 @@ public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<Hazel
         config.getNetworkConfig()
                 .setRedoOperation(true)
                 .setSmartRouting(true);
-        
+              
         config.getConnectionStrategyConfig()
                     .setAsyncStart(true)
                     .setReconnectMode(ClientConnectionStrategyConfig.ReconnectMode.ASYNC);

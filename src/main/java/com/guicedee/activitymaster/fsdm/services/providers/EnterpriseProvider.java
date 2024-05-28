@@ -42,8 +42,8 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, Ente
 				if (com.guicedee.client.IGuiceContext.get(SecurityTokenSystem.class)
 				                .hasSystemInstalled(ent))
 				{
-					log.info("Enabling Enterprise Security Stack.....");
-					activityMasterConfiguration.setSecurityEnabled(true);
+				//	log.info("Enabling Enterprise Security Stack.....");
+					//activityMasterConfiguration.setSecurityEnabled(true);
 				}
 			}
 		}

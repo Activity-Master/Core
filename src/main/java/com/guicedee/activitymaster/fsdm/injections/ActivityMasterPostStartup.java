@@ -8,28 +8,34 @@ import com.guicedee.activitymaster.fsdm.client.services.deserializers.*;
 import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
 import lombok.extern.java.Log;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import static com.guicedee.guicedinjection.interfaces.ObjectBinderKeys.*;
 
 @Log
 public class ActivityMasterPostStartup implements IGuicePostStartup<ActivityMasterPostStartup>
 {
 	@Override
-	public void postLoad()
+	public List<CompletableFuture<Boolean>> postLoad()
 	{
-		log.info("Configuration Jackson JSON for types in FSDM");
-		com.guicedee.client.IGuiceContext.get(DefaultObjectMapper)
-		            .registerModule(new SimpleModule("ActivityMasterJsonModule", Version.unknownVersion())
-				            .addDeserializer(IEnterprise.class, new EnterpriseDeserializer())
-				            .addDeserializer(IInvolvedPartyType.class, new InvolvedPartyTypeDeserializer())
-				            .addDeserializer(IInvolvedPartyNameType.class, new InvolvedPartyNameTypeDeserializer())
-				            .addDeserializer(IInvolvedPartyIdentificationType.class, new InvolvedPartyIdentificationTypeDeserializer())
-				            .addDeserializer(IInvolvedParty.class, new InvolvedPartyDeserializer())
-		            );
+		return List.of(CompletableFuture.supplyAsync(() -> {
+			log.info("Configuration Jackson JSON for types in FSDM");
+			com.guicedee.client.IGuiceContext.get(DefaultObjectMapper)
+			                                 .registerModule(new SimpleModule("ActivityMasterJsonModule", Version.unknownVersion())
+					                                 .addDeserializer(IEnterprise.class, new EnterpriseDeserializer())
+					                                 .addDeserializer(IInvolvedPartyType.class, new InvolvedPartyTypeDeserializer())
+					                                 .addDeserializer(IInvolvedPartyNameType.class, new InvolvedPartyNameTypeDeserializer())
+					                                 .addDeserializer(IInvolvedPartyIdentificationType.class, new InvolvedPartyIdentificationTypeDeserializer())
+					                                 .addDeserializer(IInvolvedParty.class, new InvolvedPartyDeserializer())
+			                                 );
+			return true;
+		}, getExecutorService()));
 	}
 	
 	@Override
 	public Integer sortOrder()
 	{
-		return Integer.MIN_VALUE + 10;
+		return Integer.MIN_VALUE + 1000;
 	}
 }

@@ -455,9 +455,8 @@ public class EnterpriseService
 	private void createBaseSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Base Systems", "Initializing Base Systems");
-		for (Iterator<IActivityMasterSystem<?>> iterator = allSystems.iterator(); iterator.hasNext(); )
+		for (IActivityMasterSystem<?> allSystem : allSystems)
 		{
-			IActivityMasterSystem<?> allSystem = iterator.next();
 			if (allSystem.getClass()
 			             .isAssignableFrom(SystemsSystem.class))
 			{
@@ -470,9 +469,8 @@ public class EnterpriseService
 	private void createBase( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Core", "Initializing Core Systems");
-		for (Iterator<IActivityMasterSystem<?>> iterator = allSystems.iterator(); iterator.hasNext(); )
+		for (IActivityMasterSystem<?> allSystem : allSystems)
 		{
-			IActivityMasterSystem<?> allSystem = iterator.next();
 			if (allSystem.getClass()
 			             .isAssignableFrom(SystemsSystem.class))
 			{

@@ -89,13 +89,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-jpamodelgen</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>json-representation</artifactId>
         </dependency>
@@ -108,102 +101,22 @@
 
     <build>
         <plugins>
-            <!--<plugin>
-                <groupId>org.hibernate.orm.tooling</groupId>
-                <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>${maven.hibernate.enhance.version}</version>
-                <executions>
-                    <execution>
-                        <id>enhance</id>
-                        <goals>
-                            <goal>enhance</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <failOnError>false</failOnError>
-                    <enableLazyInitialization>true</enableLazyInitialization>
-                    <enableDirtyTracking>true</enableDirtyTracking>
-                    <enableAssociationManagement>false</enableAssociationManagement>
-                    <enableExtendedEnhancement>false</enableExtendedEnhancement>
-                </configuration>
-            </plugin>-->
-
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <release>${jdk.release}</release>
-                    <annotationProcessorPaths>
-                        <annotationProcessorPath>
-                            <groupId>org.hibernate.orm</groupId>
-                            <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${maven.hibernate.version}</version>
-                        </annotationProcessorPath>
-                        <path>
-                            <groupId>jakarta.xml.bind</groupId>
-                            <artifactId>jakarta.xml.bind-api</artifactId>
-                            <version>${jakarta.xml.jaxb.api.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${mapstruct.version}</version>
-                        </path>
-                          <path>
-                              <groupId>org.projectlombok</groupId>
-                              <artifactId>lombok</artifactId>
-                              <version>${lombok.version}</version>
-                          </path>
-                    </annotationProcessorPaths>
-                    <annotationProcessors>
-                        <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
-                        </annotationProcessor>
-                        <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
-                        <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
-                    </annotationProcessors>
-                    <compilerArguments>
-                        <AaddGeneratedAnnotation>false</AaddGeneratedAnnotation>
-                        <Adebug>true</Adebug>
-                    </compilerArguments>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                        <version>${maven.asm.version}</version>
-                        <type>jar</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.hibernate.orm</groupId>
-                        <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>${maven.hibernate.version}</version>
-                    </dependency>
-                     <dependency>
-                         <groupId>org.projectlombok</groupId>
-                         <artifactId>lombok</artifactId>
-                         <version>${lombok.version}</version>
-                     </dependency>
-                    <dependency>
-                        <groupId>jakarta.xml.bind</groupId>
-                        <artifactId>jakarta.xml.bind-api</artifactId>
-                        <version>${jakarta.xml.jaxb.api.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
                 <configuration>
                     <annotationProcessorPaths>
-                        <annotationProcessorPath>
-                            <groupId>org.hibernate.orm</groupId>
+                           <annotationProcessorPath>
+                               <groupId>org.hibernate.orm</groupId>
+                               <artifactId>hibernate-jpamodelgen</artifactId>
+                               <version>6.4.8.Final</version>
+                           </annotationProcessorPath>
+                  <!--      <annotationProcessorPath>
+                            <groupId>com.guicedee.services</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${maven.hibernate.version}</version>
-                        </annotationProcessorPath>
+                            <version>${guicedee.version}</version>
+                        </annotationProcessorPath>-->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>

@@ -58,9 +58,9 @@ public class SecurityTokenService
 		SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
 		Optional<SecurityTokensSecurityToken> exists = sta.builder()
 		                                                  .withEnterprise(enterprise)
-		                                                  .findBySecurityToken((SecurityToken) fromToken, (SecurityToken) toToken)
 		                                                  .inActiveRange()
 		                                                  .inDateRange()
+		                                                  .findBySecurityToken((SecurityToken) fromToken, (SecurityToken) toToken)
 		                                                  .get();
 		if (exists.isEmpty())
 		{

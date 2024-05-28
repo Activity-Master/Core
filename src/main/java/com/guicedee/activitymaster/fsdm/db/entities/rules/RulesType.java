@@ -1,13 +1,12 @@
 package com.guicedee.activitymaster.fsdm.db.entities.rules;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.assists.WarehouseSCDNameDescriptionTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.builders.RulesTypeQueryBuilder;
 import jakarta.persistence.*;
@@ -40,8 +39,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class RulesType
-		extends WarehouseSCDNameDescriptionTable<RulesType, RulesTypeQueryBuilder, java.lang.String, RulesTypeSecurityToken>
-		implements IRulesType<RulesType, RulesTypeQueryBuilder>
+		extends WarehouseSCDTable<RulesType, RulesTypeQueryBuilder, String, RulesTypeSecurityToken>
+		implements IRulesType<RulesType, RulesTypeQueryBuilder>,
+		           IWarehouseNameAndDescriptionTable<RulesType,RulesTypeQueryBuilder,String>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

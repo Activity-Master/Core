@@ -15,7 +15,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resou
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRules;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.types.IdentificationTypes;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementXInvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventXInvolvedParty;
@@ -53,9 +53,9 @@ import static com.guicedee.client.IGuiceContext.*;
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
 public class InvolvedParty
-		extends WarehouseTable<InvolvedParty, InvolvedPartyQueryBuilder, java.lang.String,
-		InvolvedPartySecurityToken
-		>
+		extends WarehouseSCDTable<InvolvedParty, InvolvedPartyQueryBuilder, String,
+				InvolvedPartySecurityToken
+				>
 		implements IInvolvedParty<InvolvedParty, InvolvedPartyQueryBuilder>
 {
 	private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
@@ -178,7 +178,7 @@ public class InvolvedParty
 	}
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, InvolvedParty, InvolvedParty, java.lang.String> newLink, InvolvedParty parent, InvolvedParty child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, InvolvedParty, InvolvedParty, java.lang.String,?> newLink, InvolvedParty parent, InvolvedParty child, String value)
 	{
 		InvolvedPartyXInvolvedParty i = (InvolvedPartyXInvolvedParty) newLink;
 		i.setParentInvolvedPartyID(parent);

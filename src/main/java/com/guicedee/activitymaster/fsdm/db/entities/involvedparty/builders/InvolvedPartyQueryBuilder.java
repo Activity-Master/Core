@@ -6,14 +6,14 @@ import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedPartyQueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
 import jakarta.persistence.criteria.JoinType;
 
 import static com.entityassist.enumerations.Operand.*;
 
 public class InvolvedPartyQueryBuilder
-		extends QueryBuilderTable<InvolvedPartyQueryBuilder, InvolvedParty, java.lang.String,InvolvedPartySecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<InvolvedPartyQueryBuilder, InvolvedParty, String,InvolvedPartySecurityTokenQueryBuilder>
 		implements IInvolvedPartyQueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty>
 {
 	@Inject
