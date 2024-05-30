@@ -114,6 +114,12 @@ public class Classification
 		this.classificationSequenceNumber = classificationSequenceNumber;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public void configureForClassification(ClassificationXClassification classificationLink, ISystems<?, ?> system)
 	{
 		Classification hierarchyClassification = (Classification) get(ClassificationService.class)

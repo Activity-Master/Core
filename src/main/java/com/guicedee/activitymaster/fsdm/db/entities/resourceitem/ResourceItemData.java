@@ -67,6 +67,12 @@ public class ResourceItemData
 		id = resourceItemDataID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ResourceItemDataSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<ResourceItemDataSecurityToken> getSecurities()
 	{
 		return securities;

@@ -80,6 +80,12 @@ public class ResourceItemXResourceItem
 	}
 	
 	@Override
+	public void configureSecurityEntity(ResourceItemXResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public java.lang.String getId()
 	{
 		return id;

@@ -85,6 +85,12 @@ public class ArrangementXResourceItem
 		this.id = arrangementXResourceItemID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ArrangementXResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public ArrangementXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;

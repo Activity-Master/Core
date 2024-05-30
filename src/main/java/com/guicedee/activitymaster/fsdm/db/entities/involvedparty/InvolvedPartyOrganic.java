@@ -66,6 +66,12 @@ public class InvolvedPartyOrganic
 		this.id = involvedPartyOrganicID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(InvolvedPartyOrganicSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<InvolvedPartyOrganicSecurityToken> getSecurities()
 	{
 		return this.securities;

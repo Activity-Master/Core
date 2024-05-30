@@ -71,6 +71,11 @@ public class ProductTypeXClassification
 		this.id = productXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ProductTypeXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
 	
 	public java.lang.String getId()
 	{

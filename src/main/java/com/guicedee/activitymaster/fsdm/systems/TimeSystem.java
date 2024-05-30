@@ -143,7 +143,7 @@ public class TimeSystem
 	}
 	
 	@Transactional()
-	private Years createYear(Date date)
+	Years createYear(Date date)
 	{
 		Years year = new Years().setId(Short.parseShort(YearIDFormat.getSimpleDateFormat()
 		                                                            .format(date)));
@@ -168,7 +168,7 @@ public class TimeSystem
 		return year;
 	}
 	@Transactional()
-	private Years getYearFromID(Date date)
+	Years getYearFromID(Date date)
 	{
 		return new Years().builder()
 		                  .find(Short.parseShort(YearIDFormat.getSimpleDateFormat()
@@ -177,7 +177,7 @@ public class TimeSystem
 		                  .orElse(null);
 	}
 	@Transactional()
-	private int getLastYearID(Date date)
+	int getLastYearID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(date);
@@ -191,7 +191,7 @@ public class TimeSystem
 	 * @return
 	 */
 	@Transactional()
-	private Quarters createQuarter(Date date)
+	Quarters createQuarter(Date date)
 	{
 		Quarters quarter = new Quarters(getQuarterID(date));
 		quarter.setLastYearID((short) getLastYearQuarterID(date));
@@ -259,7 +259,7 @@ public class TimeSystem
 		return month;
 	}
 	@Transactional()
-	private Quarters getQuarterFromID(Date date) throws Exception
+	Quarters getQuarterFromID(Date date) throws Exception
 	{
 		return new Quarters().builder()
 		                     .find(getQuarterID(date))
@@ -336,7 +336,7 @@ public class TimeSystem
 	}
 	@Transactional()
 	//@CacheResult
-	private MonthOfYear getMonthOfYear(@CacheKey Integer MonthOfYear)
+	MonthOfYear getMonthOfYear(@CacheKey Integer MonthOfYear)
 	{
 		return new MonthOfYear().builder()
 		                        .where(MonthOfYear_.monthInYearNumber, Equals, MonthOfYear)
@@ -414,7 +414,7 @@ public class TimeSystem
 		                                     .format(gc.getTime()));
 	}
 	@Transactional()
-	private Months getMonthFromID(Date date)
+	Months getMonthFromID(Date date)
 	{
 		return new Months().builder()
 		                   .find(Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
@@ -450,7 +450,7 @@ public class TimeSystem
 		return month;
 	}
 	@Transactional()
-	private Weeks getWeekFromID(Date date)
+	Weeks getWeekFromID(Date date)
 	{
 		int weekID = getWeekID(date);
 		return new Weeks().builder()
@@ -471,7 +471,7 @@ public class TimeSystem
 	}
 	
 	@Transactional()
-	private Weeks createWeek(Date date)
+	Weeks createWeek(Date date)
 	{
 		Weeks week = new Weeks();
 		week.setMonthID(getMonth(date).getId());
@@ -528,7 +528,7 @@ public class TimeSystem
 	}
 	@Transactional()
 	//@CacheResult
-	private DayNames getDayName(@CacheKey String dayName)
+	DayNames getDayName(@CacheKey String dayName)
 	{
 		return new DayNames().builder()
 		                     .where(DayNames_.dayName, Equals, dayName)
@@ -536,7 +536,7 @@ public class TimeSystem
 		                     .orElse(null);
 	}
 	@Transactional()
-	private Days getDayFromID(Date date)
+	Days getDayFromID(Date date)
 	{
 		return new Days().builder()
 		                 .find(Integer.parseInt(DayIDFormat.getSimpleDateFormat()
@@ -582,7 +582,7 @@ public class TimeSystem
 	}
 	
 	@Transactional()
-	private Days createDay(Date date)
+	Days createDay(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(date);
@@ -669,7 +669,7 @@ public class TimeSystem
 	}
 	
 	@Transactional()
-	private void getDayYTD(Date date)
+	void getDayYTD(Date date)
 	{
 		
 		GregorianCalendar gc = new GregorianCalendar();
@@ -715,7 +715,7 @@ public class TimeSystem
 	}
 	
 	@Transactional()
-	private void getDayMTD(Date date)
+	void getDayMTD(Date date)
 	{
 		
 		GregorianCalendar gc = new GregorianCalendar();
@@ -758,7 +758,7 @@ public class TimeSystem
 	}
 	
 	@Transactional()
-	private TransFiscal getDayFiscal(Date date, int fiscalMonthLag)
+	TransFiscal getDayFiscal(Date date, int fiscalMonthLag)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(date);
@@ -774,7 +774,7 @@ public class TimeSystem
 	}
 	
 	@Transactional()
-	private void getDayQTD(Date date)
+	void getDayQTD(Date date)
 	{
 		
 		GregorianCalendar gc = new GregorianCalendar();

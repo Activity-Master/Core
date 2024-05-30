@@ -76,6 +76,12 @@ public class AddressXClassification
 		this.id = addressXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(AddressXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public AddressXClassification setId(java.lang.String id)
 	{
 		this.id = id;

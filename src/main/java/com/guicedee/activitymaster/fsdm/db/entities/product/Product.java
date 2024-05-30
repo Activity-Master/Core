@@ -142,6 +142,12 @@ public class Product
 		this.productCode = productCode;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ProductSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<ProductXClassification> getClassifications()
 	{
 		return classifications;

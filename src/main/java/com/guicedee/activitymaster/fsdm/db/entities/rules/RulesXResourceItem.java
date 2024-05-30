@@ -75,6 +75,12 @@ public class RulesXResourceItem
 	}
 	
 	@Override
+	public void configureSecurityEntity(RulesXResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public java.lang.String getId()
 	{
 		return id;

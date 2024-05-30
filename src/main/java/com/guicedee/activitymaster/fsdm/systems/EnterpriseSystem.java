@@ -37,12 +37,6 @@ public class EnterpriseSystem
 	}
 	
 	@Override
-	public void postStartup(IEnterprise<?,?> enterprise)
-	{
-		super.postStartup(enterprise);
-	}
-	
-	@Override
 	public String getSystemName()
 	{
 		return EnterpriseSystemName;

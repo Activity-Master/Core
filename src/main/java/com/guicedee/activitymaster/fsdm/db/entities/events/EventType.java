@@ -92,6 +92,12 @@ public class EventType
 		this.description = eventTypeDesc;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventTypesSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<EventXEventType> getEventXEventTypeList()
 	{
 		return this.eventXEventTypeList;

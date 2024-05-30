@@ -80,6 +80,12 @@ public class EventXClassification
 		this.id = eventXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

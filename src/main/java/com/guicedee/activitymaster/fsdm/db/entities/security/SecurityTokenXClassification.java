@@ -70,6 +70,12 @@ public class SecurityTokenXClassification
 		this.id = securityTokenXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(SecurityTokenXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

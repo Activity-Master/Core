@@ -76,6 +76,12 @@ public class ProductXResourceItem
 	}
 	
 	@Override
+	public void configureSecurityEntity(ProductXResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public java.lang.String getId()
 	{
 		return id;

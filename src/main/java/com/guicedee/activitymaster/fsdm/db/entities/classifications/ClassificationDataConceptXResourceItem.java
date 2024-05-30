@@ -80,6 +80,12 @@ public class ClassificationDataConceptXResourceItem
 		this.id = classificationDataConceptXResourceItemID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ClassificationDataConceptXResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public ClassificationDataConceptXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;

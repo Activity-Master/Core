@@ -104,6 +104,12 @@ public class InvolvedPartyIdentificationType
 		return getName();
 	}
 	
+	@Override
+	public void configureSecurityEntity(InvolvedPartyIdentificationTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<InvolvedPartyIdentificationTypeSecurityToken> getSecurities()
 	{
 		return securities;

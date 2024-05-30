@@ -94,6 +94,12 @@ public class InvolvedPartyType
 		description = involvedPartyTypeDesc;
 	}
 	
+	@Override
+	public void configureSecurityEntity(InvolvedPartyTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<InvolvedPartyTypeSecurityToken> getSecurities()
 	{
 		return securities;

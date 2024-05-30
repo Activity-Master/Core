@@ -47,7 +47,7 @@ public class EnterpriseService
 	
 	private static final Logger log = Logger.getLogger(EnterpriseService.class.getName());
 	
-	public IEnterprise<?,?> get()
+	public IEnterprise<?, ?> get()
 	{
 		return new Enterprise();
 	}
@@ -73,9 +73,9 @@ public class EnterpriseService
 		EnterpriseProvider.loadedEnterprise = enterprise;
 		return enterprise;
 	}
-
+	
 	@Override
-	public int loadUpdates(IEnterprise<?,?> enterprise)
+	public int loadUpdates(IEnterprise<?, ?> enterprise)
 	{
 		Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = getUpdates(enterprise);
 		
@@ -91,7 +91,8 @@ public class EnterpriseService
 		}
 		
 		@SuppressWarnings({"unchecked"})
-		ISystems<?,?> system = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
+		ISystems<?, ?> system = com.guicedee.client.IGuiceContext.get(ISystemsService.class)
+		                                                         .getActivityMaster(enterprise);
 		
 		@SuppressWarnings({"rawtypes", "unchecked"})
 		Set<IOnSystemUpdate> systemUpdateEventHandlers = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
@@ -125,14 +126,21 @@ public class EnterpriseService
 				}
 			}
 		}
-		enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
-		                                                                                  .format(LocalDate.now()), system);
-		logProgress("Update System", "Finished Updates. Last Update Date - " + DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now()));
+		updateLastUpdateDate(enterprise, system);
+		logProgress("Update System", "Finished Updates. Last Update Date - " + DateTimeFormatter.ofPattern("yyyy/MM/dd")
+		                                                                                        .format(LocalDate.now()));
 		return availableUpdates.size();
 	}
 	
+	@jakarta.transaction.Transactional
+	void updateLastUpdateDate(IEnterprise<?, ?> enterprise, ISystems<?, ?> system)
+	{
+		enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
+		                                                                                                           .format(LocalDate.now()), system);
+	}
+	
 	@Transactional()
-	private void performUpdate(ISystemUpdate o, IEnterprise<?,?> enterprise)
+	void performUpdate(ISystemUpdate o, IEnterprise<?,?> enterprise)
 	{
 		@SuppressWarnings({ "unchecked"})
 		ISystems<?,?> system = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
@@ -161,6 +169,7 @@ public class EnterpriseService
 	}
 	
 	@Override
+	@jakarta.transaction.Transactional
 	public Map<Integer, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?,?> enterprise)
 	{
 		Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
@@ -368,6 +377,8 @@ public class EnterpriseService
 		logProgress("System Configuration", "Starting system updates", 1);
 		loadUpdates(enterprise);
 		logProgress("System Configuration", "Done", 1);
+		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
+		                                 .setSecurityEnabled(true);
 	}
 	
 	@Transactional()
@@ -420,7 +431,6 @@ public class EnterpriseService
 		}
 	}
 	
-	@Transactional()
 	private void installSystem(IActivityMasterSystem<?> system, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Running System ", system.getClass()
@@ -428,12 +438,13 @@ public class EnterpriseService
 		performSystemInstall(enterprise, system);
 	}
 	
-	@Transactional()
+
 	private void performSystemInstall( IEnterprise<?,?> enterprise, IActivityMasterSystem<?> allSystem)
 	{
 		String nameC = cleanName(allSystem.getClass()
 		                                  .getSimpleName());
-		IActivityMasterSystem<?> registeredSystem = com.guicedee.client.IGuiceContext.get(allSystem.getClass());
+		
+		IActivityMasterSystem<?> registeredSystem = allSystem;//com.guicedee.client.IGuiceContext.get(allSystem.getClass());
 		
 		@SuppressWarnings({"rawtypes", "unchecked"})
 		Set<IOnSystemInstall> systemInstallEventListeners = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
@@ -441,6 +452,7 @@ public class EnterpriseService
 		{
 			systemInstallEventListener.onSystemInstallStart(registeredSystem.getSystemName());
 		}
+		
 		ISystems<?, ?> registerSystem = registeredSystem.registerSystem(enterprise);
 		
 		registeredSystem.createDefaults(enterprise);

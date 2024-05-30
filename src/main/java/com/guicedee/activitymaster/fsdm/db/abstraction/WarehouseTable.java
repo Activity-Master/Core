@@ -57,7 +57,7 @@ public abstract class WarehouseTable<
 	}
 	
 	@NotNull
-	public Class<S> findSecurityClass()
+	public Class<S> findPersistentSecurityClass()
 	{
 		return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
 	}

@@ -46,9 +46,9 @@ public abstract class WarehouseClassificationRelationshipTypesTable<
 	}
 	
 	@NotNull
-	public Class<QS> findSecurityClass()
+	public Class<QS> findPersistentSecurityClass()
 	{
-		return (Class<QS>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[6];
+		return (Class<QS>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[5];
 	}
 	
 	@Override

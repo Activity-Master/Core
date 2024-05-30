@@ -72,6 +72,12 @@ public class ResourceItemXClassification
 		this.id = resourceItemXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ResourceItemXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

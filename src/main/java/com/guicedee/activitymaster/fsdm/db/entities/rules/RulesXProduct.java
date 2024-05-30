@@ -74,6 +74,12 @@ public class RulesXProduct
 		this.id = RulesXProductID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(RulesXProductSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

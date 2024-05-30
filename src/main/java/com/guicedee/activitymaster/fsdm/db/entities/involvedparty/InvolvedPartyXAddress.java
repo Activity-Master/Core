@@ -83,6 +83,12 @@ public class InvolvedPartyXAddress
 		this.id = involvedPartyXAddressID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(InvolvedPartyXAddressSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

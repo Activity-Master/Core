@@ -66,6 +66,12 @@ public class InvolvedPartyNonOrganic
 		id = involvedPartyNonOrganicID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(InvolvedPartyNonOrganicSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<InvolvedPartyNonOrganicSecurityToken> getSecurities()
 	{
 		return securities;

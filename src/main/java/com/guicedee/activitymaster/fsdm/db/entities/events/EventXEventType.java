@@ -77,6 +77,12 @@ public class EventXEventType
 	}
 	
 	@Override
+	public void configureSecurityEntity(EventXEventTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public java.lang.String getId()
 	{
 		return this.id;

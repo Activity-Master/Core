@@ -71,6 +71,12 @@ public class InvolvedPartyXClassification
 		this.id = involvedPartyXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(InvolvedPartyXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

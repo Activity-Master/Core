@@ -69,6 +69,12 @@ public class ArrangementXArrangementType
 	}
 	
 	@Override
+	public void configureSecurityEntity(ArrangementXArrangementTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public java.lang.String getId()
 	{
 		return this.id;

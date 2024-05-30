@@ -120,6 +120,12 @@ public class SecurityToken
 	}
 	
 	@Override
+	public void configureSecurityEntity(SecurityTokensSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public String toString()
 	{
 		return getSecurityToken();

@@ -73,6 +73,13 @@ public class ActiveFlagXClassification
 	{
 		this.id = activeFlagXClassificationID;
 	}
+	
+	@Override
+	public void configureSecurityEntity(ActiveFlagXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public ActiveFlagXClassification setId(java.lang.String id)
 	{
 		this.id = id;

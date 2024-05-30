@@ -26,8 +26,8 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 		Q extends QueryBuilderSecurities<Q, J, I>,
 		I extends java.lang.String
 		>
-		extends WarehouseSCDTable<J, Q, I,J>
-		implements IWarehouseSecurityTable<J, Q,I>
+		extends WarehouseSCDTable<J, Q, I, J>
+		implements IWarehouseSecurityTable<J, Q, I>
 {
 	
 	@Serial
@@ -56,7 +56,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	        name = "ReadAllowed")
 	@JdbcTypeCode(Types.INTEGER)
 	private boolean readAllowed;
-
+	
 	@JoinColumn(name = "SecurityTokenID",
 	            referencedColumnName = "SecurityTokenID",
 	            nullable = false)
@@ -176,7 +176,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 		this.readAllowed = readAllowed;
 		return (J) this;
 	}
-
+	
 	@Override
 	public SecurityToken getSecurityTokenID()
 	{
@@ -184,12 +184,19 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	}
 	
 	@Override
-	public J setSecurityTokenID(ISecurityToken<?,?> securityTokenID)
+	public J setSecurityTokenID(ISecurityToken<?, ?> securityTokenID)
 	{
 		this.securityTokenID = (SecurityToken) securityTokenID;
 		return (J) this;
 	}
-		/*
+	
+	@Override
+	public void configureSecurityEntity(J securityEntity)
+	{
+	
+	}
+	
+	/*
 	@Override
 	public ActiveFlag getActiveFlagID()
 	{

@@ -42,12 +42,12 @@ public abstract class WarehouseRelationshipTable<
 	        name = "Value")
 	private String value;
 	
-	@NotNull
-	public Class<QS> findSecurityClass()
+	
+	@Override
+	public Class<QS> findPersistentSecurityClass()
 	{
 		return (Class<QS>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[4];
 	}
-	
 	
 	public WarehouseRelationshipTable()
 	{

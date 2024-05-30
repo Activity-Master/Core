@@ -115,6 +115,12 @@ public class ActiveFlag
 	}
 	
 	@Override
+	public void configureSecurityEntity(ActiveFlagSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public ActiveFlag setId(java.lang.String id)
 	{
 		this.id = id;

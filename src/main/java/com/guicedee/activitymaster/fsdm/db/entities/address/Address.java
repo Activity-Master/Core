@@ -122,6 +122,12 @@ public class Address
 		return this;
 	}
 	
+	@Override
+	public void configureSecurityEntity(AddressSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<AddressXClassification> getClassifications()
 	{
 		return this.classifications;

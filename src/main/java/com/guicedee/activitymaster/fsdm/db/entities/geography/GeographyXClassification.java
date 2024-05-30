@@ -77,6 +77,11 @@ public class GeographyXClassification
 		this.id = geographyXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(GeographyXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
 	
 	public java.lang.String getId()
 	{

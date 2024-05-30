@@ -94,6 +94,12 @@ public class ResourceItemType
 		description = resourceItemTypeDesc;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ResourceItemTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<ResourceItemTypeSecurityToken> getSecurities()
 	{
 		return securities;

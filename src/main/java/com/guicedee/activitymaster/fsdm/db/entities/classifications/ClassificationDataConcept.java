@@ -121,6 +121,11 @@ public class ClassificationDataConcept
 		return getName();
 	}
 	
+	@Override
+	public void configureSecurityEntity(ClassificationDataConceptSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
 	
 	public void configureForClassification(ClassificationDataConceptXClassification classificationLink, ISystems<?, ?> system)
 	{

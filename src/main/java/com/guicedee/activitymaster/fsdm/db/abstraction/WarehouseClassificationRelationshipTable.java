@@ -5,7 +5,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
@@ -47,12 +46,11 @@ public abstract class WarehouseClassificationRelationshipTable<
 	
 	}
 	
-	@NotNull
-	public Class<QS> findSecurityClass()
+	@Override
+	public Class<QS> findPersistentSecurityClass()
 	{
 		return (Class<QS>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[5];
 	}
-	
 	
 	@Override
 	public Classification getClassificationID()

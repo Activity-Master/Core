@@ -103,6 +103,12 @@ public class ArrangementType
 		this.description = arrangementTypeDescription;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ArrangementTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public ArrangementType setSecurities(List<ArrangementTypeSecurityToken> securities)
 	{
 		this.securities = securities;

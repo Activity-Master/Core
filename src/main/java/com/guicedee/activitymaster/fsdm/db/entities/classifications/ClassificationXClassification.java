@@ -87,6 +87,13 @@ public class ClassificationXClassification
 		this.securities = securities;
 		return this;
 	}
+	
+	@Override
+	public void configureSecurityEntity(ClassificationXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	@Override
 	public java.lang.String getId()
 	{

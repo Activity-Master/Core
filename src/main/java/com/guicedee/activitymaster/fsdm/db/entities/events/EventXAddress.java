@@ -83,6 +83,12 @@ public class EventXAddress
 		this.id = eventXAddressID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventXAddressSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public EventXAddress setId(java.lang.String id)
 	{
 		this.id = id;

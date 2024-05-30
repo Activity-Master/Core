@@ -40,7 +40,7 @@ public class ActivityMasterDBModule
 		                          .setMaxLogSizeInMb(100)
 		                          .setSkipCorruptedLogs(true)
 		                          .setDefaultTransactionTimeout(ActivityMasterStatics.transactionDebugTimeout)
-		                          .setWarnAboutZeroResourceTransaction(false);
+		                          .setWarnAboutZeroResourceTransaction(true);
 		
 		return new BTMConnectionBaseInfo()
 				.setEnableJdbc4ConnectionTest(true)

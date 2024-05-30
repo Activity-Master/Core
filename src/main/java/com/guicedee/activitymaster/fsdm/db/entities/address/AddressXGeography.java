@@ -79,6 +79,12 @@ public class AddressXGeography
 		this.id = addressXGeographyID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(AddressXGeographySecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public AddressXGeography setId(java.lang.String id)
 	{
 		this.id = id;

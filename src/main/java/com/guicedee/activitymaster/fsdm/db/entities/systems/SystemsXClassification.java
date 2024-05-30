@@ -67,6 +67,12 @@ public class SystemsXClassification
 	}
 	
 	@Override
+	public void configureSecurityEntity(SystemsXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public java.lang.String getId()
 	{
 		return id;

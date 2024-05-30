@@ -76,6 +76,12 @@ public class EventXProduct
 		this.id = eventXProductID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventXProductSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

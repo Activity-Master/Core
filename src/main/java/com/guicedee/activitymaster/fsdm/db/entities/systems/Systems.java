@@ -122,6 +122,12 @@ public class Systems
 	}
 	
 	@Override
+	public void configureSecurityEntity(SystemsSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public String toString()
 	{
 		return getName();

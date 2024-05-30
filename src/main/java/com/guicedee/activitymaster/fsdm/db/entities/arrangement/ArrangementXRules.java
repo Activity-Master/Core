@@ -85,6 +85,12 @@ public class ArrangementXRules
 		this.id = arrangementXRulesID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ArrangementXRulesSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public ArrangementXRules setId(java.lang.String id)
 	{
 		this.id = id;

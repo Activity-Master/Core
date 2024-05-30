@@ -105,6 +105,12 @@ public class RulesType
 		this.description = rulesTypeDesc;
 	}
 	
+	@Override
+	public void configureSecurityEntity(RulesTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<RulesXRulesType> getRulesXRulesTypeList()
 	{
 		return this.rulesXRulesTypeList;

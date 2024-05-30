@@ -80,6 +80,12 @@ public class ArrangementXInvolvedParty
 		this.id = arrangementXInvolvedPartyID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ArrangementXInvolvedPartySecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public ArrangementXInvolvedParty setId(java.lang.String id)
 	{
 		this.id = id;

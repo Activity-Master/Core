@@ -78,6 +78,11 @@ public class ArrangementTypeXClassification
 		this.id = arrangementXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ArrangementTypeXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
 	
 	@Override
 	public java.lang.String getId()

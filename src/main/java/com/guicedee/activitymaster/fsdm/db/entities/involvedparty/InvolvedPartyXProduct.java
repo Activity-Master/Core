@@ -92,6 +92,12 @@ public class InvolvedPartyXProduct
 		this.id = involvedPartyXProductID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(InvolvedPartyXProductSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

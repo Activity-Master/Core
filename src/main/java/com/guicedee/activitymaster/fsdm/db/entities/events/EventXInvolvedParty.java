@@ -77,6 +77,12 @@ public class EventXInvolvedParty
 		this.id = eventXInvolvedPartyID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventXInvolvedPartySecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

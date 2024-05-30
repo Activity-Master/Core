@@ -83,6 +83,12 @@ public class GeographyXResourceItem
 		this.id = geographyXResourceItemID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(GeographyXResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

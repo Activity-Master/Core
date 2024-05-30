@@ -85,6 +85,11 @@ public class InvolvedPartyXInvolvedPartyIdentificationType
 		setValue(value);
 	}
 	
+	@Override
+	public void configureSecurityEntity(InvolvedPartyXInvolvedPartyIdentificationTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
 	
 	@Override
 	public java.lang.String getId()

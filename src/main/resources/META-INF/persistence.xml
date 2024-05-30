@@ -246,6 +246,7 @@
             <!--<property name="hibernate.hbm2ddl.auto" value="update"/>-->
 
             <property name="hibernate.connection.autocommit" value="false"/>
+            <property name="hibernate.current_session_context_class" value="thread"/>
             <property name="hibernate.jdbc.batch_size" value="1000"/>
             <property name="hibernate.javax.cache.missing_cache_strategy" value="create"/>
 

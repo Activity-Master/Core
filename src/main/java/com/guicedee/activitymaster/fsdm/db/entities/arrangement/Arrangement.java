@@ -130,6 +130,12 @@ public class Arrangement
 		this.id = arrangementID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ArrangementSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public void setMyInvolvedPartyLinkValue(ArrangementXInvolvedParty classificationLink, InvolvedParty involvedParty, IEnterprise<?, ?> enterprise)
 	{
 		classificationLink.setArrangementID(this);

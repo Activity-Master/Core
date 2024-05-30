@@ -71,6 +71,12 @@ public class RulesXClassification
 		this.id = rulesXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(RulesXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

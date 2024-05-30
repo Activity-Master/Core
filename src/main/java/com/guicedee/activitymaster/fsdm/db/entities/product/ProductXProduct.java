@@ -76,6 +76,12 @@ public class ProductXProduct
 	}
 	
 	@Override
+	public void configureSecurityEntity(ProductXProductSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public java.lang.String getId()
 	{
 		return id;

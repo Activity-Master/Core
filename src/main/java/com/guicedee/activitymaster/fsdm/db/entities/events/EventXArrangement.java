@@ -78,6 +78,12 @@ public class EventXArrangement
 		this.id = eventXArrangementsID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventXArrangementsSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

@@ -104,6 +104,12 @@ public class Enterprise
 		return getName();
 	}
 	
+	@Override
+	public void configureSecurityEntity(EnterpriseSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	//@Override
 	public void configureForClassification(EnterpriseXClassification classificationLink, ISystems<?, ?> system)
 	{

@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.fsdm.SystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
@@ -21,6 +20,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemTyp
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
+import com.guicedee.client.IGuiceContext;
+import jakarta.transaction.Transactional;
 
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -49,8 +50,6 @@ public class SecurityTokenSystem
 	{
 		return systemsService
 		              .create(enterprise, getSystemName(), getSystemDescription());
-		
-		
 	}
 	
 	@Override
@@ -58,45 +57,65 @@ public class SecurityTokenSystem
 	{
 		logProgress("Security Token Service", "Starting Security Structure Checks/Install");
 		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
-		createSecurityDefaults(enterprise.getName(), activityMasterSystem);
+		
+		SecurityTokenSystem instance = IGuiceContext.get(SecurityTokenSystem.class);
+		
+		instance.defaultsCreation(enterprise);
+		/*createSecurityDefaults(enterprise.getName(), activityMasterSystem);
+		
 		SecurityToken rootToken = createSecurityTokens(enterprise.getName(), enterprise);
 		createGroupsAndFolders(enterprise, rootToken);
 		applyDefaultsToNewEnterprise(enterprise);
 		createActivityMasterInvolvedParty(enterprise);
 		applyDefaultsToNewEnterpriseAfterActivityMaster(enterprise);
+		*/
+		//UUID newSystemUUID = com.guicedee.client.IGuiceContext.get(SystemsService.class)
+	//	                                 .getSecurityIdentityToken(activityMasterSystem);
 		
-		UUID newSystemUUID = com.guicedee.client.IGuiceContext.get(SystemsService.class)
-		                                 .getSecurityIdentityToken(activityMasterSystem);
-		
-		SecurityToken activityMasterToken = (SecurityToken) com.guicedee.client.IGuiceContext.get(SystemsService.class)
-		                                                                .getSecurityToken(newSystemUUID.toString(), activityMasterSystem, newSystemUUID);
+		//SecurityToken activityMasterToken = (SecurityToken) com.guicedee.client.IGuiceContext.get(SystemsService.class)
+		//                                                                .getSecurityToken(newSystemUUID.toString(), activityMasterSystem, newSystemUUID);
 		
 		logProgress("Security Management", "Setting Security Configurator to Activity Master");
-		
 		//Load all the systems system tokens that are created before I am
+		
 		EnterpriseSystem enterpriseSystem = com.guicedee.client.IGuiceContext.get(EnterpriseSystem.class);
 		ActiveFlagSystem afs = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
 		ClassificationsSystem cfs = com.guicedee.client.IGuiceContext.get(ClassificationsSystem.class);
 		ClassificationsDataConceptSystem cdcs = com.guicedee.client.IGuiceContext.get(ClassificationsDataConceptSystem.class);
 		SystemsSystem ss = com.guicedee.client.IGuiceContext.get(SystemsSystem.class);
 		InvolvedPartySystem ips = com.guicedee.client.IGuiceContext.get(InvolvedPartySystem.class);
-		systemsService
-		              .registerNewSystem(enterprise, enterpriseSystem.getSystem(enterprise));
-		systemsService
-		              .registerNewSystem(enterprise, afs.getSystem(enterprise));
-		systemsService
-		              .registerNewSystem(enterprise, ss.getSystem(enterprise));
-		systemsService
-		              .registerNewSystem(enterprise, cdcs.getSystem(enterprise));
-		systemsService
-		              .registerNewSystem(enterprise, cfs.getSystem(enterprise));
-		systemsService
-		              .registerNewSystem(enterprise, ips.getSystem(enterprise));
+		
+		registerNewSystem(enterprise, enterpriseSystem.getSystem(enterprise));
+		registerNewSystem(enterprise, afs.getSystem(enterprise));
+		registerNewSystem(enterprise, ss.getSystem(enterprise));
+		registerNewSystem(enterprise, cdcs.getSystem(enterprise));
+		registerNewSystem(enterprise, cfs.getSystem(enterprise));
+		registerNewSystem(enterprise, ips.getSystem(enterprise));
 		
 		logProgress("Security Token Service", "Enabling Security System");
 		System.out.println("Enabling Authentication Modules");
 		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
 		            .setSecurityEnabled(true);
+	}
+	
+	@Transactional
+	void defaultsCreation(IEnterprise<?,?> enterprise)
+	{
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
+		
+		createSecurityDefaults(enterprise.getName(), activityMasterSystem);
+		
+		SecurityToken rootToken = createSecurityTokens(enterprise.getName(), enterprise);
+		createGroupsAndFolders(enterprise, rootToken);
+		applyDefaultsToNewEnterprise(enterprise);
+		createActivityMasterInvolvedParty(enterprise);
+		applyDefaultsToNewEnterpriseAfterActivityMaster(enterprise);
+	}
+	
+	@Transactional
+	void registerNewSystem(IEnterprise<?,?> enterprise,ISystems<?,?> creatingSystem)
+	{
+		systemsService.registerNewSystem(enterprise, creatingSystem);
 	}
 	
 	void createSecurityDefaults(String enterpriseName, ISystems<?,?> system, java.util.UUID... identityToken)
@@ -133,6 +152,7 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Security Classifications Installed", 11);
 	}
 	
+	@Transactional
 	SecurityToken createSecurityTokens(String enterpriseName, IEnterprise<?,?> enterprise)
 	{
 		UUID uuid = getSystemToken(enterprise);

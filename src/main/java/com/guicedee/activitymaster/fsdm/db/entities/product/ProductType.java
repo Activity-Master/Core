@@ -103,6 +103,12 @@ public class ProductType
 		this.description = productTypeDesc;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ProductTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<ProductXProductType> getProductXProductTypeList()
 	{
 		return this.productXProductTypeList;

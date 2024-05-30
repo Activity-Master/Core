@@ -129,6 +129,12 @@ public class Rules
 		description = rulesDesc;
 	}
 	
+	@Override
+	public void configureSecurityEntity(RulesSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<RulesXClassification> getClassifications()
 	{
 		return classifications;

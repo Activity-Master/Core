@@ -84,6 +84,12 @@ public class AddressXResourceItem
 		this.id = addressXResourceItemID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(AddressXResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public AddressXResourceItem setId(java.lang.String id)
 	{
 		this.id = id;

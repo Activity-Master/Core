@@ -76,6 +76,12 @@ public class EventXResourceItem
 		this.id = eventXResourceItemID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventXResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

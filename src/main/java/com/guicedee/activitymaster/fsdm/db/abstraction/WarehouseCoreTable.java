@@ -42,6 +42,8 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 	
 	}
 	
+	public abstract void configureSecurityEntity(S securityEntity);
+	
 	@Override
 	public void createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identity)
 	{
@@ -57,6 +59,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			createDefaultGuestReadSecurityAccess(system, identity);
 		}
 	}
+	
 	public void updateSecurity(J newCoreTable, Systems system)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
@@ -97,6 +100,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(true);
 			stAdmin.setReadAllowed(true);
+			configureSecurityEntity(stAdmin);
 			stAdmin.persist();
 		}
 		else
@@ -127,6 +131,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(false);
+			configureSecurityEntity(stAdmin);
 			stAdmin.persist();
 		}
 		else
@@ -158,6 +163,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
+			configureSecurityEntity(stAdmin);
 			stAdmin.persist();
 		}
 		else
@@ -191,6 +197,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
+			configureSecurityEntity(stAdmin);
 			stAdmin.persist();
 		}
 		else
@@ -223,6 +230,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
+			configureSecurityEntity(stAdmin);
 			stAdmin.persist();
 		}
 		else
@@ -254,6 +262,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
+			configureSecurityEntity(stAdmin);
 			stAdmin.persist();
 		}
 		else
@@ -285,6 +294,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(true);
+			configureSecurityEntity(stAdmin);
 			stAdmin.persist();
 		}
 		else
@@ -338,6 +348,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
 			stAdmin.setReadAllowed(false);
+			configureSecurityEntity(stAdmin);
 			stAdmin.persist();
 		}
 		else

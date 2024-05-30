@@ -76,6 +76,12 @@ public class InvolvedPartyXProductType
 	}
 	
 	@Override
+	public void configureSecurityEntity(InvolvedPartyXProductTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public java.lang.String getId()
 	{
 		return this.id;

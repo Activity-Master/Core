@@ -75,6 +75,12 @@ public class EventXRules
 		this.id = eventXRulesID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventXRulesSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;

@@ -132,6 +132,12 @@ public class Event
 		this.id = eventID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(EventSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public int getDayID()
 	{
 		return dayID;

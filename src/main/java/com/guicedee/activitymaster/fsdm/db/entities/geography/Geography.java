@@ -133,6 +133,12 @@ public class Geography
 		
 	}
 	
+	@Override
+	public void configureSecurityEntity(GeographySecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public List<GeographyXClassification> getClassifications()
 	{
 		return this.classifications;

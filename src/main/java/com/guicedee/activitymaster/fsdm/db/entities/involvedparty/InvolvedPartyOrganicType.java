@@ -85,6 +85,12 @@ public class InvolvedPartyOrganicType
 	}
 	
 	@Override
+	public void configureSecurityEntity(InvolvedPartyOrganicTypeSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public String toString()
 	{
 		return "OrganicPartyType - " + getName();

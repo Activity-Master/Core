@@ -130,6 +130,12 @@ public class ResourceItem
 	}
 	
 	@Override
+	public void configureSecurityEntity(ResourceItemSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
+	@Override
 	public IResourceItem<?, ?> updateDataTypeValue(String newValue)
 	{
 		setResourceItemDataType(newValue);

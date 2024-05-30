@@ -69,6 +69,12 @@ public class ClassificationDataConceptXClassification
 		this.id = classificationDataConceptXClassificationID;
 	}
 	
+	@Override
+	public void configureSecurityEntity(ClassificationDataConceptXClassificationSecurityToken securityEntity)
+	{
+		securityEntity.setBase(this);
+	}
+	
 	public java.lang.String getId()
 	{
 		return this.id;
