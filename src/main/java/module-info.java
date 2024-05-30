@@ -96,7 +96,7 @@ module com.guicedee.activitymaster.fsdm {
 	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 	
 	provides IGuicePreStartup with FSDMHazelcastPreStartup;
-	provides IGuicePostStartup with ActivityMasterPostStartup,DataCleanupPostStartup;
+	provides IGuicePostStartup with ActivityMasterPostStartup;
 	
 	
 	uses IOnSystemUpdate;

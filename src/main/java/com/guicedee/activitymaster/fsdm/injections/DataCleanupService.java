@@ -70,6 +70,8 @@ public class DataCleanupService
 								 System.out.println("Enterprise requires a security refresh");
 								 ISecurityToken<?,?> adminFolder = securityTokenService.getAdministratorsFolder(activityMasterSystem, null);
 								 System.out.println("Admin folder exists...");
+								 System.out.println("Reinstall Application....");
+								 
 							 }
 						 }catch (Throwable e)
 						 {
