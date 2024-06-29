@@ -12,7 +12,6 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.Enterpri
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import java.util.NoSuchElementException;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
@@ -66,20 +65,20 @@ public class ClassificationsDataConceptService
 	}
 	
 	@Override
-	@CacheResult(cacheName = "GetGlobalConcept")
+	//@CacheResult(cacheName = "GetGlobalConcept")
 	public ClassificationDataConcept getGlobalConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(GlobalClassificationsDataConceptName, system, identityToken);
 	}
 	
 	@Override
-	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystem")
+	//@CacheResult(cacheName = "FindConceptWithConceptValueAndSystem")
 	public ClassificationDataConcept find(@CacheKey EnterpriseClassificationDataConcepts name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(name.classificationValue(), system, identityToken);
 	}
 	@Transactional()
-	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
+	//@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
 	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
@@ -95,14 +94,14 @@ public class ClassificationsDataConceptService
 	}
 	
 	@Override
-	@CacheResult(cacheName = "NoDataConcept")
+	//@CacheResult(cacheName = "NoDataConcept")
 	public ClassificationDataConcept getNoConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(NoClassificationDataConceptName, system, identityToken);
 	}
 	
 	@Override
-	@CacheResult(cacheName = "SecurityHierarchyConcept")
+	//@CacheResult(cacheName = "SecurityHierarchyConcept")
 	public ClassificationDataConcept getSecurityHierarchyConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken, system, identityToken);

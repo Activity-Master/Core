@@ -263,10 +263,8 @@
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.max_fetch_depth" value="1"/>
 
-
-
-            <!--<property name="hibernate.enhancer.enableLazyInitialization" value="false"/>
-            <property name="hibernate.enhancer.enableDirtyTracking" value="false"/>-->
+            <property name="hibernate.enhancer.enableLazyInitialization" value="true"/>
+            <property name="hibernate.enhancer.enableDirtyTracking" value="true"/>
 
         </properties>
 

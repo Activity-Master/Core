@@ -24,7 +24,6 @@ import io.github.classgraph.ClassInfo;
 import jakarta.validation.constraints.NotNull;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -233,7 +232,7 @@ public class EnterpriseService
 	}
 	@Transactional()
 	@Override
-	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
+	//@CacheResult(cacheName = "FindEnterpriseWithClassifications")
 	public List<IEnterprise<?,?>> findEnterprisesWithClassification(@CacheKey IClassification<?,?> classification)
 	{
 		List<java.lang.String> classy = new EnterpriseXClassification().builder()
@@ -258,7 +257,7 @@ public class EnterpriseService
 	}
 	@Transactional()
 	@Override
-	@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
+	//@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
 	public IEnterprise<?,?> getEnterprise(@CacheKey String name)
 	{
 		return new Enterprise().builder()
@@ -270,7 +269,7 @@ public class EnterpriseService
 	
 	@Transactional()
 	@Override
-	@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
+	//@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
 	public IEnterprise<?,?> getEnterprise(@CacheKey UUID uuid)
 	{
 		return new Enterprise().builder()
@@ -297,7 +296,7 @@ public class EnterpriseService
 		                                     .getAll());
 	}
 	@Transactional()
-	@CacheResult
+	//@CacheResult
 	@Override
 	public IEnterprise<?,?> getIEnterpriseFromName(@CacheKey String enterprise)
 	{
@@ -307,7 +306,7 @@ public class EnterpriseService
 		                       .orElseThrow(() -> new EnterpriseException("No Enterprise for the given name"));
 	}
 	@Transactional()
-	@CacheResult
+	//@CacheResult
 	@Override
 	public IEnterprise<?,?> getIEnterpriseFromID(@CacheKey UUID enterprise)
 	{
@@ -377,8 +376,9 @@ public class EnterpriseService
 		logProgress("System Configuration", "Starting system updates", 1);
 		loadUpdates(enterprise);
 		logProgress("System Configuration", "Done", 1);
-		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
-		                                 .setSecurityEnabled(true);
+		//todo securities
+	//	com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
+	//	                                 .setSecurityEnabled(true);
 	}
 	
 	@Transactional()

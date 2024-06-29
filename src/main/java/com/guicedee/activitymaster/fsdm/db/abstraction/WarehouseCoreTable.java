@@ -47,8 +47,9 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 	@Override
 	public void createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identity)
 	{
-		if (ActivityMasterConfiguration.get()
-		                               .isSecurityEnabled())
+		/*if (ActivityMasterConfiguration.get()
+		                               .isSecurityEnabled())*/
+		if(false)
 		{
 			createDefaultAdministratorSecurityAccess(system, identity);
 			createDefaultEveryoneSecurityAccess(system, identity);

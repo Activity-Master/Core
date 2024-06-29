@@ -1,8 +1,7 @@
 package com.guicedee.activitymaster.fsdm.injections;
 
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.fsdm.client.services.ISecurityTokenService;
-import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
+import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
@@ -71,6 +70,9 @@ public class DataCleanupService
 								 ISecurityToken<?,?> adminFolder = securityTokenService.getAdministratorsFolder(activityMasterSystem, null);
 								 System.out.println("Admin folder exists...");
 								 System.out.println("Reinstall Application....");
+								 IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+								 enterpriseService.createNewEnterprise(enterpise);
+								 System.out.println("Done reinstalling Enterprise...");
 								 
 							 }
 						 }catch (Throwable e)

@@ -19,7 +19,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.Resour
 import jakarta.persistence.criteria.*;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -270,7 +269,7 @@ public class ResourceItemService
 	
 	@Transactional()
 	@Override
-	@CacheResult(cacheName = "FindResourceItemTypeString")
+	//@CacheResult(cacheName = "FindResourceItemTypeString")
 	public IResourceItemType<?, ?> findResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ResourceItemType xr = new ResourceItemType();

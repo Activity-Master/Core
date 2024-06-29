@@ -15,7 +15,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationQueryBuilder;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications.*;
@@ -111,18 +110,12 @@ public class ClassificationService
 			rootCl.setActiveFlagID(activeFlag);
 			rootCl.setConcept(dataConcept);
 			rootCl.persist();
-			rootCl.builder()
-			      .getEntityManager()
-			      .flush();
-			
-			
 			rootCl.createDefaultSecurity(system, identityToken);
 			
 			if (parent != null && !NoClassification.toString()
 			                                       .equals(name))
 			{
 				parent = (Classification) find(parent.getName(), system, identityToken);
-				rootCl = (Classification) find(name, system, identityToken);
 				@SuppressWarnings("unchecked")
 				IClassification<Classification, ClassificationQueryBuilder> pp = (IClassification<Classification, ClassificationQueryBuilder>) parent;
 				pp.addChild(rootCl, NoClassification.toString(), null, system, identityToken);
@@ -135,7 +128,7 @@ public class ClassificationService
 		return rootCl;
 	}
 	
-	@CacheResult(cacheName = "ClassificationFindWithSimpleString")
+	//@CacheResult(cacheName = "ClassificationFindWithSimpleString")
 	@Override
 	public IClassification<?, ?> find(@CacheKey String name, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -143,7 +136,7 @@ public class ClassificationService
 	}
 	
 	@Transactional()
-	@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
+	//@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
 	@Override
 	public IClassification<?, ?> find(@CacheKey String name, @CacheKey EnterpriseClassificationDataConcepts concept, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -160,7 +153,7 @@ public class ClassificationService
 	}
 	
 	@Transactional()
-	@CacheResult(cacheName = "GetHierarchyTypeClassification")
+	//@CacheResult(cacheName = "GetHierarchyTypeClassification")
 	@Override
 	public IClassification<?, ?> getHierarchyType(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -170,7 +163,7 @@ public class ClassificationService
 	}
 	
 	@Transactional()
-	@CacheResult(cacheName = "GetNoClassification")
+	//@CacheResult(cacheName = "GetNoClassification")
 	@Override
 	public IClassification<?, ?> getNoClassification(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -180,7 +173,7 @@ public class ClassificationService
 	}
 	
 	@Transactional()
-	@CacheResult(cacheName = "IdentityTypeClassification")
+	//@CacheResult(cacheName = "IdentityTypeClassification")
 	@Override
 	public IClassification<?, ?> getIdentityType(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{

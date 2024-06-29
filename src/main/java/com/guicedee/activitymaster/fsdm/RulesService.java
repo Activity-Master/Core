@@ -17,7 +17,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -162,7 +161,7 @@ public class RulesService
 	}
 	@Transactional()
 	@Override
-	@CacheResult(cacheName = "RulesTypesString")
+	//@CacheResult(cacheName = "RulesTypesString")
 	public IRulesType<?,?> findRulesTypes(@CacheKey String rulesType, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return new RulesType().builder()

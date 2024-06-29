@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
 import com.entityassist.querybuilder.QueryBuilderSCD;
+import com.google.inject.ProvisionException;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import jakarta.persistence.EntityManager;
@@ -44,7 +45,13 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 	@Override
 	public EntityManager getEntityManager()
 	{
-		return com.guicedee.client.IGuiceContext.get(EntityManager.class);
+		try
+		{
+			return com.guicedee.client.IGuiceContext.get(EntityManager.class);
+		}catch (ProvisionException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@Override

@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -94,8 +93,9 @@ public class SecurityTokenSystem
 		
 		logProgress("Security Token Service", "Enabling Security System");
 		System.out.println("Enabling Authentication Modules");
-		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
-		            .setSecurityEnabled(true);
+		//todo enable security
+	//	com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
+		//            .setSecurityEnabled(true);
 	}
 	
 	@Transactional

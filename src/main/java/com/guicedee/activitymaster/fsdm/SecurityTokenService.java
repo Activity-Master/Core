@@ -17,7 +17,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import jakarta.validation.constraints.NotNull;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import java.util.*;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications.*;
@@ -204,7 +203,7 @@ public class SecurityTokenService
 		}*/
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
+	//@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	@Override
 	public ISecurityToken<?,?> getEveryoneGroup(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -220,7 +219,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
+	//@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
 	@Override
 	public ISecurityToken<?,?> getEverywhereGroup(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -236,7 +235,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
+	//@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
 	@Override
 	public ISecurityToken<?,?> getGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -252,7 +251,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
+	//@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
 	@Override
 	public ISecurityToken<?,?> getRegisteredGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -268,7 +267,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
+	//@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
 	@Override
 	public ISecurityToken<?,?> getVisitorsGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -284,7 +283,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
+	//@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
 	@Override
 	public ISecurityToken<?,?> getAdministratorsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -300,7 +299,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
+	//@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
 	@Override
 	public ISecurityToken<?,?> getSystemsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -316,7 +315,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
+	//@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
 	@Override
 	public ISecurityToken<?,?> getPluginsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -332,7 +331,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
+//	@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
 	@Override
 	public ISecurityToken<?,?> getApplicationsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -348,7 +347,7 @@ public class SecurityTokenService
 		return exists.orElseThrow();
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecurityGetSecurityToken")
+//	@CacheResult(cacheName = "SecurityGetSecurityToken")
 	@Override
 	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -364,7 +363,7 @@ public class SecurityTokenService
 		return view;
 	}
 	@Transactional()
-	@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
+	//@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
 	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		SecurityTokenQueryBuilder builder = new SecurityToken().builder();

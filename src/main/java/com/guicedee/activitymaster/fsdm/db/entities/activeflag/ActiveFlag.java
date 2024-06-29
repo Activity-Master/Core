@@ -226,4 +226,10 @@ public class ActiveFlag
 	{
 		return securities;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return getName();
+	}
 }
