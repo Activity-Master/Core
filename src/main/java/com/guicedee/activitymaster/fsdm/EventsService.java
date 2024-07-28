@@ -14,6 +14,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
 
 import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 
@@ -100,7 +101,7 @@ public class EventsService
 	
 	@Transactional()
 	@Override
-	//@CacheResult(cacheName = "EventTypesStrings")
+	@CacheResult(cacheName = "EventTypesStrings")
 	public IEventType<?, ?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return new EventType().builder()

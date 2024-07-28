@@ -22,6 +22,7 @@ import jakarta.persistence.criteria.JoinType;
 import lombok.extern.java.Log;
 
 import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class InvolvedPartyService
 	
 	@Transactional()
 	@Override
-	//@CacheResult(cacheName = "InvovledPartyByID")
+	@CacheResult(cacheName = "InvovledPartyByID")
 	public IInvolvedParty<?, ?> findByID(@CacheKey UUID id)
 	{
 		return new InvolvedParty().builder()
@@ -189,7 +190,7 @@ public class InvolvedPartyService
 	}
 	
 	@Transactional()
-	//@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
+	@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
 	@Override
 	public IInvolvedPartyIdentificationType<?, ?> findInvolvedPartyIdentificationType(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -205,7 +206,7 @@ public class InvolvedPartyService
 	
 	@Transactional()
 	@Override
-	//@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
+	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
 	public IInvolvedParty<?, ?> findByResourceItem(@CacheKey IResourceItem<?, ?> idType, @CacheKey String value, ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		Optional<InvolvedPartyXResourceItem> builder = new InvolvedPartyXResourceItem()
@@ -292,7 +293,7 @@ public class InvolvedPartyService
 	}
 	
 	@Transactional()
-	//@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
+	@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
 	@Override
 	public IInvolvedPartyType<?, ?> findType(@CacheKey String nameType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -308,7 +309,7 @@ public class InvolvedPartyService
 	}
 	
 	@Transactional()
-	//@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
+	@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
 	@Override
 	public IInvolvedPartyNameType<?, ?> findInvolvedPartyNameType(@CacheKey String nameType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -325,7 +326,7 @@ public class InvolvedPartyService
 	
 	@Transactional()
 	@Override
-	//@CacheResult(cacheName = "InvolvedPartyFindByToken")
+	@CacheResult(cacheName = "InvolvedPartyFindByToken")
 	public IInvolvedParty<?, ?> findByToken(@CacheKey ISecurityToken<?, ?> token, @CacheKey java.util.UUID... identityToken)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
@@ -384,7 +385,7 @@ public class InvolvedPartyService
 	
 	@Transactional()
 	@Override
-	//@CacheResult(cacheName = "InvolvedPartyFindByUUID")
+	@CacheResult(cacheName = "InvolvedPartyFindByUUID")
 	public IInvolvedParty<?, ?> findByUUID(@CacheKey UUID token, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();

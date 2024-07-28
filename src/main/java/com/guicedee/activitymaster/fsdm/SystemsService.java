@@ -18,6 +18,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassificati
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 
 import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,14 +43,14 @@ public class SystemsService
 	}
 	
 	@Override
-	//@CacheResult(cacheName = "GetActivityMaster")
+	@CacheResult(cacheName = "GetActivityMaster")
 	public ISystems<?, ?> getActivityMaster(@CacheKey ISystems<?, ?> requestingSystem, @CacheKey java.util.UUID... identityToken)
 	{
 		return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
 	}
 	
 	@Override
-	//@CacheResult(cacheName = "GetActivityMasterEnterprise")
+	@CacheResult(cacheName = "GetActivityMasterEnterprise")
 	public ISystems<?, ?> getActivityMaster(@CacheKey IEnterprise<?, ?> requestingSystem, java.util.UUID... identityToken)
 	{
 		return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
@@ -68,7 +69,7 @@ public class SystemsService
 	}
 	
 	@Transactional()
-	//@CacheResult(cacheName = "FindSystemEnterpriseLevel")
+	@CacheResult(cacheName = "FindSystemEnterpriseLevel")
 	@Override
 	public ISystems<?, ?> findSystem(@CacheKey IEnterprise<?, ?> enterprise, @CacheKey String systemName, java.util.UUID... identityToken)
 	{
@@ -84,7 +85,7 @@ public class SystemsService
 	}
 	
 	@Transactional()
-	//@CacheResult(cacheName = "FindSystemByIdentityClassification")
+	@CacheResult(cacheName = "FindSystemByIdentityClassification")
 	@Override
 	public ISystems<?, ?> findSystem(@CacheKey ISystems<?, ?> requestingSystem, @CacheKey String parentSystem, java.util.UUID... identityToken)
 	{
@@ -176,7 +177,7 @@ public class SystemsService
 	}
 	
 	@Transactional()
-	//@CacheResult(cacheName = "SystemGetSecurityToken")
+	@CacheResult(cacheName = "SystemGetSecurityToken")
 	public ISecurityToken<?, ?> getSecurityToken(@CacheKey String uuidIdentity, @CacheKey ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Optional<SecurityToken> token = new SecurityToken().builder()
@@ -197,7 +198,7 @@ public class SystemsService
 	}
 	
 	
-	//@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
+	@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
 	@Override
 	public UUID getSecurityIdentityToken(@CacheKey ISystems<?, ?> system, java.util.UUID... identityToken)
 	{

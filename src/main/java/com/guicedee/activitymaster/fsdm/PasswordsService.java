@@ -20,6 +20,7 @@ import com.guicedee.guicedinjection.pairing.Pair;
 import jakarta.validation.constraints.NotNull;
 
 import javax.cache.annotation.CacheRemove;
+import javax.cache.annotation.CacheResult;
 import java.util.*;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
@@ -116,7 +117,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	
 	@Transactional()
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	//@CacheResult(cacheName = "UsersList")
+	@CacheResult(cacheName = "UsersList")
 	@Override
 	public List<IInvolvedParty<?, ?>> getAllUsers(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{

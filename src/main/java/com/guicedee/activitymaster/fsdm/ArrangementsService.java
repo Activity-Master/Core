@@ -26,6 +26,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import jakarta.persistence.criteria.JoinType;
 
 import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -99,7 +100,7 @@ public class ArrangementsService
 	
 	@Transactional()
 	@Override
-	//@CacheResult(cacheName = "ArrangementTypes")
+	@CacheResult(cacheName = "ArrangementTypes")
 	//@Transactional()
 	public IArrangementType<?, ?> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -672,7 +673,7 @@ public class ArrangementsService
 	}
 	
 	@Transactional()
-	//@CacheResult(cacheName = "ArrangementArrangementTypeString")
+	@CacheResult(cacheName = "ArrangementArrangementTypeString")
 	@Override
 	public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -689,7 +690,7 @@ public class ArrangementsService
 	
 	@Transactional()
 	@Override
-	//@CacheResult
+	@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Arrangement xr = new Arrangement();
@@ -701,7 +702,7 @@ public class ArrangementsService
 	
 	@Transactional()
 	@Override
-	//@CacheResult
+	@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.lang.String id)
 	{
 		Arrangement xr = new Arrangement();
