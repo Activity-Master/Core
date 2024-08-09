@@ -42,7 +42,7 @@ public class ActiveFlagService
 	}
 	
 	@Transactional()
-	private boolean doesFlagExist(String flagName, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
+	boolean doesFlagExist(String flagName, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		return new ActiveFlag().builder()
 		                       .withName(flagName)

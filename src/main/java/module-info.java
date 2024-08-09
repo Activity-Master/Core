@@ -53,6 +53,7 @@ module com.guicedee.activitymaster.fsdm {
 	requires com.guicedee.guicedhazelcast;
 	requires org.apache.commons.compress;
 	requires tm.bitronix.btm;
+	requires org.jboss.logging;
 	
 	provides IGuiceModule with
 			EventInterceptorsBinder,

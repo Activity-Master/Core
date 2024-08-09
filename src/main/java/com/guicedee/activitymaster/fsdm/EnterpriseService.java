@@ -196,8 +196,13 @@ public class EnterpriseService
 		{
 			Integer key = entry.getKey();
 			Class<? extends ISystemUpdate> value = entry.getValue();
+			String classValue = value.getCanonicalName();
+			if(classValue.contains("$$EnhancerByGuice$$"))
+			{
+				classValue = classValue.substring(0, classValue.indexOf("$$EnhancerByGuice$$"));
+			}
 			SortedUpdate du = value.getAnnotation(SortedUpdate.class);
-			if (!enterpriseAppliedUpdates.contains(value.getCanonicalName()) || du.force())
+			if (!enterpriseAppliedUpdates.contains(classValue) || du.force())
 			{
 				applicableUpdates.put(key, value);
 			}

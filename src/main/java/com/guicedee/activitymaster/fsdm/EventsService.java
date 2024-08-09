@@ -1,7 +1,8 @@
 package com.guicedee.activitymaster.fsdm;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
+import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -12,12 +13,18 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.EventException;
 import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
+import com.guicedee.client.IGuiceContext;
+import lombok.extern.java.Log;
+import org.jboss.logmanager.Level;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 
+@Log
 public class EventsService
 		implements IEventService<EventsService>
 {
@@ -29,7 +36,7 @@ public class EventsService
 	{
 		return new Event();
 	}
-	@Transactional()
+	
 	@Override
 	public IEvent<?, ?> find(java.lang.String id)
 	{
@@ -38,36 +45,53 @@ public class EventsService
 		                  .get()
 		                  .orElse(null);
 	}
-	@Transactional()
+	
 	@Override
-	public IEvent<?, ?> createEvent(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public CompletableFuture<IEvent<?, ?>> createEvent(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return createEvent(eventType, null, system, identityToken);
 	}
 	
 	@Override
-	@Transactional()
-	public IEvent<?, ?> createEvent(String eventType, java.lang.String key, ISystems<?, ?> system, java.util.UUID... identityToken)
+	
+	public CompletableFuture<IEvent<?, ?>> createEvent(String eventType, java.lang.String key, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Event event = new Event();
-		if(key != null)
-		event.setId(key);
-		event.setEnterpriseID(enterprise);
-		event.setSystemID(system);
-		event.setOriginalSourceSystemID(system);
-		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-		event.setActiveFlagID(activeFlag);
-		event.persist();
-		event.createDefaultSecurity(system, identityToken);
+		if (key != null)
+		{
+			event.setId(key);
+		}
 		
-		event.addEventTypes(eventType, "", NoClassification.toString(), system, identityToken);
-		return event;
+		TransactionalSupplier<IEvent<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
+		ts.setConsumer(() -> {
+			event.setEnterpriseID(enterprise);
+			event.setSystemID(system);
+			event.setOriginalSourceSystemID(system);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			event.setActiveFlagID(activeFlag);
+			event.persist();
+			event.createDefaultSecurity(system, identityToken);
+			
+			event.addEventTypes(eventType, "", NoClassification.toString(), system, identityToken);
+			return event;
+		});
+		
+		return CompletableFuture.supplyAsync(ts).whenComplete((response, error) -> {
+			if (error != null)
+			{
+				log.log(Level.SEVERE, "Could not save event type!", error);
+			}
+			else
+			{
+				log.finer("Saved new event");
+			}
+		});
 	}
 	
 	@Override
-	@Transactional()
-	public IEventType<?, ?> createEventType(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
+	
+	public CompletableFuture<IEventType<?, ?>> createEventType(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		EventType et = new EventType();
 		
@@ -80,26 +104,53 @@ public class EventsService
 		
 		if (!exists)
 		{
-			et.setName(eventType);
-			et.setDescription(eventType);
-			et.setSystemID(system);
-			et.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-			et.setActiveFlagID(activeFlag);
-			et.setOriginalSourceSystemID(system);
-			et.persist();
-			et.createDefaultSecurity(system, identityToken);
+			if (Strings.isNullOrEmpty(et.getId()))
+			{
+				et.setId(UUID.randomUUID()
+				             .toString());
+			}
 			
-			return et;
+			TransactionalSupplier<IEventType<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
+			ts.setConsumer(() -> {
+				EventType etBuilt = new EventType();
+				
+				etBuilt.setId(et.getId());
+				etBuilt.setName(eventType);
+				etBuilt.setDescription(eventType);
+				etBuilt.setSystemID(system);
+				etBuilt.setEnterpriseID(enterprise);
+				IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+				IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+				etBuilt.setActiveFlagID(activeFlag);
+				etBuilt.setOriginalSourceSystemID(system);
+				etBuilt.persist();
+				
+				etBuilt.createDefaultSecurity(system, identityToken);
+				return etBuilt;
+			});
+			
+			return CompletableFuture.supplyAsync(ts)
+			                        .whenComplete((response, error) -> {
+				                        if (error != null)
+				                        {
+					                        log.log(Level.SEVERE, "Could not save event type!", error);
+				                        }
+				                        else
+				                        {
+					                        log.fine("Saved event type: " + et.getName());
+				                        }
+			                        });
+			//return et;
 		}
 		else
 		{
-			return findEventType(eventType, system, identityToken);
+			return CompletableFuture.supplyAsync(() -> {
+				return findEventType(eventType, system, identityToken);
+			});
 		}
 	}
 	
-	@Transactional()
+	
 	@Override
 	@CacheResult(cacheName = "EventTypesStrings")
 	public IEventType<?, ?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)

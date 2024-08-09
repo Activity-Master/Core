@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -17,6 +18,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.geography.GeographyXResource
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
+import com.guicedee.client.IGuiceContext;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -24,6 +26,7 @@ import lombok.extern.java.Log;
 
 import java.io.Serial;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 import static com.entityassist.enumerations.Operand.*;
@@ -217,29 +220,39 @@ public class ResourceItem
 	
 	//@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override
-	public void updateData(byte[] data, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public CompletableFuture<Void> updateData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
 	{
-		//	System.out.println(LocalDateTime.now() + " start zip - " + data.length);
 		if (data == null || data.length == 0)
 		{
 			throw new RuntimeException("Cannot store 0 data into a resource item");
 		}
 		//	System.out.println(LocalDateTime.now() + " start search");
-		Optional<ResourceItemData> d
-				= new ResourceItemData().builder()
-				                        .inActiveRange()
-				                        //    .inDateRange()
-				                        .where(ResourceItemData_.resource, Equals, this)
-				                        .latestFirst()
-				                        .setReturnFirst(true)
-				                        .get();
-		if (d.isPresent())
-		{
-			ResourceItemData rid = d.get();
-			rid.setResourceItemData(data);
-			rid.update();
-		}
 		
+		//	System.out.println(LocalDateTime.now() + " start zip - " + data.length);
+		TransactionalSupplier<Void> ts = IGuiceContext.get(TransactionalSupplier.class);
+		ts.setConsumer(() -> {
+			  Optional<ResourceItemData> d
+					  = new ResourceItemData().builder()
+					                          .inActiveRange()
+					                          //    .inDateRange()
+					                          .where(ResourceItemData_.resource, Equals, this)
+					                          .latestFirst()
+					                          .setReturnFirst(true)
+					                          .get();
+			  if (d.isPresent())
+			  {
+				  ResourceItemData rid = d.get();
+				  rid.setResourceItemData(data);
+				  rid.update();
+			  }
+			return null;
+		});
+		return CompletableFuture.supplyAsync(ts).whenComplete((response, error) -> {
+			if (error != null)
+			{
+				log.log(Level.SEVERE, "Error search for resource item update", error);
+			}
+		});
 	}
 	
 	@Override

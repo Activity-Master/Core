@@ -74,13 +74,13 @@ public class EventsAOPInterceptor implements MethodInterceptor
 		}
 		if (eventThreads.get() == null)
 		{
-			event = eventService.createEvent(eventAnnotation.value(), system, identityToken);
+			event = eventService.createEvent(eventAnnotation.value(), system, identityToken).get();
 			eventThreads.set(event);
 		}
 		else
 		{
 			previousEvent = eventThreads.get();
-			event = eventService.createEvent(eventAnnotation.value(), system, identityToken);
+			event = eventService.createEvent(eventAnnotation.value(), system, identityToken).get();
 			eventThreads.set(event);
 			
 			previousEvent.addChild((IWarehouseTable<?, ?, String, ?>) event, eventAnnotation.parentHierarchyClassificationName(), null, system, identityToken);

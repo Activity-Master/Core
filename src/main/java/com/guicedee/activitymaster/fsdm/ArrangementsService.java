@@ -4,7 +4,7 @@ import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
+import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
@@ -23,13 +23,17 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
+import com.guicedee.client.IGuiceContext;
 import jakarta.persistence.criteria.JoinType;
+import lombok.extern.java.Log;
+import org.jboss.logmanager.Level;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.entityassist.SCDEntity.*;
@@ -37,7 +41,7 @@ import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 
-
+@Log
 public class ArrangementsService
 		implements IArrangementsService<ArrangementsService>
 {
@@ -53,74 +57,105 @@ public class ArrangementsService
 		return new Arrangement();
 	}
 	
-	@Transactional()
+	
 	@Override
-	public IArrangement<?, ?> create(String type,
-	                                 String arrangementTypeClassification,
-	                                 String arrangementTypeValue,
-	                                 ISystems<?, ?> system,
-	                                 java.util.UUID... identityToken)
+	public CompletableFuture<IArrangement<?, ?>> create(String type,
+	                                                    String arrangementTypeClassification,
+	                                                    String arrangementTypeValue,
+	                                                    ISystems<?, ?> system,
+	                                                    UUID... identityToken)
 	{
 		return create(type, null, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
 	}
 	
-	@Transactional()
+	
 	@Override
-	public IArrangement<?, ?> create(String type, java.lang.String key,
-	                                 String arrangementTypeClassification,
-	                                 String arrangementTypeValue,
-	                                 ISystems<?, ?> system,
-	                                 java.util.UUID... identityToken)
+	public CompletableFuture<IArrangement<?, ?>> create(String type, String key,
+	                                                    String arrangementTypeClassification,
+	                                                    String arrangementTypeValue,
+	                                                    ISystems<?, ?> system,
+	                                                    UUID... identityToken)
 	{
-		ArrangementType arrangementType = (ArrangementType) find(type, system);
 		Arrangement xr = new Arrangement();
-		xr.setId(key);
-		xr.setSystemID(system);
-		xr.setOriginalSourceSystemID(system);
-		xr.setEnterpriseID(arrangementType.getEnterpriseID());
-		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(arrangementType.getEnterprise());
-		xr.setActiveFlagID(activeFlag);
-		xr.persist();
+		if (key != null)
+			xr.setId(key);
+		else
+		{
+			xr.setId(UUID.randomUUID()
+			             .toString());
+		}
+		ArrangementType arrangementType = (ArrangementType) find(type, system);
 		
-		xr.createDefaultSecurity(system, identityToken);
+		TransactionalSupplier<IArrangement<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
+		ts.setConsumer(()->{
+			xr.setSystemID(system);
+			xr.setOriginalSourceSystemID(system);
+			xr.setEnterpriseID(arrangementType.getEnterpriseID());
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(arrangementType.getEnterprise());
+			xr.setActiveFlagID(activeFlag);
+			xr.persist();
+			xr.createDefaultSecurity(system, identityToken);
+			
+			xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
+							arrangementTypeValue, arrangementTypeValue, system, identityToken);
+			return xr;
+		});
 		
-		var xarxr =
-				xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
-						arrangementTypeValue, arrangementTypeValue, system, identityToken);
-		
-		return xr;
+		return CompletableFuture.supplyAsync(ts).whenComplete((response,error)->{
+			if (error != null)
+			{
+				log.log(Level.SEVERE, "Could not save event type!", error);
+			}
+			else
+			{
+				log.fine("Saved new arrangement with type : " + arrangementType.getName() + " / " + response.getId());
+			}
+		});
 	}
 	
 	@Override
-	public IArrangementType<?, ?> createArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public CompletableFuture<IArrangementType<?, ?>> createArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return createArrangementType(type, null, system, identityToken);
 	}
 	
-	@Transactional()
 	@Override
 	@CacheResult(cacheName = "ArrangementTypes")
-	//@Transactional()
-	public IArrangementType<?, ?> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+	//
+	public CompletableFuture<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ArrangementType xr = new ArrangementType();
 		xr.setId(key);
-		xr.setName(type);
-		xr.setDescription(type);
-		xr.setSystemID(system);
-		xr.setOriginalSourceSystemID(system);
-		xr.setEnterpriseID(enterprise);
-		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-		xr.setActiveFlagID(activeFlag);
-		xr.persist();
-		xr.createDefaultSecurity(system, identityToken);
 		
-		return xr;
+		TransactionalSupplier<IArrangementType<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
+		ts.setConsumer(()->{
+			xr.setName(type);
+			xr.setDescription(type);
+			xr.setSystemID(system);
+			xr.setOriginalSourceSystemID(system);
+			xr.setEnterpriseID(enterprise);
+			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+			xr.setActiveFlagID(activeFlag);
+			xr.persist();
+			xr.createDefaultSecurity(system, identityToken);
+			return xr;
+		});
+		
+		return CompletableFuture.supplyAsync(ts).whenComplete((response,error)->{
+			if (error != null)
+			{
+				log.log(Level.SEVERE, "Could not save event type!", error);
+			}
+			else
+			{
+				log.fine("Saved arrangement type: " + response.getName());
+			}
+		});
 	}
 	
-	@Transactional()
+	
 	@Override
 	public IArrangementType<?, ?> findArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -134,7 +169,7 @@ public class ArrangementsService
 		         .orElseThrow(() -> new ArrangementException("Unable to find arrangement type - " + type));
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findInvolvedPartyArrangements(IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
@@ -155,7 +190,7 @@ public class ArrangementsService
 		           .collect(Collectors.toList());
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassification(String classificationName, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
@@ -183,7 +218,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationGT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
@@ -226,7 +261,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationGTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
@@ -269,7 +304,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationGTEWithIP(String arrangementType, String classificationName,
 	                                                                          IInvolvedParty<?, ?> withInvolvedParty,
@@ -378,7 +413,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationLT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
@@ -421,7 +456,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassificationLTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
@@ -464,7 +499,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByClassification(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
 	{
@@ -512,7 +547,7 @@ public class ArrangementsService
 		return (List) arrangementList;
 	}
 	
-	@Transactional()
+	
 	@Override
 	public IArrangement<?, ?> findArrangementByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -534,7 +569,7 @@ public class ArrangementsService
 		                               .orElse(null);
 	}
 	
-	@Transactional()
+	
 	@Override
 	public IArrangement<?, ?> findArrangementByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -556,7 +591,7 @@ public class ArrangementsService
 		            .orElse(null);
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByRulesType(IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -580,7 +615,7 @@ public class ArrangementsService
 		return collect;
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -603,7 +638,7 @@ public class ArrangementsService
 		          .collect(Collectors.toList());
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -626,7 +661,7 @@ public class ArrangementsService
 		          .collect(Collectors.toList());
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -649,7 +684,7 @@ public class ArrangementsService
 		            .collect(Collectors.toList());
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IInvolvedParty<?, ?>> findArrangementInvolvedParties(IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -672,7 +707,7 @@ public class ArrangementsService
 		            .collect(Collectors.toList());
 	}
 	
-	@Transactional()
+	
 	@CacheResult(cacheName = "ArrangementArrangementTypeString")
 	@Override
 	public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
@@ -688,7 +723,7 @@ public class ArrangementsService
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement type - " + idType));
 	}
 	
-	@Transactional()
+	
 	@Override
 	@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
@@ -700,7 +735,7 @@ public class ArrangementsService
 		         .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement with ID " + id));
 	}
 	
-	@Transactional()
+	
 	@Override
 	@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.lang.String id)
@@ -712,7 +747,7 @@ public class ArrangementsService
 		         .orElse(null);
 	}
 	
-	@Transactional()
+	
 	@Override
 	public List<IArrangement<?, ?>> findAll(String arrangementType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
