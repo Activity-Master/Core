@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
+import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -16,12 +17,14 @@ import com.guicedee.activitymaster.fsdm.client.services.exceptions.SecurityAcces
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
+import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import jakarta.validation.constraints.NotNull;
 
 import javax.cache.annotation.CacheRemove;
 import javax.cache.annotation.CacheResult;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.*;
@@ -182,27 +185,44 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		IInvolvedParty<?, ?> administratorUser;
 		if (exists.isEmpty())
 		{
-			InvolvedParty adminUser = (InvolvedParty) service.create(system, pair, true);
-			
-			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeUserName.toString(),
-					adminUserName, system, identityToken);
-			
-			adminUser.addOrReuseInvolvedPartyType(NoClassification.toString(), IPTypes.TypeIndividual.toString(), "Creator Individual", system, identityToken);
-			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), PreferredNameType.toString(), "Enterprise Creator", system, identityToken);
-			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), CommonNameType.toString(), "Enterprise Creator", system, identityToken);
-			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FullNameType.toString(), "Enterprise Creator", system, identityToken);
-			adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FirstNameType.toString(), "Administrator", system, identityToken);
-			
-			get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity.toString(),
-					adminUserName,
-					"The creator of the enterprise", system, administratorsGroup, identityToken);
-			
-			adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(),
-					adminUserName, system, identityToken);
-			
-			addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, system, identityToken);
-			adminUser.createDefaultSecurity(system, identityToken);
-			administratorUser = adminUser;
+			var c = service.create(system, pair, true)
+					.whenComplete((adminUser,error)->{
+						TransactionalSupplier<IInvolvedParty<?,?>> ts = IGuiceContext.get(TransactionalSupplier.class);
+						ts.setConsumer(()->{
+							adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeUserName.toString(),
+									adminUserName, system, identityToken);
+							
+							adminUser.addOrReuseInvolvedPartyType(NoClassification.toString(), IPTypes.TypeIndividual.toString(), "Creator Individual", system, identityToken);
+							adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), PreferredNameType.toString(), "Enterprise Creator", system, identityToken);
+							adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), CommonNameType.toString(), "Enterprise Creator", system, identityToken);
+							adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FullNameType.toString(), "Enterprise Creator", system, identityToken);
+							adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FirstNameType.toString(), "Administrator", system, identityToken);
+							
+							get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity.toString(),
+									adminUserName,
+									"The creator of the enterprise", system, administratorsGroup, identityToken);
+							
+							adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(),
+									adminUserName, system, identityToken);
+							
+							addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, system, identityToken);
+							((InvolvedParty)adminUser).createDefaultSecurity(system, identityToken);
+							return adminUser;
+						});
+					})
+					;
+			try
+			{
+				administratorUser = c.get();
+			}
+			catch (InterruptedException e)
+			{
+				throw new RuntimeException(e);
+			}
+			catch (ExecutionException e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
 		else
 		{

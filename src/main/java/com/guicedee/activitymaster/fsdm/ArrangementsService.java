@@ -4,6 +4,7 @@ import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalConsumer;
 import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -29,7 +30,6 @@ import lombok.extern.java.Log;
 import org.jboss.logmanager.Level;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -76,40 +76,48 @@ public class ArrangementsService
 	                                                    ISystems<?, ?> system,
 	                                                    UUID... identityToken)
 	{
-		Arrangement xr = new Arrangement();
-		if (key != null)
-			xr.setId(key);
-		else
-		{
-			xr.setId(UUID.randomUUID()
-			             .toString());
-		}
-		ArrangementType arrangementType = (ArrangementType) find(type, system);
-		
 		TransactionalSupplier<IArrangement<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
-		ts.setConsumer(()->{
+		ts.setConsumer(() -> {
+			Arrangement xr = new Arrangement();
+			if (key != null)
+			{
+				xr.setId(key);
+			}
+			else
+			{
+				xr.setId(UUID.randomUUID()
+				             .toString());
+			}
 			xr.setSystemID(system);
 			xr.setOriginalSourceSystemID(system);
-			xr.setEnterpriseID(arrangementType.getEnterpriseID());
+			xr.setEnterpriseID(system.getEnterpriseID());
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(arrangementType.getEnterprise());
+			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterprise());
 			xr.setActiveFlagID(activeFlag);
-			xr.persist();
-			xr.createDefaultSecurity(system, identityToken);
+			xr = xr.persist();
 			
-			xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
-							arrangementTypeValue, arrangementTypeValue, system, identityToken);
 			return xr;
 		});
 		
-		return CompletableFuture.supplyAsync(ts).whenComplete((response,error)->{
+		var cf = CompletableFuture.supplyAsync(ts);
+		cf.thenAcceptAsync((IGuiceContext.get(TransactionalConsumer.class)
+		                                 .setConsumer((response) -> {
+			                                 Arrangement arrangement = (Arrangement) response;
+			                                 ArrangementType arrangementType = (ArrangementType) find(type, system);
+			                                 arrangement.createDefaultSecurity(system, identityToken);
+			                                 arrangement.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
+					                                 arrangementTypeValue, arrangementTypeValue, system, identityToken);
+			                                 
+		                                 })));
+		
+		return cf.whenComplete((response, error) -> {
 			if (error != null)
 			{
 				log.log(Level.SEVERE, "Could not save event type!", error);
 			}
 			else
 			{
-				log.fine("Saved new arrangement with type : " + arrangementType.getName() + " / " + response.getId());
+				log.info("Saved arrangement - " + type + " - " + response.getId() + " - " + arrangementTypeValue);
 			}
 		});
 	}
@@ -121,7 +129,7 @@ public class ArrangementsService
 	}
 	
 	@Override
-	@CacheResult(cacheName = "ArrangementTypes")
+	//@CacheResult(cacheName = "ArrangementTypes")
 	//
 	public CompletableFuture<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -129,7 +137,7 @@ public class ArrangementsService
 		xr.setId(key);
 		
 		TransactionalSupplier<IArrangementType<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
-		ts.setConsumer(()->{
+		ts.setConsumer(() -> {
 			xr.setName(type);
 			xr.setDescription(type);
 			xr.setSystemID(system);
@@ -143,16 +151,17 @@ public class ArrangementsService
 			return xr;
 		});
 		
-		return CompletableFuture.supplyAsync(ts).whenComplete((response,error)->{
-			if (error != null)
-			{
-				log.log(Level.SEVERE, "Could not save event type!", error);
-			}
-			else
-			{
-				log.fine("Saved arrangement type: " + response.getName());
-			}
-		});
+		return CompletableFuture.supplyAsync(ts)
+		                        .whenComplete((response, error) -> {
+			                        if (error != null)
+			                        {
+				                        log.log(Level.SEVERE, "Could not save event type!", error);
+			                        }
+			                        else
+			                        {
+				                        log.fine("Saved arrangement type: " + response.getName());
+			                        }
+		                        });
 	}
 	
 	
@@ -708,7 +717,7 @@ public class ArrangementsService
 	}
 	
 	
-	@CacheResult(cacheName = "ArrangementArrangementTypeString")
+	//@CacheResult(cacheName = "ArrangementArrangementTypeString")
 	@Override
 	public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -725,7 +734,7 @@ public class ArrangementsService
 	
 	
 	@Override
-	@CacheResult
+	//@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Arrangement xr = new Arrangement();
@@ -737,7 +746,7 @@ public class ArrangementsService
 	
 	
 	@Override
-	@CacheResult
+	//@CacheResult
 	public IArrangement<?, ?> find(@CacheKey java.lang.String id)
 	{
 		Arrangement xr = new Arrangement();
@@ -772,6 +781,7 @@ public class ArrangementsService
 	{
 		Arrangement arr = (Arrangement) arrangement;
 		arr.expireIn(Duration.ZERO);
+		arr.update();
 		return arr;
 	}
 }

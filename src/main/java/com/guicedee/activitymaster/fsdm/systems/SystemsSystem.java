@@ -91,17 +91,24 @@ public class SystemsSystem
 		InvolvedPartyService ipService = com.guicedee.client.IGuiceContext.get(InvolvedPartyService.class);
 		try
 		{
-			IInvolvedParty<?, ?> ip = ipService.create(system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), newSystemUUID.toString()), false, activityMasterSystemUUID);
+			var iInvolvedPartyCompletableFuture = ipService.create(system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), newSystemUUID.toString()), false, activityMasterSystemUUID)
+					.whenCompleteAsync((ip,error)->{
+						if(error != null)
+						{
+							log.log(Level.SEVERE, error.getMessage(), error);
+						}else {
+							IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = ipService.findInvolvedPartyIdentificationType(IdentificationTypes.IdentificationTypeSystemID.toString(), system, identityToken);
+							ip.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType, system.getId()
+							                                                                                                                 .toString(), system, activityMasterSystemUUID);
+							
+							IInvolvedPartyType<?, ?> ipType = ipService.findType(IPTypes.TypeSystem.toString(), system, identityToken);
+							ip.addOrReuseInvolvedPartyType(NoClassification.toString(), ipType, newSystemUUID.toString(), system, activityMasterSystemUUID);
+							IInvolvedPartyNameType<?, ?> nameType = ipService.findInvolvedPartyNameType(NameTypes.PreferredNameType.toString(), system, identityToken);
+							ip.addOrReuseInvolvedPartyNameType(NoClassification.toString(), nameType, system.getName(), system, activityMasterSystemUUID);
+						}
+					});
 			
-			IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = ipService.findInvolvedPartyIdentificationType(IdentificationTypes.IdentificationTypeSystemID.toString(), system, identityToken);
-			ip.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType, system.getId()
-			                                                                                                                 .toString(), system, activityMasterSystemUUID);
-			
-			IInvolvedPartyType<?, ?> ipType = ipService.findType(IPTypes.TypeSystem.toString(), system, identityToken);
-			ip.addOrReuseInvolvedPartyType(NoClassification.toString(), ipType, newSystemUUID.toString(), system, activityMasterSystemUUID);
-			IInvolvedPartyNameType<?, ?> nameType = ipService.findInvolvedPartyNameType(NameTypes.PreferredNameType.toString(), system, identityToken);
-			ip.addOrReuseInvolvedPartyNameType(NoClassification.toString(), nameType, system.getName(), system, activityMasterSystemUUID);
-			return ip;
+			return iInvolvedPartyCompletableFuture.get();
 		}
 		catch (Exception e)
 		{
