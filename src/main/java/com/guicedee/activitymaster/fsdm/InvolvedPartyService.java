@@ -1,7 +1,6 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -17,7 +16,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.Invol
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
-import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
 import jakarta.persistence.criteria.JoinType;
 import lombok.extern.java.Log;
@@ -237,81 +235,25 @@ public class InvolvedPartyService
 	public CompletableFuture<IInvolvedParty<?, ?>> create(ISystems<?, ?> system, java.lang.String key, Pair<String, String> idTypes,
 	                                                      boolean isOrganic, java.util.UUID... identityToken)
 	{
-		TransactionalSupplier<IInvolvedParty<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
-		ts.setConsumer(() -> {
-			InvolvedParty ip = new InvolvedParty();
-			ip.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-			
-			ip.setId(key);
-			ip.setActiveFlagID(activeFlag);
-			ip.setSystemID(system);
-			ip.setOriginalSourceSystemID(system);
-			ip.persist();
-			return ip;
-		});
-		var as = CompletableFuture.supplyAsync(ts);
-		as.whenComplete((response, error) -> {
-			if (error != null)
-			{
-				log.log(Level.SEVERE, "Cannot create involved party", error);
-			}
-			else
-			{
-				CompletableFuture.supplyAsync(IGuiceContext.get(TransactionalSupplier.class)
-				                                           .setConsumer(() -> {
-					                                           InvolvedParty i = (InvolvedParty) response;
-					                                           i.createDefaultSecurity(system, identityToken);
-					                                           return i;
-				                                           }))
-				                 .whenComplete((resp, err) -> {
-					                 if (err != null)
-					                 {
-						                 log.log(Level.SEVERE, "Cannot create involved party security", err);
-					                 }
-				                 });
-			}
-		});
+		InvolvedParty ip = new InvolvedParty();
+		ip.setEnterpriseID(enterprise);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		if (key == null)
+		{
+			key = UUID.randomUUID().toString();
+		}
+		ip.setId(key);
+		ip.setActiveFlagID(activeFlag);
+		ip.setSystemID(system);
+		ip.setOriginalSourceSystemID(system);
+		ip = ip.persist();
+		ip.createDefaultSecurity(system, identityToken);
+		IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(idTypes.getKey(), system, identityToken);
+		ip.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType, idTypes.getValue(), idTypes.getValue(), system, identityToken);
+		//setupInvolvedPartyOrganicStatus(isOrganic, ip, system, identityToken);
 		
-		var asId = as.whenCompleteAsync((ip, error) -> {
-			if (error != null)
-			{
-				log.log(Level.SEVERE, "Cannot create involved party", error);
-			}
-			CompletableFuture.supplyAsync(IGuiceContext.get(TransactionalSupplier.class)
-			                                           .setConsumer(() -> {
-				                                           IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(idTypes.getKey(), system, identityToken);
-				                                           ip.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType, idTypes.getValue(), idTypes.getValue(), system, identityToken);
-				                                           return ip;
-			                                           }))
-			                 .whenComplete((resp, err) -> {
-				                 if (err != null)
-				                 {
-					                 log.log(Level.SEVERE, "Cannot create involved party security", err);
-				                 }
-			                 });
-			
-		});
-		
-		as.whenCompleteAsync((ip, error) -> {
-			if (error != null)
-			{
-				log.log(Level.SEVERE, "Cannot create involved party", error);
-			}
-			CompletableFuture.supplyAsync(IGuiceContext.get(TransactionalSupplier.class)
-			                                           .setConsumer(() -> {
-				                                           setupInvolvedPartyOrganicStatus(isOrganic, ip, system, identityToken);
-				                                           return ip;
-			                                           }))
-			                 .whenComplete((resp, err) -> {
-				                 if (err != null)
-				                 {
-					                 log.log(Level.SEVERE, "Cannot create involved party security", err);
-				                 }
-			                 });
-		});
-		return asId;
+		return (CompletableFuture) CompletableFuture.completedFuture(ip);
 	}
 	
 	private void setupInvolvedPartyOrganicStatus(boolean isOrganic, IInvolvedParty<?, ?> ip, ISystems<?, ?> system, java.util.UUID... identityToken)

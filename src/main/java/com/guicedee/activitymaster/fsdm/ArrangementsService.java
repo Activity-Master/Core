@@ -4,8 +4,6 @@ import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalConsumer;
-import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
@@ -24,10 +22,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
-import com.guicedee.client.IGuiceContext;
 import jakarta.persistence.criteria.JoinType;
 import lombok.extern.java.Log;
-import org.jboss.logmanager.Level;
 
 import javax.cache.annotation.CacheKey;
 import java.time.Duration;
@@ -76,50 +72,31 @@ public class ArrangementsService
 	                                                    ISystems<?, ?> system,
 	                                                    UUID... identityToken)
 	{
-		TransactionalSupplier<IArrangement<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
-		ts.setConsumer(() -> {
-			Arrangement xr = new Arrangement();
-			if (key != null)
-			{
-				xr.setId(key);
-			}
-			else
-			{
-				xr.setId(UUID.randomUUID()
-				             .toString());
-			}
-			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
-			xr.setEnterpriseID(system.getEnterpriseID());
-			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterprise());
-			xr.setActiveFlagID(activeFlag);
-			xr = xr.persist();
-			
-			return xr;
-		});
+		Arrangement xr = new Arrangement();
+		if (key != null)
+		{
+			xr.setId(key);
+		}
+		else
+		{
+			xr.setId(UUID.randomUUID()
+			             .toString());
+		}
+		xr.setSystemID(system);
+		xr.setOriginalSourceSystemID(system);
+		xr.setEnterpriseID(system.getEnterpriseID());
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterprise());
+		xr.setActiveFlagID(activeFlag);
+		xr = xr.persist();
 		
-		var cf = CompletableFuture.supplyAsync(ts);
-		cf.thenAcceptAsync((IGuiceContext.get(TransactionalConsumer.class)
-		                                 .setConsumer((response) -> {
-			                                 Arrangement arrangement = (Arrangement) response;
-			                                 ArrangementType arrangementType = (ArrangementType) find(type, system);
-			                                 arrangement.createDefaultSecurity(system, identityToken);
-			                                 arrangement.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
-					                                 arrangementTypeValue, arrangementTypeValue, system, identityToken);
-			                                 
-		                                 })));
+		xr.createDefaultSecurity(system, identityToken);
+		ArrangementType arrangementType = (ArrangementType) find(type, system);
+		xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
+				arrangementTypeValue, arrangementTypeValue, system, identityToken);
 		
-		return cf.whenComplete((response, error) -> {
-			if (error != null)
-			{
-				log.log(Level.SEVERE, "Could not save event type!", error);
-			}
-			else
-			{
-				log.info("Saved arrangement - " + type + " - " + response.getId() + " - " + arrangementTypeValue);
-			}
-		});
+		
+		return (CompletableFuture) CompletableFuture.completedFuture(xr);
 	}
 	
 	@Override
@@ -135,9 +112,6 @@ public class ArrangementsService
 	{
 		ArrangementType xr = new ArrangementType();
 		xr.setId(key);
-		
-		TransactionalSupplier<IArrangementType<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
-		ts.setConsumer(() -> {
 			xr.setName(type);
 			xr.setDescription(type);
 			xr.setSystemID(system);
@@ -146,22 +120,10 @@ public class ArrangementsService
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			xr.setActiveFlagID(activeFlag);
-			xr.persist();
+			xr = xr.persist();
 			xr.createDefaultSecurity(system, identityToken);
-			return xr;
-		});
 		
-		return CompletableFuture.supplyAsync(ts)
-		                        .whenComplete((response, error) -> {
-			                        if (error != null)
-			                        {
-				                        log.log(Level.SEVERE, "Could not save event type!", error);
-			                        }
-			                        else
-			                        {
-				                        log.fine("Saved arrangement type: " + response.getName());
-			                        }
-		                        });
+		return (CompletableFuture) CompletableFuture.completedFuture(xr);
 	}
 	
 	

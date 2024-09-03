@@ -186,7 +186,7 @@ public class RulesService
 		}
 		else
 		{
-			return (CompletableFuture) CompletableFuture.completedStage(findRulesTypes(rulesType, system, identityToken));
+			return (CompletableFuture) CompletableFuture.completedFuture(findRulesTypes(rulesType, system, identityToken));
 		}
 	}
 	
