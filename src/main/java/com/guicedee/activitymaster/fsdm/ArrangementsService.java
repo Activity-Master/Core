@@ -4,6 +4,7 @@ import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
@@ -22,6 +23,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
+import com.guicedee.client.IGuiceContext;
 import jakarta.persistence.criteria.JoinType;
 import lombok.extern.java.Log;
 
@@ -72,31 +74,34 @@ public class ArrangementsService
 	                                                    ISystems<?, ?> system,
 	                                                    UUID... identityToken)
 	{
-		Arrangement xr = new Arrangement();
-		if (key != null)
-		{
-			xr.setId(key);
-		}
-		else
-		{
-			xr.setId(UUID.randomUUID()
-			             .toString());
-		}
-		xr.setSystemID(system);
-		xr.setOriginalSourceSystemID(system);
-		xr.setEnterpriseID(system.getEnterpriseID());
-		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterprise());
-		xr.setActiveFlagID(activeFlag);
-		xr = xr.persist();
-		
-		xr.createDefaultSecurity(system, identityToken);
-		ArrangementType arrangementType = (ArrangementType) find(type, system);
-		xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
-				arrangementTypeValue, arrangementTypeValue, system, identityToken);
-		
-		
-		return (CompletableFuture) CompletableFuture.completedFuture(xr);
+		TransactionalSupplier<IArrangement<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class)
+		                                                            .setConsumer(() -> {
+			                                                            Arrangement xr = new Arrangement();
+			                                                            if (key != null)
+			                                                            {
+				                                                            xr.setId(key);
+			                                                            }
+			                                                            else
+			                                                            {
+				                                                            xr.setId(UUID.randomUUID()
+				                                                                         .toString());
+			                                                            }
+			                                                            xr.setSystemID(system);
+			                                                            xr.setOriginalSourceSystemID(system);
+			                                                            xr.setEnterpriseID(system.getEnterpriseID());
+			                                                            IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+			                                                            IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(system.getEnterprise());
+			                                                            xr.setActiveFlagID(activeFlag);
+			                                                            xr = xr.persist();
+			                                                            
+			                                                            xr.createDefaultSecurity(system, identityToken);
+			                                                            ArrangementType arrangementType = (ArrangementType) find(type, system);
+			                                                            xr.addOrUpdateArrangementType(arrangementTypeClassification, arrangementType,
+					                                                            arrangementTypeValue, arrangementTypeValue, system, identityToken);
+																		xr.builder().getEntityManager().flush();
+			                                                            return xr;
+		                                                            });
+		return CompletableFuture.supplyAsync(ts);
 	}
 	
 	@Override
@@ -112,16 +117,16 @@ public class ArrangementsService
 	{
 		ArrangementType xr = new ArrangementType();
 		xr.setId(key);
-			xr.setName(type);
-			xr.setDescription(type);
-			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
-			xr.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-			xr.setActiveFlagID(activeFlag);
-			xr = xr.persist();
-			xr.createDefaultSecurity(system, identityToken);
+		xr.setName(type);
+		xr.setDescription(type);
+		xr.setSystemID(system);
+		xr.setOriginalSourceSystemID(system);
+		xr.setEnterpriseID(enterprise);
+		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+		xr.setActiveFlagID(activeFlag);
+		xr = xr.persist();
+		xr.createDefaultSecurity(system, identityToken);
 		
 		return (CompletableFuture) CompletableFuture.completedFuture(xr);
 	}
