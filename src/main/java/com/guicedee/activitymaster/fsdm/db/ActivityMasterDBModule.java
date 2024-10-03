@@ -48,7 +48,7 @@ public class ActivityMasterDBModule
 				.setMinPoolSize(1)
 				.setPrefill(false)
 				.setMaxIdleTime(60)
-				//s.setShareTransactionConnections(true)
+				.setShareTransactionConnections(true)
 				.setAllowLocalTransactions(true)
 				.setUrl("jdbc:postgresql://" + Environment.getProperty("FSDM_DBSERVER","localhost:5432") + "/fsdm")
 				//.setPersistenceUnitName("postgres")
