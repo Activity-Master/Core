@@ -1,11 +1,11 @@
 package com.guicedee.activitymaster.fsdm.threads;
 
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
+import com.guicedee.client.IGuiceContext;
 
 import java.util.Date;
 
-public
-class TimeLoaderThread implements Runnable
+public class TimeLoaderThread implements Runnable
 {
 	private Date date;
 
@@ -32,6 +32,6 @@ class TimeLoaderThread implements Runnable
 	@Override
 	public void run()
 	{
-		new TimeSystem().populateTransformationTables(date, -3);
+		IGuiceContext.get(TimeSystem.class).populateTransformationTables(date, -3);
 	}
 }

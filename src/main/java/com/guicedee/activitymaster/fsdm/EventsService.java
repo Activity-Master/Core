@@ -2,7 +2,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.fsdm.client.implementations.TransactionalSupplier;
+import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -144,9 +144,9 @@ public class EventsService
 		}
 		else
 		{
-			return CompletableFuture.supplyAsync(() -> {
-				return findEventType(eventType, system, identityToken);
-			});
+			return CompletableFuture.completedFuture(
+				findEventType(eventType, system, identityToken)
+			);
 		}
 	}
 	

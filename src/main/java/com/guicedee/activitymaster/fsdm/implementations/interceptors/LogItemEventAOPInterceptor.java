@@ -20,6 +20,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
@@ -86,14 +87,14 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 	}
 	
 	
-	public void processLogItemEntry(Pair<LogItem, Object> logItemObjectPair)
-	{
+	public void processLogItemEntry(Pair<LogItem, Object> logItemObjectPair) throws ExecutionException, InterruptedException {
 		Pair<Object, LogItemTypes> of = Pair.of(logItemObjectPair.getValue(), logItemObjectPair.getKey()
 		                                                                                       .type());
 		byte[] bytes = decodeReferenceObject(of);
 		IResourceItem<?, ?> resourceItem = resourceItemService.create("LogItem", logItemObjectPair.getKey()
 		                                                                                          .type()
-		                                                                                          .getMimeType(), getISystem(ActivityMasterSystemName) , getISystemToken(ActivityMasterSystemName) );
+		                                                                                          .getMimeType(), getISystem(ActivityMasterSystemName) , getISystemToken(ActivityMasterSystemName) )
+				.get();
 		resourceItem.updateData(bytes, getISystem(ActivityMasterSystemName) , getISystemToken(ActivityMasterSystemName) );
 		event.addResourceItem(logItemObjectPair.getKey()
 		                                       .value(), resourceItem,

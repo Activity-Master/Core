@@ -26,7 +26,7 @@ public class HazelcastServerConfig
 
         config.setMetricsConfig(new MetricsConfig());
         config.getMetricsConfig()
-                .setEnabled(true)
+                .setEnabled(false)
                 .setJmxConfig(new MetricsJmxConfig().setEnabled(true))
                 .setManagementCenterConfig(new MetricsManagementCenterConfig().setEnabled(true)
                         .setRetentionSeconds(5))

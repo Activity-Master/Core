@@ -652,7 +652,8 @@ public class TimeSystem
 		                                                     .format(date));
 		return newDay;
 	}
-	
+
+	@Transactional
 	public void populateTransformationTables(Date date, int fiscalLag)
 	{
 		try

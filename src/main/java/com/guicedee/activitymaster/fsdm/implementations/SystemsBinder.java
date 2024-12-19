@@ -16,11 +16,15 @@ import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import lombok.extern.java.Log;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Log
 public class SystemsBinder extends PrivateModule implements IGuiceModule<SystemsBinder>
 {
+	private static Set<String> loadedSystems = new HashSet<String>();
+
 	@Override
 	protected void configure()
 	{
@@ -58,6 +62,14 @@ public class SystemsBinder extends PrivateModule implements IGuiceModule<Systems
 			{
 				throw new RuntimeException(e);
 			}
+
+			if(!loadedSystems.contains(system.getSystemName()))
+			{
+				loadedSystems.add(system.getSystemName());
+			}else {
+				continue;
+			}
+
 			@SuppressWarnings("Convert2Diamond")
 			Key<ISystems<?, ?>> aSystemGenericKey = Key.get(new TypeLiteral<ISystems<?, ?>>() {}, Names.named(system.getSystemName()));
 			@SuppressWarnings("Convert2Diamond")
