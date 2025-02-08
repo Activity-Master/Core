@@ -186,7 +186,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		if (exists.isEmpty())
 		{
 			var c = service.create(system, pair, true)
-					.whenComplete((adminUser,error)->{
+					.whenCompleteAsync((adminUser,error)->{
 						TransactionalSupplier<IInvolvedParty<?,?>> ts = IGuiceContext.get(TransactionalSupplier.class);
 						ts.setConsumer(()->{
 							adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeUserName.toString(),

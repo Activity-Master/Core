@@ -59,9 +59,9 @@ public class ActiveFlagXClassification
 	
 	private Systems systemID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ActiveFlagXClassificationSecurityToken> securities;
 	
 	public ActiveFlagXClassification()

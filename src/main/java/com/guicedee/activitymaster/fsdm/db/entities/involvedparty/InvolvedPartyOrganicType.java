@@ -69,9 +69,9 @@ public class InvolvedPartyOrganicType
 	        name = "InvolvedPartyTypeDesc")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyOrganicTypeSecurityToken> securities;
 	
 	public InvolvedPartyOrganicType()

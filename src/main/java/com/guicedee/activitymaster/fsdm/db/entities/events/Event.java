@@ -77,49 +77,49 @@ public class Event
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXClassification> classifications;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXInvolvedParty> parties;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXArrangement> arrangements;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXResourceItem> resources;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXAddress> addresses;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventSecurityToken> securities;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXProduct> products;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXGeography> geographies;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXEventType> eventTypes;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "eventID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXRules> rules;
 	
 	public Event()

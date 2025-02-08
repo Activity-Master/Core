@@ -98,9 +98,9 @@ public class Systems
 	           fetch = FetchType.EAGER)
 	private ActiveFlag activeFlagID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "systemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<SystemsSecurityToken> securities;
 	
 	public Systems()

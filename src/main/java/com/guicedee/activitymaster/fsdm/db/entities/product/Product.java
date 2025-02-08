@@ -89,39 +89,39 @@ public class Product
 	        name = "ProductCode")
 	private String productCode;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "productID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductXClassification> classifications;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductSecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "productID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXProduct> arrangements;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "productID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductXResourceItem> resources;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "productID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXProduct> parties;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "productID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXProduct> events;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "childProductID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductXProduct> productXProductList;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "parentProductID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductXProduct> productXProductList1;
 	
 	public Product()

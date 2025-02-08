@@ -77,7 +77,7 @@ public class RulesService
 		
 		cf.whenCompleteAsync(IGuiceContext.get(TransactionalBiConsumer.class).setConsumer((response,error)->{
 			createRulesType(rulesType, rulesType, system, identityToken)
-					.whenComplete(IGuiceContext.get(TransactionalBiConsumer.class)
+					.whenCompleteAsync(IGuiceContext.get(TransactionalBiConsumer.class)
 					                           .setConsumer((rulesResponse, rulesError) -> {
 						                           if (rulesError != null)
 						                           {

@@ -35,7 +35,6 @@ module com.guicedee.activitymaster.fsdm {
 	requires com.google.common;
 	
 	requires static lombok;
-
 	
 	requires jakarta.activation;
 	requires jakarta.validation;

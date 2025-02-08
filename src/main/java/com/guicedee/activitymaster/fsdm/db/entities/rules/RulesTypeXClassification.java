@@ -54,9 +54,9 @@ public class RulesTypeXClassification
 	           fetch = FetchType.LAZY)
 	private RulesType rulesTypeID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesTypeXClassificationSecurityToken> securities;
 	
 	public RulesTypeXClassification()

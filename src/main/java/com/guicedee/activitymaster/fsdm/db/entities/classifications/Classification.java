@@ -91,9 +91,9 @@ public class Classification
 	           fetch = FetchType.EAGER)
 	private ClassificationDataConcept concept;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationSecurityToken> securities;
 	
 	public Classification()
@@ -279,8 +279,10 @@ public class Classification
 	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		ClassificationXClassification c = (ClassificationXClassification) linkTable;
+
 		c.setParentClassificationID(this);
 		c.setChildClassificationID((Classification) classificationValue);
+
 		IClassificationService<?> classificationService = get(IClassificationService.class);
 		c.setClassificationID(classificationService.getNoClassification(system));
 	}

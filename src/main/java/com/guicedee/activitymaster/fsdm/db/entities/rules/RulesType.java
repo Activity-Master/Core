@@ -69,22 +69,22 @@ public class RulesType
 	        name = "RulesTypeDesc")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "rulesTypeID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesXRulesType> rulesXRulesTypeList;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesTypeSecurityToken> securities;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "rulesTypeID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesTypeXResourceItem> resources;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "rulesTypeID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesTypeXClassification> classifications;
 	
 	

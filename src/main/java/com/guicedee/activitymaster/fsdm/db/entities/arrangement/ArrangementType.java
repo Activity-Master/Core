@@ -69,20 +69,20 @@ public class ArrangementType
 	        name = "ArrangementTypeDescription")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementTypeSecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "arrangementID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementTypeXClassification> classifications;
 	
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "type",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXArrangementType> arrangementsList;
 	
 	

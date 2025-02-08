@@ -75,56 +75,56 @@ public class ResourceItem
 	
 	@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ResourceItemXClassification> classifications;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ResourceItemXResourceItemType> types;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXResourceItem> parties;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXResourceItem> arrangements;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resource",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ResourceItemData> data;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressXResourceItem> addresses;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXResourceItem> events;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductXResourceItem> products;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationDataConceptXResourceItem> concept;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationXResourceItem> classificationXResourceItemList;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ResourceItemSecurityToken> securities;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<GeographyXResourceItem> geographies;
 	
 	public ResourceItem()
@@ -247,7 +247,7 @@ public class ResourceItem
 			  }
 			return null;
 		});
-		return CompletableFuture.supplyAsync(ts).whenComplete((response, error) -> {
+		return CompletableFuture.supplyAsync(ts).whenCompleteAsync((response, error) -> {
 			if (error != null)
 			{
 				log.log(Level.SEVERE, "Error search for resource item update", error);

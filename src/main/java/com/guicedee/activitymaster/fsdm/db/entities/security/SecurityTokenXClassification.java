@@ -55,9 +55,9 @@ public class SecurityTokenXClassification
 	           fetch = FetchType.LAZY)
 	private SecurityToken securityTokenID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<SecurityTokenXClassificationSecurityToken> securities;
 	
 	public SecurityTokenXClassification()

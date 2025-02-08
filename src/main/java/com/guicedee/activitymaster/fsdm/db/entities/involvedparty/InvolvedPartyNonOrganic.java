@@ -51,9 +51,9 @@ public class InvolvedPartyNonOrganic
 	          fetch = FetchType.LAZY)
 	private InvolvedParty involvedParty;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyNonOrganicSecurityToken> securities;
 	
 	public InvolvedPartyNonOrganic()

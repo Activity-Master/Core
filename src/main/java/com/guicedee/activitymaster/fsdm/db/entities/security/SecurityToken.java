@@ -78,26 +78,26 @@ public class SecurityToken
 	           fetch = FetchType.LAZY)
 	private Classification securityTokenClassificationID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "securityTokenID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<SecurityTokenXClassification> classifications;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "securityTokenID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<SecurityTokensSecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "childSecurityTokenID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<SecurityTokenXSecurityToken> securityTokenXSecurityTokenChildList;
 	
 	
 	//===================================================================================================================================================
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "securityTokenID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ActiveFlagSecurityToken> activeFlagSecurityTokens;
 	
 	

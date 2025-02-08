@@ -77,7 +77,7 @@ public class EventsService
 			return event;
 		});
 		
-		return CompletableFuture.supplyAsync(ts).whenComplete((response, error) -> {
+		return CompletableFuture.supplyAsync(ts).whenCompleteAsync((response, error) -> {
 			if (error != null)
 			{
 				log.log(Level.SEVERE, "Could not save event type!", error);
@@ -130,7 +130,7 @@ public class EventsService
 			});
 			
 			return CompletableFuture.supplyAsync(ts)
-			                        .whenComplete((response, error) -> {
+			                        .whenCompleteAsync((response, error) -> {
 				                        if (error != null)
 				                        {
 					                        log.log(Level.SEVERE, "Could not save event type!", error);

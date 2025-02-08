@@ -67,9 +67,9 @@ public class InvolvedPartyXResourceItem
 	           fetch = FetchType.LAZY)
 	private ResourceItem resourceItemID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXResourceItemSecurityToken> securities;
 	
 	public InvolvedPartyXResourceItem()

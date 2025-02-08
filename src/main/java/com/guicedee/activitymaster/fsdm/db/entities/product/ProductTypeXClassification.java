@@ -56,9 +56,9 @@ public class ProductTypeXClassification
 	           fetch = FetchType.LAZY)
 	private ProductType productTypeID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductTypeXClassificationSecurityToken> securities;
 	
 	public ProductTypeXClassification()

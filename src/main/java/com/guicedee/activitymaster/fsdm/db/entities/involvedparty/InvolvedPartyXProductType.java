@@ -60,9 +60,9 @@ public class InvolvedPartyXProductType
 	           fetch = FetchType.LAZY)
 	private ProductType involvedPartyTypeID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXProductTypeSecurityToken> securities;
 	
 	public InvolvedPartyXProductType()

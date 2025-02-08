@@ -62,9 +62,9 @@ public class ArrangementXClassification
 	
 	private Arrangement arrangementID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXClassificationSecurityToken> securities;
 	
 	public ArrangementXClassification()

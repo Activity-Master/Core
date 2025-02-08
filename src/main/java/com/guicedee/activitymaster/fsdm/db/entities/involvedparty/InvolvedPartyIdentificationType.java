@@ -71,14 +71,14 @@ public class InvolvedPartyIdentificationType
 	        name = "InvolvedPartyIdentificationDesc")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyIdentificationTypeSecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyIdentificationTypeID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXInvolvedPartyIdentificationType> involvedPartyXInvolvedPartyIdentificationTypeList;
 	
 	public InvolvedPartyIdentificationType()

@@ -63,46 +63,46 @@ public class Arrangement
 	private java.lang.String id;
 	
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "arrangementID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXClassification> classifications;
 	
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "arrangementID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXInvolvedParty> parties;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "arrangementID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXResourceItem> resources;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "arrangementID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXArrangement> events;
 	
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "childArrangementID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXArrangement> arrangementXArrangementList;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "parentArrangementID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXArrangement> arrangementXArrangementList1;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "arrangementID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXProduct> products;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementSecurityToken> securities;
 	
 	

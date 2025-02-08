@@ -61,9 +61,9 @@ public class AddressXClassification
 	
 	private Address addressID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressXClassificationSecurityToken> securities;
 	
 	public AddressXClassification()

@@ -65,19 +65,19 @@ public class Enterprise
 	        name = "EnterpriseDesc")
 	private String description;
 
-	@OneToMany(
+@OneToMany(
 			mappedBy = "enterpriseID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EnterpriseSecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "enterpriseID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EnterpriseXClassification> classifications;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "enterpriseID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ActiveFlag> activeFlags;
 	
 	

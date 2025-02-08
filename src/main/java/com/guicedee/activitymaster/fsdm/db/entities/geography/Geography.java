@@ -80,14 +80,14 @@ public class Geography
 	        name = "GeographyDesc")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "geographyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<GeographyXClassification> classifications;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "geographyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressXGeography> addresses;
 	
 	@JoinColumn(name = "ClassificationID",
@@ -97,22 +97,22 @@ public class Geography
 	           fetch = FetchType.LAZY)
 	private Classification classificationID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<GeographySecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "geographyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<GeographyXResourceItem> resources;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "parentGeographyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<GeographyXGeography> geographyXGeographyList;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "childGeographyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<GeographyXGeography> geographyXGeographyList1;
 	
 	public Geography()

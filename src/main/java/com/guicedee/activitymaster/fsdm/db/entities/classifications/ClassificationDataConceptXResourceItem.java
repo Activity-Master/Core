@@ -65,9 +65,9 @@ public class ClassificationDataConceptXResourceItem
 	
 	private ResourceItem resourceItemID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationDataConceptXResourceItemSecurityToken> securities;
 	
 	public ClassificationDataConceptXResourceItem()

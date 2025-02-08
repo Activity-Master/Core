@@ -40,9 +40,9 @@ public class ResourceItemData
 	        name = "ResourceItemData")
 	private byte[] resourceItemData;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ResourceItemDataSecurityToken> securities;
 	
 	@JoinColumn(name = "ResourceItemID",
@@ -52,9 +52,9 @@ public class ResourceItemData
 	           fetch = FetchType.LAZY)
 	private ResourceItem resource;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemDataID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ResourceItemDataXClassification> classifications;
 	
 	public ResourceItemData()

@@ -62,9 +62,9 @@ public class GeographyXClassification
 	           fetch = FetchType.LAZY)
 	private Geography geographyID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<GeographyXClassificationSecurityToken> securities;
 	
 	public GeographyXClassification()

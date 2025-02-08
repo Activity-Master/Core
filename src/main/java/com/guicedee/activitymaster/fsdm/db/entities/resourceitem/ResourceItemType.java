@@ -67,14 +67,14 @@ public class ResourceItemType
 	        name = "ResourceItemTypeDesc")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ResourceItemTypeSecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "resourceItemTypeID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ResourceItemXResourceItemType> involvedPartyXResourceItemTypeList;
 	
 	public ResourceItemType()

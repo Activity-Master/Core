@@ -70,19 +70,19 @@ public class ProductType
 	        name = "ProductTypeDesc")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "productTypeID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductXProductType> productXProductTypeList;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductTypeSecurityToken> securities;
 	
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "productTypeID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ProductTypeXClassification> classifications;
 	
 	

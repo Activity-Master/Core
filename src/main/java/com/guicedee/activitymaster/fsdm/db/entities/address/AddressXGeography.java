@@ -64,9 +64,9 @@ public class AddressXGeography
 	
 	private Geography geographyID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressXGeographySecurityToken> securities;
 	
 	public AddressXGeography()

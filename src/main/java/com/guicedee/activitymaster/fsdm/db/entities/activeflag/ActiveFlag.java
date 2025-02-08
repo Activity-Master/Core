@@ -87,9 +87,9 @@ public class ActiveFlag
 	private boolean allowAccess;
 	
 	@SuppressWarnings("unused")
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ActiveFlagSecurityToken> securities;
 	
 	public ActiveFlag()

@@ -18,6 +18,12 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
+<!--        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java</artifactId>
+            <version>22.3</version>
+        </dependency>-->
+
         <dependency>
             <groupId>com.entityassist</groupId>
             <artifactId>entity-assist</artifactId>

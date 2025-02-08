@@ -76,25 +76,25 @@ public class ClassificationDataConcept
 	        name = "ClassificationDataConceptDesc")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "concept",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	
 	private List<Classification> classificationList;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "classificationDataConceptID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationDataConceptXClassification> classifications;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationDataConceptSecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "classificationDataConceptID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationDataConceptXResourceItem> classificationDataConceptXResourceItemList;
 	
 	public ClassificationDataConcept()

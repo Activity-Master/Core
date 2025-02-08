@@ -49,9 +49,9 @@ public class ArrangementXResourceItem
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXResourceItemSecurityToken> arrangementXResourceItemSecurityTokenList;
 	
 	@JoinColumn(name = "ArrangementID",
@@ -70,9 +70,9 @@ public class ArrangementXResourceItem
 	
 	private ResourceItem resourceItemID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXResourceItemSecurityToken> securities;
 	
 	public ArrangementXResourceItem()

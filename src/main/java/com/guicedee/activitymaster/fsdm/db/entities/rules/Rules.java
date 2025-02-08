@@ -77,39 +77,39 @@ public class Rules
 	        name = "RuleSetDescription")
 	private String description;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "rulesID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesXClassification> classifications;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesSecurityToken> securities;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "rulesID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesXResourceItem> resources;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "childRulesID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesXRules> rulesXRulesList;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "parentRulesID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesXRules> rulesXRulesList1;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "rulesID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesXInvolvedParty> parties;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "rulesID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesXArrangement> arrangements;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "rulesID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<RulesXProduct> products;
 	
 	public Rules()

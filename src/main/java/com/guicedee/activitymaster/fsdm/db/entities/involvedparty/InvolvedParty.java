@@ -67,53 +67,53 @@ public class InvolvedParty
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXClassification> classifications;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXInvolvedPartyNameType> names;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXResourceItem> resources;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXInvolvedParty> arrangements;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXInvolvedParty> events;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartySecurityToken> securities;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "childInvolvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "parentInvolvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXInvolvedParty> involvedPartyXInvolvedPartyList1;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXInvolvedPartyType> types;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXProduct> products;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXAddress> addresses;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "involvedPartyID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
 	
 	public InvolvedParty()

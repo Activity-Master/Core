@@ -67,9 +67,9 @@ public class ArrangementXArrangement
 	
 	private Arrangement parentArrangementID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXArrangementSecurityToken> securities;
 	
 	public ArrangementXArrangement()

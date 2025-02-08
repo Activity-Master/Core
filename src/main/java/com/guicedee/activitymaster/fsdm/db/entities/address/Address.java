@@ -57,9 +57,9 @@ public class Address
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "addressID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressXClassification> classifications;
 	
 	@Basic(optional = false)
@@ -76,27 +76,27 @@ public class Address
 	
 	private Classification classificationID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressSecurityToken> securities;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "addressID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressXGeography> geographies;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "addressID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressXResourceItem> resources;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "addressID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EventXAddress> events;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "addressID",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXAddress> addresses;
 	
 	public Address()

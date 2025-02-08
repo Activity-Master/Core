@@ -64,9 +64,9 @@ public class InvolvedPartyXInvolvedParty
 	           fetch = FetchType.LAZY)
 	private InvolvedParty parentInvolvedPartyID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXInvolvedPartySecurityToken> securities;
 	
 	public InvolvedPartyXInvolvedParty()

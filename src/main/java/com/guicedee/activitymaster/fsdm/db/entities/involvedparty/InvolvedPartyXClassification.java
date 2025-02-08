@@ -56,9 +56,9 @@ public class InvolvedPartyXClassification
 	           fetch = FetchType.EAGER)
 	private InvolvedParty involvedPartyID;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXClassificationSecurityToken> securities;
 	
 	public InvolvedPartyXClassification()

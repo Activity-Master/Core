@@ -66,9 +66,9 @@ public class ArrangementXProduct
 	           fetch = FetchType.LAZY)
 	
 	private Product productID;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXProductSecurityToken> securities;
 	
 	public ArrangementXProduct()

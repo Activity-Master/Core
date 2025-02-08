@@ -54,9 +54,9 @@ public class ArrangementXArrangementType
 	@ManyToOne()
 	
 	private ArrangementType type;
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXArrangementTypeSecurityToken> securities;
 	
 	public ArrangementXArrangementType()

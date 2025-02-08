@@ -52,9 +52,9 @@ public class InvolvedPartyXRules
 	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
 	private java.lang.String id;
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXRulesSecurityToken> securities;
 	
 	@JoinColumn(name = "InvolvedPartyID",

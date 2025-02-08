@@ -67,9 +67,9 @@ public class ClassificationXClassification
 	private Classification parentClassificationID;
 	
 	
-	@OneToMany(
+@OneToMany(
 			mappedBy = "base",
-			fetch = FetchType.LAZY)
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationXClassificationSecurityToken> securities;
 	
 	public ClassificationXClassification()
