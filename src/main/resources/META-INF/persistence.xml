@@ -246,8 +246,10 @@
             <!--<property name="hibernate.hbm2ddl.auto" value="update"/>-->
 
             <property name="hibernate.connection.autocommit" value="false"/>
-            <property name="hibernate.current_session_context_class" value="thread"/>
-            <property name="hibernate.jdbc.batch_size" value="1000"/>
+            <!--<property name="hibernate.current_session_context_class" value="thread"/>-->
+            <property name="hibernate.current_session_context_class" value="jta"/>
+
+            <property name="hibernate.jdbc.batch_size" value="10"/>
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             <property name="hibernate.javax.cache.missing_cache_strategy" value="create"/>
 
@@ -264,8 +266,26 @@
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.max_fetch_depth" value="1"/>
 
-            <property name="hibernate.enhancer.enableLazyInitialization" value="true"/>
-            <property name="hibernate.enhancer.enableDirtyTracking" value="true"/>
+            <property name="hibernate.jdbc.timeout" value="60"/> <!-- 1 minute -->
+            <property name="hibernate.transaction.coordinator_class" value="jta"/>
+            <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.engine.transaction.jta.platform.internal.BitronixJtaPlatform"/>
+            <!--<property name="hibernate.generate_statistics" value="true"/>-->
+
+            <!-- Optional -->
+            <property name="hibernate.jta.platform" value="org.hibernate.engine.transaction.jta.platform.internal.BitronixJtaPlatform"/>
+
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.connection.release_mode" value="after_transaction"/>
+
+            <!-- Add PostgreSQL optimizations -->
+            <!--<property name="hibernate.connection.provider_class" value="org.postgresql.xa.PGXADataSource"/>-->
+            <property name="hibernate.jdbc.lob.non_contextual_creation" value="true"/>
+            <property name="hibernate.connection.provider_disables_autocommit" value="true"/>
+
+
+            <!--<property name="hibernate.enhancer.enableLazyInitialization" value="false"/>
+            <property name="hibernate.enhancer.enableDirtyTracking" value="false"/>
+            <property name="hibernate.enhancer.enableAssociationManagement" value="false"/>-->
 
         </properties>
 

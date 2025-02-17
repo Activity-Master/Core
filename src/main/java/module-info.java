@@ -154,8 +154,9 @@ module com.guicedee.activitymaster.fsdm {
 	
 	exports com.guicedee.activitymaster.fsdm.db.entities.events.builders;
 	opens com.guicedee.activitymaster.fsdm.db.entities.events.builders to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind,net.bytebuddy;
-	
-	opens com.guicedee.activitymaster.fsdm.db.entities.geography to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geograph,net.bytebuddyy;
+
+//	exports com.guicedee.activitymaster.fsdm.db.entities.geography;
+	opens com.guicedee.activitymaster.fsdm.db.entities.geography to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geograph,net.bytebuddy;
 	
 	
 	exports com.guicedee.activitymaster.fsdm.db.entities.geography.builders;

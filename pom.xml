@@ -103,6 +103,14 @@
             <groupId>com.guicedee.services</groupId>
             <artifactId>xml-representation</artifactId>
         </dependency>
+
+   <!--     <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql-xa</artifactId>
+            <version>42.7.5</version>
+        </dependency>
+-->
+
     </dependencies>
 
     <build>
@@ -116,13 +124,8 @@
                            <annotationProcessorPath>
                                <groupId>org.hibernate.orm</groupId>
                                <artifactId>hibernate-jpamodelgen</artifactId>
-                               <version>6.4.8.Final</version>
+                               <version>${maven.hibernate.version}</version>
                            </annotationProcessorPath>
-                  <!--      <annotationProcessorPath>
-                            <groupId>com.guicedee.services</groupId>
-                            <artifactId>hibernate-jpamodelgen</artifactId>
-                            <version>${guicedee.version}</version>
-                        </annotationProcessorPath>-->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
@@ -159,6 +162,24 @@
                         <version>${jakarta.xml.jaxb.api.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.hibernate.orm.tooling</groupId>
+                <artifactId>hibernate-enhance-maven-plugin</artifactId>
+                <version>${maven.hibernate.enhance.version}</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <enableLazyInitialization>true</enableLazyInitialization>
+                            <!--<enableDirtyTracking>false</enableDirtyTracking>-->
+                            <enableAssociationManagement>false</enableAssociationManagement>
+                            <enableExtendedEnhancement>true</enableExtendedEnhancement>
+                        </configuration>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
