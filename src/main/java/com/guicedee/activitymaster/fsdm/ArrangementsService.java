@@ -5,6 +5,7 @@ import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.guicedpersistence.lambda.TransactionalBiConsumer;
+import com.guicedee.guicedpersistence.lambda.TransactionalCallable;
 import com.guicedee.guicedpersistence.lambda.TransactionalConsumer;
 import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
@@ -26,6 +27,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import com.guicedee.client.IGuiceContext;
+import io.vertx.core.Vertx;
 import jakarta.persistence.criteria.JoinType;
 import lombok.extern.java.Log;
 
@@ -43,98 +45,107 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.D
 
 @Log
 public class ArrangementsService
-        implements IArrangementsService<ArrangementsService> {
+        implements IArrangementsService<ArrangementsService>
+{
     @Inject
     private IClassificationService<?> classificationService;
 
     @Inject
     private IEnterprise<?, ?> enterprise;
 
+    @Inject
+    private Vertx vertx;
+
     @Override
-    public IArrangement<?, ?> get() {
+    public IArrangement<?, ?> get()
+    {
         return new Arrangement();
     }
 
 
     @Override
-    public CompletableFuture<IArrangement<?, ?>> create(String type,
-                                                        String arrangementTypeClassification,
-                                                        String arrangementTypeValue,
-                                                        ISystems<?, ?> system,
-                                                        UUID... identityToken) {
+    public CompletableFuture<IArrangement> create(String type,
+                                                  String arrangementTypeClassification,
+                                                  String arrangementTypeValue,
+                                                  ISystems<?, ?> system,
+                                                  UUID... identityToken)
+    {
         return create(type, null, arrangementTypeClassification, arrangementTypeValue, system, identityToken);
     }
 
 
     @Override
-    public CompletableFuture<IArrangement<?, ?>> create(
+    public CompletableFuture<IArrangement> create(
             String type,
             String key,
             String arrangementTypeClassification,
             String arrangementTypeValue,
             ISystems<?, ?> system,
-            UUID... identityToken) {
+            UUID... identityToken)
+    {
 
-        // Step 1: Create Arrangement asynchronously
-        CompletableFuture<IArrangement<?, ?>> s = CompletableFuture.supplyAsync(
-                TransactionalSupplier.of(() -> {
-                    Arrangement arrangement = new Arrangement();
+        var s = vertx.executeBlocking(TransactionalCallable.of(() -> {
+            Arrangement arrangement = new Arrangement();
 
-                    // Set ID for the new Arrangement
-                    arrangement.setId(key != null ? key : UUID.randomUUID().toString());
+            // Set ID for the new Arrangement
+            arrangement.setId(key != null ? key : UUID.randomUUID().toString());
 
-                    // Set system and enterprise-related information
-                    arrangement.setSystemID(system);
-                    arrangement.setOriginalSourceSystemID(system);
-                    arrangement.setEnterpriseID(system.getEnterpriseID());
+            // Set system and enterprise-related information
+            arrangement.setSystemID(system);
+            arrangement.setOriginalSourceSystemID(system);
+            arrangement.setEnterpriseID(system.getEnterpriseID());
 
-                    // Fetch and set ActiveFlag - ensure proper transaction handling
-                    IActiveFlagService<?> activeFlagService = IGuiceContext.get(IActiveFlagService.class);
-                    IActiveFlag<?, ?> activeFlag = activeFlagService.getActiveFlag(system.getEnterprise());
-                    arrangement.setActiveFlagID(activeFlag);
+            // Fetch and set ActiveFlag - ensure proper transaction handling
+            IActiveFlagService<?> activeFlagService = IGuiceContext.get(IActiveFlagService.class);
+            IActiveFlag<?, ?> activeFlag = activeFlagService.getActiveFlag(system.getEnterprise());
+            arrangement.setActiveFlagID(activeFlag);
 
-                    // Persist the arrangement
-                    arrangement.persist();
+            // Persist the arrangement
+            arrangement.persist();
 
-                    // Ensure changes are written to the database
-                    arrangement.builder().getEntityManager().flush();
-
-                    return arrangement;
-                }, true)
-        );
-
-        // Step 2: Set default security for the arrangement
-        s.thenAcceptAsync(TransactionalConsumer.of(arrangement -> {
-            ((Arrangement) arrangement).createDefaultSecurity(system, identityToken);
-        }));
-
-        // Step 3: Add or update arrangement type information
-        s.thenAcceptAsync(TransactionalConsumer.of(arrangement -> {
-            ArrangementType arrangementType = (ArrangementType) find(type, system);
-            arrangement.addOrUpdateArrangementType(
-                    arrangementTypeClassification,
-                    arrangementType,
-                    arrangementTypeValue,
-                    arrangementTypeValue,
-                    system,
-                    identityToken
-            );
-
-            // Flush to ensure changes take effect
+            // Ensure changes are written to the database
             arrangement.builder().getEntityManager().flush();
+
+            return (IArrangement) arrangement;
         }));
 
-        return s;
+        s.onComplete(arrangement ->
+                vertx.executeBlocking(TransactionalCallable.of(() -> {
+                    ((Arrangement) arrangement).createDefaultSecurity(system, identityToken);
+                    return arrangement;
+                },true)));
+
+        s.onComplete(arrangement ->
+                vertx.executeBlocking(TransactionalCallable.of(() -> {
+                    ArrangementType arrangementType = (ArrangementType) find(type, system);
+                    arrangement.result().addOrUpdateArrangementType(
+                            arrangementTypeClassification,
+                            arrangementType,
+                            arrangementTypeValue,
+                            arrangementTypeValue,
+                            system,
+                            identityToken
+                    );
+
+                    // Flush to ensure changes take effect
+                    arrangement.result().builder().getEntityManager().flush();
+                    return arrangement;
+                },true)));
+
+        return FutureUtils.toCompletableFuture(s);
     }
+
     @Override
-    public CompletableFuture<IArrangementType<?, ?>> createArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken) {
+    public CompletableFuture<IArrangementType<?, ?>> createArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
         return createArrangementType(type, null, system, identityToken);
     }
 
     @Override
     //@CacheResult(cacheName = "ArrangementTypes")
     //
-    public CompletableFuture<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken) {
+    public CompletableFuture<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+    {
         ArrangementType xr = new ArrangementType();
         xr.setId(key);
         xr.setName(type);
@@ -153,7 +164,8 @@ public class ArrangementsService
 
 
     @Override
-    public IArrangementType<?, ?> findArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken) {
+    public IArrangementType<?, ?> findArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
         ArrangementType xr = new ArrangementType();
         return xr.builder()
                 .withName(type)
@@ -166,7 +178,8 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findInvolvedPartyArrangements(IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, java.util.UUID... identityToken) {
+    public List<IArrangement<?, ?>> findInvolvedPartyArrangements(IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, java.util.UUID... identityToken)
+    {
         List<ArrangementXInvolvedParty> xips =
                 new ArrangementXInvolvedParty()
                         .builder()
@@ -186,7 +199,8 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByClassification(String classificationName, String value, ISystems<?, ?> systems, java.util.UUID... identityToken) {
+    public List<IArrangement<?, ?>> findArrangementsByClassification(String classificationName, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
+    {
         IClassification<?, ?> classification = classificationService.find(classificationName, systems, identityToken);
 
         ArrangementQueryBuilder aqb = new Arrangement().builder();
@@ -213,7 +227,8 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByClassificationGT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken) {
+    public List<IArrangement<?, ?>> findArrangementsByClassificationGT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
+    {
         IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 
         ArrangementQueryBuilder aqb = new Arrangement().builder();
@@ -232,7 +247,8 @@ public class ArrangementsService
 
         aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 
-        if (withParent != null) {
+        if (withParent != null)
+        {
             JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
             ArrangementXArrangementQueryBuilder builder =
                     new ArrangementXArrangement()
@@ -254,7 +270,8 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByClassificationGTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken) {
+    public List<IArrangement<?, ?>> findArrangementsByClassificationGTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
+    {
         IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 
         ArrangementQueryBuilder aqb = new Arrangement().builder();
@@ -273,7 +290,8 @@ public class ArrangementsService
 
         aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 
-        if (withParent != null) {
+        if (withParent != null)
+        {
             JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
             ArrangementXArrangementQueryBuilder builder =
                     new ArrangementXArrangement()
@@ -302,7 +320,8 @@ public class ArrangementsService
                                                                               IResourceItem<?, ?> resourceItem,
                                                                               String resourceItemClassification,
                                                                               String value, ISystems<?, ?> system,
-                                                                              java.util.UUID... identityToken) {
+                                                                              java.util.UUID... identityToken)
+    {
         IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
 
         ArrangementQueryBuilder aqb = new Arrangement().builder();
@@ -310,7 +329,8 @@ public class ArrangementsService
                 .inActiveRange()
                 .inDateRange();
 
-        if (classificationName != null) {
+        if (classificationName != null)
+        {
             JoinExpression<Arrangement, Classification, ?> aje = new JoinExpression<>();
 
             ArrangementXClassificationQueryBuilder qb = new ArrangementXClassification().builder();
@@ -322,9 +342,11 @@ public class ArrangementsService
             aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
         }
 
-        if (withInvolvedParty != null) {
+        if (withInvolvedParty != null)
+        {
             JoinExpression<Arrangement, InvolvedParty, ?> joinExpression = new JoinExpression<>();
-            if (Strings.isNullOrEmpty(ipClassification)) {
+            if (Strings.isNullOrEmpty(ipClassification))
+            {
                 ipClassification = NoClassification.toString();
             }
             ArrangementXInvolvedPartyQueryBuilder builder =
@@ -340,9 +362,11 @@ public class ArrangementsService
 
         }
 
-        if (resourceItem != null) {
+        if (resourceItem != null)
+        {
             JoinExpression<Arrangement, ResourceItem, ?> joinExpression = new JoinExpression<>();
-            if (Strings.isNullOrEmpty(resourceItemClassification)) {
+            if (Strings.isNullOrEmpty(resourceItemClassification))
+            {
                 resourceItemClassification = NoClassification.toString();
             }
             ArrangementXResourceItemQueryBuilder builder =
@@ -358,7 +382,8 @@ public class ArrangementsService
 
         }
 
-        if (!Strings.isNullOrEmpty(arrangementType)) {
+        if (!Strings.isNullOrEmpty(arrangementType))
+        {
             JoinExpression<Arrangement, ArrangementType, ?> joinExpressionAt = new JoinExpression<>();
             ArrangementXArrangementTypeQueryBuilder builderAT =
                     new ArrangementXArrangementType()
@@ -373,7 +398,8 @@ public class ArrangementsService
 
         }
 
-        if (withParent != null) {
+        if (withParent != null)
+        {
             JoinExpression<Arrangement, Arrangement, ?> joinExpressionParentJoin = new JoinExpression<>();
             ArrangementXArrangementQueryBuilder builderParent =
                     new ArrangementXArrangement()
@@ -396,7 +422,8 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByClassificationLT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken) {
+    public List<IArrangement<?, ?>> findArrangementsByClassificationLT(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
+    {
         IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 
         ArrangementQueryBuilder aqb = new Arrangement().builder();
@@ -415,7 +442,8 @@ public class ArrangementsService
 
         aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 
-        if (withParent != null) {
+        if (withParent != null)
+        {
             JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
             ArrangementXArrangementQueryBuilder builder =
                     new ArrangementXArrangement()
@@ -437,7 +465,8 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByClassificationLTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken) {
+    public List<IArrangement<?, ?>> findArrangementsByClassificationLTE(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
+    {
         IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 
         ArrangementQueryBuilder aqb = new Arrangement().builder();
@@ -456,7 +485,8 @@ public class ArrangementsService
 
         aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 
-        if (withParent != null) {
+        if (withParent != null)
+        {
             JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
             ArrangementXArrangementQueryBuilder builder =
                     new ArrangementXArrangement()
@@ -476,9 +506,9 @@ public class ArrangementsService
         return (List) arrangementList;
     }
 
-
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByClassification(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken) {
+    public List<IArrangement<?, ?>> findArrangementsByClassification(String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, java.util.UUID... identityToken)
+    {
         IClassification<?, ?> classification = classificationService.find(arrType, systems, identityToken);
 
         ArrangementQueryBuilder aqb = new Arrangement().builder();
@@ -497,7 +527,8 @@ public class ArrangementsService
 
         aqb.join(Arrangement_.classifications, qb, JoinType.INNER, aje);
 
-        if (withParent != null) {
+        if (withParent != null)
+        {
             JoinExpression<Arrangement, Arrangement, ?> joinExpression = new JoinExpression<>();
             ArrangementXArrangementQueryBuilder builder =
                     new ArrangementXArrangement()
@@ -505,7 +536,8 @@ public class ArrangementsService
                             .inActiveRange()
                             .inDateRange()
                             .where(ArrangementXArrangement_.parentArrangementID, Equals, (Arrangement) withParent);
-            if (!Strings.isNullOrEmpty(value)) {
+            if (!Strings.isNullOrEmpty(value))
+            {
                 builder.where(ArrangementXClassification_.value, Equals, value);
             }
 
@@ -523,8 +555,10 @@ public class ArrangementsService
 
 
     @Override
-    public IArrangement<?, ?> findArrangementByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken) {
-        if (Strings.isNullOrEmpty(classificationName)) {
+    public IArrangement<?, ?> findArrangementByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
+        if (Strings.isNullOrEmpty(classificationName))
+        {
             classificationName = NoClassification.toString();
         }
         IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
@@ -543,8 +577,10 @@ public class ArrangementsService
 
 
     @Override
-    public IArrangement<?, ?> findArrangementByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken) {
-        if (Strings.isNullOrEmpty(classificationName)) {
+    public IArrangement<?, ?> findArrangementByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
+        if (Strings.isNullOrEmpty(classificationName))
+        {
             classificationName = NoClassification.toString();
         }
         IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
@@ -563,8 +599,10 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByRulesType(IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken) {
-        if (Strings.isNullOrEmpty(classificationName)) {
+    public List<IArrangement<?, ?>> findArrangementsByRulesType(IRulesType<?, ?> ruleType, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
+        if (Strings.isNullOrEmpty(classificationName))
+        {
             classificationName = NoClassification.toString();
         }
         IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
@@ -585,8 +623,10 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, java.util.UUID... identityToken) {
-        if (Strings.isNullOrEmpty(classificationName)) {
+    public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
+        if (Strings.isNullOrEmpty(classificationName))
+        {
             classificationName = NoClassification.toString();
         }
         IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
@@ -606,8 +646,10 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, java.util.UUID... identityToken) {
-        if (Strings.isNullOrEmpty(classificationName)) {
+    public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, LocalDateTime startDate, LocalDateTime endDate, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
+        if (Strings.isNullOrEmpty(classificationName))
+        {
             classificationName = NoClassification.toString();
         }
         IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
@@ -627,8 +669,10 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken) {
-        if (Strings.isNullOrEmpty(classificationName)) {
+    public List<IArrangement<?, ?>> findArrangementsByInvolvedParty(IInvolvedParty<?, ?> involvedParty, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
+        if (Strings.isNullOrEmpty(classificationName))
+        {
             classificationName = NoClassification.toString();
         }
         IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
@@ -648,8 +692,10 @@ public class ArrangementsService
 
 
     @Override
-    public List<IInvolvedParty<?, ?>> findArrangementInvolvedParties(IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken) {
-        if (Strings.isNullOrEmpty(classificationName)) {
+    public List<IInvolvedParty<?, ?>> findArrangementInvolvedParties(IArrangement<?, ?> arrangement, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
+        if (Strings.isNullOrEmpty(classificationName))
+        {
             classificationName = NoClassification.toString();
         }
         IClassification<?, ?> classification = classificationService.find(classificationName, system, identityToken);
@@ -670,7 +716,8 @@ public class ArrangementsService
 
     //@CacheResult(cacheName = "ArrangementArrangementTypeString")
     @Override
-    public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken) {
+    public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+    {
         ArrangementType xr = new ArrangementType();
         return xr.builder()
                 .withName(idType)
@@ -685,7 +732,8 @@ public class ArrangementsService
 
     @Override
     //@CacheResult
-    public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken) {
+    public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
         Arrangement xr = new Arrangement();
         return xr.builder()
                 .where(Arrangement_.id, Equals, id.toString())
@@ -696,7 +744,8 @@ public class ArrangementsService
 
     @Override
     //@CacheResult
-    public IArrangement<?, ?> find(@CacheKey java.lang.String id) {
+    public IArrangement<?, ?> find(@CacheKey java.lang.String id)
+    {
         Arrangement xr = new Arrangement();
         return xr.builder()
                 .where(Arrangement_.id, Equals, id)
@@ -706,7 +755,8 @@ public class ArrangementsService
 
 
     @Override
-    public List<IArrangement<?, ?>> findAll(String arrangementType, ISystems<?, ?> system, java.util.UUID... identityToken) {
+    public List<IArrangement<?, ?>> findAll(String arrangementType, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
         IArrangementType<?, ?> type = find(arrangementType, system, identityToken);
         List<ArrangementXArrangementType> arrs = new ArrangementXArrangementType().builder()
                 .inActiveRange()
@@ -715,7 +765,8 @@ public class ArrangementsService
                 .findLink(null, (ArrangementType) type, null)
                 .getAll();
         List<IArrangement<?, ?>> arrOut = new ArrayList<>();
-        for (ArrangementXArrangementType arr : arrs) {
+        for (ArrangementXArrangementType arr : arrs)
+        {
             arrOut.add(arr.getArrangement());
         }
 
@@ -723,7 +774,8 @@ public class ArrangementsService
     }
 
     @Override
-    public IArrangement<?, ?> completeArrangement(IArrangement<?, ?> arrangement, ISystems<?, ?> system, java.util.UUID... identityToken) {
+    public IArrangement<?, ?> completeArrangement(IArrangement<?, ?> arrangement, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
         Arrangement arr = (Arrangement) arrangement;
         arr.expireIn(Duration.ZERO);
         arr.update();

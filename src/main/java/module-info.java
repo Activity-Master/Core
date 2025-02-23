@@ -31,6 +31,8 @@ module com.guicedee.activitymaster.fsdm {
 	requires com.guicedee.xmlrepresentation;
 	
 	requires com.entityassist;
+
+	requires io.vertx.core;
 	
 	requires com.google.common;
 	
