@@ -4,24 +4,32 @@ import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig;
 import com.hazelcast.client.config.*;
 import com.hazelcast.config.MetricsJmxConfig;
+import com.hazelcast.config.SocketInterceptorConfig;
 
-public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<HazelcastClientConfig> {
+public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<HazelcastClientConfig>
+{
 
     @Override
-    public ClientConfig buildConfig(ClientConfig config) {
+    public ClientConfig buildConfig(ClientConfig config)
+    {
         config.getNetworkConfig()
                 .setRedoOperation(true)
                 .setSmartRouting(true);
-              
+
         config.getConnectionStrategyConfig()
-                    .setAsyncStart(true)
-                    .setReconnectMode(ClientConnectionStrategyConfig.ReconnectMode.ASYNC);
+                .setAsyncStart(true)
+                .setReconnectMode(ClientConnectionStrategyConfig.ReconnectMode.ASYNC);
 
         config.setMetricsConfig(new ClientMetricsConfig());
         config.getMetricsConfig()
                 .setEnabled(true)
                 .setJmxConfig(new MetricsJmxConfig().setEnabled(true))
                 .setCollectionFrequencySeconds(5);
+
+        // Example configuration for setting native protocol or libraries, if relevant
+        config.getNetworkConfig()
+                .setSocketInterceptorConfig(new SocketInterceptorConfig().setEnabled(true));
+
 
         String address = HazelcastProperties.getAddress();
         if (address.contains(":"))
