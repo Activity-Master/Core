@@ -3,12 +3,14 @@ package com.guicedee.activitymaster.fsdm.injections;
 import com.guicedee.guicedhazelcast.HazelcastProperties;
 import com.guicedee.guicedinjection.interfaces.IGuicePreStartup;
 import com.guicedee.guicedinjection.properties.GlobalProperties;
-import org.hibernate.cfg.AvailableSettings;
+import io.vertx.core.Future;
+
+import java.util.List;
 
 public class FSDMHazelcastPreStartup implements IGuicePreStartup<FSDMHazelcastPreStartup>
 {
 	@Override
-	public void onStartup()
+	public List<Future<Boolean>> onStartup()
 	{
 		if (GlobalProperties.getSystemPropertyOrEnvironment("HAZELCAST", "false")
 		                     .equals("true"))
@@ -28,6 +30,7 @@ public class FSDMHazelcastPreStartup implements IGuicePreStartup<FSDMHazelcastPr
 		{
 			HazelcastProperties.setAddress(GlobalProperties.getSystemPropertyOrEnvironment("CLIENT_ADDRESS", "localhost"));
 		}
+		return List.of(Future.succeededFuture(true));
 	}
 	
 	@Override
