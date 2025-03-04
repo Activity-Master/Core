@@ -202,7 +202,7 @@ public class ResourceItemService
 
             rid.createDefaultSecurity(system, identityToken);
             return xr;
-        }, true));
+        }, true),false);
         rif.onComplete(handler -> {
             if (handler.succeeded())
             {
@@ -219,8 +219,8 @@ public class ResourceItemService
         rif.onComplete(handler -> {
             vertx.executeBlocking(TransactionalCallable.of(() -> {
                 var xr = handler.result();
-                xr.createDefaultSecurity(system, identityToken);
                 xr.addResourceItemTypes(identityResourceType, null, DefaultClassifications.NoClassification.toString(), system, identityToken);
+                xr.createDefaultSecurity(system, identityToken);
                 return xr;
             },true));
         });

@@ -27,8 +27,8 @@ public class HazelcastClientConfig implements IGuicedHazelcastClientConfig<Hazel
                 .setCollectionFrequencySeconds(5);
 
         // Example configuration for setting native protocol or libraries, if relevant
-        config.getNetworkConfig()
-                .setSocketInterceptorConfig(new SocketInterceptorConfig().setEnabled(true));
+        /*config.getNetworkConfig()
+                .setSocketInterceptorConfig(new SocketInterceptorConfig().setEnabled(true));*/
 
 
         String address = HazelcastProperties.getAddress();
