@@ -91,17 +91,16 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 		Pair<Object, LogItemTypes> of = Pair.of(logItemObjectPair.getValue(), logItemObjectPair.getKey()
 		                                                                                       .type());
 		byte[] bytes = decodeReferenceObject(of);
-		IResourceItem<?, ?> resourceItem = resourceItemService.create("LogItem", logItemObjectPair.getKey()
-		                                                                                          .type()
-		                                                                                          .getMimeType(), getISystem(ActivityMasterSystemName) , getISystemToken(ActivityMasterSystemName) )
-				.get();
-		resourceItem.updateData(bytes, getISystem(ActivityMasterSystemName) , getISystemToken(ActivityMasterSystemName) );
-		event.addResourceItem(logItemObjectPair.getKey()
-		                                       .value(), resourceItem,
-				logItemObjectPair.getKey()
-				                 .value()
-				, getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName) );
-		
+		resourceItemService.create("LogItem", logItemObjectPair.getKey()
+						.type()
+						.getMimeType(), bytes, getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName))
+				.onSuccess(rih -> {
+					event.addResourceItem(logItemObjectPair.getKey()
+									.value(), rih,
+							logItemObjectPair.getKey()
+									.value()
+							, getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName) );
+				});
 	}
 	
 	private byte[] decodeReferenceObject(Pair<Object, LogItemTypes> pair)

@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.JdbcTypeCode;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.sql.Types;
 
 import static com.guicedee.client.IGuiceContext.*;
@@ -24,7 +25,7 @@ import static com.guicedee.client.IGuiceContext.*;
 
 public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
 		Q extends QueryBuilderSecurities<Q, J, I>,
-		I extends java.lang.String
+		I extends Serializable
 		>
 		extends WarehouseSCDTable<J, Q, I, J>
 		implements IWarehouseSecurityTable<J, Q, I>
@@ -36,25 +37,21 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	@NotNull
 	@Column(nullable = false,
 	        name = "CreateAllowed")
-	@JdbcTypeCode(Types.INTEGER)
 	private boolean createAllowed;
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 	        name = "UpdateAllowed")
-	@JdbcTypeCode(Types.INTEGER)
 	private boolean updateAllowed;
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 	        name = "DeleteAllowed")
-	@JdbcTypeCode(Types.INTEGER)
 	private boolean deleteAllowed;
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false,
 	        name = "ReadAllowed")
-	@JdbcTypeCode(Types.INTEGER)
 	private boolean readAllowed;
 	
 	@JoinColumn(name = "SecurityTokenID",

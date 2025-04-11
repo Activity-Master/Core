@@ -6,6 +6,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
 
@@ -19,11 +20,11 @@ import java.lang.reflect.ParameterizedType;
 @MappedSuperclass
 
 public abstract class WarehouseClassificationRelationshipTypesTable<
-		P extends WarehouseCoreTable<P, ?, java.lang.String,?>,
-		S extends WarehouseCoreTable<S, ?, java.lang.String,?>,
+		P extends WarehouseCoreTable<P, ?, ?,?>,
+		S extends WarehouseCoreTable<S, ?, ?,?>,
 		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, I,QS>,
 		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		QS extends WarehouseSecurityTable<QS,?,I>>
 		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I,QS>
 		implements IWarehouseRelationshipClassificationTypeTable<J, Q, P, S, I,QS>

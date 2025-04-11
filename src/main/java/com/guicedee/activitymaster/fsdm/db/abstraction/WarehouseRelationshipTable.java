@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 
@@ -23,11 +24,11 @@ import java.math.BigDecimal;
  */
 @MappedSuperclass
 public abstract class WarehouseRelationshipTable<
-		P extends WarehouseBaseTable<P, ?, java.lang.String>,
-		S extends WarehouseBaseTable<S, ?, java.lang.String>,
+		P extends WarehouseBaseTable<P, ?, ?>,
+		S extends WarehouseBaseTable<S, ?, ?>,
 		J extends WarehouseRelationshipTable<P, S, J, Q, I,QS>,
 		Q extends QueryBuilderRelationship<P, S, Q, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		QS extends WarehouseSecurityTable<QS,?,I>>
 		extends WarehouseSCDTable<J, Q, I,QS>
 		implements IWarehouseRelationshipTable<J, Q, P, S, I,QS>

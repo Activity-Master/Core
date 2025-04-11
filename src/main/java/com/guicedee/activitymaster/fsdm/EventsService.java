@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -13,16 +12,16 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.EventException;
 import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
-import com.guicedee.client.IGuiceContext;
+import com.guicedee.guicedpersistence.lambda.TransactionalCallable;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import lombok.extern.java.Log;
-import org.jboss.logmanager.Level;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
 
 @Log
 public class EventsService
@@ -30,6 +29,9 @@ public class EventsService
 {
 	@Inject
 	private IEnterprise<?, ?> enterprise;
+
+	@Inject
+	private Vertx vertx;
 	
 	@Override
 	public IEvent<?, ?> get()
@@ -47,23 +49,20 @@ public class EventsService
 	}
 	
 	@Override
-	public CompletableFuture<IEvent<?, ?>> createEvent(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Future<IEvent<?, ?>> createEvent(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		return createEvent(eventType, null, system, identityToken);
 	}
 	
 	@Override
-	
-	public CompletableFuture<IEvent<?, ?>> createEvent(String eventType, java.lang.String key, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Future<IEvent<?, ?>> createEvent(String eventType, java.lang.String key, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Event event = new Event();
 		if (key != null)
 		{
 			event.setId(key);
 		}
-		
-		TransactionalSupplier<IEvent<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
-		ts.setConsumer(() -> {
+		return vertx.executeBlocking(TransactionalCallable.of(()->{
 			event.setEnterpriseID(enterprise);
 			event.setSystemID(system);
 			event.setOriginalSourceSystemID(system);
@@ -72,36 +71,21 @@ public class EventsService
 			event.setActiveFlagID(activeFlag);
 			event.persist();
 			event.createDefaultSecurity(system, identityToken);
-			
 			event.addEventTypes(eventType, "", NoClassification.toString(), system, identityToken);
 			return event;
-		});
-		
-		return CompletableFuture.supplyAsync(ts).whenCompleteAsync((response, error) -> {
-			if (error != null)
-			{
-				log.log(Level.SEVERE, "Could not save event type!", error);
-			}
-			else
-			{
-				log.finer("Saved new event");
-			}
-		});
+		}));
 	}
 	
 	@Override
-	
-	public CompletableFuture<IEventType<?, ?>> createEventType(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Future<IEventType<?, ?>> createEventType(String eventType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		EventType et = new EventType();
-		
 		boolean exists = et.builder()
 		                   .withName(eventType)
 		                   .withEnterprise(enterprise)
 		                   .inActiveRange()
 		                   .inDateRange()
 		                   .getCount() > 0;
-		
 		if (!exists)
 		{
 			if (Strings.isNullOrEmpty(et.getId()))
@@ -109,11 +93,9 @@ public class EventsService
 				et.setId(UUID.randomUUID()
 				             .toString());
 			}
-			
-			TransactionalSupplier<IEventType<?, ?>> ts = IGuiceContext.get(TransactionalSupplier.class);
-			ts.setConsumer(() -> {
+			return vertx.executeBlocking(TransactionalCallable.of(() -> {
 				EventType etBuilt = new EventType();
-				
+
 				etBuilt.setId(et.getId());
 				etBuilt.setName(eventType);
 				etBuilt.setDescription(eventType);
@@ -124,27 +106,15 @@ public class EventsService
 				etBuilt.setActiveFlagID(activeFlag);
 				etBuilt.setOriginalSourceSystemID(system);
 				etBuilt.persist();
-				
+
 				etBuilt.createDefaultSecurity(system, identityToken);
 				return etBuilt;
-			});
-			
-			return CompletableFuture.supplyAsync(ts)
-			                        .whenCompleteAsync((response, error) -> {
-				                        if (error != null)
-				                        {
-					                        log.log(Level.SEVERE, "Could not save event type!", error);
-				                        }
-				                        else
-				                        {
-					                        log.fine("Saved event type: " + et.getName());
-				                        }
-			                        });
-			//return et;
+			}));
+
 		}
 		else
 		{
-			return CompletableFuture.completedFuture(
+			return Future.succeededFuture(
 				findEventType(eventType, system, identityToken)
 			);
 		}

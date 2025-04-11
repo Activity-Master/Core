@@ -11,11 +11,18 @@ import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.Enterpri
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.Formula;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -38,8 +45,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Enterprise
-		extends WarehouseCoreTable<Enterprise, EnterpriseQueryBuilder, String,EnterpriseSecurityToken>
+		extends WarehouseCoreTable<Enterprise, EnterpriseQueryBuilder, UUID,EnterpriseSecurityToken>
 		implements IEnterprise<Enterprise, EnterpriseQueryBuilder>
 {
 	@Serial
@@ -49,8 +60,8 @@ public class Enterprise
 	@Column(nullable = false,
 	        name = "EnterpriseID")
 	@JsonValue
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	//@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
+	private java.util.UUID id;
 	
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
@@ -65,7 +76,12 @@ public class Enterprise
 	        name = "EnterpriseDesc")
 	private String description;
 
-@OneToMany(
+	@OneToMany(
+			mappedBy = "enterpriseID",
+			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+	private List<ActiveFlag> activeFlags;
+
+	@OneToMany(
 			mappedBy = "enterpriseID",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EnterpriseSecurityToken> securities;
@@ -75,23 +91,8 @@ public class Enterprise
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<EnterpriseXClassification> classifications;
 	
-@OneToMany(
-			mappedBy = "enterpriseID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<ActiveFlag> activeFlags;
-	
-	
-	public Enterprise()
-	{
-	
-	}
-	
-	public Enterprise(java.lang.String id)
-	{
-		this.id = id;
-	}
-	
-	public Enterprise(java.lang.String id, String enterpriseName, String enterpriseDesc)
+
+	public Enterprise(UUID id, String enterpriseName, String enterpriseDesc)
 	{
 		this.id = id;
 		name = enterpriseName;
@@ -113,20 +114,7 @@ public class Enterprise
 	//@Override
 	public void configureForClassification(EnterpriseXClassification classificationLink, ISystems<?, ?> system)
 	{
-	
-	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return id;
-	}
-	
-	@Override
-	public Enterprise setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
+		classificationLink.setEnterpriseID(this);
 	}
 	
 	@Override

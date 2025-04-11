@@ -13,6 +13,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
 import static com.guicedee.client.IGuiceContext.*;
@@ -28,7 +29,7 @@ import static com.guicedee.client.IGuiceContext.*;
 public abstract class WarehouseSCDTable<
 		J extends WarehouseSCDTable<J, Q, I,S>,
 		Q extends QueryBuilderSCD<Q, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		S extends WarehouseSecurityTable<S,?,I>
 		>
 		extends WarehouseTable<J, Q, I,S>

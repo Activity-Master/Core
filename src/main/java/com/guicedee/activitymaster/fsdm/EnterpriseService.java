@@ -241,12 +241,12 @@ public class EnterpriseService
 	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
 	public List<IEnterprise<?,?>> findEnterprisesWithClassification(@CacheKey IClassification<?,?> classification)
 	{
-		List<java.lang.String> classy = new EnterpriseXClassification().builder()
+		List<UUID> classy = new EnterpriseXClassification().builder()
 		                                                   .withClassification(classification)
 		                                                   .inActiveRange()
 		                                                   .inDateRange()
 		                                                   .selectColumn(EnterpriseXClassification_.enterpriseID)
-		                                                   .getAll(String.class);
+		                                                   .getAll(UUID.class);
 		
 		EnterpriseQueryBuilder builder = new Enterprise().builder();
 		builder = builder.where(Enterprise_.id, InList, classy);
@@ -279,7 +279,7 @@ public class EnterpriseService
 	public IEnterprise<?,?> getEnterprise(@CacheKey UUID uuid)
 	{
 		return new Enterprise().builder()
-		                       .find(uuid.toString())
+		                       .find(uuid)
 		                       .inDateRange()
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Such Enterprise - " + uuid));
@@ -317,7 +317,7 @@ public class EnterpriseService
 	public IEnterprise<?,?> getIEnterpriseFromID(@CacheKey UUID enterprise)
 	{
 		return new Enterprise().builder()
-		                       .find(enterprise.toString())
+		                       .find(enterprise)
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Enterprise for the given UUID"));
 	}

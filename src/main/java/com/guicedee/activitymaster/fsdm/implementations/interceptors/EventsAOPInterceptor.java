@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
@@ -74,16 +75,15 @@ public class EventsAOPInterceptor implements MethodInterceptor
 		}
 		if (eventThreads.get() == null)
 		{
-			event = eventService.createEvent(eventAnnotation.value(), system, identityToken).get();
+			event = eventService.createEvent(eventAnnotation.value(), system, identityToken).await();
 			eventThreads.set(event);
 		}
 		else
 		{
 			previousEvent = eventThreads.get();
-			event = eventService.createEvent(eventAnnotation.value(), system, identityToken).get();
+			event = eventService.createEvent(eventAnnotation.value(), system, identityToken).await();
 			eventThreads.set(event);
-			
-			previousEvent.addChild((IWarehouseTable<?, ?, String, ?>) event, eventAnnotation.parentHierarchyClassificationName(), null, system, identityToken);
+			previousEvent.addChild((IWarehouseTable<?, ?, ?, ?>) event, eventAnnotation.parentHierarchyClassificationName(), null, system, identityToken);
 		}
 		Object o = null;
 		try

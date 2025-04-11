@@ -26,6 +26,7 @@ import com.guicedee.client.IGuiceContext;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import jakarta.persistence.criteria.*;
+import lombok.extern.log4j.Log4j2;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -40,6 +41,7 @@ import static com.entityassist.enumerations.Operand.*;
 import static jakarta.persistence.criteria.JoinType.*;
 
 
+@Log4j2
 public class ResourceItemService
         implements IResourceItemService<ResourceItemService>
 {
@@ -102,7 +104,8 @@ public class ResourceItemService
 
             xr.createDefaultSecurity(system, identityToken);
 
-        } else
+        }
+        else
         {
             return findResourceItemType(value, system, identityToken);
         }
@@ -111,122 +114,128 @@ public class ResourceItemService
 
 
     @Override
-    public CompletableFuture<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue,
-                                                         ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue,
+                                              ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return create(identityResourceType, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
     }
 
     @Override
-    public CompletableFuture<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, byte[] data,
-                                                         ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, byte[] data,
+                                              ISystems<?, ?> system, java.util.UUID... identityToken)
     {
 
         return create(identityResourceType, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), data, system, identityToken);
     }
 
     @Override
-    public CompletableFuture<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue,
-                                                         ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue,
+                                              ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return create(identityResourceType, key, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
     }
 
     @Override
-    public CompletableFuture<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, byte[] data,
-                                                         ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, byte[] data,
+                                              ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return create(identityResourceType, key, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), data, system, identityToken);
     }
 
 
     @Override
-    public CompletableFuture<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
-                                                         LocalDateTime effectiveFromDate,
-                                                         ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
+                                              LocalDateTime effectiveFromDate,
+                                              ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return create(identityResourceType, null, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, system, identityToken);
     }
 
     @Override
-    public CompletableFuture<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
-                                                         LocalDateTime effectiveFromDate, byte[] data,
-                                                         ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
+                                              LocalDateTime effectiveFromDate, byte[] data,
+                                              ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return create(identityResourceType, null, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, data, system, identityToken);
     }
 
 
     @Override
-    public CompletableFuture<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, String originalSourceSystemUniqueID,
-                                                         LocalDateTime effectiveFromDate,
-                                                         ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, String originalSourceSystemUniqueID,
+                                              LocalDateTime effectiveFromDate,
+                                              ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return create(identityResourceType, key, resourceItemDataValue, originalSourceSystemUniqueID, effectiveFromDate, null, system, identityToken);
     }
 
     @Override
-    public CompletableFuture<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue,
-                                                         String originalSourceSystemUniqueID,
-                                                         LocalDateTime effectiveFromDate, byte[] data,
-                                                         ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue,
+                                              String originalSourceSystemUniqueID,
+                                              LocalDateTime effectiveFromDate, byte[] data,
+                                              ISystems<?, ?> system, java.util.UUID... identityToken)
     {
+        Future<ResourceItem> future = vertx.executeBlocking(TransactionalCallable.of(() -> {
+                    ResourceItem xr = new ResourceItem();
+                    xr.setId(key);
+                    xr.setOriginalSourceSystemID(system);
+                    xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
+                    xr.setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(effectiveFromDate));
+                    xr.setSystemID(system);
+                    xr.setEnterpriseID(enterprise);
+                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                    IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+                    xr.setActiveFlagID(activeFlag);
+                    xr.setResourceItemDataType(resourceItemDataValue);
+                    xr.persist();
 
-        CompletableFuture<IResourceItem<?, ?>> future = new CompletableFuture<>().newIncompleteFuture();
-        Future<ResourceItem> rif = vertx.executeBlocking(TransactionalCallable.of(() -> {
-            ResourceItem xr = new ResourceItem();
-            xr.setId(key);
-            xr.setOriginalSourceSystemID(system);
-            xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
-            xr.setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(effectiveFromDate));
-            xr.setSystemID(system);
-            xr.setEnterpriseID(enterprise);
-            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-            IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-            xr.setActiveFlagID(activeFlag);
-            xr.setResourceItemDataType(resourceItemDataValue);
-            xr.persist();
+                    ResourceItemData rid = new ResourceItemData();
+                    rid.setResource(xr);
+                    rid.setEffectiveFromDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+                    rid.setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+                    rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
+                    rid.setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+                    rid.setResourceItemData("".getBytes());
+                    rid.setActiveFlagID(activeFlag);
+                    rid.setOriginalSourceSystemID(system);
+                    rid.setSystemID(system);
+                    rid.setEnterpriseID(system.getEnterpriseID());
+                    rid.persist();
 
-            ResourceItemData rid = new ResourceItemData();
-            rid.setResource(xr);
-            rid.setEffectiveFromDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
-            rid.setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
-            rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
-            rid.setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
-            rid.setResourceItemData("".getBytes());
-            rid.setActiveFlagID(activeFlag);
-            rid.setOriginalSourceSystemID(system);
-            rid.setSystemID(system);
-            rid.setEnterpriseID(system.getEnterpriseID());
-            rid.persist();
-
-            rid.createDefaultSecurity(system, identityToken);
-            return xr;
-        }, true),false);
-        rif.onComplete(handler -> {
-            if (handler.succeeded())
-            {
-                vertx.executeBlocking(TransactionalCallable.of(() -> {
-                            handler.result().updateData(data, system, identityToken);
-                            return handler.result();
-                        }))
-                        .onComplete((result) -> {
-                            future.complete(handler.result());
-                        })
-                        .onFailure(future::completeExceptionally);
-            } else future.completeExceptionally(handler.cause());
-        });
-        rif.onComplete(handler -> {
-            vertx.executeBlocking(TransactionalCallable.of(() -> {
-                var xr = handler.result();
-                xr.addResourceItemTypes(identityResourceType, null, DefaultClassifications.NoClassification.toString(), system, identityToken);
-                xr.createDefaultSecurity(system, identityToken);
-                return xr;
-            },true));
-        });
-        return future;
+                    rid.createDefaultSecurity(system, identityToken);
+                    return xr;
+                }, true), true)
+                .onComplete(ri -> {
+                    if (ri.failed() || ri.result() == null)
+                    {
+                        log.error("Failed to create resource item", ri.cause());
+                    }
+                    else
+                    {
+                        if (data != null)
+                        {
+                            vertx.executeBlocking(TransactionalCallable.of(() -> {
+                                var ris = ri.result();
+                                ris.updateData(data, system, identityToken);
+                                return ris;
+                            }, true), true);
+                        }
+                    }
+                })
+                .onComplete(ri -> {
+                    if (ri.failed() || ri.result() == null)
+                    {
+                        log.error("Failed to create resource item", ri.cause());
+                    }
+                    else
+                    {
+                        vertx.executeBlocking(TransactionalCallable.of(() -> {
+                            ri.result().addResourceItemTypes(identityResourceType, null, DefaultClassifications.NoClassification.toString(), system, identityToken);
+                            return ri;
+                        }, true), true);
+                    }
+                });
+        return (Future) future;
     }
-
 
     @Override
     public IResourceItem<?, ?> findByClassification(String resourceType,
@@ -347,7 +356,7 @@ public class ResourceItemService
                 //       .canRead(system, identityToken)
                 .inDateRange()
                 .get();
-        return exists.orElseThrow(()->new ResourceItemException("Cannot find resource item type [%s]".formatted(type)));
+        return exists.orElseThrow(() -> new ResourceItemException("Cannot find resource item type [%s]".formatted(type)));
     }
 
     @Override

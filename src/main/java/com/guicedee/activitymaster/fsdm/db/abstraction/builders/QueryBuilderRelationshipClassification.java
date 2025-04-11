@@ -10,6 +10,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderRe
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 
+import java.io.Serializable;
 
 
 /**
@@ -20,11 +21,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
  * @since 01 May 2017
  */
 public abstract class QueryBuilderRelationshipClassification<
-		P extends WarehouseCoreTable<P, ?, java.lang.String,?>,
-		S extends WarehouseCoreTable<S, ?, java.lang.String,?>,
+		P extends WarehouseCoreTable<P, ?, ?,?>,
+		S extends WarehouseCoreTable<S, ?, ?,?>,
 		J extends QueryBuilderRelationshipClassification<P, S, J, E, I,QS>,
 		E extends WarehouseClassificationRelationshipTable<P, S, E, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		QS extends QueryBuilderSecurities<QS,?,I>>
 		extends QueryBuilderRelationship<P, S, J, E, I,QS>
 		implements IQueryBuilderRelationships<J, E, P, S, I>,

@@ -8,11 +8,12 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.time.Duration;
 
 @MappedSuperclass()
 public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
-		Q extends QueryBuilderDefault<Q, J, I>, I extends java.lang.String>
+		Q extends QueryBuilderDefault<Q, J, I>, I extends Serializable>
 		extends SCDEntity<J, Q, I>
 		implements IWarehouseBaseTable<J, Q, I>
 {

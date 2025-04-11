@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -19,8 +24,11 @@ import java.util.Objects;
 @Table(name = "EnterpriseSecurityToken",
        schema = "dbo")
 @XmlRootElement
-
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EnterpriseSecurityToken
 		extends WarehouseSecurityTable<EnterpriseSecurityToken, EnterpriseSecurityTokenQueryBuilder, String>
 		implements Serializable
@@ -42,11 +50,6 @@ public class EnterpriseSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private Enterprise base;
-	
-	public EnterpriseSecurityToken()
-	{
-	
-	}
 	
 	public EnterpriseSecurityToken(java.lang.String enterpriseSecurityTokenID)
 	{

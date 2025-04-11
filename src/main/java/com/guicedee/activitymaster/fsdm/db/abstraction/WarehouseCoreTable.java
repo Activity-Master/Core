@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import jakarta.persistence.MappedSuperclass;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
@@ -28,8 +29,8 @@ import static com.guicedee.client.IGuiceContext.*;
 @MappedSuperclass()
 public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>,
 		Q extends QueryBuilderCore<Q, J, I>,
-		I extends java.lang.String,
-		S extends WarehouseSecurityTable<S,?,I>
+		I extends Serializable,
+		S extends WarehouseSecurityTable<S,?,?>
 		>
 		extends WarehouseBaseTable<J, Q, I>
 		implements IWarehouseCoreTable<J, Q, I,S>

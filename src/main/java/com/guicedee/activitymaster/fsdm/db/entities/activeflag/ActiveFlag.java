@@ -83,7 +83,6 @@ public class ActiveFlag
 	@NotNull
 	@Column(nullable = false,
 	        name = "AllowAccess")
-	@JdbcTypeCode(Types.INTEGER)
 	private boolean allowAccess;
 	
 	@SuppressWarnings("unused")

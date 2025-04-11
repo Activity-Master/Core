@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import jakarta.persistence.*;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
 
@@ -20,11 +21,11 @@ import java.lang.reflect.ParameterizedType;
 @MappedSuperclass
 
 public abstract class WarehouseClassificationRelationshipTable<
-		P extends WarehouseCoreTable<P, ?, java.lang.String,?>,
-		S extends WarehouseCoreTable<S, ?, java.lang.String,?>,
+		P extends WarehouseCoreTable<P, ?, ?,?>,
+		S extends WarehouseCoreTable<S, ?, ?,?>,
 		J extends WarehouseClassificationRelationshipTable<P, S, J, Q, I,QS>,
 		Q extends QueryBuilderRelationshipClassification<P, S, Q, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		QS extends WarehouseSecurityTable<QS,?,I>>
 		extends WarehouseRelationshipTable<P, S, J, Q, I,QS>
 		implements IWarehouseRelationshipClassificationTable<J, Q, P, S, I,QS>

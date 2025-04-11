@@ -12,6 +12,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
+
 import static com.entityassist.enumerations.Operand.*;
 
 /**
@@ -24,7 +26,7 @@ import static com.entityassist.enumerations.Operand.*;
  */
 public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J, E, I>,
 		E extends WarehouseSecurityTable<E, J, I>,
-		I extends java.lang.String>
+		I extends Serializable>
 		extends QueryBuilderSCD<J, E, I,J>
 		implements IQueryBuilderSecurity<J,E,I>
 {

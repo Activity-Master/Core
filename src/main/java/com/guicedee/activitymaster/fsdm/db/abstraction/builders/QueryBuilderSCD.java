@@ -4,10 +4,12 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderEn
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderFlags;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 
+import java.io.Serializable;
+
 public abstract class QueryBuilderSCD<
 		J extends QueryBuilderSCD<J, E, I,QS>,
 		E extends WarehouseSCDTable<E, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		QS extends QueryBuilderSecurities<QS,?,I>>
 		extends QueryBuilderTable<J, E, I,QS>
 		implements IQueryBuilderEnterprise<J, E, I>,

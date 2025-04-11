@@ -25,6 +25,7 @@ import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -263,7 +264,7 @@ public class Arrangement
 		this.id = id;
 		return this;
 	}
-	
+
 	@Override
 	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Arrangement, Arrangement, java.lang.String,?> newLink, Arrangement parent, Arrangement child, String value)
 	{

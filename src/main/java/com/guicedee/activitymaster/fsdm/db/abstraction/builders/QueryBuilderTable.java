@@ -1,10 +1,13 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
+
+import java.io.Serializable;
+
 public abstract class QueryBuilderTable<
 		J extends QueryBuilderTable<J, E, I,QS>,
 		E extends WarehouseTable<E, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		QS extends QueryBuilderSecurities<QS,?,I>
 		>
 		extends QueryBuilderCore<J, E, I>

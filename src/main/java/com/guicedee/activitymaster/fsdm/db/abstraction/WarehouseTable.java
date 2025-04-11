@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
 /**
@@ -21,7 +22,7 @@ import java.lang.reflect.ParameterizedType;
 public abstract class WarehouseTable<
 		J extends WarehouseTable<J, Q, I,S>,
 		Q extends QueryBuilderTable<Q, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		S extends WarehouseSecurityTable<S,?,I>
 		>
 		extends WarehouseCoreTable<J, Q, I,S>

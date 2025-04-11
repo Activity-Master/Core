@@ -7,12 +7,13 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
 		E extends WarehouseBaseTable<E, J, I>,
-		I extends java.lang.String>
+		I extends Serializable>
 		extends QueryBuilderSCD<J, E, I>
 		implements IQueryBuilderDefault<J, E, I>
 {

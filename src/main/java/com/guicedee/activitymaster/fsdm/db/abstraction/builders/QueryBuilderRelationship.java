@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderRe
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseRelationshipTable;
 
+import java.io.Serializable;
 
 
 /**
@@ -21,11 +22,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseRelationshipTabl
  * @param <I> the type parameter
  * @author Marc Magon
  */
-public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P, ?, java.lang.String>,
-		S extends WarehouseBaseTable<S, ?, java.lang.String>,
+public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P, ?, ?>,
+		S extends WarehouseBaseTable<S, ?, ?>,
 		J extends QueryBuilderRelationship<P, S, J, E, I,QS>,
 		E extends WarehouseRelationshipTable<P, S, E, J, I,?>,
-		I extends java.lang.String,
+		I extends Serializable,
 		QS extends QueryBuilderSecurities<QS,?,I>>
 		extends QueryBuilderSCD<J, E, I,QS>
 		implements IQueryBuilderRelationships<J, E, P, S, I>
