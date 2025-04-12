@@ -27,7 +27,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
 import com.guicedee.client.IGuiceContext;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.WorkerExecutor;
 import jakarta.persistence.criteria.JoinType;
 import lombok.extern.java.Log;
 
@@ -56,6 +59,15 @@ public class ArrangementsService
     @Inject
     private Vertx vertx;
 
+    private WorkerExecutor workerExecutor;
+
+    @Inject
+    private void setup()
+    {
+        workerExecutor = vertx.createSharedWorkerExecutor("arrangements-worker-executor", 20);
+    }
+
+
     @Override
     public IArrangement<?, ?> get()
     {
@@ -64,7 +76,7 @@ public class ArrangementsService
 
 
     @Override
-    public CompletableFuture<IArrangement> create(String type,
+    public Future<IArrangement<?,?>> create(String type,
                                                   String arrangementTypeClassification,
                                                   String arrangementTypeValue,
                                                   ISystems<?, ?> system,
@@ -75,7 +87,7 @@ public class ArrangementsService
 
 
     @Override
-    public CompletableFuture<IArrangement> create(
+    public Future<IArrangement<?,?>> create(
             String type,
             UUID key,
             String arrangementTypeClassification,
@@ -83,40 +95,35 @@ public class ArrangementsService
             ISystems<?, ?> system,
             UUID... identityToken)
     {
+        Promise<IArrangement<?,?>> promise = Promise.promise();
 
-        var s = vertx.executeBlocking(TransactionalCallable.of(() -> {
+        var s = workerExecutor.executeBlocking(TransactionalCallable.of(() -> {
             Arrangement arrangement = new Arrangement();
-
-            // Set ID for the new Arrangement
             arrangement.setId(key != null ? key : UUID.randomUUID());
-
-            // Set system and enterprise-related information
             arrangement.setSystemID(system);
             arrangement.setOriginalSourceSystemID(system);
             arrangement.setEnterpriseID(system.getEnterpriseID());
-
-            // Fetch and set ActiveFlag - ensure proper transaction handling
             IActiveFlagService<?> activeFlagService = IGuiceContext.get(IActiveFlagService.class);
             IActiveFlag<?, ?> activeFlag = activeFlagService.getActiveFlag(system.getEnterprise());
             arrangement.setActiveFlagID(activeFlag);
-
-            // Persist the arrangement
             arrangement.persist();
 
-            // Ensure changes are written to the database
-            arrangement.builder().getEntityManager().flush();
-
-            return (IArrangement) arrangement;
-        }));
-
+            return (IArrangement<?,?>) arrangement;
+        },true));
+        s.onComplete(result->{
+            if (result.failed() || result.result() == null)
+            {
+                promise.fail(result.cause());
+            }
+            else promise.complete(result.result());
+        });
         s.onComplete(arrangement ->
-                vertx.executeBlocking(TransactionalCallable.of(() -> {
+                workerExecutor.executeBlocking(TransactionalCallable.of(() -> {
                     ((Arrangement) arrangement).createDefaultSecurity(system, identityToken);
                     return arrangement;
                 },true)));
-
         s.onComplete(arrangement ->
-                vertx.executeBlocking(TransactionalCallable.of(() -> {
+                workerExecutor.executeBlocking(TransactionalCallable.of(() -> {
                     ArrangementType arrangementType = (ArrangementType) find(type, system);
                     arrangement.result().addOrUpdateArrangementType(
                             arrangementTypeClassification,
@@ -126,17 +133,14 @@ public class ArrangementsService
                             system,
                             identityToken
                     );
-
-                    // Flush to ensure changes take effect
-                    arrangement.result().builder().getEntityManager().flush();
                     return arrangement;
                 },true)));
 
-        return FutureUtils.toCompletableFuture(s);
+        return promise.future();
     }
 
     @Override
-    public CompletableFuture<IArrangementType<?, ?>> createArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Future<IArrangementType<?, ?>> createArrangementType(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return createArrangementType(type, null, system, identityToken);
     }
@@ -144,22 +148,23 @@ public class ArrangementsService
     @Override
     //@CacheResult(cacheName = "ArrangementTypes")
     //
-    public CompletableFuture<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.util.UUID key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+    public Future<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.util.UUID key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
     {
-        ArrangementType xr = new ArrangementType();
-        xr.setId(key);
-        xr.setName(type);
-        xr.setDescription(type);
-        xr.setSystemID(system);
-        xr.setOriginalSourceSystemID(system);
-        xr.setEnterpriseID(enterprise);
-        IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-        IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-        xr.setActiveFlagID(activeFlag);
-        xr.persist();
-        xr.createDefaultSecurity(system, identityToken);
-
-        return (CompletableFuture) CompletableFuture.completedFuture(xr);
+        return workerExecutor.executeBlocking(TransactionalCallable.of(() -> {
+            ArrangementType xr = new ArrangementType();
+            xr.setId(key);
+            xr.setName(type);
+            xr.setDescription(type);
+            xr.setSystemID(system);
+            xr.setOriginalSourceSystemID(system);
+            xr.setEnterpriseID(enterprise);
+            IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+            IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
+            xr.setActiveFlagID(activeFlag);
+            xr.persist();
+            xr.createDefaultSecurity(system, identityToken);
+            return xr;
+        }));
     }
 
 

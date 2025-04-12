@@ -9,6 +9,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLWarning;
@@ -29,6 +32,9 @@ public class FSDMMigrateGUI {
     private JTextField destUserField;
     private JTextField destPasswordField;
     private JTextField destDbNameField;
+
+
+    private JTextField backupDirectory;
 
     private JTextField sourceClusterNameField;
 
@@ -53,7 +59,7 @@ public class FSDMMigrateGUI {
         // Main application frame
         JFrame frame = new JFrame("FSDM Data Migration Tool");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 700);
+        frame.setSize(1200, 800);
 
         // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -148,6 +154,16 @@ public class FSDMMigrateGUI {
         destDbNameField.setText("uweassist");
         configPanel.add(destDbNameField, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 9;
+        configPanel.add(new JLabel("Backup Directory:"), gbc);
+
+        gbc.gridx = 1;
+        backupDirectory = new JTextField(30);
+        backupDirectory.setText("c:\\Java");
+        configPanel.add(backupDirectory, gbc);
+
+
         mainPanel.add(configPanel, BorderLayout.NORTH);
 
         // Log output area
@@ -162,11 +178,29 @@ public class FSDMMigrateGUI {
         JButton migrateButton = new JButton("Migrate");
         migrateButton.addActionListener(new MigrateActionListener());
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonPanel2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        JPanel buttonsContainer = new JPanel(new GridLayout(2, 1));
+        buttonsContainer.add(buttonPanel);
+        buttonsContainer.add(buttonPanel2);
+
+        mainPanel.add(buttonsContainer, BorderLayout.SOUTH);
+
+        JButton backupDbButton = new JButton("Backup DB");
+        JButton backupDataButton = new JButton("Backup Data");
+        JButton restoreDataButton = new JButton("Restore Data");
+
+        JButton createDbButton = new JButton("Create DB");
+        JButton partitionDbButton = new JButton("Partition DB");
+        JButton structureDbButton = new JButton("Structure DB");
+
+
+        buttonPanel.add(backupDbButton);
 
         JButton removeConstraintsButton = new JButton("Remove Source Constraints");
         buttonPanel.add(removeConstraintsButton);
+
+
         removeConstraintsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -224,6 +258,38 @@ public class FSDMMigrateGUI {
             }
         });
 
+        buttonPanel2.add(backupDataButton);
+        buttonPanel2.add(createDbButton);
+        buttonPanel2.add(partitionDbButton);
+        buttonPanel2.add(restoreDataButton);
+        buttonPanel2.add(structureDbButton);
+
+        backupDbButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                backupDb();
+            }
+        });
+
+        backupDataButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                backupData();
+            }
+        });
+
+        restoreDataButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                restoreData();
+            }
+        });
+
+
+        createDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_fsdm.sql", "Create Database"));
+        partitionDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_partitions.sql", "Partition Database"));
+        structureDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_structure.sql", "Structure Database"));
+
 
 
         buttonPanel.add(migrateButton);
@@ -249,6 +315,123 @@ public class FSDMMigrateGUI {
             logArea.setText(String.join("\n", logMessages));
         });
     }
+
+    private void backupDb() {
+        // Build the command to execute a full backup
+        String command = "pg_dump.exe --file \"" + backupDirectory.getText() + "\\fullbackup.backup\" --host \"localhost\" --port \"5432\" --username \"postgres\" --no-password --format=c --large-objects --verbose \"" + sourceDbNameField.getText() + "\"";
+
+        // Run the task in a SwingWorker to avoid freezing the GUI
+        new SwingWorker<Void, String>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    publish("Starting full backup...");
+
+                    ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+                    processBuilder.environment().put("PGPASSWORD", sourcePasswordField.getText()); // Add the password as an environment variable
+                    processBuilder.redirectErrorStream(true);
+
+                    // Start the process
+                    Process process = processBuilder.start();
+
+                    // Capture and publish output in real-time
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        publish(line); // Safely send log data to the GUI
+                    }
+
+                    // Wait for the process to finish
+                    int exitCode = process.waitFor();
+                    if (exitCode == 0) {
+                        publish("Full backup completed successfully.");
+                    } else {
+                        publish("Full backup failed with exit code: " + exitCode);
+                    }
+                } catch (Exception ex) {
+                    publish("Error during full backup: " + ex.getMessage());
+                }
+                return null;
+            }
+
+            @Override
+            protected void process(java.util.List<String> chunks) {
+                // Safely update the log area on the Event Dispatch Thread with published messages
+                for (String message : chunks) {
+                    appendLog(message);
+                }
+            }
+
+            @Override
+            protected void done() {
+                appendLog("Backup process finished.");
+            }
+        }.execute();
+    }
+
+
+    private void backupData() {
+        // Command to execute pg_dump
+        String command = "pg_dump.exe --file \"" + backupDirectory.getText() +"\\data.backup\" --host \"localhost\" --port \"5432\" --username \"postgres\" --no-password --format=t --large-objects --data-only --no-owner --no-privileges --no-tablespaces --no-unlogged-table-data --no-comments --no-publications --no-subscriptions --no-security-labels --no-toast-compression --no-table-access-method --inserts --on-conflict-do-nothing --verbose --exclude-schema \"information_schema\" --exclude-schema \"public\" --exclude-schema \"postgres\" --exclude-schema \"pg_toast\" \"" + sourceDbNameField.getText()+ "\"";
+
+        try {
+            appendLog("Starting backup...");
+
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+            processBuilder.redirectErrorStream(true);
+            processBuilder.environment().put("PGPASSWORD", sourcePasswordField.getText());
+            Process process = processBuilder.start();
+
+            // Capture output
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                appendLog(line);
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                appendLog("Backup completed successfully.");
+            } else {
+                appendLog("Backup failed with exit code: " + exitCode);
+            }
+
+        } catch (Exception ex) {
+            appendLog("Error during backup: " + ex.getMessage());
+        }
+    }
+
+    private void restoreData() {
+        // Command to execute pg_dump
+        String command = "pg_restore.exe --host \"localhost\" --port \"5432\" --username \"postgres\" --no-password --dbname \"uweassist\" --data-only --verbose \"" + backupDirectory.getText() + "\\data.backup" + "\"";
+
+        try {
+            appendLog("Starting backup...");
+
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+            processBuilder.redirectErrorStream(true);
+            processBuilder.environment().put("PGPASSWORD", sourcePasswordField.getText());
+            Process process = processBuilder.start();
+
+            // Capture output
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                appendLog(line);
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                appendLog("Backup completed successfully.");
+            } else {
+                appendLog("Backup failed with exit code: " + exitCode);
+            }
+
+        } catch (Exception ex) {
+            appendLog("Error during backup: " + ex.getMessage());
+        }
+    }
+
 
     private void executeRemoveConstraints() throws Exception {
         // Get database connection information from input fields
@@ -663,4 +846,56 @@ public class FSDMMigrateGUI {
             migrationThread.start();
         }
     }
+
+    private void executeSQLScript(String filePath, String actionName) {
+        // Adjust this if `psql` is not in the system's PATH.
+        String psqlPath = "psql.exe";
+        String dbName = destDbNameField.getText();
+        String host = "localhost";
+        String port = "5432";
+        String username = destUserField.getText();
+        String password = destPasswordField.getText();
+
+        try {
+            appendLog("Starting " + actionName + "...");
+
+            // Ensure the SQL file exists
+            File sqlFile = new File(filePath);
+            if (!sqlFile.exists()) {
+                appendLog("Error: File not found: " + filePath);
+                return;
+            }
+
+            // Run the `psql` command
+            String command = String.format(
+                    "%s --host=%s --port=%s --username=%s --dbname=%s --file=\"%s\"",
+                    psqlPath, host, port, username, dbName, sqlFile.getAbsolutePath()
+            );
+
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+            // Set environment variable for password (if needed)
+            processBuilder.environment().put("PGPASSWORD", password);
+
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
+
+            // Capture and log the process output
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                appendLog(line);
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                appendLog(actionName + " completed successfully.");
+            } else {
+                appendLog(actionName + " failed with exit code: " + exitCode);
+            }
+
+        } catch (Exception ex) {
+            appendLog("Error during " + actionName + ": " + ex.getMessage());
+        }
+    }
+
 }
