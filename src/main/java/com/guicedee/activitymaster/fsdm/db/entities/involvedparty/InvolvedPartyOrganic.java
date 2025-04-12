@@ -5,10 +5,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyOrganicQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -27,108 +32,91 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-		generator = ObjectIdGenerators.PropertyGenerator.class,
-		property = "id")
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class InvolvedPartyOrganic
-		extends WarehouseSCDTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, String,InvolvedPartyOrganicSecurityToken>
+        extends WarehouseSCDTable<InvolvedPartyOrganic, InvolvedPartyOrganicQueryBuilder, UUID, InvolvedPartyOrganicSecurityToken>
 
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	@Column(nullable = false,
-	        name = "InvolvedPartyOrganicID")
-	@JsonValue
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-	@JoinColumn(name = "InvolvedPartyOrganicID",
-	            referencedColumnName = "InvolvedPartyID",
-	            nullable = false,
-	            insertable = false,
-	            updatable = false)
-	@OneToOne(optional = false,
-	          fetch = FetchType.LAZY)
-	private InvolvedParty involvedParty;
-	
-@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<InvolvedPartyOrganicSecurityToken> securities;
-	
-	public InvolvedPartyOrganic()
-	{
-	
-	}
-	
-	public InvolvedPartyOrganic(java.lang.String involvedPartyOrganicID)
-	{
-		this.id = involvedPartyOrganicID;
-	}
-	
-	@Override
-	public void configureSecurityEntity(InvolvedPartyOrganicSecurityToken securityEntity)
-	{
-		securityEntity.setBase(this);
-	}
-	
-	public List<InvolvedPartyOrganicSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public InvolvedPartyOrganic setSecurities(List<InvolvedPartyOrganicSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		InvolvedPartyOrganic that = (InvolvedPartyOrganic) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
-	@Override
-	public String toString()
-	{
-		return "OrganicParty - " + getId();
-	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public InvolvedPartyOrganic setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public InvolvedParty getInvolvedParty()
-	{
-		return this.involvedParty;
-	}
-	
-	public InvolvedPartyOrganic setInvolvedParty(InvolvedParty involvedParty)
-	{
-		this.involvedParty = involvedParty;
-		return this;
-	}
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Column(nullable = false,
+            name = "InvolvedPartyOrganicID")
+    @JsonValue
+
+    private java.util.UUID id;
+
+    @JoinColumn(name = "InvolvedPartyOrganicID",
+            referencedColumnName = "InvolvedPartyID",
+            nullable = false,
+            insertable = false,
+            updatable = false)
+    @OneToOne(optional = false,
+            fetch = FetchType.LAZY)
+    private InvolvedParty involvedParty;
+
+    @OneToMany(
+            mappedBy = "base",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<InvolvedPartyOrganicSecurityToken> securities;
+
+    @Override
+    public void configureSecurityEntity(InvolvedPartyOrganicSecurityToken securityEntity)
+    {
+        securityEntity.setBase(this);
+    }
+
+    public List<InvolvedPartyOrganicSecurityToken> getSecurities()
+    {
+        return this.securities;
+    }
+
+    public InvolvedPartyOrganic setSecurities(List<InvolvedPartyOrganicSecurityToken> securities)
+    {
+        this.securities = securities;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        InvolvedPartyOrganic that = (InvolvedPartyOrganic) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString()
+    {
+        return "OrganicParty - " + getId();
+    }
+
+    public InvolvedParty getInvolvedParty()
+    {
+        return this.involvedParty;
+    }
+
+    public InvolvedPartyOrganic setInvolvedParty(InvolvedParty involvedParty)
+    {
+        this.involvedParty = involvedParty;
+        return this;
+    }
 }

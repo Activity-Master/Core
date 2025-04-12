@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlagXClassi
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlagXClassificationSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class ActiveFlagXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ActiveFlagXClassificationSecurityTokenQueryBuilder, ActiveFlagXClassificationSecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<ActiveFlagXClassificationSecurityTokenQueryBuilder, ActiveFlagXClassificationSecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

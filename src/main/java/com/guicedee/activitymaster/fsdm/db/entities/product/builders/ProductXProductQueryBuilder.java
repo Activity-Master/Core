@@ -4,9 +4,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class ProductXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Product, Product, ProductXProductQueryBuilder,
-		ProductXProduct, java.lang.String,ProductXProductSecurityTokenQueryBuilder>
+		ProductXProduct, UUID,ProductXProductSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<ProductXProduct, Product> getPrimaryAttribute()

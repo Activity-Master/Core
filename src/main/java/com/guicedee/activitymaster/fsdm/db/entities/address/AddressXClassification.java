@@ -11,11 +11,16 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXCla
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -34,12 +39,16 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressXClassification
 		extends WarehouseClassificationRelationshipTable<Address,
 		Classification,
 		AddressXClassification,
 		AddressXClassificationQueryBuilder,
-		java.lang.String,
+		UUID,
 		AddressXClassificationSecurityToken>
 		implements Serializable
 {
@@ -50,8 +59,8 @@ public class AddressXClassification
 	
 	@Column(nullable = false,
 	        name = "AddressXClassificationID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
@@ -65,33 +74,11 @@ public class AddressXClassification
 			mappedBy = "base",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<AddressXClassificationSecurityToken> securities;
-	
-	public AddressXClassification()
-	{
-	
-	}
-	
-	public AddressXClassification(java.lang.String addressXClassificationID)
-	{
-		this.id = addressXClassificationID;
-	}
-	
+
 	@Override
 	public void configureSecurityEntity(AddressXClassificationSecurityToken securityEntity)
 	{
 		securityEntity.setBase(this);
-	}
-	
-	public AddressXClassification setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public AddressXClassification setAddressID(Address addressID)
-	{
-		this.addressID = addressID;
-		return this;
 	}
 	
 	public AddressXClassification setSecurities(List<AddressXClassificationSecurityToken> securities)
@@ -110,12 +97,6 @@ public class AddressXClassification
 	public Classification getSecondary()
 	{
 		return getClassificationID();
-	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
 	}
 	
 	public Address getAddressID()

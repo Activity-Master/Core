@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.EventXRulesSecurityTo
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventXRulesSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class EventXRulesSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EventXRulesSecurityTokenQueryBuilder, EventXRulesSecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<EventXRulesSecurityTokenQueryBuilder, EventXRulesSecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

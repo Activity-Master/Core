@@ -55,7 +55,7 @@ public class AddressService
 	@Transactional()
 	@Override
 	//@Transactional()
-	public IAddress<?, ?> create(String addressClassification, java.lang.String key, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
+	public IAddress<?, ?> create(String addressClassification, java.util.UUID key, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
 	{
 		Address addy = new Address();
 		
@@ -73,7 +73,7 @@ public class AddressService
 		if (!found)
 		{
 			if(key != null)
-			addy.setId(key.toString());
+			addy.setId(key);
 			addy.setEnterpriseID(system.getEnterpriseID());
 			addy.setClassificationID(classification);
 			addy.setValue(value);

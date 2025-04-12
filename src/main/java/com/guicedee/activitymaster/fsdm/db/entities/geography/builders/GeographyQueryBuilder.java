@@ -10,12 +10,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.geography.*;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.validation.constraints.Null;
 
+import java.util.UUID;
+
 import static com.entityassist.enumerations.Operand.*;
 
 public class GeographyQueryBuilder
-		extends QueryBuilderSCD<GeographyQueryBuilder, Geography, String,GeographySecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<GeographyQueryBuilder, Geography, UUID,GeographySecurityTokenQueryBuilder>
 		implements IGeographyQueryBuilder<GeographyQueryBuilder, Geography>,
-		           IQueryBuilderNamesAndDescriptions<GeographyQueryBuilder,Geography,String>
+		           IQueryBuilderNamesAndDescriptions<GeographyQueryBuilder,Geography,UUID>
 {
 	
 	@jakarta.validation.constraints.NotNull

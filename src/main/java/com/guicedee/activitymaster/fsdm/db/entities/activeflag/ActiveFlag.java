@@ -13,6 +13,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.JdbcTypeCode;
 
@@ -20,6 +24,7 @@ import java.io.Serial;
 import java.sql.Types;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -41,8 +46,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ActiveFlag
-		extends WarehouseCoreTable<ActiveFlag, ActiveFlagQueryBuilder, String, ActiveFlagSecurityToken>
+		extends WarehouseCoreTable<ActiveFlag, ActiveFlagQueryBuilder, UUID, ActiveFlagSecurityToken>
 		implements IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>
 {
 	@Serial
@@ -50,8 +59,8 @@ public class ActiveFlag
 	@Id
 	@Column(nullable = false,
 	        name = "ActiveFlagID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "EnterpriseID",
 	            referencedColumnName = "EnterpriseID",
@@ -90,43 +99,22 @@ public class ActiveFlag
 			mappedBy = "base",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ActiveFlagSecurityToken> securities;
-	
-	public ActiveFlag()
-	{
-	
-	}
-	
-	public ActiveFlag(java.lang.String id)
-	{
-		this.id = id;
-	}
-	
-	public ActiveFlag(java.lang.String id, String activeFlagName, boolean allowAccess)
+
+
+	public ActiveFlag(UUID id, String activeFlagName, boolean allowAccess)
 	{
 		this.id = id;
 		name = activeFlagName;
 		this.allowAccess = allowAccess;
 	}
-	
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	@Override
 	public void configureSecurityEntity(ActiveFlagSecurityToken securityEntity)
 	{
 		securityEntity.setBase(this);
 	}
 	
-	@Override
-	public ActiveFlag setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	
+
 	public ActiveFlag setEnterpriseID(Enterprise enterpriseID)
 	{
 		this.enterpriseID = enterpriseID;

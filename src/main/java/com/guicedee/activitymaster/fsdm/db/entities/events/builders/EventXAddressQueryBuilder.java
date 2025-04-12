@@ -5,9 +5,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.events.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class EventXAddressQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Address, EventXAddressQueryBuilder,
-		EventXAddress, java.lang.String,EventXAddressSecurityTokenQueryBuilder>
+		EventXAddress, UUID,EventXAddressSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<EventXAddress, Event> getPrimaryAttribute()

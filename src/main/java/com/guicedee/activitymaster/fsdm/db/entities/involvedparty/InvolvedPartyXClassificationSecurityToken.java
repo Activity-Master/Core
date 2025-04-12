@@ -9,9 +9,14 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -23,8 +28,12 @@ import java.io.Serializable;
 @XmlRootElement
 
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class InvolvedPartyXClassificationSecurityToken
-		extends WarehouseSecurityTable<InvolvedPartyXClassificationSecurityToken, InvolvedPartyXClassificationSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<InvolvedPartyXClassificationSecurityToken, InvolvedPartyXClassificationSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -34,8 +43,8 @@ public class InvolvedPartyXClassificationSecurityToken
 	
 	@Column(nullable = false,
 	        name = "InvolvedPartyXClassificationSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	@JoinColumn(name = "InvolvedPartyXClassificationID",
 	            referencedColumnName = "InvolvedPartyXClassificationID",
 	            nullable = false)
@@ -43,31 +52,10 @@ public class InvolvedPartyXClassificationSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private InvolvedPartyXClassification base;
-	
-	public InvolvedPartyXClassificationSecurityToken()
-	{
-	
-	}
-	
-	public InvolvedPartyXClassificationSecurityToken(java.lang.String involvedPartyXClassificationSecurityTokenID)
-	{
-		this.id = involvedPartyXClassificationSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "InvolvedPartyXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
-	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public InvolvedPartyXClassificationSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
 	}
 	
 	public InvolvedPartyXClassification getBase()

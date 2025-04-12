@@ -9,9 +9,14 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.geography.builders.GeographyXGeographySecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -23,8 +28,12 @@ import java.io.Serializable;
 @XmlRootElement
 
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class GeographyXGeographySecurityToken
-		extends WarehouseSecurityTable<GeographyXGeographySecurityToken, GeographyXGeographySecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<GeographyXGeographySecurityToken, GeographyXGeographySecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -34,8 +43,8 @@ public class GeographyXGeographySecurityToken
 	
 	@Column(nullable = false,
 	        name = "GeographyXGeographySecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "GeographyXGeographyID",
 	            referencedColumnName = "GeographyXGeographyID",
@@ -44,33 +53,12 @@ public class GeographyXGeographySecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private GeographyXGeography base;
-	
-	public GeographyXGeographySecurityToken()
-	{
-	
-	}
-	
-	public GeographyXGeographySecurityToken(java.lang.String geographyXGeographySecurityTokenID)
-	{
-		this.id = geographyXGeographySecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "GeographyXGeographySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public GeographyXGeographySecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public GeographyXGeography getBase()
 	{
 		return this.base;

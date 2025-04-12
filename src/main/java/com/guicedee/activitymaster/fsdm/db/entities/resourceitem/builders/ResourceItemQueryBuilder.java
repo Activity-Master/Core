@@ -9,11 +9,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 import static com.entityassist.enumerations.Operand.*;
 
 public class ResourceItemQueryBuilder
-		extends QueryBuilderSCD<ResourceItemQueryBuilder, ResourceItem, String,ResourceItemSecurityTokenQueryBuilder>
-		implements IQueryBuilderClassifications<ResourceItemQueryBuilder, ResourceItem, java.lang.String>,
+		extends QueryBuilderSCD<ResourceItemQueryBuilder, ResourceItem, UUID,ResourceItemSecurityTokenQueryBuilder>
+		implements IQueryBuilderClassifications<ResourceItemQueryBuilder, ResourceItem, UUID>,
 		           IResourceItemQueryBuilder<ResourceItemQueryBuilder, ResourceItem>
 {
 	

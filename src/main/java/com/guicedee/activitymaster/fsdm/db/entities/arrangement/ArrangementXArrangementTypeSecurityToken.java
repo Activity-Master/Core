@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXArrangementTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -18,8 +23,12 @@ import java.util.Objects;
 @Table(schema = "Arrangement", name = "ArrangementXArrangementTypeSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementXArrangementTypeSecurityToken
-		extends WarehouseSecurityTable<ArrangementXArrangementTypeSecurityToken, ArrangementXArrangementTypeSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ArrangementXArrangementTypeSecurityToken, ArrangementXArrangementTypeSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -29,8 +38,8 @@ public class ArrangementXArrangementTypeSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ArrangementXArrangementTypeSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	@JoinColumn(name = "ArrangementXArrangementTypeID",
 	            referencedColumnName = "ArrangementXArrangementTypeID",
 	            nullable = false)
@@ -38,40 +47,18 @@ public class ArrangementXArrangementTypeSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private ArrangementXArrangementType base;
-	
-	public ArrangementXArrangementTypeSecurityToken()
-	{
-	
-	}
-	
-	public ArrangementXArrangementTypeSecurityToken(java.lang.String arrangementXArrangementTypeSecurityTokenID)
-	{
-		this.id = arrangementXArrangementTypeSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "ArrangementXArrangementTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public ArrangementXArrangementTypeSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public ArrangementXArrangementTypeSecurityToken setBase(ArrangementXArrangementType base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public ArrangementXArrangementType getBase()
 	{
 		return base;

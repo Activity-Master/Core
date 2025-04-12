@@ -6,11 +6,16 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.Cla
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -27,140 +32,124 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-		generator = ObjectIdGenerators.PropertyGenerator.class,
-		property = "id")
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClassificationDataConceptXResourceItem
-		extends WarehouseClassificationRelationshipTable<ClassificationDataConcept,
-		ResourceItem,
-		ClassificationDataConceptXResourceItem,
-		ClassificationDataConceptXResourceItemQueryBuilder,
-		java.lang.String,
-		ClassificationDataConceptXResourceItemSecurityToken>
-		implements Serializable
+        extends WarehouseClassificationRelationshipTable<ClassificationDataConcept,
+        ResourceItem,
+        ClassificationDataConceptXResourceItem,
+        ClassificationDataConceptXResourceItemQueryBuilder,
+        UUID,
+        ClassificationDataConceptXResourceItemSecurityToken>
+        implements Serializable
 {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	
-	@Column(nullable = false,
-	        name = "ClassificationDataConceptXResourceItemID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-	@JoinColumn(name = "ClassificationDataConceptID",
-	            referencedColumnName = "ClassificationDataConceptID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
-	private ClassificationDataConcept classificationDataConceptID;
-	
-	
-	@JoinColumn(name = "ResourceItemID",
-	            referencedColumnName = "ResourceItemID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
-	private ResourceItem resourceItemID;
-	
-@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<ClassificationDataConceptXResourceItemSecurityToken> securities;
-	
-	public ClassificationDataConceptXResourceItem()
-	{
-	
-	}
-	
-	public ClassificationDataConceptXResourceItem(java.lang.String classificationDataConceptXResourceItemID)
-	{
-		this.id = classificationDataConceptXResourceItemID;
-	}
-	
-	@Override
-	public void configureSecurityEntity(ClassificationDataConceptXResourceItemSecurityToken securityEntity)
-	{
-		securityEntity.setBase(this);
-	}
-	
-	public ClassificationDataConceptXResourceItem setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public ClassificationDataConceptXResourceItem setClassificationDataConceptID(ClassificationDataConcept classificationDataConceptID)
-	{
-		this.classificationDataConceptID = classificationDataConceptID;
-		return this;
-	}
-	
-	public ClassificationDataConceptXResourceItem setResourceItemID(ResourceItem resourceItemID)
-	{
-		this.resourceItemID = resourceItemID;
-		return this;
-	}
-	
-	public ClassificationDataConceptXResourceItem setSecurities(List<ClassificationDataConceptXResourceItemSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-	
-	@Override
-	public ClassificationDataConcept getPrimary()
-	{
-		return getClassificationDataConceptID();
-	}
-	
-	@Override
-	public ResourceItem getSecondary()
-	{
-		return getResourceItemID();
-	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
-	public ClassificationDataConcept getClassificationDataConceptID()
-	{
-		return classificationDataConceptID;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return resourceItemID;
-	}
-	
-	public List<ClassificationDataConceptXResourceItemSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ClassificationDataConceptXResourceItem that = (ClassificationDataConceptXResourceItem) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(getId());
-	}
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    @Column(nullable = false,
+            name = "ClassificationDataConceptXResourceItemID")
+
+    private java.util.UUID id;
+
+    @JoinColumn(name = "ClassificationDataConceptID",
+            referencedColumnName = "ClassificationDataConceptID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+
+    private ClassificationDataConcept classificationDataConceptID;
+
+
+    @JoinColumn(name = "ResourceItemID",
+            referencedColumnName = "ResourceItemID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+
+    private ResourceItem resourceItemID;
+
+    @OneToMany(
+            mappedBy = "base",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<ClassificationDataConceptXResourceItemSecurityToken> securities;
+
+    @Override
+    public void configureSecurityEntity(ClassificationDataConceptXResourceItemSecurityToken securityEntity)
+    {
+        securityEntity.setBase(this);
+    }
+
+
+    public ClassificationDataConceptXResourceItem setClassificationDataConceptID(ClassificationDataConcept classificationDataConceptID)
+    {
+        this.classificationDataConceptID = classificationDataConceptID;
+        return this;
+    }
+
+    public ClassificationDataConceptXResourceItem setResourceItemID(ResourceItem resourceItemID)
+    {
+        this.resourceItemID = resourceItemID;
+        return this;
+    }
+
+    public ClassificationDataConceptXResourceItem setSecurities(List<ClassificationDataConceptXResourceItemSecurityToken> securities)
+    {
+        this.securities = securities;
+        return this;
+    }
+
+    @Override
+    public ClassificationDataConcept getPrimary()
+    {
+        return getClassificationDataConceptID();
+    }
+
+    @Override
+    public ResourceItem getSecondary()
+    {
+        return getResourceItemID();
+    }
+
+
+    public ClassificationDataConcept getClassificationDataConceptID()
+    {
+        return classificationDataConceptID;
+    }
+
+    public ResourceItem getResourceItemID()
+    {
+        return resourceItemID;
+    }
+
+    public List<ClassificationDataConceptXResourceItemSecurityToken> getSecurities()
+    {
+        return securities;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        ClassificationDataConceptXResourceItem that = (ClassificationDataConceptXResourceItem) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(getId());
+    }
 }

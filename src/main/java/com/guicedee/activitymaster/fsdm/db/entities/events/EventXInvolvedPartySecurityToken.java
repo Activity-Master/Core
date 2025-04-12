@@ -4,8 +4,13 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXInvolvedPartySecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
+import java.util.UUID;
 
 
 /**
@@ -18,8 +23,12 @@ import java.io.Serial;
 @XmlRootElement
 
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EventXInvolvedPartySecurityToken
-		extends WarehouseSecurityTable<EventXInvolvedPartySecurityToken, EventXInvolvedPartySecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<EventXInvolvedPartySecurityToken, EventXInvolvedPartySecurityTokenQueryBuilder, UUID>
 {
 	
 	@Serial
@@ -28,8 +37,8 @@ public class EventXInvolvedPartySecurityToken
 	
 	@Column(nullable = false,
 	        name = "EventXInvolvedPartySecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "EventXInvolvedPartyID",
 	            referencedColumnName = "EventXInvolvedPartyID",
@@ -38,33 +47,12 @@ public class EventXInvolvedPartySecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private EventXInvolvedParty base;
-	
-	public EventXInvolvedPartySecurityToken()
-	{
-	
-	}
-	
-	public EventXInvolvedPartySecurityToken(java.lang.String eventXInvolvedPartySecurityTokenID)
-	{
-		this.id = eventXInvolvedPartySecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "EventXInvolvedPartySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public EventXInvolvedPartySecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public EventXInvolvedParty getBase()
 	{
 		return this.base;

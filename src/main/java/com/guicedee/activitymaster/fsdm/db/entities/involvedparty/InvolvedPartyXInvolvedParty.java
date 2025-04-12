@@ -10,10 +10,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.builders.InvolvedPartyXInvolvedPartyQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -33,12 +38,16 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class InvolvedPartyXInvolvedParty
 		extends WarehouseClassificationRelationshipTable<InvolvedParty,
 		InvolvedParty,
 		InvolvedPartyXInvolvedParty,
 		InvolvedPartyXInvolvedPartyQueryBuilder,
-		java.lang.String,
+		UUID,
 		InvolvedPartyXInvolvedPartySecurityToken>
 {
 	
@@ -48,8 +57,8 @@ public class InvolvedPartyXInvolvedParty
 	
 	@Column(nullable = false,
 	        name = "InvolvedPartyXInvolvedPartyID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ChildInvolvedPartyID",
 	            referencedColumnName = "InvolvedPartyID",
@@ -68,34 +77,13 @@ public class InvolvedPartyXInvolvedParty
 			mappedBy = "base",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<InvolvedPartyXInvolvedPartySecurityToken> securities;
-	
-	public InvolvedPartyXInvolvedParty()
-	{
-	
-	}
-	
-	public InvolvedPartyXInvolvedParty(java.lang.String involvedPartyXInvolvedPartyID)
-	{
-		this.id = involvedPartyXInvolvedPartyID;
-	}
-	
+
 	@Override
 	public void configureSecurityEntity(InvolvedPartyXInvolvedPartySecurityToken securityEntity)
 	{
 		securityEntity.setBase(this);
 	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public InvolvedPartyXInvolvedParty setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public InvolvedParty getChildInvolvedPartyID()
 	{
 		return this.childInvolvedPartyID;

@@ -6,9 +6,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.geography.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class GeographyXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Geography, Classification, GeographyXClassificationQueryBuilder,
-		GeographyXClassification, java.lang.String,GeographyXClassificationSecurityTokenQueryBuilder>
+		GeographyXClassification, UUID,GeographyXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<GeographyXClassification, Geography> getPrimaryAttribute()

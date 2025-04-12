@@ -9,8 +9,13 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXGeographySecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -22,8 +27,12 @@ import java.io.Serial;
 @XmlRootElement
 
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EventXGeographySecurityToken
-		extends WarehouseSecurityTable<EventXGeographySecurityToken, EventXGeographySecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<EventXGeographySecurityToken, EventXGeographySecurityTokenQueryBuilder, UUID>
 {
 	
 	@Serial
@@ -32,8 +41,8 @@ public class EventXGeographySecurityToken
 	
 	@Column(nullable = false,
 	        name = "EventXGeographySecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "EventXGeographyID",
 	            referencedColumnName = "EventXGeographyID",
@@ -42,33 +51,12 @@ public class EventXGeographySecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private EventXGeography base;
-	
-	public EventXGeographySecurityToken()
-	{
-	
-	}
-	
-	public EventXGeographySecurityToken(java.lang.String eventXGeographySecurityTokenID)
-	{
-		this.id = eventXGeographySecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "EventXGeographySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public EventXGeographySecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public EventXGeography getBase()
 	{
 		return this.base;

@@ -20,10 +20,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static jakarta.persistence.FetchType.*;
@@ -36,278 +41,259 @@ import static jakarta.persistence.FetchType.*;
 @SuppressWarnings("unused")
 @Entity
 @Table(schema = "Rules",
-       name = "Rules")
+        name = "Rules")
 @XmlRootElement
 @Access(AccessType.FIELD)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-		generator = ObjectIdGenerators.PropertyGenerator.class,
-		property = "id")
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Rules
-		extends WarehouseSCDTable<Rules, RulesQueryBuilder, String,RulesSecurityToken>
-		implements IRules<Rules, RulesQueryBuilder>
+        extends WarehouseSCDTable<Rules, RulesQueryBuilder, UUID, RulesSecurityToken>
+        implements IRules<Rules, RulesQueryBuilder>
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	
-	@Column(nullable = false,
-	        name = "RulesID")
-	@JsonValue
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	@Basic(optional = false,
-	       fetch = EAGER)
-	@NotNull
-	@Size(min = 1,
-	      max = 150)
-	@Column(nullable = false,
-	        length = 150,
-	        name = "RuleSetName")
-	private String name;
-	@Basic(optional = false,
-	       fetch = EAGER)
-	@NotNull
-	@Size(min = 1,
-	      max = 250)
-	@Column(nullable = false,
-	        length = 250,
-	        name = "RuleSetDescription")
-	private String description;
-	
-@OneToMany(
-			mappedBy = "rulesID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXClassification> classifications;
-	
-@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesSecurityToken> securities;
-@OneToMany(
-			mappedBy = "rulesID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXResourceItem> resources;
-@OneToMany(
-			mappedBy = "childRulesID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXRules> rulesXRulesList;
-@OneToMany(
-			mappedBy = "parentRulesID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXRules> rulesXRulesList1;
-	
-@OneToMany(
-			mappedBy = "rulesID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXInvolvedParty> parties;
-@OneToMany(
-			mappedBy = "rulesID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXArrangement> arrangements;
-@OneToMany(
-			mappedBy = "rulesID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXProduct> products;
-	
-	public Rules()
-	{
-	
-	}
-	
-	public Rules(java.lang.String rulesID)
-	{
-		id = rulesID;
-	}
-	
-	public Rules(java.lang.String rulesID, String rulesName, String rulesDesc)
-	{
-		id = rulesID;
-		name = rulesName;
-		description = rulesDesc;
-	}
-	
-	@Override
-	public void configureSecurityEntity(RulesSecurityToken securityEntity)
-	{
-		securityEntity.setBase(this);
-	}
-	
-	public List<RulesXClassification> getClassifications()
-	{
-		return classifications;
-	}
-	
-	public Rules setClassifications(List<RulesXClassification> classifications)
-	{
-		this.classifications = classifications;
-		return this;
-	}
-	
-	public List<RulesSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public Rules setSecurities(List<RulesSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-	
-	public List<RulesXResourceItem> getResources()
-	{
-		return resources;
-	}
-	
-	public Rules setResources(List<RulesXResourceItem> resources)
-	{
-		this.resources = resources;
-		return this;
-	}
-	
-	public List<RulesXRules> getRulesXRulesList()
-	{
-		return rulesXRulesList;
-	}
-	
-	public Rules setRulesXRulesList(List<RulesXRules> rulesXRulesList)
-	{
-		this.rulesXRulesList = rulesXRulesList;
-		return this;
-	}
-	
-	public List<RulesXRules> getRulesXRulesList1()
-	{
-		return rulesXRulesList1;
-	}
-	
-	public Rules setRulesXRulesList1(List<RulesXRules> rulesXRulesList1)
-	{
-		this.rulesXRulesList1 = rulesXRulesList1;
-		return this;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		Rules rules = (Rules) o;
-		return Objects.equals(getName(), rules.getName());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getName(), getName());
-	}
-	
-	@Override
-	public String toString()
-	{
-		return getName();
-	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return id;
-	}
-	
-	@Override
-	public Rules setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public Rules setName(String name)
-	{
-		this.name = name;
-		return this;
-	}
-	
-	public String getDescription()
-	{
-		return description;
-	}
-	
-	public Rules setDescription(String description)
-	{
-		this.description = description;
-		return this;
-	}
-	
-	
-	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Rules, Rules, java.lang.String,?> newLink, Rules parent, Rules child, String value)
-	{
-		RulesXRules r = (RulesXRules) newLink;
-		r.setParentRulesID(parent);
-		r.setChildRulesID(child);
-		r.setValue(value);
-	}
-	
-	@Override
-	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Rules primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		RulesXArrangement r = (RulesXArrangement) linkTable;
-		r.setRulesID(primary);
-		r.setArrangementID((Arrangement) secondary);
-		r.setClassificationID(classificationValue);
-		r.setValue(value);
-		
-	}
-	
-	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-	{
-		RulesXClassification rxc = (RulesXClassification) linkTable;
-		rxc.setRulesID(this);
-	}
-	
-	@Override
-	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		RulesXProduct rxp = (RulesXProduct) linkTable;
-		rxp.setRulesID(primary);
-		rxp.setProductID((Product) secondary);
-		rxp.setClassificationID(classificationValue);
-		rxp.setValue(value);
-	}
-	
-	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Rules primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		RulesXResourceItem r = (RulesXResourceItem) linkTable;
-		r.setRulesID(primary);
-		r.setResourceItemID((ResourceItem) secondary);
-		r.setClassificationID(classificationValue);
-		r.setValue(value);
-		
-	}
-	
-	@Override
-	public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Rules primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
-	{
-		RulesXRulesType r = (RulesXRulesType) linkTable;
-		r.setRulesID(primary);
-		r.setRulesTypeID((RulesType) secondary);
-		r.setClassificationID(classificationValue);
-		r.setValue(value);
-	}
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    @Column(nullable = false,
+            name = "RulesID")
+    @JsonValue
+
+    private java.util.UUID id;
+    @Basic(optional = false,
+            fetch = EAGER)
+    @NotNull
+    @Size(min = 1,
+            max = 150)
+    @Column(nullable = false,
+            length = 150,
+            name = "RuleSetName")
+    private String name;
+    @Basic(optional = false,
+            fetch = EAGER)
+    @NotNull
+    @Size(min = 1,
+            max = 250)
+    @Column(nullable = false,
+            length = 250,
+            name = "RuleSetDescription")
+    private String description;
+
+    @OneToMany(
+            mappedBy = "rulesID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXClassification> classifications;
+
+    @OneToMany(
+            mappedBy = "base",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesSecurityToken> securities;
+    @OneToMany(
+            mappedBy = "rulesID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXResourceItem> resources;
+    @OneToMany(
+            mappedBy = "childRulesID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXRules> rulesXRulesList;
+    @OneToMany(
+            mappedBy = "parentRulesID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXRules> rulesXRulesList1;
+
+    @OneToMany(
+            mappedBy = "rulesID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXInvolvedParty> parties;
+    @OneToMany(
+            mappedBy = "rulesID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXArrangement> arrangements;
+    @OneToMany(
+            mappedBy = "rulesID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXProduct> products;
+
+    public Rules(UUID rulesID, String rulesName, String rulesDesc)
+    {
+        id = rulesID;
+        name = rulesName;
+        description = rulesDesc;
+    }
+
+    @Override
+    public void configureSecurityEntity(RulesSecurityToken securityEntity)
+    {
+        securityEntity.setBase(this);
+    }
+
+    public List<RulesXClassification> getClassifications()
+    {
+        return classifications;
+    }
+
+    public Rules setClassifications(List<RulesXClassification> classifications)
+    {
+        this.classifications = classifications;
+        return this;
+    }
+
+    public List<RulesSecurityToken> getSecurities()
+    {
+        return securities;
+    }
+
+    public Rules setSecurities(List<RulesSecurityToken> securities)
+    {
+        this.securities = securities;
+        return this;
+    }
+
+    public List<RulesXResourceItem> getResources()
+    {
+        return resources;
+    }
+
+    public Rules setResources(List<RulesXResourceItem> resources)
+    {
+        this.resources = resources;
+        return this;
+    }
+
+    public List<RulesXRules> getRulesXRulesList()
+    {
+        return rulesXRulesList;
+    }
+
+    public Rules setRulesXRulesList(List<RulesXRules> rulesXRulesList)
+    {
+        this.rulesXRulesList = rulesXRulesList;
+        return this;
+    }
+
+    public List<RulesXRules> getRulesXRulesList1()
+    {
+        return rulesXRulesList1;
+    }
+
+    public Rules setRulesXRulesList1(List<RulesXRules> rulesXRulesList1)
+    {
+        this.rulesXRulesList1 = rulesXRulesList1;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        Rules rules = (Rules) o;
+        return Objects.equals(getName(), rules.getName());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(getName(), getName());
+    }
+
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public Rules setName(String name)
+    {
+        this.name = name;
+        return this;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public Rules setDescription(String description)
+    {
+        this.description = description;
+        return this;
+    }
+
+
+    @Override
+    public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Rules, Rules, UUID, ?> newLink, Rules parent, Rules child, String value)
+    {
+        RulesXRules r = (RulesXRules) newLink;
+        r.setParentRulesID(parent);
+        r.setChildRulesID(child);
+        r.setValue(value);
+    }
+
+    @Override
+    public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Rules primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        RulesXArrangement r = (RulesXArrangement) linkTable;
+        r.setRulesID(primary);
+        r.setArrangementID((Arrangement) secondary);
+        r.setClassificationID(classificationValue);
+        r.setValue(value);
+
+    }
+
+    @Override
+    public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        RulesXClassification rxc = (RulesXClassification) linkTable;
+        rxc.setRulesID(this);
+    }
+
+    @Override
+    public void configureProductAddable(IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        RulesXProduct rxp = (RulesXProduct) linkTable;
+        rxp.setRulesID(primary);
+        rxp.setProductID((Product) secondary);
+        rxp.setClassificationID(classificationValue);
+        rxp.setValue(value);
+    }
+
+    @Override
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Rules primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        RulesXResourceItem r = (RulesXResourceItem) linkTable;
+        r.setRulesID(primary);
+        r.setResourceItemID((ResourceItem) secondary);
+        r.setClassificationID(classificationValue);
+        r.setValue(value);
+
+    }
+
+    @Override
+    public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Rules primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
+    {
+        RulesXRulesType r = (RulesXRulesType) linkTable;
+        r.setRulesID(primary);
+        r.setRulesTypeID((RulesType) secondary);
+        r.setClassificationID(classificationValue);
+        r.setValue(value);
+    }
 }

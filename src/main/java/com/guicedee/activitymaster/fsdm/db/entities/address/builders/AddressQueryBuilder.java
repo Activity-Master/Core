@@ -8,8 +8,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address_;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public class AddressQueryBuilder
-		extends QueryBuilderSCD<AddressQueryBuilder, Address, String,AddressSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<AddressQueryBuilder, Address, UUID,AddressSecurityTokenQueryBuilder>
 		implements IAddressQueryBuilder<AddressQueryBuilder, Address>
 {
 	@Override

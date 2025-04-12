@@ -30,7 +30,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EnterpriseSecurityToken
-		extends WarehouseSecurityTable<EnterpriseSecurityToken, EnterpriseSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<EnterpriseSecurityToken, EnterpriseSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -40,8 +40,8 @@ public class EnterpriseSecurityToken
 	
 	@Column(nullable = false,
 	        name = "EnterpriseSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "EnterpriseID",
 	            referencedColumnName = "EnterpriseID",
@@ -50,21 +50,10 @@ public class EnterpriseSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private Enterprise base;
-	
-	public EnterpriseSecurityToken(java.lang.String enterpriseSecurityTokenID)
-	{
-		this.id = enterpriseSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "EnterpriseSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
-	}
-	
-	public EnterpriseSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
 	}
 	
 	public EnterpriseSecurityToken setBase(Enterprise base)
@@ -72,13 +61,7 @@ public class EnterpriseSecurityToken
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public Enterprise getBase()
 	{
 		return base;

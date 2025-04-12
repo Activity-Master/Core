@@ -6,19 +6,21 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class ResourceItemXClassificationQueryBuilder
-		extends QueryBuilderRelationshipClassification<ResourceItem, Classification, ResourceItemXClassificationQueryBuilder,
-		ResourceItemXClassification, java.lang.String,ResourceItemXClassificationSecurityTokenQueryBuilder>
+        extends QueryBuilderRelationshipClassification<ResourceItem, Classification, ResourceItemXClassificationQueryBuilder,
+        ResourceItemXClassification, UUID, ResourceItemXClassificationSecurityTokenQueryBuilder>
 {
-	@Override
-	public SingularAttribute<ResourceItemXClassification, ResourceItem> getPrimaryAttribute()
-	{
-		return ResourceItemXClassification_.resourceItemID;
-	}
-	
-	@Override
-	public SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
-	{
-		return ResourceItemXClassification_.classificationID;
-	}
+    @Override
+    public SingularAttribute<ResourceItemXClassification, ResourceItem> getPrimaryAttribute()
+    {
+        return ResourceItemXClassification_.resourceItemID;
+    }
+
+    @Override
+    public SingularAttribute<WarehouseClassificationRelationshipTable, Classification> getSecondaryAttribute()
+    {
+        return ResourceItemXClassification_.classificationID;
+    }
 }

@@ -4,9 +4,14 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationsSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -17,8 +22,12 @@ import java.util.Objects;
 @Table(schema = "Classification", name = "ClassificationSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClassificationSecurityToken
-		extends WarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ClassificationSecurityToken, ClassificationsSecurityTokenQueryBuilder, UUID>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -26,8 +35,8 @@ public class ClassificationSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ClassificationSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ClassificationID",
 	            referencedColumnName = "ClassificationID",
@@ -36,39 +45,19 @@ public class ClassificationSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private Classification base;
-	
-	public ClassificationSecurityToken()
-	{
-	
-	}
-	
-	public ClassificationSecurityToken(java.lang.String classificationSecurityTokenID)
-	{
-		this.id = classificationSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "ClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public ClassificationSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
+
 	
 	public ClassificationSecurityToken setBase(Classification base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public Classification getBase()
 	{
 		return base;

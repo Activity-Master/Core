@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXProductSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -19,8 +24,12 @@ import java.util.Objects;
 @Table(schema = "Arrangement", name = "ArrangementXProductSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementXProductSecurityToken
-		extends WarehouseSecurityTable<ArrangementXProductSecurityToken, ArrangementXProductSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ArrangementXProductSecurityToken, ArrangementXProductSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -30,8 +39,8 @@ public class ArrangementXProductSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ArrangementXProductSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ArrangementXProductID",
 	            referencedColumnName = "ArrangementXProductID",
@@ -40,40 +49,19 @@ public class ArrangementXProductSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private ArrangementXProduct base;
-	
-	public ArrangementXProductSecurityToken()
-	{
-	
-	}
-	
-	public ArrangementXProductSecurityToken(java.lang.String arrangementXProductSecurityTokenID)
-	{
-		this.id = arrangementXProductSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "ArrangementXProductSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public ArrangementXProductSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public ArrangementXProductSecurityToken setBase(ArrangementXProduct base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public ArrangementXProduct getBase()
 	{
 		return base;

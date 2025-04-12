@@ -5,10 +5,12 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.produ
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductType;
 
+import java.util.UUID;
+
 public class ProductTypeQueryBuilder
-		extends QueryBuilderSCD<ProductTypeQueryBuilder, ProductType, String,ProductTypeSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<ProductTypeQueryBuilder, ProductType, UUID,ProductTypeSecurityTokenQueryBuilder>
 		implements IProductTypeQueryBuilder<ProductTypeQueryBuilder, ProductType>,
-		           IQueryBuilderNamesAndDescriptions<ProductTypeQueryBuilder,ProductType,String>
+		           IQueryBuilderNamesAndDescriptions<ProductTypeQueryBuilder,ProductType, UUID>
 {
 
 }

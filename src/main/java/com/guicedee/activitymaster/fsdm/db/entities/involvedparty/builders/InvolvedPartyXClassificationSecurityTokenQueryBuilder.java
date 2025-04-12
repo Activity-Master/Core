@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyX
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXClassificationSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class InvolvedPartyXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<InvolvedPartyXClassificationSecurityTokenQueryBuilder, InvolvedPartyXClassificationSecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<InvolvedPartyXClassificationSecurityTokenQueryBuilder, InvolvedPartyXClassificationSecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

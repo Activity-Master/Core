@@ -11,11 +11,16 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXRes
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -34,12 +39,16 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressXResourceItem
 		extends WarehouseClassificationRelationshipTable<Address,
 		ResourceItem,
 		AddressXResourceItem,
 		AddressXResourceItemQueryBuilder,
-		java.lang.String,
+		UUID,
 		AddressXResourceItemSecurityToken
 		>
 		implements Serializable
@@ -51,8 +60,8 @@ public class AddressXResourceItem
 	
 	@Column(nullable = false,
 	        name = "AddressXResourceItemID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 @OneToMany(
 			mappedBy = "base",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
@@ -73,29 +82,13 @@ public class AddressXResourceItem
 	           fetch = FetchType.LAZY)
 	
 	private ResourceItem resourceItemID;
-	
-	public AddressXResourceItem()
-	{
-	
-	}
-	
-	public AddressXResourceItem(java.lang.String addressXResourceItemID)
-	{
-		this.id = addressXResourceItemID;
-	}
-	
+
 	@Override
 	public void configureSecurityEntity(AddressXResourceItemSecurityToken securityEntity)
 	{
 		securityEntity.setBase(this);
 	}
-	
-	public AddressXResourceItem setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public AddressXResourceItem setSecurities(List<AddressXResourceItemSecurityToken> securities)
 	{
 		this.securities = securities;
@@ -124,13 +117,7 @@ public class AddressXResourceItem
 	{
 		return getResourceItemID();
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public List<AddressXResourceItemSecurityToken> getSecurities()
 	{
 		return securities;

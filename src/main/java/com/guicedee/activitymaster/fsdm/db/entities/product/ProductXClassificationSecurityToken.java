@@ -4,9 +4,14 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.product.builders.ProductXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.UUID;
 
 
 /**
@@ -19,8 +24,12 @@ import java.io.Serializable;
 @XmlRootElement
 
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductXClassificationSecurityToken
-		extends WarehouseSecurityTable<ProductXClassificationSecurityToken, ProductXClassificationSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ProductXClassificationSecurityToken, ProductXClassificationSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -30,8 +39,8 @@ public class ProductXClassificationSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ProductXClassificationSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ProductXClassificationID",
 	            referencedColumnName = "ProductXClassificationID",
@@ -40,33 +49,12 @@ public class ProductXClassificationSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private ProductXClassification base;
-	
-	public ProductXClassificationSecurityToken()
-	{
-	
-	}
-	
-	public ProductXClassificationSecurityToken(java.lang.String productXClassificationSecurityTokenID)
-	{
-		this.id = productXClassificationSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "ProductXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public ProductXClassificationSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public ProductXClassification getBase()
 	{
 		return this.base;

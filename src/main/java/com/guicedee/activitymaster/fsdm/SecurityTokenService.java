@@ -182,7 +182,7 @@ public class SecurityTokenService
 		}
 	}
 	
-	private void updateSecurityHierarchy(java.lang.String securityTokenID)
+	private void updateSecurityHierarchy(UUID securityTokenID)
 	{
 		
 		//TODO hierarchy updates? i wonder

@@ -7,9 +7,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class EnterpriseXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Enterprise, Classification, EnterpriseXClassificationQueryBuilder,
-		EnterpriseXClassification, java.lang.String,EnterpriseXClassificationSecurityTokenQueryBuilder>
+		EnterpriseXClassification, UUID,EnterpriseXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<WarehouseTable, Enterprise> getPrimaryAttribute()

@@ -7,12 +7,17 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.Cla
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -23,7 +28,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  */
 @Entity
 @Table(schema = "Classification",
-       name = "ClassificationXResourceItem")
+        name = "ClassificationXResourceItem")
 @XmlRootElement
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -32,143 +37,124 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-		generator = ObjectIdGenerators.PropertyGenerator.class,
-		property = "id")
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClassificationXResourceItem
-		extends WarehouseClassificationRelationshipTable<Classification,
-		ResourceItem,
-		ClassificationXResourceItem,
-		ClassificationXResourceItemQueryBuilder,
-		java.lang.String,
-		ClassificationXResourceItemSecurityToken
-		>
-		implements Serializable
+        extends WarehouseClassificationRelationshipTable<Classification,
+        ResourceItem,
+        ClassificationXResourceItem,
+        ClassificationXResourceItemQueryBuilder,
+        UUID,
+        ClassificationXResourceItemSecurityToken
+        >
+        implements Serializable
 {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	
-	@Column(nullable = false,
-	        name = "ClassificationXResourceItemID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<ClassificationXResourceItemSecurityToken> securities;
-	
-	@JoinColumn(name = "ClassificationID",
-	            referencedColumnName = "ClassificationID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
-	private Classification classificationID;
-	
-	@JoinColumn(name = "ResourceItemID",
-	            referencedColumnName = "ResourceItemID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
-	private ResourceItem resourceItemID;
-	
-	public ClassificationXResourceItem()
-	{
-	
-	}
-	
-	public ClassificationXResourceItem(java.lang.String classificationXResourceItemID)
-	{
-		id = classificationXResourceItemID;
-	}
-	
-	@Override
-	public void configureSecurityEntity(ClassificationXResourceItemSecurityToken securityEntity)
-	{
-		securityEntity.setBase(this);
-	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return id;
-	}
-	
-	@Override
-	public ClassificationXResourceItem setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public List<ClassificationXResourceItemSecurityToken> getSecurities()
-	{
-		return securities;
-	}
-	
-	public ClassificationXResourceItem setSecurities(List<ClassificationXResourceItemSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-	
-	@Override
-	public Classification getClassificationID()
-	{
-		return classificationID;
-	}
-	
-	@Override
-	public ClassificationXResourceItem setClassificationID(IClassification classificationID)
-	{
-		this.classificationID = (Classification) classificationID;
-		return this;
-	}
-	
-	public ResourceItem getResourceItemID()
-	{
-		return resourceItemID;
-	}
-	
-	public ClassificationXResourceItem setResourceItemID(ResourceItem resourceItemID)
-	{
-		this.resourceItemID = resourceItemID;
-		return this;
-	}
-	
-	@Override
-	public Classification getPrimary()
-	{
-		return getClassificationID();
-	}
-	
-	@Override
-	public ResourceItem getSecondary()
-	{
-		return getResourceItemID();
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		ClassificationXResourceItem that = (ClassificationXResourceItem) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(getId());
-	}
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    @Column(nullable = false,
+            name = "ClassificationXResourceItemID")
+
+    private java.util.UUID id;
+
+    @OneToMany(
+            mappedBy = "base",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<ClassificationXResourceItemSecurityToken> securities;
+
+    @JoinColumn(name = "ClassificationID",
+            referencedColumnName = "ClassificationID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+
+    private Classification classificationID;
+
+    @JoinColumn(name = "ResourceItemID",
+            referencedColumnName = "ResourceItemID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+
+    private ResourceItem resourceItemID;
+
+    @Override
+    public void configureSecurityEntity(ClassificationXResourceItemSecurityToken securityEntity)
+    {
+        securityEntity.setBase(this);
+    }
+
+    public List<ClassificationXResourceItemSecurityToken> getSecurities()
+    {
+        return securities;
+    }
+
+    public ClassificationXResourceItem setSecurities(List<ClassificationXResourceItemSecurityToken> securities)
+    {
+        this.securities = securities;
+        return this;
+    }
+
+    @Override
+    public Classification getClassificationID()
+    {
+        return classificationID;
+    }
+
+    @Override
+    public ClassificationXResourceItem setClassificationID(IClassification classificationID)
+    {
+        this.classificationID = (Classification) classificationID;
+        return this;
+    }
+
+    public ResourceItem getResourceItemID()
+    {
+        return resourceItemID;
+    }
+
+    public ClassificationXResourceItem setResourceItemID(ResourceItem resourceItemID)
+    {
+        this.resourceItemID = resourceItemID;
+        return this;
+    }
+
+    @Override
+    public Classification getPrimary()
+    {
+        return getClassificationID();
+    }
+
+    @Override
+    public ResourceItem getSecondary()
+    {
+        return getResourceItemID();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        ClassificationXResourceItem that = (ClassificationXResourceItem) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(getId());
+    }
 }

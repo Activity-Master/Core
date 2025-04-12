@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXResourceItemSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -19,8 +24,12 @@ import java.util.Objects;
 @Table(schema = "Arrangement", name = "ArrangementXResourceItemSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementXResourceItemSecurityToken
-		extends WarehouseSecurityTable<ArrangementXResourceItemSecurityToken, ArrangementXResourceItemSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ArrangementXResourceItemSecurityToken, ArrangementXResourceItemSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -30,8 +39,8 @@ public class ArrangementXResourceItemSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ArrangementXResourceItemSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ArrangementXResourceItemID",
 	            referencedColumnName = "ArrangementXResourceItemID",
@@ -40,40 +49,19 @@ public class ArrangementXResourceItemSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private ArrangementXResourceItem base;
-	
-	public ArrangementXResourceItemSecurityToken()
-	{
-	
-	}
-	
-	public ArrangementXResourceItemSecurityToken(java.lang.String arrangementXResourceItemSecurityTokenID)
-	{
-		this.id = arrangementXResourceItemSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "ArrangementXResourceItemSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public ArrangementXResourceItemSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
+
 	
 	public ArrangementXResourceItemSecurityToken setBase(ArrangementXResourceItem base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public ArrangementXResourceItem getBase()
 	{
 		return base;

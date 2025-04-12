@@ -16,11 +16,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.guicedee.client.IGuiceContext.*;
@@ -45,8 +50,12 @@ import static jakarta.persistence.FetchType.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Classification
-		extends WarehouseSCDTable<Classification, ClassificationQueryBuilder, String, ClassificationSecurityToken>
+		extends WarehouseSCDTable<Classification, ClassificationQueryBuilder, UUID, ClassificationSecurityToken>
 		implements IClassification<Classification, ClassificationQueryBuilder>
 {
 	@Serial
@@ -56,8 +65,8 @@ public class Classification
 	@Column(nullable = false,
 	        name = "ClassificationID")
 	@JsonValue
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@Basic(optional = false,
 	       fetch = EAGER)
@@ -95,18 +104,8 @@ public class Classification
 			mappedBy = "base",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ClassificationSecurityToken> securities;
-	
-	public Classification()
-	{
-	
-	}
-	
-	public Classification(java.lang.String classificationID)
-	{
-		id = classificationID;
-	}
-	
-	public Classification(java.lang.String classificationID, String classificationName, String classificationDesc, int classificationSequenceNumber)
+
+	public Classification(UUID classificationID, String classificationName, String classificationDesc, int classificationSequenceNumber)
 	{
 		id = classificationID;
 		name = classificationName;
@@ -141,7 +140,7 @@ public class Classification
 	
 	
 	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Classification, Classification, java.lang.String,?> newLink, Classification parent, Classification child, String value)
+	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable<?, ?, Classification, Classification, UUID,?> newLink, Classification parent, Classification child, String value)
 	{
 		ClassificationXClassification c = (ClassificationXClassification) newLink;
 		c.setParentClassificationID(this);
@@ -175,19 +174,7 @@ public class Classification
 	{
 		return getName();
 	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return id;
-	}
-	
-	@Override
-	public Classification setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
+
 	
 	public @NotNull Integer getClassificationSequenceNumber()
 	{

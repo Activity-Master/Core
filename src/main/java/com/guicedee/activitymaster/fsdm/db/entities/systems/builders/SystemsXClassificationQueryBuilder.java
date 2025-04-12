@@ -7,9 +7,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.systems.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class SystemsXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Systems, Classification, SystemsXClassificationQueryBuilder,
-		SystemsXClassification, java.lang.String,SystemXClassificationSecurityTokenQueryBuilder>
+		SystemsXClassification, UUID,SystemXClassificationSecurityTokenQueryBuilder>
 {
 	@SuppressWarnings("rawtypes")
 	@Override

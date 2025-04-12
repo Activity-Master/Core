@@ -26,10 +26,15 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -41,7 +46,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @SuppressWarnings({"unused", "rawtypes"})
 @Entity
 @Table(schema = "Event",
-       name = "Event")
+        name = "Event")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
@@ -49,365 +54,346 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-		generator = ObjectIdGenerators.PropertyGenerator.class,
-		property = "id")
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event
-		extends WarehouseSCDTable<Event, EventQueryBuilder, String,EventSecurityToken>
-		implements IEvent<Event, EventQueryBuilder>
+        extends WarehouseSCDTable<Event, EventQueryBuilder, UUID, EventSecurityToken>
+        implements IEvent<Event, EventQueryBuilder>
 {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	
-	@Basic(optional = false)
-	@Column(nullable = false)
-	private int dayID;
-	@Basic(optional = false)
-	@Column(nullable = false)
-	private int hourID;
-	@Basic(optional = false)
-	@Column(nullable = false)
-	private int minuteID;
-	
-	@Id
-	
-	@Column(nullable = false,
-	        name = "EventID")
-	@JsonValue
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXClassification> classifications;
-	
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXInvolvedParty> parties;
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXArrangement> arrangements;
-	
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXResourceItem> resources;
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXAddress> addresses;
-@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventSecurityToken> securities;
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXProduct> products;
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXGeography> geographies;
-	
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXEventType> eventTypes;
-	
-@OneToMany(
-			mappedBy = "eventID",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXRules> rules;
-	
-	public Event()
-	{
-	
-	}
-	
-	public Event(java.lang.String eventID)
-	{
-		this.id = eventID;
-	}
-	
-	@Override
-	public void configureSecurityEntity(EventSecurityToken securityEntity)
-	{
-		securityEntity.setBase(this);
-	}
-	
-	public int getDayID()
-	{
-		return dayID;
-	}
-	
-	public Event setDayID(int dayID)
-	{
-		this.dayID = dayID;
-		return this;
-	}
-	
-	public int getHourID()
-	{
-		return hourID;
-	}
-	
-	public Event setHourID(int hourID)
-	{
-		this.hourID = hourID;
-		return this;
-	}
-	
-	public int getMinuteID()
-	{
-		return minuteID;
-	}
-	
-	public Event setMinuteID(int minuteID)
-	{
-		this.minuteID = minuteID;
-		return this;
-	}
-	
-	public List<EventXClassification> getClassifications()
-	{
-		return this.classifications;
-	}
-	
-	public Event setClassifications(List<EventXClassification> classifications)
-	{
-		this.classifications = classifications;
-		return this;
-	}
-	
-	public List<EventXInvolvedParty> getParties()
-	{
-		return this.parties;
-	}
-	
-	public Event setParties(List<EventXInvolvedParty> parties)
-	{
-		this.parties = parties;
-		return this;
-	}
-	
-	public List<EventXArrangement> getArrangements()
-	{
-		return this.arrangements;
-	}
-	
-	public Event setArrangements(List<EventXArrangement> arrangements)
-	{
-		this.arrangements = arrangements;
-		return this;
-	}
-	
-	public List<EventXResourceItem> getResources()
-	{
-		return this.resources;
-	}
-	
-	public Event setResources(List<EventXResourceItem> resources)
-	{
-		this.resources = resources;
-		return this;
-	}
-	
-	public List<EventXAddress> getAddresses()
-	{
-		return this.addresses;
-	}
-	
-	public Event setAddresses(List<EventXAddress> addresses)
-	{
-		this.addresses = addresses;
-		return this;
-	}
-	
-	public List<EventSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public Event setSecurities(List<EventSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-	
-	public List<EventXProduct> getProducts()
-	{
-		return this.products;
-	}
-	
-	public Event setProducts(List<EventXProduct> products)
-	{
-		this.products = products;
-		return this;
-	}
-	
-	public List<EventXGeography> getGeographies()
-	{
-		return this.geographies;
-	}
-	
-	public Event setGeographies(List<EventXGeography> geographies)
-	{
-		this.geographies = geographies;
-		return this;
-	}
-	
-	public List<EventXEventType> getEventTypes()
-	{
-		return this.eventTypes;
-	}
-	
-	public Event setEventTypes(List<EventXEventType> eventTypes)
-	{
-		this.eventTypes = eventTypes;
-		return this;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return getId() + "";
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		Event event = (Event) o;
-		return Objects.equals(getId(), event.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	@Override
-	public Event setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	@Override
-	public void configureAddressLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IAddress<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		EventXAddress e = (EventXAddress) linkTable;
-		e.setEventID(primary);
-		e.setAddressID((Address) secondary);
-		e.setClassificationID(classificationValue);
-		e.setValue(value);
-	}
-	
-	@Override
-	public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Event primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		EventXArrangement e = (EventXArrangement) linkTable;
-		e.setEventID(primary);
-		e.setArrangementID((Arrangement) secondary);
-		e.setClassificationID(classificationValue);
-		e.setValue(value);
-	}
-	
-	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
-	{
-		EventXClassification e = (EventXClassification) linkTable;
-		e.setEventID(this);
-		e.setClassificationID(classificationValue);
-	}
-	
-	@Override
-	public void configureEventTypeLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IEventType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
-	{
-		EventXEventType e = (EventXEventType) linkTable;
-		e.setEventID(primary);
-		e.setEventTypeID((EventType) secondary);
-		e.setClassificationID(classificationValue);
-		e.setValue(value);
-	}
-	
-	@Override
-	public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Event primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		EventXGeography e = (EventXGeography) linkTable;
-		e.setEventID(primary);
-		e.setGeographyID((Geography) secondary);
-		e.setClassificationID(classificationValue);
-		e.setValue(value);
-		
-	}
-	
-	@Override
-	public void configureInvolvedPartyAddable(IWarehouseRelationshipTable linkTable, Event primary, IInvolvedParty<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		EventXInvolvedParty e = (EventXInvolvedParty) linkTable;
-		e.setEventID(primary);
-		e.setInvolvedPartyID((InvolvedParty) secondary);
-		e.setClassificationID(classificationValue);
-		e.setValue(value);
-	}
-	
-	@Override
-	public void configureProductAddable(IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		EventXProduct product = (EventXProduct) linkTable;
-		product.setEventID(primary);
-		product.setProductID((Product) secondary);
-		product.setClassificationID(classificationValue);
-		product.setValue(value);
-		
-	}
-	
-	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Event primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		EventXResourceItem e = (EventXResourceItem) linkTable;
-		e.setEventID(primary);
-		e.setResourceItemID((ResourceItem) secondary);
-		e.setClassificationID(classificationValue);
-		e.setValue(value);
-		
-	}
-	
-	@Override
-	public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Event primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-	{
-		EventXRules e = (EventXRules) linkTable;
-		e.setEventID(primary);
-		e.setRulesID((Rules) secondary);
-		e.setClassificationID(classificationValue);
-		e.setValue(value);
-		
-	}
-	
-	@Override
-	public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable newLink, Event parent, Event child, String value)
-	{
-		EventXEvent e = (EventXEvent) newLink;
-		e.setParentEventID(parent);
-		e.setChildEventID(child);
-		e.setValue(value);
-	}
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Basic(optional = false)
+    @Column(nullable = false)
+    private int dayID;
+    @Basic(optional = false)
+    @Column(nullable = false)
+    private int hourID;
+    @Basic(optional = false)
+    @Column(nullable = false)
+    private int minuteID;
+
+    @Id
+
+    @Column(nullable = false,
+            name = "EventID")
+    @JsonValue
+
+    private java.util.UUID id;
+
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXClassification> classifications;
+
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXInvolvedParty> parties;
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXArrangement> arrangements;
+
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXResourceItem> resources;
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXAddress> addresses;
+    @OneToMany(
+            mappedBy = "base",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventSecurityToken> securities;
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXProduct> products;
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXGeography> geographies;
+
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXEventType> eventTypes;
+
+    @OneToMany(
+            mappedBy = "eventID",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXRules> rules;
+
+    @Override
+    public void configureSecurityEntity(EventSecurityToken securityEntity)
+    {
+        securityEntity.setBase(this);
+    }
+
+    public int getDayID()
+    {
+        return dayID;
+    }
+
+    public Event setDayID(int dayID)
+    {
+        this.dayID = dayID;
+        return this;
+    }
+
+    public int getHourID()
+    {
+        return hourID;
+    }
+
+    public Event setHourID(int hourID)
+    {
+        this.hourID = hourID;
+        return this;
+    }
+
+    public int getMinuteID()
+    {
+        return minuteID;
+    }
+
+    public Event setMinuteID(int minuteID)
+    {
+        this.minuteID = minuteID;
+        return this;
+    }
+
+    public List<EventXClassification> getClassifications()
+    {
+        return this.classifications;
+    }
+
+    public Event setClassifications(List<EventXClassification> classifications)
+    {
+        this.classifications = classifications;
+        return this;
+    }
+
+    public List<EventXInvolvedParty> getParties()
+    {
+        return this.parties;
+    }
+
+    public Event setParties(List<EventXInvolvedParty> parties)
+    {
+        this.parties = parties;
+        return this;
+    }
+
+    public List<EventXArrangement> getArrangements()
+    {
+        return this.arrangements;
+    }
+
+    public Event setArrangements(List<EventXArrangement> arrangements)
+    {
+        this.arrangements = arrangements;
+        return this;
+    }
+
+    public List<EventXResourceItem> getResources()
+    {
+        return this.resources;
+    }
+
+    public Event setResources(List<EventXResourceItem> resources)
+    {
+        this.resources = resources;
+        return this;
+    }
+
+    public List<EventXAddress> getAddresses()
+    {
+        return this.addresses;
+    }
+
+    public Event setAddresses(List<EventXAddress> addresses)
+    {
+        this.addresses = addresses;
+        return this;
+    }
+
+    public List<EventSecurityToken> getSecurities()
+    {
+        return this.securities;
+    }
+
+    public Event setSecurities(List<EventSecurityToken> securities)
+    {
+        this.securities = securities;
+        return this;
+    }
+
+    public List<EventXProduct> getProducts()
+    {
+        return this.products;
+    }
+
+    public Event setProducts(List<EventXProduct> products)
+    {
+        this.products = products;
+        return this;
+    }
+
+    public List<EventXGeography> getGeographies()
+    {
+        return this.geographies;
+    }
+
+    public Event setGeographies(List<EventXGeography> geographies)
+    {
+        this.geographies = geographies;
+        return this;
+    }
+
+    public List<EventXEventType> getEventTypes()
+    {
+        return this.eventTypes;
+    }
+
+    public Event setEventTypes(List<EventXEventType> eventTypes)
+    {
+        this.eventTypes = eventTypes;
+        return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getId() + "";
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        Event event = (Event) o;
+        return Objects.equals(getId(), event.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public void configureAddressLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IAddress<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        EventXAddress e = (EventXAddress) linkTable;
+        e.setEventID(primary);
+        e.setAddressID((Address) secondary);
+        e.setClassificationID(classificationValue);
+        e.setValue(value);
+    }
+
+    @Override
+    public void configureArrangementAddable(IWarehouseRelationshipTable linkTable, Event primary, IArrangement<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        EventXArrangement e = (EventXArrangement) linkTable;
+        e.setEventID(primary);
+        e.setArrangementID((Arrangement) secondary);
+        e.setClassificationID(classificationValue);
+        e.setValue(value);
+    }
+
+    @Override
+    public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    {
+        EventXClassification e = (EventXClassification) linkTable;
+        e.setEventID(this);
+        e.setClassificationID(classificationValue);
+    }
+
+    @Override
+    public void configureEventTypeLinkValue(IWarehouseRelationshipTable linkTable, Event primary, IEventType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
+    {
+        EventXEventType e = (EventXEventType) linkTable;
+        e.setEventID(primary);
+        e.setEventTypeID((EventType) secondary);
+        e.setClassificationID(classificationValue);
+        e.setValue(value);
+    }
+
+    @Override
+    public void configureGeographyAddable(IWarehouseRelationshipTable linkTable, Event primary, IGeography<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        EventXGeography e = (EventXGeography) linkTable;
+        e.setEventID(primary);
+        e.setGeographyID((Geography) secondary);
+        e.setClassificationID(classificationValue);
+        e.setValue(value);
+
+    }
+
+    @Override
+    public void configureInvolvedPartyAddable(IWarehouseRelationshipTable linkTable, Event primary, IInvolvedParty<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        EventXInvolvedParty e = (EventXInvolvedParty) linkTable;
+        e.setEventID(primary);
+        e.setInvolvedPartyID((InvolvedParty) secondary);
+        e.setClassificationID(classificationValue);
+        e.setValue(value);
+    }
+
+    @Override
+    public void configureProductAddable(IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        EventXProduct product = (EventXProduct) linkTable;
+        product.setEventID(primary);
+        product.setProductID((Product) secondary);
+        product.setClassificationID(classificationValue);
+        product.setValue(value);
+
+    }
+
+    @Override
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Event primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        EventXResourceItem e = (EventXResourceItem) linkTable;
+        e.setEventID(primary);
+        e.setResourceItemID((ResourceItem) secondary);
+        e.setClassificationID(classificationValue);
+        e.setValue(value);
+
+    }
+
+    @Override
+    public void configureRulesAddable(IWarehouseRelationshipTable linkTable, Event primary, IRules<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    {
+        EventXRules e = (EventXRules) linkTable;
+        e.setEventID(primary);
+        e.setRulesID((Rules) secondary);
+        e.setClassificationID(classificationValue);
+        e.setValue(value);
+
+    }
+
+    @Override
+    public void configureNewHierarchyItem(IWarehouseRelationshipClassificationTable newLink, Event parent, Event child, String value)
+    {
+        EventXEvent e = (EventXEvent) newLink;
+        e.setParentEventID(parent);
+        e.setChildEventID(child);
+        e.setValue(value);
+    }
 }

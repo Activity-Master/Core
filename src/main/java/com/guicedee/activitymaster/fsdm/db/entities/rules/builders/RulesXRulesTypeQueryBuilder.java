@@ -5,30 +5,31 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
 
 
 public class RulesXRulesTypeQueryBuilder
-		extends QueryBuilderRelationshipClassification<Rules, RulesType, RulesXRulesTypeQueryBuilder,
-		RulesXRulesType, java.lang.String,RulesXRulesTypeSecurityTokenQueryBuilder>
+        extends QueryBuilderRelationshipClassification<Rules, RulesType, RulesXRulesTypeQueryBuilder,
+        RulesXRulesType, UUID, RulesXRulesTypeSecurityTokenQueryBuilder>
 {
-	@Override
-	public SingularAttribute<RulesXRulesType, Rules> getPrimaryAttribute()
-	{
-		return RulesXRulesType_.rulesID;
-	}
-	
-	@Override
-	public SingularAttribute<RulesXRulesType, RulesType> getSecondaryAttribute()
-	{
-		return RulesXRulesType_.rulesTypeID;
-	}
-	
-	
-	@jakarta.validation.constraints.NotNull
-	public RulesXRulesTypeQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
-	{
-		withClassification(classification, system);
-		withValue(value);
-		return this;
-	}
+    @Override
+    public SingularAttribute<RulesXRulesType, Rules> getPrimaryAttribute()
+    {
+        return RulesXRulesType_.rulesID;
+    }
+
+    @Override
+    public SingularAttribute<RulesXRulesType, RulesType> getSecondaryAttribute()
+    {
+        return RulesXRulesType_.rulesTypeID;
+    }
+
+
+    @jakarta.validation.constraints.NotNull
+    public RulesXRulesTypeQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+    {
+        withClassification(classification, system);
+        withValue(value);
+        return this;
+    }
 }

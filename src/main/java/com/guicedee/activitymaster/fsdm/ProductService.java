@@ -36,7 +36,7 @@ public class ProductService
 	}
 	@Transactional()
 	@Override
-	public IProduct<?, ?> find(java.lang.String id)
+	public IProduct<?, ?> find(UUID id)
 	{
 		return new Product().builder()
 		                    .find(id)
@@ -46,7 +46,7 @@ public class ProductService
 	
 	@Transactional()
 	@Override
-	public IProductType<?, ?> findType(java.lang.String id)
+	public IProductType<?, ?> findType(UUID id)
 	{
 		return new ProductType().builder()
 		                        .find(id)
@@ -68,7 +68,7 @@ public class ProductService
 	
 	@Override
 	@Transactional()
-	public IProduct<?, ?> createProduct(String productType, java.lang.String key, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public IProduct<?, ?> createProduct(String productType, java.util.UUID key, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Product product = new Product();
 		product.setId(key);
@@ -132,7 +132,7 @@ public class ProductService
 	
 	@Override
 	@Transactional()
-	public IProductType<?, ?> createProductType(String productsType, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public IProductType<?, ?> createProductType(String productsType, java.util.UUID key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ProductType et = new ProductType();
 		

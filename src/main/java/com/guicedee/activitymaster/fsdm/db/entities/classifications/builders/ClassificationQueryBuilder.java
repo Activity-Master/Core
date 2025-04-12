@@ -9,11 +9,13 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.Enterpri
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.*;
 
+import java.util.UUID;
+
 
 public class ClassificationQueryBuilder
-		extends QueryBuilderSCD<ClassificationQueryBuilder, Classification, String,ClassificationsSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<ClassificationQueryBuilder, Classification, UUID,ClassificationsSecurityTokenQueryBuilder>
 		implements IClassificationQueryBuilder<ClassificationQueryBuilder, Classification>,
-		           IQueryBuilderNamesAndDescriptions<ClassificationQueryBuilder, Classification, java.lang.String>
+		           IQueryBuilderNamesAndDescriptions<ClassificationQueryBuilder, Classification, UUID>
 
 {
 	public ClassificationQueryBuilder withConcept(EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, java.util.UUID... identityToken)

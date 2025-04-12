@@ -40,7 +40,7 @@ public class EventsService
 	}
 	
 	@Override
-	public IEvent<?, ?> find(java.lang.String id)
+	public IEvent<?, ?> find(UUID id)
 	{
 		return new Event().builder()
 		                  .find(id)
@@ -55,7 +55,7 @@ public class EventsService
 	}
 	
 	@Override
-	public Future<IEvent<?, ?>> createEvent(String eventType, java.lang.String key, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Future<IEvent<?, ?>> createEvent(String eventType, java.util.UUID key, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Event event = new Event();
 		if (key != null)
@@ -88,10 +88,9 @@ public class EventsService
 		                   .getCount() > 0;
 		if (!exists)
 		{
-			if (Strings.isNullOrEmpty(et.getId()))
+			if (et.getId() == null)
 			{
-				et.setId(UUID.randomUUID()
-				             .toString());
+				et.setId(UUID.randomUUID());
 			}
 			return vertx.executeBlocking(TransactionalCallable.of(() -> {
 				EventType etBuilt = new EventType();

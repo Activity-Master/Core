@@ -23,6 +23,7 @@ import org.jboss.logmanager.Level;
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -51,14 +52,14 @@ public class RulesService
 	
 	@Override
 	
-	public CompletableFuture<IRules<?, ?>> createRules(String rulesType, java.lang.String key, String name, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public CompletableFuture<IRules<?, ?>> createRules(String rulesType, java.util.UUID key, String name, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		TransactionalSupplier<IRules<?,?>> ts = IGuiceContext.get(TransactionalSupplier.class);
 		ts.setConsumer(() -> {
 			Rules rules = new Rules();
 			if (key != null)
 			{
-				rules.setId(key.toString());
+				rules.setId(key);
 			}
 			rules.setName(name);
 			rules.setDescription(description);
@@ -95,7 +96,7 @@ public class RulesService
 	}
 	
 	@Override
-	public IRules<?, ?> find(java.lang.String identity)
+	public IRules<?, ?> find(UUID identity)
 	{
 		return new Rules().builder()
 		                  .find(identity)
@@ -104,7 +105,7 @@ public class RulesService
 	}
 	
 	@Override
-	public IRulesType<?, ?> findType(java.lang.String identity)
+	public IRulesType<?, ?> findType(UUID identity)
 	{
 		return new RulesType().builder()
 		                      .find(identity)
@@ -150,7 +151,7 @@ public class RulesService
 	}
 	
 	@Override
-	public CompletableFuture<IRulesType<?, ?>> createRulesType(String rulesType, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public CompletableFuture<IRulesType<?, ?>> createRulesType(String rulesType, java.util.UUID key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		RulesType et = new RulesType();
 		
@@ -167,7 +168,7 @@ public class RulesService
 			ts.setConsumer(() -> {
 				if (key != null)
 				{
-					et.setId(key.toString());
+					et.setId(key);
 				}
 				et.setName(rulesType);
 				et.setDescription(description);

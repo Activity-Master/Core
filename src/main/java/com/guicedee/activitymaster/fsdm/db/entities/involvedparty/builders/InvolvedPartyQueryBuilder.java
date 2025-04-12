@@ -10,10 +10,12 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
 import jakarta.persistence.criteria.JoinType;
 
+import java.util.UUID;
+
 import static com.entityassist.enumerations.Operand.*;
 
 public class InvolvedPartyQueryBuilder
-		extends QueryBuilderSCD<InvolvedPartyQueryBuilder, InvolvedParty, String,InvolvedPartySecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<InvolvedPartyQueryBuilder, InvolvedParty, UUID,InvolvedPartySecurityTokenQueryBuilder>
 		implements IInvolvedPartyQueryBuilder<InvolvedPartyQueryBuilder, InvolvedParty>
 {
 	@Inject

@@ -9,9 +9,14 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXAddressSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -23,8 +28,12 @@ import java.util.Objects;
 @XmlRootElement
 
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EventXAddressSecurityToken
-		extends WarehouseSecurityTable<EventXAddressSecurityToken, EventXAddressSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<EventXAddressSecurityToken, EventXAddressSecurityTokenQueryBuilder, UUID>
 {
 	
 	@Serial
@@ -33,8 +42,8 @@ public class EventXAddressSecurityToken
 	
 	@Column(nullable = false,
 	        name = "EventXAddressSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "EventXAddressID",
 	            referencedColumnName = "EventXAddressID",
@@ -43,26 +52,10 @@ public class EventXAddressSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private EventXAddress base;
-	
-	public EventXAddressSecurityToken()
-	{
-	
-	}
-	
-	public EventXAddressSecurityToken(java.lang.String eventXAddressSecurityTokenID)
-	{
-		this.id = eventXAddressSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "EventXAddressSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
-	}
-	
-	public EventXAddressSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
 	}
 	
 	public EventXAddressSecurityToken setBase(EventXAddress base)
@@ -70,13 +63,7 @@ public class EventXAddressSecurityToken
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public EventXAddress getBase()
 	{
 		return base;

@@ -5,10 +5,12 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 
+import java.util.UUID;
+
 public class RulesQueryBuilder
-		extends QueryBuilderSCD<RulesQueryBuilder, Rules, String,RulesSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<RulesQueryBuilder, Rules, UUID,RulesSecurityTokenQueryBuilder>
 		implements IRulesQueryBuilder<RulesQueryBuilder, Rules>,
-		           IQueryBuilderNamesAndDescriptions<RulesQueryBuilder,Rules,String>
+		           IQueryBuilderNamesAndDescriptions<RulesQueryBuilder,Rules, UUID>
 {
 
 }

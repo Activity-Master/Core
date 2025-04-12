@@ -9,10 +9,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.fsdm.db.hierarchies.builders.InvolvedPartyHierarchyViewQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -22,31 +27,20 @@ import java.io.Serializable;
 @XmlRootElement
 
 @Immutable
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class InvolvedPartyHierarchyView
-		extends WarehouseHierarchyView<InvolvedPartyHierarchyView, InvolvedPartyHierarchyViewQueryBuilder, java.lang.String>
+		extends WarehouseHierarchyView<InvolvedPartyHierarchyView, InvolvedPartyHierarchyViewQueryBuilder, UUID>
 		implements Serializable
 {
 	
 	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-	public InvolvedPartyHierarchyView()
-	{
-	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public InvolvedPartyHierarchyView setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
+
+	private java.util.UUID id;
 	
 	public boolean equals(final Object o)
 	{

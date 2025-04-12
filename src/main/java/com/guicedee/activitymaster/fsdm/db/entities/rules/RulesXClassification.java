@@ -6,11 +6,16 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.rules.builders.RulesXClassificationQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -28,119 +33,103 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-		generator = ObjectIdGenerators.PropertyGenerator.class,
-		property = "id")
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RulesXClassification
-		extends WarehouseClassificationRelationshipTable<Rules,
-		Classification,
-		RulesXClassification,
-		RulesXClassificationQueryBuilder,
-		java.lang.String,
-		RulesXClassificationSecurityToken>
-		implements Serializable
+        extends WarehouseClassificationRelationshipTable<Rules,
+        Classification,
+        RulesXClassification,
+        RulesXClassificationQueryBuilder,
+        UUID,
+        RulesXClassificationSecurityToken>
+        implements Serializable
 {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	
-	@Column(nullable = false,
-	        name = "RulesXClassificationID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-	@JoinColumn(name = "RulesID",
-	            referencedColumnName = "RulesID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	private Rules rulesID;
-	
-@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXClassificationSecurityToken> securities;
-	
-	public RulesXClassification()
-	{
-	
-	}
-	
-	public RulesXClassification(java.lang.String rulesXClassificationID)
-	{
-		this.id = rulesXClassificationID;
-	}
-	
-	@Override
-	public void configureSecurityEntity(RulesXClassificationSecurityToken securityEntity)
-	{
-		securityEntity.setBase(this);
-	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public RulesXClassification setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
-	}
-	
-	public RulesXClassification setRulesID(Rules rulesID)
-	{
-		this.rulesID = rulesID;
-		return this;
-	}
-	
-	public List<RulesXClassificationSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public RulesXClassification setSecurities(List<RulesXClassificationSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-	
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		RulesXClassification that = (RulesXClassification) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
-	@Override
-	public Rules getPrimary()
-	{
-		return getRulesID();
-	}
-	
-	@Override
-	public Classification getSecondary()
-	{
-		return getSecondary();
-	}
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    @Column(nullable = false,
+            name = "RulesXClassificationID")
+
+    private java.util.UUID id;
+
+    @JoinColumn(name = "RulesID",
+            referencedColumnName = "RulesID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+    private Rules rulesID;
+
+    @OneToMany(
+            mappedBy = "base",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXClassificationSecurityToken> securities;
+
+    @Override
+    public void configureSecurityEntity(RulesXClassificationSecurityToken securityEntity)
+    {
+        securityEntity.setBase(this);
+    }
+
+
+    public Rules getRulesID()
+    {
+        return this.rulesID;
+    }
+
+    public RulesXClassification setRulesID(Rules rulesID)
+    {
+        this.rulesID = rulesID;
+        return this;
+    }
+
+    public List<RulesXClassificationSecurityToken> getSecurities()
+    {
+        return this.securities;
+    }
+
+    public RulesXClassification setSecurities(List<RulesXClassificationSecurityToken> securities)
+    {
+        this.securities = securities;
+        return this;
+    }
+
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        RulesXClassification that = (RulesXClassification) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public Rules getPrimary()
+    {
+        return getRulesID();
+    }
+
+    @Override
+    public Classification getSecondary()
+    {
+        return getSecondary();
+    }
 }

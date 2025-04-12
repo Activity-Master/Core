@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementTypeXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -19,8 +24,12 @@ import java.util.Objects;
        name = "ArrangementTypeXClassificationSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementTypeXClassificationSecurityToken
-		extends WarehouseSecurityTable<ArrangementTypeXClassificationSecurityToken, ArrangementTypeXClassificationSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ArrangementTypeXClassificationSecurityToken, ArrangementTypeXClassificationSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -30,8 +39,8 @@ public class ArrangementTypeXClassificationSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ArrangementTypeXClassificationSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ArrangementTypeXClassificationID",
 	            referencedColumnName = "ArrangementTypeXClassificationID",
@@ -40,36 +49,13 @@ public class ArrangementTypeXClassificationSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private ArrangementTypeXClassification base;
-	
-	public ArrangementTypeXClassificationSecurityToken()
-	{
-	
-	}
-	
-	public ArrangementTypeXClassificationSecurityToken(java.lang.String arrangementXClassificationSecurityTokenID)
-	{
-		this.id = arrangementXClassificationSecurityTokenID;
-	}
-	
+
 	@Override
 	public String toString()
 	{
 		return "ArrangementTypeXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	@Override
-	public ArrangementTypeXClassificationSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public ArrangementTypeXClassificationSecurityToken setBase(ArrangementTypeXClassification base)
 	{
 		this.base = base;

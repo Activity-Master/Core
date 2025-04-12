@@ -2,6 +2,7 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.guicedee.client.Environment;
 import com.guicedee.client.IGuiceContext;
+import org.postgresql.PGConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
@@ -160,7 +162,7 @@ public class FSDMMigrateGUI {
         JButton migrateButton = new JButton("Migrate");
         migrateButton.addActionListener(new MigrateActionListener());
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(migrateButton);
+
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         JButton removeConstraintsButton = new JButton("Remove Source Constraints");
@@ -177,6 +179,22 @@ public class FSDMMigrateGUI {
             }
         });
 
+        JButton updateOriginSystemIDButton = new JButton("Update Origin Source IDs");
+        buttonPanel.add(updateOriginSystemIDButton);
+        updateOriginSystemIDButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    executeUpdateOriginSystemID();
+                } catch (Exception ex) {
+                    appendLog("Error: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+
+
         JButton updateVarcharToUUIDButton = new JButton("Update VARCHAR to UUID");
         buttonPanel.add(updateVarcharToUUIDButton);
         updateVarcharToUUIDButton.addActionListener(new ActionListener() {
@@ -191,6 +209,24 @@ public class FSDMMigrateGUI {
             }
         });
 
+
+        JButton deleteIndexes = new JButton("Delete Indexes");
+        buttonPanel.add(deleteIndexes);
+        deleteIndexes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    executeDeleteIndexes();
+                } catch (Exception ex) {
+                    appendLog("Error: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+
+
+        buttonPanel.add(migrateButton);
 
 
         // Finalizing frame
@@ -356,6 +392,181 @@ public class FSDMMigrateGUI {
             throw e;
         }
     }
+
+    private void executeDeleteIndexes() throws Exception {
+        // Get database connection information from input fields
+        String sourceUrl = "jdbc:postgresql://" + sourceUrlField.getText() + "/" + sourceDbNameField.getText();
+        String sourceUser = sourceUserField.getText();
+        String sourcePassword = sourcePasswordField.getText();
+
+        appendLog("Connecting to source database: " + sourceUrl);
+
+        // Connect to the source database
+        try (Connection connection = DriverManager.getConnection(sourceUrl, sourceUser, sourcePassword);
+             Statement statement = connection.createStatement()) {
+
+            appendLog("Connected to source database successfully.");
+
+            // Function to drop all indexes with constraint dependency checks
+            String createFunctionSql = """
+                CREATE OR REPLACE FUNCTION drop_all_indexes_for_schemas()
+                RETURNS void AS $$
+                DECLARE
+                    idx_name TEXT;
+                    idx_table TEXT;
+                    idx_schema TEXT;
+                    drop_index_sql TEXT;
+                    is_used_by_constraint BOOLEAN;
+                BEGIN
+                    FOR idx_schema, idx_table, idx_name IN
+                        SELECT
+                            n.nspname AS schema_name,
+                            t.relname AS table_name,
+                            c.relname AS index_name
+                        FROM pg_index i
+                            JOIN pg_class c ON c.oid = i.indexrelid
+                            JOIN pg_class t ON t.oid = i.indrelid
+                            JOIN pg_namespace n ON n.oid = t.relnamespace
+                        WHERE n.nspname IN ('address', 'arrangement', 'classification', 'dbo', 'event',
+                                            'geography', 'party', 'product', 'resource',
+                                            'rules', 'security', 'time')
+                            AND c.relkind = 'i'
+                            AND NOT i.indisprimary
+                    LOOP
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM pg_constraint
+                            WHERE conindid = (SELECT oid FROM pg_class WHERE relname = idx_name)
+                        ) INTO is_used_by_constraint;
+
+                        IF is_used_by_constraint THEN
+                            RAISE NOTICE 'Cannot drop index % in schema %: it is used by a constraint.', idx_name, idx_schema;
+                        ELSE
+                            drop_index_sql := format('DROP INDEX IF EXISTS %I.%I;', idx_schema, idx_name);
+                            RAISE NOTICE '%', drop_index_sql;
+                            EXECUTE drop_index_sql;
+                        END IF;
+                    END LOOP;
+                END;
+                $$ LANGUAGE plpgsql;
+                """;
+
+            statement.execute(createFunctionSql);
+            appendLog("Function 'drop_all_indexes_for_schemas' created successfully.");
+
+            // Call the function to drop indexes
+            String callFunctionSql = "SELECT drop_all_indexes_for_schemas();";
+            statement.execute(callFunctionSql);
+            appendLog("Indexes deleted successfully in specified schemas, with constraint dependencies respected.");
+
+        } catch (Exception e) {
+            appendLog("Error deleting indexes: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Executes the Update Origin System ID functionality
+     * - Alters `originalsourcesystemuniqueid` to be nullable
+     * - Updates empty strings to `NULL`
+     */
+
+    private void executeUpdateOriginSystemID() throws Exception {
+        // Get database connection information from input fields
+        String sourceUrl = "jdbc:postgresql://" + sourceUrlField.getText() + "/" + sourceDbNameField.getText();
+        String sourceUser = sourceUserField.getText();
+        String sourcePassword = sourcePasswordField.getText();
+
+        appendLog("Connecting to source database: " + sourceUrl);
+
+        // Connect to the source database
+        try (Connection connection = DriverManager.getConnection(sourceUrl, sourceUser, sourcePassword);
+             Statement statement = connection.createStatement()) {
+
+            // Set the client log level to include NOTICE messages
+            statement.execute("SET client_min_messages = NOTICE;");
+            appendLog("Connected to source database successfully.");
+
+            // Create the function
+            String createFunctionSql = """
+                CREATE OR REPLACE FUNCTION public.update_uuid_columns_to_nullable_and_set_null()
+                RETURNS VOID AS $$
+                DECLARE
+                    schema_name TEXT;
+                    table_name TEXT;
+                    target_column_name TEXT := 'originalsourcesystemuniqueid';
+                    alter_query TEXT;
+                    update_query TEXT;
+                BEGIN
+                    FOR schema_name, table_name IN
+                        SELECT t.table_schema, t.table_name
+                        FROM information_schema.tables t
+                                 JOIN information_schema.columns c
+                                      ON t.table_schema = c.table_schema AND t.table_name = c.table_name
+                        WHERE t.table_schema IN (
+                                                 'address', 'arrangement', 'classification', 'dbo', 'event',
+                                                 'geography', 'party', 'product', 'resource', 'rules',
+                                                 'security', 'time'
+                            )
+                          AND c.column_name = target_column_name
+                    LOOP
+                        -- Alter the column to allow NULL
+                        alter_query := FORMAT(
+                                'ALTER TABLE %I.%I ALTER COLUMN %I DROP NOT NULL;',
+                                schema_name, table_name, target_column_name
+                        );
+                        EXECUTE alter_query;
+                        RAISE NOTICE 'Column %.%.% made nullable.', schema_name, table_name, target_column_name;
+
+                        -- Update empty strings to NULL
+                        update_query := FORMAT(
+                                'UPDATE %I.%I SET %I = NULL WHERE %I = '''';',
+                                schema_name, table_name, target_column_name, target_column_name
+                        );
+                        EXECUTE update_query;
+                        RAISE NOTICE 'Updated empty strings to NULL in %.% column %.', schema_name, table_name, target_column_name;
+                    END LOOP;
+
+                    RAISE NOTICE 'UUID column update completed successfully.';
+                END;
+                $$ LANGUAGE plpgsql;
+                """;
+
+            statement.execute(createFunctionSql);
+            appendLog("Function 'update_uuid_columns_to_nullable_and_set_null' created successfully.");
+            fetchAndLogWarnings(statement);
+
+            // Execute the function
+            String callFunctionSql = """
+                DO $$
+                BEGIN
+                    PERFORM public.update_uuid_columns_to_nullable_and_set_null();
+                END $$;
+                """;
+            statement.execute(callFunctionSql);
+            fetchAndLogWarnings(statement);
+
+            appendLog("Updated UUID columns successfully: Empty strings converted to NULL, and columns made nullable.");
+
+        } catch (Exception e) {
+            appendLog("Error during 'Update Origin System ID': " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Helper method to fetch and log PostgreSQL warnings (e.g., RAISE NOTICE).
+     */
+    private void fetchAndLogWarnings(Statement statement) throws Exception {
+        SQLWarning warning = statement.getWarnings();
+        while (warning != null) {
+            appendLog("NOTICE: " + warning.getMessage());
+            warning = warning.getNextWarning();
+        }
+        // Clear warnings after processing
+        statement.clearWarnings();
+    }
+
 
 
     private class MigrateActionListener implements ActionListener {

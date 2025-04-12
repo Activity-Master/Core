@@ -4,9 +4,14 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders.ActiveFlagSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -18,8 +23,12 @@ import java.io.Serializable;
        schema = "dbo")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ActiveFlagSecurityToken
-		extends WarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ActiveFlagSecurityToken, ActiveFlagSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -29,8 +38,8 @@ public class ActiveFlagSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ActiveFlagSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "SecurityTokenActiveFlagID",
 	            referencedColumnName = "ActiveFlagID",
@@ -40,25 +49,7 @@ public class ActiveFlagSecurityToken
 	           cascade = CascadeType.ALL)
 	
 	private ActiveFlag base;
-	
-	public ActiveFlagSecurityToken()
-	{
-	
-	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
-	@Override
-	public ActiveFlagSecurityToken setId(String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public ActiveFlag getBase()
 	{
 		return base;

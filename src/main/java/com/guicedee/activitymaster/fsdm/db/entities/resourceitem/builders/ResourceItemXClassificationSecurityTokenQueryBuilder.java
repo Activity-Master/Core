@@ -5,12 +5,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemXCl
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemXClassificationSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class ResourceItemXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ResourceItemXClassificationSecurityTokenQueryBuilder, ResourceItemXClassificationSecurityToken, java.lang.String>
+        extends QueryBuilderSecurities<ResourceItemXClassificationSecurityTokenQueryBuilder, ResourceItemXClassificationSecurityToken, UUID>
 {
-	@Override
-	protected Attribute getMyAttribute()
-	{
-		return ResourceItemXClassificationSecurityToken_.base;
-	}
+    @Override
+    protected Attribute getMyAttribute()
+    {
+        return ResourceItemXClassificationSecurityToken_.base;
+    }
 }

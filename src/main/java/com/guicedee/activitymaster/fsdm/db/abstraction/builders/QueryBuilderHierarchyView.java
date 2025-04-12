@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 import static com.entityassist.enumerations.Operand.*;
 
-public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends java.lang.String>
+public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends Serializable>
 		extends QueryBuilder<J, E, I>
 {
 	@Override

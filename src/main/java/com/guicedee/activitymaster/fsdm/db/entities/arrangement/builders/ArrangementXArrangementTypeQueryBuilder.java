@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
 
 
 public class ArrangementXArrangementTypeQueryBuilder
@@ -14,7 +15,7 @@ public class ArrangementXArrangementTypeQueryBuilder
 		ArrangementType,
 		ArrangementXArrangementTypeQueryBuilder,
 		ArrangementXArrangementType,
-		java.lang.String,
+		UUID,
 		ArrangementXArrangementTypeSecurityTokenQueryBuilder>
 {
 	@Override

@@ -60,7 +60,7 @@ public class Enterprise
 	@Column(nullable = false,
 	        name = "EnterpriseID")
 	@JsonValue
-	//@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
+	//
 	private java.util.UUID id;
 	
 	@Basic(optional = false,

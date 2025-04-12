@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -19,8 +24,12 @@ import java.util.Objects;
 @Table(schema = "Address", name = "AddressSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressSecurityToken
-		extends WarehouseSecurityTable<AddressSecurityToken, AddressSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<AddressSecurityToken, AddressSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -30,8 +39,8 @@ public class AddressSecurityToken
 	
 	@Column(nullable = false,
 	        name = "AddressSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "AddressID",
 	            referencedColumnName = "AddressID",
@@ -40,40 +49,18 @@ public class AddressSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private Address base;
-	
-	public AddressSecurityToken()
-	{
-	
-	}
-	
-	public AddressSecurityToken(java.lang.String addressSecurityTokenID)
-	{
-		this.id = addressSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "AddressSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public AddressSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public AddressSecurityToken setBase(Address base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public Address getBase()
 	{
 		return base;

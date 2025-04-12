@@ -5,9 +5,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class InvolvedPartyXRulesQueryBuilder
 		extends QueryBuilderRelationshipClassification<InvolvedParty, Rules, InvolvedPartyXRulesQueryBuilder,
-		InvolvedPartyXRules, java.lang.String,InvolvedPartyXRulesSecurityTokenQueryBuilder>
+		InvolvedPartyXRules, UUID,InvolvedPartyXRulesSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<InvolvedPartyXRules, InvolvedParty> getPrimaryAttribute()

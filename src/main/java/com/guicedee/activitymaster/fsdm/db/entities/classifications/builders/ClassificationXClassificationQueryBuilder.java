@@ -4,9 +4,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class ClassificationXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Classification, Classification, ClassificationXClassificationQueryBuilder,
-		ClassificationXClassification, java.lang.String,ClassificationXClassificationSecurityTokenQueryBuilder>
+		ClassificationXClassification, UUID,ClassificationXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<ClassificationXClassification, Classification> getPrimaryAttribute()

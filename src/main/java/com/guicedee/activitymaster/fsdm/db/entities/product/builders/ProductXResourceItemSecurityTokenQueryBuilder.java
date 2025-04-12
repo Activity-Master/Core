@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.ProductXResourceItem
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductXResourceItemSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class ProductXResourceItemSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ProductXResourceItemSecurityTokenQueryBuilder, ProductXResourceItemSecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<ProductXResourceItemSecurityTokenQueryBuilder, ProductXResourceItemSecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

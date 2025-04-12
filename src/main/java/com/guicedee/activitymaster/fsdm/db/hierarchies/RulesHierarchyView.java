@@ -9,10 +9,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.fsdm.db.hierarchies.builders.RulesHierarchyViewQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.UUID;
 
 
 /**
@@ -23,63 +28,52 @@ import java.io.Serializable;
 @XmlRootElement
 
 @Immutable
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RulesHierarchyView
-		extends WarehouseHierarchyView<RulesHierarchyView, RulesHierarchyViewQueryBuilder, java.lang.String>
-		implements Serializable
+        extends WarehouseHierarchyView<RulesHierarchyView, RulesHierarchyViewQueryBuilder, UUID>
+        implements Serializable
 {
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-	
-	public RulesHierarchyView()
-	{
-	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public RulesHierarchyView setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-		{
-			return true;
-		}
-		if (!(o instanceof RulesHierarchyView))
-		{
-			return false;
-		}
-		final RulesHierarchyView other = (RulesHierarchyView) o;
-		if (!other.canEqual(this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		return this$id == null ? other$id == null : this$id.equals(other$id);
-	}
-	
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof RulesHierarchyView;
-	}
-	
-	public int hashCode()
-	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
-	}
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    private java.util.UUID id;
+
+
+    public boolean equals(final Object o)
+    {
+        if (o == this)
+        {
+            return true;
+        }
+        if (!(o instanceof RulesHierarchyView))
+        {
+            return false;
+        }
+        final RulesHierarchyView other = (RulesHierarchyView) o;
+        if (!other.canEqual(this))
+        {
+            return false;
+        }
+        final Object this$id = this.getId();
+        final Object other$id = other.getId();
+        return this$id == null ? other$id == null : this$id.equals(other$id);
+    }
+
+    protected boolean canEqual(final Object other)
+    {
+        return other instanceof RulesHierarchyView;
+    }
+
+    public int hashCode()
+    {
+        final int PRIME = 59;
+        int result = 1;
+        final Object $id = this.getId();
+        result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+        return result;
+    }
 }

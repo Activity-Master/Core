@@ -77,7 +77,7 @@ public class ArrangementsService
     @Override
     public CompletableFuture<IArrangement> create(
             String type,
-            String key,
+            UUID key,
             String arrangementTypeClassification,
             String arrangementTypeValue,
             ISystems<?, ?> system,
@@ -88,7 +88,7 @@ public class ArrangementsService
             Arrangement arrangement = new Arrangement();
 
             // Set ID for the new Arrangement
-            arrangement.setId(key != null ? key : UUID.randomUUID().toString());
+            arrangement.setId(key != null ? key : UUID.randomUUID());
 
             // Set system and enterprise-related information
             arrangement.setSystemID(system);
@@ -144,7 +144,7 @@ public class ArrangementsService
     @Override
     //@CacheResult(cacheName = "ArrangementTypes")
     //
-    public CompletableFuture<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.lang.String key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+    public CompletableFuture<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.util.UUID key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
     {
         ArrangementType xr = new ArrangementType();
         xr.setId(key);
@@ -736,7 +736,7 @@ public class ArrangementsService
     {
         Arrangement xr = new Arrangement();
         return xr.builder()
-                .where(Arrangement_.id, Equals, id.toString())
+                .where(Arrangement_.id, Equals, id)
                 .get()
                 .orElseThrow(() -> new ArrangementException("Cannot find active or visible arrangement with ID " + id));
     }
@@ -744,7 +744,7 @@ public class ArrangementsService
 
     @Override
     //@CacheResult
-    public IArrangement<?, ?> find(@CacheKey java.lang.String id)
+    public IArrangement<?, ?> find(@CacheKey UUID id)
     {
         Arrangement xr = new Arrangement();
         return xr.builder()

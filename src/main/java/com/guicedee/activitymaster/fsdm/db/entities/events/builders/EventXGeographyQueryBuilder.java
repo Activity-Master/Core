@@ -5,9 +5,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.*;
 import com.guicedee.activitymaster.fsdm.db.entities.geography.Geography;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class EventXGeographyQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Geography, EventXGeographyQueryBuilder,
-		EventXGeography, java.lang.String,EventXGeographySecurityTokenQueryBuilder>
+		EventXGeography, UUID,EventXGeographySecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<EventXGeography, Event> getPrimaryAttribute()

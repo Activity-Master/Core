@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXRulesTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -18,8 +23,12 @@ import java.util.Objects;
 @Table(schema = "Arrangement", name = "ArrangementXRulesTypeSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementXRulesTypeSecurityToken
-		extends WarehouseSecurityTable<ArrangementXRulesTypeSecurityToken, ArrangementXRulesTypeSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ArrangementXRulesTypeSecurityToken, ArrangementXRulesTypeSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -29,8 +38,8 @@ public class ArrangementXRulesTypeSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ArrangementXRulesTypeSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ArrangementXRulesTypeID",
 	            referencedColumnName = "ArrangementXRulesTypeID",
@@ -39,40 +48,19 @@ public class ArrangementXRulesTypeSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private ArrangementXRulesType base;
-	
-	public ArrangementXRulesTypeSecurityToken()
-	{
-	
-	}
-	
-	public ArrangementXRulesTypeSecurityToken(java.lang.String arrangementXRulesSecurityTokenID)
-	{
-		this.id = arrangementXRulesSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "ArrangementXRulesTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public ArrangementXRulesTypeSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
+
 	
 	public ArrangementXRulesTypeSecurityToken setBase(ArrangementXRulesType base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public ArrangementXRulesType getBase()
 	{
 		return base;

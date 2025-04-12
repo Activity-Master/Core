@@ -7,9 +7,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.activeflag.*;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class ActiveFlagXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ActiveFlag, Classification, ActiveFlagXClassificationQueryBuilder,
-		ActiveFlagXClassification, java.lang.String,ActiveFlagXClassificationSecurityTokenQueryBuilder>
+		ActiveFlagXClassification, UUID,ActiveFlagXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<WarehouseSCDTable, ActiveFlag> getPrimaryAttribute()

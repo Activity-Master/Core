@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.enterprise.EnterpriseSecurit
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.EnterpriseSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class EnterpriseSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EnterpriseSecurityTokenQueryBuilder, EnterpriseSecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<EnterpriseSecurityTokenQueryBuilder, EnterpriseSecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

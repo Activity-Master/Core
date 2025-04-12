@@ -11,11 +11,16 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -34,12 +39,16 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementXClassification
 		extends WarehouseClassificationRelationshipTable<Arrangement,
 		Classification,
 		ArrangementXClassification,
 		ArrangementXClassificationQueryBuilder,
-		java.lang.String,
+		UUID,
 		ArrangementXClassificationSecurityToken
 		>
 		implements Serializable
@@ -51,8 +60,8 @@ public class ArrangementXClassification
 	
 	@Column(nullable = false,
 	        name = "ArrangementXClassificationID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
@@ -66,29 +75,13 @@ public class ArrangementXClassification
 			mappedBy = "base",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXClassificationSecurityToken> securities;
-	
-	public ArrangementXClassification()
-	{
-	
-	}
-	
-	public ArrangementXClassification(java.lang.String arrangementXClassificationID)
-	{
-		this.id = arrangementXClassificationID;
-	}
-	
+
 	@Override
 	public void configureSecurityEntity(ArrangementXClassificationSecurityToken securityEntity)
 	{
 		securityEntity.setBase(this);
 	}
-	
-	public ArrangementXClassification setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public ArrangementXClassification setArrangementID(Arrangement arrangementID)
 	{
 		this.arrangementID = arrangementID;
@@ -112,12 +105,7 @@ public class ArrangementXClassification
 		return getClassificationID();
 	}
 	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public Arrangement getArrangementID()
 	{
 		return arrangementID;

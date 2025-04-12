@@ -5,9 +5,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.*;
 import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class EventXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Product, EventXProductQueryBuilder,
-		EventXProduct, java.lang.String,EventXProductSecurityTokenQueryBuilder>
+		EventXProduct, UUID,EventXProductSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<EventXProduct, Event> getPrimaryAttribute()

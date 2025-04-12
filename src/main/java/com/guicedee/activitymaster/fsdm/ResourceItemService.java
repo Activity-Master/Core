@@ -79,7 +79,7 @@ public class ResourceItemService
 
     @Override
 
-    public IResourceItemType<?, ?> createType(String value, java.lang.String key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+    public IResourceItemType<?, ?> createType(String value, java.util.UUID key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         ResourceItemType xr = new ResourceItemType();
         boolean exists = xr.builder()
@@ -129,14 +129,14 @@ public class ResourceItemService
     }
 
     @Override
-    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue,
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return create(identityResourceType, key, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
     }
 
     @Override
-    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, byte[] data,
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue, byte[] data,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return create(identityResourceType, key, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), data, system, identityToken);
@@ -161,7 +161,7 @@ public class ResourceItemService
 
 
     @Override
-    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue, String originalSourceSystemUniqueID,
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue, String originalSourceSystemUniqueID,
                                               LocalDateTime effectiveFromDate,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
@@ -169,7 +169,7 @@ public class ResourceItemService
     }
 
     @Override
-    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.lang.String key, String resourceItemDataValue,
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue,
                                               String originalSourceSystemUniqueID,
                                               LocalDateTime effectiveFromDate, byte[] data,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
@@ -314,7 +314,7 @@ public class ResourceItemService
     {
         ResourceItem res = new ResourceItem();
         ResourceItemQueryBuilder builder = res.builder();
-        builder.where(ResourceItem_.id, Equals, uuid.toString());
+        builder.where(ResourceItem_.id, Equals, uuid);
         builder.inActiveRange();
         builder.inDateRange();
         Optional<ResourceItem> exists = builder.get();

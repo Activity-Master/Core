@@ -7,19 +7,20 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Immutable;
 
+import java.io.Serializable;
 
 
 @XmlRootElement
 
 @Immutable
 @MappedSuperclass
-public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends java.lang.String>
+public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends Serializable>
 		extends BaseEntity<J, Q, I>
 {
 	@Column
 	private String name;
 	@Column
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
+	
 	private String parentID;
 	@Column
 	private String pather;

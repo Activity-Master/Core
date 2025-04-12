@@ -4,9 +4,11 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class ArrangementXArrangementQueryBuilder
 		extends QueryBuilderRelationshipClassification<Arrangement, Arrangement, ArrangementXArrangementQueryBuilder,
-		ArrangementXArrangement, java.lang.String,ArrangementXArrangementSecurityTokenQueryBuilder>
+		ArrangementXArrangement, UUID,ArrangementXArrangementSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<ArrangementXArrangement, Arrangement> getPrimaryAttribute()

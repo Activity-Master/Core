@@ -9,10 +9,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXResourceItemSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -23,8 +28,12 @@ import java.util.Objects;
 @Table(schema = "Address", name = "AddressXResourceItemSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressXResourceItemSecurityToken
-		extends WarehouseSecurityTable<AddressXResourceItemSecurityToken, AddressXResourceItemSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<AddressXResourceItemSecurityToken, AddressXResourceItemSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -34,8 +43,8 @@ public class AddressXResourceItemSecurityToken
 	
 	@Column(nullable = false,
 	        name = "AddressXResourceItemSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "AddressXResourceItemID",
 	            referencedColumnName = "AddressXResourceItemID",
@@ -44,40 +53,18 @@ public class AddressXResourceItemSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private AddressXResourceItem base;
-	
-	public AddressXResourceItemSecurityToken()
-	{
-	
-	}
-	
-	public AddressXResourceItemSecurityToken(java.lang.String addressXResourceItemSecurityTokenID)
-	{
-		this.id = addressXResourceItemSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "AddressXResourceItemSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public AddressXResourceItemSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public AddressXResourceItemSecurityToken setBase(AddressXResourceItem base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public AddressXResourceItem getBase()
 	{
 		return base;

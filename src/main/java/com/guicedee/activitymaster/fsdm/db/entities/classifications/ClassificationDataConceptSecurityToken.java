@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.ClassificationDataConceptSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -19,8 +24,12 @@ import java.util.Objects;
 @Table(schema = "Classification", name = "ClassificationDataConceptSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClassificationDataConceptSecurityToken
-		extends WarehouseSecurityTable<ClassificationDataConceptSecurityToken, ClassificationDataConceptSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ClassificationDataConceptSecurityToken, ClassificationDataConceptSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -30,8 +39,8 @@ public class ClassificationDataConceptSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ClassificationDataConceptSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ClassificationDataConceptID",
 	            referencedColumnName = "ClassificationDataConceptID",
@@ -40,40 +49,19 @@ public class ClassificationDataConceptSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private ClassificationDataConcept base;
-	
-	public ClassificationDataConceptSecurityToken()
-	{
-	
-	}
-	
-	public ClassificationDataConceptSecurityToken(java.lang.String classificationDataConceptSecurityTokenID)
-	{
-		this.id = classificationDataConceptSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "ClassificationDataConceptSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
 	
-	public ClassificationDataConceptSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public ClassificationDataConceptSecurityToken setBase(ClassificationDataConcept base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public ClassificationDataConcept getBase()
 	{
 		return base;

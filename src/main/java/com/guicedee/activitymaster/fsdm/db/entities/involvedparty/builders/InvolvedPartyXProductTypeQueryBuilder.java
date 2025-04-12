@@ -8,13 +8,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductType;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
 
 
 public class InvolvedPartyXProductTypeQueryBuilder
 		extends QueryBuilderRelationshipClassificationTypes<InvolvedParty, ProductType,
 		InvolvedPartyXProductTypeQueryBuilder,
 		InvolvedPartyXProductType,
-		java.lang.String,
+		UUID,
 		InvolvedPartyXProductTypeSecurityTokenQueryBuilder>
 {
 	@Override

@@ -6,11 +6,16 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.Arrange
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -29,12 +34,16 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementXInvolvedParty
 		extends WarehouseClassificationRelationshipTable<Arrangement,
 		InvolvedParty,
 		ArrangementXInvolvedParty,
 		ArrangementXInvolvedPartyQueryBuilder,
-		java.lang.String,
+		UUID,
 		ArrangementXInvolvedPartySecurityToken
 		>
 		implements Serializable
@@ -46,8 +55,8 @@ public class ArrangementXInvolvedParty
 	
 	@Column(nullable = false,
 	        name = "ArrangementXInvolvedPartyID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ArrangementID",
 	            referencedColumnName = "ArrangementID",
@@ -69,29 +78,13 @@ public class ArrangementXInvolvedParty
 			mappedBy = "base",
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXInvolvedPartySecurityToken> securities;
-	
-	public ArrangementXInvolvedParty()
-	{
-	
-	}
-	
-	public ArrangementXInvolvedParty(java.lang.String arrangementXInvolvedPartyID)
-	{
-		this.id = arrangementXInvolvedPartyID;
-	}
-	
+
 	@Override
 	public void configureSecurityEntity(ArrangementXInvolvedPartySecurityToken securityEntity)
 	{
 		securityEntity.setBase(this);
 	}
-	
-	public ArrangementXInvolvedParty setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
+
 	public ArrangementXInvolvedParty setArrangementID(Arrangement arrangementID)
 	{
 		this.arrangementID = arrangementID;
@@ -120,13 +113,7 @@ public class ArrangementXInvolvedParty
 	{
 		return getInvolvedPartyID();
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public Arrangement getArrangementID()
 	{
 		return arrangementID;

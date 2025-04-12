@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.events.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
 
 
 public class EventXEventTypeQueryBuilder
@@ -14,7 +15,7 @@ public class EventXEventTypeQueryBuilder
 		EventType,
 		EventXEventTypeQueryBuilder,
 		EventXEventType,
-		java.lang.String,
+		UUID,
 		EventXEventTypeSecurityTokenQueryBuilder
 		>
 {

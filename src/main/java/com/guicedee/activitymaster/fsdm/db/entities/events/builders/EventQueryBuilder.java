@@ -8,9 +8,10 @@ import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class EventQueryBuilder
-		extends QueryBuilderSCD<EventQueryBuilder, Event, String,EventSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<EventQueryBuilder, Event, UUID,EventSecurityTokenQueryBuilder>
 		implements IEventQueryBuilder<EventQueryBuilder, Event>
 {
 	

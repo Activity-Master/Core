@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.geography.GeographyXGeograph
 import com.guicedee.activitymaster.fsdm.db.entities.geography.GeographyXGeographySecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class GeographyXGeographySecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<GeographyXGeographySecurityTokenQueryBuilder, GeographyXGeographySecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<GeographyXGeographySecurityTokenQueryBuilder, GeographyXGeographySecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

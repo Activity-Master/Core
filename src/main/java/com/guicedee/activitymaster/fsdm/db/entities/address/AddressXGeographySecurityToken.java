@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.builders.AddressXGeographySecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -19,8 +24,12 @@ import java.util.Objects;
 @Table(schema = "Address", name = "AddressXGeographySecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressXGeographySecurityToken
-		extends WarehouseSecurityTable<AddressXGeographySecurityToken, AddressXGeographySecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<AddressXGeographySecurityToken, AddressXGeographySecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -30,8 +39,8 @@ public class AddressXGeographySecurityToken
 	
 	@Column(nullable = false,
 	        name = "AddressXGeographySecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "AddressXGeographyID",
 	            referencedColumnName = "AddressXGeographyID",
@@ -40,39 +49,19 @@ public class AddressXGeographySecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private AddressXGeography base;
-	
-	public AddressXGeographySecurityToken()
-	{
-	
-	}
-	
-	public AddressXGeographySecurityToken(java.lang.String addressXGeographySecurityTokenID)
-	{
-		this.id = addressXGeographySecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "AddressXGeographySecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public AddressXGeographySecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
+
 	
 	public AddressXGeographySecurityToken setBase(AddressXGeography base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
+
 	
 	public AddressXGeography getBase()
 	{

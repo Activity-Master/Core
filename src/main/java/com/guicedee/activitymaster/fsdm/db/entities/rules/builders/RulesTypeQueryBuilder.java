@@ -9,12 +9,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import jakarta.persistence.criteria.JoinType;
 
+import java.util.UUID;
+
 import static com.entityassist.enumerations.Operand.*;
 
 public class RulesTypeQueryBuilder
-		extends QueryBuilderSCD<RulesTypeQueryBuilder, RulesType, String, RulesTypeSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<RulesTypeQueryBuilder, RulesType, UUID, RulesTypeSecurityTokenQueryBuilder>
 		implements IRuleTypeQueryBuilder<RulesTypeQueryBuilder, RulesType>,
-		           IQueryBuilderNamesAndDescriptions<RulesTypeQueryBuilder, RulesType, String>
+		           IQueryBuilderNamesAndDescriptions<RulesTypeQueryBuilder, RulesType, UUID>
 {
 	@jakarta.validation.constraints.NotNull
 	public RulesTypeQueryBuilder withClassification(Classification classification, String value)

@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConceptXClassificationSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class ClassificationDataConceptXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ClassificationDataConceptXClassificationSecurityTokenQueryBuilder, ClassificationDataConceptXClassificationSecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<ClassificationDataConceptXClassificationSecurityTokenQueryBuilder, ClassificationDataConceptXClassificationSecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

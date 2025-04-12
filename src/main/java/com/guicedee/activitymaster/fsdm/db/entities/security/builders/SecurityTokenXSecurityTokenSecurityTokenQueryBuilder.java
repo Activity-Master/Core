@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityTokenXSecur
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityTokenXSecurityTokenSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class SecurityTokenXSecurityTokenSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<SecurityTokenXSecurityTokenSecurityTokenQueryBuilder, SecurityTokenXSecurityTokenSecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<SecurityTokenXSecurityTokenSecurityTokenQueryBuilder, SecurityTokenXSecurityTokenSecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

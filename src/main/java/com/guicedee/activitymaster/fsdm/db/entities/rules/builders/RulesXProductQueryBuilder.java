@@ -9,11 +9,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 import static com.entityassist.enumerations.Operand.*;
 
 public class RulesXProductQueryBuilder
 		extends QueryBuilderRelationshipClassification<Rules, Product, RulesXProductQueryBuilder,
-		RulesXProduct, java.lang.String,RulesXProductSecurityTokenQueryBuilder>
+		RulesXProduct, UUID,RulesXProductSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<RulesXProduct, Rules> getPrimaryAttribute()

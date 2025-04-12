@@ -4,10 +4,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseXClassificationSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -16,87 +21,70 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "EnterpriseXClassificationSecurityToken",
-       schema = "dbo")
+        schema = "dbo")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EnterpriseXClassificationSecurityToken
-		extends WarehouseSecurityTable<EnterpriseXClassificationSecurityToken, EnterpriseXClassificationSecurityTokenQueryBuilder, String>
-		implements Serializable
+        extends WarehouseSecurityTable<EnterpriseXClassificationSecurityToken, EnterpriseXClassificationSecurityTokenQueryBuilder, UUID>
+        implements Serializable
 {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	
-	@Column(nullable = false,
-	        name = "EnterpriseXClassificationSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-	@JoinColumn(name = "EnterpriseXClassificationID",
-	            referencedColumnName = "EnterpriseXClassificationID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
-	private EnterpriseXClassification base;
-	
-	public EnterpriseXClassificationSecurityToken()
-	{
-	
-	}
-	
-	public EnterpriseXClassificationSecurityToken(java.lang.String classificationXResourceItemSecurityTokenID)
-	{
-		this.id = classificationXResourceItemSecurityTokenID;
-	}
-	
-	public String toString()
-	{
-		return "EnterpriseXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
-	}
-	
-	public EnterpriseXClassificationSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public EnterpriseXClassificationSecurityToken setBase(EnterpriseXClassification base)
-	{
-		this.base = base;
-		return this;
-	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
-	public EnterpriseXClassification getBase()
-	{
-		return base;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		EnterpriseXClassificationSecurityToken that = (EnterpriseXClassificationSecurityToken) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(getId());
-	}
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    @Column(nullable = false,
+            name = "EnterpriseXClassificationSecurityTokenID")
+
+    private java.util.UUID id;
+
+    @JoinColumn(name = "EnterpriseXClassificationID",
+            referencedColumnName = "EnterpriseXClassificationID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+
+    private EnterpriseXClassification base;
+
+    public String toString()
+    {
+        return "EnterpriseXClassificationSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
+    }
+
+
+    public EnterpriseXClassificationSecurityToken setBase(EnterpriseXClassification base)
+    {
+        this.base = base;
+        return this;
+    }
+
+    public EnterpriseXClassification getBase()
+    {
+        return base;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        EnterpriseXClassificationSecurityToken that = (EnterpriseXClassificationSecurityToken) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(getId());
+    }
 }

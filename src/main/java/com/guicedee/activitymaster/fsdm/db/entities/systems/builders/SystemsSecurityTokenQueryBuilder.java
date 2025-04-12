@@ -5,12 +5,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsSecurityToken
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class SystemsSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<SystemsSecurityTokenQueryBuilder, SystemsSecurityToken, java.lang.String>
+        extends QueryBuilderSecurities<SystemsSecurityTokenQueryBuilder, SystemsSecurityToken, UUID>
 {
-	@Override
-	protected Attribute getMyAttribute()
-	{
-		return SystemsSecurityToken_.base;
-	}
+    @Override
+    protected Attribute getMyAttribute()
+    {
+        return SystemsSecurityToken_.base;
+    }
 }

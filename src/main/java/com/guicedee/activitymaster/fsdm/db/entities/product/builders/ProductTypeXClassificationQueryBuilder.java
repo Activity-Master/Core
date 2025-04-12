@@ -6,9 +6,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class ProductTypeXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ProductType, Classification, ProductTypeXClassificationQueryBuilder,
-		ProductTypeXClassification, java.lang.String,ProductTypeXClassificationSecurityTokenQueryBuilder>
+		ProductTypeXClassification, UUID,ProductTypeXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<ProductTypeXClassification, ProductType> getPrimaryAttribute()

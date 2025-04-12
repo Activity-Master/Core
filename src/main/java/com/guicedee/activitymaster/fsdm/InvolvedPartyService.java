@@ -52,11 +52,11 @@ public class InvolvedPartyService
 	
 	
 	@Override
-	@CacheResult(cacheName = "InvovledPartyByID")
+	//@CacheResult(cacheName = "InvovledPartyByID")
 	public IInvolvedParty<?, ?> findByID(@CacheKey UUID id)
 	{
 		return new InvolvedParty().builder()
-		                          .find(id.toString())
+		                          .find(id)
 		                          .get()
 		                          .orElseThrow();
 	}
@@ -169,7 +169,7 @@ public class InvolvedPartyService
 	}
 	
 	//
-	public InvolvedPartyOrganicType createOrganicType(ISystems<?, ?> system, String key, String name, String description, java.util.UUID... identityToken)
+	public InvolvedPartyOrganicType createOrganicType(ISystems<?, ?> system, UUID key, String name, String description, java.util.UUID... identityToken)
 	{
 		InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
 		xr.setId(key);
@@ -190,7 +190,7 @@ public class InvolvedPartyService
 	}
 	
 	
-	@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
+	//@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
 	@Override
 	public IInvolvedPartyIdentificationType<?, ?> findInvolvedPartyIdentificationType(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -206,7 +206,7 @@ public class InvolvedPartyService
 	
 	
 	@Override
-	@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
+	//@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
 	public IInvolvedParty<?, ?> findByResourceItem(@CacheKey IResourceItem<?, ?> idType, @CacheKey String value, ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		Optional<InvolvedPartyXResourceItem> builder = new InvolvedPartyXResourceItem()
@@ -232,7 +232,7 @@ public class InvolvedPartyService
 	
 	@Override
 	
-	public CompletableFuture<IInvolvedParty<?, ?>> create(ISystems<?, ?> system, java.lang.String key, Pair<String, String> idTypes,
+	public CompletableFuture<IInvolvedParty<?, ?>> create(ISystems<?, ?> system, java.util.UUID key, Pair<String, String> idTypes,
 	                                                      boolean isOrganic, java.util.UUID... identityToken)
 	{
 		InvolvedParty ip = new InvolvedParty();
@@ -241,7 +241,7 @@ public class InvolvedPartyService
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		if (key == null)
 		{
-			key = UUID.randomUUID().toString();
+			key = UUID.randomUUID();
 		}
 		ip.setId(key);
 		ip.setActiveFlagID(activeFlag);
@@ -293,7 +293,7 @@ public class InvolvedPartyService
 	}
 	
 	
-	@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
+	//@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
 	@Override
 	public IInvolvedPartyType<?, ?> findType(@CacheKey String nameType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -309,7 +309,7 @@ public class InvolvedPartyService
 	}
 	
 	
-	@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
+	//@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
 	@Override
 	public IInvolvedPartyNameType<?, ?> findInvolvedPartyNameType(@CacheKey String nameType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -326,7 +326,7 @@ public class InvolvedPartyService
 	
 	
 	@Override
-	@CacheResult(cacheName = "InvolvedPartyFindByToken")
+	//@CacheResult(cacheName = "InvolvedPartyFindByToken")
 	public IInvolvedParty<?, ?> findByToken(@CacheKey ISecurityToken<?, ?> token, @CacheKey java.util.UUID... identityToken)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
@@ -348,7 +348,7 @@ public class InvolvedPartyService
 	public IInvolvedParty<?, ?> find(@CacheKey UUID uuid)
 	{
 		return new InvolvedParty().builder()
-		                          .find(uuid.toString())
+		                          .find(uuid)
 		                          .get()
 		                          .orElseThrow(() -> new InvolvedPartyException("The IP does not exist - " + uuid));
 	}
@@ -358,7 +358,7 @@ public class InvolvedPartyService
 	public IInvolvedPartyType<?, ?> findType(@CacheKey UUID uuid)
 	{
 		return new InvolvedPartyType().builder()
-		                              .find(uuid.toString())
+		                              .find(uuid)
 		                              .get()
 		                              .orElseThrow(() -> new InvolvedPartyException("The IP Type does not exist - " + uuid));
 	}
@@ -368,7 +368,7 @@ public class InvolvedPartyService
 	public IInvolvedPartyNameType<?, ?> findNameType(@CacheKey UUID uuid)
 	{
 		return new InvolvedPartyNameType().builder()
-		                                  .find(uuid.toString())
+		                                  .find(uuid)
 		                                  .get()
 		                                  .orElseThrow(() -> new InvolvedPartyException("The IP Name Type does not exist - " + uuid));
 	}
@@ -378,14 +378,14 @@ public class InvolvedPartyService
 	public IInvolvedPartyIdentificationType<?, ?> findIdentificationType(@CacheKey UUID uuid)
 	{
 		return new InvolvedPartyIdentificationType().builder()
-		                                            .find(uuid.toString())
+		                                            .find(uuid)
 		                                            .get()
 		                                            .orElseThrow(() -> new InvolvedPartyException("The IP Name Type does not exist - " + uuid));
 	}
 	
 	
 	@Override
-	@CacheResult(cacheName = "InvolvedPartyFindByUUID")
+	//@CacheResult(cacheName = "InvolvedPartyFindByUUID")
 	public IInvolvedParty<?, ?> findByUUID(@CacheKey UUID token, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();

@@ -33,9 +33,9 @@ public abstract class WarehouseTable<
 	
 	@Basic(optional = false)
 	@NotNull
-	@Column(nullable = false,
+	@Column(nullable = true,
 	        name = "OriginalSourceSystemUniqueID")
-	private String originalSourceSystemUniqueID = "";
+	private String originalSourceSystemUniqueID;
 	
 	@JoinColumn(name = "OriginalSourceSystemID",
 	            referencedColumnName = "SystemID",

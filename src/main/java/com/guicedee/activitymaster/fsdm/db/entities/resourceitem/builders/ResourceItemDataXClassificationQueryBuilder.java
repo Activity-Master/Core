@@ -6,9 +6,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class ResourceItemDataXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<ResourceItemData, Classification, ResourceItemDataXClassificationQueryBuilder,
-		ResourceItemDataXClassification, java.lang.String,ResourceItemDataXClassificationSecurityTokenQueryBuilder>
+		ResourceItemDataXClassification, UUID,ResourceItemDataXClassificationSecurityTokenQueryBuilder>
 {
 	
 	@Override

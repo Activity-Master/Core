@@ -6,11 +6,13 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderCore;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 
+import java.util.UUID;
+
 @SuppressWarnings("Duplicates")
 public class ActiveFlagQueryBuilder
-		extends QueryBuilderCore<ActiveFlagQueryBuilder, ActiveFlag, String>
+		extends QueryBuilderCore<ActiveFlagQueryBuilder, ActiveFlag, UUID>
 		implements IActiveFlagQueryBuilder<ActiveFlagQueryBuilder, ActiveFlag>,
-		           IQueryBuilderNamesAndDescriptions<ActiveFlagQueryBuilder,ActiveFlag,String>
+		           IQueryBuilderNamesAndDescriptions<ActiveFlagQueryBuilder,ActiveFlag,UUID>
 {
 	
 	@jakarta.validation.constraints.NotNull

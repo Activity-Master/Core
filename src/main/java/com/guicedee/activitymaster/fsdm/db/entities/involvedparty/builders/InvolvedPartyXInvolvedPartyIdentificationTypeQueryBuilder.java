@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
 
 
 public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
@@ -16,7 +17,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 		InvolvedPartyIdentificationType,
 		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder,
 		InvolvedPartyXInvolvedPartyIdentificationType,
-		java.lang.String,
+		UUID,
 		InvolvedPartyXInvolvedPartyIdentificationTypeSecurityTokenQueryBuilder>
 {
 	@Override

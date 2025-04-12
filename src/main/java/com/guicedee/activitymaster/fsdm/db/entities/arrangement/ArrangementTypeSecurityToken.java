@@ -9,10 +9,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 
 /**
@@ -24,8 +29,12 @@ import java.util.Objects;
 @Table(schema = "Arrangement", name = "ArrangementTypeSecurityToken")
 @XmlRootElement
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementTypeSecurityToken
-		extends WarehouseSecurityTable<ArrangementTypeSecurityToken, ArrangementTypeSecurityTokenQueryBuilder, String>
+		extends WarehouseSecurityTable<ArrangementTypeSecurityToken, ArrangementTypeSecurityTokenQueryBuilder, UUID>
 		implements Serializable
 {
 	
@@ -35,8 +44,8 @@ public class ArrangementTypeSecurityToken
 	
 	@Column(nullable = false,
 	        name = "ArrangementTypeSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	
 	@JoinColumn(name = "ArrangementTypeID",
 	            referencedColumnName = "ArrangementTypeID",
@@ -45,40 +54,19 @@ public class ArrangementTypeSecurityToken
 	           fetch = FetchType.LAZY)
 	
 	private ArrangementType base;
-	
-	public ArrangementTypeSecurityToken()
-	{
-	
-	}
-	
-	public ArrangementTypeSecurityToken(java.lang.String arrangementTypeSecurityTokenID)
-	{
-		this.id = arrangementTypeSecurityTokenID;
-	}
-	
+
 	public String toString()
 	{
 		return "ArrangementTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
 	}
-	
-	public ArrangementTypeSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
+
 	
 	public ArrangementTypeSecurityToken setBase(ArrangementType base)
 	{
 		this.base = base;
 		return this;
 	}
-	
-	@Override
-	public String getId()
-	{
-		return id;
-	}
-	
+
 	public ArrangementType getBase()
 	{
 		return base;

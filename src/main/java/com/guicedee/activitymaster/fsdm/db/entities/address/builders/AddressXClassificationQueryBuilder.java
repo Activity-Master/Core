@@ -6,9 +6,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.address.*;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class AddressXClassificationQueryBuilder
 		extends QueryBuilderRelationshipClassification<Address, Classification, AddressXClassificationQueryBuilder,
-		AddressXClassification, java.lang.String,AddressXClassificationSecurityTokenQueryBuilder>
+		AddressXClassification, UUID,AddressXClassificationSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<AddressXClassification, Address> getPrimaryAttribute()

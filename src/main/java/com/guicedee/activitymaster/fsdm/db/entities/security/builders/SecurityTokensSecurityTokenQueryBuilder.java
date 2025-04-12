@@ -6,12 +6,14 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecu
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 import static com.entityassist.enumerations.Operand.*;
 
 public class SecurityTokensSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, java.lang.String>
-		implements IQueryBuilderEnterprise<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, java.lang.String>,
-		           IQueryBuilderSCD<SecurityTokensSecurityTokenQueryBuilder,SecurityTokensSecurityToken,String>
+		extends QueryBuilderSecurities<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, UUID>
+		implements IQueryBuilderEnterprise<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, UUID>,
+		           IQueryBuilderSCD<SecurityTokensSecurityTokenQueryBuilder,SecurityTokensSecurityToken,UUID>
 {
 	public SecurityTokensSecurityTokenQueryBuilder findBySecurityToken(SecurityToken fromToken, SecurityToken forToken)
 	{

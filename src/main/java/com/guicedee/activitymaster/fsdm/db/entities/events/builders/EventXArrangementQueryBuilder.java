@@ -5,9 +5,11 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.Arrangement;
 import com.guicedee.activitymaster.fsdm.db.entities.events.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 public class EventXArrangementQueryBuilder
 		extends QueryBuilderRelationshipClassification<Event, Arrangement, EventXArrangementQueryBuilder,
-		EventXArrangement, java.lang.String,EventXArrangementSecurityTokenQueryBuilder>
+		EventXArrangement, UUID,EventXArrangementSecurityTokenQueryBuilder>
 {
 	@Override
 	public SingularAttribute<EventXArrangement, Event> getPrimaryAttribute()

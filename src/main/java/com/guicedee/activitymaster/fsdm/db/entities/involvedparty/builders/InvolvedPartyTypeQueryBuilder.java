@@ -5,11 +5,13 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyType;
 
+import java.util.UUID;
+
 public class InvolvedPartyTypeQueryBuilder
-		extends QueryBuilderSCD<InvolvedPartyTypeQueryBuilder, InvolvedPartyType, String,
+		extends QueryBuilderSCD<InvolvedPartyTypeQueryBuilder, InvolvedPartyType, UUID,
 				InvolvedPartyTypeSecurityTokenQueryBuilder>
 		implements IInvolvedPartyTypeQueryBuilder<InvolvedPartyTypeQueryBuilder, InvolvedPartyType>,
-		           IQueryBuilderNamesAndDescriptions<InvolvedPartyTypeQueryBuilder,InvolvedPartyType,String>
+		           IQueryBuilderNamesAndDescriptions<InvolvedPartyTypeQueryBuilder,InvolvedPartyType,UUID>
 {
 
 }

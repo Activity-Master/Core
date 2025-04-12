@@ -5,12 +5,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassificati
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassificationSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class SystemXClassificationSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<SystemXClassificationSecurityTokenQueryBuilder, SystemsXClassificationSecurityToken, java.lang.String>
+        extends QueryBuilderSecurities<SystemXClassificationSecurityTokenQueryBuilder, SystemsXClassificationSecurityToken, UUID>
 {
-	@Override
-	protected Attribute getMyAttribute()
-	{
-		return SystemsXClassificationSecurityToken_.base;
-	}
+    @Override
+    protected Attribute getMyAttribute()
+    {
+        return SystemsXClassificationSecurityToken_.base;
+    }
 }

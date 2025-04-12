@@ -7,6 +7,8 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
+
 import static com.entityassist.enumerations.Operand.*;
 
 public class ProductXProductTypeQueryBuilder
@@ -14,7 +16,7 @@ public class ProductXProductTypeQueryBuilder
 		ProductType,
 		ProductXProductTypeQueryBuilder,
 		ProductXProductType,
-		java.lang.String,
+		UUID,
 		ProductXProductTypeSecurityTokenQueryBuilder>
 {
 	@Override

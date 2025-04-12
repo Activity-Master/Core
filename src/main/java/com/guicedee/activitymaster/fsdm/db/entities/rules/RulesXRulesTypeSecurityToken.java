@@ -4,8 +4,13 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.builders.RulesXRulesTypeSecurityTokenQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
+import java.util.UUID;
 
 
 /**
@@ -15,104 +20,85 @@ import java.io.Serial;
  */
 @Entity
 @Table(schema = "Rules",
-       name = "RulesXRulesTypeSecurityToken")
+        name = "RulesXRulesTypeSecurityToken")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RulesXRulesTypeSecurityToken
-		extends WarehouseSecurityTable<RulesXRulesTypeSecurityToken, RulesXRulesTypeSecurityTokenQueryBuilder, String>
+        extends WarehouseSecurityTable<RulesXRulesTypeSecurityToken, RulesXRulesTypeSecurityTokenQueryBuilder, UUID>
 {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	
-	@Column(nullable = false,
-	        name = "RulesXRulesTypeSecurityTokenID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-	@JoinColumn(name = "RulesXRulesTypeID",
-	            referencedColumnName = "RulesXRulesTypeID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
-	private RulesXRulesType base;
-	
-	public RulesXRulesTypeSecurityToken()
-	{
-	
-	}
-	
-	public RulesXRulesTypeSecurityToken(java.lang.String rulesXRulesTypeSecurityTokenID)
-	{
-		this.id = rulesXRulesTypeSecurityTokenID;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return "RulesXRulesTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
-	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	@Override
-	public RulesXRulesTypeSecurityToken setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public RulesXRulesType getBase()
-	{
-		return this.base;
-	}
-	
-	public RulesXRulesTypeSecurityToken setBase(RulesXRulesType base)
-	{
-		this.base = base;
-		return this;
-	}
-	
-	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-		{
-			return true;
-		}
-		if (!(o instanceof RulesXRulesTypeSecurityToken))
-		{
-			return false;
-		}
-		final RulesXRulesTypeSecurityToken other = (RulesXRulesTypeSecurityToken) o;
-		if (!other.canEqual(this))
-		{
-			return false;
-		}
-		final Object this$id = this.getId();
-		final Object other$id = other.getId();
-		return this$id == null ? other$id == null : this$id.equals(other$id);
-	}
-	
-	protected boolean canEqual(final Object other)
-	{
-		return other instanceof RulesXRulesTypeSecurityToken;
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		final int PRIME = 59;
-		int result = 1;
-		final Object $id = this.getId();
-		result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-		return result;
-	}
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    @Column(nullable = false,
+            name = "RulesXRulesTypeSecurityTokenID")
+
+    private java.util.UUID id;
+
+    @JoinColumn(name = "RulesXRulesTypeID",
+            referencedColumnName = "RulesXRulesTypeID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+
+    private RulesXRulesType base;
+
+    @Override
+    public String toString()
+    {
+        return "RulesXRulesTypeSecurityToken(id=" + this.getId() + ", base=" + this.getBase() + ")";
+    }
+
+    public RulesXRulesType getBase()
+    {
+        return this.base;
+    }
+
+    public RulesXRulesTypeSecurityToken setBase(RulesXRulesType base)
+    {
+        this.base = base;
+        return this;
+    }
+
+    @Override
+    public boolean equals(final Object o)
+    {
+        if (o == this)
+        {
+            return true;
+        }
+        if (!(o instanceof RulesXRulesTypeSecurityToken))
+        {
+            return false;
+        }
+        final RulesXRulesTypeSecurityToken other = (RulesXRulesTypeSecurityToken) o;
+        if (!other.canEqual(this))
+        {
+            return false;
+        }
+        final Object this$id = this.getId();
+        final Object other$id = other.getId();
+        return this$id == null ? other$id == null : this$id.equals(other$id);
+    }
+
+    protected boolean canEqual(final Object other)
+    {
+        return other instanceof RulesXRulesTypeSecurityToken;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int PRIME = 59;
+        int result = 1;
+        final Object $id = this.getId();
+        result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+        return result;
+    }
 }

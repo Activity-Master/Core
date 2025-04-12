@@ -5,12 +5,14 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderCore;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 
+import java.util.UUID;
+
 public class SystemsQueryBuilder
-		extends QueryBuilderCore<SystemsQueryBuilder, Systems, String>
-		implements IQueryBuilderClassifications<SystemsQueryBuilder, Systems, java.lang.String>,
+		extends QueryBuilderCore<SystemsQueryBuilder, Systems, UUID>
+		implements IQueryBuilderClassifications<SystemsQueryBuilder, Systems, UUID>,
 		           ISystemsQueryBuilder<SystemsQueryBuilder, Systems>,
-		           IQueryBuilderDefault<SystemsQueryBuilder, Systems, java.lang.String>,
-		           IQueryBuilderEnterprise<SystemsQueryBuilder, Systems, java.lang.String>,
-		           IQueryBuilderNamesAndDescriptions<SystemsQueryBuilder,Systems,String>
+		           IQueryBuilderDefault<SystemsQueryBuilder, Systems, UUID>,
+		           IQueryBuilderEnterprise<SystemsQueryBuilder, Systems, UUID>,
+		           IQueryBuilderNamesAndDescriptions<SystemsQueryBuilder,Systems,UUID>
 {
 }

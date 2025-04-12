@@ -5,10 +5,15 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventXEventTypeQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -19,7 +24,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
  */
 @Entity
 @Table(schema = "Event",
-       name = "EventXEventType")
+        name = "EventXEventType")
 @XmlRootElement
 
 @Access(AccessType.FIELD)
@@ -27,137 +32,118 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-		generator = ObjectIdGenerators.PropertyGenerator.class,
-		property = "id")
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EventXEventType
-		extends WarehouseClassificationRelationshipTypesTable<Event,
-		EventType,
-		EventXEventType,
-		EventXEventTypeQueryBuilder,
-		java.lang.String,
-		EventXEventTypeSecurityToken>
+        extends WarehouseClassificationRelationshipTypesTable<Event,
+        EventType,
+        EventXEventType,
+        EventXEventTypeQueryBuilder,
+        UUID,
+        EventXEventTypeSecurityToken>
 {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	
-	@Column(nullable = false,
-	        name = "EventXEventTypeID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<EventXEventTypeSecurityToken> securities;
-	
-	@JoinColumn(name = "EventID",
-	            referencedColumnName = "EventID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	
-	private Event eventID;
-	@JoinColumn(name = "EventTypeID",
-	            referencedColumnName = "EventTypeID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	private EventType eventTypeID;
-	
-	public EventXEventType()
-	{
-	
-	}
-	
-	public EventXEventType(java.lang.String eventXEventTypeID)
-	{
-		this.id = eventXEventTypeID;
-	}
-	
-	@Override
-	public void configureSecurityEntity(EventXEventTypeSecurityToken securityEntity)
-	{
-		securityEntity.setBase(this);
-	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	@Override
-	public EventXEventType setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public List<EventXEventTypeSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public EventXEventType setSecurities(List<EventXEventTypeSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-	
-	public Event getEventID()
-	{
-		return this.eventID;
-	}
-	
-	public EventXEventType setEventID(Event eventID)
-	{
-		this.eventID = eventID;
-		return this;
-	}
-	
-	public EventType getEventTypeID()
-	{
-		return this.eventTypeID;
-	}
-	
-	public EventXEventType setEventTypeID(EventType eventTypeID)
-	{
-		this.eventTypeID = eventTypeID;
-		return this;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		EventXEventType that = (EventXEventType) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
-	@Override
-	public Event getPrimary()
-	{
-		return getEventID();
-	}
-	
-	@Override
-	public EventType getSecondary()
-	{
-		return getEventTypeID();
-	}
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    @Column(nullable = false,
+            name = "EventXEventTypeID")
+
+    private java.util.UUID id;
+
+    @OneToMany(
+            mappedBy = "base",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<EventXEventTypeSecurityToken> securities;
+
+    @JoinColumn(name = "EventID",
+            referencedColumnName = "EventID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+
+    private Event eventID;
+    @JoinColumn(name = "EventTypeID",
+            referencedColumnName = "EventTypeID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+    private EventType eventTypeID;
+
+    @Override
+    public void configureSecurityEntity(EventXEventTypeSecurityToken securityEntity)
+    {
+        securityEntity.setBase(this);
+    }
+
+    public List<EventXEventTypeSecurityToken> getSecurities()
+    {
+        return this.securities;
+    }
+
+    public EventXEventType setSecurities(List<EventXEventTypeSecurityToken> securities)
+    {
+        this.securities = securities;
+        return this;
+    }
+
+    public Event getEventID()
+    {
+        return this.eventID;
+    }
+
+    public EventXEventType setEventID(Event eventID)
+    {
+        this.eventID = eventID;
+        return this;
+    }
+
+    public EventType getEventTypeID()
+    {
+        return this.eventTypeID;
+    }
+
+    public EventXEventType setEventTypeID(EventType eventTypeID)
+    {
+        this.eventTypeID = eventTypeID;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        EventXEventType that = (EventXEventType) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public Event getPrimary()
+    {
+        return getEventID();
+    }
+
+    @Override
+    public EventType getSecondary()
+    {
+        return getEventTypeID();
+    }
 }

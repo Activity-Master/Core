@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.EventXGeographySecuri
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventXGeographySecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class EventXGeographySecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<EventXGeographySecurityTokenQueryBuilder, EventXGeographySecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<EventXGeographySecurityTokenQueryBuilder, EventXGeographySecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

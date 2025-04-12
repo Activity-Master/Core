@@ -5,9 +5,11 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
 
+import java.util.UUID;
+
 public class ClassificationDataConceptQueryBuilder
-		extends QueryBuilderSCD<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, String,ClassificationDataConceptSecurityTokenQueryBuilder>
+		extends QueryBuilderSCD<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, UUID,ClassificationDataConceptSecurityTokenQueryBuilder>
 		implements IClassificationDataConceptQueryBuilder<ClassificationDataConceptQueryBuilder, ClassificationDataConcept>,
-		           IQueryBuilderNamesAndDescriptions<ClassificationDataConceptQueryBuilder,ClassificationDataConcept,String>
+		           IQueryBuilderNamesAndDescriptions<ClassificationDataConceptQueryBuilder,ClassificationDataConcept,UUID>
 {
 }

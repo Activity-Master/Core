@@ -10,11 +10,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -37,10 +42,14 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIdentityInfo(
 		generator = ObjectIdGenerators.PropertyGenerator.class,
 		property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArrangementType
-		extends WarehouseSCDTable<ArrangementType, ArrangementTypeQueryBuilder, String, ArrangementTypeSecurityToken>
+		extends WarehouseSCDTable<ArrangementType, ArrangementTypeQueryBuilder, UUID, ArrangementTypeSecurityToken>
 		implements IArrangementType<ArrangementType, ArrangementTypeQueryBuilder>,
-		           IWarehouseNameAndDescriptionTable<ArrangementType,ArrangementTypeQueryBuilder,String>
+		           IWarehouseNameAndDescriptionTable<ArrangementType,ArrangementTypeQueryBuilder,UUID>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -48,8 +57,8 @@ public class ArrangementType
 	@Column(nullable = false,
 	        name = "ArrangementTypeID")
 	@JsonValue
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
+	
+	private java.util.UUID id;
 	@Basic(optional = false,
 	       fetch = FetchType.EAGER)
 	@NotNull
@@ -85,18 +94,8 @@ public class ArrangementType
 			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
 	private List<ArrangementXArrangementType> arrangementsList;
 	
-	
-	public ArrangementType()
-	{
-	
-	}
-	
-	public ArrangementType(java.lang.String arrangementTypeID)
-	{
-		this.id = arrangementTypeID;
-	}
-	
-	public ArrangementType(java.lang.String arrangementTypeID, String arrangementTypeName, String arrangementTypeDescription)
+
+	public ArrangementType(UUID arrangementTypeID, String arrangementTypeName, String arrangementTypeDescription)
 	{
 		this.id = arrangementTypeID;
 		this.name = arrangementTypeName;
@@ -125,19 +124,6 @@ public class ArrangementType
 	public String toString()
 	{
 		return getName();
-	}
-	
-	@Override
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	@Override
-	public ArrangementType setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
 	}
 	
 	public ArrangementType setName(String name)

@@ -6,10 +6,15 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.Arrangement;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.builders.RulesXArrangementQueryBuilder;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
@@ -27,134 +32,117 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 @JsonIdentityInfo(
-		generator = ObjectIdGenerators.PropertyGenerator.class,
-		property = "id")
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RulesXArrangement
-		extends WarehouseClassificationRelationshipTable<Rules,
-		Arrangement,
-		RulesXArrangement,
-		RulesXArrangementQueryBuilder,
-		java.lang.String, RulesXArrangementsSecurityToken>
+        extends WarehouseClassificationRelationshipTable<Rules,
+        Arrangement,
+        RulesXArrangement,
+        RulesXArrangementQueryBuilder,
+        UUID, RulesXArrangementsSecurityToken>
 {
-	
-	@Serial
-	private static final long serialVersionUID = 1L;
-	@Id
-	
-	@Column(nullable = false,
-	        name = "RulesXArrangementsID")
-	@org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
-	private java.lang.String id;
-	
-@OneToMany(
-			mappedBy = "base",
-			fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-	private List<RulesXArrangementsSecurityToken> securities;
-	
-	@JoinColumn(name = "ArrangementID",
-	            referencedColumnName = "ArrangementID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	private Arrangement arrangementID;
-	
-	@JoinColumn(name = "RulesID",
-	            referencedColumnName = "RulesID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = FetchType.LAZY)
-	private Rules rulesID;
-	
-	public RulesXArrangement()
-	{
-	
-	}
-	
-	public RulesXArrangement(java.lang.String RulesXArrangementsID)
-	{
-		this.id = RulesXArrangementsID;
-	}
-	
-	@Override
-	public void configureSecurityEntity(RulesXArrangementsSecurityToken securityEntity)
-	{
-		securityEntity.setBase(this);
-	}
-	
-	public java.lang.String getId()
-	{
-		return this.id;
-	}
-	
-	public RulesXArrangement setId(java.lang.String id)
-	{
-		this.id = id;
-		return this;
-	}
-	
-	public List<RulesXArrangementsSecurityToken> getSecurities()
-	{
-		return this.securities;
-	}
-	
-	public RulesXArrangement setSecurities(List<RulesXArrangementsSecurityToken> securities)
-	{
-		this.securities = securities;
-		return this;
-	}
-	
-	public Arrangement getArrangementID()
-	{
-		return this.arrangementID;
-	}
-	
-	public RulesXArrangement setArrangementID(Arrangement arrangementID)
-	{
-		this.arrangementID = arrangementID;
-		return this;
-	}
-	
-	public Rules getRulesID()
-	{
-		return this.rulesID;
-	}
-	
-	public RulesXArrangement setRulesID(Rules RulesID)
-	{
-		this.rulesID = RulesID;
-		return this;
-	}
-	
-	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-		{
-			return true;
-		}
-		if (o == null || getClass() != o.getClass())
-		{
-			return false;
-		}
-		RulesXArrangement that = (RulesXArrangement) o;
-		return Objects.equals(getId(), that.getId());
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(getId());
-	}
-	
-	@Override
-	public Rules getPrimary()
-	{
-		return getRulesID();
-	}
-	
-	@Override
-	public Arrangement getSecondary()
-	{
-		return getArrangementID();
-	}
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    @Id
+
+    @Column(nullable = false,
+            name = "RulesXArrangementsID")
+
+    private java.util.UUID id;
+
+    @OneToMany(
+            mappedBy = "base",
+            fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    private List<RulesXArrangementsSecurityToken> securities;
+
+    @JoinColumn(name = "ArrangementID",
+            referencedColumnName = "ArrangementID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+    private Arrangement arrangementID;
+
+    @JoinColumn(name = "RulesID",
+            referencedColumnName = "RulesID",
+            nullable = false)
+    @ManyToOne(optional = false,
+            fetch = FetchType.LAZY)
+    private Rules rulesID;
+
+    @Override
+    public void configureSecurityEntity(RulesXArrangementsSecurityToken securityEntity)
+    {
+        securityEntity.setBase(this);
+    }
+
+    public List<RulesXArrangementsSecurityToken> getSecurities()
+    {
+        return this.securities;
+    }
+
+    public RulesXArrangement setSecurities(List<RulesXArrangementsSecurityToken> securities)
+    {
+        this.securities = securities;
+        return this;
+    }
+
+    public Arrangement getArrangementID()
+    {
+        return this.arrangementID;
+    }
+
+    public RulesXArrangement setArrangementID(Arrangement arrangementID)
+    {
+        this.arrangementID = arrangementID;
+        return this;
+    }
+
+    public Rules getRulesID()
+    {
+        return this.rulesID;
+    }
+
+    public RulesXArrangement setRulesID(Rules RulesID)
+    {
+        this.rulesID = RulesID;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        RulesXArrangement that = (RulesXArrangement) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public Rules getPrimary()
+    {
+        return getRulesID();
+    }
+
+    @Override
+    public Arrangement getSecondary()
+    {
+        return getArrangementID();
+    }
 }

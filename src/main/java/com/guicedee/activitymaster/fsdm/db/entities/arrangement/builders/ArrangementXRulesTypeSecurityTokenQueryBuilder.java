@@ -5,8 +5,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementXRule
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.ArrangementXRulesTypeSecurityToken_;
 import jakarta.persistence.metamodel.Attribute;
 
+import java.util.UUID;
+
 public class ArrangementXRulesTypeSecurityTokenQueryBuilder
-		extends QueryBuilderSecurities<ArrangementXRulesTypeSecurityTokenQueryBuilder, ArrangementXRulesTypeSecurityToken, java.lang.String>
+		extends QueryBuilderSecurities<ArrangementXRulesTypeSecurityTokenQueryBuilder, ArrangementXRulesTypeSecurityToken, UUID>
 {
 	@Override
 	protected Attribute getMyAttribute()

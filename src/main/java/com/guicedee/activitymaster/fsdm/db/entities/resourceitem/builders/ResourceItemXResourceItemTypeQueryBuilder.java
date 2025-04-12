@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRela
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.util.UUID;
 
 
 public class ResourceItemXResourceItemTypeQueryBuilder
@@ -14,7 +15,7 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 		ResourceItemType,
 		ResourceItemXResourceItemTypeQueryBuilder,
 		ResourceItemXResourceItemType,
-		java.lang.String,
+		UUID,
 		ResourceItemXResourceItemTypeSecurityTokenQueryBuilder>
 {
 	@Override
