@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
 		E extends WarehouseBaseTable<E, J, I>,
-		I extends Serializable>
+		I extends UUID>
 		extends QueryBuilderSCD<J, E, I>
 		implements IQueryBuilderDefault<J, E, I>
 {
@@ -31,8 +31,7 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
 		if (entity.getId() == null)
 		{
 			//noinspection unchecked
-			entity.setId((I) UUID.randomUUID()
-			                     .toString());
+			entity.setId((I) UUID.randomUUID());
 		}
 		return super.onCreate(entity);
 	}

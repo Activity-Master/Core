@@ -29,7 +29,7 @@ import static com.guicedee.client.IGuiceContext.*;
 @MappedSuperclass()
 public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>,
 		Q extends QueryBuilderCore<Q, J, I>,
-		I extends Serializable,
+		I extends UUID,
 		S extends WarehouseSecurityTable<S,?,?>
 		>
 		extends WarehouseBaseTable<J, Q, I>

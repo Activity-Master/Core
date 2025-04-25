@@ -10,6 +10,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseRelationshipTable;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 
 /**
@@ -26,7 +27,7 @@ public abstract class QueryBuilderRelationship<P extends WarehouseBaseTable<P, ?
 		S extends WarehouseBaseTable<S, ?, ?>,
 		J extends QueryBuilderRelationship<P, S, J, E, I,QS>,
 		E extends WarehouseRelationshipTable<P, S, E, J, I,?>,
-		I extends Serializable,
+		I extends UUID,
 		QS extends QueryBuilderSecurities<QS,?,I>>
 		extends QueryBuilderSCD<J, E, I,QS>
 		implements IQueryBuilderRelationships<J, E, P, S, I>

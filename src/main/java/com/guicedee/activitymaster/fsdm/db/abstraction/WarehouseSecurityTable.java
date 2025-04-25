@@ -13,6 +13,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Types;
+import java.util.UUID;
 
 import static com.guicedee.client.IGuiceContext.*;
 
@@ -25,8 +26,7 @@ import static com.guicedee.client.IGuiceContext.*;
 
 public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
 		Q extends QueryBuilderSecurities<Q, J, I>,
-		I extends Serializable
-		>
+		I extends UUID>
 		extends WarehouseSCDTable<J, Q, I, J>
 		implements IWarehouseSecurityTable<J, Q, I>
 {

@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.UUID;
 
 /**
  * @author Marc Magon
@@ -22,7 +23,7 @@ import java.lang.reflect.ParameterizedType;
 public abstract class WarehouseTable<
 		J extends WarehouseTable<J, Q, I,S>,
 		Q extends QueryBuilderTable<Q, J, I,?>,
-		I extends Serializable,
+		I extends UUID,
 		S extends WarehouseSecurityTable<S,?,I>
 		>
 		extends WarehouseCoreTable<J, Q, I,S>

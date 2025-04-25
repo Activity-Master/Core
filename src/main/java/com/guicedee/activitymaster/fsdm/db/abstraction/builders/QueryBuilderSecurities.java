@@ -13,6 +13,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
 
@@ -26,7 +27,7 @@ import static com.entityassist.enumerations.Operand.*;
  */
 public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J, E, I>,
 		E extends WarehouseSecurityTable<E, J, I>,
-		I extends Serializable>
+		I extends UUID>
 		extends QueryBuilderSCD<J, E, I,J>
 		implements IQueryBuilderSecurity<J,E,I>
 {

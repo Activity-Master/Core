@@ -1,16 +1,11 @@
-package com.guicedee.activitymaster.fsdm;
+package com.guicedee.activitymaster.fsdm.services;
 
 import com.guicedee.client.Environment;
-import com.guicedee.client.IGuiceContext;
-import com.guicedee.guicedpersistence.btm.BTMTransactionIsolation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.metamodel.EntityType;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.Transaction;
 import org.hibernate.Session;
-import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 
 import java.lang.reflect.Field;
@@ -20,7 +15,6 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * Custom manager to copy data from one EntityManager to another

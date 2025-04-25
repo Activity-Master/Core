@@ -5,6 +5,7 @@ import com.entityassist.querybuilder.QueryBuilder;
 import jakarta.persistence.EntityManager;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public abstract class DefaultTimeQueryBuilder<
 		J extends DefaultTimeQueryBuilder<J, E, I>,

@@ -11,6 +11,7 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 
 /**
@@ -25,7 +26,7 @@ public abstract class QueryBuilderRelationshipClassificationTypes<
 		S extends WarehouseCoreTable<S, ?, ?,?>,
 		J extends QueryBuilderRelationshipClassificationTypes<P, S, J, E, I,QS>,
 		E extends WarehouseClassificationRelationshipTypesTable<P, S, E, J, I,?>,
-		I extends Serializable,
+		I extends UUID,
 		QS extends QueryBuilderSecurities<QS,?,I>
 		>
 		extends QueryBuilderRelationshipClassification<P, S, J, E, I,QS>

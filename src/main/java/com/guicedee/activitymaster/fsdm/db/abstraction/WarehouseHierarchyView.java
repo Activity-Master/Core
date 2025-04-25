@@ -8,13 +8,14 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Immutable;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 
 @XmlRootElement
 
 @Immutable
 @MappedSuperclass
-public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends Serializable>
+public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends UUID>
 		extends BaseEntity<J, Q, I>
 {
 	@Column

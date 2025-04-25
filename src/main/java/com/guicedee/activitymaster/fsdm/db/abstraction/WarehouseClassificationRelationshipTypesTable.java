@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.UUID;
 
 
 /**
@@ -24,7 +25,7 @@ public abstract class WarehouseClassificationRelationshipTypesTable<
 		S extends WarehouseCoreTable<S, ?, ?,?>,
 		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, I,QS>,
 		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, I,?>,
-		I extends Serializable,
+		I extends UUID,
 		QS extends WarehouseSecurityTable<QS,?,I>>
 		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I,QS>
 		implements IWarehouseRelationshipClassificationTypeTable<J, Q, P, S, I,QS>
