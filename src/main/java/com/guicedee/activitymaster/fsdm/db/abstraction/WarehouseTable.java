@@ -36,7 +36,7 @@ public abstract class WarehouseTable<
 	@NotNull
 	@Column(nullable = true,
 	        name = "OriginalSourceSystemUniqueID")
-	private String originalSourceSystemUniqueID;
+	private UUID originalSourceSystemUniqueID;
 	
 	@JoinColumn(name = "OriginalSourceSystemID",
 	            referencedColumnName = "SystemID",
@@ -72,12 +72,12 @@ public abstract class WarehouseTable<
 		return (J) this;
 	}
 	
-	public @NotNull String getOriginalSourceSystemUniqueID()
+	public @NotNull UUID getOriginalSourceSystemUniqueID()
 	{
 		return this.originalSourceSystemUniqueID;
 	}
 	
-	public J setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
+	public J setOriginalSourceSystemUniqueID(@NotNull UUID originalSourceSystemUniqueID)
 	{
 		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
 		return (J) this;

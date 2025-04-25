@@ -318,7 +318,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		stAdmin.setSystemID((Systems) system);
 		stAdmin.setActiveFlagID(((Systems) system).getActiveFlagID());
 		stAdmin.setOriginalSourceSystemID((Systems) system);
-		stAdmin.setOriginalSourceSystemUniqueID("");
+		stAdmin.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
 		stAdmin.setEnterpriseID((Enterprise) system.getEnterprise());
 		
 		return stAdmin;

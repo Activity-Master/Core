@@ -67,7 +67,7 @@ public class SecurityTokenService
 			sta.setSystemID((Systems) system);
 			sta.setOriginalSourceSystemID((Systems) system);
 			sta.setEnterpriseID(enterprise);
-			sta.setOriginalSourceSystemUniqueID("");
+			sta.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
 			sta.setActiveFlagID((ActiveFlag) activeFlag);

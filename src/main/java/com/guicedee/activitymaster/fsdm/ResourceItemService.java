@@ -117,7 +117,7 @@ public class ResourceItemService
     public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
-        return create(identityResourceType, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
+        return create(identityResourceType, resourceItemDataValue, java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"), com.entityassist.RootEntity.getNow(), system, identityToken);
     }
 
     @Override
@@ -125,26 +125,26 @@ public class ResourceItemService
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
 
-        return create(identityResourceType, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), data, system, identityToken);
+        return create(identityResourceType, resourceItemDataValue, java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"), com.entityassist.RootEntity.getNow(), data, system, identityToken);
     }
 
     @Override
     public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
-        return create(identityResourceType, key, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), system, identityToken);
+        return create(identityResourceType, key, resourceItemDataValue,java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"), com.entityassist.RootEntity.getNow(), system, identityToken);
     }
 
     @Override
     public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue, byte[] data,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
-        return create(identityResourceType, key, resourceItemDataValue, "", com.entityassist.RootEntity.getNow(), data, system, identityToken);
+        return create(identityResourceType, key, resourceItemDataValue, java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"), com.entityassist.RootEntity.getNow(), data, system, identityToken);
     }
 
 
     @Override
-    public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, UUID originalSourceSystemUniqueID,
                                               LocalDateTime effectiveFromDate,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
@@ -152,7 +152,7 @@ public class ResourceItemService
     }
 
     @Override
-    public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, String originalSourceSystemUniqueID,
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, String resourceItemDataValue, UUID originalSourceSystemUniqueID,
                                               LocalDateTime effectiveFromDate, byte[] data,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
@@ -161,7 +161,7 @@ public class ResourceItemService
 
 
     @Override
-    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue, String originalSourceSystemUniqueID,
+    public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue, UUID originalSourceSystemUniqueID,
                                               LocalDateTime effectiveFromDate,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
@@ -170,7 +170,7 @@ public class ResourceItemService
 
     @Override
     public Future<IResourceItem<?, ?>> create(String identityResourceType, java.util.UUID key, String resourceItemDataValue,
-                                              String originalSourceSystemUniqueID,
+                                              UUID originalSourceSystemUniqueID,
                                               LocalDateTime effectiveFromDate, byte[] data,
                                               ISystems<?, ?> system, java.util.UUID... identityToken)
     {
@@ -323,7 +323,7 @@ public class ResourceItemService
 
 
     @Override
-    public IResourceItem<?, ?> findByOriginalSourceUniqueID(@CacheKey String originalSourceUniqueID,
+    public IResourceItem<?, ?> findByOriginalSourceUniqueID(@CacheKey UUID originalSourceUniqueID,
                                                             @CacheKey ISystems<?, ?> systems,
                                                             @CacheKey java.util.UUID... identityToken)
     {

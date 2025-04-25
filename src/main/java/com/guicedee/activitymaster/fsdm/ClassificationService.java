@@ -104,7 +104,7 @@ public class ClassificationService
 			rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
 			rootCl.setSystemID(system);
 			rootCl.setOriginalSourceSystemID(system);
-			rootCl.setOriginalSourceSystemUniqueID("");
+			rootCl.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
 			rootCl.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);

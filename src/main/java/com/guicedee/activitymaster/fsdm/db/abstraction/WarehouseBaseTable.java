@@ -6,8 +6,11 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -21,6 +24,10 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
         extends SCDEntity<J, Q, I>
         implements IWarehouseBaseTable<J, Q, I>
 {
+    @Getter
+    @Setter
+    @Transient
+    private int yearRange = 10;
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -39,7 +46,7 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
         Q builder = super.builder();
         builder.where(builder.<SingularAttribute, LocalDate>getAttribute("warehouseCreatedDate"),
                 Operand.GreaterThanEqualTo,
-                LocalDate.now().minusYears(1));
+                LocalDate.now().minusYears(getYearRange()));
         return builder;
     }
 

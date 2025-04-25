@@ -18,7 +18,7 @@ public abstract class QueryBuilderTable<
 	{
 		if (entity.getOriginalSourceSystemUniqueID() == null)
 		{
-			entity.setOriginalSourceSystemUniqueID("");
+			entity.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
 		}
 		
 		return super.onCreate(entity);

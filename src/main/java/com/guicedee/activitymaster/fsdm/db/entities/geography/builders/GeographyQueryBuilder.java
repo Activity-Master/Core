@@ -45,7 +45,7 @@ public class GeographyQueryBuilder
 		return this;
 	}
 	
-	public GeographyQueryBuilder withGeoNameID(String id)
+	public GeographyQueryBuilder withGeoNameID(UUID id)
 	{
 		where(Geography_.originalSourceSystemUniqueID, Equals, id);
 		return this;

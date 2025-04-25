@@ -60,43 +60,6 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)
 	private SecurityToken securityTokenID;
-		/*
-	@JoinColumn(name = "ActiveFlagID",
-	            referencedColumnName = "ActiveFlagID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = LAZY)
-	private ActiveFlag activeFlagID;
-	
-	@JoinColumn(name = "EnterpriseID",
-	            referencedColumnName = "EnterpriseID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = LAZY)
-	
-	private Enterprise enterpriseID;
-	
-	@JoinColumn(name = "SystemID",
-	            referencedColumnName = "SystemID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = LAZY)
-	
-	private Systems systemID;
-	
-	@Basic(optional = false)
-	@NotNull
-	@Column(nullable = false,
-	        name = "OriginalSourceSystemUniqueID")
-	private String originalSourceSystemUniqueID;
-	
-	@JoinColumn(name = "OriginalSourceSystemID",
-	            referencedColumnName = "SystemID",
-	            nullable = false)
-	@ManyToOne(optional = false,
-	           fetch = LAZY)
-	private Systems originalSourceSystemID;
-	*/
 	
 	//===========================================================================================================================
 	
@@ -192,70 +155,5 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	{
 	
 	}
-	
-	/*
-	@Override
-	public ActiveFlag getActiveFlagID()
-	{
-		return activeFlagID;
-	}
-	
-	@Override
-	public J setActiveFlagID(IActiveFlag<?, ?> activeFlagID)
-	{
-		this.activeFlagID = (ActiveFlag) activeFlagID;
-		return (J) this;
-	}
-	
-	@Override
-	public Enterprise getEnterpriseID()
-	{
-		return enterpriseID;
-	}
-	
-	@Override
-	public J setEnterpriseID(IEnterprise<?, ?> enterpriseID)
-	{
-		this.enterpriseID = (Enterprise) enterpriseID;
-		return (J) this;
-	}
-	
-	@Override
-	public Systems getSystemID()
-	{
-		return systemID;
-	}
-	
-	@Override
-	public J setSystemID(ISystems<?, ?> systemID)
-	{
-		this.systemID = (Systems) systemID;
-		return (J) this;
-	}
-	
-	@Override
-	public @NotNull String getOriginalSourceSystemUniqueID()
-	{
-		return originalSourceSystemUniqueID;
-	}
-	
-	@Override
-	public J setOriginalSourceSystemUniqueID(@NotNull String originalSourceSystemUniqueID)
-	{
-		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
-		return (J) this;
-	}
-	
-	@Override
-	public Systems getOriginalSourceSystemID()
-	{
-		return originalSourceSystemID;
-	}
-	
-	@Override
-	public J setOriginalSourceSystemID(ISystems<?, ?> originalSourceSystemID)
-	{
-		this.originalSourceSystemID = (Systems) originalSourceSystemID;
-		return (J) this;
-	}*/
+
 }
