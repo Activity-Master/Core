@@ -109,12 +109,6 @@
             <artifactId>vertx-core</artifactId>
         </dependency>
 
-   <!--     <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql-xa</artifactId>
-            <version>42.7.5</version>
-        </dependency>
--->
 
     </dependencies>
 
