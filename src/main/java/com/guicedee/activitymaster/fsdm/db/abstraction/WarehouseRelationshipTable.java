@@ -29,7 +29,7 @@ public abstract class WarehouseRelationshipTable<
 		S extends WarehouseBaseTable<S, ?, ?>,
 		J extends WarehouseRelationshipTable<P, S, J, Q, I,QS>,
 		Q extends QueryBuilderRelationship<P, S, Q, J, I,?>,
-		I extends UUID,
+		I extends java.util.UUID,
 		QS extends WarehouseSecurityTable<QS,?,I>>
 		extends WarehouseSCDTable<J, Q, I,QS>
 		implements IWarehouseRelationshipTable<J, Q, P, S, I,QS>

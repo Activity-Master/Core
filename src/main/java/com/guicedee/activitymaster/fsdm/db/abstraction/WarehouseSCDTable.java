@@ -30,7 +30,7 @@ import static com.guicedee.client.IGuiceContext.*;
 public abstract class WarehouseSCDTable<
 		J extends WarehouseSCDTable<J, Q, I,S>,
 		Q extends QueryBuilderSCD<Q, J, I,?>,
-		I extends UUID,
+		I extends java.util.UUID,
 		S extends WarehouseSecurityTable<S,?,I>
 		>
 		extends WarehouseTable<J, Q, I,S>

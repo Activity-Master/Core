@@ -10,7 +10,7 @@ import java.util.UUID;
 public abstract class QueryBuilderSCD<
 		J extends QueryBuilderSCD<J, E, I,QS>,
 		E extends WarehouseSCDTable<E, J, I,?>,
-		I extends UUID,
+		I extends java.util.UUID,
 		QS extends QueryBuilderSecurities<QS,?,I>>
 		extends QueryBuilderTable<J, E, I,QS>
 		implements IQueryBuilderEnterprise<J, E, I>,

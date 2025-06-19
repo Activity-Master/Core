@@ -78,7 +78,7 @@ public class ProductService
 		
 		product.setEnterpriseID(enterprise);
 		product.setSystemID(system);
-		product.setOriginalSourceSystemID(system);
+		product.setOriginalSourceSystemID(system.getId());
 		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		product.setActiveFlagID(activeFlag);
@@ -153,7 +153,7 @@ public class ProductService
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			et.setActiveFlagID(activeFlag);
-			et.setOriginalSourceSystemID(system);
+			et.setOriginalSourceSystemID(system.getId());
 			et.persist();
 			et.createDefaultSecurity(system, identityToken);
 			

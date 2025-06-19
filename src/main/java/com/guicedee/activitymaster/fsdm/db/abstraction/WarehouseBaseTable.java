@@ -5,6 +5,7 @@ import com.entityassist.enumerations.Operand;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
+import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import jakarta.persistence.metamodel.SingularAttribute;
@@ -20,7 +21,7 @@ import java.util.UUID;
 
 @MappedSuperclass()
 public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
-        Q extends QueryBuilderDefault<Q, J, I>, I extends UUID>
+        Q extends QueryBuilderDefault<Q, J, I>, I extends java.util.UUID>
         extends SCDEntity<J, Q, I>
         implements IWarehouseBaseTable<J, Q, I>
 {
@@ -28,6 +29,11 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
     @Setter
     @Transient
     private int yearRange = 10;
+
+    @Column
+    @Getter
+    @Setter
+    private LocalDate warehouseFromDate;
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -44,9 +50,6 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
     public @NotNull Q builder()
     {
         Q builder = super.builder();
-        builder.where(builder.<SingularAttribute, LocalDate>getAttribute("warehouseCreatedDate"),
-                Operand.GreaterThanEqualTo,
-                LocalDate.now().minusYears(getYearRange()));
         return builder;
     }
 

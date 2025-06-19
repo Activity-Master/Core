@@ -78,7 +78,7 @@ public class AddressService
 			addy.setClassificationID(classification);
 			addy.setValue(value);
 			addy.setSystemID(system);
-			addy.setOriginalSourceSystemID(system);
+			addy.setOriginalSourceSystemID(system.getId());
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			addy.setActiveFlagID(activeFlag);
@@ -129,7 +129,7 @@ public class AddressService
 			address.setClassificationID(ipAddressClassification);
 			address.setEnterpriseID(enterprise);
 			address.setSystemID(system);
-			address.setOriginalSourceSystemID(system);
+			address.setOriginalSourceSystemID(system.getId());
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
@@ -175,7 +175,7 @@ public class AddressService
 			address.setClassificationID(ipAddressClassification);
 			address.setEnterpriseID(enterprise);
 			address.setSystemID(system);
-			address.setOriginalSourceSystemID(system);
+			address.setOriginalSourceSystemID(system.getId());
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
@@ -222,7 +222,7 @@ public class AddressService
 			address.setClassificationID(ipAddressClassification);
 			address.setEnterpriseID(enterprise);
 			address.setSystemID(system);
-			address.setOriginalSourceSystemID(system);
+			address.setOriginalSourceSystemID(system.getId());
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			address.setActiveFlagID(activeFlag);
@@ -272,14 +272,14 @@ public class AddressService
 				webDetails.setEnterpriseID(enterprise);
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
-				webDetails.setOriginalSourceSystemID(system);
+				webDetails.setOriginalSourceSystemID(system.getId());
 				webDetails.setActiveFlagID(activeFlag);
 				
 				//
 				webDetails = new Address();
 				webDetails.setValue(url.getPort() + "");
 				webDetails.setClassificationID(webPortAddressClassification);
-				webDetails.setOriginalSourceSystemID(system);
+				webDetails.setOriginalSourceSystemID(system.getId());
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
@@ -290,7 +290,7 @@ public class AddressService
 				webDetails = new Address();
 				webDetails.setValue(domain);
 				webDetails.setClassificationID(webDomainAddressClassification);
-				webDetails.setOriginalSourceSystemID(system);
+				webDetails.setOriginalSourceSystemID(system.getId());
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
@@ -301,7 +301,7 @@ public class AddressService
 				webDetails = new Address();
 				webDetails.setValue(protocol);
 				webDetails.setClassificationID(webProtocolAddressClassification);
-				webDetails.setOriginalSourceSystemID(system);
+				webDetails.setOriginalSourceSystemID(system.getId());
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
 				webDetails.setActiveFlagID(activeFlag);
@@ -310,7 +310,7 @@ public class AddressService
 				
 				webDetails = new Address();
 				webDetails.setValue(uri);
-				webDetails.setOriginalSourceSystemID(system);
+				webDetails.setOriginalSourceSystemID(system.getId());
 				webDetails.setClassificationID(webSiteAddressClassification);
 				webDetails.setSystemID(system);
 				webDetails.setEnterpriseID(((Systems) system).getEnterpriseID());
@@ -387,7 +387,7 @@ public class AddressService
 		streetAddress.setClassificationID(homePhoneNumber);
 		streetAddress.setEnterpriseID(enterprise);
 		streetAddress.setSystemID(system);
-		streetAddress.setOriginalSourceSystemID(system);
+		streetAddress.setOriginalSourceSystemID(system.getId());
 		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		streetAddress.setActiveFlagID(activeFlag);
@@ -457,7 +457,7 @@ public class AddressService
 			emailAddy.setClassificationID(emailAddress);
 			emailAddy.setEnterpriseID(enterprise);
 			emailAddy.setSystemID(system);
-			emailAddy.setOriginalSourceSystemID(system);
+			emailAddy.setOriginalSourceSystemID(system.getId());
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			emailAddy.setActiveFlagID(activeFlag);
@@ -527,7 +527,7 @@ public class AddressService
 		address.setClassificationID(buildingAddressClassification);
 		address.setEnterpriseID(enterprise);
 		address.setSystemID(system);
-		address.setOriginalSourceSystemID(system);
+		address.setOriginalSourceSystemID(system.getId());
 		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		address.setActiveFlagID(activeFlag);
@@ -579,7 +579,7 @@ public class AddressService
 		address.setClassificationID(boxAddressClassification);
 		address.setEnterpriseID(enterprise);
 		address.setSystemID(system);
-		address.setOriginalSourceSystemID(system);
+		address.setOriginalSourceSystemID(system.getId());
 		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 		address.setActiveFlagID(activeFlag);

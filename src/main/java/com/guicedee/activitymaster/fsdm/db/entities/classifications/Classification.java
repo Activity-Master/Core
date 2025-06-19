@@ -91,7 +91,6 @@ public class Classification
 	@NotNull
 	@Column(nullable = false,
 	        name = "ClassificationSequenceNumber")
-	@OrderBy
 	private int classificationSequenceNumber;
 	@JoinColumn(name = "ClassificationDataConceptID",
 	            referencedColumnName = "ClassificationDataConceptID",

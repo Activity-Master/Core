@@ -65,7 +65,7 @@ public class EventsService
 		return vertx.executeBlocking(TransactionalCallable.of(()->{
 			event.setEnterpriseID(enterprise);
 			event.setSystemID(system);
-			event.setOriginalSourceSystemID(system);
+			event.setOriginalSourceSystemID(system.getId());
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			event.setActiveFlagID(activeFlag);
@@ -103,7 +103,7 @@ public class EventsService
 				IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 				IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 				etBuilt.setActiveFlagID(activeFlag);
-				etBuilt.setOriginalSourceSystemID(system);
+				etBuilt.setOriginalSourceSystemID(system.getId());
 				etBuilt.persist();
 
 				etBuilt.createDefaultSecurity(system, identityToken);

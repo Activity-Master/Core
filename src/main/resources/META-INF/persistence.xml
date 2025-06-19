@@ -9,7 +9,6 @@
         <class>com.entityassist.converters.LocalDateTimeAttributeConverter</class>
         <class>com.entityassist.converters.LocalDateTimestampAttributeConverter</class>
 
-
         <class>com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag</class>
         <class>com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlagSecurityToken</class>
         <class>com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlagXClassification</class>
@@ -291,4 +290,3 @@
 
     </persistence-unit>
 </persistence>
-

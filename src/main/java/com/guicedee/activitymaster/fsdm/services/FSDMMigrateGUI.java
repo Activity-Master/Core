@@ -169,8 +169,9 @@ public class FSDMMigrateGUI {
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
 
-        JButton addDateColumns = new JButton("Add Date Columns");
-
+        JButton removeDuplicateIndexes = new JButton("Remove Indexes");
+        JButton fixDateColumns = new JButton("Add Dates 2026");
+        JButton addDateColumns = new JButton("Configure for 2026");
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JPanel buttonPanel2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -198,11 +199,13 @@ public class FSDMMigrateGUI {
         removeConstraintsButton.addActionListener(e -> executeSQLScript("META-INF/scripts/drop_foreign_keys.sql", "Remove Constraints",false));
 
         JButton deleteIndexes = new JButton("Delete Indexes");
+        deleteIndexes.setEnabled(true);
         buttonPanel.add(deleteIndexes);
         deleteIndexes.addActionListener(e -> executeSQLScript("META-INF/scripts/delete_indexes.sql", "Delete Indexes",false));
 
 
         JButton updateOriginSystemIDButton = new JButton("Update Origin Source IDs");
+        updateOriginSystemIDButton.setEnabled(true);
         buttonPanel.add(updateOriginSystemIDButton);
         updateOriginSystemIDButton.addActionListener(e -> executeSQLScript("META-INF/scripts/update_orirgin_system_id.sql", "Update Origin System IDs",false));
 
@@ -242,9 +245,13 @@ public class FSDMMigrateGUI {
         partitionDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_partitions.sql", "Partition Database",true));
         structureDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_structure.sql", "Structure Database",true));
 
+        removeDuplicateIndexes.addActionListener(e -> executeSQLScript("META-INF/scripts/2026_remove_duplicate_indexes.sql", "Remove Duplicate Indexes",false));
         addDateColumns.addActionListener(e -> executeSQLScript("META-INF/scripts/2026_migration_prep.sql", "Add Date Columns",false));
+        fixDateColumns.addActionListener(e -> executeSQLScript("META-INF/scripts/add_warehousecreatedate_column.sql", "Fix Date Columns",false));
 
+        buttonPanel.add(removeDuplicateIndexes);
         buttonPanel.add(addDateColumns);
+        buttonPanel.add(fixDateColumns);
 
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true); // Shows "Running..." as text on the progress bar

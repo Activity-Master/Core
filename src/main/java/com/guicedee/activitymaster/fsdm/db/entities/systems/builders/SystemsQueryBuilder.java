@@ -13,6 +13,6 @@ public class SystemsQueryBuilder
 		           ISystemsQueryBuilder<SystemsQueryBuilder, Systems>,
 		           IQueryBuilderDefault<SystemsQueryBuilder, Systems, UUID>,
 		           IQueryBuilderEnterprise<SystemsQueryBuilder, Systems, UUID>,
-		           IQueryBuilderNamesAndDescriptions<SystemsQueryBuilder,Systems,UUID>
+		           IQueryBuilderNamesAndDescriptions<SystemsQueryBuilder,Systems,java.util.UUID>
 {
 }

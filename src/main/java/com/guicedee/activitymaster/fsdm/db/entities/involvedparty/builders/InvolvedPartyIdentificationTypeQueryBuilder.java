@@ -11,7 +11,7 @@ public class InvolvedPartyIdentificationTypeQueryBuilder
 		extends QueryBuilderSCD<InvolvedPartyIdentificationTypeQueryBuilder, InvolvedPartyIdentificationType, UUID,
 				InvolvedPartyIdentificationTypeSecurityTokenQueryBuilder>
 		implements IInvolvedPartyIdentificationTypeQueryBuilder<InvolvedPartyIdentificationTypeQueryBuilder, InvolvedPartyIdentificationType>,
-		           IQueryBuilderNamesAndDescriptions<InvolvedPartyIdentificationTypeQueryBuilder,InvolvedPartyIdentificationType,UUID>
+		           IQueryBuilderNamesAndDescriptions<InvolvedPartyIdentificationTypeQueryBuilder,InvolvedPartyIdentificationType,java.util.UUID>
 {
 
 }

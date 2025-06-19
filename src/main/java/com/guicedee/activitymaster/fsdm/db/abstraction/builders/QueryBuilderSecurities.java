@@ -27,7 +27,7 @@ import static com.entityassist.enumerations.Operand.*;
  */
 public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J, E, I>,
 		E extends WarehouseSecurityTable<E, J, I>,
-		I extends UUID>
+		I extends java.util.UUID>
 		extends QueryBuilderSCD<J, E, I,J>
 		implements IQueryBuilderSecurity<J,E,I>
 {

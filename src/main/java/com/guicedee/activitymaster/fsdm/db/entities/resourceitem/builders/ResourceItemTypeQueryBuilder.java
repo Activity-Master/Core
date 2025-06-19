@@ -10,7 +10,7 @@ import java.util.UUID;
 public class ResourceItemTypeQueryBuilder
 		extends QueryBuilderSCD<ResourceItemTypeQueryBuilder, ResourceItemType, UUID,ResourceItemTypeSecurityTokenQueryBuilder>
 		implements IResourceItemTypeQueryBuilder<ResourceItemTypeQueryBuilder, ResourceItemType>,
-		           IQueryBuilderNamesAndDescriptions<ResourceItemTypeQueryBuilder,ResourceItemType,UUID>
+		           IQueryBuilderNamesAndDescriptions<ResourceItemTypeQueryBuilder,ResourceItemType,java.util.UUID>
 {
 
 }

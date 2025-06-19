@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Immutable
 @MappedSuperclass
-public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends UUID>
+public abstract class WarehouseHierarchyView<J extends WarehouseHierarchyView<J, Q, I>, Q extends QueryBuilderHierarchyView<Q, J, I>, I extends java.util.UUID>
 		extends BaseEntity<J, Q, I>
 {
 	@Column

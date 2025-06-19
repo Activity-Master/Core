@@ -79,7 +79,7 @@ public class InvolvedPartyService
 			xr.setName(name);
 			xr.setDescription(description);
 			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
+			xr.setOriginalSourceSystemID(system.getId());
 			xr.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
@@ -116,7 +116,7 @@ public class InvolvedPartyService
 			xr.setName(name);
 			xr.setDescription(description);
 			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
+			xr.setOriginalSourceSystemID(system.getId());
 			xr.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
@@ -150,7 +150,7 @@ public class InvolvedPartyService
 			xr.setName(name);
 			xr.setDescription(description);
 			xr.setSystemID(system);
-			xr.setOriginalSourceSystemID(system);
+			xr.setOriginalSourceSystemID(system.getId());
 			xr.setEnterpriseID(enterprise);
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
@@ -176,7 +176,7 @@ public class InvolvedPartyService
 		xr.setName(name);
 		xr.setDescription(description);
 		xr.setSystemID(system);
-		xr.setOriginalSourceSystemID(system);
+		xr.setOriginalSourceSystemID(system.getId());
 		xr.setEnterpriseID(enterprise);
 		IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 		IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
@@ -246,7 +246,7 @@ public class InvolvedPartyService
 		ip.setId(key);
 		ip.setActiveFlagID(activeFlag);
 		ip.setSystemID(system);
-		ip.setOriginalSourceSystemID(system);
+		ip.setOriginalSourceSystemID(system.getId());
 		ip = ip.persist();
 		ip.createDefaultSecurity(system, identityToken);
 		IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = findInvolvedPartyIdentificationType(idTypes.getKey(), system, identityToken);
@@ -268,7 +268,7 @@ public class InvolvedPartyService
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			ipo.setActiveFlagID(activeFlag);
 			ipo.setSystemID(system);
-			ipo.setOriginalSourceSystemID(system);
+			ipo.setOriginalSourceSystemID(system.getId());
 			ipo.persist();
 			
 			ipo.createDefaultSecurity(system, identityToken);
@@ -284,7 +284,7 @@ public class InvolvedPartyService
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			ipo.setActiveFlagID(activeFlag);
 			ipo.setSystemID(system);
-			ipo.setOriginalSourceSystemID(system);
+			ipo.setOriginalSourceSystemID(system.getId());
 			ipo.persist();
 			
 			ipo.createDefaultSecurity(system, identityToken);

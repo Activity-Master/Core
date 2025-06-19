@@ -113,7 +113,7 @@ $$
     DECLARE
         rec              RECORD;
         schema_rec       RECORD;
-        partition_column TEXT   := 'warehousecreateddate';
+        partition_column TEXT   := 'warehousefromdate';
         start_year       INT    := 2021;  -- Changed to 2023
         end_year         INT    := 2035;
         is_partitioned   BOOLEAN;

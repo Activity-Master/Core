@@ -26,7 +26,7 @@ import static com.guicedee.client.IGuiceContext.*;
 
 public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
 		Q extends QueryBuilderSecurities<Q, J, I>,
-		I extends UUID>
+		I extends java.util.UUID>
 		extends WarehouseSCDTable<J, Q, I, J>
 		implements IWarehouseSecurityTable<J, Q, I>
 {

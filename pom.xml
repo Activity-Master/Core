@@ -18,11 +18,11 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
-<!--        <dependency>
-            <groupId>com.graphql-java</groupId>
-            <artifactId>graphql-java</artifactId>
-            <version>22.3</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>com.graphql-java</groupId>
+                    <artifactId>graphql-java</artifactId>
+                    <version>22.3</version>
+                </dependency>-->
 
         <dependency>
             <groupId>com.entityassist</groupId>
@@ -109,7 +109,6 @@
             <artifactId>vertx-core</artifactId>
         </dependency>
 
-
     </dependencies>
 
     <build>
@@ -120,11 +119,11 @@
                 <version>${maven.compiler.version}</version>
                 <configuration>
                     <annotationProcessorPaths>
-                           <annotationProcessorPath>
-                               <groupId>org.hibernate.orm</groupId>
-                               <artifactId>hibernate-jpamodelgen</artifactId>
-                               <version>${maven.hibernate.version}</version>
-                           </annotationProcessorPath>
+                        <annotationProcessorPath>
+                           <groupId>org.hibernate.orm</groupId>
+                            <artifactId>hibernate-processor</artifactId>
+                            <version>${maven.hibernate.version}</version>
+                        </annotationProcessorPath>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
@@ -144,7 +143,7 @@
                     <annotationProcessors>
                         <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor
                         </annotationProcessor>
-                        <annotationProcessor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
+                        <annotationProcessor>org.hibernate.processor.HibernateProcessor</annotationProcessor>
                         <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
                     </annotationProcessors>
                     <failOnError>true</failOnError>
@@ -162,7 +161,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.hibernate.orm.tooling</groupId>
                 <artifactId>hibernate-enhance-maven-plugin</artifactId>
                 <version>${maven.hibernate.enhance.version}</version>
@@ -170,7 +169,7 @@
                     <execution>
                         <configuration>
                             <enableLazyInitialization>true</enableLazyInitialization>
-                            <!--<enableDirtyTracking>false</enableDirtyTracking>-->
+                            &lt;!&ndash;<enableDirtyTracking>false</enableDirtyTracking>&ndash;&gt;
                             <enableAssociationManagement>false</enableAssociationManagement>
                             <enableExtendedEnhancement>true</enableExtendedEnhancement>
                         </configuration>
@@ -179,7 +178,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
         </plugins>
     </build>

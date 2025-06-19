@@ -5,7 +5,7 @@
 --
 
 ALTER TABLE address.address
-    ADD CONSTRAINT address_pkey PRIMARY KEY (addressid, warehousecreateddate);
+    ADD CONSTRAINT address_pkey PRIMARY KEY (addressid, warehousefromdate);
 
 
 --
@@ -14,7 +14,7 @@ ALTER TABLE address.address
 --
 
 ALTER TABLE address.addresssecuritytoken
-    ADD CONSTRAINT addresssecuritytoken_pkey PRIMARY KEY (addresssecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT addresssecuritytoken_pkey PRIMARY KEY (addresssecuritytokenid, warehousefromdate);
 
 
 --
@@ -23,7 +23,7 @@ ALTER TABLE address.addresssecuritytoken
 --
 
 ALTER TABLE address.addressxclassification
-    ADD CONSTRAINT addressxclassification_pkey PRIMARY KEY (addressxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT addressxclassification_pkey PRIMARY KEY (addressxclassificationid, warehousefromdate);
 
 
 --
@@ -32,7 +32,7 @@ ALTER TABLE address.addressxclassification
 --
 
 ALTER TABLE address.addressxclassificationsecuritytoken
-    ADD CONSTRAINT addressxclassificationsecuritytoken_pkey PRIMARY KEY (addressxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT addressxclassificationsecuritytoken_pkey PRIMARY KEY (addressxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -41,7 +41,7 @@ ALTER TABLE address.addressxclassificationsecuritytoken
 --
 
 ALTER TABLE address.addressxgeography
-    ADD CONSTRAINT addressxgeography_pkey PRIMARY KEY (addressxgeographyid, warehousecreateddate);
+    ADD CONSTRAINT addressxgeography_pkey PRIMARY KEY (addressxgeographyid, warehousefromdate);
 
 
 --
@@ -50,7 +50,7 @@ ALTER TABLE address.addressxgeography
 --
 
 ALTER TABLE address.addressxgeographysecuritytoken
-    ADD CONSTRAINT addressxgeographysecuritytoken_pkey PRIMARY KEY (addressxgeographysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT addressxgeographysecuritytoken_pkey PRIMARY KEY (addressxgeographysecuritytokenid, warehousefromdate);
 
 
 --
@@ -59,7 +59,7 @@ ALTER TABLE address.addressxgeographysecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitem
-    ADD CONSTRAINT addressxresourceitem_pkey PRIMARY KEY (addressxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT addressxresourceitem_pkey PRIMARY KEY (addressxresourceitemid, warehousefromdate);
 
 
 --
@@ -68,7 +68,7 @@ ALTER TABLE address.addressxresourceitem
 --
 
 ALTER TABLE address.addressxresourceitemsecuritytoken
-    ADD CONSTRAINT addressxresourceitemsecuritytoken_pkey PRIMARY KEY (addressxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT addressxresourceitemsecuritytoken_pkey PRIMARY KEY (addressxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -77,7 +77,7 @@ ALTER TABLE address.addressxresourceitemsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangement
-    ADD CONSTRAINT arrangement_pkey PRIMARY KEY (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT arrangement_pkey PRIMARY KEY (arrangementid, warehousefromdate);
 
 
 --
@@ -86,7 +86,7 @@ ALTER TABLE arrangement.arrangement
 --
 
 ALTER TABLE arrangement.arrangementsecuritytoken
-    ADD CONSTRAINT arrangementsecuritytoken_pkey PRIMARY KEY (arrangementsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementsecuritytoken_pkey PRIMARY KEY (arrangementsecuritytokenid, warehousefromdate);
 
 
 --
@@ -95,7 +95,7 @@ ALTER TABLE arrangement.arrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtype
-    ADD CONSTRAINT arrangementtype_pkey PRIMARY KEY (arrangementtypeid, warehousecreateddate);
+    ADD CONSTRAINT arrangementtype_pkey PRIMARY KEY (arrangementtypeid, warehousefromdate);
 
 
 --
@@ -104,7 +104,7 @@ ALTER TABLE arrangement.arrangementtype
 --
 
 ALTER TABLE arrangement.arrangementtypesecuritytoken
-    ADD CONSTRAINT arrangementtypesecuritytoken_pkey PRIMARY KEY (arrangementtypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementtypesecuritytoken_pkey PRIMARY KEY (arrangementtypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -113,7 +113,7 @@ ALTER TABLE arrangement.arrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypexclassification
-    ADD CONSTRAINT arrangementtypexclassification_pkey PRIMARY KEY (arrangementtypexclassificationid, warehousecreateddate);
+    ADD CONSTRAINT arrangementtypexclassification_pkey PRIMARY KEY (arrangementtypexclassificationid, warehousefromdate);
 
 
 --
@@ -122,7 +122,7 @@ ALTER TABLE arrangement.arrangementtypexclassification
 --
 
 ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
-    ADD CONSTRAINT arrangementtypexclassificationsecuritytoken_pkey PRIMARY KEY (arrangementtypexclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementtypexclassificationsecuritytoken_pkey PRIMARY KEY (arrangementtypexclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -131,7 +131,7 @@ ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangement
-    ADD CONSTRAINT arrangementxarrangement_pkey PRIMARY KEY (arrangementxarrangementid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxarrangement_pkey PRIMARY KEY (arrangementxarrangementid, warehousefromdate);
 
 
 --
@@ -140,7 +140,7 @@ ALTER TABLE arrangement.arrangementxarrangement
 --
 
 ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
-    ADD CONSTRAINT arrangementxarrangementsecuritytoken_pkey PRIMARY KEY (arrangementxarrangementsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxarrangementsecuritytoken_pkey PRIMARY KEY (arrangementxarrangementsecuritytokenid, warehousefromdate);
 
 
 --
@@ -149,7 +149,7 @@ ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtype
-    ADD CONSTRAINT arrangementxarrangementtype_pkey PRIMARY KEY (arrangementxarrangementtypeid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxarrangementtype_pkey PRIMARY KEY (arrangementxarrangementtypeid, warehousefromdate);
 
 
 --
@@ -158,7 +158,7 @@ ALTER TABLE arrangement.arrangementxarrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
-    ADD CONSTRAINT arrangementxarrangementtypesecuritytoken_pkey PRIMARY KEY (arrangementxarrangementtypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxarrangementtypesecuritytoken_pkey PRIMARY KEY (arrangementxarrangementtypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -167,7 +167,7 @@ ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxclassification
-    ADD CONSTRAINT arrangementxclassification_pkey PRIMARY KEY (arrangementxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxclassification_pkey PRIMARY KEY (arrangementxclassificationid, warehousefromdate);
 
 
 --
@@ -176,7 +176,7 @@ ALTER TABLE arrangement.arrangementxclassification
 --
 
 ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
-    ADD CONSTRAINT arrangementxclassificationsecuritytoken_pkey PRIMARY KEY (arrangementxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxclassificationsecuritytoken_pkey PRIMARY KEY (arrangementxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -185,7 +185,7 @@ ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedparty
-    ADD CONSTRAINT arrangementxinvolvedparty_pkey PRIMARY KEY (arrangementxinvolvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxinvolvedparty_pkey PRIMARY KEY (arrangementxinvolvedpartyid, warehousefromdate);
 
 
 --
@@ -194,7 +194,7 @@ ALTER TABLE arrangement.arrangementxinvolvedparty
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
-    ADD CONSTRAINT arrangementxinvolvedpartysecuritytoken_pkey PRIMARY KEY (arrangementxinvolvedpartysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxinvolvedpartysecuritytoken_pkey PRIMARY KEY (arrangementxinvolvedpartysecuritytokenid, warehousefromdate);
 
 
 --
@@ -203,7 +203,7 @@ ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxproduct
-    ADD CONSTRAINT arrangementxproduct_pkey PRIMARY KEY (arrangementxproductid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxproduct_pkey PRIMARY KEY (arrangementxproductid, warehousefromdate);
 
 
 --
@@ -212,7 +212,7 @@ ALTER TABLE arrangement.arrangementxproduct
 --
 
 ALTER TABLE arrangement.arrangementxproductsecuritytoken
-    ADD CONSTRAINT arrangementxproductsecuritytoken_pkey PRIMARY KEY (arrangementxproductsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxproductsecuritytoken_pkey PRIMARY KEY (arrangementxproductsecuritytokenid, warehousefromdate);
 
 
 --
@@ -221,7 +221,7 @@ ALTER TABLE arrangement.arrangementxproductsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxresourceitem
-    ADD CONSTRAINT arrangementxresourceitem_pkey PRIMARY KEY (arrangementxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxresourceitem_pkey PRIMARY KEY (arrangementxresourceitemid, warehousefromdate);
 
 
 --
@@ -230,7 +230,7 @@ ALTER TABLE arrangement.arrangementxresourceitem
 --
 
 ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
-    ADD CONSTRAINT arrangementxresourceitemsecuritytoken_pkey PRIMARY KEY (arrangementxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxresourceitemsecuritytoken_pkey PRIMARY KEY (arrangementxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -239,7 +239,7 @@ ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrules
-    ADD CONSTRAINT arrangementxrules_pkey PRIMARY KEY (arrangementxrulesid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxrules_pkey PRIMARY KEY (arrangementxrulesid, warehousefromdate);
 
 
 --
@@ -248,7 +248,7 @@ ALTER TABLE arrangement.arrangementxrules
 --
 
 ALTER TABLE arrangement.arrangementxrulessecuritytoken
-    ADD CONSTRAINT arrangementxrulessecuritytoken_pkey PRIMARY KEY (arrangementxrulessecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxrulessecuritytoken_pkey PRIMARY KEY (arrangementxrulessecuritytokenid, warehousefromdate);
 
 
 --
@@ -257,7 +257,7 @@ ALTER TABLE arrangement.arrangementxrulessecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulestype
-    ADD CONSTRAINT arrangementxrulestype_pkey PRIMARY KEY (arrangementxrulestypeid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxrulestype_pkey PRIMARY KEY (arrangementxrulestypeid, warehousefromdate);
 
 
 --
@@ -266,7 +266,7 @@ ALTER TABLE arrangement.arrangementxrulestype
 --
 
 ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
-    ADD CONSTRAINT arrangementxrulestypesecuritytoken_pkey PRIMARY KEY (arrangementxrulestypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT arrangementxrulestypesecuritytoken_pkey PRIMARY KEY (arrangementxrulestypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -275,7 +275,7 @@ ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
 --
 
 ALTER TABLE classification.classification
-    ADD CONSTRAINT classification_pkey PRIMARY KEY (classificationid, warehousecreateddate);
+    ADD CONSTRAINT classification_pkey PRIMARY KEY (classificationid, warehousefromdate);
 
 
 --
@@ -284,7 +284,7 @@ ALTER TABLE classification.classification
 --
 
 ALTER TABLE classification.classificationdataconcept
-    ADD CONSTRAINT classificationdataconcept_pkey PRIMARY KEY (classificationdataconceptid, warehousecreateddate);
+    ADD CONSTRAINT classificationdataconcept_pkey PRIMARY KEY (classificationdataconceptid, warehousefromdate);
 
 
 --
@@ -293,7 +293,7 @@ ALTER TABLE classification.classificationdataconcept
 --
 
 ALTER TABLE classification.classificationdataconceptsecuritytoken
-    ADD CONSTRAINT classificationdataconceptsecuritytoken_pkey PRIMARY KEY (classificationdataconceptsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT classificationdataconceptsecuritytoken_pkey PRIMARY KEY (classificationdataconceptsecuritytokenid, warehousefromdate);
 
 
 --
@@ -302,7 +302,7 @@ ALTER TABLE classification.classificationdataconceptsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxclassification
-    ADD CONSTRAINT classificationdataconceptxclassification_pkey PRIMARY KEY (classificationdataconceptxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT classificationdataconceptxclassification_pkey PRIMARY KEY (classificationdataconceptxclassificationid, warehousefromdate);
 
 
 --
@@ -312,7 +312,7 @@ ALTER TABLE classification.classificationdataconceptxclassification
 
 ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
     ADD CONSTRAINT classificationdataconceptxclassificationsecuritytoken_pkey PRIMARY KEY (classificationdataconceptxclassificationsecuritytokenid,
-                                                                                           warehousecreateddate);
+                                                                                           warehousefromdate);
 
 
 --
@@ -321,7 +321,7 @@ ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitem
-    ADD CONSTRAINT classificationdataconceptxresourceitem_pkey PRIMARY KEY (classificationdataconceptxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT classificationdataconceptxresourceitem_pkey PRIMARY KEY (classificationdataconceptxresourceitemid, warehousefromdate);
 
 
 --
@@ -331,7 +331,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitem
 
 ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
     ADD CONSTRAINT classificationdataconceptxresourceitemsecuritytoken_pkey PRIMARY KEY (classificationdataconceptxresourceitemsecuritytokenid,
-                                                                                         warehousecreateddate);
+                                                                                         warehousefromdate);
 
 
 --
@@ -340,7 +340,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationsecuritytoken
-    ADD CONSTRAINT classificationsecuritytoken_pkey PRIMARY KEY (classificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT classificationsecuritytoken_pkey PRIMARY KEY (classificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -349,7 +349,7 @@ ALTER TABLE classification.classificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxclassification
-    ADD CONSTRAINT classificationxclassification_pkey PRIMARY KEY (classificationxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT classificationxclassification_pkey PRIMARY KEY (classificationxclassificationid, warehousefromdate);
 
 
 --
@@ -358,7 +358,7 @@ ALTER TABLE classification.classificationxclassification
 --
 
 ALTER TABLE classification.classificationxclassificationsecuritytoken
-    ADD CONSTRAINT classificationxclassificationsecuritytoken_pkey PRIMARY KEY (classificationxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT classificationxclassificationsecuritytoken_pkey PRIMARY KEY (classificationxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -367,7 +367,7 @@ ALTER TABLE classification.classificationxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitem
-    ADD CONSTRAINT classificationxresourceitem_pkey PRIMARY KEY (classificationxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT classificationxresourceitem_pkey PRIMARY KEY (classificationxresourceitemid, warehousefromdate);
 
 
 --
@@ -376,7 +376,7 @@ ALTER TABLE classification.classificationxresourceitem
 --
 
 ALTER TABLE classification.classificationxresourceitemsecuritytoken
-    ADD CONSTRAINT classificationxresourceitemsecuritytoken_pkey PRIMARY KEY (classificationxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT classificationxresourceitemsecuritytoken_pkey PRIMARY KEY (classificationxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -385,7 +385,7 @@ ALTER TABLE classification.classificationxresourceitemsecuritytoken
 --
 
 ALTER TABLE dbo.activeflag
-    ADD CONSTRAINT activeflag_pkey PRIMARY KEY (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT activeflag_pkey PRIMARY KEY (activeflagid, warehousefromdate);
 
 
 --
@@ -394,7 +394,7 @@ ALTER TABLE dbo.activeflag
 --
 
 ALTER TABLE dbo.activeflagsecuritytoken
-    ADD CONSTRAINT activeflagsecuritytoken_pkey PRIMARY KEY (activeflagsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT activeflagsecuritytoken_pkey PRIMARY KEY (activeflagsecuritytokenid, warehousefromdate);
 
 
 --
@@ -403,7 +403,7 @@ ALTER TABLE dbo.activeflagsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagxclassification
-    ADD CONSTRAINT activeflagxclassification_pkey PRIMARY KEY (activeflagxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT activeflagxclassification_pkey PRIMARY KEY (activeflagxclassificationid, warehousefromdate);
 
 
 --
@@ -412,7 +412,7 @@ ALTER TABLE dbo.activeflagxclassification
 --
 
 ALTER TABLE dbo.activeflagxclassificationsecuritytoken
-    ADD CONSTRAINT activeflagxclassificationsecuritytoken_pkey PRIMARY KEY (activeflagxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT activeflagxclassificationsecuritytoken_pkey PRIMARY KEY (activeflagxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -421,7 +421,7 @@ ALTER TABLE dbo.activeflagxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.enterprise
-    ADD CONSTRAINT enterprise_pkey PRIMARY KEY (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT enterprise_pkey PRIMARY KEY (enterpriseid, warehousefromdate);
 
 
 --
@@ -430,7 +430,7 @@ ALTER TABLE dbo.enterprise
 --
 
 ALTER TABLE dbo.enterprisesecuritytoken
-    ADD CONSTRAINT enterprisesecuritytoken_pkey PRIMARY KEY (enterprisesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT enterprisesecuritytoken_pkey PRIMARY KEY (enterprisesecuritytokenid, warehousefromdate);
 
 
 --
@@ -439,7 +439,7 @@ ALTER TABLE dbo.enterprisesecuritytoken
 --
 
 ALTER TABLE dbo.enterprisexclassification
-    ADD CONSTRAINT enterprisexclassification_pkey PRIMARY KEY (enterprisexclassificationid, warehousecreateddate);
+    ADD CONSTRAINT enterprisexclassification_pkey PRIMARY KEY (enterprisexclassificationid, warehousefromdate);
 
 
 --
@@ -448,7 +448,7 @@ ALTER TABLE dbo.enterprisexclassification
 --
 
 ALTER TABLE dbo.enterprisexclassificationsecuritytoken
-    ADD CONSTRAINT enterprisexclassificationsecuritytoken_pkey PRIMARY KEY (enterprisexclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT enterprisexclassificationsecuritytoken_pkey PRIMARY KEY (enterprisexclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -457,7 +457,7 @@ ALTER TABLE dbo.enterprisexclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.systems
-    ADD CONSTRAINT systems_pkey PRIMARY KEY (systemid, warehousecreateddate);
+    ADD CONSTRAINT systems_pkey PRIMARY KEY (systemid, warehousefromdate);
 
 
 --
@@ -466,7 +466,7 @@ ALTER TABLE dbo.systems
 --
 
 ALTER TABLE dbo.systemssecuritytoken
-    ADD CONSTRAINT systemssecuritytoken_pkey PRIMARY KEY (systemssecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT systemssecuritytoken_pkey PRIMARY KEY (systemssecuritytokenid, warehousefromdate);
 
 
 --
@@ -475,7 +475,7 @@ ALTER TABLE dbo.systemssecuritytoken
 --
 
 ALTER TABLE dbo.systemxclassification
-    ADD CONSTRAINT systemxclassification_pkey PRIMARY KEY (systemxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT systemxclassification_pkey PRIMARY KEY (systemxclassificationid, warehousefromdate);
 
 
 --
@@ -484,7 +484,7 @@ ALTER TABLE dbo.systemxclassification
 --
 
 ALTER TABLE dbo.systemxclassificationsecuritytoken
-    ADD CONSTRAINT systemxclassificationsecuritytoken_pkey PRIMARY KEY (systemxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT systemxclassificationsecuritytoken_pkey PRIMARY KEY (systemxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -493,7 +493,7 @@ ALTER TABLE dbo.systemxclassificationsecuritytoken
 --
 
 ALTER TABLE event.event
-    ADD CONSTRAINT event_pkey PRIMARY KEY (eventid, warehousecreateddate);
+    ADD CONSTRAINT event_pkey PRIMARY KEY (eventid, warehousefromdate);
 
 
 --
@@ -502,7 +502,7 @@ ALTER TABLE event.event
 --
 
 ALTER TABLE event.eventsecuritytoken
-    ADD CONSTRAINT eventsecuritytoken_pkey PRIMARY KEY (eventssecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventsecuritytoken_pkey PRIMARY KEY (eventssecuritytokenid, warehousefromdate);
 
 
 --
@@ -511,7 +511,7 @@ ALTER TABLE event.eventsecuritytoken
 --
 
 ALTER TABLE event.eventtype
-    ADD CONSTRAINT eventtype_pkey PRIMARY KEY (eventtypeid, warehousecreateddate);
+    ADD CONSTRAINT eventtype_pkey PRIMARY KEY (eventtypeid, warehousefromdate);
 
 
 --
@@ -520,7 +520,7 @@ ALTER TABLE event.eventtype
 --
 
 ALTER TABLE event.eventtypessecuritytoken
-    ADD CONSTRAINT eventtypessecuritytoken_pkey PRIMARY KEY (eventtypessecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventtypessecuritytoken_pkey PRIMARY KEY (eventtypessecuritytokenid, warehousefromdate);
 
 
 --
@@ -529,7 +529,7 @@ ALTER TABLE event.eventtypessecuritytoken
 --
 
 ALTER TABLE event.eventxaddress
-    ADD CONSTRAINT eventxaddress_pkey PRIMARY KEY (eventxaddressid, warehousecreateddate);
+    ADD CONSTRAINT eventxaddress_pkey PRIMARY KEY (eventxaddressid, warehousefromdate);
 
 
 --
@@ -538,7 +538,7 @@ ALTER TABLE event.eventxaddress
 --
 
 ALTER TABLE event.eventxaddresssecuritytoken
-    ADD CONSTRAINT eventxaddresssecuritytoken_pkey PRIMARY KEY (eventxaddresssecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxaddresssecuritytoken_pkey PRIMARY KEY (eventxaddresssecuritytokenid, warehousefromdate);
 
 
 --
@@ -547,7 +547,7 @@ ALTER TABLE event.eventxaddresssecuritytoken
 --
 
 ALTER TABLE event.eventxarrangement
-    ADD CONSTRAINT eventxarrangement_pkey PRIMARY KEY (eventxarrangementsid, warehousecreateddate);
+    ADD CONSTRAINT eventxarrangement_pkey PRIMARY KEY (eventxarrangementsid, warehousefromdate);
 
 
 --
@@ -556,7 +556,7 @@ ALTER TABLE event.eventxarrangement
 --
 
 ALTER TABLE event.eventxarrangementssecuritytoken
-    ADD CONSTRAINT eventxarrangementssecuritytoken_pkey PRIMARY KEY (eventxarrangementssecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxarrangementssecuritytoken_pkey PRIMARY KEY (eventxarrangementssecuritytokenid, warehousefromdate);
 
 
 --
@@ -565,7 +565,7 @@ ALTER TABLE event.eventxarrangementssecuritytoken
 --
 
 ALTER TABLE event.eventxclassification
-    ADD CONSTRAINT eventxclassification_pkey PRIMARY KEY (eventxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT eventxclassification_pkey PRIMARY KEY (eventxclassificationid, warehousefromdate);
 
 
 --
@@ -574,7 +574,7 @@ ALTER TABLE event.eventxclassification
 --
 
 ALTER TABLE event.eventxclassificationsecuritytoken
-    ADD CONSTRAINT eventxclassificationsecuritytoken_pkey PRIMARY KEY (eventxclassificationssecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxclassificationsecuritytoken_pkey PRIMARY KEY (eventxclassificationssecuritytokenid, warehousefromdate);
 
 
 --
@@ -583,7 +583,7 @@ ALTER TABLE event.eventxclassificationsecuritytoken
 --
 
 ALTER TABLE event.eventxevent
-    ADD CONSTRAINT eventxevent_pkey PRIMARY KEY (eventxeventid, warehousecreateddate);
+    ADD CONSTRAINT eventxevent_pkey PRIMARY KEY (eventxeventid, warehousefromdate);
 
 
 --
@@ -592,7 +592,7 @@ ALTER TABLE event.eventxevent
 --
 
 ALTER TABLE event.eventxeventsecuritytoken
-    ADD CONSTRAINT eventxeventsecuritytoken_pkey PRIMARY KEY (eventxeventsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxeventsecuritytoken_pkey PRIMARY KEY (eventxeventsecuritytokenid, warehousefromdate);
 
 
 --
@@ -601,7 +601,7 @@ ALTER TABLE event.eventxeventsecuritytoken
 --
 
 ALTER TABLE event.eventxeventtype
-    ADD CONSTRAINT eventxeventtype_pkey PRIMARY KEY (eventxeventtypeid, warehousecreateddate);
+    ADD CONSTRAINT eventxeventtype_pkey PRIMARY KEY (eventxeventtypeid, warehousefromdate);
 
 
 --
@@ -610,7 +610,7 @@ ALTER TABLE event.eventxeventtype
 --
 
 ALTER TABLE event.eventxeventtypesecuritytoken
-    ADD CONSTRAINT eventxeventtypesecuritytoken_pkey PRIMARY KEY (eventxeventtypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxeventtypesecuritytoken_pkey PRIMARY KEY (eventxeventtypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -619,7 +619,7 @@ ALTER TABLE event.eventxeventtypesecuritytoken
 --
 
 ALTER TABLE event.eventxgeography
-    ADD CONSTRAINT eventxgeography_pkey PRIMARY KEY (eventxgeographyid, warehousecreateddate);
+    ADD CONSTRAINT eventxgeography_pkey PRIMARY KEY (eventxgeographyid, warehousefromdate);
 
 
 --
@@ -628,7 +628,7 @@ ALTER TABLE event.eventxgeography
 --
 
 ALTER TABLE event.eventxgeographysecuritytoken
-    ADD CONSTRAINT eventxgeographysecuritytoken_pkey PRIMARY KEY (eventxgeographysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxgeographysecuritytoken_pkey PRIMARY KEY (eventxgeographysecuritytokenid, warehousefromdate);
 
 
 --
@@ -637,7 +637,7 @@ ALTER TABLE event.eventxgeographysecuritytoken
 --
 
 ALTER TABLE event.eventxinvolvedparty
-    ADD CONSTRAINT eventxinvolvedparty_pkey PRIMARY KEY (eventxinvolvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT eventxinvolvedparty_pkey PRIMARY KEY (eventxinvolvedpartyid, warehousefromdate);
 
 
 --
@@ -646,7 +646,7 @@ ALTER TABLE event.eventxinvolvedparty
 --
 
 ALTER TABLE event.eventxinvolvedpartysecuritytoken
-    ADD CONSTRAINT eventxinvolvedpartysecuritytoken_pkey PRIMARY KEY (eventxinvolvedpartysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxinvolvedpartysecuritytoken_pkey PRIMARY KEY (eventxinvolvedpartysecuritytokenid, warehousefromdate);
 
 
 --
@@ -655,7 +655,7 @@ ALTER TABLE event.eventxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE event.eventxproduct
-    ADD CONSTRAINT eventxproduct_pkey PRIMARY KEY (eventxproductid, warehousecreateddate);
+    ADD CONSTRAINT eventxproduct_pkey PRIMARY KEY (eventxproductid, warehousefromdate);
 
 
 --
@@ -664,7 +664,7 @@ ALTER TABLE event.eventxproduct
 --
 
 ALTER TABLE event.eventxproductsecuritytoken
-    ADD CONSTRAINT eventxproductsecuritytoken_pkey PRIMARY KEY (eventxproductsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxproductsecuritytoken_pkey PRIMARY KEY (eventxproductsecuritytokenid, warehousefromdate);
 
 
 --
@@ -673,7 +673,7 @@ ALTER TABLE event.eventxproductsecuritytoken
 --
 
 ALTER TABLE event.eventxresourceitem
-    ADD CONSTRAINT eventxresourceitem_pkey PRIMARY KEY (eventxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT eventxresourceitem_pkey PRIMARY KEY (eventxresourceitemid, warehousefromdate);
 
 
 --
@@ -682,7 +682,7 @@ ALTER TABLE event.eventxresourceitem
 --
 
 ALTER TABLE event.eventxresourceitemsecuritytoken
-    ADD CONSTRAINT eventxresourceitemsecuritytoken_pkey PRIMARY KEY (eventxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxresourceitemsecuritytoken_pkey PRIMARY KEY (eventxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -691,7 +691,7 @@ ALTER TABLE event.eventxresourceitemsecuritytoken
 --
 
 ALTER TABLE event.eventxrules
-    ADD CONSTRAINT eventxrules_pkey PRIMARY KEY (eventxrulesid, warehousecreateddate);
+    ADD CONSTRAINT eventxrules_pkey PRIMARY KEY (eventxrulesid, warehousefromdate);
 
 
 --
@@ -700,7 +700,7 @@ ALTER TABLE event.eventxrules
 --
 
 ALTER TABLE event.eventxrulessecuritytoken
-    ADD CONSTRAINT eventxrulessecuritytoken_pkey PRIMARY KEY (eventxrulessecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT eventxrulessecuritytoken_pkey PRIMARY KEY (eventxrulessecuritytokenid, warehousefromdate);
 
 
 --
@@ -709,7 +709,7 @@ ALTER TABLE event.eventxrulessecuritytoken
 --
 
 ALTER TABLE geography.geography
-    ADD CONSTRAINT geography_pkey PRIMARY KEY (geographyid, warehousecreateddate);
+    ADD CONSTRAINT geography_pkey PRIMARY KEY (geographyid, warehousefromdate);
 
 
 --
@@ -718,7 +718,7 @@ ALTER TABLE geography.geography
 --
 
 ALTER TABLE geography.geographysecuritytoken
-    ADD CONSTRAINT geographysecuritytoken_pkey PRIMARY KEY (geographysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT geographysecuritytoken_pkey PRIMARY KEY (geographysecuritytokenid, warehousefromdate);
 
 
 --
@@ -727,7 +727,7 @@ ALTER TABLE geography.geographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxclassification
-    ADD CONSTRAINT geographyxclassification_pkey PRIMARY KEY (geographyxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT geographyxclassification_pkey PRIMARY KEY (geographyxclassificationid, warehousefromdate);
 
 
 --
@@ -736,7 +736,7 @@ ALTER TABLE geography.geographyxclassification
 --
 
 ALTER TABLE geography.geographyxclassificationsecuritytoken
-    ADD CONSTRAINT geographyxclassificationsecuritytoken_pkey PRIMARY KEY (geographyxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT geographyxclassificationsecuritytoken_pkey PRIMARY KEY (geographyxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -745,7 +745,7 @@ ALTER TABLE geography.geographyxclassificationsecuritytoken
 --
 
 ALTER TABLE geography.geographyxgeography
-    ADD CONSTRAINT geographyxgeography_pkey PRIMARY KEY (geographyxgeographyid, warehousecreateddate);
+    ADD CONSTRAINT geographyxgeography_pkey PRIMARY KEY (geographyxgeographyid, warehousefromdate);
 
 
 --
@@ -754,7 +754,7 @@ ALTER TABLE geography.geographyxgeography
 --
 
 ALTER TABLE geography.geographyxgeographysecuritytoken
-    ADD CONSTRAINT geographyxgeographysecuritytoken_pkey PRIMARY KEY (geographyxgeographysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT geographyxgeographysecuritytoken_pkey PRIMARY KEY (geographyxgeographysecuritytokenid, warehousefromdate);
 
 
 --
@@ -763,7 +763,7 @@ ALTER TABLE geography.geographyxgeographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitem
-    ADD CONSTRAINT geographyxresourceitem_pkey PRIMARY KEY (geographyxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT geographyxresourceitem_pkey PRIMARY KEY (geographyxresourceitemid, warehousefromdate);
 
 
 --
@@ -772,7 +772,7 @@ ALTER TABLE geography.geographyxresourceitem
 --
 
 ALTER TABLE geography.geographyxresourceitemsecuritytoken
-    ADD CONSTRAINT geographyxresourceitemsecuritytoken_pkey PRIMARY KEY (geographyxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT geographyxresourceitemsecuritytoken_pkey PRIMARY KEY (geographyxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -781,7 +781,7 @@ ALTER TABLE geography.geographyxresourceitemsecuritytoken
 --
 
 ALTER TABLE party.involvedparty
-    ADD CONSTRAINT involvedparty_pkey PRIMARY KEY (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT involvedparty_pkey PRIMARY KEY (involvedpartyid, warehousefromdate);
 
 
 --
@@ -790,7 +790,7 @@ ALTER TABLE party.involvedparty
 --
 
 ALTER TABLE party.involvedpartyidentificationtype
-    ADD CONSTRAINT involvedpartyidentificationtype_pkey PRIMARY KEY (involvedpartyidentificationtypeid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyidentificationtype_pkey PRIMARY KEY (involvedpartyidentificationtypeid, warehousefromdate);
 
 
 --
@@ -799,7 +799,7 @@ ALTER TABLE party.involvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT involvedpartyidentificationtypesecuritytoken_pkey PRIMARY KEY (involvedpartyidentificationtypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyidentificationtypesecuritytoken_pkey PRIMARY KEY (involvedpartyidentificationtypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -808,7 +808,7 @@ ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynametype
-    ADD CONSTRAINT involvedpartynametype_pkey PRIMARY KEY (involvedpartynametypeid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartynametype_pkey PRIMARY KEY (involvedpartynametypeid, warehousefromdate);
 
 
 --
@@ -817,7 +817,7 @@ ALTER TABLE party.involvedpartynametype
 --
 
 ALTER TABLE party.involvedpartynametypesecuritytoken
-    ADD CONSTRAINT involvedpartynametypesecuritytoken_pkey PRIMARY KEY (involvedpartynametypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartynametypesecuritytoken_pkey PRIMARY KEY (involvedpartynametypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -826,7 +826,7 @@ ALTER TABLE party.involvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganic
-    ADD CONSTRAINT involvedpartynonorganic_pkey PRIMARY KEY (involvedpartynonorganicid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartynonorganic_pkey PRIMARY KEY (involvedpartynonorganicid, warehousefromdate);
 
 
 --
@@ -835,7 +835,7 @@ ALTER TABLE party.involvedpartynonorganic
 --
 
 ALTER TABLE party.involvedpartynonorganicsecuritytoken
-    ADD CONSTRAINT involvedpartynonorganicsecuritytoken_pkey PRIMARY KEY (involvedpartynonorganicsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartynonorganicsecuritytoken_pkey PRIMARY KEY (involvedpartynonorganicsecuritytokenid, warehousefromdate);
 
 
 --
@@ -844,7 +844,7 @@ ALTER TABLE party.involvedpartynonorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganic
-    ADD CONSTRAINT involvedpartyorganic_pkey PRIMARY KEY (involvedpartyorganicid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyorganic_pkey PRIMARY KEY (involvedpartyorganicid, warehousefromdate);
 
 
 --
@@ -853,7 +853,7 @@ ALTER TABLE party.involvedpartyorganic
 --
 
 ALTER TABLE party.involvedpartyorganicsecuritytoken
-    ADD CONSTRAINT involvedpartyorganicsecuritytoken_pkey PRIMARY KEY (involvedpartyorganicsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyorganicsecuritytoken_pkey PRIMARY KEY (involvedpartyorganicsecuritytokenid, warehousefromdate);
 
 
 --
@@ -862,7 +862,7 @@ ALTER TABLE party.involvedpartyorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganictype
-    ADD CONSTRAINT involvedpartyorganictype_pkey PRIMARY KEY (involvedpartyorganictypeid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyorganictype_pkey PRIMARY KEY (involvedpartyorganictypeid, warehousefromdate);
 
 
 --
@@ -871,7 +871,7 @@ ALTER TABLE party.involvedpartyorganictype
 --
 
 ALTER TABLE party.involvedpartyorganictypesecuritytoken
-    ADD CONSTRAINT involvedpartyorganictypesecuritytoken_pkey PRIMARY KEY (involvedpartyorganictypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyorganictypesecuritytoken_pkey PRIMARY KEY (involvedpartyorganictypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -880,7 +880,7 @@ ALTER TABLE party.involvedpartyorganictypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartysecuritytoken
-    ADD CONSTRAINT involvedpartysecuritytoken_pkey PRIMARY KEY (involvedpartysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartysecuritytoken_pkey PRIMARY KEY (involvedpartysecuritytokenid, warehousefromdate);
 
 
 --
@@ -889,7 +889,7 @@ ALTER TABLE party.involvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartytype
-    ADD CONSTRAINT involvedpartytype_pkey PRIMARY KEY (involvedpartytypeid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartytype_pkey PRIMARY KEY (involvedpartytypeid, warehousefromdate);
 
 
 --
@@ -898,7 +898,7 @@ ALTER TABLE party.involvedpartytype
 --
 
 ALTER TABLE party.involvedpartytypesecuritytoken
-    ADD CONSTRAINT involvedpartytypesecuritytoken_pkey PRIMARY KEY (involvedpartytypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartytypesecuritytoken_pkey PRIMARY KEY (involvedpartytypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -907,7 +907,7 @@ ALTER TABLE party.involvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxaddress
-    ADD CONSTRAINT involvedpartyxaddress_pkey PRIMARY KEY (involvedpartyxaddressid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxaddress_pkey PRIMARY KEY (involvedpartyxaddressid, warehousefromdate);
 
 
 --
@@ -916,7 +916,7 @@ ALTER TABLE party.involvedpartyxaddress
 --
 
 ALTER TABLE party.involvedpartyxaddresssecuritytoken
-    ADD CONSTRAINT involvedpartyxaddresssecuritytoken_pkey PRIMARY KEY (involvedpartyxaddresssecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxaddresssecuritytoken_pkey PRIMARY KEY (involvedpartyxaddresssecuritytokenid, warehousefromdate);
 
 
 --
@@ -925,7 +925,7 @@ ALTER TABLE party.involvedpartyxaddresssecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxclassification
-    ADD CONSTRAINT involvedpartyxclassification_pkey PRIMARY KEY (involvedpartyxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxclassification_pkey PRIMARY KEY (involvedpartyxclassificationid, warehousefromdate);
 
 
 --
@@ -934,7 +934,7 @@ ALTER TABLE party.involvedpartyxclassification
 --
 
 ALTER TABLE party.involvedpartyxclassificationsecuritytoken
-    ADD CONSTRAINT involvedpartyxclassificationsecuritytoken_pkey PRIMARY KEY (involvedpartyxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxclassificationsecuritytoken_pkey PRIMARY KEY (involvedpartyxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -943,7 +943,7 @@ ALTER TABLE party.involvedpartyxclassificationsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedparty
-    ADD CONSTRAINT involvedpartyxinvolvedparty_pkey PRIMARY KEY (involvedpartyxinvolvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxinvolvedparty_pkey PRIMARY KEY (involvedpartyxinvolvedpartyid, warehousefromdate);
 
 
 --
@@ -952,7 +952,7 @@ ALTER TABLE party.involvedpartyxinvolvedparty
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
-    ADD CONSTRAINT involvedpartyxinvolvedpartyidentificationtype_pkey PRIMARY KEY (involvedpartyxinvolvedpartyidentificationtypeid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxinvolvedpartyidentificationtype_pkey PRIMARY KEY (involvedpartyxinvolvedpartyidentificationtypeid, warehousefromdate);
 
 
 --
@@ -962,7 +962,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
     ADD CONSTRAINT involvedpartyxinvolvedpartyidentificationtypesecuritytoken_pkey PRIMARY KEY (involvedpartyxinvolvedpartyidentificationtypesecuritytokenid,
-                                                                                                warehousecreateddate);
+                                                                                                warehousefromdate);
 
 
 --
@@ -971,7 +971,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametype
-    ADD CONSTRAINT involvedpartyxinvolvedpartynametype_pkey PRIMARY KEY (involvedpartyxinvolvedpartynametypeid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxinvolvedpartynametype_pkey PRIMARY KEY (involvedpartyxinvolvedpartynametypeid, warehousefromdate);
 
 
 --
@@ -981,7 +981,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametype
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
     ADD CONSTRAINT involvedpartyxinvolvedpartynametypesecuritytoken_pkey PRIMARY KEY (involvedpartyxinvolvedpartynametypesecuritytokenid,
-                                                                                      warehousecreateddate);
+                                                                                      warehousefromdate);
 
 
 --
@@ -990,7 +990,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
-    ADD CONSTRAINT involvedpartyxinvolvedpartysecuritytoken_pkey PRIMARY KEY (involvedpartyxinvolvedpartysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxinvolvedpartysecuritytoken_pkey PRIMARY KEY (involvedpartyxinvolvedpartysecuritytokenid, warehousefromdate);
 
 
 --
@@ -999,7 +999,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytype
-    ADD CONSTRAINT involvedpartyxinvolvedpartytype_pkey PRIMARY KEY (involvedpartyxinvolvedpartytypeid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxinvolvedpartytype_pkey PRIMARY KEY (involvedpartyxinvolvedpartytypeid, warehousefromdate);
 
 
 --
@@ -1008,7 +1008,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
-    ADD CONSTRAINT involvedpartyxinvolvedpartytypesecuritytoken_pkey PRIMARY KEY (involvedpartyxinvolvedpartytypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxinvolvedpartytypesecuritytoken_pkey PRIMARY KEY (involvedpartyxinvolvedpartytypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -1017,7 +1017,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT involvedpartyxproduct_pkey PRIMARY KEY (involvedpartyxproductid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxproduct_pkey PRIMARY KEY (involvedpartyxproductid, warehousefromdate);
 
 
 --
@@ -1026,7 +1026,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartyxproductsecuritytoken
-    ADD CONSTRAINT involvedpartyxproductsecuritytoken_pkey PRIMARY KEY (involvedpartyxproductsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxproductsecuritytoken_pkey PRIMARY KEY (involvedpartyxproductsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1035,7 +1035,7 @@ ALTER TABLE party.involvedpartyxproductsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproducttype
-    ADD CONSTRAINT involvedpartyxproducttype_pkey PRIMARY KEY (involvedpartyxproducttypeid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxproducttype_pkey PRIMARY KEY (involvedpartyxproducttypeid, warehousefromdate);
 
 
 --
@@ -1044,7 +1044,7 @@ ALTER TABLE party.involvedpartyxproducttype
 --
 
 ALTER TABLE party.involvedpartyxproducttypesecuritytoken
-    ADD CONSTRAINT involvedpartyxproducttypesecuritytoken_pkey PRIMARY KEY (involvedpartyxproducttypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxproducttypesecuritytoken_pkey PRIMARY KEY (involvedpartyxproducttypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -1053,7 +1053,7 @@ ALTER TABLE party.involvedpartyxproducttypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxresourceitem
-    ADD CONSTRAINT involvedpartyxresourceitem_pkey PRIMARY KEY (involvedpartyxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxresourceitem_pkey PRIMARY KEY (involvedpartyxresourceitemid, warehousefromdate);
 
 
 --
@@ -1062,7 +1062,7 @@ ALTER TABLE party.involvedpartyxresourceitem
 --
 
 ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
-    ADD CONSTRAINT involvedpartyxresourceitemsecuritytoken_pkey PRIMARY KEY (involvedpartyxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxresourceitemsecuritytoken_pkey PRIMARY KEY (involvedpartyxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1071,7 +1071,7 @@ ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT involvedpartyxrules_pkey PRIMARY KEY (involvedpartyxrulesid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxrules_pkey PRIMARY KEY (involvedpartyxrulesid, warehousefromdate);
 
 
 --
@@ -1080,7 +1080,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE party.involvedpartyxrulessecuritytoken
-    ADD CONSTRAINT involvedpartyxrulessecuritytoken_pkey PRIMARY KEY (involvedpartyxrulessecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT involvedpartyxrulessecuritytoken_pkey PRIMARY KEY (involvedpartyxrulessecuritytokenid, warehousefromdate);
 
 
 --
@@ -1089,7 +1089,7 @@ ALTER TABLE party.involvedpartyxrulessecuritytoken
 --
 
 ALTER TABLE product.product
-    ADD CONSTRAINT product_pkey PRIMARY KEY (productid, warehousecreateddate);
+    ADD CONSTRAINT product_pkey PRIMARY KEY (productid, warehousefromdate);
 
 
 --
@@ -1098,7 +1098,7 @@ ALTER TABLE product.product
 --
 
 ALTER TABLE product.productsecuritytoken
-    ADD CONSTRAINT productsecuritytoken_pkey PRIMARY KEY (productsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT productsecuritytoken_pkey PRIMARY KEY (productsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1107,7 +1107,7 @@ ALTER TABLE product.productsecuritytoken
 --
 
 ALTER TABLE product.producttype
-    ADD CONSTRAINT producttype_pkey PRIMARY KEY (producttypeid, warehousecreateddate);
+    ADD CONSTRAINT producttype_pkey PRIMARY KEY (producttypeid, warehousefromdate);
 
 
 --
@@ -1116,7 +1116,7 @@ ALTER TABLE product.producttype
 --
 
 ALTER TABLE product.producttypessecuritytoken
-    ADD CONSTRAINT producttypessecuritytoken_pkey PRIMARY KEY (producttypessecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT producttypessecuritytoken_pkey PRIMARY KEY (producttypessecuritytokenid, warehousefromdate);
 
 
 --
@@ -1125,7 +1125,7 @@ ALTER TABLE product.producttypessecuritytoken
 --
 
 ALTER TABLE product.producttypexclassification
-    ADD CONSTRAINT producttypexclassification_pkey PRIMARY KEY (producttypexclassificationid, warehousecreateddate);
+    ADD CONSTRAINT producttypexclassification_pkey PRIMARY KEY (producttypexclassificationid, warehousefromdate);
 
 
 --
@@ -1134,7 +1134,7 @@ ALTER TABLE product.producttypexclassification
 --
 
 ALTER TABLE product.producttypexclassificationsecuritytoken
-    ADD CONSTRAINT producttypexclassificationsecuritytoken_pkey PRIMARY KEY (producttypexclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT producttypexclassificationsecuritytoken_pkey PRIMARY KEY (producttypexclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1143,7 +1143,7 @@ ALTER TABLE product.producttypexclassificationsecuritytoken
 --
 
 ALTER TABLE product.productxclassification
-    ADD CONSTRAINT productxclassification_pkey PRIMARY KEY (productxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT productxclassification_pkey PRIMARY KEY (productxclassificationid, warehousefromdate);
 
 
 --
@@ -1152,7 +1152,7 @@ ALTER TABLE product.productxclassification
 --
 
 ALTER TABLE product.productxclassificationsecuritytoken
-    ADD CONSTRAINT productxclassificationsecuritytoken_pkey PRIMARY KEY (productxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT productxclassificationsecuritytoken_pkey PRIMARY KEY (productxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1161,7 +1161,7 @@ ALTER TABLE product.productxclassificationsecuritytoken
 --
 
 ALTER TABLE product.productxproduct
-    ADD CONSTRAINT productxproduct_pkey PRIMARY KEY (productxproductid, warehousecreateddate);
+    ADD CONSTRAINT productxproduct_pkey PRIMARY KEY (productxproductid, warehousefromdate);
 
 
 --
@@ -1170,7 +1170,7 @@ ALTER TABLE product.productxproduct
 --
 
 ALTER TABLE product.productxproductsecuritytoken
-    ADD CONSTRAINT productxproductsecuritytoken_pkey PRIMARY KEY (productxproductsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT productxproductsecuritytoken_pkey PRIMARY KEY (productxproductsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1179,7 +1179,7 @@ ALTER TABLE product.productxproductsecuritytoken
 --
 
 ALTER TABLE product.productxproducttype
-    ADD CONSTRAINT productxproducttype_pkey PRIMARY KEY (productxproducttypeid, warehousecreateddate);
+    ADD CONSTRAINT productxproducttype_pkey PRIMARY KEY (productxproducttypeid, warehousefromdate);
 
 
 --
@@ -1188,7 +1188,7 @@ ALTER TABLE product.productxproducttype
 --
 
 ALTER TABLE product.productxproducttypesecuritytoken
-    ADD CONSTRAINT productxproducttypesecuritytoken_pkey PRIMARY KEY (productxproducttypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT productxproducttypesecuritytoken_pkey PRIMARY KEY (productxproducttypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -1197,7 +1197,7 @@ ALTER TABLE product.productxproducttypesecuritytoken
 --
 
 ALTER TABLE product.productxresourceitem
-    ADD CONSTRAINT productxresourceitem_pkey PRIMARY KEY (productxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT productxresourceitem_pkey PRIMARY KEY (productxresourceitemid, warehousefromdate);
 
 
 --
@@ -1206,7 +1206,7 @@ ALTER TABLE product.productxresourceitem
 --
 
 ALTER TABLE product.productxresourceitemsecuritytoken
-    ADD CONSTRAINT productxresourceitemsecuritytoken_pkey PRIMARY KEY (productxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT productxresourceitemsecuritytoken_pkey PRIMARY KEY (productxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1287,7 +1287,7 @@ ALTER TABLE public.quarters_months
 --
 
 ALTER TABLE resource.resourceitem
-    ADD CONSTRAINT resourceitem_pkey PRIMARY KEY (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT resourceitem_pkey PRIMARY KEY (resourceitemid, warehousefromdate);
 
 
 --
@@ -1296,7 +1296,7 @@ ALTER TABLE resource.resourceitem
 --
 
 ALTER TABLE resource.resourceitemdata
-    ADD CONSTRAINT resourceitemdata_pkey PRIMARY KEY (resourceitemdataid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemdata_pkey PRIMARY KEY (resourceitemdataid, warehousefromdate);
 
 
 --
@@ -1305,7 +1305,7 @@ ALTER TABLE resource.resourceitemdata
 --
 
 ALTER TABLE resource.resourceitemdatasecuritytoken
-    ADD CONSTRAINT resourceitemdatasecuritytoken_pkey PRIMARY KEY (resourceitemdatasecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemdatasecuritytoken_pkey PRIMARY KEY (resourceitemdatasecuritytokenid, warehousefromdate);
 
 
 --
@@ -1314,7 +1314,7 @@ ALTER TABLE resource.resourceitemdatasecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdataxclassification
-    ADD CONSTRAINT resourceitemdataxclassification_pkey PRIMARY KEY (resourceitemdataxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemdataxclassification_pkey PRIMARY KEY (resourceitemdataxclassificationid, warehousefromdate);
 
 
 --
@@ -1323,7 +1323,7 @@ ALTER TABLE resource.resourceitemdataxclassification
 --
 
 ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
-    ADD CONSTRAINT resourceitemdataxclassificationsecuritytoken_pkey PRIMARY KEY (resourceitemdataxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemdataxclassificationsecuritytoken_pkey PRIMARY KEY (resourceitemdataxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1332,7 +1332,7 @@ ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemsecuritytoken
-    ADD CONSTRAINT resourceitemsecuritytoken_pkey PRIMARY KEY (resourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemsecuritytoken_pkey PRIMARY KEY (resourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1341,7 +1341,7 @@ ALTER TABLE resource.resourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemtype
-    ADD CONSTRAINT resourceitemtype_pkey PRIMARY KEY (resourceitemtypeid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemtype_pkey PRIMARY KEY (resourceitemtypeid, warehousefromdate);
 
 
 --
@@ -1350,7 +1350,7 @@ ALTER TABLE resource.resourceitemtype
 --
 
 ALTER TABLE resource.resourceitemtypesecuritytoken
-    ADD CONSTRAINT resourceitemtypesecuritytoken_pkey PRIMARY KEY (resourceitemtypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemtypesecuritytoken_pkey PRIMARY KEY (resourceitemtypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -1359,7 +1359,7 @@ ALTER TABLE resource.resourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassification
-    ADD CONSTRAINT resourceitemxclassification_pkey PRIMARY KEY (resourceitemxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemxclassification_pkey PRIMARY KEY (resourceitemxclassificationid, warehousefromdate);
 
 
 --
@@ -1368,7 +1368,7 @@ ALTER TABLE resource.resourceitemxclassification
 --
 
 ALTER TABLE resource.resourceitemxclassificationsecuritytoken
-    ADD CONSTRAINT resourceitemxclassificationsecuritytoken_pkey PRIMARY KEY (resourceitemxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemxclassificationsecuritytoken_pkey PRIMARY KEY (resourceitemxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1377,7 +1377,7 @@ ALTER TABLE resource.resourceitemxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitem
-    ADD CONSTRAINT resourceitemxresourceitem_pkey PRIMARY KEY (resourceitemxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemxresourceitem_pkey PRIMARY KEY (resourceitemxresourceitemid, warehousefromdate);
 
 
 --
@@ -1386,7 +1386,7 @@ ALTER TABLE resource.resourceitemxresourceitem
 --
 
 ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
-    ADD CONSTRAINT resourceitemxresourceitemsecuritytoken_pkey PRIMARY KEY (resourceitemxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemxresourceitemsecuritytoken_pkey PRIMARY KEY (resourceitemxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1395,7 +1395,7 @@ ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtype
-    ADD CONSTRAINT resourceitemxresourceitemtype_pkey PRIMARY KEY (resourceitemxresourceitemtypeid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemxresourceitemtype_pkey PRIMARY KEY (resourceitemxresourceitemtypeid, warehousefromdate);
 
 
 --
@@ -1404,7 +1404,7 @@ ALTER TABLE resource.resourceitemxresourceitemtype
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
-    ADD CONSTRAINT resourceitemxresourceitemtypesecuritytoken_pkey PRIMARY KEY (resourceitemxresourceitemtypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT resourceitemxresourceitemtypesecuritytoken_pkey PRIMARY KEY (resourceitemxresourceitemtypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -1413,7 +1413,7 @@ ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
 --
 
 ALTER TABLE rules.rules
-    ADD CONSTRAINT rules_pkey PRIMARY KEY (rulesid, warehousecreateddate);
+    ADD CONSTRAINT rules_pkey PRIMARY KEY (rulesid, warehousefromdate);
 
 
 --
@@ -1422,7 +1422,7 @@ ALTER TABLE rules.rules
 --
 
 ALTER TABLE rules.rulessecuritytoken
-    ADD CONSTRAINT rulessecuritytoken_pkey PRIMARY KEY (rulessecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulessecuritytoken_pkey PRIMARY KEY (rulessecuritytokenid, warehousefromdate);
 
 
 --
@@ -1431,7 +1431,7 @@ ALTER TABLE rules.rulessecuritytoken
 --
 
 ALTER TABLE rules.rulestype
-    ADD CONSTRAINT rulestype_pkey PRIMARY KEY (rulestypeid, warehousecreateddate);
+    ADD CONSTRAINT rulestype_pkey PRIMARY KEY (rulestypeid, warehousefromdate);
 
 
 --
@@ -1440,7 +1440,7 @@ ALTER TABLE rules.rulestype
 --
 
 ALTER TABLE rules.rulestypessecuritytoken
-    ADD CONSTRAINT rulestypessecuritytoken_pkey PRIMARY KEY (rulestypessecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulestypessecuritytoken_pkey PRIMARY KEY (rulestypessecuritytokenid, warehousefromdate);
 
 
 --
@@ -1449,7 +1449,7 @@ ALTER TABLE rules.rulestypessecuritytoken
 --
 
 ALTER TABLE rules.rulestypexclassification
-    ADD CONSTRAINT rulestypexclassification_pkey PRIMARY KEY (rulestypexclassificationid, warehousecreateddate);
+    ADD CONSTRAINT rulestypexclassification_pkey PRIMARY KEY (rulestypexclassificationid, warehousefromdate);
 
 
 --
@@ -1458,7 +1458,7 @@ ALTER TABLE rules.rulestypexclassification
 --
 
 ALTER TABLE rules.rulestypexclassificationsecuritytoken
-    ADD CONSTRAINT rulestypexclassificationsecuritytoken_pkey PRIMARY KEY (rulestypexclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulestypexclassificationsecuritytoken_pkey PRIMARY KEY (rulestypexclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1467,7 +1467,7 @@ ALTER TABLE rules.rulestypexclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulestypexresourceitem
-    ADD CONSTRAINT rulestypexresourceitem_pkey PRIMARY KEY (rulestypexresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT rulestypexresourceitem_pkey PRIMARY KEY (rulestypexresourceitemid, warehousefromdate);
 
 
 --
@@ -1476,7 +1476,7 @@ ALTER TABLE rules.rulestypexresourceitem
 --
 
 ALTER TABLE rules.rulestypexresourceitemsecuritytoken
-    ADD CONSTRAINT rulestypexresourceitemsecuritytoken_pkey PRIMARY KEY (rulestypexresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulestypexresourceitemsecuritytoken_pkey PRIMARY KEY (rulestypexresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1485,7 +1485,7 @@ ALTER TABLE rules.rulestypexresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxarrangement
-    ADD CONSTRAINT rulesxarrangement_pkey PRIMARY KEY (rulesxarrangementsid, warehousecreateddate);
+    ADD CONSTRAINT rulesxarrangement_pkey PRIMARY KEY (rulesxarrangementsid, warehousefromdate);
 
 
 --
@@ -1494,7 +1494,7 @@ ALTER TABLE rules.rulesxarrangement
 --
 
 ALTER TABLE rules.rulesxarrangementssecuritytoken
-    ADD CONSTRAINT rulesxarrangementssecuritytoken_pkey PRIMARY KEY (rulesxarrangementssecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulesxarrangementssecuritytoken_pkey PRIMARY KEY (rulesxarrangementssecuritytokenid, warehousefromdate);
 
 
 --
@@ -1503,7 +1503,7 @@ ALTER TABLE rules.rulesxarrangementssecuritytoken
 --
 
 ALTER TABLE rules.rulesxclassification
-    ADD CONSTRAINT rulesxclassification_pkey PRIMARY KEY (rulesxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT rulesxclassification_pkey PRIMARY KEY (rulesxclassificationid, warehousefromdate);
 
 
 --
@@ -1512,7 +1512,7 @@ ALTER TABLE rules.rulesxclassification
 --
 
 ALTER TABLE rules.rulesxclassificationsecuritytoken
-    ADD CONSTRAINT rulesxclassificationsecuritytoken_pkey PRIMARY KEY (rulesxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulesxclassificationsecuritytoken_pkey PRIMARY KEY (rulesxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1521,7 +1521,7 @@ ALTER TABLE rules.rulesxclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedparty
-    ADD CONSTRAINT rulesxinvolvedparty_pkey PRIMARY KEY (rulesxinvolvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT rulesxinvolvedparty_pkey PRIMARY KEY (rulesxinvolvedpartyid, warehousefromdate);
 
 
 --
@@ -1530,7 +1530,7 @@ ALTER TABLE rules.rulesxinvolvedparty
 --
 
 ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
-    ADD CONSTRAINT rulesxinvolvedpartysecuritytoken_pkey PRIMARY KEY (rulesxinvolvedpartysecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulesxinvolvedpartysecuritytoken_pkey PRIMARY KEY (rulesxinvolvedpartysecuritytokenid, warehousefromdate);
 
 
 --
@@ -1539,7 +1539,7 @@ ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE rules.rulesxproduct
-    ADD CONSTRAINT rulesxproduct_pkey PRIMARY KEY (rulesxproductid, warehousecreateddate);
+    ADD CONSTRAINT rulesxproduct_pkey PRIMARY KEY (rulesxproductid, warehousefromdate);
 
 
 --
@@ -1548,7 +1548,7 @@ ALTER TABLE rules.rulesxproduct
 --
 
 ALTER TABLE rules.rulesxproductsecuritytoken
-    ADD CONSTRAINT rulesxproductsecuritytoken_pkey PRIMARY KEY (rulesxproductsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulesxproductsecuritytoken_pkey PRIMARY KEY (rulesxproductsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1557,7 +1557,7 @@ ALTER TABLE rules.rulesxproductsecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitem
-    ADD CONSTRAINT rulesxresourceitem_pkey PRIMARY KEY (rulesxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT rulesxresourceitem_pkey PRIMARY KEY (rulesxresourceitemid, warehousefromdate);
 
 
 --
@@ -1566,7 +1566,7 @@ ALTER TABLE rules.rulesxresourceitem
 --
 
 ALTER TABLE rules.rulesxresourceitemsecuritytoken
-    ADD CONSTRAINT rulesxresourceitemsecuritytoken_pkey PRIMARY KEY (rulesxresourceitemsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulesxresourceitemsecuritytoken_pkey PRIMARY KEY (rulesxresourceitemsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1575,7 +1575,7 @@ ALTER TABLE rules.rulesxresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxrules
-    ADD CONSTRAINT rulesxrules_pkey PRIMARY KEY (rulesxrulesid, warehousecreateddate);
+    ADD CONSTRAINT rulesxrules_pkey PRIMARY KEY (rulesxrulesid, warehousefromdate);
 
 
 --
@@ -1584,7 +1584,7 @@ ALTER TABLE rules.rulesxrules
 --
 
 ALTER TABLE rules.rulesxrulessecuritytoken
-    ADD CONSTRAINT rulesxrulessecuritytoken_pkey PRIMARY KEY (rulesxrulessecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulesxrulessecuritytoken_pkey PRIMARY KEY (rulesxrulessecuritytokenid, warehousefromdate);
 
 
 --
@@ -1593,7 +1593,7 @@ ALTER TABLE rules.rulesxrulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulestype
-    ADD CONSTRAINT rulesxrulestype_pkey PRIMARY KEY (rulesxrulestypeid, warehousecreateddate);
+    ADD CONSTRAINT rulesxrulestype_pkey PRIMARY KEY (rulesxrulestypeid, warehousefromdate);
 
 
 --
@@ -1602,7 +1602,7 @@ ALTER TABLE rules.rulesxrulestype
 --
 
 ALTER TABLE rules.rulesxrulestypesecuritytoken
-    ADD CONSTRAINT rulesxrulestypesecuritytoken_pkey PRIMARY KEY (rulesxrulestypesecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT rulesxrulestypesecuritytoken_pkey PRIMARY KEY (rulesxrulestypesecuritytokenid, warehousefromdate);
 
 
 --
@@ -1620,7 +1620,7 @@ ALTER TABLE security.securityhierarchy
 --
 
 ALTER TABLE security.securitytoken
-    ADD CONSTRAINT securitytoken_pkey PRIMARY KEY (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT securitytoken_pkey PRIMARY KEY (securitytokenid, warehousefromdate);
 
 
 --
@@ -1629,7 +1629,7 @@ ALTER TABLE security.securitytoken
 --
 
 ALTER TABLE security.securitytokenssecuritytoken
-    ADD CONSTRAINT securitytokenssecuritytoken_pkey PRIMARY KEY (securitytokenaccessid, warehousecreateddate);
+    ADD CONSTRAINT securitytokenssecuritytoken_pkey PRIMARY KEY (securitytokenaccessid, warehousefromdate);
 
 
 --
@@ -1638,7 +1638,7 @@ ALTER TABLE security.securitytokenssecuritytoken
 --
 
 ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
-    ADD CONSTRAINT securitytokensxsecuritytokensecuritytoken_pkey PRIMARY KEY (securitytokenxsecuritytokensecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT securitytokensxsecuritytokensecuritytoken_pkey PRIMARY KEY (securitytokenxsecuritytokensecuritytokenid, warehousefromdate);
 
 
 --
@@ -1647,7 +1647,7 @@ ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
 --
 
 ALTER TABLE security.securitytokenxclassification
-    ADD CONSTRAINT securitytokenxclassification_pkey PRIMARY KEY (securitytokenxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT securitytokenxclassification_pkey PRIMARY KEY (securitytokenxclassificationid, warehousefromdate);
 
 
 --
@@ -1656,7 +1656,7 @@ ALTER TABLE security.securitytokenxclassification
 --
 
 ALTER TABLE security.securitytokenxclassificationsecuritytoken
-    ADD CONSTRAINT securitytokenxclassificationsecuritytoken_pkey PRIMARY KEY (securitytokenxclassificationsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT securitytokenxclassificationsecuritytoken_pkey PRIMARY KEY (securitytokenxclassificationsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1665,7 +1665,7 @@ ALTER TABLE security.securitytokenxclassificationsecuritytoken
 --
 
 ALTER TABLE security.securitytokenxsecuritytoken
-    ADD CONSTRAINT securitytokenxsecuritytoken_pkey PRIMARY KEY (securitytokenxsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT securitytokenxsecuritytoken_pkey PRIMARY KEY (securitytokenxsecuritytokenid, warehousefromdate);
 
 
 --
@@ -1845,7 +1845,7 @@ ALTER TABLE "time".years
 --
 
 ALTER TABLE address.addressxclassification
-    ADD CONSTRAINT fk10gn5jpbgrhhp4e99c6i8p9ps FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk10gn5jpbgrhhp4e99c6i8p9ps FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -1854,7 +1854,7 @@ ALTER TABLE address.addressxclassification
 --
 
 ALTER TABLE address.addressxgeography
-    ADD CONSTRAINT fk1jym0y5b721wadwh42kt6jhl7 FOREIGN KEY (addressid, warehousecreateddate) REFERENCES address.address (addressid, warehousecreateddate);
+    ADD CONSTRAINT fk1jym0y5b721wadwh42kt6jhl7 FOREIGN KEY (addressid, warehousefromdate) REFERENCES address.address (addressid, warehousefromdate);
 
 
 --
@@ -1863,7 +1863,7 @@ ALTER TABLE address.addressxgeography
 --
 
 ALTER TABLE address.addressxresourceitemsecuritytoken
-    ADD CONSTRAINT fk3483wmiodjy481digc0kciwho FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk3483wmiodjy481digc0kciwho FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -1872,7 +1872,7 @@ ALTER TABLE address.addressxresourceitemsecuritytoken
 --
 
 ALTER TABLE address.addressxgeographysecuritytoken
-    ADD CONSTRAINT fk44g7fv09en02ov1n5mtvwm9g0 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk44g7fv09en02ov1n5mtvwm9g0 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -1881,7 +1881,7 @@ ALTER TABLE address.addressxgeographysecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitem
-    ADD CONSTRAINT fk4fdkipv2j9v5vo3ejwd5k2lkc FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk4fdkipv2j9v5vo3ejwd5k2lkc FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -1890,7 +1890,7 @@ ALTER TABLE address.addressxresourceitem
 --
 
 ALTER TABLE address.addresssecuritytoken
-    ADD CONSTRAINT fk4iwbt1caylolasmb7919al3vo FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk4iwbt1caylolasmb7919al3vo FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -1899,7 +1899,7 @@ ALTER TABLE address.addresssecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitem
-    ADD CONSTRAINT fk6gvqnudvt7tsnt1gxo59d96di FOREIGN KEY (addressid, warehousecreateddate) REFERENCES address.address (addressid, warehousecreateddate);
+    ADD CONSTRAINT fk6gvqnudvt7tsnt1gxo59d96di FOREIGN KEY (addressid, warehousefromdate) REFERENCES address.address (addressid, warehousefromdate);
 
 
 --
@@ -1908,7 +1908,7 @@ ALTER TABLE address.addressxresourceitem
 --
 
 ALTER TABLE address.addressxclassification
-    ADD CONSTRAINT fk6lyv1kvg7y348bj3pmbionfkr FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk6lyv1kvg7y348bj3pmbionfkr FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -1917,7 +1917,7 @@ ALTER TABLE address.addressxclassification
 --
 
 ALTER TABLE address.addressxresourceitem
-    ADD CONSTRAINT fk8233bmyvh84df7grsv59kx99x FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8233bmyvh84df7grsv59kx99x FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -1926,7 +1926,7 @@ ALTER TABLE address.addressxresourceitem
 --
 
 ALTER TABLE address.addressxclassificationsecuritytoken
-    ADD CONSTRAINT fk8r4rrxr1r79me66xvgxk7rnrr FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk8r4rrxr1r79me66xvgxk7rnrr FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -1935,7 +1935,7 @@ ALTER TABLE address.addressxclassificationsecuritytoken
 --
 
 ALTER TABLE address.addressxgeography
-    ADD CONSTRAINT fk8tb5og3v55dnhqp8aw31nwwmt FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk8tb5og3v55dnhqp8aw31nwwmt FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -1944,7 +1944,7 @@ ALTER TABLE address.addressxgeography
 --
 
 ALTER TABLE address.addressxresourceitemsecuritytoken
-    ADD CONSTRAINT fk94ahf4mdoc5kymdb9kd3ck141 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk94ahf4mdoc5kymdb9kd3ck141 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -1953,7 +1953,7 @@ ALTER TABLE address.addressxresourceitemsecuritytoken
 --
 
 ALTER TABLE address.address
-    ADD CONSTRAINT fk9iyq6jfpe1xg4oaba71hnicr7 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk9iyq6jfpe1xg4oaba71hnicr7 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -1962,7 +1962,7 @@ ALTER TABLE address.address
 --
 
 ALTER TABLE address.addressxclassificationsecuritytoken
-    ADD CONSTRAINT fkaoaax8wtnqlmuh9uh7oewam8w FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkaoaax8wtnqlmuh9uh7oewam8w FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -1971,7 +1971,7 @@ ALTER TABLE address.addressxclassificationsecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitem
-    ADD CONSTRAINT fkappieo5e929jb2sushbbrw3xh FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkappieo5e929jb2sushbbrw3xh FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -1980,7 +1980,7 @@ ALTER TABLE address.addressxresourceitem
 --
 
 ALTER TABLE address.addressxclassificationsecuritytoken
-    ADD CONSTRAINT fkbnb6j2jg2da9a096a6mdqugc2 FOREIGN KEY (addressxclassificationid, warehousecreateddate) REFERENCES address.addressxclassification (addressxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkbnb6j2jg2da9a096a6mdqugc2 FOREIGN KEY (addressxclassificationid, warehousefromdate) REFERENCES address.addressxclassification (addressxclassificationid, warehousefromdate);
 
 
 --
@@ -1989,7 +1989,7 @@ ALTER TABLE address.addressxclassificationsecuritytoken
 --
 
 ALTER TABLE address.addressxgeographysecuritytoken
-    ADD CONSTRAINT fkcp386daxldghx156aklcouc4y FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkcp386daxldghx156aklcouc4y FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -1998,7 +1998,7 @@ ALTER TABLE address.addressxgeographysecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitemsecuritytoken
-    ADD CONSTRAINT fkds3id5ml3ium9v870rdxryoav FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkds3id5ml3ium9v870rdxryoav FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2007,7 +2007,7 @@ ALTER TABLE address.addressxresourceitemsecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitem
-    ADD CONSTRAINT fkeckhwk0f0a03h24a7we03pi2q FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkeckhwk0f0a03h24a7we03pi2q FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2016,7 +2016,7 @@ ALTER TABLE address.addressxresourceitem
 --
 
 ALTER TABLE address.address
-    ADD CONSTRAINT fkf5n0oi8hso8dpemjbb6733utp FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkf5n0oi8hso8dpemjbb6733utp FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2025,7 +2025,7 @@ ALTER TABLE address.address
 --
 
 ALTER TABLE address.addressxgeographysecuritytoken
-    ADD CONSTRAINT fkfrqil82x8r1wpyn0ral52ypi3 FOREIGN KEY (addressxgeographyid, warehousecreateddate) REFERENCES address.addressxgeography (addressxgeographyid, warehousecreateddate);
+    ADD CONSTRAINT fkfrqil82x8r1wpyn0ral52ypi3 FOREIGN KEY (addressxgeographyid, warehousefromdate) REFERENCES address.addressxgeography (addressxgeographyid, warehousefromdate);
 
 
 --
@@ -2034,7 +2034,7 @@ ALTER TABLE address.addressxgeographysecuritytoken
 --
 
 ALTER TABLE address.addressxgeographysecuritytoken
-    ADD CONSTRAINT fkgbtljbtwk7lsj92gxbx6su7dp FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkgbtljbtwk7lsj92gxbx6su7dp FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2043,7 +2043,7 @@ ALTER TABLE address.addressxgeographysecuritytoken
 --
 
 ALTER TABLE address.addresssecuritytoken
-    ADD CONSTRAINT fkgc74tjta2etx11rg02xqt293l FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkgc74tjta2etx11rg02xqt293l FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2052,7 +2052,7 @@ ALTER TABLE address.addresssecuritytoken
 --
 
 ALTER TABLE address.addressxclassification
-    ADD CONSTRAINT fkgelsst4chd2utcx5ed62or2h7 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkgelsst4chd2utcx5ed62or2h7 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2061,7 +2061,7 @@ ALTER TABLE address.addressxclassification
 --
 
 ALTER TABLE address.addressxgeography
-    ADD CONSTRAINT fkgf8llc9jdhc8s0eatod3ja84o FOREIGN KEY (geographyid, warehousecreateddate) REFERENCES geography.geography (geographyid, warehousecreateddate);
+    ADD CONSTRAINT fkgf8llc9jdhc8s0eatod3ja84o FOREIGN KEY (geographyid, warehousefromdate) REFERENCES geography.geography (geographyid, warehousefromdate);
 
 
 --
@@ -2070,7 +2070,7 @@ ALTER TABLE address.addressxgeography
 --
 
 ALTER TABLE address.address
-    ADD CONSTRAINT fkgh65u3w9ww52fhyerw4038tvf FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkgh65u3w9ww52fhyerw4038tvf FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -2079,7 +2079,7 @@ ALTER TABLE address.address
 --
 
 ALTER TABLE address.addressxgeographysecuritytoken
-    ADD CONSTRAINT fkhp6f4qu8ywoe5aj507yc3gghn FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkhp6f4qu8ywoe5aj507yc3gghn FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2088,7 +2088,7 @@ ALTER TABLE address.addressxgeographysecuritytoken
 --
 
 ALTER TABLE address.addressxclassificationsecuritytoken
-    ADD CONSTRAINT fki37g7k1r7gjvpsmrglofsk4t5 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fki37g7k1r7gjvpsmrglofsk4t5 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2097,7 +2097,7 @@ ALTER TABLE address.addressxclassificationsecuritytoken
 --
 
 ALTER TABLE address.addresssecuritytoken
-    ADD CONSTRAINT fki5s2v3sm6uuf3j8sbqbuxcfu6 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fki5s2v3sm6uuf3j8sbqbuxcfu6 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2106,7 +2106,7 @@ ALTER TABLE address.addresssecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitemsecuritytoken
-    ADD CONSTRAINT fkjdtgh57fk70hgg6owk878wdrv FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkjdtgh57fk70hgg6owk878wdrv FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2115,7 +2115,7 @@ ALTER TABLE address.addressxresourceitemsecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitem
-    ADD CONSTRAINT fkm191nhp3l761p7sgm5r0nafnl FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkm191nhp3l761p7sgm5r0nafnl FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2124,7 +2124,7 @@ ALTER TABLE address.addressxresourceitem
 --
 
 ALTER TABLE address.addressxgeography
-    ADD CONSTRAINT fkm2u3jmfqc5akhsq86tod7q6nc FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm2u3jmfqc5akhsq86tod7q6nc FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2133,7 +2133,7 @@ ALTER TABLE address.addressxgeography
 --
 
 ALTER TABLE address.addresssecuritytoken
-    ADD CONSTRAINT fknc36gmq9xrt6k0cj6clmbh13p FOREIGN KEY (addressid, warehousecreateddate) REFERENCES address.address (addressid, warehousecreateddate);
+    ADD CONSTRAINT fknc36gmq9xrt6k0cj6clmbh13p FOREIGN KEY (addressid, warehousefromdate) REFERENCES address.address (addressid, warehousefromdate);
 
 
 --
@@ -2142,7 +2142,7 @@ ALTER TABLE address.addresssecuritytoken
 --
 
 ALTER TABLE address.addressxgeography
-    ADD CONSTRAINT fknjongjciautlpcno0p44ekxn1 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fknjongjciautlpcno0p44ekxn1 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2151,7 +2151,7 @@ ALTER TABLE address.addressxgeography
 --
 
 ALTER TABLE address.addressxclassification
-    ADD CONSTRAINT fkobw11cghkuvasdoprpf8jeax5 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkobw11cghkuvasdoprpf8jeax5 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -2160,7 +2160,7 @@ ALTER TABLE address.addressxclassification
 --
 
 ALTER TABLE address.addresssecuritytoken
-    ADD CONSTRAINT fkog9cqhou7pe3e0cwc7uavblc0 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkog9cqhou7pe3e0cwc7uavblc0 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2169,7 +2169,7 @@ ALTER TABLE address.addresssecuritytoken
 --
 
 ALTER TABLE address.address
-    ADD CONSTRAINT fkoj04ku2v02yibdyt7p9nuphyf FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkoj04ku2v02yibdyt7p9nuphyf FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2178,7 +2178,7 @@ ALTER TABLE address.address
 --
 
 ALTER TABLE address.addressxgeography
-    ADD CONSTRAINT fkoni218klw7gbcm5ksonbvvvld FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkoni218klw7gbcm5ksonbvvvld FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -2187,7 +2187,7 @@ ALTER TABLE address.addressxgeography
 --
 
 ALTER TABLE address.addressxclassificationsecuritytoken
-    ADD CONSTRAINT fkoo05nqmk8a03k1nje9outisjd FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkoo05nqmk8a03k1nje9outisjd FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2196,7 +2196,7 @@ ALTER TABLE address.addressxclassificationsecuritytoken
 --
 
 ALTER TABLE address.addressxgeography
-    ADD CONSTRAINT fkpn4h36o5q70i13pbhluyugaxw FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkpn4h36o5q70i13pbhluyugaxw FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2205,7 +2205,7 @@ ALTER TABLE address.addressxgeography
 --
 
 ALTER TABLE address.addressxgeographysecuritytoken
-    ADD CONSTRAINT fkq6uacmwuavt3j9bani8jg5k50 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkq6uacmwuavt3j9bani8jg5k50 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2214,7 +2214,7 @@ ALTER TABLE address.addressxgeographysecuritytoken
 --
 
 ALTER TABLE address.addressxresourceitemsecuritytoken
-    ADD CONSTRAINT fkqcrw559ebisww70vhco1yn1l3 FOREIGN KEY (addressxresourceitemid, warehousecreateddate) REFERENCES address.addressxresourceitem (addressxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkqcrw559ebisww70vhco1yn1l3 FOREIGN KEY (addressxresourceitemid, warehousefromdate) REFERENCES address.addressxresourceitem (addressxresourceitemid, warehousefromdate);
 
 
 --
@@ -2223,7 +2223,7 @@ ALTER TABLE address.addressxresourceitemsecuritytoken
 --
 
 ALTER TABLE address.addressxclassification
-    ADD CONSTRAINT fkqemdst9c0gqhhpeqrixd4567g FOREIGN KEY (addressid, warehousecreateddate) REFERENCES address.address (addressid, warehousecreateddate);
+    ADD CONSTRAINT fkqemdst9c0gqhhpeqrixd4567g FOREIGN KEY (addressid, warehousefromdate) REFERENCES address.address (addressid, warehousefromdate);
 
 
 --
@@ -2232,7 +2232,7 @@ ALTER TABLE address.addressxclassification
 --
 
 ALTER TABLE address.addressxresourceitem
-    ADD CONSTRAINT fks421flo2pfa9xgnh0kaaju64f FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fks421flo2pfa9xgnh0kaaju64f FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -2241,7 +2241,7 @@ ALTER TABLE address.addressxresourceitem
 --
 
 ALTER TABLE address.addressxclassification
-    ADD CONSTRAINT fks747gghpsg2w01eb6xycbkem FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fks747gghpsg2w01eb6xycbkem FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2250,7 +2250,7 @@ ALTER TABLE address.addressxclassification
 --
 
 ALTER TABLE address.addresssecuritytoken
-    ADD CONSTRAINT fks8ohxcn7hgiuyyyy7koaught4 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fks8ohxcn7hgiuyyyy7koaught4 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2259,7 +2259,7 @@ ALTER TABLE address.addresssecuritytoken
 --
 
 ALTER TABLE address.address
-    ADD CONSTRAINT fksx02yl44uidocj3ryaqom1urb FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fksx02yl44uidocj3ryaqom1urb FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2268,7 +2268,7 @@ ALTER TABLE address.address
 --
 
 ALTER TABLE address.addressxresourceitemsecuritytoken
-    ADD CONSTRAINT fksx2i6hs70nkrw122gnxi1oljt FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fksx2i6hs70nkrw122gnxi1oljt FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2277,7 +2277,7 @@ ALTER TABLE address.addressxresourceitemsecuritytoken
 --
 
 ALTER TABLE address.addressxclassificationsecuritytoken
-    ADD CONSTRAINT fktnrs65dum0qh9qgh0mlyhkf27 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fktnrs65dum0qh9qgh0mlyhkf27 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2286,7 +2286,7 @@ ALTER TABLE address.addressxclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxresourceitem
-    ADD CONSTRAINT fk10auu483ou8vross23ilkm601 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk10auu483ou8vross23ilkm601 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -2295,7 +2295,7 @@ ALTER TABLE arrangement.arrangementxresourceitem
 --
 
 ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
-    ADD CONSTRAINT fk11a4s30v3c7vosoqpy1210fhu FOREIGN KEY (arrangementxrulestypeid, warehousecreateddate) REFERENCES arrangement.arrangementxrulestype (arrangementxrulestypeid, warehousecreateddate);
+    ADD CONSTRAINT fk11a4s30v3c7vosoqpy1210fhu FOREIGN KEY (arrangementxrulestypeid, warehousefromdate) REFERENCES arrangement.arrangementxrulestype (arrangementxrulestypeid, warehousefromdate);
 
 
 --
@@ -2304,7 +2304,7 @@ ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangement
-    ADD CONSTRAINT fk1evl6ld81fkqmo674i0ip26v FOREIGN KEY (parentarrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fk1evl6ld81fkqmo674i0ip26v FOREIGN KEY (parentarrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -2313,7 +2313,7 @@ ALTER TABLE arrangement.arrangementxarrangement
 --
 
 ALTER TABLE arrangement.arrangementtypesecuritytoken
-    ADD CONSTRAINT fk1kek1dppp202jrr8e9f692syg FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk1kek1dppp202jrr8e9f692syg FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2322,7 +2322,7 @@ ALTER TABLE arrangement.arrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxproduct
-    ADD CONSTRAINT fk1xsuwtqoogpaxitg2wjqk2rs3 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk1xsuwtqoogpaxitg2wjqk2rs3 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2331,7 +2331,7 @@ ALTER TABLE arrangement.arrangementxproduct
 --
 
 ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
-    ADD CONSTRAINT fk2fi4ltyv1r2frptrof3moedig FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2fi4ltyv1r2frptrof3moedig FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2340,7 +2340,7 @@ ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
-    ADD CONSTRAINT fk2hmmp93bfci8j7pwlv14p7m9 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk2hmmp93bfci8j7pwlv14p7m9 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2349,7 +2349,7 @@ ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxproductsecuritytoken
-    ADD CONSTRAINT fk2mf0po3jsf10wa7ypxoyj2t0q FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk2mf0po3jsf10wa7ypxoyj2t0q FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2358,7 +2358,7 @@ ALTER TABLE arrangement.arrangementxproductsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedparty
-    ADD CONSTRAINT fk2nbjk1qgv7xcqx60p5k9fpknv FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk2nbjk1qgv7xcqx60p5k9fpknv FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2367,7 +2367,7 @@ ALTER TABLE arrangement.arrangementxinvolvedparty
 --
 
 ALTER TABLE arrangement.arrangementxrulessecuritytoken
-    ADD CONSTRAINT fk33pq6ks4wh6ap23lm8cmv11e3 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk33pq6ks4wh6ap23lm8cmv11e3 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2376,7 +2376,7 @@ ALTER TABLE arrangement.arrangementxrulessecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypexclassification
-    ADD CONSTRAINT fk3cu1a03o9dfjsrxdgg5f8ljc1 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk3cu1a03o9dfjsrxdgg5f8ljc1 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2385,7 +2385,7 @@ ALTER TABLE arrangement.arrangementtypexclassification
 --
 
 ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
-    ADD CONSTRAINT fk3plf0o1h097qqbme256dh14ms FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk3plf0o1h097qqbme256dh14ms FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2394,7 +2394,7 @@ ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrules
-    ADD CONSTRAINT fk3q3s3y2ypar6b6yao94qiavib FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk3q3s3y2ypar6b6yao94qiavib FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2403,7 +2403,7 @@ ALTER TABLE arrangement.arrangementxrules
 --
 
 ALTER TABLE arrangement.arrangementxproduct
-    ADD CONSTRAINT fk3uwrmqh1e9msanm5ujxk06mqh FOREIGN KEY (productid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fk3uwrmqh1e9msanm5ujxk06mqh FOREIGN KEY (productid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -2412,7 +2412,7 @@ ALTER TABLE arrangement.arrangementxproduct
 --
 
 ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
-    ADD CONSTRAINT fk4b5sc95gghbab83uot4y8kma4 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk4b5sc95gghbab83uot4y8kma4 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2421,7 +2421,7 @@ ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
-    ADD CONSTRAINT fk4f2d6k0rr9lafbgy0j4w59405 FOREIGN KEY (arrangementxarrangementtypeid, warehousecreateddate) REFERENCES arrangement.arrangementxarrangementtype (arrangementxarrangementtypeid, warehousecreateddate);
+    ADD CONSTRAINT fk4f2d6k0rr9lafbgy0j4w59405 FOREIGN KEY (arrangementxarrangementtypeid, warehousefromdate) REFERENCES arrangement.arrangementxarrangementtype (arrangementxarrangementtypeid, warehousefromdate);
 
 
 --
@@ -2430,7 +2430,7 @@ ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypesecuritytoken
-    ADD CONSTRAINT fk4kogklx4xlk4ck1ol3nc3xuf3 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk4kogklx4xlk4ck1ol3nc3xuf3 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2439,7 +2439,7 @@ ALTER TABLE arrangement.arrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
-    ADD CONSTRAINT fk4lwhxuk5gfc02ycby5kfro576 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk4lwhxuk5gfc02ycby5kfro576 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2448,7 +2448,7 @@ ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
-    ADD CONSTRAINT fk51besipwxf9c4wsjao3x1b2y1 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk51besipwxf9c4wsjao3x1b2y1 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2457,7 +2457,7 @@ ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
-    ADD CONSTRAINT fk533wd6s99uye7jfrvnscmp7h0 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk533wd6s99uye7jfrvnscmp7h0 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2466,7 +2466,7 @@ ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxresourceitem
-    ADD CONSTRAINT fk5m4kptkleha73alk03p761cau FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk5m4kptkleha73alk03p761cau FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -2475,7 +2475,7 @@ ALTER TABLE arrangement.arrangementxresourceitem
 --
 
 ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
-    ADD CONSTRAINT fk5m5vtq233eq18lrww0cu5isj9 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk5m5vtq233eq18lrww0cu5isj9 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2484,7 +2484,7 @@ ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fk5nm7udu4cx5rwgqsxiy10vdmj FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5nm7udu4cx5rwgqsxiy10vdmj FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2493,7 +2493,7 @@ ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE arrangement.arrangement
-    ADD CONSTRAINT fk5qltxdf1yl3w935f1v6c1s3te FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk5qltxdf1yl3w935f1v6c1s3te FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2502,7 +2502,7 @@ ALTER TABLE arrangement.arrangement
 --
 
 ALTER TABLE arrangement.arrangementxclassification
-    ADD CONSTRAINT fk5rajkqbykrmn8tkkrqg2clkk1 FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fk5rajkqbykrmn8tkkrqg2clkk1 FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -2511,7 +2511,7 @@ ALTER TABLE arrangement.arrangementxclassification
 --
 
 ALTER TABLE arrangement.arrangementxarrangement
-    ADD CONSTRAINT fk5x95ig2e720s90163vs5mru16 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk5x95ig2e720s90163vs5mru16 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2520,7 +2520,7 @@ ALTER TABLE arrangement.arrangementxarrangement
 --
 
 ALTER TABLE arrangement.arrangementxrulessecuritytoken
-    ADD CONSTRAINT fk62jqx0o1s2q6r66fn8nrjo4bf FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk62jqx0o1s2q6r66fn8nrjo4bf FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2529,7 +2529,7 @@ ALTER TABLE arrangement.arrangementxrulessecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulestype
-    ADD CONSTRAINT fk6343urwgxbykoau8p7h0i58gj FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk6343urwgxbykoau8p7h0i58gj FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2538,7 +2538,7 @@ ALTER TABLE arrangement.arrangementxrulestype
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
-    ADD CONSTRAINT fk67y1klef35wuyfupagyk4roic FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk67y1klef35wuyfupagyk4roic FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2547,7 +2547,7 @@ ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulestype
-    ADD CONSTRAINT fk69m07mb95iafnyyk11228ihmc FOREIGN KEY (rulestypeid, warehousecreateddate) REFERENCES rules.rulestype (rulestypeid, warehousecreateddate);
+    ADD CONSTRAINT fk69m07mb95iafnyyk11228ihmc FOREIGN KEY (rulestypeid, warehousefromdate) REFERENCES rules.rulestype (rulestypeid, warehousefromdate);
 
 
 --
@@ -2556,7 +2556,7 @@ ALTER TABLE arrangement.arrangementxrulestype
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedparty
-    ADD CONSTRAINT fk6c7521dhlo7ou6o4oeosk7eop FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6c7521dhlo7ou6o4oeosk7eop FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2565,7 +2565,7 @@ ALTER TABLE arrangement.arrangementxinvolvedparty
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedparty
-    ADD CONSTRAINT fk6ka1ls0qmv9y1iaya2rkr8m5r FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk6ka1ls0qmv9y1iaya2rkr8m5r FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -2574,7 +2574,7 @@ ALTER TABLE arrangement.arrangementxinvolvedparty
 --
 
 ALTER TABLE arrangement.arrangementxrulestype
-    ADD CONSTRAINT fk6rx9646bu0edq22qa8nol81vv FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6rx9646bu0edq22qa8nol81vv FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2583,7 +2583,7 @@ ALTER TABLE arrangement.arrangementxrulestype
 --
 
 ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
-    ADD CONSTRAINT fk6tsk1t4h6o94591ke2oy8fcte FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk6tsk1t4h6o94591ke2oy8fcte FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2592,7 +2592,7 @@ ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulessecuritytoken
-    ADD CONSTRAINT fk6tttie9brrhlxxh2adq02kffo FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk6tttie9brrhlxxh2adq02kffo FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2601,7 +2601,7 @@ ALTER TABLE arrangement.arrangementxrulessecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedparty
-    ADD CONSTRAINT fk71wpg1p7v2qn02lh0cw5drs95 FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fk71wpg1p7v2qn02lh0cw5drs95 FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -2610,7 +2610,7 @@ ALTER TABLE arrangement.arrangementxinvolvedparty
 --
 
 ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
-    ADD CONSTRAINT fk7h39db92fgksv3rwgkq72hsd1 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7h39db92fgksv3rwgkq72hsd1 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2619,7 +2619,7 @@ ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
-    ADD CONSTRAINT fk7y5i3hvgtvn2u9mtx8wljsh9a FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7y5i3hvgtvn2u9mtx8wljsh9a FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2628,7 +2628,7 @@ ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxproductsecuritytoken
-    ADD CONSTRAINT fk7ychxphmo3yvikab4txsecg1h FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7ychxphmo3yvikab4txsecg1h FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2637,7 +2637,7 @@ ALTER TABLE arrangement.arrangementxproductsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxproductsecuritytoken
-    ADD CONSTRAINT fk82ys481oxq2v892sryshuytj0 FOREIGN KEY (arrangementxproductid, warehousecreateddate) REFERENCES arrangement.arrangementxproduct (arrangementxproductid, warehousecreateddate);
+    ADD CONSTRAINT fk82ys481oxq2v892sryshuytj0 FOREIGN KEY (arrangementxproductid, warehousefromdate) REFERENCES arrangement.arrangementxproduct (arrangementxproductid, warehousefromdate);
 
 
 --
@@ -2646,7 +2646,7 @@ ALTER TABLE arrangement.arrangementxproductsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
-    ADD CONSTRAINT fk8bgg9lfof21l7yvjet4et71xj FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk8bgg9lfof21l7yvjet4et71xj FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2655,7 +2655,7 @@ ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementsecuritytoken
-    ADD CONSTRAINT fk8h3yhvjy6fw0rvr2uyxq8voh5 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8h3yhvjy6fw0rvr2uyxq8voh5 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2664,7 +2664,7 @@ ALTER TABLE arrangement.arrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
-    ADD CONSTRAINT fk8jucexc7kuoodu11v39lpwxj9 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk8jucexc7kuoodu11v39lpwxj9 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2673,7 +2673,7 @@ ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypesecuritytoken
-    ADD CONSTRAINT fk8to2ic6e1hst2vlk01q5p7cw1 FOREIGN KEY (arrangementtypeid, warehousecreateddate) REFERENCES arrangement.arrangementtype (arrangementtypeid, warehousecreateddate);
+    ADD CONSTRAINT fk8to2ic6e1hst2vlk01q5p7cw1 FOREIGN KEY (arrangementtypeid, warehousefromdate) REFERENCES arrangement.arrangementtype (arrangementtypeid, warehousefromdate);
 
 
 --
@@ -2682,7 +2682,7 @@ ALTER TABLE arrangement.arrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
-    ADD CONSTRAINT fk9c1o9pupbc18y3et9022u6etc FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk9c1o9pupbc18y3et9022u6etc FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2691,7 +2691,7 @@ ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
-    ADD CONSTRAINT fk9cdguosd6bmsd6ihjueeay3qu FOREIGN KEY (arrangementxclassificationid, warehousecreateddate) REFERENCES arrangement.arrangementxclassification (arrangementxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fk9cdguosd6bmsd6ihjueeay3qu FOREIGN KEY (arrangementxclassificationid, warehousefromdate) REFERENCES arrangement.arrangementxclassification (arrangementxclassificationid, warehousefromdate);
 
 
 --
@@ -2700,7 +2700,7 @@ ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangement
-    ADD CONSTRAINT fk9g734gsx3xenay6j6aw1t11dv FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk9g734gsx3xenay6j6aw1t11dv FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2709,7 +2709,7 @@ ALTER TABLE arrangement.arrangementxarrangement
 --
 
 ALTER TABLE arrangement.arrangement
-    ADD CONSTRAINT fk9gnhqn13p53nkwow24uj5lllt FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk9gnhqn13p53nkwow24uj5lllt FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2718,7 +2718,7 @@ ALTER TABLE arrangement.arrangement
 --
 
 ALTER TABLE arrangement.arrangementtypesecuritytoken
-    ADD CONSTRAINT fk9le4bf2k6hm5nc8ieluakg4fd FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk9le4bf2k6hm5nc8ieluakg4fd FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2727,7 +2727,7 @@ ALTER TABLE arrangement.arrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
-    ADD CONSTRAINT fk9q39hofgnynlo6lfnv57d0wn7 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk9q39hofgnynlo6lfnv57d0wn7 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2736,7 +2736,7 @@ ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
-    ADD CONSTRAINT fk9veykvob6op2xdb32ad53tu82 FOREIGN KEY (arrangementtypexclassificationid, warehousecreateddate) REFERENCES arrangement.arrangementtypexclassification (arrangementtypexclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fk9veykvob6op2xdb32ad53tu82 FOREIGN KEY (arrangementtypexclassificationid, warehousefromdate) REFERENCES arrangement.arrangementtypexclassification (arrangementtypexclassificationid, warehousefromdate);
 
 
 --
@@ -2745,7 +2745,7 @@ ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxclassification
-    ADD CONSTRAINT fk9w31er1wt79j9n4v3ugfhb6hn FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk9w31er1wt79j9n4v3ugfhb6hn FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -2754,7 +2754,7 @@ ALTER TABLE arrangement.arrangementxclassification
 --
 
 ALTER TABLE arrangement.arrangementtype
-    ADD CONSTRAINT fkaflivu0h1pm24n5y95tw5gv1y FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkaflivu0h1pm24n5y95tw5gv1y FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2763,7 +2763,7 @@ ALTER TABLE arrangement.arrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxproduct
-    ADD CONSTRAINT fkalyhg8tgsoumu832w7ol05mqv FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkalyhg8tgsoumu832w7ol05mqv FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -2772,7 +2772,7 @@ ALTER TABLE arrangement.arrangementxproduct
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtype
-    ADD CONSTRAINT fkb2mvoggrta8b3xlgvxav3gv68 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkb2mvoggrta8b3xlgvxav3gv68 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2781,7 +2781,7 @@ ALTER TABLE arrangement.arrangementxarrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtype
-    ADD CONSTRAINT fkbbug6qxo424aa0l3k0ilpjwh1 FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fkbbug6qxo424aa0l3k0ilpjwh1 FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -2790,7 +2790,7 @@ ALTER TABLE arrangement.arrangementxarrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxrules
-    ADD CONSTRAINT fkbc3k5pxxb18ylj1p929i1t740 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkbc3k5pxxb18ylj1p929i1t740 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2799,7 +2799,7 @@ ALTER TABLE arrangement.arrangementxrules
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtype
-    ADD CONSTRAINT fkbcb78fk9imiu30j55mudj4w9l FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkbcb78fk9imiu30j55mudj4w9l FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2808,7 +2808,7 @@ ALTER TABLE arrangement.arrangementxarrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxclassification
-    ADD CONSTRAINT fkbkgxtaag54r6vr8vyt0p6e2uu FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkbkgxtaag54r6vr8vyt0p6e2uu FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2817,7 +2817,7 @@ ALTER TABLE arrangement.arrangementxclassification
 --
 
 ALTER TABLE arrangement.arrangementxarrangement
-    ADD CONSTRAINT fkbli36e1w9e3a47g2s5a5unn2n FOREIGN KEY (childarrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fkbli36e1w9e3a47g2s5a5unn2n FOREIGN KEY (childarrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -2826,7 +2826,7 @@ ALTER TABLE arrangement.arrangementxarrangement
 --
 
 ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
-    ADD CONSTRAINT fkby5vbby0hxu3nnxqjkgpg71xq FOREIGN KEY (arrangementxarrangementid, warehousecreateddate) REFERENCES arrangement.arrangementxarrangement (arrangementxarrangementid, warehousecreateddate);
+    ADD CONSTRAINT fkby5vbby0hxu3nnxqjkgpg71xq FOREIGN KEY (arrangementxarrangementid, warehousefromdate) REFERENCES arrangement.arrangementxarrangement (arrangementxarrangementid, warehousefromdate);
 
 
 --
@@ -2835,7 +2835,7 @@ ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedparty
-    ADD CONSTRAINT fkc3wsa0x6xjq8pt6mnp8p2390l FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkc3wsa0x6xjq8pt6mnp8p2390l FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2844,7 +2844,7 @@ ALTER TABLE arrangement.arrangementxinvolvedparty
 --
 
 ALTER TABLE arrangement.arrangementxrulessecuritytoken
-    ADD CONSTRAINT fkc4a0rcrpg0hotxs39ny4ki4qw FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkc4a0rcrpg0hotxs39ny4ki4qw FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2853,7 +2853,7 @@ ALTER TABLE arrangement.arrangementxrulessecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
-    ADD CONSTRAINT fkc6bmk80c5n3kl4frhnr5nsn5s FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkc6bmk80c5n3kl4frhnr5nsn5s FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2862,7 +2862,7 @@ ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulestype
-    ADD CONSTRAINT fkcnkik4eq3xs4h6v2j13ul3rsv FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkcnkik4eq3xs4h6v2j13ul3rsv FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2871,7 +2871,7 @@ ALTER TABLE arrangement.arrangementxrulestype
 --
 
 ALTER TABLE arrangement.arrangementxrulestype
-    ADD CONSTRAINT fkd7koulxa7fid1reyw9nyhhuts FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fkd7koulxa7fid1reyw9nyhhuts FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -2880,7 +2880,7 @@ ALTER TABLE arrangement.arrangementxrulestype
 --
 
 ALTER TABLE arrangement.arrangementxresourceitem
-    ADD CONSTRAINT fked04m2i7mgfyfrsxu60cmf8or FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fked04m2i7mgfyfrsxu60cmf8or FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2889,7 +2889,7 @@ ALTER TABLE arrangement.arrangementxresourceitem
 --
 
 ALTER TABLE arrangement.arrangementxproduct
-    ADD CONSTRAINT fked4l0kxkvvnw06uq0l4n55e35 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fked4l0kxkvvnw06uq0l4n55e35 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2898,7 +2898,7 @@ ALTER TABLE arrangement.arrangementxproduct
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtype
-    ADD CONSTRAINT fkek405uwe4g6xo9tdi9gfhg88y FOREIGN KEY (arrangementtypeid, warehousecreateddate) REFERENCES arrangement.arrangementtype (arrangementtypeid, warehousecreateddate);
+    ADD CONSTRAINT fkek405uwe4g6xo9tdi9gfhg88y FOREIGN KEY (arrangementtypeid, warehousefromdate) REFERENCES arrangement.arrangementtype (arrangementtypeid, warehousefromdate);
 
 
 --
@@ -2907,7 +2907,7 @@ ALTER TABLE arrangement.arrangementxarrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxclassification
-    ADD CONSTRAINT fkesqu1vwy8pm4ori8xt2hlt00y FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkesqu1vwy8pm4ori8xt2hlt00y FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -2916,7 +2916,7 @@ ALTER TABLE arrangement.arrangementxclassification
 --
 
 ALTER TABLE arrangement.arrangementxproductsecuritytoken
-    ADD CONSTRAINT fkf0liawyl1pg73vaqhl9077ty2 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkf0liawyl1pg73vaqhl9077ty2 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -2925,7 +2925,7 @@ ALTER TABLE arrangement.arrangementxproductsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrules
-    ADD CONSTRAINT fkf8qlkxh19e3pedt1xmnwe786o FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkf8qlkxh19e3pedt1xmnwe786o FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2934,7 +2934,7 @@ ALTER TABLE arrangement.arrangementxrules
 --
 
 ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
-    ADD CONSTRAINT fkfieks9k5klxucyqm2qel3dvyk FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkfieks9k5klxucyqm2qel3dvyk FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -2943,7 +2943,7 @@ ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
-    ADD CONSTRAINT fkfuddtuea83j0rqqy24iwxsddr FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkfuddtuea83j0rqqy24iwxsddr FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2952,7 +2952,7 @@ ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
-    ADD CONSTRAINT fkfxhigbw4io92wri4583cu4v0l FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkfxhigbw4io92wri4583cu4v0l FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2961,7 +2961,7 @@ ALTER TABLE arrangement.arrangementxrulestypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulessecuritytoken
-    ADD CONSTRAINT fkgeha0vtd9yo30vppd0an8kcyp FOREIGN KEY (arrangementxrulesid, warehousecreateddate) REFERENCES arrangement.arrangementxrules (arrangementxrulesid, warehousecreateddate);
+    ADD CONSTRAINT fkgeha0vtd9yo30vppd0an8kcyp FOREIGN KEY (arrangementxrulesid, warehousefromdate) REFERENCES arrangement.arrangementxrules (arrangementxrulesid, warehousefromdate);
 
 
 --
@@ -2970,7 +2970,7 @@ ALTER TABLE arrangement.arrangementxrulessecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypexclassification
-    ADD CONSTRAINT fkgqxi8s68s3xjnmr59l1mjrm3g FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkgqxi8s68s3xjnmr59l1mjrm3g FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -2979,7 +2979,7 @@ ALTER TABLE arrangement.arrangementtypexclassification
 --
 
 ALTER TABLE arrangement.arrangementtypexclassification
-    ADD CONSTRAINT fkhasvr2i2sploam3msr9ujxvg4 FOREIGN KEY (arrangementtypeid, warehousecreateddate) REFERENCES arrangement.arrangementtype (arrangementtypeid, warehousecreateddate);
+    ADD CONSTRAINT fkhasvr2i2sploam3msr9ujxvg4 FOREIGN KEY (arrangementtypeid, warehousefromdate) REFERENCES arrangement.arrangementtype (arrangementtypeid, warehousefromdate);
 
 
 --
@@ -2988,7 +2988,7 @@ ALTER TABLE arrangement.arrangementtypexclassification
 --
 
 ALTER TABLE arrangement.arrangementxrulessecuritytoken
-    ADD CONSTRAINT fkhf5rvmrtd7mq9vm4obo2m68eh FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkhf5rvmrtd7mq9vm4obo2m68eh FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -2997,7 +2997,7 @@ ALTER TABLE arrangement.arrangementxrulessecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
-    ADD CONSTRAINT fkhsvu9ibj7uijfgn34h38l5nh3 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkhsvu9ibj7uijfgn34h38l5nh3 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3006,7 +3006,7 @@ ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangement
-    ADD CONSTRAINT fkhyfnlmxxkjivonnw64dir0iph FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkhyfnlmxxkjivonnw64dir0iph FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3015,7 +3015,7 @@ ALTER TABLE arrangement.arrangement
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedparty
-    ADD CONSTRAINT fki29w8ch3051e71mlykw6gt7p0 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fki29w8ch3051e71mlykw6gt7p0 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3024,7 +3024,7 @@ ALTER TABLE arrangement.arrangementxinvolvedparty
 --
 
 ALTER TABLE arrangement.arrangementxproduct
-    ADD CONSTRAINT fki2inhxddbgmsdi3bl7mwt7fqi FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fki2inhxddbgmsdi3bl7mwt7fqi FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3033,7 +3033,7 @@ ALTER TABLE arrangement.arrangementxproduct
 --
 
 ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
-    ADD CONSTRAINT fki6fgnt16ckmqi9y21s9a8gp47 FOREIGN KEY (arrangementxresourceitemid, warehousecreateddate) REFERENCES arrangement.arrangementxresourceitem (arrangementxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fki6fgnt16ckmqi9y21s9a8gp47 FOREIGN KEY (arrangementxresourceitemid, warehousefromdate) REFERENCES arrangement.arrangementxresourceitem (arrangementxresourceitemid, warehousefromdate);
 
 
 --
@@ -3042,7 +3042,7 @@ ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
-    ADD CONSTRAINT fkieslcpo9uox0881igyk7rdfrq FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkieslcpo9uox0881igyk7rdfrq FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3051,7 +3051,7 @@ ALTER TABLE arrangement.arrangementxarrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxproduct
-    ADD CONSTRAINT fkiissfi60gmgix1sr4ik8wp9fa FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fkiissfi60gmgix1sr4ik8wp9fa FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -3060,7 +3060,7 @@ ALTER TABLE arrangement.arrangementxproduct
 --
 
 ALTER TABLE arrangement.arrangementxresourceitem
-    ADD CONSTRAINT fkiu0pr9p6o39mwwfh9epgoahom FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fkiu0pr9p6o39mwwfh9epgoahom FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -3069,7 +3069,7 @@ ALTER TABLE arrangement.arrangementxresourceitem
 --
 
 ALTER TABLE arrangement.arrangementtypesecuritytoken
-    ADD CONSTRAINT fkj02k0j5pke3dkpaxhbgmaikqi FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkj02k0j5pke3dkpaxhbgmaikqi FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3078,7 +3078,7 @@ ALTER TABLE arrangement.arrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
-    ADD CONSTRAINT fkk5vha5aon2i7roy6wox5r8k1d FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkk5vha5aon2i7roy6wox5r8k1d FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -3087,7 +3087,7 @@ ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxproductsecuritytoken
-    ADD CONSTRAINT fkkfajnpjwfuc4kt13avqmjs27i FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkkfajnpjwfuc4kt13avqmjs27i FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -3096,7 +3096,7 @@ ALTER TABLE arrangement.arrangementxproductsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangement
-    ADD CONSTRAINT fkkg32gfwya6793p80k1no6hmk8 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkkg32gfwya6793p80k1no6hmk8 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3105,7 +3105,7 @@ ALTER TABLE arrangement.arrangementxarrangement
 --
 
 ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
-    ADD CONSTRAINT fkko0edkl361kq6uwstfhcmp1e7 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkko0edkl361kq6uwstfhcmp1e7 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3114,7 +3114,7 @@ ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedparty
-    ADD CONSTRAINT fkkpvqwygo5551679i6hds7kada FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkkpvqwygo5551679i6hds7kada FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -3123,7 +3123,7 @@ ALTER TABLE arrangement.arrangementxinvolvedparty
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkkyktyh5uldr0apnx4fb7rqqhj FOREIGN KEY (arrangementxinvolvedpartyid, warehousecreateddate) REFERENCES arrangement.arrangementxinvolvedparty (arrangementxinvolvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkkyktyh5uldr0apnx4fb7rqqhj FOREIGN KEY (arrangementxinvolvedpartyid, warehousefromdate) REFERENCES arrangement.arrangementxinvolvedparty (arrangementxinvolvedpartyid, warehousefromdate);
 
 
 --
@@ -3132,7 +3132,7 @@ ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrules
-    ADD CONSTRAINT fkl1taisa4493ad6n8troarks3c FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fkl1taisa4493ad6n8troarks3c FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -3141,7 +3141,7 @@ ALTER TABLE arrangement.arrangementxrules
 --
 
 ALTER TABLE arrangement.arrangementtypexclassification
-    ADD CONSTRAINT fklexxdvodllklvfn0ua4r0aw0u FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklexxdvodllklvfn0ua4r0aw0u FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3150,7 +3150,7 @@ ALTER TABLE arrangement.arrangementtypexclassification
 --
 
 ALTER TABLE arrangement.arrangementtypexclassification
-    ADD CONSTRAINT fklne0s6fbh4wdnpnvija69e2d8 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fklne0s6fbh4wdnpnvija69e2d8 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3159,7 +3159,7 @@ ALTER TABLE arrangement.arrangementtypexclassification
 --
 
 ALTER TABLE arrangement.arrangementtype
-    ADD CONSTRAINT fkm3ev8du7vdvw2rislo3gxsvv9 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm3ev8du7vdvw2rislo3gxsvv9 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3168,7 +3168,7 @@ ALTER TABLE arrangement.arrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
-    ADD CONSTRAINT fkmxvd2rnt5882sxxk831sdbkqq FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmxvd2rnt5882sxxk831sdbkqq FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3177,7 +3177,7 @@ ALTER TABLE arrangement.arrangementxclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
-    ADD CONSTRAINT fkn7ohgt9uwimsmg8b1kcclgymq FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkn7ohgt9uwimsmg8b1kcclgymq FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3186,7 +3186,7 @@ ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementsecuritytoken
-    ADD CONSTRAINT fkngh7orqtfcriw1bpc7ctcu9ay FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkngh7orqtfcriw1bpc7ctcu9ay FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3195,7 +3195,7 @@ ALTER TABLE arrangement.arrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fknhcqo7dtttikbygsv29vbxw64 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fknhcqo7dtttikbygsv29vbxw64 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3204,7 +3204,7 @@ ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementsecuritytoken
-    ADD CONSTRAINT fknjnehgnp3ybq6wcnfbx6clqi8 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fknjnehgnp3ybq6wcnfbx6clqi8 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -3213,7 +3213,7 @@ ALTER TABLE arrangement.arrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtype
-    ADD CONSTRAINT fknk2gclr0bkbxp3dvg0yboy59o FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fknk2gclr0bkbxp3dvg0yboy59o FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3222,7 +3222,7 @@ ALTER TABLE arrangement.arrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxproductsecuritytoken
-    ADD CONSTRAINT fknp4l2srl6e09175ngloxrexer FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fknp4l2srl6e09175ngloxrexer FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3231,7 +3231,7 @@ ALTER TABLE arrangement.arrangementxproductsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangement
-    ADD CONSTRAINT fko7k9jfu2q1gdbwkhan19cjg6r FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko7k9jfu2q1gdbwkhan19cjg6r FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3240,7 +3240,7 @@ ALTER TABLE arrangement.arrangement
 --
 
 ALTER TABLE arrangement.arrangementsecuritytoken
-    ADD CONSTRAINT fkodrogs5m3dhd54wsy89161ika FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkodrogs5m3dhd54wsy89161ika FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3249,7 +3249,7 @@ ALTER TABLE arrangement.arrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
-    ADD CONSTRAINT fkofagwms8gkw6geqmiyncnj2cx FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkofagwms8gkw6geqmiyncnj2cx FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3258,7 +3258,7 @@ ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtype
-    ADD CONSTRAINT fkofvbeuabms8ebk75wsgnkjbld FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkofvbeuabms8ebk75wsgnkjbld FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3267,7 +3267,7 @@ ALTER TABLE arrangement.arrangementxarrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
-    ADD CONSTRAINT fkotwjcy38jqowrom4f1t9u4sxv FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkotwjcy38jqowrom4f1t9u4sxv FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3276,7 +3276,7 @@ ALTER TABLE arrangement.arrangementxresourceitemsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxrulestype
-    ADD CONSTRAINT fkov2gqdwxiyblbpqmnwc4np7x9 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkov2gqdwxiyblbpqmnwc4np7x9 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3285,7 +3285,7 @@ ALTER TABLE arrangement.arrangementxrulestype
 --
 
 ALTER TABLE arrangement.arrangementxarrangement
-    ADD CONSTRAINT fkovmdueeas3icmh2sa2j64g4ck FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkovmdueeas3icmh2sa2j64g4ck FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3294,7 +3294,7 @@ ALTER TABLE arrangement.arrangementxarrangement
 --
 
 ALTER TABLE arrangement.arrangementtypesecuritytoken
-    ADD CONSTRAINT fkp3x2trigpgx2f2q7h92n2tlr2 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkp3x2trigpgx2f2q7h92n2tlr2 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3303,7 +3303,7 @@ ALTER TABLE arrangement.arrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkp9gl2xg7lrargsi7wloadqsxa FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkp9gl2xg7lrargsi7wloadqsxa FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3312,7 +3312,7 @@ ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
-    ADD CONSTRAINT fkpe27j1xif8mx3f5q5dh6o41an FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkpe27j1xif8mx3f5q5dh6o41an FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3321,7 +3321,7 @@ ALTER TABLE arrangement.arrangementtypexclassificationsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtypexclassification
-    ADD CONSTRAINT fkpi8wetfnfovvirlmsfvhu89bh FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkpi8wetfnfovvirlmsfvhu89bh FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3330,7 +3330,7 @@ ALTER TABLE arrangement.arrangementtypexclassification
 --
 
 ALTER TABLE arrangement.arrangementxresourceitem
-    ADD CONSTRAINT fkpj4eok42bmisj8g6r7crx0er5 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkpj4eok42bmisj8g6r7crx0er5 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3339,7 +3339,7 @@ ALTER TABLE arrangement.arrangementxresourceitem
 --
 
 ALTER TABLE arrangement.arrangementxresourceitem
-    ADD CONSTRAINT fkpjx2bwph3f67laisvffrnopd8 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkpjx2bwph3f67laisvffrnopd8 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3348,7 +3348,7 @@ ALTER TABLE arrangement.arrangementxresourceitem
 --
 
 ALTER TABLE arrangement.arrangementxclassification
-    ADD CONSTRAINT fkpwmnjntxrxxp88ohtix3f9rld FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkpwmnjntxrxxp88ohtix3f9rld FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3357,7 +3357,7 @@ ALTER TABLE arrangement.arrangementxclassification
 --
 
 ALTER TABLE arrangement.arrangementxrulestype
-    ADD CONSTRAINT fkq01c7ongg1cofa4ceibxduma2 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkq01c7ongg1cofa4ceibxduma2 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3366,7 +3366,7 @@ ALTER TABLE arrangement.arrangementxrulestype
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
-    ADD CONSTRAINT fkqi48u6i84yjq1jg357fh1qwgi FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqi48u6i84yjq1jg357fh1qwgi FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3375,7 +3375,7 @@ ALTER TABLE arrangement.arrangementxarrangementtypesecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkqmjll31vsk7uwahn932wd5vob FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkqmjll31vsk7uwahn932wd5vob FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3384,7 +3384,7 @@ ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxclassification
-    ADD CONSTRAINT fkqryq2ja6bavkj7a5bj7w081kp FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqryq2ja6bavkj7a5bj7w081kp FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3393,7 +3393,7 @@ ALTER TABLE arrangement.arrangementxclassification
 --
 
 ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkqup67qfcgs10hc0x651xne7t9 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkqup67qfcgs10hc0x651xne7t9 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -3402,7 +3402,7 @@ ALTER TABLE arrangement.arrangementxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtype
-    ADD CONSTRAINT fkqxy44j74nhe3dhfwf595lguwl FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkqxy44j74nhe3dhfwf595lguwl FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3411,7 +3411,7 @@ ALTER TABLE arrangement.arrangementxarrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxrules
-    ADD CONSTRAINT fkqyb5d3jb3i9rsxm0cfo208njj FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqyb5d3jb3i9rsxm0cfo208njj FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3420,7 +3420,7 @@ ALTER TABLE arrangement.arrangementxrules
 --
 
 ALTER TABLE arrangement.arrangementxresourceitem
-    ADD CONSTRAINT fkrc9mg4osgj3ye4dab54n96ttq FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkrc9mg4osgj3ye4dab54n96ttq FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3429,7 +3429,7 @@ ALTER TABLE arrangement.arrangementxresourceitem
 --
 
 ALTER TABLE arrangement.arrangementsecuritytoken
-    ADD CONSTRAINT fkrhnkn0cyirv36wdfbx81p2omn FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fkrhnkn0cyirv36wdfbx81p2omn FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -3438,7 +3438,7 @@ ALTER TABLE arrangement.arrangementsecuritytoken
 --
 
 ALTER TABLE arrangement.arrangementtype
-    ADD CONSTRAINT fkro0fvyrds9erw2wk2s6gderhd FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkro0fvyrds9erw2wk2s6gderhd FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3447,7 +3447,7 @@ ALTER TABLE arrangement.arrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxrules
-    ADD CONSTRAINT fkrt9gl1ke0yp5rgncnsr0t2x2m FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkrt9gl1ke0yp5rgncnsr0t2x2m FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3456,7 +3456,7 @@ ALTER TABLE arrangement.arrangementxrules
 --
 
 ALTER TABLE arrangement.arrangementxarrangementtype
-    ADD CONSTRAINT fkshy3d2vx1xpatx6rnu60ag7jg FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkshy3d2vx1xpatx6rnu60ag7jg FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3465,7 +3465,7 @@ ALTER TABLE arrangement.arrangementxarrangementtype
 --
 
 ALTER TABLE arrangement.arrangementxrules
-    ADD CONSTRAINT fksp0nolvpdwpwmjyghyp486frp FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fksp0nolvpdwpwmjyghyp486frp FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -3474,7 +3474,7 @@ ALTER TABLE arrangement.arrangementxrules
 --
 
 ALTER TABLE arrangement.arrangementxarrangement
-    ADD CONSTRAINT fksw7clyy90t99djoxclxg646im FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fksw7clyy90t99djoxclxg646im FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3483,7 +3483,7 @@ ALTER TABLE arrangement.arrangementxarrangement
 --
 
 ALTER TABLE arrangement.arrangementxproduct
-    ADD CONSTRAINT fkt25tk83urovuvrxc874cm07hh FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkt25tk83urovuvrxc874cm07hh FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3492,7 +3492,7 @@ ALTER TABLE arrangement.arrangementxproduct
 --
 
 ALTER TABLE arrangement.arrangementsecuritytoken
-    ADD CONSTRAINT fkt5ibl9ewo11erwy04qt07riv3 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkt5ibl9ewo11erwy04qt07riv3 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3501,7 +3501,7 @@ ALTER TABLE arrangement.arrangementsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptsecuritytoken
-    ADD CONSTRAINT fk104e6i5qwqmf9codleb3r0sq8 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk104e6i5qwqmf9codleb3r0sq8 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3510,7 +3510,7 @@ ALTER TABLE classification.classificationdataconceptsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
-    ADD CONSTRAINT fk11pvel7kmbcntj5cllihder1x FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk11pvel7kmbcntj5cllihder1x FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3519,7 +3519,7 @@ ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
-    ADD CONSTRAINT fk18b70ps0o5g4y7eo5awrlls3v FOREIGN KEY (classificationdataconceptxresourceitemid, warehousecreateddate) REFERENCES classification.classificationdataconceptxresourceitem (classificationdataconceptxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk18b70ps0o5g4y7eo5awrlls3v FOREIGN KEY (classificationdataconceptxresourceitemid, warehousefromdate) REFERENCES classification.classificationdataconceptxresourceitem (classificationdataconceptxresourceitemid, warehousefromdate);
 
 
 --
@@ -3528,7 +3528,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
-    ADD CONSTRAINT fk1x5i621v0xt7a60cvh4w88fu5 FOREIGN KEY (classificationdataconceptxclassificationid, warehousecreateddate) REFERENCES classification.classificationdataconceptxclassification (classificationdataconceptxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fk1x5i621v0xt7a60cvh4w88fu5 FOREIGN KEY (classificationdataconceptxclassificationid, warehousefromdate) REFERENCES classification.classificationdataconceptxclassification (classificationdataconceptxclassificationid, warehousefromdate);
 
 
 --
@@ -3537,7 +3537,7 @@ ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitemsecuritytoken
-    ADD CONSTRAINT fk202whr6s26bncotttl943yl80 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk202whr6s26bncotttl943yl80 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3546,7 +3546,7 @@ ALTER TABLE classification.classificationxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitem
-    ADD CONSTRAINT fk26e3u9h3fcxpwbormhncoee4p FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk26e3u9h3fcxpwbormhncoee4p FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3555,7 +3555,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitem
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
-    ADD CONSTRAINT fk31ifcku5xuo9j2f7nyvsheivg FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk31ifcku5xuo9j2f7nyvsheivg FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3564,7 +3564,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationxclassificationsecuritytoken
-    ADD CONSTRAINT fk382so754rj84e0moqjj7q6cmd FOREIGN KEY (classificationxclassificationid, warehousecreateddate) REFERENCES classification.classificationxclassification (classificationxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fk382so754rj84e0moqjj7q6cmd FOREIGN KEY (classificationxclassificationid, warehousefromdate) REFERENCES classification.classificationxclassification (classificationxclassificationid, warehousefromdate);
 
 
 --
@@ -3573,7 +3573,7 @@ ALTER TABLE classification.classificationxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationsecuritytoken
-    ADD CONSTRAINT fk3pyb4fg9krm6cs8gyymn96d1b FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk3pyb4fg9krm6cs8gyymn96d1b FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3582,7 +3582,7 @@ ALTER TABLE classification.classificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitem
-    ADD CONSTRAINT fk41ad965y444vlu7ib0yr8qf96 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk41ad965y444vlu7ib0yr8qf96 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3591,7 +3591,7 @@ ALTER TABLE classification.classificationxresourceitem
 --
 
 ALTER TABLE classification.classificationdataconceptxclassification
-    ADD CONSTRAINT fk4wh9c6d6snotj0cdns7wdojty FOREIGN KEY (classificationdataconceptid, warehousecreateddate) REFERENCES classification.classificationdataconcept (classificationdataconceptid, warehousecreateddate);
+    ADD CONSTRAINT fk4wh9c6d6snotj0cdns7wdojty FOREIGN KEY (classificationdataconceptid, warehousefromdate) REFERENCES classification.classificationdataconcept (classificationdataconceptid, warehousefromdate);
 
 
 --
@@ -3600,7 +3600,7 @@ ALTER TABLE classification.classificationdataconceptxclassification
 --
 
 ALTER TABLE classification.classificationxclassification
-    ADD CONSTRAINT fk5lxvsymahaue1a1gx87ll8w9t FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5lxvsymahaue1a1gx87ll8w9t FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3609,7 +3609,7 @@ ALTER TABLE classification.classificationxclassification
 --
 
 ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
-    ADD CONSTRAINT fk60x6yebwf17dn491shf6aobv2 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk60x6yebwf17dn491shf6aobv2 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3618,7 +3618,7 @@ ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxclassification
-    ADD CONSTRAINT fk6p7cqsuyxor559t3sfbxvsrsh FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk6p7cqsuyxor559t3sfbxvsrsh FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3627,7 +3627,7 @@ ALTER TABLE classification.classificationdataconceptxclassification
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitem
-    ADD CONSTRAINT fk70uhig9qru3lmqnjq9yfgsddn FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk70uhig9qru3lmqnjq9yfgsddn FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3636,7 +3636,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitem
 --
 
 ALTER TABLE classification.classificationdataconcept
-    ADD CONSTRAINT fk7anrd6m4u7jmgosom1ov3sup6 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7anrd6m4u7jmgosom1ov3sup6 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3645,7 +3645,7 @@ ALTER TABLE classification.classificationdataconcept
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitem
-    ADD CONSTRAINT fk7cngjs2bvw18p1j29fg62svn3 FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk7cngjs2bvw18p1j29fg62svn3 FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -3654,7 +3654,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitem
 --
 
 ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
-    ADD CONSTRAINT fk86t8j5lcn4fxi8km9e839mn76 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk86t8j5lcn4fxi8km9e839mn76 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -3663,7 +3663,7 @@ ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classification
-    ADD CONSTRAINT fk8cywgvl24kx13sapgd5ppnxgn FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk8cywgvl24kx13sapgd5ppnxgn FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3672,7 +3672,7 @@ ALTER TABLE classification.classification
 --
 
 ALTER TABLE classification.classificationdataconceptxclassification
-    ADD CONSTRAINT fk8ri5ojfslqput3614qfxh89ko FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk8ri5ojfslqput3614qfxh89ko FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3681,7 +3681,7 @@ ALTER TABLE classification.classificationdataconceptxclassification
 --
 
 ALTER TABLE classification.classification
-    ADD CONSTRAINT fk977a6joatob09p0ati780wx3i FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk977a6joatob09p0ati780wx3i FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3690,7 +3690,7 @@ ALTER TABLE classification.classification
 --
 
 ALTER TABLE classification.classificationxclassification
-    ADD CONSTRAINT fka0edqa9iht684osp3290grh5j FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fka0edqa9iht684osp3290grh5j FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3699,7 +3699,7 @@ ALTER TABLE classification.classificationxclassification
 --
 
 ALTER TABLE classification.classificationdataconceptsecuritytoken
-    ADD CONSTRAINT fka96umbw2pt2xsr7dpr7rg59sb FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fka96umbw2pt2xsr7dpr7rg59sb FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3708,7 +3708,7 @@ ALTER TABLE classification.classificationdataconceptsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptsecuritytoken
-    ADD CONSTRAINT fkaet7sbnxoa25lvh4fttjxq241 FOREIGN KEY (classificationdataconceptid, warehousecreateddate) REFERENCES classification.classificationdataconcept (classificationdataconceptid, warehousecreateddate);
+    ADD CONSTRAINT fkaet7sbnxoa25lvh4fttjxq241 FOREIGN KEY (classificationdataconceptid, warehousefromdate) REFERENCES classification.classificationdataconcept (classificationdataconceptid, warehousefromdate);
 
 
 --
@@ -3717,7 +3717,7 @@ ALTER TABLE classification.classificationdataconceptsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxclassification
-    ADD CONSTRAINT fkalb9m4tw81jr1nrghxwnhgbsm FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkalb9m4tw81jr1nrghxwnhgbsm FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3726,7 +3726,7 @@ ALTER TABLE classification.classificationdataconceptxclassification
 --
 
 ALTER TABLE classification.classificationsecuritytoken
-    ADD CONSTRAINT fkalw5xpd22jfxd5le05m2baego FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkalw5xpd22jfxd5le05m2baego FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3735,7 +3735,7 @@ ALTER TABLE classification.classificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationsecuritytoken
-    ADD CONSTRAINT fkarnkwlgj9y3433pngmhg39j5f FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkarnkwlgj9y3433pngmhg39j5f FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3744,7 +3744,7 @@ ALTER TABLE classification.classificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitem
-    ADD CONSTRAINT fkb3i6n3mk43lmc47412g00l07p FOREIGN KEY (classificationdataconceptid, warehousecreateddate) REFERENCES classification.classificationdataconcept (classificationdataconceptid, warehousecreateddate);
+    ADD CONSTRAINT fkb3i6n3mk43lmc47412g00l07p FOREIGN KEY (classificationdataconceptid, warehousefromdate) REFERENCES classification.classificationdataconcept (classificationdataconceptid, warehousefromdate);
 
 
 --
@@ -3753,7 +3753,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitem
 --
 
 ALTER TABLE classification.classificationdataconceptxclassification
-    ADD CONSTRAINT fkbkxw52ao5d3w2lww1wcgwc6r8 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkbkxw52ao5d3w2lww1wcgwc6r8 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3762,7 +3762,7 @@ ALTER TABLE classification.classificationdataconceptxclassification
 --
 
 ALTER TABLE classification.classificationxclassification
-    ADD CONSTRAINT fkbutwoudrgvo3cbjn39cd3ftn1 FOREIGN KEY (parentclassificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkbutwoudrgvo3cbjn39cd3ftn1 FOREIGN KEY (parentclassificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3771,7 +3771,7 @@ ALTER TABLE classification.classificationxclassification
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitem
-    ADD CONSTRAINT fkbxuns49b2h4ymjifep6bup0y7 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkbxuns49b2h4ymjifep6bup0y7 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3780,7 +3780,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitem
 --
 
 ALTER TABLE classification.classification
-    ADD CONSTRAINT fkdameu9rwq0ndi6g9pnasalwf2 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkdameu9rwq0ndi6g9pnasalwf2 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3789,7 +3789,7 @@ ALTER TABLE classification.classification
 --
 
 ALTER TABLE classification.classificationdataconceptsecuritytoken
-    ADD CONSTRAINT fkdj2s9qftq2ybskhst5rh7kvcs FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkdj2s9qftq2ybskhst5rh7kvcs FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3798,7 +3798,7 @@ ALTER TABLE classification.classificationdataconceptsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitem
-    ADD CONSTRAINT fkg9sk8egvr7m48ajxuq08kr36a FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkg9sk8egvr7m48ajxuq08kr36a FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3807,7 +3807,7 @@ ALTER TABLE classification.classificationxresourceitem
 --
 
 ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
-    ADD CONSTRAINT fkglkin1i2uv5gp9dlk1sbgmulg FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkglkin1i2uv5gp9dlk1sbgmulg FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3816,7 +3816,7 @@ ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitem
-    ADD CONSTRAINT fkgm9umwfpdxs1ao0jb2ye8t4qi FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkgm9umwfpdxs1ao0jb2ye8t4qi FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3825,7 +3825,7 @@ ALTER TABLE classification.classificationxresourceitem
 --
 
 ALTER TABLE classification.classificationxclassification
-    ADD CONSTRAINT fkgt5llwl8oh4q2fo4fv9vfmui2 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkgt5llwl8oh4q2fo4fv9vfmui2 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3834,7 +3834,7 @@ ALTER TABLE classification.classificationxclassification
 --
 
 ALTER TABLE classification.classificationxclassificationsecuritytoken
-    ADD CONSTRAINT fkidlqquwljda1kte0kjjjkkopi FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkidlqquwljda1kte0kjjjkkopi FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3843,7 +3843,7 @@ ALTER TABLE classification.classificationxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitem
-    ADD CONSTRAINT fkisdanawdo1rw8v7t1jks92pgf FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkisdanawdo1rw8v7t1jks92pgf FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3852,7 +3852,7 @@ ALTER TABLE classification.classificationxresourceitem
 --
 
 ALTER TABLE classification.classificationdataconcept
-    ADD CONSTRAINT fkjjkh1tgw58ebgjyfhs55uq0bc FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkjjkh1tgw58ebgjyfhs55uq0bc FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3861,7 +3861,7 @@ ALTER TABLE classification.classificationdataconcept
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
-    ADD CONSTRAINT fkk0lwglw1ekrh07d1rp0qnt3v9 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkk0lwglw1ekrh07d1rp0qnt3v9 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3870,7 +3870,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitem
-    ADD CONSTRAINT fkk1tllh3pw17bo91f98qajwv18 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkk1tllh3pw17bo91f98qajwv18 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -3879,7 +3879,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitem
 --
 
 ALTER TABLE classification.classificationxclassificationsecuritytoken
-    ADD CONSTRAINT fkktsowuwqxuk0snthieryx7pny FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkktsowuwqxuk0snthieryx7pny FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3888,7 +3888,7 @@ ALTER TABLE classification.classificationxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitem
-    ADD CONSTRAINT fklhxbcwpk3r33hdnpbirj5q8e0 FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fklhxbcwpk3r33hdnpbirj5q8e0 FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -3897,7 +3897,7 @@ ALTER TABLE classification.classificationxresourceitem
 --
 
 ALTER TABLE classification.classificationxclassification
-    ADD CONSTRAINT fklolls1qwf58fhw1lo6plg1u2d FOREIGN KEY (childclassificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fklolls1qwf58fhw1lo6plg1u2d FOREIGN KEY (childclassificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -3906,7 +3906,7 @@ ALTER TABLE classification.classificationxclassification
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitem
-    ADD CONSTRAINT fkm5et8roankenbjliy9qigclab FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm5et8roankenbjliy9qigclab FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3915,7 +3915,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitem
 --
 
 ALTER TABLE classification.classificationxclassification
-    ADD CONSTRAINT fkmdyinn1kd9lrjajlts2832kgp FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkmdyinn1kd9lrjajlts2832kgp FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3924,7 +3924,7 @@ ALTER TABLE classification.classificationxclassification
 --
 
 ALTER TABLE classification.classificationxresourceitemsecuritytoken
-    ADD CONSTRAINT fkmxlv95qskrx8l20xdjs55gxwy FOREIGN KEY (classificationxresourceitemid, warehousecreateddate) REFERENCES classification.classificationxresourceitem (classificationxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkmxlv95qskrx8l20xdjs55gxwy FOREIGN KEY (classificationxresourceitemid, warehousefromdate) REFERENCES classification.classificationxresourceitem (classificationxresourceitemid, warehousefromdate);
 
 
 --
@@ -3933,7 +3933,7 @@ ALTER TABLE classification.classificationxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationxclassification
-    ADD CONSTRAINT fkng5lu9wyocw42hm2yq6966eic FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkng5lu9wyocw42hm2yq6966eic FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3942,7 +3942,7 @@ ALTER TABLE classification.classificationxclassification
 --
 
 ALTER TABLE classification.classificationdataconcept
-    ADD CONSTRAINT fknq22rqtgtemjf9w2iwanl89im FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fknq22rqtgtemjf9w2iwanl89im FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3951,7 +3951,7 @@ ALTER TABLE classification.classificationdataconcept
 --
 
 ALTER TABLE classification.classificationxresourceitemsecuritytoken
-    ADD CONSTRAINT fknudqvddewc67sunrqr4wnh0aq FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fknudqvddewc67sunrqr4wnh0aq FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3960,7 +3960,7 @@ ALTER TABLE classification.classificationxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptsecuritytoken
-    ADD CONSTRAINT fko5u4q6stb4e4gp0hfwttgpoof FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fko5u4q6stb4e4gp0hfwttgpoof FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -3969,7 +3969,7 @@ ALTER TABLE classification.classificationdataconceptsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
-    ADD CONSTRAINT fkohnmet2w8qiqs1tqgp3bvaj8s FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkohnmet2w8qiqs1tqgp3bvaj8s FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -3978,7 +3978,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationxclassificationsecuritytoken
-    ADD CONSTRAINT fkovne1f69w7lejinl9o202wq8r FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkovne1f69w7lejinl9o202wq8r FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3987,7 +3987,7 @@ ALTER TABLE classification.classificationxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxclassificationsecuritytoken
-    ADD CONSTRAINT fkp0uayhfmnxp6mbojs6b906uo1 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkp0uayhfmnxp6mbojs6b906uo1 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -3996,7 +3996,7 @@ ALTER TABLE classification.classificationxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationsecuritytoken
-    ADD CONSTRAINT fkpgoqkscc2c9ynucppx7kqfq17 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkpgoqkscc2c9ynucppx7kqfq17 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4005,7 +4005,7 @@ ALTER TABLE classification.classificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitemsecuritytoken
-    ADD CONSTRAINT fkpkswoxe9sd4fcqdc735yo80kc FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkpkswoxe9sd4fcqdc735yo80kc FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4014,7 +4014,7 @@ ALTER TABLE classification.classificationxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxclassification
-    ADD CONSTRAINT fkptvfaytvks9cf4qvb1ch0nc5q FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkptvfaytvks9cf4qvb1ch0nc5q FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4023,7 +4023,7 @@ ALTER TABLE classification.classificationdataconceptxclassification
 --
 
 ALTER TABLE classification.classificationxresourceitem
-    ADD CONSTRAINT fkq78r34v2adpvnc8u50fdo2mth FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkq78r34v2adpvnc8u50fdo2mth FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4032,7 +4032,7 @@ ALTER TABLE classification.classificationxresourceitem
 --
 
 ALTER TABLE classification.classificationdataconcept
-    ADD CONSTRAINT fkq95ppsctlqk23bbukl11jfrk9 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkq95ppsctlqk23bbukl11jfrk9 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4041,7 +4041,7 @@ ALTER TABLE classification.classificationdataconcept
 --
 
 ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
-    ADD CONSTRAINT fkqd86yl64ly9efrkoqoo5g6d3a FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqd86yl64ly9efrkoqoo5g6d3a FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4050,7 +4050,7 @@ ALTER TABLE classification.classificationdataconceptxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitemsecuritytoken
-    ADD CONSTRAINT fkqof2ui2s3pfau54hqtylrpbcf FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkqof2ui2s3pfau54hqtylrpbcf FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4059,7 +4059,7 @@ ALTER TABLE classification.classificationxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classification
-    ADD CONSTRAINT fkradegxgr2qgtrmpcnr280wrow FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkradegxgr2qgtrmpcnr280wrow FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4068,7 +4068,7 @@ ALTER TABLE classification.classification
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
-    ADD CONSTRAINT fkrnilsvgvwpcbv8fs2yr1p87ei FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkrnilsvgvwpcbv8fs2yr1p87ei FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4077,7 +4077,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
-    ADD CONSTRAINT fkrq8gtmddaq83y0vq5v5mvun3s FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkrq8gtmddaq83y0vq5v5mvun3s FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4086,7 +4086,7 @@ ALTER TABLE classification.classificationdataconceptxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationdataconceptsecuritytoken
-    ADD CONSTRAINT fks2ygkvtk17e901wed7fjjio7v FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fks2ygkvtk17e901wed7fjjio7v FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4095,7 +4095,7 @@ ALTER TABLE classification.classificationdataconceptsecuritytoken
 --
 
 ALTER TABLE classification.classificationxresourceitemsecuritytoken
-    ADD CONSTRAINT fkt2qwo9050jpmg0k59is420r1h FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkt2qwo9050jpmg0k59is420r1h FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4104,7 +4104,7 @@ ALTER TABLE classification.classificationxresourceitemsecuritytoken
 --
 
 ALTER TABLE classification.classificationsecuritytoken
-    ADD CONSTRAINT fktb0dfsliwpcbdw26ivstchoxa FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fktb0dfsliwpcbdw26ivstchoxa FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4113,7 +4113,7 @@ ALTER TABLE classification.classificationsecuritytoken
 --
 
 ALTER TABLE classification.classificationxclassificationsecuritytoken
-    ADD CONSTRAINT fktgfix5de1n30m7rvhxrb1yel2 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fktgfix5de1n30m7rvhxrb1yel2 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4122,7 +4122,7 @@ ALTER TABLE classification.classificationxclassificationsecuritytoken
 --
 
 ALTER TABLE classification.classification
-    ADD CONSTRAINT fkuyay717baco8bei1qoxcauux FOREIGN KEY (classificationdataconceptid, warehousecreateddate) REFERENCES classification.classificationdataconcept (classificationdataconceptid, warehousecreateddate);
+    ADD CONSTRAINT fkuyay717baco8bei1qoxcauux FOREIGN KEY (classificationdataconceptid, warehousefromdate) REFERENCES classification.classificationdataconcept (classificationdataconceptid, warehousefromdate);
 
 
 --
@@ -4131,7 +4131,7 @@ ALTER TABLE classification.classification
 --
 
 ALTER TABLE classification.classificationsecuritytoken
-    ADD CONSTRAINT fkxo8jweipcwyhjky1sj6asi70 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkxo8jweipcwyhjky1sj6asi70 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4140,7 +4140,7 @@ ALTER TABLE classification.classificationsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagsecuritytoken
-    ADD CONSTRAINT fk20yjws7ewoq2cqkx3ypki36rx FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk20yjws7ewoq2cqkx3ypki36rx FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4149,7 +4149,7 @@ ALTER TABLE dbo.activeflagsecuritytoken
 --
 
 ALTER TABLE dbo.enterprisesecuritytoken
-    ADD CONSTRAINT fk3604iuvyi4psepv3rdn69jf76 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk3604iuvyi4psepv3rdn69jf76 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4158,7 +4158,7 @@ ALTER TABLE dbo.enterprisesecuritytoken
 --
 
 ALTER TABLE dbo.activeflagxclassificationsecuritytoken
-    ADD CONSTRAINT fk415n0jfxdeuva0evd9mvlooaa FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk415n0jfxdeuva0evd9mvlooaa FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4167,7 +4167,7 @@ ALTER TABLE dbo.activeflagxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.systemssecuritytoken
-    ADD CONSTRAINT fk569rtrkku5kg7sponne0xwgkf FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk569rtrkku5kg7sponne0xwgkf FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4176,7 +4176,7 @@ ALTER TABLE dbo.systemssecuritytoken
 --
 
 ALTER TABLE dbo.enterprisexclassificationsecuritytoken
-    ADD CONSTRAINT fk5l36jvcvedgw6gaa8301xjr62 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk5l36jvcvedgw6gaa8301xjr62 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4185,7 +4185,7 @@ ALTER TABLE dbo.enterprisexclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagsecuritytoken
-    ADD CONSTRAINT fk5upfxgyprbf9blrljkanx6dq1 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5upfxgyprbf9blrljkanx6dq1 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4194,7 +4194,7 @@ ALTER TABLE dbo.activeflagsecuritytoken
 --
 
 ALTER TABLE dbo.systemxclassification
-    ADD CONSTRAINT fk6ejo5y1g32jdsi6nh5wufvdg9 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk6ejo5y1g32jdsi6nh5wufvdg9 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4203,7 +4203,7 @@ ALTER TABLE dbo.systemxclassification
 --
 
 ALTER TABLE dbo.activeflagxclassificationsecuritytoken
-    ADD CONSTRAINT fk6lfmv9ervio1pg5wiowy4hvve FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6lfmv9ervio1pg5wiowy4hvve FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4212,7 +4212,7 @@ ALTER TABLE dbo.activeflagxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.enterprisexclassificationsecuritytoken
-    ADD CONSTRAINT fk75tx4r7sp36qtylr8r888gbkr FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk75tx4r7sp36qtylr8r888gbkr FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4221,7 +4221,7 @@ ALTER TABLE dbo.enterprisexclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.systemssecuritytoken
-    ADD CONSTRAINT fk78ntmjytf0l9egbfp8w5quysa FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk78ntmjytf0l9egbfp8w5quysa FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4230,7 +4230,7 @@ ALTER TABLE dbo.systemssecuritytoken
 --
 
 ALTER TABLE dbo.enterprisexclassification
-    ADD CONSTRAINT fk7dcbw0medved7abfmh1y0btj FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7dcbw0medved7abfmh1y0btj FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4239,7 +4239,7 @@ ALTER TABLE dbo.enterprisexclassification
 --
 
 ALTER TABLE dbo.enterprisexclassificationsecuritytoken
-    ADD CONSTRAINT fk7jfxn7qp93vt98lob9q7g5exc FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7jfxn7qp93vt98lob9q7g5exc FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4248,7 +4248,7 @@ ALTER TABLE dbo.enterprisexclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagxclassification
-    ADD CONSTRAINT fk7p1a2n77n5ic2exm71aemudot FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7p1a2n77n5ic2exm71aemudot FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4257,7 +4257,7 @@ ALTER TABLE dbo.activeflagxclassification
 --
 
 ALTER TABLE dbo.systemssecuritytoken
-    ADD CONSTRAINT fk7vvidgjeuilwrvmphf0pwrdqm FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7vvidgjeuilwrvmphf0pwrdqm FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4266,7 +4266,7 @@ ALTER TABLE dbo.systemssecuritytoken
 --
 
 ALTER TABLE dbo.enterprisexclassification
-    ADD CONSTRAINT fk9wfebpqldiybaphp969e7vu9q FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk9wfebpqldiybaphp969e7vu9q FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4275,7 +4275,7 @@ ALTER TABLE dbo.enterprisexclassification
 --
 
 ALTER TABLE dbo.activeflagxclassificationsecuritytoken
-    ADD CONSTRAINT fkahuj23jai69r76hk3u9iqos5d FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkahuj23jai69r76hk3u9iqos5d FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4284,7 +4284,7 @@ ALTER TABLE dbo.activeflagxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.systemxclassificationsecuritytoken
-    ADD CONSTRAINT fkammfvlpf58c86bmebac2l5fhy FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkammfvlpf58c86bmebac2l5fhy FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4293,7 +4293,7 @@ ALTER TABLE dbo.systemxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.systemxclassificationsecuritytoken
-    ADD CONSTRAINT fkaxmrulkvngggqqt0yjk39qjx0 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkaxmrulkvngggqqt0yjk39qjx0 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4302,7 +4302,7 @@ ALTER TABLE dbo.systemxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.systemxclassificationsecuritytoken
-    ADD CONSTRAINT fkb1iyf0i1s8q5tmc9wrwdfi52i FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkb1iyf0i1s8q5tmc9wrwdfi52i FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4311,7 +4311,7 @@ ALTER TABLE dbo.systemxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagxclassification
-    ADD CONSTRAINT fkblul4g9hdfavb3grhcn5bu32h FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkblul4g9hdfavb3grhcn5bu32h FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -4320,7 +4320,7 @@ ALTER TABLE dbo.activeflagxclassification
 --
 
 ALTER TABLE dbo.enterprisesecuritytoken
-    ADD CONSTRAINT fkcja1yq5j2ywm4mearg7gfbeg8 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkcja1yq5j2ywm4mearg7gfbeg8 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4329,7 +4329,7 @@ ALTER TABLE dbo.enterprisesecuritytoken
 --
 
 ALTER TABLE dbo.enterprisexclassification
-    ADD CONSTRAINT fkd8u5qov86csi5bmvn97648jyq FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkd8u5qov86csi5bmvn97648jyq FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4338,7 +4338,7 @@ ALTER TABLE dbo.enterprisexclassification
 --
 
 ALTER TABLE dbo.activeflagsecuritytoken
-    ADD CONSTRAINT fkf1tv1gusx83k2ytmhi4g3tqbm FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkf1tv1gusx83k2ytmhi4g3tqbm FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4347,7 +4347,7 @@ ALTER TABLE dbo.activeflagsecuritytoken
 --
 
 ALTER TABLE dbo.systemxclassification
-    ADD CONSTRAINT fkf8j3lg5l7fp5qthp3s7v5cpsy FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkf8j3lg5l7fp5qthp3s7v5cpsy FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4356,7 +4356,7 @@ ALTER TABLE dbo.systemxclassification
 --
 
 ALTER TABLE dbo.systemssecuritytoken
-    ADD CONSTRAINT fkgq2e9xc2wsw93xl4p5yhaysx FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkgq2e9xc2wsw93xl4p5yhaysx FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4365,7 +4365,7 @@ ALTER TABLE dbo.systemssecuritytoken
 --
 
 ALTER TABLE dbo.systems
-    ADD CONSTRAINT fkgrtajtg4kade8b7dvqjynt2c6 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkgrtajtg4kade8b7dvqjynt2c6 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4374,7 +4374,7 @@ ALTER TABLE dbo.systems
 --
 
 ALTER TABLE dbo.systemxclassificationsecuritytoken
-    ADD CONSTRAINT fkhpnepymhd6det14tmy3vsx6g8 FOREIGN KEY (systemxclassificationid, warehousecreateddate) REFERENCES dbo.systemxclassification (systemxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkhpnepymhd6det14tmy3vsx6g8 FOREIGN KEY (systemxclassificationid, warehousefromdate) REFERENCES dbo.systemxclassification (systemxclassificationid, warehousefromdate);
 
 
 --
@@ -4383,7 +4383,7 @@ ALTER TABLE dbo.systemxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.enterprisesecuritytoken
-    ADD CONSTRAINT fki2166mtej2yhf4qeegbrtwsom FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fki2166mtej2yhf4qeegbrtwsom FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4392,7 +4392,7 @@ ALTER TABLE dbo.enterprisesecuritytoken
 --
 
 ALTER TABLE dbo.enterprisesecuritytoken
-    ADD CONSTRAINT fki27vhcoq25358slocd9mn9481 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fki27vhcoq25358slocd9mn9481 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4401,7 +4401,7 @@ ALTER TABLE dbo.enterprisesecuritytoken
 --
 
 ALTER TABLE dbo.activeflagsecuritytoken
-    ADD CONSTRAINT fki4tkjwmtimx0nsi9nkmvjejd8 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fki4tkjwmtimx0nsi9nkmvjejd8 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4410,7 +4410,7 @@ ALTER TABLE dbo.activeflagsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagxclassification
-    ADD CONSTRAINT fkid9su2w15uts2jocr2ix6p9n6 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkid9su2w15uts2jocr2ix6p9n6 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4419,7 +4419,7 @@ ALTER TABLE dbo.activeflagxclassification
 --
 
 ALTER TABLE dbo.systemxclassificationsecuritytoken
-    ADD CONSTRAINT fkj9spyu6coc19mcroktrbdym0i FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkj9spyu6coc19mcroktrbdym0i FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4428,7 +4428,7 @@ ALTER TABLE dbo.systemxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagxclassification
-    ADD CONSTRAINT fkjcnjquu3mlf3fqxljya6hhh32 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkjcnjquu3mlf3fqxljya6hhh32 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4437,7 +4437,7 @@ ALTER TABLE dbo.activeflagxclassification
 --
 
 ALTER TABLE dbo.activeflagxclassificationsecuritytoken
-    ADD CONSTRAINT fkjt5o1jc7herohd02v678yyba6 FOREIGN KEY (activeflagxclassificationid, warehousecreateddate) REFERENCES dbo.activeflagxclassification (activeflagxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkjt5o1jc7herohd02v678yyba6 FOREIGN KEY (activeflagxclassificationid, warehousefromdate) REFERENCES dbo.activeflagxclassification (activeflagxclassificationid, warehousefromdate);
 
 
 --
@@ -4446,7 +4446,7 @@ ALTER TABLE dbo.activeflagxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.systems
-    ADD CONSTRAINT fkk9wup45yifecrf4o0fb5lyuy6 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkk9wup45yifecrf4o0fb5lyuy6 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4455,7 +4455,7 @@ ALTER TABLE dbo.systems
 --
 
 ALTER TABLE dbo.enterprisesecuritytoken
-    ADD CONSTRAINT fkkfbukc1416acs2qhjduyaslun FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkkfbukc1416acs2qhjduyaslun FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4464,7 +4464,7 @@ ALTER TABLE dbo.enterprisesecuritytoken
 --
 
 ALTER TABLE dbo.activeflagxclassificationsecuritytoken
-    ADD CONSTRAINT fkl8ovwqdvb6bagyf17g7gk46qy FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkl8ovwqdvb6bagyf17g7gk46qy FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4473,7 +4473,7 @@ ALTER TABLE dbo.activeflagxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagsecuritytoken
-    ADD CONSTRAINT fklh0yk0eo7gs9tjd368uaqa0vt FOREIGN KEY (securitytokenactiveflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fklh0yk0eo7gs9tjd368uaqa0vt FOREIGN KEY (securitytokenactiveflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4482,7 +4482,7 @@ ALTER TABLE dbo.activeflagsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagxclassificationsecuritytoken
-    ADD CONSTRAINT fklmqtxiiqcje4o4vix6egjsg27 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fklmqtxiiqcje4o4vix6egjsg27 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4491,7 +4491,7 @@ ALTER TABLE dbo.activeflagxclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.enterprisexclassificationsecuritytoken
-    ADD CONSTRAINT fklojg3xmk98ghle10liw96742m FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklojg3xmk98ghle10liw96742m FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4500,7 +4500,7 @@ ALTER TABLE dbo.enterprisexclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.activeflag
-    ADD CONSTRAINT fkme13h3ny7lm8n86kltbw69ni1 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkme13h3ny7lm8n86kltbw69ni1 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4509,7 +4509,7 @@ ALTER TABLE dbo.activeflag
 --
 
 ALTER TABLE dbo.enterprisexclassification
-    ADD CONSTRAINT fkmt4djrkvv0w1ef778yy01fone FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmt4djrkvv0w1ef778yy01fone FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4518,7 +4518,7 @@ ALTER TABLE dbo.enterprisexclassification
 --
 
 ALTER TABLE dbo.activeflagxclassification
-    ADD CONSTRAINT fko09sv3aidiqrfa034t31l067w FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko09sv3aidiqrfa034t31l067w FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4527,7 +4527,7 @@ ALTER TABLE dbo.activeflagxclassification
 --
 
 ALTER TABLE dbo.systemxclassification
-    ADD CONSTRAINT fko0c1ywx0xwsytkccp23xtolxd FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko0c1ywx0xwsytkccp23xtolxd FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4536,7 +4536,7 @@ ALTER TABLE dbo.systemxclassification
 --
 
 ALTER TABLE dbo.enterprisexclassificationsecuritytoken
-    ADD CONSTRAINT fkp7wseksjtv3n3vok7qm68dmdb FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkp7wseksjtv3n3vok7qm68dmdb FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4545,7 +4545,7 @@ ALTER TABLE dbo.enterprisexclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.enterprisexclassification
-    ADD CONSTRAINT fkpubcpyc3hm0x9l70u19lj96r0 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkpubcpyc3hm0x9l70u19lj96r0 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -4554,7 +4554,7 @@ ALTER TABLE dbo.enterprisexclassification
 --
 
 ALTER TABLE dbo.systemxclassification
-    ADD CONSTRAINT fkq69xnhoy37i0vgl4n0ye0deql FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkq69xnhoy37i0vgl4n0ye0deql FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4563,7 +4563,7 @@ ALTER TABLE dbo.systemxclassification
 --
 
 ALTER TABLE dbo.enterprisexclassificationsecuritytoken
-    ADD CONSTRAINT fkr6xvbr7r4rmk73etcyyx887ao FOREIGN KEY (enterprisexclassificationid, warehousecreateddate) REFERENCES dbo.enterprisexclassification (enterprisexclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkr6xvbr7r4rmk73etcyyx887ao FOREIGN KEY (enterprisexclassificationid, warehousefromdate) REFERENCES dbo.enterprisexclassification (enterprisexclassificationid, warehousefromdate);
 
 
 --
@@ -4572,7 +4572,7 @@ ALTER TABLE dbo.enterprisexclassificationsecuritytoken
 --
 
 ALTER TABLE dbo.activeflagsecuritytoken
-    ADD CONSTRAINT fkr9uxaoa4e7qc848omo02gnv8q FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkr9uxaoa4e7qc848omo02gnv8q FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4581,7 +4581,7 @@ ALTER TABLE dbo.activeflagsecuritytoken
 --
 
 ALTER TABLE dbo.systemssecuritytoken
-    ADD CONSTRAINT fks9aoyq05lmsl0jpqnja4gy5g8 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fks9aoyq05lmsl0jpqnja4gy5g8 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4590,7 +4590,7 @@ ALTER TABLE dbo.systemssecuritytoken
 --
 
 ALTER TABLE dbo.systemxclassification
-    ADD CONSTRAINT fksok0wnd9e14j1shyqkn1fkpf3 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fksok0wnd9e14j1shyqkn1fkpf3 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -4599,7 +4599,7 @@ ALTER TABLE dbo.systemxclassification
 --
 
 ALTER TABLE dbo.systemxclassificationsecuritytoken
-    ADD CONSTRAINT fktm7py81728d8oor46wotp8y0f FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fktm7py81728d8oor46wotp8y0f FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4608,7 +4608,7 @@ ALTER TABLE dbo.systemxclassificationsecuritytoken
 --
 
 ALTER TABLE event.eventxinvolvedparty
-    ADD CONSTRAINT fk14n4sdaea68x8ye5kdnm92m4v FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fk14n4sdaea68x8ye5kdnm92m4v FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -4617,7 +4617,7 @@ ALTER TABLE event.eventxinvolvedparty
 --
 
 ALTER TABLE event.eventxaddresssecuritytoken
-    ADD CONSTRAINT fk1b8yahv9f17vt9brstr9lu5s FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk1b8yahv9f17vt9brstr9lu5s FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4626,7 +4626,7 @@ ALTER TABLE event.eventxaddresssecuritytoken
 --
 
 ALTER TABLE event.eventxgeographysecuritytoken
-    ADD CONSTRAINT fk1i4qgb7md1vd911fwvxii42tx FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk1i4qgb7md1vd911fwvxii42tx FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4635,7 +4635,7 @@ ALTER TABLE event.eventxgeographysecuritytoken
 --
 
 ALTER TABLE event.eventxevent
-    ADD CONSTRAINT fk27gym41nw6dls3e5oll0nkcbr FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk27gym41nw6dls3e5oll0nkcbr FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4644,7 +4644,7 @@ ALTER TABLE event.eventxevent
 --
 
 ALTER TABLE event.eventxaddresssecuritytoken
-    ADD CONSTRAINT fk2n5hwft2sainpe6l7cerwj4o6 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2n5hwft2sainpe6l7cerwj4o6 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4653,7 +4653,7 @@ ALTER TABLE event.eventxaddresssecuritytoken
 --
 
 ALTER TABLE event.eventxeventtype
-    ADD CONSTRAINT fk2s0kehqs4vd8un8pa781t8abk FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2s0kehqs4vd8un8pa781t8abk FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4662,7 +4662,7 @@ ALTER TABLE event.eventxeventtype
 --
 
 ALTER TABLE event.eventxarrangementssecuritytoken
-    ADD CONSTRAINT fk2tudn6gio54xpxa5ecyryl2v0 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2tudn6gio54xpxa5ecyryl2v0 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4671,7 +4671,7 @@ ALTER TABLE event.eventxarrangementssecuritytoken
 --
 
 ALTER TABLE event.eventxclassificationsecuritytoken
-    ADD CONSTRAINT fk2uwfplnar8o0onw3e93phd69k FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk2uwfplnar8o0onw3e93phd69k FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4680,7 +4680,7 @@ ALTER TABLE event.eventxclassificationsecuritytoken
 --
 
 ALTER TABLE event.eventxproduct
-    ADD CONSTRAINT fk2wg3fp1s1jjl3lng6uak99fr4 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2wg3fp1s1jjl3lng6uak99fr4 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4689,7 +4689,7 @@ ALTER TABLE event.eventxproduct
 --
 
 ALTER TABLE event.eventxresourceitem
-    ADD CONSTRAINT fk30l7kjmsyo5va5n3exkkl364i FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fk30l7kjmsyo5va5n3exkkl364i FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -4698,7 +4698,7 @@ ALTER TABLE event.eventxresourceitem
 --
 
 ALTER TABLE event.eventxarrangementssecuritytoken
-    ADD CONSTRAINT fk33w71cp61prmc7i0uboecicda FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk33w71cp61prmc7i0uboecicda FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4707,7 +4707,7 @@ ALTER TABLE event.eventxarrangementssecuritytoken
 --
 
 ALTER TABLE event.eventtype
-    ADD CONSTRAINT fk3a6ig1a98nle8uhil7c00wtxj FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk3a6ig1a98nle8uhil7c00wtxj FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4716,7 +4716,7 @@ ALTER TABLE event.eventtype
 --
 
 ALTER TABLE event.eventxaddress
-    ADD CONSTRAINT fk3bbi34ppkvf938mm8618n7cdi FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk3bbi34ppkvf938mm8618n7cdi FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4725,7 +4725,7 @@ ALTER TABLE event.eventxaddress
 --
 
 ALTER TABLE event.eventxgeographysecuritytoken
-    ADD CONSTRAINT fk3k3bo2t7xd8q3va2g8whp7l7v FOREIGN KEY (eventxgeographyid, warehousecreateddate) REFERENCES event.eventxgeography (eventxgeographyid, warehousecreateddate);
+    ADD CONSTRAINT fk3k3bo2t7xd8q3va2g8whp7l7v FOREIGN KEY (eventxgeographyid, warehousefromdate) REFERENCES event.eventxgeography (eventxgeographyid, warehousefromdate);
 
 
 --
@@ -4734,7 +4734,7 @@ ALTER TABLE event.eventxgeographysecuritytoken
 --
 
 ALTER TABLE event.eventxrules
-    ADD CONSTRAINT fk3pv6r2calb05a669dg4aaqvy3 FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fk3pv6r2calb05a669dg4aaqvy3 FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -4743,7 +4743,7 @@ ALTER TABLE event.eventxrules
 --
 
 ALTER TABLE event.eventtypessecuritytoken
-    ADD CONSTRAINT fk3sqx94u3an8m27b0aotdca2wb FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk3sqx94u3an8m27b0aotdca2wb FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4752,7 +4752,7 @@ ALTER TABLE event.eventtypessecuritytoken
 --
 
 ALTER TABLE event.eventxrulessecuritytoken
-    ADD CONSTRAINT fk4cfg8atxhbgoya17d1vp1bpf7 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk4cfg8atxhbgoya17d1vp1bpf7 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4761,7 +4761,7 @@ ALTER TABLE event.eventxrulessecuritytoken
 --
 
 ALTER TABLE event.eventxaddresssecuritytoken
-    ADD CONSTRAINT fk4delkrhbqq9uhqpsmqbdc8eh1 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk4delkrhbqq9uhqpsmqbdc8eh1 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4770,7 +4770,7 @@ ALTER TABLE event.eventxaddresssecuritytoken
 --
 
 ALTER TABLE event.eventxclassificationsecuritytoken
-    ADD CONSTRAINT fk4hjmqpqf99dnag748layycl1d FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk4hjmqpqf99dnag748layycl1d FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4779,7 +4779,7 @@ ALTER TABLE event.eventxclassificationsecuritytoken
 --
 
 ALTER TABLE event.eventtypessecuritytoken
-    ADD CONSTRAINT fk533lul2cwy1gxqwdlkwot3xli FOREIGN KEY (eventtypesid, warehousecreateddate) REFERENCES event.eventtype (eventtypeid, warehousecreateddate);
+    ADD CONSTRAINT fk533lul2cwy1gxqwdlkwot3xli FOREIGN KEY (eventtypesid, warehousefromdate) REFERENCES event.eventtype (eventtypeid, warehousefromdate);
 
 
 --
@@ -4788,7 +4788,7 @@ ALTER TABLE event.eventtypessecuritytoken
 --
 
 ALTER TABLE event.event
-    ADD CONSTRAINT fk5a6m41a8gggwx8fqsrs4at8tg FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5a6m41a8gggwx8fqsrs4at8tg FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4797,7 +4797,7 @@ ALTER TABLE event.event
 --
 
 ALTER TABLE event.eventxeventsecuritytoken
-    ADD CONSTRAINT fk5ce8ibb6xf53yy6w5nvrna86b FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk5ce8ibb6xf53yy6w5nvrna86b FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4806,7 +4806,7 @@ ALTER TABLE event.eventxeventsecuritytoken
 --
 
 ALTER TABLE event.eventsecuritytoken
-    ADD CONSTRAINT fk5l2t98n1cb4rsa23u81thgv50 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk5l2t98n1cb4rsa23u81thgv50 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4815,7 +4815,7 @@ ALTER TABLE event.eventsecuritytoken
 --
 
 ALTER TABLE event.eventtypessecuritytoken
-    ADD CONSTRAINT fk69no16tl8ojgbi6so0jp3s68a FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk69no16tl8ojgbi6so0jp3s68a FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4824,7 +4824,7 @@ ALTER TABLE event.eventtypessecuritytoken
 --
 
 ALTER TABLE event.eventxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fk6ckmfi6y2y2topapiybevk1rg FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6ckmfi6y2y2topapiybevk1rg FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4833,7 +4833,7 @@ ALTER TABLE event.eventxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE event.eventxaddresssecuritytoken
-    ADD CONSTRAINT fk6frs7aq2uychxsnl6r89fi7on FOREIGN KEY (eventxaddressid, warehousecreateddate) REFERENCES event.eventxaddress (eventxaddressid, warehousecreateddate);
+    ADD CONSTRAINT fk6frs7aq2uychxsnl6r89fi7on FOREIGN KEY (eventxaddressid, warehousefromdate) REFERENCES event.eventxaddress (eventxaddressid, warehousefromdate);
 
 
 --
@@ -4842,7 +4842,7 @@ ALTER TABLE event.eventxaddresssecuritytoken
 --
 
 ALTER TABLE event.eventxevent
-    ADD CONSTRAINT fk6gr2cpldlbe8dfgk92iceiksh FOREIGN KEY (parenteventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fk6gr2cpldlbe8dfgk92iceiksh FOREIGN KEY (parenteventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -4851,7 +4851,7 @@ ALTER TABLE event.eventxevent
 --
 
 ALTER TABLE event.event
-    ADD CONSTRAINT fk6ifge8hyt5n7895pe83e7l8ic FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk6ifge8hyt5n7895pe83e7l8ic FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4860,7 +4860,7 @@ ALTER TABLE event.event
 --
 
 ALTER TABLE event.eventxeventsecuritytoken
-    ADD CONSTRAINT fk6k5gowbbqddlswcein88ndcuf FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6k5gowbbqddlswcein88ndcuf FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4869,7 +4869,7 @@ ALTER TABLE event.eventxeventsecuritytoken
 --
 
 ALTER TABLE event.eventxrules
-    ADD CONSTRAINT fk6kh594jdfv92e12q994afvkq2 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk6kh594jdfv92e12q994afvkq2 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -4878,7 +4878,7 @@ ALTER TABLE event.eventxrules
 --
 
 ALTER TABLE event.eventxproduct
-    ADD CONSTRAINT fk6kw3pcx56g4uy28x9t6q9w5g3 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk6kw3pcx56g4uy28x9t6q9w5g3 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -4887,7 +4887,7 @@ ALTER TABLE event.eventxproduct
 --
 
 ALTER TABLE event.eventxeventtypesecuritytoken
-    ADD CONSTRAINT fk70y0xcygmmf2v7dbnjwf15tuu FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk70y0xcygmmf2v7dbnjwf15tuu FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4896,7 +4896,7 @@ ALTER TABLE event.eventxeventtypesecuritytoken
 --
 
 ALTER TABLE event.eventxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fk72yo43h7hi9spviftt74k46si FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk72yo43h7hi9spviftt74k46si FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4905,7 +4905,7 @@ ALTER TABLE event.eventxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE event.eventxarrangement
-    ADD CONSTRAINT fk7607u935wf0x8yuf84h0xseyl FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fk7607u935wf0x8yuf84h0xseyl FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -4914,7 +4914,7 @@ ALTER TABLE event.eventxarrangement
 --
 
 ALTER TABLE event.eventxrules
-    ADD CONSTRAINT fk795v6hn2a3tim8hhf6ery2yf8 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk795v6hn2a3tim8hhf6ery2yf8 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -4923,7 +4923,7 @@ ALTER TABLE event.eventxrules
 --
 
 ALTER TABLE event.eventtype
-    ADD CONSTRAINT fk7bpo42s41tkfou4bopgs8xeqg FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7bpo42s41tkfou4bopgs8xeqg FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4932,7 +4932,7 @@ ALTER TABLE event.eventtype
 --
 
 ALTER TABLE event.eventxclassification
-    ADD CONSTRAINT fk7gqyx4i1xca4ioveotqcctmd3 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7gqyx4i1xca4ioveotqcctmd3 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -4941,7 +4941,7 @@ ALTER TABLE event.eventxclassification
 --
 
 ALTER TABLE event.eventxeventsecuritytoken
-    ADD CONSTRAINT fk7kw08dh8lncu1lfruwll5ejtm FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7kw08dh8lncu1lfruwll5ejtm FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4950,7 +4950,7 @@ ALTER TABLE event.eventxeventsecuritytoken
 --
 
 ALTER TABLE event.eventxarrangement
-    ADD CONSTRAINT fk7tkxsheat6us20jq1hhsmhkan FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7tkxsheat6us20jq1hhsmhkan FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4959,7 +4959,7 @@ ALTER TABLE event.eventxarrangement
 --
 
 ALTER TABLE event.eventxgeography
-    ADD CONSTRAINT fk7ttvl8fdvn2nghkfr1u5adhgx FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk7ttvl8fdvn2nghkfr1u5adhgx FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -4968,7 +4968,7 @@ ALTER TABLE event.eventxgeography
 --
 
 ALTER TABLE event.eventxproductsecuritytoken
-    ADD CONSTRAINT fk7wsudn2jsus0x9h44mrgv4nad FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk7wsudn2jsus0x9h44mrgv4nad FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -4977,7 +4977,7 @@ ALTER TABLE event.eventxproductsecuritytoken
 --
 
 ALTER TABLE event.eventxgeographysecuritytoken
-    ADD CONSTRAINT fk85ggy74dqr0025fhhn8nva2v1 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk85ggy74dqr0025fhhn8nva2v1 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4986,7 +4986,7 @@ ALTER TABLE event.eventxgeographysecuritytoken
 --
 
 ALTER TABLE event.eventxaddresssecuritytoken
-    ADD CONSTRAINT fk86mt4pshsp9bxjaubl1729701 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk86mt4pshsp9bxjaubl1729701 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -4995,7 +4995,7 @@ ALTER TABLE event.eventxaddresssecuritytoken
 --
 
 ALTER TABLE event.eventxevent
-    ADD CONSTRAINT fk8q11uo1x1xogw2rytdqbnhqn1 FOREIGN KEY (childeventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fk8q11uo1x1xogw2rytdqbnhqn1 FOREIGN KEY (childeventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5004,7 +5004,7 @@ ALTER TABLE event.eventxevent
 --
 
 ALTER TABLE event.eventxinvolvedparty
-    ADD CONSTRAINT fk8xntnjn0yestyj21n227fwi9t FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8xntnjn0yestyj21n227fwi9t FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5013,7 +5013,7 @@ ALTER TABLE event.eventxinvolvedparty
 --
 
 ALTER TABLE event.eventtype
-    ADD CONSTRAINT fk91msecp4vf69nvn0t6362tmvy FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk91msecp4vf69nvn0t6362tmvy FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5022,7 +5022,7 @@ ALTER TABLE event.eventtype
 --
 
 ALTER TABLE event.event
-    ADD CONSTRAINT fk944ydkbqk682cotb21mlyedhc FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk944ydkbqk682cotb21mlyedhc FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5031,7 +5031,7 @@ ALTER TABLE event.event
 --
 
 ALTER TABLE event.eventxproduct
-    ADD CONSTRAINT fk9dtyhip89oe1wyjki0ph2kynb FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk9dtyhip89oe1wyjki0ph2kynb FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5040,7 +5040,7 @@ ALTER TABLE event.eventxproduct
 --
 
 ALTER TABLE event.eventxinvolvedparty
-    ADD CONSTRAINT fk9eoeiem966sixemrfgnq76211 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk9eoeiem966sixemrfgnq76211 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5049,7 +5049,7 @@ ALTER TABLE event.eventxinvolvedparty
 --
 
 ALTER TABLE event.eventxgeography
-    ADD CONSTRAINT fk9hobmhai131oqagl3obeablxc FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fk9hobmhai131oqagl3obeablxc FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5058,7 +5058,7 @@ ALTER TABLE event.eventxgeography
 --
 
 ALTER TABLE event.eventxrules
-    ADD CONSTRAINT fk9koqxie6a6q0b4elyxadxe9bi FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fk9koqxie6a6q0b4elyxadxe9bi FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5067,7 +5067,7 @@ ALTER TABLE event.eventxrules
 --
 
 ALTER TABLE event.eventxarrangement
-    ADD CONSTRAINT fk9l3iwtdok5r27i83ywbjt0nto FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk9l3iwtdok5r27i83ywbjt0nto FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5076,7 +5076,7 @@ ALTER TABLE event.eventxarrangement
 --
 
 ALTER TABLE event.eventxeventsecuritytoken
-    ADD CONSTRAINT fkaddyvw0he74ynmpwy5rtvn26r FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkaddyvw0he74ynmpwy5rtvn26r FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5085,7 +5085,7 @@ ALTER TABLE event.eventxeventsecuritytoken
 --
 
 ALTER TABLE event.eventxrules
-    ADD CONSTRAINT fkavxgy5uwlh1u87pyd3wr431w FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkavxgy5uwlh1u87pyd3wr431w FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5094,7 +5094,7 @@ ALTER TABLE event.eventxrules
 --
 
 ALTER TABLE event.eventxeventsecuritytoken
-    ADD CONSTRAINT fkaybh5nk6h1pn25l38m9sb807f FOREIGN KEY (eventxeventid, warehousecreateddate) REFERENCES event.eventxevent (eventxeventid, warehousecreateddate);
+    ADD CONSTRAINT fkaybh5nk6h1pn25l38m9sb807f FOREIGN KEY (eventxeventid, warehousefromdate) REFERENCES event.eventxevent (eventxeventid, warehousefromdate);
 
 
 --
@@ -5103,7 +5103,7 @@ ALTER TABLE event.eventxeventsecuritytoken
 --
 
 ALTER TABLE event.eventxrules
-    ADD CONSTRAINT fkb3ssh2npba39x5f4e6hofnsej FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkb3ssh2npba39x5f4e6hofnsej FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5112,7 +5112,7 @@ ALTER TABLE event.eventxrules
 --
 
 ALTER TABLE event.eventsecuritytoken
-    ADD CONSTRAINT fkb5qngfntxfvo5cn45y0afpq6x FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkb5qngfntxfvo5cn45y0afpq6x FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5121,7 +5121,7 @@ ALTER TABLE event.eventsecuritytoken
 --
 
 ALTER TABLE event.eventxgeography
-    ADD CONSTRAINT fkbe9ptj3nqor5lbwjb48yl44jg FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkbe9ptj3nqor5lbwjb48yl44jg FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5130,7 +5130,7 @@ ALTER TABLE event.eventxgeography
 --
 
 ALTER TABLE event.eventxresourceitem
-    ADD CONSTRAINT fkbyjir0fafd1lcw9bta2vjmc1n FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkbyjir0fafd1lcw9bta2vjmc1n FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -5139,7 +5139,7 @@ ALTER TABLE event.eventxresourceitem
 --
 
 ALTER TABLE event.eventxinvolvedparty
-    ADD CONSTRAINT fkcr5fhf97fu39srlrsjwm8bjsw FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkcr5fhf97fu39srlrsjwm8bjsw FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -5148,7 +5148,7 @@ ALTER TABLE event.eventxinvolvedparty
 --
 
 ALTER TABLE event.eventtype
-    ADD CONSTRAINT fkd28eytnr3sps354vu7k75r6ds FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkd28eytnr3sps354vu7k75r6ds FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5157,7 +5157,7 @@ ALTER TABLE event.eventtype
 --
 
 ALTER TABLE event.eventxrulessecuritytoken
-    ADD CONSTRAINT fkd42bwmq984cam0ylnap2s3wpc FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkd42bwmq984cam0ylnap2s3wpc FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5166,7 +5166,7 @@ ALTER TABLE event.eventxrulessecuritytoken
 --
 
 ALTER TABLE event.eventxaddress
-    ADD CONSTRAINT fkd6wdra1kpon3dn8wcfjrk6msl FOREIGN KEY (addressid, warehousecreateddate) REFERENCES address.address (addressid, warehousecreateddate);
+    ADD CONSTRAINT fkd6wdra1kpon3dn8wcfjrk6msl FOREIGN KEY (addressid, warehousefromdate) REFERENCES address.address (addressid, warehousefromdate);
 
 
 --
@@ -5175,7 +5175,7 @@ ALTER TABLE event.eventxaddress
 --
 
 ALTER TABLE event.eventxaddresssecuritytoken
-    ADD CONSTRAINT fkd7r65wrbjj132a0hama4srqfu FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkd7r65wrbjj132a0hama4srqfu FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5184,7 +5184,7 @@ ALTER TABLE event.eventxaddresssecuritytoken
 --
 
 ALTER TABLE event.eventxeventtypesecuritytoken
-    ADD CONSTRAINT fkd7rws5evj37jj64ccvudlyxmc FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkd7rws5evj37jj64ccvudlyxmc FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5193,7 +5193,7 @@ ALTER TABLE event.eventxeventtypesecuritytoken
 --
 
 ALTER TABLE event.eventxresourceitemsecuritytoken
-    ADD CONSTRAINT fkds5ohuq35i98a2mbbtiv844uq FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkds5ohuq35i98a2mbbtiv844uq FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5202,7 +5202,7 @@ ALTER TABLE event.eventxresourceitemsecuritytoken
 --
 
 ALTER TABLE event.eventxrulessecuritytoken
-    ADD CONSTRAINT fke143eyeb17r5ye7xvqygem8a6 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fke143eyeb17r5ye7xvqygem8a6 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -5211,7 +5211,7 @@ ALTER TABLE event.eventxrulessecuritytoken
 --
 
 ALTER TABLE event.eventtypessecuritytoken
-    ADD CONSTRAINT fke2wss5k3p8r4nxol9e95m3k3q FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fke2wss5k3p8r4nxol9e95m3k3q FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5220,7 +5220,7 @@ ALTER TABLE event.eventtypessecuritytoken
 --
 
 ALTER TABLE event.eventxclassification
-    ADD CONSTRAINT fkf1gqpk872jacljscf2kv0i24r FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fkf1gqpk872jacljscf2kv0i24r FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5229,7 +5229,7 @@ ALTER TABLE event.eventxclassification
 --
 
 ALTER TABLE event.eventxaddress
-    ADD CONSTRAINT fkf3dfxx8n3ijrkin1n3rr8jcek FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkf3dfxx8n3ijrkin1n3rr8jcek FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -5238,7 +5238,7 @@ ALTER TABLE event.eventxaddress
 --
 
 ALTER TABLE event.eventxeventtypesecuritytoken
-    ADD CONSTRAINT fkfdhh2w146eu56jmq685a7vlo7 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkfdhh2w146eu56jmq685a7vlo7 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5247,7 +5247,7 @@ ALTER TABLE event.eventxeventtypesecuritytoken
 --
 
 ALTER TABLE event.eventxclassificationsecuritytoken
-    ADD CONSTRAINT fkfoq8c32icxr3vxx3t050nwdqm FOREIGN KEY (eventxclassificationsid, warehousecreateddate) REFERENCES event.eventxclassification (eventxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkfoq8c32icxr3vxx3t050nwdqm FOREIGN KEY (eventxclassificationsid, warehousefromdate) REFERENCES event.eventxclassification (eventxclassificationid, warehousefromdate);
 
 
 --
@@ -5256,7 +5256,7 @@ ALTER TABLE event.eventxclassificationsecuritytoken
 --
 
 ALTER TABLE event.eventxresourceitem
-    ADD CONSTRAINT fkfpea4o9v60x6us7p60hss1aqu FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkfpea4o9v60x6us7p60hss1aqu FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5265,7 +5265,7 @@ ALTER TABLE event.eventxresourceitem
 --
 
 ALTER TABLE event.eventxrules
-    ADD CONSTRAINT fkfsgbiovv87rrf7llv66q5li2d FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkfsgbiovv87rrf7llv66q5li2d FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5274,7 +5274,7 @@ ALTER TABLE event.eventxrules
 --
 
 ALTER TABLE event.eventxresourceitemsecuritytoken
-    ADD CONSTRAINT fkfwm7s7q3f572ajckfelr5c25d FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkfwm7s7q3f572ajckfelr5c25d FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5283,7 +5283,7 @@ ALTER TABLE event.eventxresourceitemsecuritytoken
 --
 
 ALTER TABLE event.eventxrulessecuritytoken
-    ADD CONSTRAINT fkfxyf5j49rr38955mbno4ynfqv FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkfxyf5j49rr38955mbno4ynfqv FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5292,7 +5292,7 @@ ALTER TABLE event.eventxrulessecuritytoken
 --
 
 ALTER TABLE event.eventxproduct
-    ADD CONSTRAINT fkfyq4xws9l9ndtorw2cgrbtc5b FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fkfyq4xws9l9ndtorw2cgrbtc5b FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5301,7 +5301,7 @@ ALTER TABLE event.eventxproduct
 --
 
 ALTER TABLE event.eventxclassificationsecuritytoken
-    ADD CONSTRAINT fkg821wl3o2mwy3k7ysebk2donl FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkg821wl3o2mwy3k7ysebk2donl FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -5310,7 +5310,7 @@ ALTER TABLE event.eventxclassificationsecuritytoken
 --
 
 ALTER TABLE event.eventxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkgechwpr8prmtfarbxf4s395tu FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkgechwpr8prmtfarbxf4s395tu FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5319,7 +5319,7 @@ ALTER TABLE event.eventxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE event.eventxproductsecuritytoken
-    ADD CONSTRAINT fkgl97bfv9e5ua7l2clt415514f FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkgl97bfv9e5ua7l2clt415514f FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5328,7 +5328,7 @@ ALTER TABLE event.eventxproductsecuritytoken
 --
 
 ALTER TABLE event.eventxproductsecuritytoken
-    ADD CONSTRAINT fkgpkp7841e76d4r6jv2drrorjf FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkgpkp7841e76d4r6jv2drrorjf FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5337,7 +5337,7 @@ ALTER TABLE event.eventxproductsecuritytoken
 --
 
 ALTER TABLE event.eventxproduct
-    ADD CONSTRAINT fkgxnd3jbg2f39e8ik5c0ivxdru FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkgxnd3jbg2f39e8ik5c0ivxdru FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5346,7 +5346,7 @@ ALTER TABLE event.eventxproduct
 --
 
 ALTER TABLE event.eventxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkh04u3m7l7xqsx19gjxiq084nw FOREIGN KEY (eventxinvolvedpartyid, warehousecreateddate) REFERENCES event.eventxinvolvedparty (eventxinvolvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkh04u3m7l7xqsx19gjxiq084nw FOREIGN KEY (eventxinvolvedpartyid, warehousefromdate) REFERENCES event.eventxinvolvedparty (eventxinvolvedpartyid, warehousefromdate);
 
 
 --
@@ -5355,7 +5355,7 @@ ALTER TABLE event.eventxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE event.eventxeventtype
-    ADD CONSTRAINT fkh0rt5ii9pw04gwly7db3xu1k FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fkh0rt5ii9pw04gwly7db3xu1k FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5364,7 +5364,7 @@ ALTER TABLE event.eventxeventtype
 --
 
 ALTER TABLE event.eventxeventsecuritytoken
-    ADD CONSTRAINT fkhljdtw3p9eoe701gg8a3o21iy FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkhljdtw3p9eoe701gg8a3o21iy FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5373,7 +5373,7 @@ ALTER TABLE event.eventxeventsecuritytoken
 --
 
 ALTER TABLE event.eventxarrangement
-    ADD CONSTRAINT fkhyhd3s7f217ugwq3wo7pk5t1y FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkhyhd3s7f217ugwq3wo7pk5t1y FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5382,7 +5382,7 @@ ALTER TABLE event.eventxarrangement
 --
 
 ALTER TABLE event.eventxevent
-    ADD CONSTRAINT fki35b9qnbbkiv3vxem4lbvlhov FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fki35b9qnbbkiv3vxem4lbvlhov FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -5391,7 +5391,7 @@ ALTER TABLE event.eventxevent
 --
 
 ALTER TABLE event.eventxgeography
-    ADD CONSTRAINT fki5u3ixu9xfcy27ntux56f0gx6 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fki5u3ixu9xfcy27ntux56f0gx6 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5400,7 +5400,7 @@ ALTER TABLE event.eventxgeography
 --
 
 ALTER TABLE event.eventxeventtypesecuritytoken
-    ADD CONSTRAINT fki6cykrbt81enfl7o22ujsidj9 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fki6cykrbt81enfl7o22ujsidj9 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -5409,7 +5409,7 @@ ALTER TABLE event.eventxeventtypesecuritytoken
 --
 
 ALTER TABLE event.eventxeventtype
-    ADD CONSTRAINT fkid8h6sd0odvwwwicoto22miy8 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkid8h6sd0odvwwwicoto22miy8 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5418,7 +5418,7 @@ ALTER TABLE event.eventxeventtype
 --
 
 ALTER TABLE event.eventxarrangement
-    ADD CONSTRAINT fkii5wwqv91rn4ji3nwgiy3wd2l FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fkii5wwqv91rn4ji3nwgiy3wd2l FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5427,7 +5427,7 @@ ALTER TABLE event.eventxarrangement
 --
 
 ALTER TABLE event.eventxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkin148rfphl52k2k9ihia0993r FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkin148rfphl52k2k9ihia0993r FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5436,7 +5436,7 @@ ALTER TABLE event.eventxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE event.eventxproduct
-    ADD CONSTRAINT fkiskxy3i7nn1pjcegr6e1kmuxh FOREIGN KEY (productid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fkiskxy3i7nn1pjcegr6e1kmuxh FOREIGN KEY (productid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -5445,7 +5445,7 @@ ALTER TABLE event.eventxproduct
 --
 
 ALTER TABLE event.eventxgeographysecuritytoken
-    ADD CONSTRAINT fkiw30isi83vw6xrvmxj8nou8lf FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkiw30isi83vw6xrvmxj8nou8lf FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5454,7 +5454,7 @@ ALTER TABLE event.eventxgeographysecuritytoken
 --
 
 ALTER TABLE event.eventxinvolvedparty
-    ADD CONSTRAINT fkiynqnmd943q3oxlqkjvdah2h FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkiynqnmd943q3oxlqkjvdah2h FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5463,7 +5463,7 @@ ALTER TABLE event.eventxinvolvedparty
 --
 
 ALTER TABLE event.eventxgeography
-    ADD CONSTRAINT fkiyrhx2xjplgljfvo8swoilr1q FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkiyrhx2xjplgljfvo8swoilr1q FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5472,7 +5472,7 @@ ALTER TABLE event.eventxgeography
 --
 
 ALTER TABLE event.eventxaddress
-    ADD CONSTRAINT fkjkfm7v3719rvi0mu4nev2xu6d FOREIGN KEY (eventid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fkjkfm7v3719rvi0mu4nev2xu6d FOREIGN KEY (eventid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5481,7 +5481,7 @@ ALTER TABLE event.eventxaddress
 --
 
 ALTER TABLE event.eventxresourceitem
-    ADD CONSTRAINT fkk74s5n31kgmbvmr362yle6kvd FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkk74s5n31kgmbvmr362yle6kvd FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -5490,7 +5490,7 @@ ALTER TABLE event.eventxresourceitem
 --
 
 ALTER TABLE event.eventxclassificationsecuritytoken
-    ADD CONSTRAINT fkkdkwjb6nhj76m65s840einvmw FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkkdkwjb6nhj76m65s840einvmw FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5499,7 +5499,7 @@ ALTER TABLE event.eventxclassificationsecuritytoken
 --
 
 ALTER TABLE event.eventxrulessecuritytoken
-    ADD CONSTRAINT fkkosmoasfra60wqac2vrx5qddw FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkkosmoasfra60wqac2vrx5qddw FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5508,7 +5508,7 @@ ALTER TABLE event.eventxrulessecuritytoken
 --
 
 ALTER TABLE event.eventxarrangement
-    ADD CONSTRAINT fklj26m0snewjsmso5n6jskt2a4 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklj26m0snewjsmso5n6jskt2a4 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5517,7 +5517,7 @@ ALTER TABLE event.eventxarrangement
 --
 
 ALTER TABLE event.eventxaddress
-    ADD CONSTRAINT fklmpsaajrvosc033g4idqh17bv FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fklmpsaajrvosc033g4idqh17bv FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5526,7 +5526,7 @@ ALTER TABLE event.eventxaddress
 --
 
 ALTER TABLE event.eventxgeographysecuritytoken
-    ADD CONSTRAINT fklr37auqe3m87viorqc1tsmkn FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fklr37auqe3m87viorqc1tsmkn FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5535,7 +5535,7 @@ ALTER TABLE event.eventxgeographysecuritytoken
 --
 
 ALTER TABLE event.eventxinvolvedparty
-    ADD CONSTRAINT fkm4w7sl97j4p81cd2rehtd5jpd FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm4w7sl97j4p81cd2rehtd5jpd FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5544,7 +5544,7 @@ ALTER TABLE event.eventxinvolvedparty
 --
 
 ALTER TABLE event.eventxaddress
-    ADD CONSTRAINT fkm52nfxs3cy5syh6ar5mly3k64 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm52nfxs3cy5syh6ar5mly3k64 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5553,7 +5553,7 @@ ALTER TABLE event.eventxaddress
 --
 
 ALTER TABLE event.eventxevent
-    ADD CONSTRAINT fkm690re4pvdyyeo38mfwgatnhk FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkm690re4pvdyyeo38mfwgatnhk FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5562,7 +5562,7 @@ ALTER TABLE event.eventxevent
 --
 
 ALTER TABLE event.eventxresourceitem
-    ADD CONSTRAINT fkmioseq29u1gk2kh4uhxsrpr5b FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkmioseq29u1gk2kh4uhxsrpr5b FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5571,7 +5571,7 @@ ALTER TABLE event.eventxresourceitem
 --
 
 ALTER TABLE event.eventxresourceitemsecuritytoken
-    ADD CONSTRAINT fkmoagxghmr17ytrthakoidoxvn FOREIGN KEY (eventxresourceitemid, warehousecreateddate) REFERENCES event.eventxresourceitem (eventxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkmoagxghmr17ytrthakoidoxvn FOREIGN KEY (eventxresourceitemid, warehousefromdate) REFERENCES event.eventxresourceitem (eventxresourceitemid, warehousefromdate);
 
 
 --
@@ -5580,7 +5580,7 @@ ALTER TABLE event.eventxresourceitemsecuritytoken
 --
 
 ALTER TABLE event.eventxaddress
-    ADD CONSTRAINT fkmtwd6myq1nc0g02s2s2nhkteo FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmtwd6myq1nc0g02s2s2nhkteo FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5589,7 +5589,7 @@ ALTER TABLE event.eventxaddress
 --
 
 ALTER TABLE event.eventsecuritytoken
-    ADD CONSTRAINT fkmwxej7o84e382w8iy2y6fwlmf FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkmwxej7o84e382w8iy2y6fwlmf FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5598,7 +5598,7 @@ ALTER TABLE event.eventsecuritytoken
 --
 
 ALTER TABLE event.eventxproductsecuritytoken
-    ADD CONSTRAINT fkn5dxxoefbl6hg9dm8wpthnyro FOREIGN KEY (eventxproductid, warehousecreateddate) REFERENCES event.eventxproduct (eventxproductid, warehousecreateddate);
+    ADD CONSTRAINT fkn5dxxoefbl6hg9dm8wpthnyro FOREIGN KEY (eventxproductid, warehousefromdate) REFERENCES event.eventxproduct (eventxproductid, warehousefromdate);
 
 
 --
@@ -5607,7 +5607,7 @@ ALTER TABLE event.eventxproductsecuritytoken
 --
 
 ALTER TABLE event.eventxresourceitemsecuritytoken
-    ADD CONSTRAINT fknjjtfvj551fm36x4gwx2ny47f FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fknjjtfvj551fm36x4gwx2ny47f FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5616,7 +5616,7 @@ ALTER TABLE event.eventxresourceitemsecuritytoken
 --
 
 ALTER TABLE event.eventxeventtypesecuritytoken
-    ADD CONSTRAINT fknq4vx7pf7dug9j4pr7u3mxas7 FOREIGN KEY (eventxeventtypeid, warehousecreateddate) REFERENCES event.eventxeventtype (eventxeventtypeid, warehousecreateddate);
+    ADD CONSTRAINT fknq4vx7pf7dug9j4pr7u3mxas7 FOREIGN KEY (eventxeventtypeid, warehousefromdate) REFERENCES event.eventxeventtype (eventxeventtypeid, warehousefromdate);
 
 
 --
@@ -5625,7 +5625,7 @@ ALTER TABLE event.eventxeventtypesecuritytoken
 --
 
 ALTER TABLE event.eventxresourceitem
-    ADD CONSTRAINT fkns5wkh4kiqo2l7a16029ntkpg FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkns5wkh4kiqo2l7a16029ntkpg FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5634,7 +5634,7 @@ ALTER TABLE event.eventxresourceitem
 --
 
 ALTER TABLE event.eventxresourceitemsecuritytoken
-    ADD CONSTRAINT fko04e70wvi9b3hehhsu7pjj30y FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fko04e70wvi9b3hehhsu7pjj30y FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5643,7 +5643,7 @@ ALTER TABLE event.eventxresourceitemsecuritytoken
 --
 
 ALTER TABLE event.eventxclassification
-    ADD CONSTRAINT fko28x8wv64sef2ifxjm8a4i2ft FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fko28x8wv64sef2ifxjm8a4i2ft FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -5652,7 +5652,7 @@ ALTER TABLE event.eventxclassification
 --
 
 ALTER TABLE event.eventsecuritytoken
-    ADD CONSTRAINT fko5kqswpu433kf5hcc3yh1w10e FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko5kqswpu433kf5hcc3yh1w10e FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5661,7 +5661,7 @@ ALTER TABLE event.eventsecuritytoken
 --
 
 ALTER TABLE event.eventxevent
-    ADD CONSTRAINT fko7pb9lg0uhpllekuxaeml1xip FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko7pb9lg0uhpllekuxaeml1xip FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5670,7 +5670,7 @@ ALTER TABLE event.eventxevent
 --
 
 ALTER TABLE event.eventxproductsecuritytoken
-    ADD CONSTRAINT fkod2lhedbtyh8y4sd0dg38l3dc FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkod2lhedbtyh8y4sd0dg38l3dc FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5679,7 +5679,7 @@ ALTER TABLE event.eventxproductsecuritytoken
 --
 
 ALTER TABLE event.eventxgeography
-    ADD CONSTRAINT fkohfy1ao57carvvjcwcok5sch5 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkohfy1ao57carvvjcwcok5sch5 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5688,7 +5688,7 @@ ALTER TABLE event.eventxgeography
 --
 
 ALTER TABLE event.eventxclassification
-    ADD CONSTRAINT fkojl271yprimpjrrv6u1a2ggb6 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkojl271yprimpjrrv6u1a2ggb6 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5697,7 +5697,7 @@ ALTER TABLE event.eventxclassification
 --
 
 ALTER TABLE event.eventxarrangementssecuritytoken
-    ADD CONSTRAINT fkom7ax04agkpio3h8xw30vb60m FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkom7ax04agkpio3h8xw30vb60m FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5706,7 +5706,7 @@ ALTER TABLE event.eventxarrangementssecuritytoken
 --
 
 ALTER TABLE event.eventxclassificationsecuritytoken
-    ADD CONSTRAINT fkoq4421g5p0yjlklv0231xbjel FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkoq4421g5p0yjlklv0231xbjel FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5715,7 +5715,7 @@ ALTER TABLE event.eventxclassificationsecuritytoken
 --
 
 ALTER TABLE event.eventxrulessecuritytoken
-    ADD CONSTRAINT fkos5etiopqb270oj8wjby9dld9 FOREIGN KEY (eventxrulesid, warehousecreateddate) REFERENCES event.eventxrules (eventxrulesid, warehousecreateddate);
+    ADD CONSTRAINT fkos5etiopqb270oj8wjby9dld9 FOREIGN KEY (eventxrulesid, warehousefromdate) REFERENCES event.eventxrules (eventxrulesid, warehousefromdate);
 
 
 --
@@ -5724,7 +5724,7 @@ ALTER TABLE event.eventxrulessecuritytoken
 --
 
 ALTER TABLE event.eventxclassification
-    ADD CONSTRAINT fkp7fx787hsyq9nf8820wl2rh1x FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkp7fx787hsyq9nf8820wl2rh1x FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5733,7 +5733,7 @@ ALTER TABLE event.eventxclassification
 --
 
 ALTER TABLE event.eventxeventtype
-    ADD CONSTRAINT fkp99ppwwnp2w9bnqg5pmf8b2hv FOREIGN KEY (eventtypeid, warehousecreateddate) REFERENCES event.eventtype (eventtypeid, warehousecreateddate);
+    ADD CONSTRAINT fkp99ppwwnp2w9bnqg5pmf8b2hv FOREIGN KEY (eventtypeid, warehousefromdate) REFERENCES event.eventtype (eventtypeid, warehousefromdate);
 
 
 --
@@ -5742,7 +5742,7 @@ ALTER TABLE event.eventxeventtype
 --
 
 ALTER TABLE event.eventxclassification
-    ADD CONSTRAINT fkpssgfk2o0m8r84lhnb04bh0om FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkpssgfk2o0m8r84lhnb04bh0om FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5751,7 +5751,7 @@ ALTER TABLE event.eventxclassification
 --
 
 ALTER TABLE event.eventxeventtype
-    ADD CONSTRAINT fkpurdwniain7du77wld6bi9kfk FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkpurdwniain7du77wld6bi9kfk FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -5760,7 +5760,7 @@ ALTER TABLE event.eventxeventtype
 --
 
 ALTER TABLE event.eventxarrangement
-    ADD CONSTRAINT fkpwoqs4xag1rw5tyrb062tyagd FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkpwoqs4xag1rw5tyrb062tyagd FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -5769,7 +5769,7 @@ ALTER TABLE event.eventxarrangement
 --
 
 ALTER TABLE event.eventxarrangementssecuritytoken
-    ADD CONSTRAINT fkq3ik0e8bbij1nqvdu0jn1unvg FOREIGN KEY (eventxarrangementsid, warehousecreateddate) REFERENCES event.eventxarrangement (eventxarrangementsid, warehousecreateddate);
+    ADD CONSTRAINT fkq3ik0e8bbij1nqvdu0jn1unvg FOREIGN KEY (eventxarrangementsid, warehousefromdate) REFERENCES event.eventxarrangement (eventxarrangementsid, warehousefromdate);
 
 
 --
@@ -5778,7 +5778,7 @@ ALTER TABLE event.eventxarrangementssecuritytoken
 --
 
 ALTER TABLE event.eventxresourceitem
-    ADD CONSTRAINT fkq5cq69kmrvba5howgpqkpyv2t FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkq5cq69kmrvba5howgpqkpyv2t FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5787,7 +5787,7 @@ ALTER TABLE event.eventxresourceitem
 --
 
 ALTER TABLE event.eventxresourceitemsecuritytoken
-    ADD CONSTRAINT fkq8fobq1u0tsuvj481ya8icdhe FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkq8fobq1u0tsuvj481ya8icdhe FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -5796,7 +5796,7 @@ ALTER TABLE event.eventxresourceitemsecuritytoken
 --
 
 ALTER TABLE event.eventsecuritytoken
-    ADD CONSTRAINT fkqcwlmmiy1hf3p3ol2dy865mx5 FOREIGN KEY (eventsid, warehousecreateddate) REFERENCES event.event (eventid, warehousecreateddate);
+    ADD CONSTRAINT fkqcwlmmiy1hf3p3ol2dy865mx5 FOREIGN KEY (eventsid, warehousefromdate) REFERENCES event.event (eventid, warehousefromdate);
 
 
 --
@@ -5805,7 +5805,7 @@ ALTER TABLE event.eventsecuritytoken
 --
 
 ALTER TABLE event.eventxeventtype
-    ADD CONSTRAINT fkqf8vxnj6qupg8u3wuiqcd247x FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkqf8vxnj6qupg8u3wuiqcd247x FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5814,7 +5814,7 @@ ALTER TABLE event.eventxeventtype
 --
 
 ALTER TABLE event.eventxproduct
-    ADD CONSTRAINT fkqj3yu6g3em9mm3gabikm12hke FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqj3yu6g3em9mm3gabikm12hke FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5823,7 +5823,7 @@ ALTER TABLE event.eventxproduct
 --
 
 ALTER TABLE event.eventxgeography
-    ADD CONSTRAINT fkqnbhmdykbnj6recqytrcm5x52 FOREIGN KEY (geographyid, warehousecreateddate) REFERENCES geography.geography (geographyid, warehousecreateddate);
+    ADD CONSTRAINT fkqnbhmdykbnj6recqytrcm5x52 FOREIGN KEY (geographyid, warehousefromdate) REFERENCES geography.geography (geographyid, warehousefromdate);
 
 
 --
@@ -5832,7 +5832,7 @@ ALTER TABLE event.eventxgeography
 --
 
 ALTER TABLE event.eventtypessecuritytoken
-    ADD CONSTRAINT fkr2xa1q4402m8pc5evyj1tw9q5 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkr2xa1q4402m8pc5evyj1tw9q5 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5841,7 +5841,7 @@ ALTER TABLE event.eventtypessecuritytoken
 --
 
 ALTER TABLE event.eventxgeographysecuritytoken
-    ADD CONSTRAINT fkrekwdq9yy06eyoqgiwlh0qw4n FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkrekwdq9yy06eyoqgiwlh0qw4n FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5850,7 +5850,7 @@ ALTER TABLE event.eventxgeographysecuritytoken
 --
 
 ALTER TABLE event.eventxevent
-    ADD CONSTRAINT fks7qe80gktw6nesd2ijfu3j438 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fks7qe80gktw6nesd2ijfu3j438 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5859,7 +5859,7 @@ ALTER TABLE event.eventxevent
 --
 
 ALTER TABLE event.eventxarrangementssecuritytoken
-    ADD CONSTRAINT fks8terumw31sybh6o0x4sdbc2t FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fks8terumw31sybh6o0x4sdbc2t FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -5868,7 +5868,7 @@ ALTER TABLE event.eventxarrangementssecuritytoken
 --
 
 ALTER TABLE event.eventsecuritytoken
-    ADD CONSTRAINT fksa47kc62uve787xbc9h6syv0t FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fksa47kc62uve787xbc9h6syv0t FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5877,7 +5877,7 @@ ALTER TABLE event.eventsecuritytoken
 --
 
 ALTER TABLE event.eventxinvolvedparty
-    ADD CONSTRAINT fksoe05vt9d1tt0ot0rd7ns68l0 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fksoe05vt9d1tt0ot0rd7ns68l0 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -5886,7 +5886,7 @@ ALTER TABLE event.eventxinvolvedparty
 --
 
 ALTER TABLE event.eventxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkssmudrecemndf6iufso5jpyoi FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkssmudrecemndf6iufso5jpyoi FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -5895,7 +5895,7 @@ ALTER TABLE event.eventxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE event.eventxproductsecuritytoken
-    ADD CONSTRAINT fkt6d41dk6xtiue499wasf738r FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkt6d41dk6xtiue499wasf738r FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5904,7 +5904,7 @@ ALTER TABLE event.eventxproductsecuritytoken
 --
 
 ALTER TABLE event.event
-    ADD CONSTRAINT fkt9syxmvp6c5pcyhyiv9c8qpb1 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkt9syxmvp6c5pcyhyiv9c8qpb1 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5913,7 +5913,7 @@ ALTER TABLE event.event
 --
 
 ALTER TABLE event.eventtypessecuritytoken
-    ADD CONSTRAINT fktcukxvcv6bvhbmcelmt16vroq FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fktcukxvcv6bvhbmcelmt16vroq FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5922,7 +5922,7 @@ ALTER TABLE event.eventtypessecuritytoken
 --
 
 ALTER TABLE event.eventxarrangementssecuritytoken
-    ADD CONSTRAINT fktiw0truwtwa3ublkae3jexugw FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fktiw0truwtwa3ublkae3jexugw FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5931,7 +5931,7 @@ ALTER TABLE event.eventxarrangementssecuritytoken
 --
 
 ALTER TABLE event.eventxeventtypesecuritytoken
-    ADD CONSTRAINT fkvymcuqjxqpd4so83dmpnj5mk FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkvymcuqjxqpd4so83dmpnj5mk FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5940,7 +5940,7 @@ ALTER TABLE event.eventxeventtypesecuritytoken
 --
 
 ALTER TABLE event.eventxeventtype
-    ADD CONSTRAINT fkw45a7dsxmiph0mrg1j2infhv FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkw45a7dsxmiph0mrg1j2infhv FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5949,7 +5949,7 @@ ALTER TABLE event.eventxeventtype
 --
 
 ALTER TABLE geography.geographyxgeography
-    ADD CONSTRAINT fk1dvwqevxm9g1ajxfofeyog39o FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk1dvwqevxm9g1ajxfofeyog39o FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5958,7 +5958,7 @@ ALTER TABLE geography.geographyxgeography
 --
 
 ALTER TABLE geography.geographyxgeography
-    ADD CONSTRAINT fk1x9ioslmt95w0fjxh1h7tgh22 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk1x9ioslmt95w0fjxh1h7tgh22 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5967,7 +5967,7 @@ ALTER TABLE geography.geographyxgeography
 --
 
 ALTER TABLE geography.geographyxgeographysecuritytoken
-    ADD CONSTRAINT fk2ho20x8qldli7owo63ieh7pdk FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk2ho20x8qldli7owo63ieh7pdk FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -5976,7 +5976,7 @@ ALTER TABLE geography.geographyxgeographysecuritytoken
 --
 
 ALTER TABLE geography.geography
-    ADD CONSTRAINT fk3hp5hnnmkc6wh089ye90tm3o6 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk3hp5hnnmkc6wh089ye90tm3o6 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -5985,7 +5985,7 @@ ALTER TABLE geography.geography
 --
 
 ALTER TABLE geography.geographyxresourceitem
-    ADD CONSTRAINT fk4cbs953wqd4v6mb2yco9uu2cy FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk4cbs953wqd4v6mb2yco9uu2cy FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -5994,7 +5994,7 @@ ALTER TABLE geography.geographyxresourceitem
 --
 
 ALTER TABLE geography.geographyxresourceitemsecuritytoken
-    ADD CONSTRAINT fk57l6e5bda4i1n4re0hw21706u FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk57l6e5bda4i1n4re0hw21706u FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6003,7 +6003,7 @@ ALTER TABLE geography.geographyxresourceitemsecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitemsecuritytoken
-    ADD CONSTRAINT fk5j6a8twkt85ffakx17foe5klo FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk5j6a8twkt85ffakx17foe5klo FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6012,7 +6012,7 @@ ALTER TABLE geography.geographyxresourceitemsecuritytoken
 --
 
 ALTER TABLE geography.geographyxclassificationsecuritytoken
-    ADD CONSTRAINT fk5jg1k2am65j8ibiky7mc0inxf FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5jg1k2am65j8ibiky7mc0inxf FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6021,7 +6021,7 @@ ALTER TABLE geography.geographyxclassificationsecuritytoken
 --
 
 ALTER TABLE geography.geographyxclassification
-    ADD CONSTRAINT fk5ohjj567mkcmt76ptgsq2qsin FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk5ohjj567mkcmt76ptgsq2qsin FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -6030,7 +6030,7 @@ ALTER TABLE geography.geographyxclassification
 --
 
 ALTER TABLE geography.geographyxclassification
-    ADD CONSTRAINT fk5p12kjl7g353s2w727ulp384s FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5p12kjl7g353s2w727ulp384s FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6039,7 +6039,7 @@ ALTER TABLE geography.geographyxclassification
 --
 
 ALTER TABLE geography.geographyxresourceitemsecuritytoken
-    ADD CONSTRAINT fk6m9u05ntxa7n822r58ewn00e6 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk6m9u05ntxa7n822r58ewn00e6 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6048,7 +6048,7 @@ ALTER TABLE geography.geographyxresourceitemsecuritytoken
 --
 
 ALTER TABLE geography.geographysecuritytoken
-    ADD CONSTRAINT fk7ate5yexxkqmll1407emnf36i FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk7ate5yexxkqmll1407emnf36i FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6057,7 +6057,7 @@ ALTER TABLE geography.geographysecuritytoken
 --
 
 ALTER TABLE geography.geographysecuritytoken
-    ADD CONSTRAINT fk8obgl7xdf7mth9vgblc6u057d FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8obgl7xdf7mth9vgblc6u057d FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6066,7 +6066,7 @@ ALTER TABLE geography.geographysecuritytoken
 --
 
 ALTER TABLE geography.geographysecuritytoken
-    ADD CONSTRAINT fk9u01t3it5fhcfyw2q3x2r19f6 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk9u01t3it5fhcfyw2q3x2r19f6 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6075,7 +6075,7 @@ ALTER TABLE geography.geographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxclassification
-    ADD CONSTRAINT fkafecxpt71ni5iel6aklaku4f5 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkafecxpt71ni5iel6aklaku4f5 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6084,7 +6084,7 @@ ALTER TABLE geography.geographyxclassification
 --
 
 ALTER TABLE geography.geographyxresourceitem
-    ADD CONSTRAINT fkan3li0682x6rj5rnqgo2s3bm3 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkan3li0682x6rj5rnqgo2s3bm3 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6093,7 +6093,7 @@ ALTER TABLE geography.geographyxresourceitem
 --
 
 ALTER TABLE geography.geographysecuritytoken
-    ADD CONSTRAINT fkbrt91rfhyvn2hp76aga8vvdoq FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkbrt91rfhyvn2hp76aga8vvdoq FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6102,7 +6102,7 @@ ALTER TABLE geography.geographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitem
-    ADD CONSTRAINT fkbvccen8s30rkpie76wyr1mixd FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkbvccen8s30rkpie76wyr1mixd FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -6111,7 +6111,7 @@ ALTER TABLE geography.geographyxresourceitem
 --
 
 ALTER TABLE geography.geography
-    ADD CONSTRAINT fkd30h42gp0snfq2lrm61hxeo7a FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkd30h42gp0snfq2lrm61hxeo7a FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -6120,7 +6120,7 @@ ALTER TABLE geography.geography
 --
 
 ALTER TABLE geography.geographyxgeography
-    ADD CONSTRAINT fkdwrnhxis6ef8f2rkhxv56jmgu FOREIGN KEY (childgeographyid, warehousecreateddate) REFERENCES geography.geography (geographyid, warehousecreateddate);
+    ADD CONSTRAINT fkdwrnhxis6ef8f2rkhxv56jmgu FOREIGN KEY (childgeographyid, warehousefromdate) REFERENCES geography.geography (geographyid, warehousefromdate);
 
 
 --
@@ -6129,7 +6129,7 @@ ALTER TABLE geography.geographyxgeography
 --
 
 ALTER TABLE geography.geographyxgeography
-    ADD CONSTRAINT fkdxliyywqpd69bpwfsbm58tia1 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkdxliyywqpd69bpwfsbm58tia1 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6138,7 +6138,7 @@ ALTER TABLE geography.geographyxgeography
 --
 
 ALTER TABLE geography.geography
-    ADD CONSTRAINT fke3cvg85u45hqr34o3srx8njbv FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fke3cvg85u45hqr34o3srx8njbv FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6147,7 +6147,7 @@ ALTER TABLE geography.geography
 --
 
 ALTER TABLE geography.geographyxgeographysecuritytoken
-    ADD CONSTRAINT fke94i2ly219wcofp3qlsyepcjx FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fke94i2ly219wcofp3qlsyepcjx FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6156,7 +6156,7 @@ ALTER TABLE geography.geographyxgeographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxclassificationsecuritytoken
-    ADD CONSTRAINT fkeenbngjgunycd80bgeoaylrwp FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkeenbngjgunycd80bgeoaylrwp FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6165,7 +6165,7 @@ ALTER TABLE geography.geographyxclassificationsecuritytoken
 --
 
 ALTER TABLE geography.geography
-    ADD CONSTRAINT fkfe6vl7bajuvj2k024mtfxvjwy FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkfe6vl7bajuvj2k024mtfxvjwy FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6174,7 +6174,7 @@ ALTER TABLE geography.geography
 --
 
 ALTER TABLE geography.geographyxclassificationsecuritytoken
-    ADD CONSTRAINT fkffvnvtxqjjbur12t6x7qcbn2h FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkffvnvtxqjjbur12t6x7qcbn2h FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6183,7 +6183,7 @@ ALTER TABLE geography.geographyxclassificationsecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitemsecuritytoken
-    ADD CONSTRAINT fkfwajhfr051wxdtw76afh5totc FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkfwajhfr051wxdtw76afh5totc FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6192,7 +6192,7 @@ ALTER TABLE geography.geographyxresourceitemsecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitem
-    ADD CONSTRAINT fkgd4x1t5pb1lnp2etg9yptt7n7 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkgd4x1t5pb1lnp2etg9yptt7n7 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6201,7 +6201,7 @@ ALTER TABLE geography.geographyxresourceitem
 --
 
 ALTER TABLE geography.geographyxgeography
-    ADD CONSTRAINT fkglfnoy0sok1ayveu5glm26neo FOREIGN KEY (parentgeographyid, warehousecreateddate) REFERENCES geography.geography (geographyid, warehousecreateddate);
+    ADD CONSTRAINT fkglfnoy0sok1ayveu5glm26neo FOREIGN KEY (parentgeographyid, warehousefromdate) REFERENCES geography.geography (geographyid, warehousefromdate);
 
 
 --
@@ -6210,7 +6210,7 @@ ALTER TABLE geography.geographyxgeography
 --
 
 ALTER TABLE geography.geographyxclassification
-    ADD CONSTRAINT fkgt1brdxa60taodmc6cg28r0lb FOREIGN KEY (geographyid, warehousecreateddate) REFERENCES geography.geography (geographyid, warehousecreateddate);
+    ADD CONSTRAINT fkgt1brdxa60taodmc6cg28r0lb FOREIGN KEY (geographyid, warehousefromdate) REFERENCES geography.geography (geographyid, warehousefromdate);
 
 
 --
@@ -6219,7 +6219,7 @@ ALTER TABLE geography.geographyxclassification
 --
 
 ALTER TABLE geography.geographysecuritytoken
-    ADD CONSTRAINT fkh6x5jqejxvpq70sg8w8bcddvu FOREIGN KEY (geographyid, warehousecreateddate) REFERENCES geography.geography (geographyid, warehousecreateddate);
+    ADD CONSTRAINT fkh6x5jqejxvpq70sg8w8bcddvu FOREIGN KEY (geographyid, warehousefromdate) REFERENCES geography.geography (geographyid, warehousefromdate);
 
 
 --
@@ -6228,7 +6228,7 @@ ALTER TABLE geography.geographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxgeography
-    ADD CONSTRAINT fkh8w4rt46cn0a8rdk7p46i6yw6 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkh8w4rt46cn0a8rdk7p46i6yw6 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -6237,7 +6237,7 @@ ALTER TABLE geography.geographyxgeography
 --
 
 ALTER TABLE geography.geography
-    ADD CONSTRAINT fkhfy9e7gg8xlswihrx45wk0093 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkhfy9e7gg8xlswihrx45wk0093 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6246,7 +6246,7 @@ ALTER TABLE geography.geography
 --
 
 ALTER TABLE geography.geographyxresourceitem
-    ADD CONSTRAINT fkikpxdma2cnfy7ak4hqqskegdt FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkikpxdma2cnfy7ak4hqqskegdt FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -6255,7 +6255,7 @@ ALTER TABLE geography.geographyxresourceitem
 --
 
 ALTER TABLE geography.geographyxgeographysecuritytoken
-    ADD CONSTRAINT fkjqo2qgds42bxfxae3xjj8528w FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkjqo2qgds42bxfxae3xjj8528w FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6264,7 +6264,7 @@ ALTER TABLE geography.geographyxgeographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxclassification
-    ADD CONSTRAINT fkl1bl1px429vykkiut1fdl7o0n FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkl1bl1px429vykkiut1fdl7o0n FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6273,7 +6273,7 @@ ALTER TABLE geography.geographyxclassification
 --
 
 ALTER TABLE geography.geographyxclassificationsecuritytoken
-    ADD CONSTRAINT fkl5321rf4hio0kms78ic3f8bst FOREIGN KEY (geographyxclassificationid, warehousecreateddate) REFERENCES geography.geographyxclassification (geographyxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkl5321rf4hio0kms78ic3f8bst FOREIGN KEY (geographyxclassificationid, warehousefromdate) REFERENCES geography.geographyxclassification (geographyxclassificationid, warehousefromdate);
 
 
 --
@@ -6282,7 +6282,7 @@ ALTER TABLE geography.geographyxclassificationsecuritytoken
 --
 
 ALTER TABLE geography.geographyxgeographysecuritytoken
-    ADD CONSTRAINT fklclax5c7qktjee2sf4mysgub8 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklclax5c7qktjee2sf4mysgub8 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6291,7 +6291,7 @@ ALTER TABLE geography.geographyxgeographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitem
-    ADD CONSTRAINT fkmfe0l4k1dgd3890oxlt65lm8g FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkmfe0l4k1dgd3890oxlt65lm8g FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6300,7 +6300,7 @@ ALTER TABLE geography.geographyxresourceitem
 --
 
 ALTER TABLE geography.geographyxclassificationsecuritytoken
-    ADD CONSTRAINT fkmhery9mlbon8qfm9i7vymp6jy FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmhery9mlbon8qfm9i7vymp6jy FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6309,7 +6309,7 @@ ALTER TABLE geography.geographyxclassificationsecuritytoken
 --
 
 ALTER TABLE geography.geographysecuritytoken
-    ADD CONSTRAINT fkmpal48yq5kf23jj4x9r77v0g7 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkmpal48yq5kf23jj4x9r77v0g7 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6318,7 +6318,7 @@ ALTER TABLE geography.geographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitemsecuritytoken
-    ADD CONSTRAINT fkodr0owqhi39gwkkygjyyk3sd9 FOREIGN KEY (geographyxresourceitemid, warehousecreateddate) REFERENCES geography.geographyxresourceitem (geographyxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkodr0owqhi39gwkkygjyyk3sd9 FOREIGN KEY (geographyxresourceitemid, warehousefromdate) REFERENCES geography.geographyxresourceitem (geographyxresourceitemid, warehousefromdate);
 
 
 --
@@ -6327,7 +6327,7 @@ ALTER TABLE geography.geographyxresourceitemsecuritytoken
 --
 
 ALTER TABLE geography.geographyxgeography
-    ADD CONSTRAINT fkp5cwyefygfcshowmbuctqm2bd FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkp5cwyefygfcshowmbuctqm2bd FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6336,7 +6336,7 @@ ALTER TABLE geography.geographyxgeography
 --
 
 ALTER TABLE geography.geographyxclassificationsecuritytoken
-    ADD CONSTRAINT fkp6nlv6glhcy1fyqj5bj5hggud FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkp6nlv6glhcy1fyqj5bj5hggud FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6345,7 +6345,7 @@ ALTER TABLE geography.geographyxclassificationsecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitemsecuritytoken
-    ADD CONSTRAINT fkpj8pp6mw0061pdlxv6p8f9qv8 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkpj8pp6mw0061pdlxv6p8f9qv8 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6354,7 +6354,7 @@ ALTER TABLE geography.geographyxresourceitemsecuritytoken
 --
 
 ALTER TABLE geography.geographyxresourceitem
-    ADD CONSTRAINT fkplqcl8yui4k6xm0faaa3v9v3v FOREIGN KEY (geographyid, warehousecreateddate) REFERENCES geography.geography (geographyid, warehousecreateddate);
+    ADD CONSTRAINT fkplqcl8yui4k6xm0faaa3v9v3v FOREIGN KEY (geographyid, warehousefromdate) REFERENCES geography.geography (geographyid, warehousefromdate);
 
 
 --
@@ -6363,7 +6363,7 @@ ALTER TABLE geography.geographyxresourceitem
 --
 
 ALTER TABLE geography.geographyxgeographysecuritytoken
-    ADD CONSTRAINT fkqd1qu9501eat5nh9sjc6ejg27 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqd1qu9501eat5nh9sjc6ejg27 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6372,7 +6372,7 @@ ALTER TABLE geography.geographyxgeographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxgeographysecuritytoken
-    ADD CONSTRAINT fkqth25orgkxdx6xvepkv9dkco4 FOREIGN KEY (geographyxgeographyid, warehousecreateddate) REFERENCES geography.geographyxgeography (geographyxgeographyid, warehousecreateddate);
+    ADD CONSTRAINT fkqth25orgkxdx6xvepkv9dkco4 FOREIGN KEY (geographyxgeographyid, warehousefromdate) REFERENCES geography.geographyxgeography (geographyxgeographyid, warehousefromdate);
 
 
 --
@@ -6381,7 +6381,7 @@ ALTER TABLE geography.geographyxgeographysecuritytoken
 --
 
 ALTER TABLE geography.geographyxclassification
-    ADD CONSTRAINT fkrtu1y36y10o03rcrhrvacvki1 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkrtu1y36y10o03rcrhrvacvki1 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6390,7 +6390,7 @@ ALTER TABLE geography.geographyxclassification
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT fk1306t8qbngy6vd6gt28t6w515 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk1306t8qbngy6vd6gt28t6w515 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6399,7 +6399,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE party.involvedpartysecuritytoken
-    ADD CONSTRAINT fk14xr935tw00ygoqib0cxoxmvf FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk14xr935tw00ygoqib0cxoxmvf FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6408,7 +6408,7 @@ ALTER TABLE party.involvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fk18x9igr3j8p5ug8wm2mattpsn FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk18x9igr3j8p5ug8wm2mattpsn FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6417,7 +6417,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fk1cih29htv8dr2nqs6113mhy20 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk1cih29htv8dr2nqs6113mhy20 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6426,7 +6426,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxrulessecuritytoken
-    ADD CONSTRAINT fk1gcn1u4lcsxql11rx2ydvwnbu FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk1gcn1u4lcsxql11rx2ydvwnbu FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6435,7 +6435,7 @@ ALTER TABLE party.involvedpartyxrulessecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxclassification
-    ADD CONSTRAINT fk1k9352drnr2qjxk0itdlpiphl FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk1k9352drnr2qjxk0itdlpiphl FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6444,7 +6444,7 @@ ALTER TABLE party.involvedpartyxclassification
 --
 
 ALTER TABLE party.involvedpartyxclassification
-    ADD CONSTRAINT fk1l1b8kh214rut78airw106ska FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fk1l1b8kh214rut78airw106ska FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -6453,7 +6453,7 @@ ALTER TABLE party.involvedpartyxclassification
 --
 
 ALTER TABLE party.involvedpartyorganicsecuritytoken
-    ADD CONSTRAINT fk1lqut70vjbvicq402lw3avani FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk1lqut70vjbvicq402lw3avani FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6462,7 +6462,7 @@ ALTER TABLE party.involvedpartyorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fk1o1ufjc0u6yv02pfqokf19xhv FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk1o1ufjc0u6yv02pfqokf19xhv FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6471,7 +6471,7 @@ ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedparty
-    ADD CONSTRAINT fk1opo02p7o9r0k39gmafbukmdk FOREIGN KEY (childinvolvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fk1opo02p7o9r0k39gmafbukmdk FOREIGN KEY (childinvolvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -6480,7 +6480,7 @@ ALTER TABLE party.involvedpartyxinvolvedparty
 --
 
 ALTER TABLE party.involvedpartytype
-    ADD CONSTRAINT fk1v128xeri7d1pkfnltmnoo1co FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk1v128xeri7d1pkfnltmnoo1co FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6489,7 +6489,7 @@ ALTER TABLE party.involvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytype
-    ADD CONSTRAINT fk1w89pqnk0aoy7o41vm6wmidxd FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk1w89pqnk0aoy7o41vm6wmidxd FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -6498,7 +6498,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytype
 --
 
 ALTER TABLE party.involvedpartyorganictype
-    ADD CONSTRAINT fk1wmvw7vfk12aop3lrals1o1pj FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk1wmvw7vfk12aop3lrals1o1pj FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6507,7 +6507,7 @@ ALTER TABLE party.involvedpartyorganictype
 --
 
 ALTER TABLE party.involvedpartytypesecuritytoken
-    ADD CONSTRAINT fk217dwfh6c779f14rd2w8sm1vi FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk217dwfh6c779f14rd2w8sm1vi FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6516,7 +6516,7 @@ ALTER TABLE party.involvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
-    ADD CONSTRAINT fk27wqwvha1jdn24hktf0sx5qs9 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk27wqwvha1jdn24hktf0sx5qs9 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6525,7 +6525,7 @@ ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
-    ADD CONSTRAINT fk2erptg0ji67dbv45kqtodxb0c FOREIGN KEY (involvedpartyxinvolvedpartytypeid, warehousecreateddate) REFERENCES party.involvedpartyxinvolvedpartytype (involvedpartyxinvolvedpartytypeid, warehousecreateddate);
+    ADD CONSTRAINT fk2erptg0ji67dbv45kqtodxb0c FOREIGN KEY (involvedpartyxinvolvedpartytypeid, warehousefromdate) REFERENCES party.involvedpartyxinvolvedpartytype (involvedpartyxinvolvedpartytypeid, warehousefromdate);
 
 
 --
@@ -6534,7 +6534,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganic
-    ADD CONSTRAINT fk2fa0fq7vy2j3i2fog95gffalm FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk2fa0fq7vy2j3i2fog95gffalm FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6543,7 +6543,7 @@ ALTER TABLE party.involvedpartynonorganic
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT fk2hwee6e8u06db7hbr07aglskd FOREIGN KEY (involvedpartyxproductid, warehousecreateddate) REFERENCES party.involvedpartyxproduct (involvedpartyxproductid, warehousecreateddate);
+    ADD CONSTRAINT fk2hwee6e8u06db7hbr07aglskd FOREIGN KEY (involvedpartyxproductid, warehousefromdate) REFERENCES party.involvedpartyxproduct (involvedpartyxproductid, warehousefromdate);
 
 
 --
@@ -6552,7 +6552,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartyxproducttype
-    ADD CONSTRAINT fk2jbtjrhepl2mad2ogocxmdr2h FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2jbtjrhepl2mad2ogocxmdr2h FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6561,7 +6561,7 @@ ALTER TABLE party.involvedpartyxproducttype
 --
 
 ALTER TABLE party.involvedpartyxresourceitem
-    ADD CONSTRAINT fk2lynx18ubx3g0afp6rv021wty FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fk2lynx18ubx3g0afp6rv021wty FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -6570,7 +6570,7 @@ ALTER TABLE party.involvedpartyxresourceitem
 --
 
 ALTER TABLE party.involvedpartyorganictypesecuritytoken
-    ADD CONSTRAINT fk2rtgc2ltnx9facnuwt0aj6fpe FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2rtgc2ltnx9facnuwt0aj6fpe FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6579,7 +6579,7 @@ ALTER TABLE party.involvedpartyorganictypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganic
-    ADD CONSTRAINT fk2u5a4jkumk881cv7x3ei6vv22 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2u5a4jkumk881cv7x3ei6vv22 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6588,7 +6588,7 @@ ALTER TABLE party.involvedpartyorganic
 --
 
 ALTER TABLE party.involvedpartynametype
-    ADD CONSTRAINT fk2xslqqsshflrv1q0ps8p5woad FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2xslqqsshflrv1q0ps8p5woad FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6597,7 +6597,7 @@ ALTER TABLE party.involvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxaddresssecuritytoken
-    ADD CONSTRAINT fk32jyotpfsamhn8afbs8xgdw5y FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk32jyotpfsamhn8afbs8xgdw5y FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6606,7 +6606,7 @@ ALTER TABLE party.involvedpartyxaddresssecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxaddress
-    ADD CONSTRAINT fk3ehfta90cc7ha3uo6wplucc09 FOREIGN KEY (addressid, warehousecreateddate) REFERENCES address.address (addressid, warehousecreateddate);
+    ADD CONSTRAINT fk3ehfta90cc7ha3uo6wplucc09 FOREIGN KEY (addressid, warehousefromdate) REFERENCES address.address (addressid, warehousefromdate);
 
 
 --
@@ -6615,7 +6615,7 @@ ALTER TABLE party.involvedpartyxaddress
 --
 
 ALTER TABLE party.involvedpartytypesecuritytoken
-    ADD CONSTRAINT fk3fs2knats407bhami7ulk0ch9 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk3fs2knats407bhami7ulk0ch9 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6624,7 +6624,7 @@ ALTER TABLE party.involvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxresourceitem
-    ADD CONSTRAINT fk3igrqj1tpl6viwlb4jn4nlr9 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk3igrqj1tpl6viwlb4jn4nlr9 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6633,7 +6633,7 @@ ALTER TABLE party.involvedpartyxresourceitem
 --
 
 ALTER TABLE party.involvedpartyxclassificationsecuritytoken
-    ADD CONSTRAINT fk3jrcy00rqjcc9lotsouknd88 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk3jrcy00rqjcc9lotsouknd88 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6642,7 +6642,7 @@ ALTER TABLE party.involvedpartyxclassificationsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytype
-    ADD CONSTRAINT fk3pqtk4c0d0raqtidrxy0kpohi FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fk3pqtk4c0d0raqtidrxy0kpohi FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -6651,7 +6651,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxaddress
-    ADD CONSTRAINT fk4flitthmlghp6mj3h7maq4w84 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk4flitthmlghp6mj3h7maq4w84 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6660,7 +6660,7 @@ ALTER TABLE party.involvedpartyxaddress
 --
 
 ALTER TABLE party.involvedparty
-    ADD CONSTRAINT fk4gadr7utku5dispktvjwbl2cu FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk4gadr7utku5dispktvjwbl2cu FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6669,7 +6669,7 @@ ALTER TABLE party.involvedparty
 --
 
 ALTER TABLE party.involvedpartynonorganicsecuritytoken
-    ADD CONSTRAINT fk4igjsit3bwp3b387pa19s1sej FOREIGN KEY (involvedpartynonorganicid, warehousecreateddate) REFERENCES party.involvedpartynonorganic (involvedpartynonorganicid, warehousecreateddate);
+    ADD CONSTRAINT fk4igjsit3bwp3b387pa19s1sej FOREIGN KEY (involvedpartynonorganicid, warehousefromdate) REFERENCES party.involvedpartynonorganic (involvedpartynonorganicid, warehousefromdate);
 
 
 --
@@ -6678,7 +6678,7 @@ ALTER TABLE party.involvedpartynonorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
-    ADD CONSTRAINT fk4jy62mro7v8k9isc2tc9ikaat FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk4jy62mro7v8k9isc2tc9ikaat FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6687,7 +6687,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fk4pb209rtplqb1uj5wtx2xr5mg FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk4pb209rtplqb1uj5wtx2xr5mg FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6696,7 +6696,7 @@ ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedparty
-    ADD CONSTRAINT fk55h5hqcp98fursty4tgy1krgd FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk55h5hqcp98fursty4tgy1krgd FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6705,7 +6705,7 @@ ALTER TABLE party.involvedpartyxinvolvedparty
 --
 
 ALTER TABLE party.involvedpartyxaddresssecuritytoken
-    ADD CONSTRAINT fk58kov7xpcnh58m7m0rxhs6g30 FOREIGN KEY (involvedpartyxaddressid, warehousecreateddate) REFERENCES party.involvedpartyxaddress (involvedpartyxaddressid, warehousecreateddate);
+    ADD CONSTRAINT fk58kov7xpcnh58m7m0rxhs6g30 FOREIGN KEY (involvedpartyxaddressid, warehousefromdate) REFERENCES party.involvedpartyxaddress (involvedpartyxaddressid, warehousefromdate);
 
 
 --
@@ -6714,7 +6714,7 @@ ALTER TABLE party.involvedpartyxaddresssecuritytoken
 --
 
 ALTER TABLE party.involvedpartynametypesecuritytoken
-    ADD CONSTRAINT fk5dtp2b2133pffte1i7gxtom1t FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk5dtp2b2133pffte1i7gxtom1t FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6723,7 +6723,7 @@ ALTER TABLE party.involvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametype
-    ADD CONSTRAINT fk5x12pwiby030udsbagyaqxluf FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk5x12pwiby030udsbagyaqxluf FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6732,7 +6732,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxaddress
-    ADD CONSTRAINT fk6c2fjdp7lxcfy0ar93ni78dcv FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6c2fjdp7lxcfy0ar93ni78dcv FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6741,7 +6741,7 @@ ALTER TABLE party.involvedpartyxaddress
 --
 
 ALTER TABLE party.involvedpartyorganictype
-    ADD CONSTRAINT fk6ei1dirma8r1y7lh4glpn9cuy FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk6ei1dirma8r1y7lh4glpn9cuy FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6750,7 +6750,7 @@ ALTER TABLE party.involvedpartyorganictype
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT fk6hhyqulmrh1w7g3212r7jfkaw FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk6hhyqulmrh1w7g3212r7jfkaw FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -6759,7 +6759,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE party.involvedpartyxinvolvedparty
-    ADD CONSTRAINT fk6ih93cr42n69eamwdjj8a2ygn FOREIGN KEY (parentinvolvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fk6ih93cr42n69eamwdjj8a2ygn FOREIGN KEY (parentinvolvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -6768,7 +6768,7 @@ ALTER TABLE party.involvedpartyxinvolvedparty
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fk6l4fxgap9wfdttqp33s0wyut4 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk6l4fxgap9wfdttqp33s0wyut4 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6777,7 +6777,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
-    ADD CONSTRAINT fk6mi0299iv61l8tmmegrfwi2w3 FOREIGN KEY (involvedpartyidentificationtypeid, warehousecreateddate) REFERENCES party.involvedpartyidentificationtype (involvedpartyidentificationtypeid, warehousecreateddate);
+    ADD CONSTRAINT fk6mi0299iv61l8tmmegrfwi2w3 FOREIGN KEY (involvedpartyidentificationtypeid, warehousefromdate) REFERENCES party.involvedpartyidentificationtype (involvedpartyidentificationtypeid, warehousefromdate);
 
 
 --
@@ -6786,7 +6786,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyxclassificationsecuritytoken
-    ADD CONSTRAINT fk6pqhjtv3yvs3afa2dg5erfbad FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk6pqhjtv3yvs3afa2dg5erfbad FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6795,7 +6795,7 @@ ALTER TABLE party.involvedpartyxclassificationsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproductsecuritytoken
-    ADD CONSTRAINT fk6tukdpqv5fg05yawnk4f35bun FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk6tukdpqv5fg05yawnk4f35bun FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6804,7 +6804,7 @@ ALTER TABLE party.involvedpartyxproductsecuritytoken
 --
 
 ALTER TABLE party.involvedpartytype
-    ADD CONSTRAINT fk6wemtilbmlhs3b040hu5tfn7v FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6wemtilbmlhs3b040hu5tfn7v FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6813,7 +6813,7 @@ ALTER TABLE party.involvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
-    ADD CONSTRAINT fk72adgv7vc7uthg1eiq4sceq89 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk72adgv7vc7uthg1eiq4sceq89 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6822,7 +6822,7 @@ ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fk7dkwueip8veb59dox327ia0a8 FOREIGN KEY (involvedpartyidentificationtypeid, warehousecreateddate) REFERENCES party.involvedpartyidentificationtype (involvedpartyidentificationtypeid, warehousecreateddate);
+    ADD CONSTRAINT fk7dkwueip8veb59dox327ia0a8 FOREIGN KEY (involvedpartyidentificationtypeid, warehousefromdate) REFERENCES party.involvedpartyidentificationtype (involvedpartyidentificationtypeid, warehousefromdate);
 
 
 --
@@ -6831,7 +6831,7 @@ ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxclassification
-    ADD CONSTRAINT fk7jbx6dlrjcvu3ifb2s1w0ulct FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7jbx6dlrjcvu3ifb2s1w0ulct FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6840,7 +6840,7 @@ ALTER TABLE party.involvedpartyxclassification
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fk7ot9s9hc1w0icwm3ogcwhqvd3 FOREIGN KEY (involvedpartyxinvolvedpartyidentificationtypeid, warehousecreateddate) REFERENCES party.involvedpartyxinvolvedpartyidentificationtype (involvedpartyxinvolvedpartyidentificationtypeid, warehousecreateddate);
+    ADD CONSTRAINT fk7ot9s9hc1w0icwm3ogcwhqvd3 FOREIGN KEY (involvedpartyxinvolvedpartyidentificationtypeid, warehousefromdate) REFERENCES party.involvedpartyxinvolvedpartyidentificationtype (involvedpartyxinvolvedpartyidentificationtypeid, warehousefromdate);
 
 
 --
@@ -6849,7 +6849,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynametypesecuritytoken
-    ADD CONSTRAINT fk7t8d65pscktrxlw1we4idhlyj FOREIGN KEY (involvedpartynametypeid, warehousecreateddate) REFERENCES party.involvedpartynametype (involvedpartynametypeid, warehousecreateddate);
+    ADD CONSTRAINT fk7t8d65pscktrxlw1we4idhlyj FOREIGN KEY (involvedpartynametypeid, warehousefromdate) REFERENCES party.involvedpartynametype (involvedpartynametypeid, warehousefromdate);
 
 
 --
@@ -6858,7 +6858,7 @@ ALTER TABLE party.involvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
-    ADD CONSTRAINT fk7xl5vyatrbubvu8on89cnkdsj FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7xl5vyatrbubvu8on89cnkdsj FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6867,7 +6867,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxrulessecuritytoken
-    ADD CONSTRAINT fk86e07awdx5h97q548mtjxnlp1 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk86e07awdx5h97q548mtjxnlp1 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -6876,7 +6876,7 @@ ALTER TABLE party.involvedpartyxrulessecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxrulessecuritytoken
-    ADD CONSTRAINT fk86h342si0g1hy4qpnkap8oq08 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk86h342si0g1hy4qpnkap8oq08 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6885,7 +6885,7 @@ ALTER TABLE party.involvedpartyxrulessecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganicsecuritytoken
-    ADD CONSTRAINT fk8a7thuoro1mbxsng2amjluimk FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk8a7thuoro1mbxsng2amjluimk FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6894,7 +6894,7 @@ ALTER TABLE party.involvedpartynonorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproducttypesecuritytoken
-    ADD CONSTRAINT fk8ftebinncegtl979d5gsqnkah FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8ftebinncegtl979d5gsqnkah FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6903,7 +6903,7 @@ ALTER TABLE party.involvedpartyxproducttypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
-    ADD CONSTRAINT fk8kb1lmh3wvovdurs0rq2jtotk FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8kb1lmh3wvovdurs0rq2jtotk FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6912,7 +6912,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT fk8yk3mt51je6xtf3as7f1n5koa FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk8yk3mt51je6xtf3as7f1n5koa FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6921,7 +6921,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE party.involvedpartyxaddresssecuritytoken
-    ADD CONSTRAINT fk9h5dpjakcr9j4c61u628tte1b FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk9h5dpjakcr9j4c61u628tte1b FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6930,7 +6930,7 @@ ALTER TABLE party.involvedpartyxaddresssecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
-    ADD CONSTRAINT fk9k1s2vuya90it56mtuij9qk0d FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk9k1s2vuya90it56mtuij9qk0d FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6939,7 +6939,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyxproducttype
-    ADD CONSTRAINT fk9qw1jha2e5bmcbfm5tv9vi4f0 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk9qw1jha2e5bmcbfm5tv9vi4f0 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6948,7 +6948,7 @@ ALTER TABLE party.involvedpartyxproducttype
 --
 
 ALTER TABLE party.involvedpartyidentificationtype
-    ADD CONSTRAINT fk9t4s53f0ihecoo8ufdth1vbq2 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk9t4s53f0ihecoo8ufdth1vbq2 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -6957,7 +6957,7 @@ ALTER TABLE party.involvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
-    ADD CONSTRAINT fk9y6c21dewoi7fs477176gh0hv FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk9y6c21dewoi7fs477176gh0hv FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6966,7 +6966,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynametype
-    ADD CONSTRAINT fka7cnvd016j105uffrbuh94xx5 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fka7cnvd016j105uffrbuh94xx5 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -6975,7 +6975,7 @@ ALTER TABLE party.involvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
-    ADD CONSTRAINT fka8ayy9j0gddpl8adc2c6ug1y1 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fka8ayy9j0gddpl8adc2c6ug1y1 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -6984,7 +6984,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartynametype
-    ADD CONSTRAINT fkaaa9iyxq2koyservqjmrfeqee FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkaaa9iyxq2koyservqjmrfeqee FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -6993,7 +6993,7 @@ ALTER TABLE party.involvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
-    ADD CONSTRAINT fkamb8ax10bbah3k81o43u11kod FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkamb8ax10bbah3k81o43u11kod FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7002,7 +7002,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproducttype
-    ADD CONSTRAINT fkanja7q0nr3e57ilnlo9mualbo FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkanja7q0nr3e57ilnlo9mualbo FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -7011,7 +7011,7 @@ ALTER TABLE party.involvedpartyxproducttype
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT fkau2m5a079qpprk5hhhdqum1e2 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkau2m5a079qpprk5hhhdqum1e2 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7020,7 +7020,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartyxclassificationsecuritytoken
-    ADD CONSTRAINT fkbd75ir0ahamjur4981w6ki6tu FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkbd75ir0ahamjur4981w6ki6tu FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7029,7 +7029,7 @@ ALTER TABLE party.involvedpartyxclassificationsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproductsecuritytoken
-    ADD CONSTRAINT fkbfn2hrolgktevx0ena7ia8gr1 FOREIGN KEY (involvedpartyxproductid, warehousecreateddate) REFERENCES party.involvedpartyxproduct (involvedpartyxproductid, warehousecreateddate);
+    ADD CONSTRAINT fkbfn2hrolgktevx0ena7ia8gr1 FOREIGN KEY (involvedpartyxproductid, warehousefromdate) REFERENCES party.involvedpartyxproduct (involvedpartyxproductid, warehousefromdate);
 
 
 --
@@ -7038,7 +7038,7 @@ ALTER TABLE party.involvedpartyxproductsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkbjx132wxvnoasynr6sdwopoiv FOREIGN KEY (involvedpartyxinvolvedpartyid, warehousecreateddate) REFERENCES party.involvedpartyxinvolvedparty (involvedpartyxinvolvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkbjx132wxvnoasynr6sdwopoiv FOREIGN KEY (involvedpartyxinvolvedpartyid, warehousefromdate) REFERENCES party.involvedpartyxinvolvedparty (involvedpartyxinvolvedpartyid, warehousefromdate);
 
 
 --
@@ -7047,7 +7047,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganicsecuritytoken
-    ADD CONSTRAINT fkbo9u2l1rksyb0qw3poycrj3y2 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkbo9u2l1rksyb0qw3poycrj3y2 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7056,7 +7056,7 @@ ALTER TABLE party.involvedpartynonorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxresourceitem
-    ADD CONSTRAINT fkbtxxv9kh2p77i3qt1nhgi5epp FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkbtxxv9kh2p77i3qt1nhgi5epp FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -7065,7 +7065,7 @@ ALTER TABLE party.involvedpartyxresourceitem
 --
 
 ALTER TABLE party.involvedpartyxclassificationsecuritytoken
-    ADD CONSTRAINT fkbu7cxnreyofsgf9cdr0s3i9a1 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkbu7cxnreyofsgf9cdr0s3i9a1 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7074,7 +7074,7 @@ ALTER TABLE party.involvedpartyxclassificationsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
-    ADD CONSTRAINT fkbv1ja6o5cpxl4jpwm7bneb4ys FOREIGN KEY (involvedpartyxresourceitemid, warehousecreateddate) REFERENCES party.involvedpartyxresourceitem (involvedpartyxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkbv1ja6o5cpxl4jpwm7bneb4ys FOREIGN KEY (involvedpartyxresourceitemid, warehousefromdate) REFERENCES party.involvedpartyxresourceitem (involvedpartyxresourceitemid, warehousefromdate);
 
 
 --
@@ -7083,7 +7083,7 @@ ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
-    ADD CONSTRAINT fkc10kevx7v3jol7lbh6vw0smi4 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkc10kevx7v3jol7lbh6vw0smi4 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7092,7 +7092,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
-    ADD CONSTRAINT fkc7m7jk9bba59unhsafmgxbu4f FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkc7m7jk9bba59unhsafmgxbu4f FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -7101,7 +7101,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartytypesecuritytoken
-    ADD CONSTRAINT fkc8cf751cac8asi0iu3rkexxt0 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkc8cf751cac8asi0iu3rkexxt0 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7110,7 +7110,7 @@ ALTER TABLE party.involvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT fkchhwxcvsrfev3k76luwrc1di3 FOREIGN KEY (productid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fkchhwxcvsrfev3k76luwrc1di3 FOREIGN KEY (productid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -7119,7 +7119,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartynametypesecuritytoken
-    ADD CONSTRAINT fkclphu45dfvj92ca97kfmhd0il FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkclphu45dfvj92ca97kfmhd0il FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -7128,7 +7128,7 @@ ALTER TABLE party.involvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganic
-    ADD CONSTRAINT fkcphls8bnbiwk5rkf278le5kad FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkcphls8bnbiwk5rkf278le5kad FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7137,7 +7137,7 @@ ALTER TABLE party.involvedpartynonorganic
 --
 
 ALTER TABLE party.involvedparty
-    ADD CONSTRAINT fkd9g7suhvo150i79rthg96ktwu FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkd9g7suhvo150i79rthg96ktwu FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7146,7 +7146,7 @@ ALTER TABLE party.involvedparty
 --
 
 ALTER TABLE party.involvedpartyxclassification
-    ADD CONSTRAINT fkdfqy11c8yvskjx2yu9wa2ay8r FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkdfqy11c8yvskjx2yu9wa2ay8r FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -7155,7 +7155,7 @@ ALTER TABLE party.involvedpartyxclassification
 --
 
 ALTER TABLE party.involvedpartyxclassification
-    ADD CONSTRAINT fkdinundrqqh853d336evxy3bcf FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkdinundrqqh853d336evxy3bcf FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7164,7 +7164,7 @@ ALTER TABLE party.involvedpartyxclassification
 --
 
 ALTER TABLE party.involvedpartynametypesecuritytoken
-    ADD CONSTRAINT fkdkkd4w22d3p250hyn7vwkrp6a FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkdkkd4w22d3p250hyn7vwkrp6a FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7173,7 +7173,7 @@ ALTER TABLE party.involvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartytypesecuritytoken
-    ADD CONSTRAINT fkdtx295xce0hprr5jy1la820eh FOREIGN KEY (involvedpartytypeid, warehousecreateddate) REFERENCES party.involvedpartytype (involvedpartytypeid, warehousecreateddate);
+    ADD CONSTRAINT fkdtx295xce0hprr5jy1la820eh FOREIGN KEY (involvedpartytypeid, warehousefromdate) REFERENCES party.involvedpartytype (involvedpartytypeid, warehousefromdate);
 
 
 --
@@ -7182,7 +7182,7 @@ ALTER TABLE party.involvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fkdvt59k7lx9fobcggw3naabwkc FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkdvt59k7lx9fobcggw3naabwkc FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7191,7 +7191,7 @@ ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxaddress
-    ADD CONSTRAINT fkdwkp9qbashp1p04uip3rg2hls FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkdwkp9qbashp1p04uip3rg2hls FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -7200,7 +7200,7 @@ ALTER TABLE party.involvedpartyxaddress
 --
 
 ALTER TABLE party.involvedpartyorganictype
-    ADD CONSTRAINT fke1juu2g32hsp6fwtfw7f9d3jx FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fke1juu2g32hsp6fwtfw7f9d3jx FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7209,7 +7209,7 @@ ALTER TABLE party.involvedpartyorganictype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
-    ADD CONSTRAINT fkeafj6qgxpt157ayq3csmbo5sj FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkeafj6qgxpt157ayq3csmbo5sj FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7218,7 +7218,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproducttypesecuritytoken
-    ADD CONSTRAINT fkeaiel3pwjpomb5v1gyvnswnhi FOREIGN KEY (involvedpartyxproducttypeid, warehousecreateddate) REFERENCES party.involvedpartyxproducttype (involvedpartyxproducttypeid, warehousecreateddate);
+    ADD CONSTRAINT fkeaiel3pwjpomb5v1gyvnswnhi FOREIGN KEY (involvedpartyxproducttypeid, warehousefromdate) REFERENCES party.involvedpartyxproducttype (involvedpartyxproducttypeid, warehousefromdate);
 
 
 --
@@ -7227,7 +7227,7 @@ ALTER TABLE party.involvedpartyxproducttypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproducttypesecuritytoken
-    ADD CONSTRAINT fkebb1xe5bii4fw0alp6uk7yx3g FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkebb1xe5bii4fw0alp6uk7yx3g FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7236,7 +7236,7 @@ ALTER TABLE party.involvedpartyxproducttypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkec644efp6gtbnydr4qmfmytrn FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkec644efp6gtbnydr4qmfmytrn FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7245,7 +7245,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT fkeiak0rrb2rgx9gest89clwauh FOREIGN KEY (involvedpartyxrulesid, warehousecreateddate) REFERENCES party.involvedpartyxrules (involvedpartyxrulesid, warehousecreateddate);
+    ADD CONSTRAINT fkeiak0rrb2rgx9gest89clwauh FOREIGN KEY (involvedpartyxrulesid, warehousefromdate) REFERENCES party.involvedpartyxrules (involvedpartyxrulesid, warehousefromdate);
 
 
 --
@@ -7254,7 +7254,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE party.involvedpartyorganictypesecuritytoken
-    ADD CONSTRAINT fkejueyv4755b9ec8xoyb7wpu4x FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkejueyv4755b9ec8xoyb7wpu4x FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7263,7 +7263,7 @@ ALTER TABLE party.involvedpartyorganictypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxaddress
-    ADD CONSTRAINT fkejxbg01t325qgchlwnwmpl7a0 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkejxbg01t325qgchlwnwmpl7a0 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7272,7 +7272,7 @@ ALTER TABLE party.involvedpartyxaddress
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytype
-    ADD CONSTRAINT fkelc5v745ispspjwh2cwse92bh FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkelc5v745ispspjwh2cwse92bh FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7281,7 +7281,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxrulessecuritytoken
-    ADD CONSTRAINT fker91inm2bcxuigrl4g4051u4o FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fker91inm2bcxuigrl4g4051u4o FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7290,7 +7290,7 @@ ALTER TABLE party.involvedpartyxrulessecuritytoken
 --
 
 ALTER TABLE party.involvedpartyidentificationtype
-    ADD CONSTRAINT fkeuxx0k0eufg56jpbymmg0wnju FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkeuxx0k0eufg56jpbymmg0wnju FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7299,7 +7299,7 @@ ALTER TABLE party.involvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyorganicsecuritytoken
-    ADD CONSTRAINT fkeyo56crc5eg0qtbt3o79rblnp FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkeyo56crc5eg0qtbt3o79rblnp FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -7308,7 +7308,7 @@ ALTER TABLE party.involvedpartyorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxaddress
-    ADD CONSTRAINT fkf0jjy7kksugbaamt8638ktw8a FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkf0jjy7kksugbaamt8638ktw8a FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7317,7 +7317,7 @@ ALTER TABLE party.involvedpartyxaddress
 --
 
 ALTER TABLE party.involvedpartyxresourceitem
-    ADD CONSTRAINT fkf1eri71wcx822turop42m1raw FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkf1eri71wcx822turop42m1raw FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -7326,7 +7326,7 @@ ALTER TABLE party.involvedpartyxresourceitem
 --
 
 ALTER TABLE party.involvedpartyorganic
-    ADD CONSTRAINT fkf7p05lygebyxjhhtrkbn2n2md FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkf7p05lygebyxjhhtrkbn2n2md FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7335,7 +7335,7 @@ ALTER TABLE party.involvedpartyorganic
 --
 
 ALTER TABLE party.involvedpartyxproducttype
-    ADD CONSTRAINT fkfwrjy39tsf1ctjt6rx6siphyo FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkfwrjy39tsf1ctjt6rx6siphyo FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7344,7 +7344,7 @@ ALTER TABLE party.involvedpartyxproducttype
 --
 
 ALTER TABLE party.involvedpartyorganicsecuritytoken
-    ADD CONSTRAINT fkg9iyrrj29vcyc3b6sxsgy95on FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkg9iyrrj29vcyc3b6sxsgy95on FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7353,7 +7353,7 @@ ALTER TABLE party.involvedpartyorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproductsecuritytoken
-    ADD CONSTRAINT fkghbsln22v6fh0b1jdcblved0n FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkghbsln22v6fh0b1jdcblved0n FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7362,7 +7362,7 @@ ALTER TABLE party.involvedpartyxproductsecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganic
-    ADD CONSTRAINT fkgjctovxjg820869d686h867uv FOREIGN KEY (involvedpartynonorganicid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkgjctovxjg820869d686h867uv FOREIGN KEY (involvedpartynonorganicid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -7371,7 +7371,7 @@ ALTER TABLE party.involvedpartynonorganic
 --
 
 ALTER TABLE party.involvedpartysecuritytoken
-    ADD CONSTRAINT fkgtrgr11h04p33g04pukt5x1sy FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkgtrgr11h04p33g04pukt5x1sy FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7380,7 +7380,7 @@ ALTER TABLE party.involvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkgx4f05xe52w7yxl6f4mgycsyu FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkgx4f05xe52w7yxl6f4mgycsyu FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7389,7 +7389,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartynametypesecuritytoken
-    ADD CONSTRAINT fkh3e0lgk341y3qrbdp9y7eo6uf FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkh3e0lgk341y3qrbdp9y7eo6uf FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7398,7 +7398,7 @@ ALTER TABLE party.involvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartytype
-    ADD CONSTRAINT fkh8ct5p1uw4f7s19svr7525boe FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkh8ct5p1uw4f7s19svr7525boe FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7407,7 +7407,7 @@ ALTER TABLE party.involvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT fkhd6xjhmmugixhj5pl6fdocdwy FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkhd6xjhmmugixhj5pl6fdocdwy FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -7416,7 +7416,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE party.involvedpartyxresourceitem
-    ADD CONSTRAINT fkhkmp4ty2oydnlut2dtgkv8se8 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkhkmp4ty2oydnlut2dtgkv8se8 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7425,7 +7425,7 @@ ALTER TABLE party.involvedpartyxresourceitem
 --
 
 ALTER TABLE party.involvedpartyxaddress
-    ADD CONSTRAINT fki1pmmm070ua8yd0xrk19qq206 FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fki1pmmm070ua8yd0xrk19qq206 FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -7434,7 +7434,7 @@ ALTER TABLE party.involvedpartyxaddress
 --
 
 ALTER TABLE party.involvedpartysecuritytoken
-    ADD CONSTRAINT fkialc3kro04ovq8q26gg2hce1s FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkialc3kro04ovq8q26gg2hce1s FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -7443,7 +7443,7 @@ ALTER TABLE party.involvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametype
-    ADD CONSTRAINT fkiatc66e8wafha0n8xgeslpypc FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkiatc66e8wafha0n8xgeslpypc FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -7452,7 +7452,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxaddresssecuritytoken
-    ADD CONSTRAINT fkietr95ln1k6gcutfwaqg26k24 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkietr95ln1k6gcutfwaqg26k24 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7461,7 +7461,7 @@ ALTER TABLE party.involvedpartyxaddresssecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganicsecuritytoken
-    ADD CONSTRAINT fkii44sojyhs3kd1d607mnqldov FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkii44sojyhs3kd1d607mnqldov FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7470,7 +7470,7 @@ ALTER TABLE party.involvedpartynonorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedparty
-    ADD CONSTRAINT fkisqmvjyuuk8aqaogyeipmxtmi FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkisqmvjyuuk8aqaogyeipmxtmi FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -7479,7 +7479,7 @@ ALTER TABLE party.involvedpartyxinvolvedparty
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytype
-    ADD CONSTRAINT fkj0mx9sjb7tx19f8y6g6aha7ae FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkj0mx9sjb7tx19f8y6g6aha7ae FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7488,7 +7488,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytype
 --
 
 ALTER TABLE party.involvedpartytypesecuritytoken
-    ADD CONSTRAINT fkjhy9dh04vj80o53adnsk1xi9t FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkjhy9dh04vj80o53adnsk1xi9t FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7497,7 +7497,7 @@ ALTER TABLE party.involvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproducttypesecuritytoken
-    ADD CONSTRAINT fkjkwmptgw4rcxlvjycdbevrdbh FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkjkwmptgw4rcxlvjycdbevrdbh FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -7506,7 +7506,7 @@ ALTER TABLE party.involvedpartyxproducttypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxresourceitem
-    ADD CONSTRAINT fkjo97cd2ria6n18uyt9y9n1k40 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkjo97cd2ria6n18uyt9y9n1k40 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7515,7 +7515,7 @@ ALTER TABLE party.involvedpartyxresourceitem
 --
 
 ALTER TABLE party.involvedpartyxproducttype
-    ADD CONSTRAINT fkjoxnotjs00eoek4eboy9ob7x3 FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkjoxnotjs00eoek4eboy9ob7x3 FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -7524,7 +7524,7 @@ ALTER TABLE party.involvedpartyxproducttype
 --
 
 ALTER TABLE party.involvedpartyxproducttype
-    ADD CONSTRAINT fkk7gt22kjj7aajqm1i61s53dto FOREIGN KEY (producttypeid, warehousecreateddate) REFERENCES product.producttype (producttypeid, warehousecreateddate);
+    ADD CONSTRAINT fkk7gt22kjj7aajqm1i61s53dto FOREIGN KEY (producttypeid, warehousefromdate) REFERENCES product.producttype (producttypeid, warehousefromdate);
 
 
 --
@@ -7533,7 +7533,7 @@ ALTER TABLE party.involvedpartyxproducttype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
-    ADD CONSTRAINT fkkb48h7qs2y9d208ho8l8lu5my FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkkb48h7qs2y9d208ho8l8lu5my FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7542,7 +7542,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyidentificationtype
-    ADD CONSTRAINT fkkeqqy519age78syf29vttmwu9 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkkeqqy519age78syf29vttmwu9 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7551,7 +7551,7 @@ ALTER TABLE party.involvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyorganictypesecuritytoken
-    ADD CONSTRAINT fkkj7fqfd2urqo5hgy3vxagu45t FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkkj7fqfd2urqo5hgy3vxagu45t FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7560,7 +7560,7 @@ ALTER TABLE party.involvedpartyorganictypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganicsecuritytoken
-    ADD CONSTRAINT fkkkks9t7wiiiku7knnyo6vvc3r FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkkkks9t7wiiiku7knnyo6vvc3r FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -7569,7 +7569,7 @@ ALTER TABLE party.involvedpartynonorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytype
-    ADD CONSTRAINT fkkm9ehabqxotucg1e13vhmcgge FOREIGN KEY (involvedpartytypeid, warehousecreateddate) REFERENCES party.involvedpartytype (involvedpartytypeid, warehousecreateddate);
+    ADD CONSTRAINT fkkm9ehabqxotucg1e13vhmcgge FOREIGN KEY (involvedpartytypeid, warehousefromdate) REFERENCES party.involvedpartytype (involvedpartytypeid, warehousefromdate);
 
 
 --
@@ -7578,7 +7578,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxaddresssecuritytoken
-    ADD CONSTRAINT fkkwbmkde209srp4k0q0s7cd1u3 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkkwbmkde209srp4k0q0s7cd1u3 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7587,7 +7587,7 @@ ALTER TABLE party.involvedpartyxaddresssecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametype
-    ADD CONSTRAINT fkkxftjgdli2l9ro94w41wclkfx FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkkxftjgdli2l9ro94w41wclkfx FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7596,7 +7596,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametype
 --
 
 ALTER TABLE party.involvedpartynametype
-    ADD CONSTRAINT fkl18vvxbpd5f6oq57wy3jtnbp8 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkl18vvxbpd5f6oq57wy3jtnbp8 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7605,7 +7605,7 @@ ALTER TABLE party.involvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
-    ADD CONSTRAINT fkl8eohlltm8o9u06rc0tqtf5io FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkl8eohlltm8o9u06rc0tqtf5io FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7614,7 +7614,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganic
-    ADD CONSTRAINT fklb5mxasbqff0f09q3tsqkgsi1 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklb5mxasbqff0f09q3tsqkgsi1 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7623,7 +7623,7 @@ ALTER TABLE party.involvedpartynonorganic
 --
 
 ALTER TABLE party.involvedpartyxaddresssecuritytoken
-    ADD CONSTRAINT fklcmcbwu95pa7hnchv2tw2l6e4 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fklcmcbwu95pa7hnchv2tw2l6e4 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -7632,7 +7632,7 @@ ALTER TABLE party.involvedpartyxaddresssecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedparty
-    ADD CONSTRAINT fklrica71csov4p3987b56q8vxg FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fklrica71csov4p3987b56q8vxg FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7641,7 +7641,7 @@ ALTER TABLE party.involvedpartyxinvolvedparty
 --
 
 ALTER TABLE party.involvedpartyorganictypesecuritytoken
-    ADD CONSTRAINT fkluot9f3p0qcl04j9vytxoy5w2 FOREIGN KEY (involvedpartyorganictypeid, warehousecreateddate) REFERENCES party.involvedpartyorganictype (involvedpartyorganictypeid, warehousecreateddate);
+    ADD CONSTRAINT fkluot9f3p0qcl04j9vytxoy5w2 FOREIGN KEY (involvedpartyorganictypeid, warehousefromdate) REFERENCES party.involvedpartyorganictype (involvedpartyorganictypeid, warehousefromdate);
 
 
 --
@@ -7650,7 +7650,7 @@ ALTER TABLE party.involvedpartyorganictypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproductsecuritytoken
-    ADD CONSTRAINT fklvpxfkxf414rr3h2hd7qfbt6x FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fklvpxfkxf414rr3h2hd7qfbt6x FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7659,7 +7659,7 @@ ALTER TABLE party.involvedpartyxproductsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyidentificationtype
-    ADD CONSTRAINT fklxima3r9ohrv77gnodycrb2su FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklxima3r9ohrv77gnodycrb2su FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7668,7 +7668,7 @@ ALTER TABLE party.involvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyxrulessecuritytoken
-    ADD CONSTRAINT fkm4u2pspis8jhbsy7bpti76wsd FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm4u2pspis8jhbsy7bpti76wsd FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7677,7 +7677,7 @@ ALTER TABLE party.involvedpartyxrulessecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT fkm5l1oipl6mvv54tc6xx24yk06 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkm5l1oipl6mvv54tc6xx24yk06 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -7686,7 +7686,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
-    ADD CONSTRAINT fkm62y4d4wr0udqi7iexcc3gaa5 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm62y4d4wr0udqi7iexcc3gaa5 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7695,7 +7695,7 @@ ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganic
-    ADD CONSTRAINT fkmkbm0yyns5o1ll48bo5yce5sc FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkmkbm0yyns5o1ll48bo5yce5sc FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7704,7 +7704,7 @@ ALTER TABLE party.involvedpartyorganic
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
-    ADD CONSTRAINT fkmkjv3992oc9plpbavw8qwtqxx FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmkjv3992oc9plpbavw8qwtqxx FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7713,7 +7713,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxclassificationsecuritytoken
-    ADD CONSTRAINT fkmsyb25jnjb9yam4x4779256w2 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkmsyb25jnjb9yam4x4779256w2 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7722,7 +7722,7 @@ ALTER TABLE party.involvedpartyxclassificationsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fkmt218lxijt1k3knyl48ebot0f FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmt218lxijt1k3knyl48ebot0f FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7731,7 +7731,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganicsecuritytoken
-    ADD CONSTRAINT fkmyjwts72ixlq4gmviiba55a6e FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkmyjwts72ixlq4gmviiba55a6e FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7740,7 +7740,7 @@ ALTER TABLE party.involvedpartyorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametype
-    ADD CONSTRAINT fkn2foayal7pve60wm8tps4eq67 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkn2foayal7pve60wm8tps4eq67 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7749,7 +7749,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytype
-    ADD CONSTRAINT fkn68mf1pa4afxo1tx2q83kksx4 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkn68mf1pa4afxo1tx2q83kksx4 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7758,7 +7758,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxproductsecuritytoken
-    ADD CONSTRAINT fkn7l4i9kxjbtg61rjqwin84k52 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkn7l4i9kxjbtg61rjqwin84k52 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7767,7 +7767,7 @@ ALTER TABLE party.involvedpartyxproductsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
-    ADD CONSTRAINT fkn7qd136m19by1jp2xgntox5nr FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkn7qd136m19by1jp2xgntox5nr FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -7776,7 +7776,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartysecuritytoken
-    ADD CONSTRAINT fknkgdmsl2don2yegx2qfgnykqw FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fknkgdmsl2don2yegx2qfgnykqw FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7785,7 +7785,7 @@ ALTER TABLE party.involvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
-    ADD CONSTRAINT fknl7qjhkyalhn6skoouq0jt8pq FOREIGN KEY (involvedpartyxinvolvedpartynametypeid, warehousecreateddate) REFERENCES party.involvedpartyxinvolvedpartynametype (involvedpartyxinvolvedpartynametypeid, warehousecreateddate);
+    ADD CONSTRAINT fknl7qjhkyalhn6skoouq0jt8pq FOREIGN KEY (involvedpartyxinvolvedpartynametypeid, warehousefromdate) REFERENCES party.involvedpartyxinvolvedpartynametype (involvedpartyxinvolvedpartynametypeid, warehousefromdate);
 
 
 --
@@ -7794,7 +7794,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganic
-    ADD CONSTRAINT fknyksrtkiekj3cd65vtj6d641e FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fknyksrtkiekj3cd65vtj6d641e FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7803,7 +7803,7 @@ ALTER TABLE party.involvedpartyorganic
 --
 
 ALTER TABLE party.involvedpartysecuritytoken
-    ADD CONSTRAINT fko24pnibqq5rx8t4soy88rynmd FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fko24pnibqq5rx8t4soy88rynmd FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7812,7 +7812,7 @@ ALTER TABLE party.involvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT fko98uqwvsmtmebl7e64anytc63 FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fko98uqwvsmtmebl7e64anytc63 FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -7821,7 +7821,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartyxinvolvedparty
-    ADD CONSTRAINT fkocrvxgjfr7ogilbsg5ija9raf FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkocrvxgjfr7ogilbsg5ija9raf FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7830,7 +7830,7 @@ ALTER TABLE party.involvedpartyxinvolvedparty
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
-    ADD CONSTRAINT fkoj896cehdnvqta4i4psp2g5c FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkoj896cehdnvqta4i4psp2g5c FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7839,7 +7839,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartynonorganicsecuritytoken
-    ADD CONSTRAINT fkp0jkfk12oi63j8blb7dvepu5i FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkp0jkfk12oi63j8blb7dvepu5i FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7848,7 +7848,7 @@ ALTER TABLE party.involvedpartynonorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkp3f6axkd1puang58hu44ll5dh FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkp3f6axkd1puang58hu44ll5dh FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7857,7 +7857,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT fkp5ixt88una33viktp0w23kwj6 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkp5ixt88una33viktp0w23kwj6 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7866,7 +7866,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
-    ADD CONSTRAINT fkp8fhw7rn2g46bjsnhvss90xt0 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkp8fhw7rn2g46bjsnhvss90xt0 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7875,7 +7875,7 @@ ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartytype
-    ADD CONSTRAINT fkpfkqk9ya2eb37pvaq9y6pwesj FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkpfkqk9ya2eb37pvaq9y6pwesj FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7884,7 +7884,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametype
-    ADD CONSTRAINT fkpi2yp7u241j1k9an8b0mttcib FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkpi2yp7u241j1k9an8b0mttcib FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7893,7 +7893,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fkpk4kkstfg7ebwsy3y9pmt6sia FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkpk4kkstfg7ebwsy3y9pmt6sia FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -7902,7 +7902,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedparty
-    ADD CONSTRAINT fkpni39h3ejdgolqlvxwoltisl2 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkpni39h3ejdgolqlvxwoltisl2 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7911,7 +7911,7 @@ ALTER TABLE party.involvedparty
 --
 
 ALTER TABLE party.involvedpartysecuritytoken
-    ADD CONSTRAINT fkpogqfy578mwtlm6p81g0btv3n FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkpogqfy578mwtlm6p81g0btv3n FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7920,7 +7920,7 @@ ALTER TABLE party.involvedpartysecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganictype
-    ADD CONSTRAINT fkq2twef17pvkati3vquevv6w8c FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkq2twef17pvkati3vquevv6w8c FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7929,7 +7929,7 @@ ALTER TABLE party.involvedpartyorganictype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedparty
-    ADD CONSTRAINT fkq53n0bblmmvb6j4n4ub3r9tea FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkq53n0bblmmvb6j4n4ub3r9tea FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7938,7 +7938,7 @@ ALTER TABLE party.involvedpartyxinvolvedparty
 --
 
 ALTER TABLE party.involvedparty
-    ADD CONSTRAINT fkq6epu7tek9j6nfmtx80i7jv55 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkq6epu7tek9j6nfmtx80i7jv55 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -7947,7 +7947,7 @@ ALTER TABLE party.involvedparty
 --
 
 ALTER TABLE party.involvedpartyxclassification
-    ADD CONSTRAINT fkq80p3cmg58mvp6pb85vee4twn FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkq80p3cmg58mvp6pb85vee4twn FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7956,7 +7956,7 @@ ALTER TABLE party.involvedpartyxclassification
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT fkqcygcbsndr9g4owqwp22nkrdg FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkqcygcbsndr9g4owqwp22nkrdg FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -7965,7 +7965,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE party.involvedpartyxrulessecuritytoken
-    ADD CONSTRAINT fkqd2pskmew84uw4kpp9tscnftg FOREIGN KEY (involvedpartyxrulesid, warehousecreateddate) REFERENCES party.involvedpartyxrules (involvedpartyxrulesid, warehousecreateddate);
+    ADD CONSTRAINT fkqd2pskmew84uw4kpp9tscnftg FOREIGN KEY (involvedpartyxrulesid, warehousefromdate) REFERENCES party.involvedpartyxrules (involvedpartyxrulesid, warehousefromdate);
 
 
 --
@@ -7974,7 +7974,7 @@ ALTER TABLE party.involvedpartyxrulessecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxresourceitem
-    ADD CONSTRAINT fkqq23awk6k3o0swj127dcgd0st FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqq23awk6k3o0swj127dcgd0st FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -7983,7 +7983,7 @@ ALTER TABLE party.involvedpartyxresourceitem
 --
 
 ALTER TABLE party.involvedpartyxproducttypesecuritytoken
-    ADD CONSTRAINT fkqt1rigtuob9p89owrlanmtlt2 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkqt1rigtuob9p89owrlanmtlt2 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -7992,7 +7992,7 @@ ALTER TABLE party.involvedpartyxproducttypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartytype
-    ADD CONSTRAINT fkqwx9fppibmcrytwu4t30w0f7e FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqwx9fppibmcrytwu4t30w0f7e FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8001,7 +8001,7 @@ ALTER TABLE party.involvedpartytype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fkqx276013uinthqhdmr1lqpucn FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkqx276013uinthqhdmr1lqpucn FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8010,7 +8010,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganictypesecuritytoken
-    ADD CONSTRAINT fkr6a971hibsnykjeadhdgnmwm6 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkr6a971hibsnykjeadhdgnmwm6 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8019,7 +8019,7 @@ ALTER TABLE party.involvedpartyorganictypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartynametypesecuritytoken
-    ADD CONSTRAINT fkr9iq4s6tpt0gt97prluo7sia FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkr9iq4s6tpt0gt97prluo7sia FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8028,7 +8028,7 @@ ALTER TABLE party.involvedpartynametypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyorganictypesecuritytoken
-    ADD CONSTRAINT fkrbdy36uy6fi319o482uvgbic1 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkrbdy36uy6fi319o482uvgbic1 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8037,7 +8037,7 @@ ALTER TABLE party.involvedpartyorganictypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproducttype
-    ADD CONSTRAINT fkrdm87u0ipc3rwnmd9jk22bwrk FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkrdm87u0ipc3rwnmd9jk22bwrk FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8046,7 +8046,7 @@ ALTER TABLE party.involvedpartyxproducttype
 --
 
 ALTER TABLE party.involvedpartyorganicsecuritytoken
-    ADD CONSTRAINT fks4ev0kg4ufyi8iw19xqwn2fxb FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fks4ev0kg4ufyi8iw19xqwn2fxb FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8055,7 +8055,7 @@ ALTER TABLE party.involvedpartyorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT fks9ps3fhh31svi0qpmwv3utwww FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fks9ps3fhh31svi0qpmwv3utwww FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8064,7 +8064,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartyorganic
-    ADD CONSTRAINT fks9ty7u1vtfr0m9cu70ecqfmio FOREIGN KEY (involvedpartyorganicid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fks9ty7u1vtfr0m9cu70ecqfmio FOREIGN KEY (involvedpartyorganicid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -8073,7 +8073,7 @@ ALTER TABLE party.involvedpartyorganic
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT fkscjxiiwoomhsis6829bfcljai FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkscjxiiwoomhsis6829bfcljai FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8082,7 +8082,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE party.involvedpartyxproducttypesecuritytoken
-    ADD CONSTRAINT fksidcxt1uldnhq44dumo7lesno FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fksidcxt1uldnhq44dumo7lesno FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8091,7 +8091,7 @@ ALTER TABLE party.involvedpartyxproducttypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxclassificationsecuritytoken
-    ADD CONSTRAINT fksmurlugdvahy37fyxobdauy42 FOREIGN KEY (involvedpartyxclassificationid, warehousecreateddate) REFERENCES party.involvedpartyxclassification (involvedpartyxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fksmurlugdvahy37fyxobdauy42 FOREIGN KEY (involvedpartyxclassificationid, warehousefromdate) REFERENCES party.involvedpartyxclassification (involvedpartyxclassificationid, warehousefromdate);
 
 
 --
@@ -8100,7 +8100,7 @@ ALTER TABLE party.involvedpartyxclassificationsecuritytoken
 --
 
 ALTER TABLE party.involvedpartytypesecuritytoken
-    ADD CONSTRAINT fksoyq6n0n6er6eyhn229l4oxu6 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fksoyq6n0n6er6eyhn229l4oxu6 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8109,7 +8109,7 @@ ALTER TABLE party.involvedpartytypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fkspj0etctwf7i8sj0gu0d6tvs8 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkspj0etctwf7i8sj0gu0d6tvs8 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8118,7 +8118,7 @@ ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproduct
-    ADD CONSTRAINT fkstmxsovkkg83xipa6jb1v9tqv FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkstmxsovkkg83xipa6jb1v9tqv FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8127,7 +8127,7 @@ ALTER TABLE party.involvedpartyxproduct
 --
 
 ALTER TABLE party.involvedpartyorganicsecuritytoken
-    ADD CONSTRAINT fkt03i6kwyod9krg1cpoki9kc5x FOREIGN KEY (involvedpartyorganicid, warehousecreateddate) REFERENCES party.involvedpartyorganic (involvedpartyorganicid, warehousecreateddate);
+    ADD CONSTRAINT fkt03i6kwyod9krg1cpoki9kc5x FOREIGN KEY (involvedpartyorganicid, warehousefromdate) REFERENCES party.involvedpartyorganic (involvedpartyorganicid, warehousefromdate);
 
 
 --
@@ -8136,7 +8136,7 @@ ALTER TABLE party.involvedpartyorganicsecuritytoken
 --
 
 ALTER TABLE party.involvedpartynonorganic
-    ADD CONSTRAINT fkt3m2esc7actxvqhmovs8wly1p FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkt3m2esc7actxvqhmovs8wly1p FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8145,7 +8145,7 @@ ALTER TABLE party.involvedpartynonorganic
 --
 
 ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fkt53nic14klq9pmlooadcird6a FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkt53nic14klq9pmlooadcird6a FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8154,7 +8154,7 @@ ALTER TABLE party.involvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametype
-    ADD CONSTRAINT fkt5o5c0529tdsv531mn84tmm9f FOREIGN KEY (involvedpartynametypeid, warehousecreateddate) REFERENCES party.involvedpartynametype (involvedpartynametypeid, warehousecreateddate);
+    ADD CONSTRAINT fkt5o5c0529tdsv531mn84tmm9f FOREIGN KEY (involvedpartynametypeid, warehousefromdate) REFERENCES party.involvedpartynametype (involvedpartynametypeid, warehousefromdate);
 
 
 --
@@ -8163,7 +8163,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
-    ADD CONSTRAINT fktdfx6obcjum68sqbp0u7efean FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fktdfx6obcjum68sqbp0u7efean FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8172,7 +8172,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartynametype
-    ADD CONSTRAINT fktl0dvsfwf7kt9mg6hean9j9xo FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fktl0dvsfwf7kt9mg6hean9j9xo FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -8181,7 +8181,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartynametype
 --
 
 ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
-    ADD CONSTRAINT fktltopjihcyxw2xet9w7toxvm1 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fktltopjihcyxw2xet9w7toxvm1 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8190,7 +8190,7 @@ ALTER TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
-    ADD CONSTRAINT fktnbu592x1dn0dtkv0lfo7cs6b FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fktnbu592x1dn0dtkv0lfo7cs6b FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8199,7 +8199,7 @@ ALTER TABLE party.involvedpartyxresourceitemsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxproductsecuritytoken
-    ADD CONSTRAINT fktoih3sskv7bfum9756f55oveh FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fktoih3sskv7bfum9756f55oveh FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8208,7 +8208,7 @@ ALTER TABLE party.involvedpartyxproductsecuritytoken
 --
 
 ALTER TABLE party.involvedpartyxrules
-    ADD CONSTRAINT fkwjuotwflalqakh6pqixxoa1l FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkwjuotwflalqakh6pqixxoa1l FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8217,7 +8217,7 @@ ALTER TABLE party.involvedpartyxrules
 --
 
 ALTER TABLE product.producttypessecuritytoken
-    ADD CONSTRAINT fk124dnn13mvx64w9sscl56x0e9 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk124dnn13mvx64w9sscl56x0e9 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8226,7 +8226,7 @@ ALTER TABLE product.producttypessecuritytoken
 --
 
 ALTER TABLE product.productxclassification
-    ADD CONSTRAINT fk170jhdqdisurhraj01enjp07f FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk170jhdqdisurhraj01enjp07f FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8235,7 +8235,7 @@ ALTER TABLE product.productxclassification
 --
 
 ALTER TABLE product.productxproductsecuritytoken
-    ADD CONSTRAINT fk1ig8t64jsxnh0bpi3ql9st9ox FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk1ig8t64jsxnh0bpi3ql9st9ox FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8244,7 +8244,7 @@ ALTER TABLE product.productxproductsecuritytoken
 --
 
 ALTER TABLE product.product
-    ADD CONSTRAINT fk1uilqm7vj2gtc2d8x638robxd FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk1uilqm7vj2gtc2d8x638robxd FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8253,7 +8253,7 @@ ALTER TABLE product.product
 --
 
 ALTER TABLE product.productxproducttype
-    ADD CONSTRAINT fk1v5k0dbqs8u10y8qplq99qoiq FOREIGN KEY (productid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fk1v5k0dbqs8u10y8qplq99qoiq FOREIGN KEY (productid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -8262,7 +8262,7 @@ ALTER TABLE product.productxproducttype
 --
 
 ALTER TABLE product.productxproducttypesecuritytoken
-    ADD CONSTRAINT fk24ny4320upy05vtrp0bl40edh FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk24ny4320upy05vtrp0bl40edh FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8271,7 +8271,7 @@ ALTER TABLE product.productxproducttypesecuritytoken
 --
 
 ALTER TABLE product.productxclassificationsecuritytoken
-    ADD CONSTRAINT fk25k9qm7701i83jtdlw9pma3it FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk25k9qm7701i83jtdlw9pma3it FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8280,7 +8280,7 @@ ALTER TABLE product.productxclassificationsecuritytoken
 --
 
 ALTER TABLE product.productxclassificationsecuritytoken
-    ADD CONSTRAINT fk2a1344eckqbgsu5qtw1hqtmii FOREIGN KEY (productxclassificationid, warehousecreateddate) REFERENCES product.productxclassification (productxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fk2a1344eckqbgsu5qtw1hqtmii FOREIGN KEY (productxclassificationid, warehousefromdate) REFERENCES product.productxclassification (productxclassificationid, warehousefromdate);
 
 
 --
@@ -8289,7 +8289,7 @@ ALTER TABLE product.productxclassificationsecuritytoken
 --
 
 ALTER TABLE product.productxresourceitem
-    ADD CONSTRAINT fk2kfndi7vipw90dmibvhml8luf FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk2kfndi7vipw90dmibvhml8luf FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -8298,7 +8298,7 @@ ALTER TABLE product.productxresourceitem
 --
 
 ALTER TABLE product.productxresourceitemsecuritytoken
-    ADD CONSTRAINT fk2n140poncbaodw93p66dr19wm FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk2n140poncbaodw93p66dr19wm FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8307,7 +8307,7 @@ ALTER TABLE product.productxresourceitemsecuritytoken
 --
 
 ALTER TABLE product.productxproducttype
-    ADD CONSTRAINT fk2n7njekvkkktqita4lo8o2rop FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2n7njekvkkktqita4lo8o2rop FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8316,7 +8316,7 @@ ALTER TABLE product.productxproducttype
 --
 
 ALTER TABLE product.productxresourceitem
-    ADD CONSTRAINT fk3c9bk1tu9tr4ajj57j50lq61s FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk3c9bk1tu9tr4ajj57j50lq61s FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8325,7 +8325,7 @@ ALTER TABLE product.productxresourceitem
 --
 
 ALTER TABLE product.productxproducttypesecuritytoken
-    ADD CONSTRAINT fk3h3ux71dsf7opesl0p4fq9y2n FOREIGN KEY (productxproducttypeid, warehousecreateddate) REFERENCES product.productxproducttype (productxproducttypeid, warehousecreateddate);
+    ADD CONSTRAINT fk3h3ux71dsf7opesl0p4fq9y2n FOREIGN KEY (productxproducttypeid, warehousefromdate) REFERENCES product.productxproducttype (productxproducttypeid, warehousefromdate);
 
 
 --
@@ -8334,7 +8334,7 @@ ALTER TABLE product.productxproducttypesecuritytoken
 --
 
 ALTER TABLE product.productxresourceitem
-    ADD CONSTRAINT fk4ircw0cakrrbxh9eb947do1r1 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk4ircw0cakrrbxh9eb947do1r1 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8343,7 +8343,7 @@ ALTER TABLE product.productxresourceitem
 --
 
 ALTER TABLE product.productxresourceitemsecuritytoken
-    ADD CONSTRAINT fk4pq3n38ujll0fn7l4mw2f0uj2 FOREIGN KEY (productxresourceitemid, warehousecreateddate) REFERENCES product.productxresourceitem (productxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk4pq3n38ujll0fn7l4mw2f0uj2 FOREIGN KEY (productxresourceitemid, warehousefromdate) REFERENCES product.productxresourceitem (productxresourceitemid, warehousefromdate);
 
 
 --
@@ -8352,7 +8352,7 @@ ALTER TABLE product.productxresourceitemsecuritytoken
 --
 
 ALTER TABLE product.productxclassification
-    ADD CONSTRAINT fk4rxn4f51nq7nachqwenoijt19 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk4rxn4f51nq7nachqwenoijt19 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8361,7 +8361,7 @@ ALTER TABLE product.productxclassification
 --
 
 ALTER TABLE product.product
-    ADD CONSTRAINT fk5igcn0xk318avw7alibquq364 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5igcn0xk318avw7alibquq364 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8370,7 +8370,7 @@ ALTER TABLE product.product
 --
 
 ALTER TABLE product.productxproducttypesecuritytoken
-    ADD CONSTRAINT fk5r6sj8u01cbw7ndxn6nkbqbgs FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk5r6sj8u01cbw7ndxn6nkbqbgs FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8379,7 +8379,7 @@ ALTER TABLE product.productxproducttypesecuritytoken
 --
 
 ALTER TABLE product.productxproducttype
-    ADD CONSTRAINT fk64ad5aqtu7abdea2c46wmwsyp FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk64ad5aqtu7abdea2c46wmwsyp FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8388,7 +8388,7 @@ ALTER TABLE product.productxproducttype
 --
 
 ALTER TABLE product.productxproduct
-    ADD CONSTRAINT fk6by61ucqfknganlsl2nrl75qi FOREIGN KEY (childproductid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fk6by61ucqfknganlsl2nrl75qi FOREIGN KEY (childproductid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -8397,7 +8397,7 @@ ALTER TABLE product.productxproduct
 --
 
 ALTER TABLE product.productxclassification
-    ADD CONSTRAINT fk6if9d2r0jph42fstek03stxde FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk6if9d2r0jph42fstek03stxde FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -8406,7 +8406,7 @@ ALTER TABLE product.productxclassification
 --
 
 ALTER TABLE product.productsecuritytoken
-    ADD CONSTRAINT fk6nu64a57s4xf2f259fg2ds2vx FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6nu64a57s4xf2f259fg2ds2vx FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8415,7 +8415,7 @@ ALTER TABLE product.productsecuritytoken
 --
 
 ALTER TABLE product.producttype
-    ADD CONSTRAINT fk6qo5a8hhlrogyas0wxpefi252 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk6qo5a8hhlrogyas0wxpefi252 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8424,7 +8424,7 @@ ALTER TABLE product.producttype
 --
 
 ALTER TABLE product.productxproduct
-    ADD CONSTRAINT fk77xliloqs4xw4ci0ajbplqpww FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk77xliloqs4xw4ci0ajbplqpww FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8433,7 +8433,7 @@ ALTER TABLE product.productxproduct
 --
 
 ALTER TABLE product.producttype
-    ADD CONSTRAINT fk7jpihblwon21gvxequinglp4u FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7jpihblwon21gvxequinglp4u FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8442,7 +8442,7 @@ ALTER TABLE product.producttype
 --
 
 ALTER TABLE product.productxproducttype
-    ADD CONSTRAINT fk7qloe9c2vsgtb7r52s8rwam77 FOREIGN KEY (producttypeid, warehousecreateddate) REFERENCES product.producttype (producttypeid, warehousecreateddate);
+    ADD CONSTRAINT fk7qloe9c2vsgtb7r52s8rwam77 FOREIGN KEY (producttypeid, warehousefromdate) REFERENCES product.producttype (producttypeid, warehousefromdate);
 
 
 --
@@ -8451,7 +8451,7 @@ ALTER TABLE product.productxproducttype
 --
 
 ALTER TABLE product.productxproductsecuritytoken
-    ADD CONSTRAINT fk87msnwio1ifds9frgcawk703q FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk87msnwio1ifds9frgcawk703q FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8460,7 +8460,7 @@ ALTER TABLE product.productxproductsecuritytoken
 --
 
 ALTER TABLE product.productxclassification
-    ADD CONSTRAINT fk8b81utqms0112fwiuv724pss1 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk8b81utqms0112fwiuv724pss1 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8469,7 +8469,7 @@ ALTER TABLE product.productxclassification
 --
 
 ALTER TABLE product.productxclassification
-    ADD CONSTRAINT fk8bl09vfxm9qhghywxbfk36qra FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk8bl09vfxm9qhghywxbfk36qra FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8478,7 +8478,7 @@ ALTER TABLE product.productxclassification
 --
 
 ALTER TABLE product.productxresourceitemsecuritytoken
-    ADD CONSTRAINT fk8ljhn730t04d2yrudqin3b4rx FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8ljhn730t04d2yrudqin3b4rx FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8487,7 +8487,7 @@ ALTER TABLE product.productxresourceitemsecuritytoken
 --
 
 ALTER TABLE product.productxresourceitemsecuritytoken
-    ADD CONSTRAINT fk9rwmunm7mftbfjjefdk9i0ryh FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk9rwmunm7mftbfjjefdk9i0ryh FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8496,7 +8496,7 @@ ALTER TABLE product.productxresourceitemsecuritytoken
 --
 
 ALTER TABLE product.producttypessecuritytoken
-    ADD CONSTRAINT fka4hffxoba5up3ewpbck3bydrl FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fka4hffxoba5up3ewpbck3bydrl FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8505,7 +8505,7 @@ ALTER TABLE product.producttypessecuritytoken
 --
 
 ALTER TABLE product.producttype
-    ADD CONSTRAINT fkaji1ysqjjctugqxgktlyq4jb7 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkaji1ysqjjctugqxgktlyq4jb7 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8514,7 +8514,7 @@ ALTER TABLE product.producttype
 --
 
 ALTER TABLE product.productxclassificationsecuritytoken
-    ADD CONSTRAINT fkalo1aiwrqa3qvcoyta4wmron0 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkalo1aiwrqa3qvcoyta4wmron0 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8523,7 +8523,7 @@ ALTER TABLE product.productxclassificationsecuritytoken
 --
 
 ALTER TABLE product.producttypessecuritytoken
-    ADD CONSTRAINT fkbw6gf8n6ce2ob0qbvc0hdr876 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkbw6gf8n6ce2ob0qbvc0hdr876 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8532,7 +8532,7 @@ ALTER TABLE product.producttypessecuritytoken
 --
 
 ALTER TABLE product.producttypexclassification
-    ADD CONSTRAINT fkd0fwhreudgdgcdipqbmxnrpw0 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkd0fwhreudgdgcdipqbmxnrpw0 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -8541,7 +8541,7 @@ ALTER TABLE product.producttypexclassification
 --
 
 ALTER TABLE product.productxproduct
-    ADD CONSTRAINT fkdcpq7m2melgfwv5auqyagl72h FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkdcpq7m2melgfwv5auqyagl72h FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8550,7 +8550,7 @@ ALTER TABLE product.productxproduct
 --
 
 ALTER TABLE product.productxresourceitem
-    ADD CONSTRAINT fkdlspqxuytfux61envksg2oblc FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkdlspqxuytfux61envksg2oblc FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8559,7 +8559,7 @@ ALTER TABLE product.productxresourceitem
 --
 
 ALTER TABLE product.productxproducttypesecuritytoken
-    ADD CONSTRAINT fke8k4xro3jq77djofuxtcqjnb7 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fke8k4xro3jq77djofuxtcqjnb7 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8568,7 +8568,7 @@ ALTER TABLE product.productxproducttypesecuritytoken
 --
 
 ALTER TABLE product.producttypexclassification
-    ADD CONSTRAINT fkefusbrg6b297xo4uaifrnf7of FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkefusbrg6b297xo4uaifrnf7of FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8577,7 +8577,7 @@ ALTER TABLE product.producttypexclassification
 --
 
 ALTER TABLE product.productxproductsecuritytoken
-    ADD CONSTRAINT fkfov8qx41nggbg75jj8ely4wrp FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkfov8qx41nggbg75jj8ely4wrp FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8586,7 +8586,7 @@ ALTER TABLE product.productxproductsecuritytoken
 --
 
 ALTER TABLE product.product
-    ADD CONSTRAINT fkfvbgcjo7xxxjqbqwy6rf9okxe FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkfvbgcjo7xxxjqbqwy6rf9okxe FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8595,7 +8595,7 @@ ALTER TABLE product.product
 --
 
 ALTER TABLE product.producttype
-    ADD CONSTRAINT fkg36gb46ujtrxwet1ac4f2k43b FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkg36gb46ujtrxwet1ac4f2k43b FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8604,7 +8604,7 @@ ALTER TABLE product.producttype
 --
 
 ALTER TABLE product.product
-    ADD CONSTRAINT fkhd5i44wqur3jhd2e66aj1e38 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkhd5i44wqur3jhd2e66aj1e38 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8613,7 +8613,7 @@ ALTER TABLE product.product
 --
 
 ALTER TABLE product.productxresourceitemsecuritytoken
-    ADD CONSTRAINT fkhgl7dki8ue6gmivh1ulwel4j1 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkhgl7dki8ue6gmivh1ulwel4j1 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8622,7 +8622,7 @@ ALTER TABLE product.productxresourceitemsecuritytoken
 --
 
 ALTER TABLE product.producttypexclassificationsecuritytoken
-    ADD CONSTRAINT fkhp82lysbkher7sh9nmdc8j5mt FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkhp82lysbkher7sh9nmdc8j5mt FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8631,7 +8631,7 @@ ALTER TABLE product.producttypexclassificationsecuritytoken
 --
 
 ALTER TABLE product.producttypessecuritytoken
-    ADD CONSTRAINT fkhqgmcxurg87rgu1ekgl6xqb4 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkhqgmcxurg87rgu1ekgl6xqb4 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8640,7 +8640,7 @@ ALTER TABLE product.producttypessecuritytoken
 --
 
 ALTER TABLE product.productsecuritytoken
-    ADD CONSTRAINT fkhwbgx5m4cqg3drq0kbl2ln218 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkhwbgx5m4cqg3drq0kbl2ln218 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8649,7 +8649,7 @@ ALTER TABLE product.productsecuritytoken
 --
 
 ALTER TABLE product.producttypexclassificationsecuritytoken
-    ADD CONSTRAINT fki005cybjhowcm4dc6a4rur35f FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fki005cybjhowcm4dc6a4rur35f FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8658,7 +8658,7 @@ ALTER TABLE product.producttypexclassificationsecuritytoken
 --
 
 ALTER TABLE product.productxproducttype
-    ADD CONSTRAINT fki3kgl08d83biiovc4ipk0i82k FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fki3kgl08d83biiovc4ipk0i82k FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -8667,7 +8667,7 @@ ALTER TABLE product.productxproducttype
 --
 
 ALTER TABLE product.productsecuritytoken
-    ADD CONSTRAINT fkix4kyq2jvwpfkwr07hb5418wk FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkix4kyq2jvwpfkwr07hb5418wk FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8676,7 +8676,7 @@ ALTER TABLE product.productsecuritytoken
 --
 
 ALTER TABLE product.productxresourceitem
-    ADD CONSTRAINT fkjcm094m4k21700pj371gyg28 FOREIGN KEY (productid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fkjcm094m4k21700pj371gyg28 FOREIGN KEY (productid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -8685,7 +8685,7 @@ ALTER TABLE product.productxresourceitem
 --
 
 ALTER TABLE product.productxproduct
-    ADD CONSTRAINT fkjtuo8wff4bgrag27r7b90e0cr FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkjtuo8wff4bgrag27r7b90e0cr FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -8694,7 +8694,7 @@ ALTER TABLE product.productxproduct
 --
 
 ALTER TABLE product.productxproductsecuritytoken
-    ADD CONSTRAINT fkk3c9qgnvemsrtifm1qkfwwpai FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkk3c9qgnvemsrtifm1qkfwwpai FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8703,7 +8703,7 @@ ALTER TABLE product.productxproductsecuritytoken
 --
 
 ALTER TABLE product.productxresourceitem
-    ADD CONSTRAINT fkk4j0vxf6l51756si5xlelvhyx FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkk4j0vxf6l51756si5xlelvhyx FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -8712,7 +8712,7 @@ ALTER TABLE product.productxresourceitem
 --
 
 ALTER TABLE product.productxproduct
-    ADD CONSTRAINT fkkh1fb4vobxxm3gqr902b2sy9q FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkkh1fb4vobxxm3gqr902b2sy9q FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8721,7 +8721,7 @@ ALTER TABLE product.productxproduct
 --
 
 ALTER TABLE product.producttypexclassificationsecuritytoken
-    ADD CONSTRAINT fkkpdeivhwgmup6yq5or7mkhh3i FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkkpdeivhwgmup6yq5or7mkhh3i FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8730,7 +8730,7 @@ ALTER TABLE product.producttypexclassificationsecuritytoken
 --
 
 ALTER TABLE product.producttypessecuritytoken
-    ADD CONSTRAINT fkkpofjm6j3idsftpk1nilvd5am FOREIGN KEY (producttypesid, warehousecreateddate) REFERENCES product.producttype (producttypeid, warehousecreateddate);
+    ADD CONSTRAINT fkkpofjm6j3idsftpk1nilvd5am FOREIGN KEY (producttypesid, warehousefromdate) REFERENCES product.producttype (producttypeid, warehousefromdate);
 
 
 --
@@ -8739,7 +8739,7 @@ ALTER TABLE product.producttypessecuritytoken
 --
 
 ALTER TABLE product.productsecuritytoken
-    ADD CONSTRAINT fklfavoymys95w6sr5vg7fc2lpd FOREIGN KEY (productid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fklfavoymys95w6sr5vg7fc2lpd FOREIGN KEY (productid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -8748,7 +8748,7 @@ ALTER TABLE product.productsecuritytoken
 --
 
 ALTER TABLE product.producttypexclassification
-    ADD CONSTRAINT fklpladubwvqlvl4m7vv5k7i04a FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fklpladubwvqlvl4m7vv5k7i04a FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8757,7 +8757,7 @@ ALTER TABLE product.producttypexclassification
 --
 
 ALTER TABLE product.productxresourceitemsecuritytoken
-    ADD CONSTRAINT fklwlxp6u9a4k42nl1xqst9y0y FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fklwlxp6u9a4k42nl1xqst9y0y FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8766,7 +8766,7 @@ ALTER TABLE product.productxresourceitemsecuritytoken
 --
 
 ALTER TABLE product.productxproduct
-    ADD CONSTRAINT fklwu619drh230ni7r1dow2jdo1 FOREIGN KEY (parentproductid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fklwu619drh230ni7r1dow2jdo1 FOREIGN KEY (parentproductid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -8775,7 +8775,7 @@ ALTER TABLE product.productxproduct
 --
 
 ALTER TABLE product.producttypexclassification
-    ADD CONSTRAINT fkm04vi4rjib6p4wstxivhv5uwb FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm04vi4rjib6p4wstxivhv5uwb FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8784,7 +8784,7 @@ ALTER TABLE product.producttypexclassification
 --
 
 ALTER TABLE product.productxproductsecuritytoken
-    ADD CONSTRAINT fkm2agj4yop5p5pdbbqalr9ys6d FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm2agj4yop5p5pdbbqalr9ys6d FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8793,7 +8793,7 @@ ALTER TABLE product.productxproductsecuritytoken
 --
 
 ALTER TABLE product.producttypexclassificationsecuritytoken
-    ADD CONSTRAINT fkm2t70qvf88y1hc6xxtp5yvedj FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkm2t70qvf88y1hc6xxtp5yvedj FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8802,7 +8802,7 @@ ALTER TABLE product.producttypexclassificationsecuritytoken
 --
 
 ALTER TABLE product.producttypexclassificationsecuritytoken
-    ADD CONSTRAINT fkmtyho44wd7jen9pckqv90td0j FOREIGN KEY (producttypexclassificationid, warehousecreateddate) REFERENCES product.producttypexclassification (producttypexclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkmtyho44wd7jen9pckqv90td0j FOREIGN KEY (producttypexclassificationid, warehousefromdate) REFERENCES product.producttypexclassification (producttypexclassificationid, warehousefromdate);
 
 
 --
@@ -8811,7 +8811,7 @@ ALTER TABLE product.producttypexclassificationsecuritytoken
 --
 
 ALTER TABLE product.producttypexclassificationsecuritytoken
-    ADD CONSTRAINT fkn22khncgjxl940nga25siqctl FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkn22khncgjxl940nga25siqctl FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8820,7 +8820,7 @@ ALTER TABLE product.producttypexclassificationsecuritytoken
 --
 
 ALTER TABLE product.productxclassificationsecuritytoken
-    ADD CONSTRAINT fkncist9vnbkli1wfjeyqeqpbhi FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkncist9vnbkli1wfjeyqeqpbhi FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8829,7 +8829,7 @@ ALTER TABLE product.productxclassificationsecuritytoken
 --
 
 ALTER TABLE product.productxproducttypesecuritytoken
-    ADD CONSTRAINT fknnkyxacvaltro761yay2h0a0t FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fknnkyxacvaltro761yay2h0a0t FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8838,7 +8838,7 @@ ALTER TABLE product.productxproducttypesecuritytoken
 --
 
 ALTER TABLE product.productxproducttypesecuritytoken
-    ADD CONSTRAINT fknr2deq2638s77m37vyx16g6i0 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fknr2deq2638s77m37vyx16g6i0 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8847,7 +8847,7 @@ ALTER TABLE product.productxproducttypesecuritytoken
 --
 
 ALTER TABLE product.productsecuritytoken
-    ADD CONSTRAINT fkobdmay5wpjxkq8fmnh5jb4wax FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkobdmay5wpjxkq8fmnh5jb4wax FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8856,7 +8856,7 @@ ALTER TABLE product.productsecuritytoken
 --
 
 ALTER TABLE product.producttypexclassification
-    ADD CONSTRAINT fkon0srs81eq9qmdm4clgh7lf1r FOREIGN KEY (producttypeid, warehousecreateddate) REFERENCES product.producttype (producttypeid, warehousecreateddate);
+    ADD CONSTRAINT fkon0srs81eq9qmdm4clgh7lf1r FOREIGN KEY (producttypeid, warehousefromdate) REFERENCES product.producttype (producttypeid, warehousefromdate);
 
 
 --
@@ -8865,7 +8865,7 @@ ALTER TABLE product.producttypexclassification
 --
 
 ALTER TABLE product.producttypessecuritytoken
-    ADD CONSTRAINT fkpevw33iuc65w72j6c9j1scwi FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkpevw33iuc65w72j6c9j1scwi FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8874,7 +8874,7 @@ ALTER TABLE product.producttypessecuritytoken
 --
 
 ALTER TABLE product.productxclassificationsecuritytoken
-    ADD CONSTRAINT fkphp040h86si2e7sthuts7u84a FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkphp040h86si2e7sthuts7u84a FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8883,7 +8883,7 @@ ALTER TABLE product.productxclassificationsecuritytoken
 --
 
 ALTER TABLE product.productxproduct
-    ADD CONSTRAINT fkpjcmb3bm0uykh5ycoxw327a6y FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkpjcmb3bm0uykh5ycoxw327a6y FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8892,7 +8892,7 @@ ALTER TABLE product.productxproduct
 --
 
 ALTER TABLE product.productsecuritytoken
-    ADD CONSTRAINT fkpp00icvq84wm807qt11c7di0o FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkpp00icvq84wm807qt11c7di0o FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -8901,7 +8901,7 @@ ALTER TABLE product.productsecuritytoken
 --
 
 ALTER TABLE product.productxresourceitem
-    ADD CONSTRAINT fkq078arvokvft7rp6g01drm5ga FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkq078arvokvft7rp6g01drm5ga FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8910,7 +8910,7 @@ ALTER TABLE product.productxresourceitem
 --
 
 ALTER TABLE product.productxproducttype
-    ADD CONSTRAINT fkqx5p60ei4jsps9ajg56g6y75n FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqx5p60ei4jsps9ajg56g6y75n FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -8919,7 +8919,7 @@ ALTER TABLE product.productxproducttype
 --
 
 ALTER TABLE product.productxproductsecuritytoken
-    ADD CONSTRAINT fksmhfy43ik4seggjpeh0hd7ohe FOREIGN KEY (productxproductid, warehousecreateddate) REFERENCES product.productxproduct (productxproductid, warehousecreateddate);
+    ADD CONSTRAINT fksmhfy43ik4seggjpeh0hd7ohe FOREIGN KEY (productxproductid, warehousefromdate) REFERENCES product.productxproduct (productxproductid, warehousefromdate);
 
 
 --
@@ -8928,7 +8928,7 @@ ALTER TABLE product.productxproductsecuritytoken
 --
 
 ALTER TABLE product.productxclassificationsecuritytoken
-    ADD CONSTRAINT fksqaqrh3mqcptl4uk5ucmkn34h FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fksqaqrh3mqcptl4uk5ucmkn34h FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -8937,7 +8937,7 @@ ALTER TABLE product.productxclassificationsecuritytoken
 --
 
 ALTER TABLE product.producttypexclassification
-    ADD CONSTRAINT fktby5ywfw3h2p0kwing53rbw83 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fktby5ywfw3h2p0kwing53rbw83 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8946,7 +8946,7 @@ ALTER TABLE product.producttypexclassification
 --
 
 ALTER TABLE product.productxclassification
-    ADD CONSTRAINT fktjv0q3owa2dvherxn8lwy4umj FOREIGN KEY (productid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fktjv0q3owa2dvherxn8lwy4umj FOREIGN KEY (productid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -8955,7 +8955,7 @@ ALTER TABLE product.productxclassification
 --
 
 ALTER TABLE product.productxproducttype
-    ADD CONSTRAINT fktn5yb54e9i7r3hwtr1bojxh6e FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fktn5yb54e9i7r3hwtr1bojxh6e FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -8991,7 +8991,7 @@ ALTER TABLE public.quarters_months
 --
 
 ALTER TABLE resource.resourceitemdata
-    ADD CONSTRAINT fk1fo3xmni8ec47xrr4ga2eff84 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk1fo3xmni8ec47xrr4ga2eff84 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9000,7 +9000,7 @@ ALTER TABLE resource.resourceitemdata
 --
 
 ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
-    ADD CONSTRAINT fk1n6u8l8jhlesanln4et9jehgh FOREIGN KEY (resourceitemxresourceitemid, warehousecreateddate) REFERENCES resource.resourceitemxresourceitem (resourceitemxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk1n6u8l8jhlesanln4et9jehgh FOREIGN KEY (resourceitemxresourceitemid, warehousefromdate) REFERENCES resource.resourceitemxresourceitem (resourceitemxresourceitemid, warehousefromdate);
 
 
 --
@@ -9009,7 +9009,7 @@ ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitem
-    ADD CONSTRAINT fk200sir97l7uhxxs2l0b23ok3r FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk200sir97l7uhxxs2l0b23ok3r FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9018,7 +9018,7 @@ ALTER TABLE resource.resourceitem
 --
 
 ALTER TABLE resource.resourceitemdataxclassification
-    ADD CONSTRAINT fk2dy40tyg4ideqgywl6lh9gly5 FOREIGN KEY (resourceitemdataid, warehousecreateddate) REFERENCES resource.resourceitemdata (resourceitemdataid, warehousecreateddate);
+    ADD CONSTRAINT fk2dy40tyg4ideqgywl6lh9gly5 FOREIGN KEY (resourceitemdataid, warehousefromdate) REFERENCES resource.resourceitemdata (resourceitemdataid, warehousefromdate);
 
 
 --
@@ -9027,7 +9027,7 @@ ALTER TABLE resource.resourceitemdataxclassification
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
-    ADD CONSTRAINT fk2ep9v4fv470h60ye8kq7lfybi FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk2ep9v4fv470h60ye8kq7lfybi FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9036,7 +9036,7 @@ ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitem
-    ADD CONSTRAINT fk2ki967a981nc2wof2y4u5kwtw FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk2ki967a981nc2wof2y4u5kwtw FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9045,7 +9045,7 @@ ALTER TABLE resource.resourceitemxresourceitem
 --
 
 ALTER TABLE resource.resourceitemxclassificationsecuritytoken
-    ADD CONSTRAINT fk3i66vwdq4it2rgp85m6d0jq81 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk3i66vwdq4it2rgp85m6d0jq81 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9054,7 +9054,7 @@ ALTER TABLE resource.resourceitemxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemtypesecuritytoken
-    ADD CONSTRAINT fk3p3b9iwh15wwgccqgj3lpysqn FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk3p3b9iwh15wwgccqgj3lpysqn FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9063,7 +9063,7 @@ ALTER TABLE resource.resourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdatasecuritytoken
-    ADD CONSTRAINT fk3w9axr9msmakpp6ferrlkuvdy FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk3w9axr9msmakpp6ferrlkuvdy FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9072,7 +9072,7 @@ ALTER TABLE resource.resourceitemdatasecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassification
-    ADD CONSTRAINT fk3wmuxdwncxa9duotxup8kots8 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk3wmuxdwncxa9duotxup8kots8 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9081,7 +9081,7 @@ ALTER TABLE resource.resourceitemxclassification
 --
 
 ALTER TABLE resource.resourceitemtypesecuritytoken
-    ADD CONSTRAINT fk4cdo57v9c89cmsd70444brarb FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk4cdo57v9c89cmsd70444brarb FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9090,7 +9090,7 @@ ALTER TABLE resource.resourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassification
-    ADD CONSTRAINT fk5ad2d7e8c7kiwjtnfv4baj6k5 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk5ad2d7e8c7kiwjtnfv4baj6k5 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -9099,7 +9099,7 @@ ALTER TABLE resource.resourceitemxclassification
 --
 
 ALTER TABLE resource.resourceitemxresourceitem
-    ADD CONSTRAINT fk5jtsbc1lwwjo7gimmifc90cxv FOREIGN KEY (parentresourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk5jtsbc1lwwjo7gimmifc90cxv FOREIGN KEY (parentresourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -9108,7 +9108,7 @@ ALTER TABLE resource.resourceitemxresourceitem
 --
 
 ALTER TABLE resource.resourceitemtypesecuritytoken
-    ADD CONSTRAINT fk5wdvel5htabl0xh6uo6do4nmw FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk5wdvel5htabl0xh6uo6do4nmw FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9117,7 +9117,7 @@ ALTER TABLE resource.resourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdataxclassification
-    ADD CONSTRAINT fk663fflx6v3085crppbxdji50p FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk663fflx6v3085crppbxdji50p FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9126,7 +9126,7 @@ ALTER TABLE resource.resourceitemdataxclassification
 --
 
 ALTER TABLE resource.resourceitemtype
-    ADD CONSTRAINT fk6qq7tnhpgyvvt5vly41nemv50 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk6qq7tnhpgyvvt5vly41nemv50 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9135,7 +9135,7 @@ ALTER TABLE resource.resourceitemtype
 --
 
 ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
-    ADD CONSTRAINT fk6sn4lyt8rfdltu9cbblt5uieh FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk6sn4lyt8rfdltu9cbblt5uieh FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9144,7 +9144,7 @@ ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
-    ADD CONSTRAINT fk79odxnrnlexs55g44rmjdw9my FOREIGN KEY (resourceitemdataxclassificationid, warehousecreateddate) REFERENCES resource.resourceitemdataxclassification (resourceitemdataxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fk79odxnrnlexs55g44rmjdw9my FOREIGN KEY (resourceitemdataxclassificationid, warehousefromdate) REFERENCES resource.resourceitemdataxclassification (resourceitemdataxclassificationid, warehousefromdate);
 
 
 --
@@ -9153,7 +9153,7 @@ ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassificationsecuritytoken
-    ADD CONSTRAINT fk7ns6uhcbucfbl2uioayhiydj2 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk7ns6uhcbucfbl2uioayhiydj2 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9162,7 +9162,7 @@ ALTER TABLE resource.resourceitemxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
-    ADD CONSTRAINT fk7phkn8oemhek6rr9400ha8lh3 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7phkn8oemhek6rr9400ha8lh3 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9171,7 +9171,7 @@ ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassificationsecuritytoken
-    ADD CONSTRAINT fk7wx6yqn7nc5fajp9dhi1f2mjx FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7wx6yqn7nc5fajp9dhi1f2mjx FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9180,7 +9180,7 @@ ALTER TABLE resource.resourceitemxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemsecuritytoken
-    ADD CONSTRAINT fk84jknr1n5cnm1wtlwn07d1r64 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk84jknr1n5cnm1wtlwn07d1r64 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9189,7 +9189,7 @@ ALTER TABLE resource.resourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemsecuritytoken
-    ADD CONSTRAINT fk861bu9d1oka3g8dh0mb85tyc4 FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk861bu9d1oka3g8dh0mb85tyc4 FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -9198,7 +9198,7 @@ ALTER TABLE resource.resourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitem
-    ADD CONSTRAINT fk8cpmhhiy16t26qcrc94hxyngi FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk8cpmhhiy16t26qcrc94hxyngi FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9207,7 +9207,7 @@ ALTER TABLE resource.resourceitem
 --
 
 ALTER TABLE resource.resourceitemxclassification
-    ADD CONSTRAINT fk8obyha4m3ud6wg5wugtj0efl3 FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk8obyha4m3ud6wg5wugtj0efl3 FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -9216,7 +9216,7 @@ ALTER TABLE resource.resourceitemxclassification
 --
 
 ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
-    ADD CONSTRAINT fk8qo9i93o20ejx9qm1wys3xwmt FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8qo9i93o20ejx9qm1wys3xwmt FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9225,7 +9225,7 @@ ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitem
-    ADD CONSTRAINT fk94ha303yukem4jhrogbx5e06w FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk94ha303yukem4jhrogbx5e06w FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9234,7 +9234,7 @@ ALTER TABLE resource.resourceitem
 --
 
 ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
-    ADD CONSTRAINT fka0xjd26qyqrft0dop3wn7f0np FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fka0xjd26qyqrft0dop3wn7f0np FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9243,7 +9243,7 @@ ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
-    ADD CONSTRAINT fkab7vvw2nd2839r3whhm76iel FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkab7vvw2nd2839r3whhm76iel FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9252,7 +9252,7 @@ ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
-    ADD CONSTRAINT fkajq33984mmb4dan1b1ujl28qh FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkajq33984mmb4dan1b1ujl28qh FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9261,7 +9261,7 @@ ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
-    ADD CONSTRAINT fkb8riptu7wfv9qs6scj4k6bdnh FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkb8riptu7wfv9qs6scj4k6bdnh FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9270,7 +9270,7 @@ ALTER TABLE resource.resourceitemdataxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitem
-    ADD CONSTRAINT fkbb8g8afmpudbornwchcbn8d6x FOREIGN KEY (childresourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkbb8g8afmpudbornwchcbn8d6x FOREIGN KEY (childresourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -9279,7 +9279,7 @@ ALTER TABLE resource.resourceitemxresourceitem
 --
 
 ALTER TABLE resource.resourceitem
-    ADD CONSTRAINT fkc07twhlsn4lwl4lmx290qts4r FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkc07twhlsn4lwl4lmx290qts4r FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9288,7 +9288,7 @@ ALTER TABLE resource.resourceitem
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
-    ADD CONSTRAINT fkc63ne5lom1f43u7t6lfi6imtn FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkc63ne5lom1f43u7t6lfi6imtn FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9297,7 +9297,7 @@ ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
-    ADD CONSTRAINT fkchn8hstbo7rkgh5817jqqcxpx FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkchn8hstbo7rkgh5817jqqcxpx FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9306,7 +9306,7 @@ ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtype
-    ADD CONSTRAINT fkcvs3qfiioi6vtrvsx9fydc5w9 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkcvs3qfiioi6vtrvsx9fydc5w9 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9315,7 +9315,7 @@ ALTER TABLE resource.resourceitemxresourceitemtype
 --
 
 ALTER TABLE resource.resourceitemxresourceitem
-    ADD CONSTRAINT fkcwb9vx2pur7f8if9mh62f8yta FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkcwb9vx2pur7f8if9mh62f8yta FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9324,7 +9324,7 @@ ALTER TABLE resource.resourceitemxresourceitem
 --
 
 ALTER TABLE resource.resourceitemdata
-    ADD CONSTRAINT fkdc81hbiavl5m699l1e4n4qtp FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkdc81hbiavl5m699l1e4n4qtp FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9333,7 +9333,7 @@ ALTER TABLE resource.resourceitemdata
 --
 
 ALTER TABLE resource.resourceitemxresourceitem
-    ADD CONSTRAINT fkesiucs3j6sufylpxxpldbhwbl FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkesiucs3j6sufylpxxpldbhwbl FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9342,7 +9342,7 @@ ALTER TABLE resource.resourceitemxresourceitem
 --
 
 ALTER TABLE resource.resourceitemsecuritytoken
-    ADD CONSTRAINT fkeut88pwpr6r3by6poh8s3lgn5 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkeut88pwpr6r3by6poh8s3lgn5 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9351,7 +9351,7 @@ ALTER TABLE resource.resourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
-    ADD CONSTRAINT fkexfo0hib3thx9lan7x40hj7gr FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkexfo0hib3thx9lan7x40hj7gr FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9360,7 +9360,7 @@ ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdatasecuritytoken
-    ADD CONSTRAINT fkfx83b2i5f4bu61o46gd6jpq3m FOREIGN KEY (resourceitemdataid, warehousecreateddate) REFERENCES resource.resourceitemdata (resourceitemdataid, warehousecreateddate);
+    ADD CONSTRAINT fkfx83b2i5f4bu61o46gd6jpq3m FOREIGN KEY (resourceitemdataid, warehousefromdate) REFERENCES resource.resourceitemdata (resourceitemdataid, warehousefromdate);
 
 
 --
@@ -9369,7 +9369,7 @@ ALTER TABLE resource.resourceitemdatasecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtype
-    ADD CONSTRAINT fkg86r3f2ftu2ex3xkplrd9tar7 FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkg86r3f2ftu2ex3xkplrd9tar7 FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -9378,7 +9378,7 @@ ALTER TABLE resource.resourceitemxresourceitemtype
 --
 
 ALTER TABLE resource.resourceitemxresourceitem
-    ADD CONSTRAINT fkgguetxp2rpaak5nhtais4qipi FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkgguetxp2rpaak5nhtais4qipi FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9387,7 +9387,7 @@ ALTER TABLE resource.resourceitemxresourceitem
 --
 
 ALTER TABLE resource.resourceitemxclassification
-    ADD CONSTRAINT fkgjx0hpxxegn5wge4pdrchmidh FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkgjx0hpxxegn5wge4pdrchmidh FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9396,7 +9396,7 @@ ALTER TABLE resource.resourceitemxclassification
 --
 
 ALTER TABLE resource.resourceitemtype
-    ADD CONSTRAINT fkgxtvsg5e3c8sq9j7y8bx0ib5v FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkgxtvsg5e3c8sq9j7y8bx0ib5v FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9405,7 +9405,7 @@ ALTER TABLE resource.resourceitemtype
 --
 
 ALTER TABLE resource.resourceitemtype
-    ADD CONSTRAINT fkh8avb7iv2w72vgk90sh1d2p4f FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkh8avb7iv2w72vgk90sh1d2p4f FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9414,7 +9414,7 @@ ALTER TABLE resource.resourceitemtype
 --
 
 ALTER TABLE resource.resourceitemdatasecuritytoken
-    ADD CONSTRAINT fkhcwacfqh36t292fibcvgdtr3m FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkhcwacfqh36t292fibcvgdtr3m FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9423,7 +9423,7 @@ ALTER TABLE resource.resourceitemdatasecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdatasecuritytoken
-    ADD CONSTRAINT fkhpb19eadjrkws43r16fgy3mjl FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkhpb19eadjrkws43r16fgy3mjl FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9432,7 +9432,7 @@ ALTER TABLE resource.resourceitemdatasecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdata
-    ADD CONSTRAINT fkht0uy53uvuomcxp1m9d76l2f2 FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkht0uy53uvuomcxp1m9d76l2f2 FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -9441,7 +9441,7 @@ ALTER TABLE resource.resourceitemdata
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
-    ADD CONSTRAINT fki8ap9tegp5e5e2687a8rlolq3 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fki8ap9tegp5e5e2687a8rlolq3 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9450,7 +9450,7 @@ ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemtype
-    ADD CONSTRAINT fki9pjt06s4hopvhur99agga4k6 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fki9pjt06s4hopvhur99agga4k6 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9459,7 +9459,7 @@ ALTER TABLE resource.resourceitemtype
 --
 
 ALTER TABLE resource.resourceitemdataxclassification
-    ADD CONSTRAINT fkiaq7u3ym056htigwqw14ilcsn FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkiaq7u3ym056htigwqw14ilcsn FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9468,7 +9468,7 @@ ALTER TABLE resource.resourceitemdataxclassification
 --
 
 ALTER TABLE resource.resourceitemdata
-    ADD CONSTRAINT fkigdv809qbjivrueu1pbkvr9j3 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkigdv809qbjivrueu1pbkvr9j3 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9477,7 +9477,7 @@ ALTER TABLE resource.resourceitemdata
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
-    ADD CONSTRAINT fkiwc4nixnum6cvlrtlpopjlrrp FOREIGN KEY (resourceitemxresourceitemtypeid, warehousecreateddate) REFERENCES resource.resourceitemxresourceitemtype (resourceitemxresourceitemtypeid, warehousecreateddate);
+    ADD CONSTRAINT fkiwc4nixnum6cvlrtlpopjlrrp FOREIGN KEY (resourceitemxresourceitemtypeid, warehousefromdate) REFERENCES resource.resourceitemxresourceitemtype (resourceitemxresourceitemtypeid, warehousefromdate);
 
 
 --
@@ -9486,7 +9486,7 @@ ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassification
-    ADD CONSTRAINT fkjrhfr20kvirghjffwvd80r39m FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkjrhfr20kvirghjffwvd80r39m FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9495,7 +9495,7 @@ ALTER TABLE resource.resourceitemxclassification
 --
 
 ALTER TABLE resource.resourceitemdataxclassification
-    ADD CONSTRAINT fkjsk9t2sreiwpv88hanu3khr74 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkjsk9t2sreiwpv88hanu3khr74 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9504,7 +9504,7 @@ ALTER TABLE resource.resourceitemdataxclassification
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
-    ADD CONSTRAINT fkkj0hvw87ec6j3mlt4m96ky91p FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkkj0hvw87ec6j3mlt4m96ky91p FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9513,7 +9513,7 @@ ALTER TABLE resource.resourceitemxresourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdatasecuritytoken
-    ADD CONSTRAINT fkll81jjs16jumy0yll1ql0c21 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkll81jjs16jumy0yll1ql0c21 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9522,7 +9522,7 @@ ALTER TABLE resource.resourceitemdatasecuritytoken
 --
 
 ALTER TABLE resource.resourceitemsecuritytoken
-    ADD CONSTRAINT fklri3qjyh3vwi43xe3crxm8xdq FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fklri3qjyh3vwi43xe3crxm8xdq FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9531,7 +9531,7 @@ ALTER TABLE resource.resourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtype
-    ADD CONSTRAINT fklsy82htwl5f124qkuxb5cuq8y FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fklsy82htwl5f124qkuxb5cuq8y FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9540,7 +9540,7 @@ ALTER TABLE resource.resourceitemxresourceitemtype
 --
 
 ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
-    ADD CONSTRAINT fkm9ls44frfnxy77f2yitjmfb4w FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkm9ls44frfnxy77f2yitjmfb4w FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9549,7 +9549,7 @@ ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemtypesecuritytoken
-    ADD CONSTRAINT fkml0sk2cyf2m3s7w1idm5b1fv2 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkml0sk2cyf2m3s7w1idm5b1fv2 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9558,7 +9558,7 @@ ALTER TABLE resource.resourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
-    ADD CONSTRAINT fkmylvnsbdyx59j60lktojr074f FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkmylvnsbdyx59j60lktojr074f FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9567,7 +9567,7 @@ ALTER TABLE resource.resourceitemxresourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassificationsecuritytoken
-    ADD CONSTRAINT fknvnmjioardv2gat6o4shntlxd FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fknvnmjioardv2gat6o4shntlxd FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9576,7 +9576,7 @@ ALTER TABLE resource.resourceitemxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemsecuritytoken
-    ADD CONSTRAINT fko0923krxdcp1issfcfcl7a0a7 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko0923krxdcp1issfcfcl7a0a7 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9585,7 +9585,7 @@ ALTER TABLE resource.resourceitemsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassification
-    ADD CONSTRAINT fko1fubrmjfvsi58rt1amf7u7fw FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko1fubrmjfvsi58rt1amf7u7fw FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9594,7 +9594,7 @@ ALTER TABLE resource.resourceitemxclassification
 --
 
 ALTER TABLE resource.resourceitemtypesecuritytoken
-    ADD CONSTRAINT fko2usew1i3g60p11uwfuv2ajmd FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko2usew1i3g60p11uwfuv2ajmd FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9603,7 +9603,7 @@ ALTER TABLE resource.resourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxclassificationsecuritytoken
-    ADD CONSTRAINT fko7a0ts75p7f0b5ekl3e5nr2jx FOREIGN KEY (resourceitemxclassificationid, warehousecreateddate) REFERENCES resource.resourceitemxclassification (resourceitemxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fko7a0ts75p7f0b5ekl3e5nr2jx FOREIGN KEY (resourceitemxclassificationid, warehousefromdate) REFERENCES resource.resourceitemxclassification (resourceitemxclassificationid, warehousefromdate);
 
 
 --
@@ -9612,7 +9612,7 @@ ALTER TABLE resource.resourceitemxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdata
-    ADD CONSTRAINT fkole6gj7jyg1pdvt918naap8n5 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkole6gj7jyg1pdvt918naap8n5 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9621,7 +9621,7 @@ ALTER TABLE resource.resourceitemdata
 --
 
 ALTER TABLE resource.resourceitemdatasecuritytoken
-    ADD CONSTRAINT fkomv4xy8vibg1lxewrtq0lj42t FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkomv4xy8vibg1lxewrtq0lj42t FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9630,7 +9630,7 @@ ALTER TABLE resource.resourceitemdatasecuritytoken
 --
 
 ALTER TABLE resource.resourceitemdataxclassification
-    ADD CONSTRAINT fkox913icfxl6rbqwjw04y7odq6 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkox913icfxl6rbqwjw04y7odq6 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9639,7 +9639,7 @@ ALTER TABLE resource.resourceitemdataxclassification
 --
 
 ALTER TABLE resource.resourceitemxresourceitem
-    ADD CONSTRAINT fkoyv9alf1u6nf5wbkwvj207pd6 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkoyv9alf1u6nf5wbkwvj207pd6 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -9648,7 +9648,7 @@ ALTER TABLE resource.resourceitemxresourceitem
 --
 
 ALTER TABLE resource.resourceitemdataxclassification
-    ADD CONSTRAINT fkp9oe45dlyale0o4ug986voncj FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkp9oe45dlyale0o4ug986voncj FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -9657,7 +9657,7 @@ ALTER TABLE resource.resourceitemdataxclassification
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtype
-    ADD CONSTRAINT fkpirwchdhynd810k5mp231e2sh FOREIGN KEY (resourceitemtypeid, warehousecreateddate) REFERENCES resource.resourceitemtype (resourceitemtypeid, warehousecreateddate);
+    ADD CONSTRAINT fkpirwchdhynd810k5mp231e2sh FOREIGN KEY (resourceitemtypeid, warehousefromdate) REFERENCES resource.resourceitemtype (resourceitemtypeid, warehousefromdate);
 
 
 --
@@ -9666,7 +9666,7 @@ ALTER TABLE resource.resourceitemxresourceitemtype
 --
 
 ALTER TABLE resource.resourceitemxclassificationsecuritytoken
-    ADD CONSTRAINT fkq4lxbn9s7559mqng8hmhau4s4 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkq4lxbn9s7559mqng8hmhau4s4 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9675,7 +9675,7 @@ ALTER TABLE resource.resourceitemxclassificationsecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtype
-    ADD CONSTRAINT fkqbn3rldlgiftql2sxfoc020k7 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkqbn3rldlgiftql2sxfoc020k7 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -9684,7 +9684,7 @@ ALTER TABLE resource.resourceitemxresourceitemtype
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtype
-    ADD CONSTRAINT fkr19kv8ueg4bkxh2pvj156qvwk FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkr19kv8ueg4bkxh2pvj156qvwk FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9693,7 +9693,7 @@ ALTER TABLE resource.resourceitemxresourceitemtype
 --
 
 ALTER TABLE resource.resourceitemtypesecuritytoken
-    ADD CONSTRAINT fkrpcr2w5s8sdyuh9e5bsiqpsl FOREIGN KEY (resourceitemtypeid, warehousecreateddate) REFERENCES resource.resourceitemtype (resourceitemtypeid, warehousecreateddate);
+    ADD CONSTRAINT fkrpcr2w5s8sdyuh9e5bsiqpsl FOREIGN KEY (resourceitemtypeid, warehousefromdate) REFERENCES resource.resourceitemtype (resourceitemtypeid, warehousefromdate);
 
 
 --
@@ -9702,7 +9702,7 @@ ALTER TABLE resource.resourceitemtypesecuritytoken
 --
 
 ALTER TABLE resource.resourceitemxresourceitemtype
-    ADD CONSTRAINT fksw4ntk83q20lccxb0t56uvvun FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fksw4ntk83q20lccxb0t56uvvun FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9711,7 +9711,7 @@ ALTER TABLE resource.resourceitemxresourceitemtype
 --
 
 ALTER TABLE resource.resourceitemsecuritytoken
-    ADD CONSTRAINT fktj25xftljow24gev8hl3dsjw8 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fktj25xftljow24gev8hl3dsjw8 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9720,7 +9720,7 @@ ALTER TABLE resource.resourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulestype
-    ADD CONSTRAINT fk11qj2su8f2sy9nvcjss76yfqm FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk11qj2su8f2sy9nvcjss76yfqm FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9729,7 +9729,7 @@ ALTER TABLE rules.rulestype
 --
 
 ALTER TABLE rules.rulestypessecuritytoken
-    ADD CONSTRAINT fk12fsootndlsrm2gkytfg2gfw0 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk12fsootndlsrm2gkytfg2gfw0 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9738,7 +9738,7 @@ ALTER TABLE rules.rulestypessecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitem
-    ADD CONSTRAINT fk19cj3ortt8x7wa4mnkohkpebi FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fk19cj3ortt8x7wa4mnkohkpebi FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -9747,7 +9747,7 @@ ALTER TABLE rules.rulesxresourceitem
 --
 
 ALTER TABLE rules.rulesxproductsecuritytoken
-    ADD CONSTRAINT fk1inr52n9q3ax5rhqtjhthh78r FOREIGN KEY (rulesxproductid, warehousecreateddate) REFERENCES rules.rulesxproduct (rulesxproductid, warehousecreateddate);
+    ADD CONSTRAINT fk1inr52n9q3ax5rhqtjhthh78r FOREIGN KEY (rulesxproductid, warehousefromdate) REFERENCES rules.rulesxproduct (rulesxproductid, warehousefromdate);
 
 
 --
@@ -9756,7 +9756,7 @@ ALTER TABLE rules.rulesxproductsecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitemsecuritytoken
-    ADD CONSTRAINT fk23yuc0ofnmca2ig2dd1wx5ol8 FOREIGN KEY (rulesxresourceitemid, warehousecreateddate) REFERENCES rules.rulesxresourceitem (rulesxresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fk23yuc0ofnmca2ig2dd1wx5ol8 FOREIGN KEY (rulesxresourceitemid, warehousefromdate) REFERENCES rules.rulesxresourceitem (rulesxresourceitemid, warehousefromdate);
 
 
 --
@@ -9765,7 +9765,7 @@ ALTER TABLE rules.rulesxresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxarrangementssecuritytoken
-    ADD CONSTRAINT fk2xvs1pi7rc32lemnyvj01j301 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk2xvs1pi7rc32lemnyvj01j301 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9774,7 +9774,7 @@ ALTER TABLE rules.rulesxarrangementssecuritytoken
 --
 
 ALTER TABLE rules.rulesxrules
-    ADD CONSTRAINT fk31s09rv16v0yhe5aac7l6ele3 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk31s09rv16v0yhe5aac7l6ele3 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -9783,7 +9783,7 @@ ALTER TABLE rules.rulesxrules
 --
 
 ALTER TABLE rules.rulesxrules
-    ADD CONSTRAINT fk37pin4ub4l14xqqanw037awej FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk37pin4ub4l14xqqanw037awej FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9792,7 +9792,7 @@ ALTER TABLE rules.rulesxrules
 --
 
 ALTER TABLE rules.rulesxclassification
-    ADD CONSTRAINT fk38k4xit5ty330vs01iv18sikh FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk38k4xit5ty330vs01iv18sikh FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9801,7 +9801,7 @@ ALTER TABLE rules.rulesxclassification
 --
 
 ALTER TABLE rules.rulesxinvolvedparty
-    ADD CONSTRAINT fk3djrrw59r13qf53lxmls4da7g FOREIGN KEY (involvedpartyid, warehousecreateddate) REFERENCES party.involvedparty (involvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fk3djrrw59r13qf53lxmls4da7g FOREIGN KEY (involvedpartyid, warehousefromdate) REFERENCES party.involvedparty (involvedpartyid, warehousefromdate);
 
 
 --
@@ -9810,7 +9810,7 @@ ALTER TABLE rules.rulesxinvolvedparty
 --
 
 ALTER TABLE rules.rulestypexclassification
-    ADD CONSTRAINT fk3fotawtun2be400jw1c5mcxr5 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk3fotawtun2be400jw1c5mcxr5 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9819,7 +9819,7 @@ ALTER TABLE rules.rulestypexclassification
 --
 
 ALTER TABLE rules.rulestypexclassificationsecuritytoken
-    ADD CONSTRAINT fk3nsh18vueud5iybj4xk2t4j6r FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk3nsh18vueud5iybj4xk2t4j6r FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9828,7 +9828,7 @@ ALTER TABLE rules.rulestypexclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fk3qdk5vxgo4txkaaj5a8y8giwd FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk3qdk5vxgo4txkaaj5a8y8giwd FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9837,7 +9837,7 @@ ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitem
-    ADD CONSTRAINT fk41dmnx4ijklqr44tlpomg7it5 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk41dmnx4ijklqr44tlpomg7it5 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -9846,7 +9846,7 @@ ALTER TABLE rules.rulesxresourceitem
 --
 
 ALTER TABLE rules.rulesxarrangementssecuritytoken
-    ADD CONSTRAINT fk4dxpxc1hj2n1ik4s3ms69w3kw FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk4dxpxc1hj2n1ik4s3ms69w3kw FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9855,7 +9855,7 @@ ALTER TABLE rules.rulesxarrangementssecuritytoken
 --
 
 ALTER TABLE rules.rulesxproductsecuritytoken
-    ADD CONSTRAINT fk4g0qn2ufofwya9mua7k1bip3n FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk4g0qn2ufofwya9mua7k1bip3n FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9864,7 +9864,7 @@ ALTER TABLE rules.rulesxproductsecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulessecuritytoken
-    ADD CONSTRAINT fk4kklxff6jc1n1bo39g3sdqrix FOREIGN KEY (rulesxrulesid, warehousecreateddate) REFERENCES rules.rulesxrules (rulesxrulesid, warehousecreateddate);
+    ADD CONSTRAINT fk4kklxff6jc1n1bo39g3sdqrix FOREIGN KEY (rulesxrulesid, warehousefromdate) REFERENCES rules.rulesxrules (rulesxrulesid, warehousefromdate);
 
 
 --
@@ -9873,7 +9873,7 @@ ALTER TABLE rules.rulesxrulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxarrangement
-    ADD CONSTRAINT fk4nj9r8fu6b1ymd9o8tdryxrtx FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk4nj9r8fu6b1ymd9o8tdryxrtx FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9882,7 +9882,7 @@ ALTER TABLE rules.rulesxarrangement
 --
 
 ALTER TABLE rules.rulestypexclassificationsecuritytoken
-    ADD CONSTRAINT fk4rylunbc8qipcw0n020nhab5b FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk4rylunbc8qipcw0n020nhab5b FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9891,7 +9891,7 @@ ALTER TABLE rules.rulestypexclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxproductsecuritytoken
-    ADD CONSTRAINT fk50a41rvtkyewefjmf4e8l52sw FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk50a41rvtkyewefjmf4e8l52sw FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9900,7 +9900,7 @@ ALTER TABLE rules.rulesxproductsecuritytoken
 --
 
 ALTER TABLE rules.rulessecuritytoken
-    ADD CONSTRAINT fk57dd0fcy24o8k2spnqrykgk2a FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk57dd0fcy24o8k2spnqrykgk2a FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9909,7 +9909,7 @@ ALTER TABLE rules.rulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxproduct
-    ADD CONSTRAINT fk57dubv678gaj1eatqjof0x0nb FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk57dubv678gaj1eatqjof0x0nb FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -9918,7 +9918,7 @@ ALTER TABLE rules.rulesxproduct
 --
 
 ALTER TABLE rules.rulesxresourceitemsecuritytoken
-    ADD CONSTRAINT fk5dv1vwep6v9958vjdse4henw0 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk5dv1vwep6v9958vjdse4henw0 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -9927,7 +9927,7 @@ ALTER TABLE rules.rulesxresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitem
-    ADD CONSTRAINT fk5fe2nqc5oe2o0pqnptrrciyra FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk5fe2nqc5oe2o0pqnptrrciyra FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9936,7 +9936,7 @@ ALTER TABLE rules.rulesxresourceitem
 --
 
 ALTER TABLE rules.rulessecuritytoken
-    ADD CONSTRAINT fk5hjfvbnd3js59ca3fowm88h6t FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5hjfvbnd3js59ca3fowm88h6t FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9945,7 +9945,7 @@ ALTER TABLE rules.rulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxproduct
-    ADD CONSTRAINT fk5m9wrb374b5g1wpwkj3jr09y6 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk5m9wrb374b5g1wpwkj3jr09y6 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9954,7 +9954,7 @@ ALTER TABLE rules.rulesxproduct
 --
 
 ALTER TABLE rules.rulestypessecuritytoken
-    ADD CONSTRAINT fk5tck1lwdgo3i3lbwyphxlsilw FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk5tck1lwdgo3i3lbwyphxlsilw FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -9963,7 +9963,7 @@ ALTER TABLE rules.rulestypessecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedparty
-    ADD CONSTRAINT fk5ujdw4x8upupcaml412wan0p7 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk5ujdw4x8upupcaml412wan0p7 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -9972,7 +9972,7 @@ ALTER TABLE rules.rulesxinvolvedparty
 --
 
 ALTER TABLE rules.rulesxinvolvedparty
-    ADD CONSTRAINT fk611oa399omtv631o66ausvb55 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk611oa399omtv631o66ausvb55 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9981,7 +9981,7 @@ ALTER TABLE rules.rulesxinvolvedparty
 --
 
 ALTER TABLE rules.rulesxproduct
-    ADD CONSTRAINT fk6a018wimk1mn1ucjsg7m6v42e FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk6a018wimk1mn1ucjsg7m6v42e FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -9990,7 +9990,7 @@ ALTER TABLE rules.rulesxproduct
 --
 
 ALTER TABLE rules.rulestypexresourceitem
-    ADD CONSTRAINT fk6hivvn41g61n8v941egrae19i FOREIGN KEY (rulestypeid, warehousecreateddate) REFERENCES rules.rulestype (rulestypeid, warehousecreateddate);
+    ADD CONSTRAINT fk6hivvn41g61n8v941egrae19i FOREIGN KEY (rulestypeid, warehousefromdate) REFERENCES rules.rulestype (rulestypeid, warehousefromdate);
 
 
 --
@@ -9999,7 +9999,7 @@ ALTER TABLE rules.rulestypexresourceitem
 --
 
 ALTER TABLE rules.rulesxrulestype
-    ADD CONSTRAINT fk710wj6aj8es1ht1o9fxdehtua FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk710wj6aj8es1ht1o9fxdehtua FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10008,7 +10008,7 @@ ALTER TABLE rules.rulesxrulestype
 --
 
 ALTER TABLE rules.rulestypexresourceitem
-    ADD CONSTRAINT fk7an7eg5j3seoaxajls3knmrwt FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fk7an7eg5j3seoaxajls3knmrwt FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -10017,7 +10017,7 @@ ALTER TABLE rules.rulestypexresourceitem
 --
 
 ALTER TABLE rules.rulesxarrangement
-    ADD CONSTRAINT fk7kbnsdojwukxxly9vxqkraun2 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk7kbnsdojwukxxly9vxqkraun2 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10026,7 +10026,7 @@ ALTER TABLE rules.rulesxarrangement
 --
 
 ALTER TABLE rules.rulesxarrangement
-    ADD CONSTRAINT fk7kfpfoyfd5mn1x45215dlee28 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7kfpfoyfd5mn1x45215dlee28 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10035,7 +10035,7 @@ ALTER TABLE rules.rulesxarrangement
 --
 
 ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fk7lvh9pa4gweufl5x0ubtl38my FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fk7lvh9pa4gweufl5x0ubtl38my FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -10044,7 +10044,7 @@ ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE rules.rulesxclassification
-    ADD CONSTRAINT fk7nyvj635fp8si7pq0qetkfhpb FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7nyvj635fp8si7pq0qetkfhpb FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10053,7 +10053,7 @@ ALTER TABLE rules.rulesxclassification
 --
 
 ALTER TABLE rules.rulestype
-    ADD CONSTRAINT fk7v51o36ciw802dj5m82giq97q FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7v51o36ciw802dj5m82giq97q FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10062,7 +10062,7 @@ ALTER TABLE rules.rulestype
 --
 
 ALTER TABLE rules.rulestypexclassification
-    ADD CONSTRAINT fk87mojdqprestm5uqmw925bqf1 FOREIGN KEY (rulestypeid, warehousecreateddate) REFERENCES rules.rulestype (rulestypeid, warehousecreateddate);
+    ADD CONSTRAINT fk87mojdqprestm5uqmw925bqf1 FOREIGN KEY (rulestypeid, warehousefromdate) REFERENCES rules.rulestype (rulestypeid, warehousefromdate);
 
 
 --
@@ -10071,7 +10071,7 @@ ALTER TABLE rules.rulestypexclassification
 --
 
 ALTER TABLE rules.rulesxrulestype
-    ADD CONSTRAINT fk8hvei78rfy1byxtb36lwwst06 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8hvei78rfy1byxtb36lwwst06 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10080,7 +10080,7 @@ ALTER TABLE rules.rulesxrulestype
 --
 
 ALTER TABLE rules.rulesxinvolvedparty
-    ADD CONSTRAINT fk8i91cawihcqkxe2fr9oawrshw FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk8i91cawihcqkxe2fr9oawrshw FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10089,7 +10089,7 @@ ALTER TABLE rules.rulesxinvolvedparty
 --
 
 ALTER TABLE rules.rulesxclassification
-    ADD CONSTRAINT fk8txg0h4hi98qbgslaodff7dyt FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk8txg0h4hi98qbgslaodff7dyt FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10098,7 +10098,7 @@ ALTER TABLE rules.rulesxclassification
 --
 
 ALTER TABLE rules.rulestypexresourceitemsecuritytoken
-    ADD CONSTRAINT fk8xs3tib17edep24d44482bmjp FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk8xs3tib17edep24d44482bmjp FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10107,7 +10107,7 @@ ALTER TABLE rules.rulestypexresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fk903el1e8i3wxjag53njlscvkg FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk903el1e8i3wxjag53njlscvkg FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10116,7 +10116,7 @@ ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE rules.rulestypexclassification
-    ADD CONSTRAINT fk9662odo6kpnj3a66uyqqh9gph FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk9662odo6kpnj3a66uyqqh9gph FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10125,7 +10125,7 @@ ALTER TABLE rules.rulestypexclassification
 --
 
 ALTER TABLE rules.rulestypessecuritytoken
-    ADD CONSTRAINT fk9aexqcupg3q8il9en4moulmo1 FOREIGN KEY (rulestypesid, warehousecreateddate) REFERENCES rules.rulestype (rulestypeid, warehousecreateddate);
+    ADD CONSTRAINT fk9aexqcupg3q8il9en4moulmo1 FOREIGN KEY (rulestypesid, warehousefromdate) REFERENCES rules.rulestype (rulestypeid, warehousefromdate);
 
 
 --
@@ -10134,7 +10134,7 @@ ALTER TABLE rules.rulestypessecuritytoken
 --
 
 ALTER TABLE rules.rulesxarrangement
-    ADD CONSTRAINT fk9gfetl178gc0bjfak6tny0keu FOREIGN KEY (arrangementid, warehousecreateddate) REFERENCES arrangement.arrangement (arrangementid, warehousecreateddate);
+    ADD CONSTRAINT fk9gfetl178gc0bjfak6tny0keu FOREIGN KEY (arrangementid, warehousefromdate) REFERENCES arrangement.arrangement (arrangementid, warehousefromdate);
 
 
 --
@@ -10143,7 +10143,7 @@ ALTER TABLE rules.rulesxarrangement
 --
 
 ALTER TABLE rules.rulesxproduct
-    ADD CONSTRAINT fk9t2smyfxndgfnuoht0l8q42rb FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk9t2smyfxndgfnuoht0l8q42rb FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10152,7 +10152,7 @@ ALTER TABLE rules.rulesxproduct
 --
 
 ALTER TABLE rules.rulesxproductsecuritytoken
-    ADD CONSTRAINT fka1ai0uri46j0quxeqcikkdclv FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fka1ai0uri46j0quxeqcikkdclv FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10161,7 +10161,7 @@ ALTER TABLE rules.rulesxproductsecuritytoken
 --
 
 ALTER TABLE rules.rulestypexclassificationsecuritytoken
-    ADD CONSTRAINT fkamvwb2lq6eh8s3gobs9amn1ns FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkamvwb2lq6eh8s3gobs9amn1ns FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10170,7 +10170,7 @@ ALTER TABLE rules.rulestypexclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxclassificationsecuritytoken
-    ADD CONSTRAINT fkb0vp45d3tkxwvy5938ua9n809 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkb0vp45d3tkxwvy5938ua9n809 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10179,7 +10179,7 @@ ALTER TABLE rules.rulesxclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxclassification
-    ADD CONSTRAINT fkbbvhygyarc5j4gi7wjnd052p3 FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkbbvhygyarc5j4gi7wjnd052p3 FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -10188,7 +10188,7 @@ ALTER TABLE rules.rulesxclassification
 --
 
 ALTER TABLE rules.rulesxrulestypesecuritytoken
-    ADD CONSTRAINT fkbn0acfejqvxbal40304ibsbr5 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkbn0acfejqvxbal40304ibsbr5 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10197,7 +10197,7 @@ ALTER TABLE rules.rulesxrulestypesecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulestype
-    ADD CONSTRAINT fkbn4oo9asbe39dle7ow6buqvt7 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkbn4oo9asbe39dle7ow6buqvt7 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10206,7 +10206,7 @@ ALTER TABLE rules.rulesxrulestype
 --
 
 ALTER TABLE rules.rulesxrulestype
-    ADD CONSTRAINT fkbohku2sim3tc8ey86rq8psqpt FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkbohku2sim3tc8ey86rq8psqpt FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -10215,7 +10215,7 @@ ALTER TABLE rules.rulesxrulestype
 --
 
 ALTER TABLE rules.rules
-    ADD CONSTRAINT fkbpbgfk1w8xjpcvla2wtr28rfm FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkbpbgfk1w8xjpcvla2wtr28rfm FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10224,7 +10224,7 @@ ALTER TABLE rules.rules
 --
 
 ALTER TABLE rules.rulesxrulestypesecuritytoken
-    ADD CONSTRAINT fkby3adp3oxnvi7q571ij36jj0v FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkby3adp3oxnvi7q571ij36jj0v FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10233,7 +10233,7 @@ ALTER TABLE rules.rulesxrulestypesecuritytoken
 --
 
 ALTER TABLE rules.rulestypexresourceitemsecuritytoken
-    ADD CONSTRAINT fkcdu908ybhdghbjvhquhpfucsr FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkcdu908ybhdghbjvhquhpfucsr FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10242,7 +10242,7 @@ ALTER TABLE rules.rulestypexresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulestypexclassification
-    ADD CONSTRAINT fkcmpyykrmpk1epxo9jmicem78i FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkcmpyykrmpk1epxo9jmicem78i FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -10251,7 +10251,7 @@ ALTER TABLE rules.rulestypexclassification
 --
 
 ALTER TABLE rules.rulestypexclassificationsecuritytoken
-    ADD CONSTRAINT fkcn088ejtlnauiohbrpvvufegu FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkcn088ejtlnauiohbrpvvufegu FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -10260,7 +10260,7 @@ ALTER TABLE rules.rulestypexclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxarrangementssecuritytoken
-    ADD CONSTRAINT fkd1ylioumsfoo6scfb0fdouur7 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkd1ylioumsfoo6scfb0fdouur7 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -10269,7 +10269,7 @@ ALTER TABLE rules.rulesxarrangementssecuritytoken
 --
 
 ALTER TABLE rules.rulestypexclassification
-    ADD CONSTRAINT fkdck5vk5rjw51e9u8ducstsysg FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkdck5vk5rjw51e9u8ducstsysg FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10278,7 +10278,7 @@ ALTER TABLE rules.rulestypexclassification
 --
 
 ALTER TABLE rules.rulesxrulestype
-    ADD CONSTRAINT fkdly04cjef5yj3ne8v1uwb8h12 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkdly04cjef5yj3ne8v1uwb8h12 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -10287,7 +10287,7 @@ ALTER TABLE rules.rulesxrulestype
 --
 
 ALTER TABLE rules.rulestypessecuritytoken
-    ADD CONSTRAINT fkeciu87p8mk0yiel2t1bwipg9a FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkeciu87p8mk0yiel2t1bwipg9a FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10296,7 +10296,7 @@ ALTER TABLE rules.rulestypessecuritytoken
 --
 
 ALTER TABLE rules.rulessecuritytoken
-    ADD CONSTRAINT fkenyc4oy7p7bpluwr2incgf2m6 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkenyc4oy7p7bpluwr2incgf2m6 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10305,7 +10305,7 @@ ALTER TABLE rules.rulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxarrangement
-    ADD CONSTRAINT fkeu7bn1gb6dg7xt097ognxjwh5 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkeu7bn1gb6dg7xt097ognxjwh5 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10314,7 +10314,7 @@ ALTER TABLE rules.rulesxarrangement
 --
 
 ALTER TABLE rules.rulesxproduct
-    ADD CONSTRAINT fkf3t7xp42nph7ypmy38rtkr9c8 FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkf3t7xp42nph7ypmy38rtkr9c8 FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -10323,7 +10323,7 @@ ALTER TABLE rules.rulesxproduct
 --
 
 ALTER TABLE rules.rulestype
-    ADD CONSTRAINT fkf7030hfrlt8o2dxdarmt5ftrp FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkf7030hfrlt8o2dxdarmt5ftrp FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10332,7 +10332,7 @@ ALTER TABLE rules.rulestype
 --
 
 ALTER TABLE rules.rulesxarrangement
-    ADD CONSTRAINT fkfj9ondul2lkfugd0u6vdxq1yi FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkfj9ondul2lkfugd0u6vdxq1yi FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -10341,7 +10341,7 @@ ALTER TABLE rules.rulesxarrangement
 --
 
 ALTER TABLE rules.rulesxarrangementssecuritytoken
-    ADD CONSTRAINT fkflgh5an92uoxffkehd7g7tp8j FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkflgh5an92uoxffkehd7g7tp8j FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10350,7 +10350,7 @@ ALTER TABLE rules.rulesxarrangementssecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulessecuritytoken
-    ADD CONSTRAINT fkfv9sfhe1kdjwa8dgu136k90ut FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkfv9sfhe1kdjwa8dgu136k90ut FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -10359,7 +10359,7 @@ ALTER TABLE rules.rulesxrulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkg0ntb8lcpw9n6p49kpubuyle2 FOREIGN KEY (rulesxinvolvedpartyid, warehousecreateddate) REFERENCES rules.rulesxinvolvedparty (rulesxinvolvedpartyid, warehousecreateddate);
+    ADD CONSTRAINT fkg0ntb8lcpw9n6p49kpubuyle2 FOREIGN KEY (rulesxinvolvedpartyid, warehousefromdate) REFERENCES rules.rulesxinvolvedparty (rulesxinvolvedpartyid, warehousefromdate);
 
 
 --
@@ -10368,7 +10368,7 @@ ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE rules.rulesxproductsecuritytoken
-    ADD CONSTRAINT fkgenrresjjjhv02rh0slya5d88 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkgenrresjjjhv02rh0slya5d88 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10377,7 +10377,7 @@ ALTER TABLE rules.rulesxproductsecuritytoken
 --
 
 ALTER TABLE rules.rulesxrules
-    ADD CONSTRAINT fkgivavwvb91qbin4sxepd6wbs5 FOREIGN KEY (parentrulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkgivavwvb91qbin4sxepd6wbs5 FOREIGN KEY (parentrulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -10386,7 +10386,7 @@ ALTER TABLE rules.rulesxrules
 --
 
 ALTER TABLE rules.rulesxresourceitem
-    ADD CONSTRAINT fkhubiaglxhl6fy8gx1oei33qbc FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkhubiaglxhl6fy8gx1oei33qbc FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10395,7 +10395,7 @@ ALTER TABLE rules.rulesxresourceitem
 --
 
 ALTER TABLE rules.rulesxrulestypesecuritytoken
-    ADD CONSTRAINT fkibc3w3kdwgur69j3lhbi6l0k5 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkibc3w3kdwgur69j3lhbi6l0k5 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -10404,7 +10404,7 @@ ALTER TABLE rules.rulesxrulestypesecuritytoken
 --
 
 ALTER TABLE rules.rulestypessecuritytoken
-    ADD CONSTRAINT fkic2121k0p1edg44c55hog6oe6 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkic2121k0p1edg44c55hog6oe6 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10413,7 +10413,7 @@ ALTER TABLE rules.rulestypessecuritytoken
 --
 
 ALTER TABLE rules.rules
-    ADD CONSTRAINT fkihoftg6akowf7mjyheyfmty0i FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkihoftg6akowf7mjyheyfmty0i FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10422,7 +10422,7 @@ ALTER TABLE rules.rules
 --
 
 ALTER TABLE rules.rulesxclassification
-    ADD CONSTRAINT fkiyjrx7w183fwo2nhmwpqh0stw FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkiyjrx7w183fwo2nhmwpqh0stw FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -10431,7 +10431,7 @@ ALTER TABLE rules.rulesxclassification
 --
 
 ALTER TABLE rules.rulesxclassificationsecuritytoken
-    ADD CONSTRAINT fkj60pj71vbrlqc7ijopnpprev7 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkj60pj71vbrlqc7ijopnpprev7 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -10440,7 +10440,7 @@ ALTER TABLE rules.rulesxclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedparty
-    ADD CONSTRAINT fkj8719e5kkmd7kd8bpqr71rt3a FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkj8719e5kkmd7kd8bpqr71rt3a FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -10449,7 +10449,7 @@ ALTER TABLE rules.rulesxinvolvedparty
 --
 
 ALTER TABLE rules.rulesxresourceitemsecuritytoken
-    ADD CONSTRAINT fkji8ugnof4vkss37iu1mfuy2l4 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkji8ugnof4vkss37iu1mfuy2l4 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10458,7 +10458,7 @@ ALTER TABLE rules.rulesxresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxclassificationsecuritytoken
-    ADD CONSTRAINT fkjklxc6ukplqhj7wa03ah80qh0 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkjklxc6ukplqhj7wa03ah80qh0 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10467,7 +10467,7 @@ ALTER TABLE rules.rulesxclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulestypesecuritytoken
-    ADD CONSTRAINT fkjr2flixl5hw7uqmh9chynqt4h FOREIGN KEY (rulesxrulestypeid, warehousecreateddate) REFERENCES rules.rulesxrulestype (rulesxrulestypeid, warehousecreateddate);
+    ADD CONSTRAINT fkjr2flixl5hw7uqmh9chynqt4h FOREIGN KEY (rulesxrulestypeid, warehousefromdate) REFERENCES rules.rulesxrulestype (rulesxrulestypeid, warehousefromdate);
 
 
 --
@@ -10476,7 +10476,7 @@ ALTER TABLE rules.rulesxrulestypesecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkju1w7gcf2bu52ok8ibtd40gk4 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkju1w7gcf2bu52ok8ibtd40gk4 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10485,7 +10485,7 @@ ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitemsecuritytoken
-    ADD CONSTRAINT fkju938jbh27xnvuokmjxlnlqos FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkju938jbh27xnvuokmjxlnlqos FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10494,7 +10494,7 @@ ALTER TABLE rules.rulesxresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulestypexresourceitem
-    ADD CONSTRAINT fkkl9dib27d8h3g00pp40q3vpw4 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkkl9dib27d8h3g00pp40q3vpw4 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10503,7 +10503,7 @@ ALTER TABLE rules.rulestypexresourceitem
 --
 
 ALTER TABLE rules.rulestypexclassification
-    ADD CONSTRAINT fkl2497yt06thxeacoue8jbbaoh FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkl2497yt06thxeacoue8jbbaoh FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10512,7 +10512,7 @@ ALTER TABLE rules.rulestypexclassification
 --
 
 ALTER TABLE rules.rulesxproductsecuritytoken
-    ADD CONSTRAINT fklaeiodujthn91pwnj8qag1ao6 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklaeiodujthn91pwnj8qag1ao6 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10521,7 +10521,7 @@ ALTER TABLE rules.rulesxproductsecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulessecuritytoken
-    ADD CONSTRAINT fklbxxoxpoelx3t2p1g96nqv90q FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fklbxxoxpoelx3t2p1g96nqv90q FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10530,7 +10530,7 @@ ALTER TABLE rules.rulesxrulessecuritytoken
 --
 
 ALTER TABLE rules.rulestypexresourceitemsecuritytoken
-    ADD CONSTRAINT fklhnbp8n1wy13okhhtnxwqu5hy FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklhnbp8n1wy13okhhtnxwqu5hy FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10539,7 +10539,7 @@ ALTER TABLE rules.rulestypexresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxclassification
-    ADD CONSTRAINT fklog5hewe9u4c7wb35u4xvv84c FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklog5hewe9u4c7wb35u4xvv84c FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10548,7 +10548,7 @@ ALTER TABLE rules.rulesxclassification
 --
 
 ALTER TABLE rules.rulesxrulestypesecuritytoken
-    ADD CONSTRAINT fkm2rtvaw8pdy1l3rvbc9wicom3 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkm2rtvaw8pdy1l3rvbc9wicom3 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10557,7 +10557,7 @@ ALTER TABLE rules.rulesxrulestypesecuritytoken
 --
 
 ALTER TABLE rules.rulestypexresourceitemsecuritytoken
-    ADD CONSTRAINT fkm6jgd6lrdywbn56w6e0s5awd1 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkm6jgd6lrdywbn56w6e0s5awd1 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -10566,7 +10566,7 @@ ALTER TABLE rules.rulestypexresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulestype
-    ADD CONSTRAINT fkm7jdyuyikwo9qlfe6qae0bv3q FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkm7jdyuyikwo9qlfe6qae0bv3q FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10575,7 +10575,7 @@ ALTER TABLE rules.rulestype
 --
 
 ALTER TABLE rules.rulestypexclassificationsecuritytoken
-    ADD CONSTRAINT fkmjbouj2e7loyrlu87avtm4gtm FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmjbouj2e7loyrlu87avtm4gtm FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10584,7 +10584,7 @@ ALTER TABLE rules.rulestypexclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxclassificationsecuritytoken
-    ADD CONSTRAINT fkmno9p3edeufft6bgiv94tecpa FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmno9p3edeufft6bgiv94tecpa FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10593,7 +10593,7 @@ ALTER TABLE rules.rulesxclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulessecuritytoken
-    ADD CONSTRAINT fkmsl2uqlxr7q5n3bq6e14nknk FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkmsl2uqlxr7q5n3bq6e14nknk FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10602,7 +10602,7 @@ ALTER TABLE rules.rulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulestypesecuritytoken
-    ADD CONSTRAINT fkmst7g4r9cabb1d78ysr4hvppe FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmst7g4r9cabb1d78ysr4hvppe FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10611,7 +10611,7 @@ ALTER TABLE rules.rulesxrulestypesecuritytoken
 --
 
 ALTER TABLE rules.rulessecuritytoken
-    ADD CONSTRAINT fkmtk7w2kpskec0ebnwnrmo8rmp FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkmtk7w2kpskec0ebnwnrmo8rmp FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -10620,7 +10620,7 @@ ALTER TABLE rules.rulessecuritytoken
 --
 
 ALTER TABLE rules.rules
-    ADD CONSTRAINT fknh64xmjpd3alokexjnuqr0unw FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fknh64xmjpd3alokexjnuqr0unw FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10629,7 +10629,7 @@ ALTER TABLE rules.rules
 --
 
 ALTER TABLE rules.rulessecuritytoken
-    ADD CONSTRAINT fknj1ss0ctynt0u0t9nx5wprick FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fknj1ss0ctynt0u0t9nx5wprick FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -10638,7 +10638,7 @@ ALTER TABLE rules.rulessecuritytoken
 --
 
 ALTER TABLE rules.rulestypexclassificationsecuritytoken
-    ADD CONSTRAINT fknn81qs2b5rstr3u748lvjbl61 FOREIGN KEY (rulestypexclassificationid, warehousecreateddate) REFERENCES rules.rulestypexclassification (rulestypexclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fknn81qs2b5rstr3u748lvjbl61 FOREIGN KEY (rulestypexclassificationid, warehousefromdate) REFERENCES rules.rulestypexclassification (rulestypexclassificationid, warehousefromdate);
 
 
 --
@@ -10647,7 +10647,7 @@ ALTER TABLE rules.rulestypexclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulessecuritytoken
-    ADD CONSTRAINT fknwhg52uwedumbo0s6msu4kvu4 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fknwhg52uwedumbo0s6msu4kvu4 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10656,7 +10656,7 @@ ALTER TABLE rules.rulesxrulessecuritytoken
 --
 
 ALTER TABLE rules.rulestypexresourceitem
-    ADD CONSTRAINT fko8drrcbtv7to8utrafqb942a FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fko8drrcbtv7to8utrafqb942a FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10665,7 +10665,7 @@ ALTER TABLE rules.rulestypexresourceitem
 --
 
 ALTER TABLE rules.rulesxrulessecuritytoken
-    ADD CONSTRAINT fkohvvumprn80d89qp41tyeesd3 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkohvvumprn80d89qp41tyeesd3 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10674,7 +10674,7 @@ ALTER TABLE rules.rulesxrulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxrulestype
-    ADD CONSTRAINT fkonxshkblvrhnt4fasmfxmnyrf FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkonxshkblvrhnt4fasmfxmnyrf FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10683,7 +10683,7 @@ ALTER TABLE rules.rulesxrulestype
 --
 
 ALTER TABLE rules.rulestypexresourceitemsecuritytoken
-    ADD CONSTRAINT fkotlbdpur4kwiwymopsenwumbg FOREIGN KEY (rulestypexresourceitemid, warehousecreateddate) REFERENCES rules.rulestypexresourceitem (rulestypexresourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkotlbdpur4kwiwymopsenwumbg FOREIGN KEY (rulestypexresourceitemid, warehousefromdate) REFERENCES rules.rulestypexresourceitem (rulestypexresourceitemid, warehousefromdate);
 
 
 --
@@ -10692,7 +10692,7 @@ ALTER TABLE rules.rulestypexresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxclassificationsecuritytoken
-    ADD CONSTRAINT fkowvdqrq0fiqefy3g85fj60rgq FOREIGN KEY (rulesxclassificationid, warehousecreateddate) REFERENCES rules.rulesxclassification (rulesxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkowvdqrq0fiqefy3g85fj60rgq FOREIGN KEY (rulesxclassificationid, warehousefromdate) REFERENCES rules.rulesxclassification (rulesxclassificationid, warehousefromdate);
 
 
 --
@@ -10701,7 +10701,7 @@ ALTER TABLE rules.rulesxclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxrules
-    ADD CONSTRAINT fkpahnm53g0d7kjo5tfrask49up FOREIGN KEY (childrulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkpahnm53g0d7kjo5tfrask49up FOREIGN KEY (childrulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -10710,7 +10710,7 @@ ALTER TABLE rules.rulesxrules
 --
 
 ALTER TABLE rules.rulesxclassificationsecuritytoken
-    ADD CONSTRAINT fkq49rw6kbi9gykntudl1mdodl7 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkq49rw6kbi9gykntudl1mdodl7 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10719,7 +10719,7 @@ ALTER TABLE rules.rulesxclassificationsecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedparty
-    ADD CONSTRAINT fkqcugfk4tgg63qe2e7fk4h1jou FOREIGN KEY (rulesid, warehousecreateddate) REFERENCES rules.rules (rulesid, warehousecreateddate);
+    ADD CONSTRAINT fkqcugfk4tgg63qe2e7fk4h1jou FOREIGN KEY (rulesid, warehousefromdate) REFERENCES rules.rules (rulesid, warehousefromdate);
 
 
 --
@@ -10728,7 +10728,7 @@ ALTER TABLE rules.rulesxinvolvedparty
 --
 
 ALTER TABLE rules.rules
-    ADD CONSTRAINT fkqkhxbrmhfk0ou8sfgrq6w04yn FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkqkhxbrmhfk0ou8sfgrq6w04yn FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10737,7 +10737,7 @@ ALTER TABLE rules.rules
 --
 
 ALTER TABLE rules.rulesxrules
-    ADD CONSTRAINT fkqmjt8nooh7ch2vr14euld3bnk FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkqmjt8nooh7ch2vr14euld3bnk FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10746,7 +10746,7 @@ ALTER TABLE rules.rulesxrules
 --
 
 ALTER TABLE rules.rulestypexresourceitem
-    ADD CONSTRAINT fkqygy5t9dhj5r3nefikdhaxdb6 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkqygy5t9dhj5r3nefikdhaxdb6 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10755,7 +10755,7 @@ ALTER TABLE rules.rulestypexresourceitem
 --
 
 ALTER TABLE rules.rulesxresourceitem
-    ADD CONSTRAINT fkr1sg6ky0tcfxt3faiqbpvq72o FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkr1sg6ky0tcfxt3faiqbpvq72o FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10764,7 +10764,7 @@ ALTER TABLE rules.rulesxresourceitem
 --
 
 ALTER TABLE rules.rulesxproduct
-    ADD CONSTRAINT fkr9hc797wqs7k8u8iun1psqhi0 FOREIGN KEY (productid, warehousecreateddate) REFERENCES product.product (productid, warehousecreateddate);
+    ADD CONSTRAINT fkr9hc797wqs7k8u8iun1psqhi0 FOREIGN KEY (productid, warehousefromdate) REFERENCES product.product (productid, warehousefromdate);
 
 
 --
@@ -10773,7 +10773,7 @@ ALTER TABLE rules.rulesxproduct
 --
 
 ALTER TABLE rules.rulestypexresourceitemsecuritytoken
-    ADD CONSTRAINT fkrbpyq0298hcisaevbl3mp0m5d FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkrbpyq0298hcisaevbl3mp0m5d FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10782,7 +10782,7 @@ ALTER TABLE rules.rulestypexresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulestypexresourceitem
-    ADD CONSTRAINT fkrdh9f21yu45alpi37mrexx5sy FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkrdh9f21yu45alpi37mrexx5sy FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -10791,7 +10791,7 @@ ALTER TABLE rules.rulestypexresourceitem
 --
 
 ALTER TABLE rules.rulesxarrangement
-    ADD CONSTRAINT fkrkfqm429ef4j7jwneu7jxeye4 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkrkfqm429ef4j7jwneu7jxeye4 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -10800,7 +10800,7 @@ ALTER TABLE rules.rulesxarrangement
 --
 
 ALTER TABLE rules.rulesxrules
-    ADD CONSTRAINT fkrncrmhaj7pk6audwswshmudqj FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkrncrmhaj7pk6audwswshmudqj FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10809,7 +10809,7 @@ ALTER TABLE rules.rulesxrules
 --
 
 ALTER TABLE rules.rulesxrulestype
-    ADD CONSTRAINT fkrv7w522dypyy838vgcr1r566e FOREIGN KEY (rulestypeid, warehousecreateddate) REFERENCES rules.rulestype (rulestypeid, warehousecreateddate);
+    ADD CONSTRAINT fkrv7w522dypyy838vgcr1r566e FOREIGN KEY (rulestypeid, warehousefromdate) REFERENCES rules.rulestype (rulestypeid, warehousefromdate);
 
 
 --
@@ -10818,7 +10818,7 @@ ALTER TABLE rules.rulesxrulestype
 --
 
 ALTER TABLE rules.rulesxproduct
-    ADD CONSTRAINT fkrwm05r7gimvp4itjeem7u6sk6 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkrwm05r7gimvp4itjeem7u6sk6 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10827,7 +10827,7 @@ ALTER TABLE rules.rulesxproduct
 --
 
 ALTER TABLE rules.rulesxrulessecuritytoken
-    ADD CONSTRAINT fks16mt02lac7ao524fhu5liiys FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fks16mt02lac7ao524fhu5liiys FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10836,7 +10836,7 @@ ALTER TABLE rules.rulesxrulessecuritytoken
 --
 
 ALTER TABLE rules.rulesxarrangementssecuritytoken
-    ADD CONSTRAINT fks5w3o4wg63awg0iuc76km8e1n FOREIGN KEY (rulesxarrangementsid, warehousecreateddate) REFERENCES rules.rulesxarrangement (rulesxarrangementsid, warehousecreateddate);
+    ADD CONSTRAINT fks5w3o4wg63awg0iuc76km8e1n FOREIGN KEY (rulesxarrangementsid, warehousefromdate) REFERENCES rules.rulesxarrangement (rulesxarrangementsid, warehousefromdate);
 
 
 --
@@ -10845,7 +10845,7 @@ ALTER TABLE rules.rulesxarrangementssecuritytoken
 --
 
 ALTER TABLE rules.rulestypessecuritytoken
-    ADD CONSTRAINT fks5xpq0ecpqefbfuwqkymvncsn FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fks5xpq0ecpqefbfuwqkymvncsn FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10854,7 +10854,7 @@ ALTER TABLE rules.rulestypessecuritytoken
 --
 
 ALTER TABLE rules.rulestypexresourceitem
-    ADD CONSTRAINT fksbm8nex7yud5ymui9t5m2wuiw FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fksbm8nex7yud5ymui9t5m2wuiw FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10863,7 +10863,7 @@ ALTER TABLE rules.rulestypexresourceitem
 --
 
 ALTER TABLE rules.rulesxresourceitemsecuritytoken
-    ADD CONSTRAINT fksm3jfs67p3ly7mjl1jkrualak FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fksm3jfs67p3ly7mjl1jkrualak FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10872,7 +10872,7 @@ ALTER TABLE rules.rulesxresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxinvolvedparty
-    ADD CONSTRAINT fksqp0envk694667mbnl8hndily FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fksqp0envk694667mbnl8hndily FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10881,7 +10881,7 @@ ALTER TABLE rules.rulesxinvolvedparty
 --
 
 ALTER TABLE rules.rulesxrules
-    ADD CONSTRAINT fkt5ep7dex0ykbws23o3yk8sctu FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkt5ep7dex0ykbws23o3yk8sctu FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10890,7 +10890,7 @@ ALTER TABLE rules.rulesxrules
 --
 
 ALTER TABLE rules.rulesxarrangementssecuritytoken
-    ADD CONSTRAINT fkte09hu3a7vurplykt3w97714k FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkte09hu3a7vurplykt3w97714k FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10899,7 +10899,7 @@ ALTER TABLE rules.rulesxarrangementssecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitemsecuritytoken
-    ADD CONSTRAINT fktlm1dpqcyom9yo1lefe0yqowj FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fktlm1dpqcyom9yo1lefe0yqowj FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10908,7 +10908,7 @@ ALTER TABLE rules.rulesxresourceitemsecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitem
-    ADD CONSTRAINT fktlnk6dgimet9xmad6ajypb5xh FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fktlnk6dgimet9xmad6ajypb5xh FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10917,7 +10917,7 @@ ALTER TABLE rules.rulesxresourceitem
 --
 
 ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
-    ADD CONSTRAINT fkunriof269jly3lkmqk8jsp4g FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkunriof269jly3lkmqk8jsp4g FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10926,7 +10926,7 @@ ALTER TABLE rules.rulesxinvolvedpartysecuritytoken
 --
 
 ALTER TABLE rules.rulesxresourceitem
-    ADD CONSTRAINT fkvs83cy05gattyxwtir1yyv2s FOREIGN KEY (resourceitemid, warehousecreateddate) REFERENCES resource.resourceitem (resourceitemid, warehousecreateddate);
+    ADD CONSTRAINT fkvs83cy05gattyxwtir1yyv2s FOREIGN KEY (resourceitemid, warehousefromdate) REFERENCES resource.resourceitem (resourceitemid, warehousefromdate);
 
 
 --
@@ -10935,7 +10935,7 @@ ALTER TABLE rules.rulesxresourceitem
 --
 
 ALTER TABLE security.securitytokenxclassificationsecuritytoken
-    ADD CONSTRAINT fk23j9r000kvoovvj3lpurf7lro FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk23j9r000kvoovvj3lpurf7lro FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10944,7 +10944,7 @@ ALTER TABLE security.securitytokenxclassificationsecuritytoken
 --
 
 ALTER TABLE security.securitytoken
-    ADD CONSTRAINT fk3dojhs6jjsp6g4xtwg1gfsg7i FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk3dojhs6jjsp6g4xtwg1gfsg7i FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10953,7 +10953,7 @@ ALTER TABLE security.securitytoken
 --
 
 ALTER TABLE security.securitytokenxclassificationsecuritytoken
-    ADD CONSTRAINT fk7b8h1egk35meq3khexlt58p04 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7b8h1egk35meq3khexlt58p04 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10962,7 +10962,7 @@ ALTER TABLE security.securitytokenxclassificationsecuritytoken
 --
 
 ALTER TABLE security.securitytokenssecuritytoken
-    ADD CONSTRAINT fk7d5c4foji5ocaal45ulv0uaxl FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk7d5c4foji5ocaal45ulv0uaxl FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10971,7 +10971,7 @@ ALTER TABLE security.securitytokenssecuritytoken
 --
 
 ALTER TABLE security.securitytoken
-    ADD CONSTRAINT fk7oknl73tuuwwt63nkgdcm4abq FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fk7oknl73tuuwwt63nkgdcm4abq FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -10980,7 +10980,7 @@ ALTER TABLE security.securitytoken
 --
 
 ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
-    ADD CONSTRAINT fk7thwp5xsmuj0tlkpvobud9um7 FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fk7thwp5xsmuj0tlkpvobud9um7 FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -10989,7 +10989,7 @@ ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
 --
 
 ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
-    ADD CONSTRAINT fk8ts5kdhf2u71ss5se0eydoyx5 FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fk8ts5kdhf2u71ss5se0eydoyx5 FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -10998,7 +10998,7 @@ ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
 --
 
 ALTER TABLE security.securitytokenxsecuritytoken
-    ADD CONSTRAINT fkaa10y63not65gkhd88hn83qke FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkaa10y63not65gkhd88hn83qke FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -11007,7 +11007,7 @@ ALTER TABLE security.securitytokenxsecuritytoken
 --
 
 ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
-    ADD CONSTRAINT fkamoh9xumd90l12fw52p4t2lr1 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkamoh9xumd90l12fw52p4t2lr1 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -11016,7 +11016,7 @@ ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
 --
 
 ALTER TABLE security.securitytokenxclassification
-    ADD CONSTRAINT fkbeh76kxkmk54rmc3f6m4wsjaf FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkbeh76kxkmk54rmc3f6m4wsjaf FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -11025,7 +11025,7 @@ ALTER TABLE security.securitytokenxclassification
 --
 
 ALTER TABLE security.securitytokenxsecuritytoken
-    ADD CONSTRAINT fkbi1t0uojqlur84bdht26o1b9a FOREIGN KEY (childsecuritytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkbi1t0uojqlur84bdht26o1b9a FOREIGN KEY (childsecuritytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -11034,7 +11034,7 @@ ALTER TABLE security.securitytokenxsecuritytoken
 --
 
 ALTER TABLE security.securitytokenssecuritytoken
-    ADD CONSTRAINT fkbohmlwb2yuw6vjbohxmmuhu2u FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkbohmlwb2yuw6vjbohxmmuhu2u FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -11043,7 +11043,7 @@ ALTER TABLE security.securitytokenssecuritytoken
 --
 
 ALTER TABLE security.securitytokenxclassificationsecuritytoken
-    ADD CONSTRAINT fkctvl0v696371fygrxpr48xfh6 FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkctvl0v696371fygrxpr48xfh6 FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -11052,7 +11052,7 @@ ALTER TABLE security.securitytokenxclassificationsecuritytoken
 --
 
 ALTER TABLE security.securitytoken
-    ADD CONSTRAINT fkdxgncdf26cjimvl7qyfqcpv5l FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkdxgncdf26cjimvl7qyfqcpv5l FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -11061,7 +11061,7 @@ ALTER TABLE security.securitytoken
 --
 
 ALTER TABLE security.securitytokenxclassificationsecuritytoken
-    ADD CONSTRAINT fke3gxxm2i6buv2rvlr17em38aj FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fke3gxxm2i6buv2rvlr17em38aj FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -11070,7 +11070,7 @@ ALTER TABLE security.securitytokenxclassificationsecuritytoken
 --
 
 ALTER TABLE security.securitytokenxclassification
-    ADD CONSTRAINT fkf0ve8e1o43mpjqbkv0eor80ks FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkf0ve8e1o43mpjqbkv0eor80ks FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -11079,7 +11079,7 @@ ALTER TABLE security.securitytokenxclassification
 --
 
 ALTER TABLE security.securitytokenxsecuritytoken
-    ADD CONSTRAINT fkfcmwpt8n1j6p4l9y51o4s4b99 FOREIGN KEY (classificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkfcmwpt8n1j6p4l9y51o4s4b99 FOREIGN KEY (classificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -11088,7 +11088,7 @@ ALTER TABLE security.securitytokenxsecuritytoken
 --
 
 ALTER TABLE security.securitytoken
-    ADD CONSTRAINT fkg5dnn3ygqgg2j80h4ijca6kdp FOREIGN KEY (securitytokenclassificationid, warehousecreateddate) REFERENCES classification.classification (classificationid, warehousecreateddate);
+    ADD CONSTRAINT fkg5dnn3ygqgg2j80h4ijca6kdp FOREIGN KEY (securitytokenclassificationid, warehousefromdate) REFERENCES classification.classification (classificationid, warehousefromdate);
 
 
 --
@@ -11097,7 +11097,7 @@ ALTER TABLE security.securitytoken
 --
 
 ALTER TABLE security.securitytokenssecuritytoken
-    ADD CONSTRAINT fkgm9ke6kkuxlw3dm67iseaofu8 FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkgm9ke6kkuxlw3dm67iseaofu8 FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11106,7 +11106,7 @@ ALTER TABLE security.securitytokenssecuritytoken
 --
 
 ALTER TABLE security.securitytokenxsecuritytoken
-    ADD CONSTRAINT fkh8wabwfov1k3ah9r2jmm11fg8 FOREIGN KEY (parentsecuritytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkh8wabwfov1k3ah9r2jmm11fg8 FOREIGN KEY (parentsecuritytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -11115,7 +11115,7 @@ ALTER TABLE security.securitytokenxsecuritytoken
 --
 
 ALTER TABLE security.securitytokenxsecuritytoken
-    ADD CONSTRAINT fkix4kxmf6f9elii179h4fv9opk FOREIGN KEY (activeflagid, warehousecreateddate) REFERENCES dbo.activeflag (activeflagid, warehousecreateddate);
+    ADD CONSTRAINT fkix4kxmf6f9elii179h4fv9opk FOREIGN KEY (activeflagid, warehousefromdate) REFERENCES dbo.activeflag (activeflagid, warehousefromdate);
 
 
 --
@@ -11124,7 +11124,7 @@ ALTER TABLE security.securitytokenxsecuritytoken
 --
 
 ALTER TABLE security.securitytokenxclassification
-    ADD CONSTRAINT fkiy9192vtwu1t1tucigro1dhbr FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fkiy9192vtwu1t1tucigro1dhbr FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -11133,7 +11133,7 @@ ALTER TABLE security.securitytokenxclassification
 --
 
 ALTER TABLE security.securitytokenxsecuritytoken
-    ADD CONSTRAINT fkkhrctfxn8jbkmugeuq13or9y2 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkkhrctfxn8jbkmugeuq13or9y2 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11142,7 +11142,7 @@ ALTER TABLE security.securitytokenxsecuritytoken
 --
 
 ALTER TABLE security.securitytokenxclassification
-    ADD CONSTRAINT fkkpec2fqi1saqvfqyim4qibvhc FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkkpec2fqi1saqvfqyim4qibvhc FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11151,7 +11151,7 @@ ALTER TABLE security.securitytokenxclassification
 --
 
 ALTER TABLE security.securitytokenxsecuritytoken
-    ADD CONSTRAINT fklyogqrmsivjjwwmqyhs3w8eey FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fklyogqrmsivjjwwmqyhs3w8eey FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11160,7 +11160,7 @@ ALTER TABLE security.securitytokenxsecuritytoken
 --
 
 ALTER TABLE security.securitytokenxclassificationsecuritytoken
-    ADD CONSTRAINT fkmvagw1psni1acp68r86p98326 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkmvagw1psni1acp68r86p98326 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11169,7 +11169,7 @@ ALTER TABLE security.securitytokenxclassificationsecuritytoken
 --
 
 ALTER TABLE security.securitytokenssecuritytoken
-    ADD CONSTRAINT fkn5jt48ip0t79bbac760wnpk4u FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkn5jt48ip0t79bbac760wnpk4u FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11178,7 +11178,7 @@ ALTER TABLE security.securitytokenssecuritytoken
 --
 
 ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
-    ADD CONSTRAINT fkr9dd79mvxphy35j0l30f60wjo FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkr9dd79mvxphy35j0l30f60wjo FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11187,7 +11187,7 @@ ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
 --
 
 ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
-    ADD CONSTRAINT fkraqvstjiad8yqfg3be6ae1e1r FOREIGN KEY (systemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkraqvstjiad8yqfg3be6ae1e1r FOREIGN KEY (systemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11196,7 +11196,7 @@ ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
 --
 
 ALTER TABLE security.securitytokenxclassification
-    ADD CONSTRAINT fkrct8kx4cxa9ys52h7kp02yda0 FOREIGN KEY (originalsourcesystemid, warehousecreateddate) REFERENCES dbo.systems (systemid, warehousecreateddate);
+    ADD CONSTRAINT fkrct8kx4cxa9ys52h7kp02yda0 FOREIGN KEY (originalsourcesystemid, warehousefromdate) REFERENCES dbo.systems (systemid, warehousefromdate);
 
 
 --
@@ -11205,7 +11205,7 @@ ALTER TABLE security.securitytokenxclassification
 --
 
 ALTER TABLE security.securitytokenxclassificationsecuritytoken
-    ADD CONSTRAINT fkrde1i5gxqtmm8pxu5g9lwepd2 FOREIGN KEY (securitytokenxclassificationid, warehousecreateddate) REFERENCES security.securitytokenxclassification (securitytokenxclassificationid, warehousecreateddate);
+    ADD CONSTRAINT fkrde1i5gxqtmm8pxu5g9lwepd2 FOREIGN KEY (securitytokenxclassificationid, warehousefromdate) REFERENCES security.securitytokenxclassification (securitytokenxclassificationid, warehousefromdate);
 
 
 --
@@ -11214,7 +11214,7 @@ ALTER TABLE security.securitytokenxclassificationsecuritytoken
 --
 
 ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
-    ADD CONSTRAINT fks48ohap0caelpi8nu60sp55i6 FOREIGN KEY (securitytokenxsecuritytokenid, warehousecreateddate) REFERENCES security.securitytokenxsecuritytoken (securitytokenxsecuritytokenid, warehousecreateddate);
+    ADD CONSTRAINT fks48ohap0caelpi8nu60sp55i6 FOREIGN KEY (securitytokenxsecuritytokenid, warehousefromdate) REFERENCES security.securitytokenxsecuritytoken (securitytokenxsecuritytokenid, warehousefromdate);
 
 
 --
@@ -11223,7 +11223,7 @@ ALTER TABLE security.securitytokensxsecuritytokensecuritytoken
 --
 
 ALTER TABLE security.securitytokenssecuritytoken
-    ADD CONSTRAINT fksoxo8an11ilt212h41x4c9ofj FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fksoxo8an11ilt212h41x4c9ofj FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -11232,7 +11232,7 @@ ALTER TABLE security.securitytokenssecuritytoken
 --
 
 ALTER TABLE security.securitytoken
-    ADD CONSTRAINT fksqp2hjm3vhxqy62do1twwtrmf FOREIGN KEY (enterpriseid, warehousecreateddate) REFERENCES dbo.enterprise (enterpriseid, warehousecreateddate);
+    ADD CONSTRAINT fksqp2hjm3vhxqy62do1twwtrmf FOREIGN KEY (enterpriseid, warehousefromdate) REFERENCES dbo.enterprise (enterpriseid, warehousefromdate);
 
 
 --
@@ -11241,7 +11241,7 @@ ALTER TABLE security.securitytoken
 --
 
 ALTER TABLE security.securitytokenxclassification
-    ADD CONSTRAINT fktis44ugn011fdb281jb5onjsv FOREIGN KEY (securitytokenid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fktis44ugn011fdb281jb5onjsv FOREIGN KEY (securitytokenid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --
@@ -11250,7 +11250,7 @@ ALTER TABLE security.securitytokenxclassification
 --
 
 ALTER TABLE security.securitytokenssecuritytoken
-    ADD CONSTRAINT fkujfypgbk5b3c90rftiwmwv0m FOREIGN KEY (securitytokentoid, warehousecreateddate) REFERENCES security.securitytoken (securitytokenid, warehousecreateddate);
+    ADD CONSTRAINT fkujfypgbk5b3c90rftiwmwv0m FOREIGN KEY (securitytokentoid, warehousefromdate) REFERENCES security.securitytoken (securitytokenid, warehousefromdate);
 
 
 --

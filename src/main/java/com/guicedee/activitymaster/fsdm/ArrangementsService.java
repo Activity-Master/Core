@@ -101,7 +101,7 @@ public class ArrangementsService
             Arrangement arrangement = new Arrangement();
             arrangement.setId(key != null ? key : UUID.randomUUID());
             arrangement.setSystemID(system);
-            arrangement.setOriginalSourceSystemID(system);
+            arrangement.setOriginalSourceSystemID(system.getId());
             arrangement.setEnterpriseID(system.getEnterpriseID());
             IActiveFlagService<?> activeFlagService = IGuiceContext.get(IActiveFlagService.class);
             IActiveFlag<?, ?> activeFlag = activeFlagService.getActiveFlag(system.getEnterprise());
@@ -156,7 +156,7 @@ public class ArrangementsService
             xr.setName(type);
             xr.setDescription(type);
             xr.setSystemID(system);
-            xr.setOriginalSourceSystemID(system);
+            xr.setOriginalSourceSystemID(system.getId());
             xr.setEnterpriseID(enterprise);
             IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
             IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);

@@ -12,7 +12,7 @@ import java.util.UUID;
 public class ActiveFlagQueryBuilder
 		extends QueryBuilderCore<ActiveFlagQueryBuilder, ActiveFlag, UUID>
 		implements IActiveFlagQueryBuilder<ActiveFlagQueryBuilder, ActiveFlag>,
-		           IQueryBuilderNamesAndDescriptions<ActiveFlagQueryBuilder,ActiveFlag,UUID>
+		           IQueryBuilderNamesAndDescriptions<ActiveFlagQueryBuilder,ActiveFlag,java.util.UUID>
 {
 	
 	@jakarta.validation.constraints.NotNull

@@ -49,7 +49,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 public class ArrangementType
 		extends WarehouseSCDTable<ArrangementType, ArrangementTypeQueryBuilder, UUID, ArrangementTypeSecurityToken>
 		implements IArrangementType<ArrangementType, ArrangementTypeQueryBuilder>,
-		           IWarehouseNameAndDescriptionTable<ArrangementType,ArrangementTypeQueryBuilder,UUID>
+		           IWarehouseNameAndDescriptionTable<ArrangementType,ArrangementTypeQueryBuilder,java.util.UUID>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

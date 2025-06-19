@@ -10,6 +10,6 @@ import java.util.UUID;
 public class ClassificationDataConceptQueryBuilder
 		extends QueryBuilderSCD<ClassificationDataConceptQueryBuilder, ClassificationDataConcept, UUID,ClassificationDataConceptSecurityTokenQueryBuilder>
 		implements IClassificationDataConceptQueryBuilder<ClassificationDataConceptQueryBuilder, ClassificationDataConcept>,
-		           IQueryBuilderNamesAndDescriptions<ClassificationDataConceptQueryBuilder,ClassificationDataConcept,UUID>
+		           IQueryBuilderNamesAndDescriptions<ClassificationDataConceptQueryBuilder,ClassificationDataConcept,java.util.UUID>
 {
 }

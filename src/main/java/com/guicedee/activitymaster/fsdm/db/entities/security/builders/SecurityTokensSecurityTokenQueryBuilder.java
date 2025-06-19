@@ -13,7 +13,7 @@ import static com.entityassist.enumerations.Operand.*;
 public class SecurityTokensSecurityTokenQueryBuilder
 		extends QueryBuilderSecurities<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, UUID>
 		implements IQueryBuilderEnterprise<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, UUID>,
-		           IQueryBuilderSCD<SecurityTokensSecurityTokenQueryBuilder,SecurityTokensSecurityToken,UUID>
+		           IQueryBuilderSCD<SecurityTokensSecurityTokenQueryBuilder,SecurityTokensSecurityToken,java.util.UUID>
 {
 	public SecurityTokensSecurityTokenQueryBuilder findBySecurityToken(SecurityToken fromToken, SecurityToken forToken)
 	{

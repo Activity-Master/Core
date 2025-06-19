@@ -25,7 +25,7 @@ public abstract class WarehouseClassificationRelationshipTypesTable<
 		S extends WarehouseCoreTable<S, ?, ?,?>,
 		J extends WarehouseClassificationRelationshipTypesTable<P, S, J, Q, I,QS>,
 		Q extends QueryBuilderRelationshipClassificationTypes<P, S, Q, J, I,?>,
-		I extends UUID,
+		I extends java.util.UUID,
 		QS extends WarehouseSecurityTable<QS,?,I>>
 		extends WarehouseClassificationRelationshipTable<P, S, J, Q, I,QS>
 		implements IWarehouseRelationshipClassificationTypeTable<J, Q, P, S, I,QS>

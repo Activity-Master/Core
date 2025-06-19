@@ -18,13 +18,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import com.guicedee.client.IGuiceContext;
 import lombok.extern.java.Log;
-import org.jboss.logmanager.Level;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
@@ -66,7 +66,7 @@ public class RulesService
 			
 			rules.setEnterpriseID(enterprise);
 			rules.setSystemID(system);
-			rules.setOriginalSourceSystemID(system);
+			rules.setOriginalSourceSystemID(system.getId());
 			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 			IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 			rules.setActiveFlagID(activeFlag);
@@ -177,7 +177,7 @@ public class RulesService
 				IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 				IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
 				et.setActiveFlagID(activeFlag);
-				et.setOriginalSourceSystemID(system);
+				et.setOriginalSourceSystemID(system.getId());
 				et.persist();
 				et.createDefaultSecurity(system, identityToken);
 				

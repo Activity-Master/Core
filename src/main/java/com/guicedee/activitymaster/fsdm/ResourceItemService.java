@@ -94,7 +94,7 @@ public class ResourceItemService
             xr.setId(key);
             xr.setName(value);
             xr.setDescription(value);
-            xr.setOriginalSourceSystemID(system);
+            xr.setOriginalSourceSystemID(system.getId());
             xr.setSystemID(system);
             xr.setEnterpriseID(enterprise);
             IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
@@ -177,7 +177,7 @@ public class ResourceItemService
         Future<ResourceItem> future = vertx.executeBlocking(TransactionalCallable.of(() -> {
                     ResourceItem xr = new ResourceItem();
                     xr.setId(key);
-                    xr.setOriginalSourceSystemID(system);
+                    xr.setOriginalSourceSystemID(system.getId());
                     xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
                     xr.setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(effectiveFromDate));
                     xr.setSystemID(system);
@@ -196,7 +196,7 @@ public class ResourceItemService
                     rid.setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
                     rid.setResourceItemData("".getBytes());
                     rid.setActiveFlagID(activeFlag);
-                    rid.setOriginalSourceSystemID(system);
+                    rid.setOriginalSourceSystemID(system.getId());
                     rid.setSystemID(system);
                     rid.setEnterpriseID(system.getEnterpriseID());
                     rid.persist();

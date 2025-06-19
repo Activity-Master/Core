@@ -9,6 +9,7 @@ import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
 import com.guicedee.guicedpersistence.db.DatabaseModule;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
 import java.util.Properties;
 
@@ -24,7 +25,7 @@ public class ActivityMasterDestinationDBModule
 	}
 	
 	@Override
-	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(ParsedPersistenceXmlDescriptor persistenceUnit, Properties properties)
+	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnitDescriptor persistenceUnit, Properties properties)
 	{
 /*		if (System.getProperty("fsdm_integratedSecurity") == null)
 		{

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>,
 		E extends WarehouseCoreTable<E, J, I,?>,
-		I extends UUID>
+		I extends java.util.UUID>
 		extends QueryBuilderDefault<J, E, I>
 {
 }

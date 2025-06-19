@@ -26,7 +26,7 @@ public abstract class QueryBuilderRelationshipClassification<
 		S extends WarehouseCoreTable<S, ?, ?,?>,
 		J extends QueryBuilderRelationshipClassification<P, S, J, E, I,QS>,
 		E extends WarehouseClassificationRelationshipTable<P, S, E, J, I,?>,
-		I extends UUID,
+		I extends java.util.UUID,
 		QS extends QueryBuilderSecurities<QS,?,I>>
 		extends QueryBuilderRelationship<P, S, J, E, I,QS>
 		implements IQueryBuilderRelationships<J, E, P, S, I>,

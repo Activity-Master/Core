@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.*;
 
-public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends UUID>
+public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends java.util.UUID>
 		extends QueryBuilder<J, E, I>
 {
 	@Override

@@ -17,7 +17,7 @@ import static com.entityassist.enumerations.Operand.*;
 public class GeographyQueryBuilder
 		extends QueryBuilderSCD<GeographyQueryBuilder, Geography, UUID,GeographySecurityTokenQueryBuilder>
 		implements IGeographyQueryBuilder<GeographyQueryBuilder, Geography>,
-		           IQueryBuilderNamesAndDescriptions<GeographyQueryBuilder,Geography,UUID>
+		           IQueryBuilderNamesAndDescriptions<GeographyQueryBuilder,Geography,java.util.UUID>
 {
 	
 	@jakarta.validation.constraints.NotNull

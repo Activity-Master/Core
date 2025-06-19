@@ -54,7 +54,6 @@ public class DayParts extends BaseEntity<DayParts, DayPartsQueryBuilder, Integer
 	@Basic(optional = false)
 	@NotNull
 	@Column(nullable = false)
-	@OrderBy
 	private int dayPartSortOrder;
 	@OneToMany(cascade = CascadeType.ALL,
 	           mappedBy = "dayPartID",

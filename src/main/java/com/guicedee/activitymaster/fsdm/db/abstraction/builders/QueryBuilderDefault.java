@@ -12,51 +12,63 @@ import java.util.UUID;
 
 
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
-		E extends WarehouseBaseTable<E, J, I>,
-		I extends UUID>
-		extends QueryBuilderSCD<J, E, I>
-		implements IQueryBuilderDefault<J, E, I>
+        E extends WarehouseBaseTable<E, J, I>,
+        I extends java.util.UUID>
+        extends QueryBuilderSCD<J, E, I>
+        implements IQueryBuilderDefault<J, E, I>
 {
-	public QueryBuilderDefault()
-	{
-		//setRunDetached(true);
-		setReturnFirst(true);
-		//setUseDirectConnection(true);
-		//	setDetach(true);
-	}
-	
-	@Override
-	public boolean onCreate(E entity)
-	{
-		if (entity.getId() == null)
-		{
-			//noinspection unchecked
-			entity.setId((I) UUID.randomUUID());
-		}
-		return super.onCreate(entity);
-	}
-	
-	@Override
-	public @NotNull J persist(E entity)
-	{
-		return super.persist(entity);
-	}
-	
-	@Override
-	public EntityManager getEntityManager()
-	{
-		try
-		{
-			return com.guicedee.client.IGuiceContext.get(EntityManager.class);
-		}catch (ProvisionException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-	
-	@Override
-	public boolean isIdGenerated()
-	{
-		return false;
-	}
+    public QueryBuilderDefault()
+    {
+        //setRunDetached(true);
+        setReturnFirst(true);
+        //setUseDirectConnection(true);
+        //	setDetach(true);
+    }
+
+    @Override
+    public boolean onCreate(E entity)
+    {
+        if (entity.getId() == null)
+        {
+            //noinspection unchecked
+            entity.setId((I) UUID.randomUUID());
+        }
+        if (entity.getWarehouseFromDate() == null)
+        {
+            if (entity.getEffectiveFromDate() != null)
+            {
+                entity.setWarehouseFromDate(entity.getEffectiveFromDate().toLocalDate());
+            }
+            else
+            {
+                entity.setWarehouseFromDate(java.time.LocalDate.now());
+            }
+        }
+        return super.onCreate(entity);
+    }
+
+    @Override
+    public @NotNull J persist(E entity)
+    {
+        return super.persist(entity);
+    }
+
+    @Override
+    public EntityManager getEntityManager()
+    {
+        try
+        {
+            return com.guicedee.client.IGuiceContext.get(EntityManager.class);
+        }
+        catch (ProvisionException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean isIdGenerated()
+    {
+        return false;
+    }
 }

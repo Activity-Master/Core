@@ -28,12 +28,12 @@ BEGIN
                     'ALTER TABLE %I.%I ALTER COLUMN %I DROP NOT NULL;',
                     schema_name, table_name, target_column_name
                            );
-            EXECUTE alter_query;
-            RAISE NOTICE 'Column %.%.% made nullable.', schema_name, table_name, target_column_name;
+            --EXECUTE alter_query;
+            RAISE NOTICE 'Column %.%.% being updated.', schema_name, table_name, target_column_name;
 
             -- Update empty strings to NULL
             update_query := FORMAT(
-                    'UPDATE %I.%I SET %I = NULL WHERE %I = '''';',
+                    'UPDATE %I.%I SET %I = ''00000000-0000-0000-0000-000000000000'' WHERE %I = '''';',
                     schema_name, table_name, target_column_name, target_column_name
                             );
             EXECUTE update_query;
