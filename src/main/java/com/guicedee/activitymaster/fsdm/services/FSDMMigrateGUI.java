@@ -109,7 +109,7 @@ public class FSDMMigrateGUI {
 
         gbc.gridx = 1;
         sourceClusterNameField = new JTextField(30); // New text field for source cluster name
-        sourceClusterNameField.setText("UWEv8");
+        sourceClusterNameField.setText("UWEv9");
         configPanel.add(sourceClusterNameField, gbc);
 
 
@@ -176,7 +176,20 @@ public class FSDMMigrateGUI {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JPanel buttonPanel2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JPanel buttonsContainer = new JPanel(new GridLayout(3, 1));
+        // Create a new panel for the "Run All" button
+        JPanel runAllPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton runAllButton = new JButton("Run All");
+        runAllButton.setFont(new Font(runAllButton.getFont().getName(), Font.BOLD, 14));
+        runAllButton.setBackground(new Color(0, 153, 0)); // Green background
+        runAllButton.setForeground(Color.WHITE); // White text
+        runAllButton.setPreferredSize(new Dimension(150, 40));
+        runAllPanel.add(runAllButton);
+
+        // Add action listener for the "Run All" button
+        runAllButton.addActionListener(e -> runAllFunctions());
+
+        JPanel buttonsContainer = new JPanel(new GridLayout(4, 1));
+        buttonsContainer.add(runAllPanel);
         buttonsContainer.add(buttonPanel);
         buttonsContainer.add(buttonPanel2);
 
@@ -191,6 +204,7 @@ public class FSDMMigrateGUI {
 
         JButton partitionDbButton = new JButton("Partition DB");
         JButton structureDbButton = new JButton("Structure DB");
+        JButton structureFsdmDbButton = new JButton("Structure FSDM DB");
 
         buttonPanel.add(backupDbButton);
 
@@ -218,6 +232,7 @@ public class FSDMMigrateGUI {
         buttonPanel2.add(partitionDbButton);
         buttonPanel2.add(restoreDataButton);
         buttonPanel2.add(structureDbButton);
+        buttonPanel2.add(structureFsdmDbButton);
 
         backupDbButton.addActionListener(new ActionListener() {
             @Override
@@ -244,6 +259,7 @@ public class FSDMMigrateGUI {
         createDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_fsdm.sql", "Create Database",true));
         partitionDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_partitions.sql", "Partition Database",true));
         structureDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_structure.sql", "Structure Database",true));
+        structureFsdmDbButton.addActionListener(e -> executeSQLScript("META-INF/postgres_fsdm_structure.sql", "Structure Database",true));
 
         removeDuplicateIndexes.addActionListener(e -> executeSQLScript("META-INF/scripts/2026_remove_duplicate_indexes.sql", "Remove Duplicate Indexes",false));
         addDateColumns.addActionListener(e -> executeSQLScript("META-INF/scripts/2026_migration_prep.sql", "Add Date Columns",false));
@@ -566,4 +582,360 @@ public class FSDMMigrateGUI {
         worker.execute(); // Start the SwingWorker
     }
 
+    /**
+     * Executes all migration functions in the specified order
+     */
+    private void runAllFunctions() {
+        appendLog("Starting Run All process...");
+
+        // Disable the Run All button to prevent multiple clicks
+        JButton source = (JButton) SwingUtilities.getAncestorOfClass(JPanel.class, 
+                                  SwingUtilities.getDeepestComponentAt(
+                                      SwingUtilities.getRootPane(logArea).getContentPane(), 
+                                      0, 0))
+                                  .getComponent(0);
+        source.setEnabled(false);
+
+        // Create a sequential executor for the tasks
+        executeSequentialTasks(0, () -> {
+            // Re-enable the Run All button when all tasks are complete
+            source.setEnabled(true);
+            appendLog("Run All process finished.");
+            progressBar.setVisible(false);
+            progressBar.setIndeterminate(false);
+        });
+    }
+
+    /**
+     * Executes tasks sequentially with proper handling of asynchronous operations
+     * @param taskIndex The index of the current task
+     * @param onComplete Callback to run when all tasks are complete
+     */
+    private void executeSequentialTasks(int taskIndex, Runnable onComplete) {
+        // Define all tasks in the sequence
+        Runnable[] tasks = new Runnable[] {
+            // Task 1: Backup DB
+            () -> {
+                appendLog("Step 1/12: Backing up database...");
+                executeWithCallback(() -> {
+                    String command = "pg_dump.exe --file \"" + backupDirectory.getText() + "\\fullbackup.backup\" --host \"localhost\" --port \"5432\" --username \"postgres\" --no-password --format=c --large-objects --verbose \"" + sourceDbNameField.getText() + "\"";
+
+                    try {
+                        ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+                        processBuilder.environment().put("PGPASSWORD", sourcePasswordField.getText());
+                        processBuilder.redirectErrorStream(true);
+                        Process process = processBuilder.start();
+
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                final String logLine = line;
+                                SwingUtilities.invokeLater(() -> appendLog(logLine));
+                            }
+
+                            int exitCode = process.waitFor();
+                            final String resultMessage = exitCode == 0 ? 
+                                "Full backup completed successfully." : 
+                                "Full backup failed with exit code: " + exitCode;
+
+                            SwingUtilities.invokeLater(() -> appendLog(resultMessage));
+                        }
+                    } catch (Exception ex) {
+                        final String errorMsg = "Error during full backup: " + ex.getMessage();
+                        SwingUtilities.invokeLater(() -> appendLog(errorMsg));
+                    }
+                }, () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 2: Remove Source Constraints
+            () -> {
+                appendLog("Step 2/12: Removing source constraints...");
+                executeSQLScriptWithCallback("META-INF/scripts/drop_foreign_keys.sql", "Remove Constraints", false,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 3: Remove Indexes
+            () -> {
+                appendLog("Step 3/12: Removing indexes...");
+                executeSQLScriptWithCallback("META-INF/scripts/2026_remove_duplicate_indexes.sql", "Remove Duplicate Indexes", false,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 4: Delete Indexes
+            () -> {
+                appendLog("Step 4/12: Deleting indexes...");
+                executeSQLScriptWithCallback("META-INF/scripts/delete_indexes.sql", "Delete Indexes", false,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 5: Update Origin Source IDs
+            () -> {
+                appendLog("Step 5/12: Updating origin source IDs...");
+                executeSQLScriptWithCallback("META-INF/scripts/update_orirgin_system_id.sql", "Update Origin System IDs", false,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 6: Update VARCHAR to UUID
+            () -> {
+                appendLog("Step 6/12: Updating VARCHAR to UUID...");
+                executeSQLScriptWithCallback("META-INF/scripts/update_to_uuid.sql", "Update UUIDs", false,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 7: Configure for 2026
+            () -> {
+                appendLog("Step 7/12: Configuring for 2026...");
+                executeSQLScriptWithCallback("META-INF/scripts/2026_migration_prep.sql", "Fix Date Columns", false,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 7.1: Configure for 2026
+            () -> {
+                appendLog("Step 7/12: Configuring for 2026...");
+                executeSQLScriptWithCallback("META-INF/scripts/add_warehousecreatedate_column.sql", "Add Date Columns", false,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+            // Task 7.2: Configure for 2026
+            () -> {
+                appendLog("Step 7/12: Structure FSDM...");
+                executeSQLScriptWithCallback("META-INF/scripts/postgres_fsdm_structure.sql", "Structure FSDM", false,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 8: Backup Data
+            () -> {
+                appendLog("Step 8/12: Backing up data...");
+                executeWithCallback(() -> {
+                    String command = "pg_dump.exe --file \"" + backupDirectory.getText() + "\\data.backup\" --host \"localhost\" --port \"5432\" --username \"" + sourceUserField.getText()+
+                        "\" --no-password --format=t --large-objects --data-only --no-owner --no-privileges --no-tablespaces --no-unlogged-table-data --no-comments --no-publications --no-subscriptions --no-security-labels --no-toast-compression --no-table-access-method --inserts --on-conflict-do-nothing --column-inserts --verbose --exclude-schema \"information_schema\" --exclude-schema \"postgres\" --exclude-schema \"pg_toast\" \"" + sourceDbNameField.getText() + "\"";
+
+                    try {
+                        ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+                        processBuilder.redirectErrorStream(true);
+                        processBuilder.environment().put("PGPASSWORD", sourcePasswordField.getText());
+                        Process process = processBuilder.start();
+
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                final String logLine = line;
+                                SwingUtilities.invokeLater(() -> appendLog(logLine));
+                            }
+
+                            int exitCode = process.waitFor();
+                            final String resultMessage = exitCode == 0 ? 
+                                "Backup completed successfully." : 
+                                "Backup failed with exit code: " + exitCode;
+
+                            SwingUtilities.invokeLater(() -> appendLog(resultMessage));
+                        }
+                    } catch (Exception ex) {
+                        final String errorMsg = "Error during backup: " + ex.getMessage();
+                        SwingUtilities.invokeLater(() -> appendLog(errorMsg));
+                    }
+                }, () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 9: Create DB
+            () -> {
+                appendLog("Step 9/12: Creating database...");
+                executeSQLScriptWithCallback("META-INF/postgres_fsdm.sql", "Create Database", true,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 10: Partition DB
+            () -> {
+                appendLog("Step 10/12: Partitioning database...");
+                executeSQLScriptWithCallback("META-INF/postgres_partitions.sql", "Partition Database", true,
+                    () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 11: Restore Data
+            () -> {
+                appendLog("Step 11/12: Restoring data...");
+                executeWithCallback(() -> {
+                    String command = "pg_restore.exe --host \"localhost\" --port \"5432\" --username \"" + destUserField.getText()+ "\"" +
+                        " --no-password --dbname \"" + destDbNameField.getText()+ "\" --data-only --verbose \"" + backupDirectory.getText() + "\\data.backup" + "\"";
+
+                    try {
+                        ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+                        processBuilder.redirectErrorStream(true);
+                        processBuilder.environment().put("PGPASSWORD", sourcePasswordField.getText());
+                        Process process = processBuilder.start();
+
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                final String logLine = line;
+                                SwingUtilities.invokeLater(() -> appendLog(logLine));
+                            }
+
+                            int exitCode = process.waitFor();
+                            final String resultMessage = exitCode == 0 ? 
+                                "Restore completed successfully." : 
+                                "Restore failed with exit code: " + exitCode;
+
+                            SwingUtilities.invokeLater(() -> appendLog(resultMessage));
+                        }
+                    } catch (Exception ex) {
+                        final String errorMsg = "Error during restore: " + ex.getMessage();
+                        SwingUtilities.invokeLater(() -> appendLog(errorMsg));
+                    }
+                }, () -> executeSequentialTasks(taskIndex + 1, onComplete));
+            },
+
+            // Task 12: Structure DB
+            () -> {
+                appendLog("Step 12/12: Structuring database...");
+                executeSQLScriptWithCallback("META-INF/postgres_structure.sql", "Structure Database", true,
+                    () -> {
+                        appendLog("Run All process completed successfully!");
+                        onComplete.run();
+                    });
+            }
+        };
+
+        // Execute the current task if within bounds
+        if (taskIndex < tasks.length) {
+            tasks[taskIndex].run();
+        } else {
+            // All tasks completed
+            onComplete.run();
+        }
+    }
+
+    /**
+     * Helper method to execute a task with a callback when complete
+     */
+    private void executeWithCallback(Runnable task, Runnable callback) {
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                task.run();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                callback.run();
+            }
+        };
+        worker.execute();
+    }
+
+    /**
+     * Helper method to execute an SQL script with a callback when complete
+     */
+    private void executeSQLScriptWithCallback(String filePath, String actionName, boolean destination, Runnable callback) {
+        // Use SwingWorker to handle the execution asynchronously
+        SwingWorker<Void, String> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                // Adjust this if `psql` is not in the system's PATH.
+                String psqlPath = "psql.exe";
+                String dbName = destination ? destDbNameField.getText() : sourceDbNameField.getText();
+                String host = "localhost";
+                String port = "5432";
+                String username = destination ? destUserField.getText() : sourceUserField.getText();
+                String password =  destination ? destPasswordField.getText() : sourcePasswordField.getText();
+
+                try {
+                    publish("Starting " + actionName + "...");
+                    setProgress(0); // Reset progress to 0
+
+                    // Locate the SQL file (it might be in the classpath or filesystem)
+                    InputStream sqlFileInputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+                    File sqlFile;
+
+                    if (sqlFileInputStream != null) {
+                        // File is in the JAR or classpath. Extract to a temporary file.
+                        publish("Extracting SQL file from classpath...");
+                        sqlFile = File.createTempFile("temp-", ".sql");
+                        sqlFile.deleteOnExit();
+
+                        try (FileOutputStream outputStream = new FileOutputStream(sqlFile)) {
+                            byte[] buffer = new byte[1024];
+                            int bytesRead;
+                            while ((bytesRead = sqlFileInputStream.read(buffer)) != -1) {
+                                outputStream.write(buffer, 0, bytesRead);
+                            }
+                        }
+                        publish("SQL file extracted to: " + sqlFile.getAbsolutePath());
+                    } else {
+                        // File is expected to be on the filesystem.
+                        sqlFile = new File(filePath);
+
+                        if (!sqlFile.exists()) {
+                            publish("Error: File not found: " + filePath);
+                            return null;
+                        }
+                    }
+
+                    // Run the `psql` command
+                    String command = String.format(
+                            "%s --host=%s --port=%s --username=%s --dbname=%s --file=\"%s\"",
+                            psqlPath, host, port, username, dbName, sqlFile.getAbsolutePath()
+                    );
+
+                    ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+                    // Set environment variable for password (if needed)
+                    processBuilder.environment().put("PGPASSWORD", password);
+
+                    processBuilder.redirectErrorStream(true);
+                    Process process = processBuilder.start();
+
+                    // Capture and log the process output
+                    try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
+                    {
+                        String line;
+
+                        // Assign an arbitrary progress interval while reading the output
+                        int totalLines = 0; // Tracks line count while reading output
+                        while ((line = reader.readLine()) != null)
+                        {
+                            totalLines++;
+                            publish(line);
+                            if (totalLines % 10 == 0)
+                            { // Update progress every 10 lines
+                                setProgress(Math.min(totalLines, 100)); // Smoothly update progress to a max of 100
+                            }
+                        }
+
+                        int exitCode = process.waitFor();
+                        if (exitCode == 0)
+                        {
+                            publish(actionName + " completed successfully.");
+                        }
+                        else
+                        {
+                            publish(actionName + " failed with exit code: " + exitCode);
+                        }
+                    }
+                    setProgress(100); // Complete progress on success
+
+                } catch (Exception ex) {
+                    publish("Error during " + actionName + ": " + ex.getMessage());
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void process(java.util.List<String> chunks) {
+                // This runs on the EDT to update the GUI with messages
+                for (String message : chunks) {
+                    appendLog(message); // Append messages to the log text area
+                }
+            }
+
+            @Override
+            protected void done() {
+                // Call the callback when done
+                callback.run();
+            }
+        };
+
+        // Start the worker
+        worker.execute();
+    }
 }

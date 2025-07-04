@@ -118,7 +118,8 @@ public abstract class WarehouseSCDTable<
 		return this.systemID;
 	}
 	
-	public J setSystemID(ISystems<?, ?> systemID)
+	@SuppressWarnings("unchecked")
+    public J setSystemID(ISystems<?, ?> systemID)
 	{
 		this.systemID = (Systems) systemID;
 		return (J) this;

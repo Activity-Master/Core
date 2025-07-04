@@ -8,6 +8,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
+import io.vertx.core.Future;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.ResourceItemClassifications.*;
@@ -18,13 +19,13 @@ public class ClassificationBaseSetup implements ISystemUpdate
 {
 	@Inject
 	private IClassificationService<?> service;
-	
+
 	@Inject
 	@Named(ActivityMasterSystemName)
 	private ISystems<?,?> activityMasterSystem;
-	
+
 	@Override
-	public void update(IEnterprise<?,?> enterprise)
+	public Future<Boolean> update(IEnterprise<?,?> enterprise)
 	{
 		logProgress("Classifications System", "Loading Base Languages...", 1);
 		service.create(Languages, activityMasterSystem, DefaultClassifications.DefaultClassification);
@@ -33,7 +34,7 @@ public class ClassificationBaseSetup implements ISystemUpdate
 		service.create(ISO6392EnglishName, activityMasterSystem, Languages);
 		service.create(ISO6392FrenchName, activityMasterSystem, Languages);
 		service.create(ISO6392GermanName, activityMasterSystem, Languages);
-		
+
 		logProgress("Classifications System", "Loading Default Devices...", 1);
 		service.create(Hardware, activityMasterSystem);
 		service.create(Scanner, activityMasterSystem,Hardware);
@@ -42,6 +43,8 @@ public class ClassificationBaseSetup implements ISystemUpdate
 		service.create(Computer, activityMasterSystem,Hardware);
 		service.create(Desktop, activityMasterSystem,Computer);
 		service.create(Laptop, activityMasterSystem,Computer);
+
+		return Future.succeededFuture(true);
 	}
-	
+
 }

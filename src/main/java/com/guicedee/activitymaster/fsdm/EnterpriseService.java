@@ -21,6 +21,7 @@ import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.GuiceContext;
 import io.github.classgraph.ClassInfo;
+import io.vertx.core.Future;
 import jakarta.validation.constraints.NotNull;
 
 import javax.cache.annotation.CacheKey;
@@ -44,14 +45,14 @@ public class EnterpriseService
 {
 	@Inject
 	private ActivityMasterConfiguration configuration;
-	
+
 	private static final Logger log = Logger.getLogger(EnterpriseService.class.getName());
-	
+
 	public IEnterprise<?, ?> get()
 	{
 		return new Enterprise();
 	}
-	
+
 	@Transactional()
 	public Enterprise create(@NotNull String name, @NotNull String description)
 	{
@@ -59,7 +60,7 @@ public class EnterpriseService
 		Optional<Enterprise> exists = enterprise.builder()
 		                                        .withName(name)
 		                                        .get();
-		
+
 		if (exists.isEmpty())
 		{
 			enterprise.setName(name);
@@ -73,14 +74,14 @@ public class EnterpriseService
 		EnterpriseProvider.loadedEnterprise = enterprise;
 		return enterprise;
 	}
-	
+
 	@Override
 	public int loadUpdates(IEnterprise<?, ?> enterprise)
 	{
 		Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = getUpdates(enterprise);
-		
+
 		log.config(MessageFormat.format("There are {0} required updates", availableUpdates.size()));
-		
+
 		setCurrentTask(0);
 		int tasks = 0;
 		for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
@@ -89,16 +90,16 @@ public class EnterpriseService
 			tasks += aClass.getAnnotation(SortedUpdate.class)
 			               .taskCount();
 		}
-		
+
 		@SuppressWarnings({"unchecked"})
 		ISystems<?, ?> system = com.guicedee.client.IGuiceContext.get(ISystemsService.class)
 		                                                         .getActivityMaster(enterprise);
-		
+
 		@SuppressWarnings({"rawtypes", "unchecked"})
 		Set<IOnSystemUpdate> systemUpdateEventHandlers = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
-		
+
 		setTotalTasks(tasks);
-		
+
 		for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
 		{
 			Integer key = entry.getKey();
@@ -131,24 +132,26 @@ public class EnterpriseService
 		                                                                                        .format(LocalDate.now()));
 		return availableUpdates.size();
 	}
-	
+
 	@jakarta.transaction.Transactional
 	void updateLastUpdateDate(IEnterprise<?, ?> enterprise, ISystems<?, ?> system)
 	{
 		enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
 		                                                                                                           .format(LocalDate.now()), system);
 	}
-	
+
 	@Transactional()
 	void performUpdate(ISystemUpdate o, IEnterprise<?,?> enterprise)
 	{
 		@SuppressWarnings({ "unchecked"})
 		ISystems<?,?> system = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
-		o.update(enterprise);
+		Future<Boolean> updateFuture = o.update(enterprise);
+		// Wait for the future to complete to ensure sequential execution
+		updateFuture.result(); // This blocks until the future completes
 		enterprise.addClassification(UpdateClass.toString(), o.getClass()
 		                             .getCanonicalName(), system);
 	}
-	
+
 	@Override
 	public Set<String> getEnterpriseAppliedUpdates(IEnterprise<?,?> enterprise)
 	{
@@ -167,7 +170,7 @@ public class EnterpriseService
 		}
 		return set;
 	}
-	
+
 	@Override
 	@jakarta.transaction.Transactional
 	public Map<Integer, Class<? extends ISystemUpdate>> getUpdates(IEnterprise<?,?> enterprise)
@@ -179,13 +182,13 @@ public class EnterpriseService
 			{
 				continue;
 			}
-			
+
 			@SuppressWarnings("unchecked")
 			Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) classInfo.loadClass();
 			SortedUpdate du = clazz.getAnnotation(SortedUpdate.class);
 			availableUpdates.put(du.sortOrder(), clazz);
 		}
-		
+
 		Set<String> enterpriseAppliedUpdates = getEnterpriseAppliedUpdates(enterprise);
 		for (String enterpriseAppliedUpdate : enterpriseAppliedUpdates)
 		{
@@ -209,8 +212,8 @@ public class EnterpriseService
 		}
 		return applicableUpdates;
 	}
-	
-	
+
+
 	@Override
 	public Map<Integer, Class<? extends ISystemUpdate>> getAllUpdates()
 	{
@@ -221,7 +224,7 @@ public class EnterpriseService
 			{
 				continue;
 			}
-			
+
 			@SuppressWarnings("unchecked")
 			Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) classInfo.loadClass();
 			SortedUpdate du = clazz.getAnnotation(SortedUpdate.class);
@@ -247,7 +250,7 @@ public class EnterpriseService
 		                                                   .inDateRange()
 		                                                   .selectColumn(EnterpriseXClassification_.enterpriseID)
 		                                                   .getAll(UUID.class);
-		
+
 		EnterpriseQueryBuilder builder = new Enterprise().builder();
 		builder = builder.where(Enterprise_.id, InList, classy);
 		return new ArrayList<>(builder.getAll());
@@ -272,7 +275,7 @@ public class EnterpriseService
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Such Enterprise - " + name));
 	}
-	
+
 	@Transactional()
 	@Override
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
@@ -321,46 +324,46 @@ public class EnterpriseService
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Enterprise for the given UUID"));
 	}
-	
+
 	@Override
 	public IEnterprise<?,?> startNewEnterprise(String enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword)
 	{
 		return startNewEnterprise(enterpriseName, adminUserName, adminPassword, null);
 	}
-	
+
 	@Override
 	public IEnterprise<?,?> startNewEnterprise(String enterpriseName,
 	                                         @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier)
 	{
 		com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
 				.setSecurityEnabled(false);
-		
+
 		Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
-		
+
 		int totalTasks = allSystems.stream()
 		                           .mapToInt(IActivityMasterSystem::totalTasks)
 		                           .sum() + 1;
-		
+
 		logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks);
-		
+
 		Enterprise enterprise = installEnterprise(enterpriseName);
 		createNewEnterprise(enterprise);
-		
+
 		ISystems<?,?> activityMasterSystem = com.guicedee.client.IGuiceContext.get(ISystemsService.class).getActivityMaster(enterprise);
-		
-		
+
+
 		IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
 		passwordsService.createAdminAndCreatorUserForEnterprise(activityMasterSystem, adminUserName, adminPassword, uuidIdentifier);
 		wipeCaches();
-		
+
 		logProgress("Systems", "Running Systems Post Startups", 1);
-		
+
 		performPostStartup(enterprise);
 		return enterprise;
 	}
-	
-	
+
+
 	private Enterprise installEnterprise(String enterpriseName)
 	{
 		Enterprise enterprise = create(enterpriseName, enterpriseName);
@@ -368,7 +371,7 @@ public class EnterpriseService
 				.setApplicationEnterpriseName(enterpriseName);
 		return enterprise;
 	}
-	
+
 	@Override
 	public void createNewEnterprise(@NotNull IEnterprise<?,?> enterprise)
 	{
@@ -386,7 +389,7 @@ public class EnterpriseService
 	//	com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
 	//	                                 .setSecurityEnabled(true);
 	}
-	
+
 	@Transactional()
 	@Override
 	public boolean isEnterpriseReady()
@@ -402,7 +405,7 @@ public class EnterpriseService
 				return enterprise.builder()
 				                                   .hasClassification(EnterpriseClassifications.LastUpdateDate.toString(), system)
 				                                   .getCount() > 0;
-				
+
 			}
 			catch (SystemsException e)
 			{
@@ -415,7 +418,7 @@ public class EnterpriseService
 		}
 		return false;
 	}
-	
+
 	private void installSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		//then from classifications data service do both
@@ -436,40 +439,40 @@ public class EnterpriseService
 			}
 		}
 	}
-	
+
 	private void installSystem(IActivityMasterSystem<?> system, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Running System ", system.getClass()
 		                                        .getSimpleName());
 		performSystemInstall(enterprise, system);
 	}
-	
+
 
 	private void performSystemInstall( IEnterprise<?,?> enterprise, IActivityMasterSystem<?> allSystem)
 	{
 		String nameC = cleanName(allSystem.getClass()
 		                                  .getSimpleName());
-		
+
 		IActivityMasterSystem<?> registeredSystem = allSystem;//com.guicedee.client.IGuiceContext.get(allSystem.getClass());
-		
+
 		@SuppressWarnings({"rawtypes", "unchecked"})
 		Set<IOnSystemInstall> systemInstallEventListeners = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
 		for (IOnSystemInstall systemInstallEventListener : systemInstallEventListeners)
 		{
 			systemInstallEventListener.onSystemInstallStart(registeredSystem.getSystemName());
 		}
-		
+
 		ISystems<?, ?> registerSystem = registeredSystem.registerSystem(enterprise);
-		
+
 		registeredSystem.createDefaults(enterprise);
 		for (IOnSystemInstall a : systemInstallEventListeners)
 		{
 			a.onSystemInstallEnd(registeredSystem.getSystemName());
 		}
-		
+
 		logProgress("Installed System", nameC, 1);
 	}
-	
+
 	private void createBaseSystems( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Base Systems", "Initializing Base Systems");
@@ -483,7 +486,7 @@ public class EnterpriseService
 			performSystemInstall(enterprise, allSystem);
 		}
 	}
-	
+
 	private void createBase( Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Creating Core", "Initializing Core Systems");

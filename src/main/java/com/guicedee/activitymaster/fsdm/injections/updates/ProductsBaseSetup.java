@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.ProductClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
+import io.vertx.core.Future;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 
@@ -15,13 +16,13 @@ public class ProductsBaseSetup implements ISystemUpdate
 {
 	@Inject
 	private IClassificationService<?> service;
-	
+
 	@Inject
 	@Named(ActivityMasterSystemName)
 	private ISystems<?,?> activityMasterSystem;
-	
+
 	@Override
-	public void update(IEnterprise<?,?> enterprise)
+	public Future<Boolean> update(IEnterprise<?,?> enterprise)
 	{
 		logProgress("Products System", "Loaded Product Classifications...", 1);
 		service.create(ProductClassifications.Products, activityMasterSystem);
@@ -29,6 +30,7 @@ public class ProductsBaseSetup implements ISystemUpdate
 		service.create(ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup);
 		service.create(ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup);
 		service.create(ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup);
+		return Future.succeededFuture(true);
 	}
-	
+
 }

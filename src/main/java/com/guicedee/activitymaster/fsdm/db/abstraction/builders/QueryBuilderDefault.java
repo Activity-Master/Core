@@ -1,5 +1,6 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
+import com.entityassist.enumerations.Operand;
 import com.entityassist.querybuilder.QueryBuilderSCD;
 import com.google.inject.ProvisionException;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderDefault;
@@ -8,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.UUID;
 
 
@@ -45,6 +47,25 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
             }
         }
         return super.onCreate(entity);
+    }
+
+    public J inPartition(LocalDate partition)
+    {
+        where(getAttribute("warehouseFromDate"), Operand.Equals, partition);
+        return (J)this;
+    }
+
+
+    public J fromPartition(LocalDate partition)
+    {
+        where(getAttribute("warehouseFromDate"), Operand.GreaterThanEqualTo, partition);
+        return (J)this;
+    }
+
+    public J tillPartition(LocalDate partition)
+    {
+        where(getAttribute("warehouseFromDate"), Operand.LessThanEqualTo, partition);
+        return (J)this;
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
+import io.vertx.core.Future;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 
@@ -15,13 +16,13 @@ public class EventsBaseSetup implements ISystemUpdate
 {
 	@Inject
 	private IClassificationService<?> service;
-	
+
 	@Inject
 	@Named(ActivityMasterSystemName)
 	private ISystems<?,?> activityMasterSystem;
-	
+
 	@Override
-	public void update(IEnterprise<?,?> enterprise)
+	public Future<Boolean> update(IEnterprise<?,?> enterprise)
 	{
 		logProgress("Events System", "Loading Base Events...", 1);
 		createEventInvolvedPartyDefaultClassifications(enterprise);
@@ -30,8 +31,9 @@ public class EventsBaseSetup implements ISystemUpdate
 		createEventEventTypesClassifications(enterprise);
 		createEventProductsDefaultClassifications(enterprise);
 		createEventResourceItemDefaultClassifications(enterprise);
+		return Future.succeededFuture(true);
 	}
-	
+
 	@SuppressWarnings("WeakerAccess")
 	void createEventInvolvedPartyDefaultClassifications(IEnterprise<?,?> enterprise)
 	{
@@ -53,11 +55,11 @@ public class EventsBaseSetup implements ISystemUpdate
 		service.create(EventClassifications.NotifiesInvolvedParty, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
 		service.create(EventClassifications.UpdatedPassword, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
 		service.create(EventClassifications.UpdatedUsername, activityMasterSystem, EventInvolvedPartiesClassifications.InvolvedPartyEvents);
-		
+
 		logProgress("Events System", "Loaded Event InvolvedParty Classifications...", 1);
-		
+
 	}
-	
+
 	@SuppressWarnings("WeakerAccess")
 	void createEventAddressDefaultClassifications(IEnterprise<?,?> enterprise)
 	{
@@ -73,12 +75,12 @@ public class EventsBaseSetup implements ISystemUpdate
 		service.create(EventAddressClassifications.MMSd, activityMasterSystem, EventAddressClassifications.AddressEvents);
 		service.create(EventAddressClassifications.Posted, activityMasterSystem, EventAddressClassifications.AddressEvents);
 		service.create(EventAddressClassifications.RegisteredPost, activityMasterSystem, EventAddressClassifications.AddressEvents);
-		
+
 		service.create(EventAddressClassifications.AddedAddress, activityMasterSystem, EventAddressClassifications.AddressEvents);
-		
+
 		logProgress("Events System", "Loaded Event Address Classifications...", 1);
 	}
-	
+
 	@SuppressWarnings("WeakerAccess")
 	void createEventArrangementDefaultClassifications(IEnterprise<?,?> enterprise)
 	{
@@ -91,17 +93,17 @@ public class EventsBaseSetup implements ISystemUpdate
 		service.create(EventArrangementClassifications.AlteredRiskValue, activityMasterSystem, EventArrangementClassifications.ArrangementEvents);
 		logProgress("Events System", "Loaded Event Arrangements Classifications...", 1);
 	}
-	
+
 	@SuppressWarnings("WeakerAccess")
 	void createEventEventTypesClassifications(IEnterprise<?,?> enterprise)
 	{
 		service.create(EventTypeClassifications.TypeOfEvents, activityMasterSystem);
 		service.create(EventTypeClassifications.HasTheType, activityMasterSystem, EventTypeClassifications.TypeOfEvents);
 		service.create(EventTypeClassifications.CanBeIdentifiedBy, activityMasterSystem, EventTypeClassifications.TypeOfEvents);
-		
+
 		logProgress("Events System", "Loaded Event Event Types Classifications...", 1);
 	}
-	
+
 	@SuppressWarnings("WeakerAccess")
 	void createEventProductsDefaultClassifications(IEnterprise<?,?> enterprise)
 	{
@@ -120,10 +122,10 @@ public class EventsBaseSetup implements ISystemUpdate
 		service.create(EventProductClassifications.ChangedTheInterestOf, activityMasterSystem, EventProductClassifications.ProductEvent);
 		service.create(EventProductClassifications.RatedTheProduct, activityMasterSystem, EventProductClassifications.ProductEvent);
 		service.create(EventProductClassifications.ChangedTheRatingOfTheProduct, activityMasterSystem, EventProductClassifications.ProductEvent);
-		
+
 		logProgress("Events System", "Loaded Event Product Default Classifications...", 1);
 	}
-	
+
 	@SuppressWarnings("WeakerAccess")
 	void createEventResourceItemDefaultClassifications(IEnterprise<?,?> enterprise)
 	{
@@ -137,19 +139,19 @@ public class EventsBaseSetup implements ISystemUpdate
 		service.create(EventResourceItemClassifications.LodgedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.DeliveredTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.DestroyedTheResourceItemRegistration, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
-		
+
 		service.create(EventResourceItemClassifications.JSONCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.JSONCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.WebServiceCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.WebServiceCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
-		
+
 		service.create(EventResourceItemClassifications.HttpCallRequest, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.HttpCallResponse, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.HttpSession, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.HttpSessionProperties, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
 		service.create(EventResourceItemClassifications.UserAgent, activityMasterSystem, EventResourceItemClassifications.ResourceItemEvent);
-		
+
 		logProgress("Events System", "Loaded Event Resource Item Default Classifications...", 1);
 	}
-	
+
 }

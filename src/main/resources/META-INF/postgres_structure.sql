@@ -2969,6 +2969,16 @@ create index fklyogqrmsivjjwwmqyhs3w8eey_systemidwhcd on security.securitytokenx
 
 
 
+CREATE OR REPLACE FUNCTION uuid_equal_varchar (text, uuid)
+RETURNS boolean AS 'SELECT $1::text = $2::text;' LANGUAGE sql IMMUTABLE;
+
+CREATE OPERATOR = (
+    leftarg = text,
+    rightarg = uuid,
+    procedure = uuid_equal_varchar,
+    commutator = =
+);
+
 
 
 

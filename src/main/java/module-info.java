@@ -223,7 +223,7 @@ module com.guicedee.activitymaster.fsdm {
 	opens com.guicedee.activitymaster.fsdm.systems to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
 
 
-	opens com.guicedee.activitymaster.converters to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
+	//opens com.guicedee.activitymaster.converters to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
 
 	
 	//opens com.guicedee.activitymaster.fsdm.services.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;

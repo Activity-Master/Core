@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
+import io.vertx.core.Future;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 
@@ -15,26 +16,26 @@ public class ArrangementsBaseSetup implements ISystemUpdate
 {
 	@Inject
 	private IClassificationService<?> service;
-	
+
 	@Inject
 	@Named(ActivityMasterSystemName)
 	private ISystems<?,?> activityMasterSystem;
-	
+
 	@Override
-	public void update(IEnterprise<?,?> enterprise)
+	public Future<Boolean> update(IEnterprise<?,?> enterprise)
 	{
-		
+
 		logProgress("Arrangements", "Creating Base...");
-		
+
 		//arrangement relationships with parties
 		service.create(ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements, activityMasterSystem);
 		service.create(ArrangementInvolvedPartyClassifications.PurchasedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements);
 		service.create(ArrangementInvolvedPartyClassifications.SoldBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements);
 		service.create(ArrangementInvolvedPartyClassifications.OwnedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements);
 		service.create(ArrangementInvolvedPartyClassifications.ManagedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements);
-		
+
 		logProgress("Arrangements", "Loaded Arrangement InvolvedParty Classifications...", 1);
-		
+
 		//purchase classifications
 		service.create(ArrangementProductClassifications.ArrangementPurchase, activityMasterSystem);
 		service.create(ArrangementProductClassifications.PurchaseName, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase);
@@ -47,7 +48,7 @@ public class ArrangementsBaseSetup implements ISystemUpdate
 		service.create(ArrangementProductClassifications.PurchasePromotionCode, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase);
 		service.create(ArrangementProductClassifications.PurchaseStatus, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase);
 		logProgress("Arrangements", "Loaded Arrangement Product Classifications...", 1);
-		
+
 		service.create(ArrangementTypeClassifications.ArrangementProductTypes, activityMasterSystem);
 		service.create(ArrangementTypeClassifications.ProductPurchase, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		service.create(ArrangementTypeClassifications.ProductBid, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
@@ -55,6 +56,8 @@ public class ArrangementsBaseSetup implements ISystemUpdate
 		service.create(ArrangementTypeClassifications.ProductQuote, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		service.create(ArrangementTypeClassifications.ProductLead, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes);
 		logProgress("Arrangements", "Loaded Arrangement Type Classifications...", 1);
+
+		return Future.succeededFuture(true);
 	}
-	
+
 }
