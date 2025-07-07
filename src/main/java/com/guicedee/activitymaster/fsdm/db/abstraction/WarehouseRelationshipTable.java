@@ -13,6 +13,9 @@ import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD.convertToUTCDateTime;
+import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.EndOfTime;
+
 
 /**
  * @param <S>
@@ -123,16 +126,16 @@ public abstract class WarehouseRelationshipTable<
 	{
 		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                            .getDeletedFlag(getEnterpriseID(), identifyingToken));
-		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		update();
 		
 		setId(null);
 		setValue(newValue);
-		setEffectiveFromDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		setEffectiveFromDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-		setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		setWarehouseCreatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                            .getActiveFlag(getEnterpriseID(), identifyingToken));
 		persist();

@@ -7,7 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.client.IGuiceContext;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+//import jakarta.transaction.Transactional;
 
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ public class DataCleanupService
 	@Inject
 	private ISecurityTokenService<?> securityTokenService;
 	
-	@Transactional
+	//@Transactional
 	public void cleanup()
 	{
 		EntityManager entityManager = IGuiceContext.get(EntityManager.class);

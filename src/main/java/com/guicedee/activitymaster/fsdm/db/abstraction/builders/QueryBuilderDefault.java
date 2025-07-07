@@ -1,14 +1,10 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
 import com.entityassist.enumerations.Operand;
-import com.entityassist.querybuilder.QueryBuilderSCD;
-import com.google.inject.ProvisionException;
+import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
-import jakarta.persistence.EntityManager;
-import jakarta.validation.constraints.NotNull;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -16,7 +12,7 @@ import java.util.UUID;
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
         E extends WarehouseBaseTable<E, J, I>,
         I extends java.util.UUID>
-        extends QueryBuilderSCD<J, E, I>
+        extends QueryBuilder<J, E, I>
         implements IQueryBuilderDefault<J, E, I>
 {
     public QueryBuilderDefault()
@@ -66,25 +62,6 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
     {
         where(getAttribute("warehouseFromDate"), Operand.LessThanEqualTo, partition);
         return (J)this;
-    }
-
-    @Override
-    public @NotNull J persist(E entity)
-    {
-        return super.persist(entity);
-    }
-
-    @Override
-    public EntityManager getEntityManager()
-    {
-        try
-        {
-            return com.guicedee.client.IGuiceContext.get(EntityManager.class);
-        }
-        catch (ProvisionException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

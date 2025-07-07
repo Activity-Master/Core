@@ -52,9 +52,9 @@ public class AddressService
 	{
 		return create(addressClassification, null, system, value, identifyingToken);
 	}
-	@Transactional()
-	@Override
 	//@Transactional()
+	@Override
+	////@Transactional()
 	public IAddress<?, ?> create(String addressClassification, java.util.UUID key, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
 	{
 		Address addy = new Address();
@@ -99,9 +99,9 @@ public class AddressService
 		}
 		return addy;
 	}
-	@Transactional()
-	@Override
 	//@Transactional()
+	@Override
+	////@Transactional()
 	public IAddress<?, ?> addOrFindIPAddress(String ipAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
@@ -149,9 +149,9 @@ public class AddressService
 		}
 		return address;
 	}
-	@Transactional()
-	@Override
 	//@Transactional()
+	@Override
+	////@Transactional()
 	public IAddress<?, ?> addOrFindHostName(String hostName, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
@@ -196,9 +196,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional()
-	@Override
 	//@Transactional()
+	@Override
+	////@Transactional()
 	public IAddress<?, ?> addOrFindWebAddress(String webAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		
@@ -339,9 +339,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional()
-	@Override
 	//@Transactional()
+	@Override
+	////@Transactional()
 	public IAddress<?, ?> addOrFindPhoneContact(String phoneNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Classification homePhoneNumber = (Classification) classificationServiceProvider.find(
@@ -401,9 +401,9 @@ public class AddressService
 		
 		return streetAddress;
 	}
-	@Transactional()
-	@Override
 	//@Transactional()
+	@Override
+	////@Transactional()
 	public IAddress<?, ?> addOrFindEmailContact(String emailAddressString, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Classification emailAddress = (Classification) classificationServiceProvider.find(
@@ -476,15 +476,15 @@ public class AddressService
 		
 		return emailAddy;
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public Optional<? extends IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		return involvedParty.findAddress(HomeCellNumber.name(), null, system, true, true, identityToken);
 	}
-	@Transactional()
-	@Override
 	//@Transactional()
+	@Override
+	////@Transactional()
 	public IAddress<?, ?> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
@@ -540,9 +540,9 @@ public class AddressService
 		
 		return address;
 	}
-	@Transactional()
-	@Override
 	//@Transactional()
+	@Override
+	////@Transactional()
 	public IAddress<?, ?> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
 	{
 		

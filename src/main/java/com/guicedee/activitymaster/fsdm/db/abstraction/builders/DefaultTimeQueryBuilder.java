@@ -20,13 +20,7 @@ public abstract class DefaultTimeQueryBuilder<
 	//	setUseDirectConnection(true);
 	//	setDetach(true);
 	}
-	
-	@Override
-	public EntityManager getEntityManager()
-	{
-		return com.guicedee.client.IGuiceContext.get(EntityManager.class);
-	}
-	
+
 	@Override
 	public boolean isIdGenerated()
 	{

@@ -30,7 +30,7 @@ public class RulesXProductQueryBuilder
 	}
 	
 	
-	@jakarta.validation.constraints.NotNull
+	
 	public RulesXProductQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		JoinExpression joinExpression = new JoinExpression();

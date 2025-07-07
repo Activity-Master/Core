@@ -280,10 +280,10 @@ public class ResourceItem
 
         ResourceItemData rid = new ResourceItemData();
         rid.setResource(this);
-        rid.setEffectiveFromDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-        rid.setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+        rid.setEffectiveFromDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+        rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
         rid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-        rid.setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+        rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
         rid.setResourceItemData(data);
         rid.setActiveFlagID(getActiveFlagID());
         rid.setOriginalSourceSystemID(getSystemID());

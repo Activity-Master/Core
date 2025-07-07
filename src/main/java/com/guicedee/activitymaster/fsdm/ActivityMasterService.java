@@ -32,7 +32,7 @@ public class ActivityMasterService
 	{
 		enterpriseService.loadUpdates(enterprise);
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public void runScript(String script)
 	{
@@ -46,7 +46,7 @@ public class ActivityMasterService
 			log.log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public void updatePartitionBases()
 	{

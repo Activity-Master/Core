@@ -20,7 +20,7 @@ public class GeographyQueryBuilder
 		           IQueryBuilderNamesAndDescriptions<GeographyQueryBuilder,Geography,java.util.UUID>
 {
 	
-	@jakarta.validation.constraints.NotNull
+	
 	public GeographyQueryBuilder withParent(IGeography<?, ?> parent, @Null String value)
 	{
 		if (parent == null)

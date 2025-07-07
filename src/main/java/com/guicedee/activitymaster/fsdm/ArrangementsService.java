@@ -5,7 +5,7 @@ import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.guicedpersistence.lambda.TransactionalBiConsumer;
-import com.guicedee.guicedpersistence.lambda.TransactionalCallable;
+import com.guicedee.activitymaster.fsdm.db.entityassist.TransactionalCallable;
 import com.guicedee.guicedpersistence.lambda.TransactionalConsumer;
 import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import static com.entityassist.SCDEntity.*;
+import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;

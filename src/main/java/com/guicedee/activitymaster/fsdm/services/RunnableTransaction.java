@@ -16,7 +16,7 @@ public class RunnableTransaction implements Runnable
 	}
 	
 	@Override
-	@Transactional()
+	//@Transactional()
 	public void run()
 	{
 		consumer.get();

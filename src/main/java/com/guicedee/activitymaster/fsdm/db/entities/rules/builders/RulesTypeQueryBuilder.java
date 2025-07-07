@@ -18,7 +18,7 @@ public class RulesTypeQueryBuilder
 		implements IRuleTypeQueryBuilder<RulesTypeQueryBuilder, RulesType>,
 		           IQueryBuilderNamesAndDescriptions<RulesTypeQueryBuilder, RulesType, UUID>
 {
-	@jakarta.validation.constraints.NotNull
+	
 	public RulesTypeQueryBuilder withClassification(Classification classification, String value)
 	{
 		JoinExpression joinExpression = new JoinExpression();

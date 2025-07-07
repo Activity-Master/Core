@@ -53,7 +53,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return passEncrypted;
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IInvolvedParty<?, ?> findByUsername(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -66,7 +66,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return party;
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IInvolvedParty<?, ?> findByUsernameAndPassword(String username, String password, ISystems<?, ?> system, boolean throwForNoUser, java.util.UUID... identityToken)
 	{
@@ -118,7 +118,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		return foundPart;
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@CacheResult(cacheName = "UsersList")
 	@Override
@@ -128,10 +128,10 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		                                 .findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
 		                                 .getAll();
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	@CacheRemove(cacheName = "UsersList")
-	//@Transactional()
+	////@Transactional()
 	public IInvolvedParty<?, ?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		byte[] salt = System.getProperty("systemSalt") != null ? System.getProperty("systemSalt")
@@ -149,7 +149,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		
 		return involvedParty;
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public boolean doesUsernameExist(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -162,7 +162,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	}
 	
 	@Override
-	@Transactional()
+	//@Transactional()
 	public IInvolvedParty<?, ?> createAdminAndCreatorUserForEnterprise(ISystems<?, ?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey)
 	{

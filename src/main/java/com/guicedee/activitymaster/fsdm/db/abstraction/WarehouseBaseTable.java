@@ -1,10 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
-import com.entityassist.SCDEntity;
-import com.entityassist.enumerations.Operand;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
+import com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
@@ -18,6 +17,8 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.UUID;
+
+import static com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD.convertToUTCDateTime;
 
 @MappedSuperclass()
 public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
@@ -40,7 +41,7 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
 
     public J expireIn(Duration duration)
     {
-        setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow())
+        setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow())
                 .plus(duration));
         update();
         return (J) this;
@@ -59,9 +60,4 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
         return getId() == null;
     }
 
-    @Override
-    public @NotNull J persist()
-    {
-        return super.persist();
-    }
 }

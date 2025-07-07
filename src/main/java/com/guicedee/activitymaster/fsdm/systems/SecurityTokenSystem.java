@@ -20,7 +20,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
 import com.guicedee.client.IGuiceContext;
-import jakarta.transaction.Transactional;
+//import jakarta.transaction.Transactional;
 
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -98,7 +98,7 @@ public class SecurityTokenSystem
 		//            .setSecurityEnabled(true);
 	}
 	
-	@Transactional
+	//@Transactional
 	void defaultsCreation(IEnterprise<?,?> enterprise)
 	{
 		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);
@@ -112,7 +112,7 @@ public class SecurityTokenSystem
 		applyDefaultsToNewEnterpriseAfterActivityMaster(enterprise);
 	}
 	
-	@Transactional
+	//@Transactional
 	void registerNewSystem(IEnterprise<?,?> enterprise,ISystems<?,?> creatingSystem)
 	{
 		systemsService.registerNewSystem(enterprise, creatingSystem);
@@ -152,7 +152,7 @@ public class SecurityTokenSystem
 		logProgress("Security Token Service", "Security Classifications Installed", 11);
 	}
 	
-	@Transactional
+	//@Transactional
 	SecurityToken createSecurityTokens(String enterpriseName, IEnterprise<?,?> enterprise)
 	{
 		UUID uuid = getSystemToken(enterprise);

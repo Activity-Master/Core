@@ -4,12 +4,9 @@ import com.entityassist.RootEntity;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-//import com.guicedee.guicedpersistence.lambda.TransactionalBiConsumer;
+
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ResourceItemException;
-import com.guicedee.guicedpersistence.lambda.TransactionalBiConsumer;
-import com.guicedee.guicedpersistence.lambda.TransactionalCallable;
-import com.guicedee.guicedpersistence.lambda.TransactionalConsumer;
-import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
+//import com.guicedee.activitymaster.fsdm.db.entityassist.TransactionalCallable;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -22,6 +19,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemXClassificationQueryBuilder;
+import com.guicedee.activitymaster.fsdm.db.entityassist.TransactionalCallable;
 import com.guicedee.client.IGuiceContext;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -36,8 +34,10 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import static com.entityassist.SCDEntity.*;
+//import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD.convertToUTCDateTime;
+import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.EndOfTime;
 import static jakarta.persistence.criteria.JoinType.*;
 
 
@@ -248,7 +248,7 @@ public class ResourceItemService
             xr.setId(key);
             xr.setOriginalSourceSystemID(system.getId());
             xr.setOriginalSourceSystemUniqueID(originalSourceSystemUniqueID);
-            xr.setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(effectiveFromDate));
+            xr.setEffectiveFromDate(convertToUTCDateTime(effectiveFromDate));
             xr.setSystemID(system);
             xr.setEnterpriseID(enterprise);
             IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
@@ -259,10 +259,11 @@ public class ResourceItemService
 
             ResourceItemData rid = new ResourceItemData();
             rid.setResource(xr);
-            rid.setEffectiveFromDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
-            rid.setWarehouseCreatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+            //rid.setEffectiveFromDate(convertToUTCDateTime(RootEntity.getNow()));
+            rid.setEffectiveFromDate(convertToUTCDateTime(RootEntity.getNow()));
+            rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
             rid.setEffectiveToDate(EndOfTime.atOffset(ZoneOffset.UTC));
-            rid.setWarehouseLastUpdatedTimestamp(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+            rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
             rid.setResourceItemData("".getBytes());
             rid.setActiveFlagID(activeFlag);
             rid.setOriginalSourceSystemID(system.getId());

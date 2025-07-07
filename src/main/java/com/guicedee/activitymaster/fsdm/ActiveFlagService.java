@@ -21,7 +21,7 @@ public class ActiveFlagService
 		return new ActiveFlag();
 	}
 	
-	@Transactional()
+	//@Transactional()
 	public IActiveFlag<?,?> create(IEnterprise<?,?> enterprise, String name, String description, java.util.UUID... identifyingToken)
 	{
 		ActiveFlag af = new ActiveFlag();
@@ -41,7 +41,7 @@ public class ActiveFlagService
 		}
 	}
 	
-	@Transactional()
+	//@Transactional()
 	boolean doesFlagExist(String flagName, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		return new ActiveFlag().builder()
@@ -52,14 +52,14 @@ public class ActiveFlagService
 		                       .getCount() > 0;
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IActiveFlag<?,?> findFlagByName(com.entityassist.enumerations.ActiveFlag flag, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		return findFlagByName(flag.name(), enterprise, identifyingToken);
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@CacheResult(cacheName = "FindActiveByName")
 	@Override
 	public IActiveFlag<?,?> findFlagByName(@CacheKey String flag, @CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
@@ -72,7 +72,7 @@ public class ActiveFlagService
 		                       .get()
 		                       .orElseThrow(() -> new ActiveFlagException("Unable to find a flag by name of - " + flag + " - in enterprise - " + enterprise));
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	@CacheResult(cacheName = "FindActiveFlagRange")
 	public List<IActiveFlag<?,?>> findActiveRange(@CacheKey IEnterprise<?,?> enterprise, @CacheKey java.util.UUID... identifyingToken)
@@ -80,7 +80,7 @@ public class ActiveFlagService
 		return (List) find(getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
 	}
 	
-	@Transactional()
+	//@Transactional()
 	List<ActiveFlag> find(String[] name, IEnterprise<?,?> enterprise, java.util.UUID... identifyingToken)
 	{
 		ActiveFlag search = new ActiveFlag();

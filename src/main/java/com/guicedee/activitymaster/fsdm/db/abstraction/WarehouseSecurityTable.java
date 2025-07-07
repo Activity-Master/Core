@@ -80,7 +80,7 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 		setActiveFlagID(get(IActiveFlagService.class)
 				.getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class)
 						.getSystemToken(getEnterpriseID())));
-		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		update();
 		return (J) this;
 	}

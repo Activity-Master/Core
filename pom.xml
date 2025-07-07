@@ -26,7 +26,7 @@
 
         <dependency>
             <groupId>com.entityassist</groupId>
-            <artifactId>entity-assist</artifactId>
+            <artifactId>entity-assist-reactive</artifactId>
         </dependency>
 
         <dependency>
@@ -38,11 +38,13 @@
             <groupId>com.guicedee.activitymaster</groupId>
             <artifactId>activity-master-client</artifactId>
         </dependency>
+        <!--
 
-        <dependency>
-            <groupId>com.guicedee.persistence</groupId>
-            <artifactId>guiced-persistence</artifactId>
-        </dependency>
+                <dependency>
+                    <groupId>com.guicedee.persistence</groupId>
+                    <artifactId>guiced-persistence</artifactId>
+                </dependency>
+        -->
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
@@ -76,13 +78,19 @@
 
         <dependency>
             <groupId>com.guicedee.persistence</groupId>
-            <artifactId>guiced-hazelcast-hibernate</artifactId>
+            <artifactId>guiced-hazelcast</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>hibernate-jcache</artifactId>
-        </dependency>
+
+        <!--
+
+
+
+                <dependency>
+                    <groupId>com.guicedee.services</groupId>
+                    <artifactId>hibernate-jcache</artifactId>
+                </dependency>
+        -->
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
@@ -112,9 +120,12 @@
         <dependency>
             <groupId>io.cloudevents</groupId>
             <artifactId>cloudevents-json-jackson</artifactId>
-            <version>4.0.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -167,24 +178,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <!--<plugin>
-                <groupId>org.hibernate.orm.tooling</groupId>
-                <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                <version>${maven.hibernate.enhance.version}</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <enableLazyInitialization>true</enableLazyInitialization>
-                            &lt;!&ndash;<enableDirtyTracking>false</enableDirtyTracking>&ndash;&gt;
-                            <enableAssociationManagement>false</enableAssociationManagement>
-                            <enableExtendedEnhancement>true</enableExtendedEnhancement>
-                        </configuration>
-                        <goals>
-                            <goal>enhance</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
 
         </plugins>
     </build>

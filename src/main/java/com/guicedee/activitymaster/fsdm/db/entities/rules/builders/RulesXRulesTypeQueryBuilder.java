@@ -25,7 +25,7 @@ public class RulesXRulesTypeQueryBuilder
     }
 
 
-    @jakarta.validation.constraints.NotNull
+    
     public RulesXRulesTypeQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         withClassification(classification, system);

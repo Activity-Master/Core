@@ -126,7 +126,7 @@ public class TimeSystem
 		JobService.INSTANCE
 		          .removeJob("TimeRangeLoading");
 	}
-	@Transactional()
+	//@Transactional()
 	//@CacheResult(cacheName = "Years")
 	public Years getYear(@CacheKey Date date)
 	{
@@ -143,7 +143,7 @@ public class TimeSystem
 		return year;
 	}
 	
-	@Transactional()
+	//@Transactional()
 	Years createYear(Date date)
 	{
 		Years year = new Years().setId(Short.parseShort(YearIDFormat.getSimpleDateFormat()
@@ -168,7 +168,7 @@ public class TimeSystem
 		    .getEntityManager().flush();
 		return year;
 	}
-	@Transactional()
+	//@Transactional()
 	Years getYearFromID(Date date)
 	{
 		return new Years().builder()
@@ -177,7 +177,7 @@ public class TimeSystem
 		                  .get()
 		                  .orElse(null);
 	}
-	@Transactional()
+	//@Transactional()
 	int getLastYearID(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -191,7 +191,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	@Transactional()
+	//@Transactional()
 	Quarters createQuarter(Date date)
 	{
 		Quarters quarter = new Quarters(getQuarterID(date));
@@ -236,7 +236,7 @@ public class TimeSystem
 		return quarter;
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@CacheResult
 	public Quarters getQuarter(@CacheKey Date date)
 	{
@@ -259,7 +259,7 @@ public class TimeSystem
 		}
 		return month;
 	}
-	@Transactional()
+	//@Transactional()
 	Quarters getQuarterFromID(Date date) throws Exception
 	{
 		return new Quarters().builder()
@@ -312,7 +312,7 @@ public class TimeSystem
 		gc.add(Calendar.YEAR, -1);
 		return getQuarterID(gc.getTime());
 	}
-	@Transactional()
+	//@Transactional()
 	/**
 	 * @param date
 	 * @return
@@ -335,7 +335,7 @@ public class TimeSystem
 		}
 		return month;
 	}
-	@Transactional()
+	//@Transactional()
 	@CacheResult
 	MonthOfYear getMonthOfYear(@CacheKey Integer MonthOfYear)
 	{
@@ -345,7 +345,7 @@ public class TimeSystem
 		                        .orElse(null);
 	}
 	
-	@Transactional()
+	//@Transactional()
 	Months createMonth(Date date)
 	{
 		Months month = new Months(Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
@@ -414,7 +414,7 @@ public class TimeSystem
 		return Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
 		                                     .format(gc.getTime()));
 	}
-	@Transactional()
+	//@Transactional()
 	Months getMonthFromID(Date date)
 	{
 		return new Months().builder()
@@ -450,7 +450,7 @@ public class TimeSystem
 		}
 		return month;
 	}
-	@Transactional()
+	//@Transactional()
 	Weeks getWeekFromID(Date date)
 	{
 		int weekID = getWeekID(date);
@@ -471,7 +471,7 @@ public class TimeSystem
 		return weekID;
 	}
 	
-	@Transactional()
+	//@Transactional()
 	Weeks createWeek(Date date)
 	{
 		Weeks week = new Weeks();
@@ -496,7 +496,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	@Transactional()
+	//@Transactional()
 	@CacheResult
 	@Override
 	public boolean getDay(@CacheKey Date date)
@@ -527,7 +527,7 @@ public class TimeSystem
 		}
 		return true;
 	}
-	@Transactional()
+	//@Transactional()
 	@CacheResult
 	DayNames getDayName(@CacheKey String dayName)
 	{
@@ -536,7 +536,7 @@ public class TimeSystem
 		                     .get()
 		                     .orElse(null);
 	}
-	@Transactional()
+	//@Transactional()
 	Days getDayFromID(Date date)
 	{
 		return new Days().builder()
@@ -582,7 +582,7 @@ public class TimeSystem
 		                                   .format(gc.getTime()));
 	}
 	
-	@Transactional()
+	//@Transactional()
 	Days createDay(Date date)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -653,7 +653,7 @@ public class TimeSystem
 		return newDay;
 	}
 
-	@Transactional
+	//@Transactional
 	public void populateTransformationTables(Date date, int fiscalLag)
 	{
 		try
@@ -670,7 +670,7 @@ public class TimeSystem
 		getDayFiscal(date, fiscalLag);
 	}
 	
-	@Transactional()
+	//@Transactional()
 	void getDayYTD(Date date)
 	{
 		
@@ -716,7 +716,7 @@ public class TimeSystem
 		arr.clear();
 	}
 	
-	@Transactional()
+	//@Transactional()
 	void getDayMTD(Date date)
 	{
 		
@@ -759,7 +759,7 @@ public class TimeSystem
 		arr.clear();
 	}
 	
-	@Transactional()
+	//@Transactional()
 	TransFiscal getDayFiscal(Date date, int fiscalMonthLag)
 	{
 		GregorianCalendar gc = new GregorianCalendar();
@@ -775,7 +775,7 @@ public class TimeSystem
 		return tran;
 	}
 	
-	@Transactional()
+	//@Transactional()
 	void getDayQTD(Date date)
 	{
 		
@@ -848,7 +848,7 @@ public class TimeSystem
 	}
 	
 	@Override
-	@Transactional()
+	//@Transactional()
 	public void createTime()
 	{
 		if (new Hours().builder()

@@ -15,13 +15,13 @@ public class ActiveFlagQueryBuilder
 		           IQueryBuilderNamesAndDescriptions<ActiveFlagQueryBuilder,ActiveFlag,java.util.UUID>
 {
 	
-	@jakarta.validation.constraints.NotNull
+	
 	public ActiveFlagQueryBuilder inActiveRange(IEnterprise<?, ?> enterprise)
 	{
 		return this;
 	}
 	
-	@jakarta.validation.constraints.NotNull
+	
 	public ActiveFlagQueryBuilder inVisibleRange(IEnterprise<?, ?> enterprise)
 	{
 		return this;

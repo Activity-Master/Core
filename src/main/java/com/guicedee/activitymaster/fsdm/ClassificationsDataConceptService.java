@@ -30,7 +30,7 @@ public class ClassificationsDataConceptService
 		return new ClassificationDataConcept();
 	}
 	
-	@Transactional()
+	//@Transactional()
 	public ClassificationDataConcept createDataConcept(EnterpriseClassificationDataConcepts name,
 	                                                   String description,
 	                                                   ISystems<?,?> system,
@@ -78,7 +78,7 @@ public class ClassificationsDataConceptService
 	{
 		return find(name.classificationValue(), system, identityToken);
 	}
-	@Transactional()
+	//@Transactional()
 	@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
 	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{

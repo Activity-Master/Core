@@ -14,19 +14,7 @@ import static com.entityassist.enumerations.Operand.*;
 public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyView<J, E, I>, E extends WarehouseHierarchyView<E, J, I>, I extends java.util.UUID>
 		extends QueryBuilder<J, E, I>
 {
-	@Override
-	public void onSelectExecution(TypedQuery<?> query)
-	{
-		org.hibernate.query.Query<?> q = query.unwrap(org.hibernate.query.Query.class);
-		q.addQueryHint("MAXRECURSION 0");
-	}
-	
-	@Override
-	public EntityManager getEntityManager()
-	{
-		return com.guicedee.client.IGuiceContext.get(EntityManager.class);
-	}
-	
+
 	@Override
 	public boolean isIdGenerated()
 	{

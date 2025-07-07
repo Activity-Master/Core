@@ -34,7 +34,7 @@ public class ProductService
 	{
 		return new Product();
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IProduct<?, ?> find(UUID id)
 	{
@@ -44,7 +44,7 @@ public class ProductService
 		                    .orElse(null);
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IProductType<?, ?> findType(UUID id)
 	{
@@ -67,7 +67,7 @@ public class ProductService
 	}
 	
 	@Override
-	@Transactional()
+	//@Transactional()
 	public IProduct<?, ?> createProduct(String productType, java.util.UUID key, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		Product product = new Product();
@@ -91,7 +91,7 @@ public class ProductService
 		
 		return product;
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IProduct<?, ?> findProduct(String name, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -103,7 +103,7 @@ public class ProductService
 		                    .get()
 		                    .orElseThrow();
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>> findProductByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -131,7 +131,7 @@ public class ProductService
 	}
 	
 	@Override
-	@Transactional()
+	//@Transactional()
 	public IProductType<?, ?> createProductType(String productsType, java.util.UUID key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		ProductType et = new ProductType();
@@ -165,7 +165,7 @@ public class ProductService
 		}
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IProductType<?, ?> findProductTypeForProduct(String productType, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -179,7 +179,7 @@ public class ProductService
 		                        .orElseThrow(() -> new NoSuchElementException("Product Type - " + productType + " not found"));
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IProduct<?, ?> findProduct(String productName, IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -200,7 +200,7 @@ public class ProductService
 		return findProductTypeForProduct(product, classification.getName(), system, identityToken);
 	}
 	
-	@Transactional()
+	//@Transactional()
 	@Override
 	public IProductType<?, ?> findProductTypeForProduct(IProduct<?, ?> product, String classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -220,7 +220,7 @@ public class ProductService
 	{
 		return findProductTypes(classification.getName(), system, identityToken);
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public List<IProductType<?, ?>> findProductTypes(String classification, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
@@ -239,7 +239,7 @@ public class ProductService
 	{
 		return findByProductTypes(type.getName(), system, identityToken);
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public List<IProduct<?, ?>> findByProductTypes(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{

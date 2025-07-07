@@ -9,7 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
 import com.guicedee.activitymaster.fsdm.systems.SecurityTokenSystem;
-import jakarta.transaction.Transactional;
+//import jakarta.transaction.Transactional;
 import lombok.extern.java.Log;
 
 @Log
@@ -24,7 +24,7 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, Ente
 	public static IEnterprise<Enterprise, EnterpriseQueryBuilder> loadedEnterprise = null;
 	
 	@Override
-	@Transactional
+	//@Transactional
 	public IEnterprise<Enterprise, EnterpriseQueryBuilder> get()
 	{
 		if (loadedEnterprise != null)

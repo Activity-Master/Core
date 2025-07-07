@@ -81,7 +81,7 @@ public class InvolvedPartyQueryBuilder
 		return this;
 	}
 	
-	@jakarta.validation.constraints.NotNull
+	
 	@Override
 	public InvolvedPartyQueryBuilder withClassification(IClassification<?, ?> classification, String value, ISystems<?, ?> system)
 	{

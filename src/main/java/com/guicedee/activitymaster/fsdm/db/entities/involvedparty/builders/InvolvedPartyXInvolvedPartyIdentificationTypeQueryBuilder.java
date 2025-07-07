@@ -33,7 +33,7 @@ public class InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder
 	}
 	
 	@Override
-	public @jakarta.validation.constraints.NotNull InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withValue(Operand operand, String value)
+	public  InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder withValue(Operand operand, String value)
 	{
 		if (Strings.isNullOrEmpty(value))
 		{

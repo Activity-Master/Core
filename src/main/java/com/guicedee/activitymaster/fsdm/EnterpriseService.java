@@ -53,7 +53,7 @@ public class EnterpriseService
 		return new Enterprise();
 	}
 
-	@Transactional()
+	//@Transactional()
 	public Enterprise create(@NotNull String name, @NotNull String description)
 	{
 		Enterprise enterprise = new Enterprise();
@@ -140,7 +140,7 @@ public class EnterpriseService
 		                                                                                                           .format(LocalDate.now()), system);
 	}
 
-	@Transactional()
+	//@Transactional()
 	void performUpdate(ISystemUpdate o, IEnterprise<?,?> enterprise)
 	{
 		@SuppressWarnings({ "unchecked"})
@@ -239,7 +239,7 @@ public class EnterpriseService
 		}
 		return applicableUpdates;
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	@CacheResult(cacheName = "FindEnterpriseWithClassifications")
 	public List<IEnterprise<?,?>> findEnterprisesWithClassification(@CacheKey IClassification<?,?> classification)
@@ -255,7 +255,7 @@ public class EnterpriseService
 		builder = builder.where(Enterprise_.id, InList, classy);
 		return new ArrayList<>(builder.getAll());
 	}
-	@Transactional()
+	//@Transactional()
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Optional<IEnterprise<?,?>> findEnterprise(String name)
 	{
@@ -264,7 +264,7 @@ public class EnterpriseService
 		                                  .inDateRange()
 		                                  .get();
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
 	public IEnterprise<?,?> getEnterprise(@CacheKey String name)
@@ -276,7 +276,7 @@ public class EnterpriseService
 		                       .orElseThrow(() -> new EnterpriseException("No Such Enterprise - " + name));
 	}
 
-	@Transactional()
+	//@Transactional()
 	@Override
 	@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
 	public IEnterprise<?,?> getEnterprise(@CacheKey UUID uuid)
@@ -287,7 +287,7 @@ public class EnterpriseService
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Such Enterprise - " + uuid));
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public boolean doesEnterpriseExist(String name)
 	{
@@ -296,7 +296,7 @@ public class EnterpriseService
 		                       .inDateRange()
 		                       .getCount() > 0;
 	}
-	@Transactional()
+	//@Transactional()
 	@Override
 	public Set<IEnterprise<?,?>> getIEnterprises()
 	{
@@ -304,7 +304,7 @@ public class EnterpriseService
 		                                     .inDateRange()
 		                                     .getAll());
 	}
-	@Transactional()
+	//@Transactional()
 	@CacheResult
 	@Override
 	public IEnterprise<?,?> getIEnterpriseFromName(@CacheKey String enterprise)
@@ -314,7 +314,7 @@ public class EnterpriseService
 		                       .get()
 		                       .orElseThrow(() -> new EnterpriseException("No Enterprise for the given name"));
 	}
-	@Transactional()
+	//@Transactional()
 	@CacheResult
 	@Override
 	public IEnterprise<?,?> getIEnterpriseFromID(@CacheKey UUID enterprise)
@@ -390,7 +390,7 @@ public class EnterpriseService
 	//	                                 .setSecurityEnabled(true);
 	}
 
-	@Transactional()
+	//@Transactional()
 	@Override
 	public boolean isEnterpriseReady()
 	{

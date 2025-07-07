@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.UUID;
 
+import static com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD.convertToUTCDateTime;
 import static com.guicedee.client.IGuiceContext.*;
 
 /**
@@ -85,7 +86,7 @@ public abstract class WarehouseSCDTable<
 	{
 		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
 		                                                 .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-		setEffectiveToDate(com.entityassist.querybuilder.QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		update();
 		return (J) this;
 	}

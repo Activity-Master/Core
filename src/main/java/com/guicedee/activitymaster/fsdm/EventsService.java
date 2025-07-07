@@ -12,7 +12,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.EventException;
 import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
-import com.guicedee.guicedpersistence.lambda.TransactionalCallable;
+import com.guicedee.activitymaster.fsdm.db.entityassist.TransactionalCallable;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import lombok.extern.java.Log;
