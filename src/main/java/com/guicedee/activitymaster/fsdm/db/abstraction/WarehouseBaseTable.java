@@ -1,8 +1,9 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
+import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
-import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
+import com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -22,7 +23,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBu
 
 @MappedSuperclass()
 public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
-        Q extends QueryBuilderDefault<Q, J, I>, I extends java.util.UUID>
+        Q extends QueryBuilderSCD<Q, J, I>, I extends java.util.UUID>
         extends SCDEntity<J, Q, I>
         implements IWarehouseBaseTable<J, Q, I>
 {

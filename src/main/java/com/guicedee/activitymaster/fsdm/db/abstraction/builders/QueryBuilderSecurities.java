@@ -34,11 +34,11 @@ public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J,
 {
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public Uni<J> findLinkedSecurityToken(SecurityToken identityToken, I id)
+	public J findLinkedSecurityToken(SecurityToken identityToken, I id)
 	{
 		where(getSecurityTokenAttribute(), Equals, identityToken);
 		where(getMyAttribute(), Equals, id);
-		return Uni.createFrom().item((J) this);
+		return (J) this;
 	}
 
 	protected Attribute getSecurityTokenAttribute()
@@ -53,30 +53,29 @@ public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J,
 
 	protected abstract Attribute getMyAttribute();
 
-	public Uni<J> findBySecurityToken(SecurityToken uuid)
+	@SuppressWarnings("unchecked")
+	public J findBySecurityToken(SecurityToken uuid)
 	{
 		where(getSecurityTokenAttribute(), Equals, uuid);
-		return Uni.createFrom().item((J) this);
+		return (J) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public Uni<J> findLinkedSecurityToken(SecurityToken identityToken, WarehouseBaseTable id)
+	public J findLinkedSecurityToken(SecurityToken identityToken, WarehouseBaseTable id)
 	{
-		return findLinkedSecurityTokens(id)
-			.chain(result -> {
-				Attribute securityAttribute = getSecurityTokenAttribute();
-				where(securityAttribute, Equals, identityToken);
-				return Uni.createFrom().item((J) this);
-			});
+		findLinkedSecurityTokens(id);
+		Attribute securityAttribute = getSecurityTokenAttribute();
+		where(securityAttribute, Equals, identityToken);
+		return (J) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public Uni<J> findLinkedSecurityTokens(WarehouseBaseTable id)
+	public J findLinkedSecurityTokens(WarehouseBaseTable id)
 	{
 		Attribute myAttribute = getMyAttribute();
 		where(myAttribute, Equals, id);
-		return Uni.createFrom().item((J) this);
+		return (J) this;
 	}
 }

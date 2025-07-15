@@ -97,8 +97,8 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>, E ex
 	@Override
 	public E archive(E entity)
 	{
-		entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
-		entity.setEffectiveToDate(convertToUTCDateTime(RootEntity.getNow()));
+		entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+		entity.setEffectiveToDate(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
 		entity.setActiveFlag(ActiveFlag.Archived);
 		
 		getEntityManager().merge(entity);
@@ -119,8 +119,8 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>, E ex
 	@SuppressWarnings("unused")
 	public E closeAndReturnNewlyUpdate(E entity, ActiveFlag status)
 	{
-		entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
-		entity.setEffectiveToDate(convertToUTCDateTime(RootEntity.getNow()));
+		entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+		entity.setEffectiveToDate(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
 		entity.setActiveFlag(status);
 		
 		getEntityManager().merge(entity);
@@ -128,9 +128,9 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>, E ex
 		
 		entity.setId(null);
 		
-		entity.setWarehouseCreatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
-		entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
-		entity.setEffectiveFromDate(convertToUTCDateTime(RootEntity.getNow()));
+		entity.setWarehouseCreatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+		entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+		entity.setEffectiveFromDate(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
 		entity.setEffectiveToDate(SCDEntity.EndOfTime.atOffset(UTC));
 		entity.setActiveFlag(ActiveFlag.Active);
 		

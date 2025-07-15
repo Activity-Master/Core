@@ -4,7 +4,10 @@ import com.entityassist.enumerations.Operand;
 import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
+import com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD;
+import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -13,7 +16,7 @@ import java.util.UUID;
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
         E extends WarehouseBaseTable<E, J, I>,
         I extends java.util.UUID>
-        extends QueryBuilder<J, E, I>
+        extends QueryBuilderSCD<J, E, I>
         implements IQueryBuilderDefault<J, E, I>
 {
     public QueryBuilderDefault()
@@ -63,6 +66,13 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
     {
         where(getAttribute("warehouseFromDate"), Operand.LessThanEqualTo, partition);
         return (J)this;
+    }
+
+    @Override
+    public Mutiny.Session getEntityManager()
+    {
+        return IGuiceContext.get(Mutiny.SessionFactory.class)
+                       .getCurrentSession();
     }
 
     @Override

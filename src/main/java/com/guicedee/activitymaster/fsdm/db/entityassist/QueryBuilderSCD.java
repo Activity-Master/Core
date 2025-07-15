@@ -1,27 +1,28 @@
 package com.guicedee.activitymaster.fsdm.db.entityassist;
 
-import com.entityassist.RootEntity;
+import com.entityassist.BaseEntity;
 import com.entityassist.enumerations.Operand;
 import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.QueryBuilder;
+import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseBaseTable;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import static com.entityassist.RootEntity.getNow;
-import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.EndOfTime;
 import static java.time.ZoneOffset.UTC;
 
 @SuppressWarnings("unused")
-public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E extends SCDEntity<E, J, I>, I extends Serializable>
+public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>,
+                                             E extends BaseEntity<E,J,I> &  IWarehouseBaseTable<E, J, I>,
+                                             I extends UUID>
         extends QueryBuilder<J, E, I>
-        implements IQueryBuilderSCD<J, E, I>
+        implements IQueryBuilderSCD<J, E, I>, IQueryBuilderDefault<J,E,I>
 {
     /**
      * The effective to date column name

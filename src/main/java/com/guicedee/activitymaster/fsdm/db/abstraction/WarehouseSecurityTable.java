@@ -10,6 +10,7 @@ import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.annotations.JdbcTypeCode;
 
 import java.io.Serial;
@@ -27,7 +28,7 @@ import static com.guicedee.client.IGuiceContext.*;
  */
 @SuppressWarnings("unchecked")
 @MappedSuperclass
-
+@Log4j2
 public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J, Q, I>,
 		Q extends QueryBuilderSecurities<Q, J, I>,
 		I extends java.util.UUID>
@@ -91,14 +92,25 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 		ActiveFlagSystem activeSystem = get(ActiveFlagSystem.class);
 		UUID systemToken = activeSystem.getSystemToken(enterprise);
 
-		// Set the active flag to deleted
-		setActiveFlagID(get(IActiveFlagService.class).getDeletedFlag(enterprise, systemToken));
+		log.info("Removing entity with ID: {}", getId());
 
-		// Set the effective to date to now
-		setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+		// Get the active flag service with proper generic type parameter
+		IActiveFlagService<?> activeFlagService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 
-		// Update the entity and return the result
-		return update();
+		// Use reactive chain to get deleted flag and update entity
+		return activeFlagService
+			.getDeletedFlag(enterprise, systemToken)
+			.onSubscription().invoke(() -> log.debug("Getting deleted flag for enterprise: {}", enterprise.getName()))
+			.onItem().invoke(activeFlag -> log.debug("Retrieved deleted flag: {}", activeFlag.getName()))
+			.onFailure().invoke(error -> log.error("Error getting deleted flag: {}", error.getMessage(), error))
+			.chain(activeFlag -> {
+				log.debug("Setting active flag to deleted for entity: {}", getId());
+				setActiveFlagID(activeFlag);
+				setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+				return update()
+					.onItem().invoke(entity -> log.info("Successfully marked entity as removed: {}", entity.getId()))
+					.onFailure().invoke(error -> log.error("Error updating entity as removed: {}", error.getMessage(), error));
+			});
 	}
 
 	/**

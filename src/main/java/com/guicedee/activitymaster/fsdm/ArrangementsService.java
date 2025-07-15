@@ -4,10 +4,6 @@ import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import com.guicedee.guicedpersistence.lambda.TransactionalBiConsumer;
-import com.guicedee.activitymaster.fsdm.db.entityassist.TransactionalCallable;
-import com.guicedee.guicedpersistence.lambda.TransactionalConsumer;
-import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
@@ -56,18 +52,6 @@ public class ArrangementsService
 
     @Inject
     private IEnterprise<?, ?> enterprise;
-
-    @Inject
-    private Vertx vertx;
-
-    private WorkerExecutor workerExecutor;
-
-    @Inject
-    private void setup()
-    {
-        workerExecutor = vertx.createSharedWorkerExecutor("arrangements-worker-executor", 20);
-    }
-
 
     @Override
     public IArrangement<?, ?> get()

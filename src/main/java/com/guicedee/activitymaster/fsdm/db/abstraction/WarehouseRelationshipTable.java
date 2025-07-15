@@ -5,6 +5,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationship;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -13,6 +14,8 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
+
+import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.EndOfTime;
 
 
 /**
@@ -121,38 +124,39 @@ public abstract class WarehouseRelationshipTable<
 
 	/**
 	 * Updates this relationship with a new value.
-	 * 
-	 * Note: This method uses several methods in a non-reactive way:
-	 * - setActiveFlagID: Although it returns a Uni<J>, this method ignores the returned Uni and treats it as a simple property setter
-	 * - getEnterpriseID: Although it returns a Uni<IEnterprise<?,?>>, this method treats it as if it directly returns IEnterprise<?,?>
-	 * - getSystemID: Although it returns a Uni<ISystems<?,?>>, this method treats it as if it directly returns ISystems<?,?>
-	 * 
-	 * These methods don't perform any actions beyond setting or getting property values.
 	 *
 	 * @param newValue The new value to set
 	 * @param identifyingToken Optional identifying tokens
-	 * @return This instance for method chaining
+	 * @return A Uni that emits this instance when the update is complete
 	 */
 	@SuppressWarnings("unchecked")
-	public @NotNull J update(String newValue, java.util.UUID... identifyingToken)
+	public @NotNull Uni<J> update(String newValue, java.util.UUID... identifyingToken)
 	{
-		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-		                            .getDeletedFlag(getEnterpriseID(), identifyingToken));
 		setEffectiveToDate(IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
 		setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		update();
 
-		setId(null);
-		setValue(newValue);
-		setEffectiveFromDate(IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-		setWarehouseCreatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-		                            .getActiveFlag(getEnterpriseID(), identifyingToken));
-		persist();
-		createDefaultSecurity(getSystemID());
+		IActiveFlagService<?> activeFlagService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 
-		return (J) this;
+		return activeFlagService.getDeletedFlag(getEnterpriseID(), identifyingToken)
+			.chain(deletedFlag -> {
+				setActiveFlagID(deletedFlag);
+				return update();
+			})
+			.chain(updated -> {
+				setId(null);
+				setValue(newValue);
+				setEffectiveFromDate(IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+				setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
+				setWarehouseCreatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+				setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+
+				return activeFlagService.getActiveFlag(getEnterpriseID(), identifyingToken);
+			})
+			.chain(activeFlag -> {
+				setActiveFlagID(activeFlag);
+				return persist();
+			})
+			.chain(persisted -> createDefaultSecurity(getSystemID())
+				.map(v -> (J) this));
 	}
 }

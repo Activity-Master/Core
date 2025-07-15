@@ -11,10 +11,13 @@ import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IC
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.InList;
@@ -22,6 +25,7 @@ import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBu
 import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.EndOfTime;
 import static java.time.ZoneOffset.UTC;
 
+@Log4j2
 public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>,
 		E extends WarehouseCoreTable<E, J, I,?>,
 		I extends java.util.UUID>
@@ -44,12 +48,18 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>,
         }
 
         IActiveFlagService<?> flagService = IGuiceContext.get(IActiveFlagService.class);
-        Collection<IActiveFlag<?,?>> flags = flagService.findActiveRange(enterprise);
-        Collection<IActiveFlag<?,?>> flagss = new ArrayList<>();
-        for (IActiveFlag<?,?> flag : flags) {
-            flagss.add(flag);
+        try {
+            List<IActiveFlag<?,?>> flags = flagService.findActiveRange(enterprise)
+                .await().atMost(Duration.ofMinutes(1));
+            Collection<IActiveFlag<?,?>> flagss = new ArrayList<>();
+            for (IActiveFlag<?,?> flag : flags) {
+                flagss.add(flag);
+            }
+            where(this.<E, IActiveFlag<?,?>>getAttribute("activeFlagID"), InList, flagss);
+        } catch (Exception e) {
+            // Log the error but continue
+            log.error("Error getting active flags: {}", e.getMessage(), e);
         }
-        where(this.<E, IActiveFlag<?,?>>getAttribute("activeFlagID"), InList, flagss);
         return (J) this;
     }
 
@@ -70,12 +80,18 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>,
         }
 
         IActiveFlagService<?> flagService = IGuiceContext.get(IActiveFlagService.class);
-        Collection<IActiveFlag<?,?>> flags = flagService.getVisibleRange(enterprise);
-        Collection<IActiveFlag<?,?>> flagss = new ArrayList<>();
-        for (IActiveFlag<?,?> flag : flags) {
-            flagss.add(flag);
+        try {
+            List<IActiveFlag<?,?>> flags = flagService.getVisibleRange(enterprise)
+                .await().atMost(Duration.ofMinutes(1));
+            Collection<IActiveFlag<?,?>> flagss = new ArrayList<>();
+            for (IActiveFlag<?,?> flag : flags) {
+                flagss.add(flag);
+            }
+            where(this.<E, IActiveFlag<?,?>>getAttribute("activeFlagID"), InList, flagss);
+        } catch (Exception e) {
+            // Log the error but continue
+            log.error("Error getting visible flags: {}", e.getMessage(), e);
         }
-        where(this.<E, IActiveFlag<?,?>>getAttribute("activeFlagID"), InList, flagss);
         return (J) this;
     }
 
@@ -106,21 +122,30 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>,
             throw new IllegalStateException("Entity does not contain enterprise information");
         }
 
-        if (newActiveFlagType == ActiveFlag.Deleted) {
-            flag = flagService.getDeletedFlag(enterprise, UUID.randomUUID());
-        } else if (newActiveFlagType == ActiveFlag.Archived) {
-            flag = flagService.getArchivedFlag(enterprise, UUID.randomUUID());
-        } else {
-            flag = flagService.getActiveFlag(enterprise, UUID.randomUUID());
-        }
+        try {
+            if (newActiveFlagType == ActiveFlag.Deleted) {
+                flag = flagService.getDeletedFlag(enterprise, UUID.randomUUID())
+                    .await().atMost(Duration.ofMinutes(1));
+            } else if (newActiveFlagType == ActiveFlag.Archived) {
+                flag = flagService.getArchivedFlag(enterprise, UUID.randomUUID())
+                    .await().atMost(Duration.ofMinutes(1));
+            } else {
+                flag = flagService.getActiveFlag(enterprise, UUID.randomUUID())
+                    .await().atMost(Duration.ofMinutes(1));
+            }
 
-        // Update the entity with the new flag
-        if (entity instanceof IContainsActiveFlags) {
-            ((IContainsActiveFlags<?>) entity).setActiveFlagID(flag);
-            entity.update();
-            return entity;
-        } else {
-            throw new IllegalStateException("Entity does not support active flags");
+            // Update the entity with the new flag
+            if (entity instanceof IContainsActiveFlags) {
+                ((IContainsActiveFlags<?>) entity).setActiveFlagID(flag);
+                return entity.update()
+                    .await().atMost(Duration.ofMinutes(1));
+            } else {
+                throw new IllegalStateException("Entity does not support active flags");
+            }
+        } catch (Exception e) {
+            // Log the error and rethrow
+            log.error("Error getting active flag: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to get active flag", e);
         }
     }
 
@@ -170,7 +195,8 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>,
 
             // Get the active flag
             IActiveFlagService<?> flagService = IGuiceContext.get(IActiveFlagService.class);
-            IActiveFlag<?,?> activeFlag = flagService.getActiveFlag(enterprise, UUID.randomUUID());
+            IActiveFlag<?,?> activeFlag = flagService.getActiveFlag(enterprise, UUID.randomUUID())
+                .await().atMost(Duration.ofMinutes(1));
 
             // Set the enterprise ID if the new entity supports it
             if (newEntity instanceof IContainsEnterprise) {
@@ -180,12 +206,13 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>,
             // Set the active flag if the new entity supports it
             if (newEntity instanceof IContainsActiveFlags) {
                 ((IContainsActiveFlags<?>) newEntity).setActiveFlagID(activeFlag);
-                newEntity.persist();
-                return newEntity;
+                return newEntity.persist()
+                    .await().atMost(Duration.ofMinutes(1));
             } else {
                 throw new IllegalStateException("Entity does not support active flags");
             }
         } catch (Exception e) {
+            log.error("Failed to create new entity: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to create new entity", e);
         }
     }

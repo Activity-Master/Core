@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -29,7 +30,7 @@ import static com.guicedee.client.IGuiceContext.*;
  * @since 06 Dec 2016
  */
 @MappedSuperclass
-
+@Log4j2
 public abstract class WarehouseSCDTable<
 		J extends WarehouseSCDTable<J, Q, I,S>,
 		Q extends QueryBuilderSCD<Q, J, I,?>,
@@ -87,16 +88,55 @@ public abstract class WarehouseSCDTable<
 		// Get the enterprise directly from the requesting system
 		IEnterprise<?,?> enterprise = requestingSystem.getEnterpriseID();
 
-		// Get the active flag service and active flag
-		IActiveFlagService<?> activeFlagService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-		IActiveFlag<?,?> activeFlag = activeFlagService.getActiveFlag(enterprise);
-
-		// Set the system ID, active flag ID, and enterprise ID
+		// Set the system ID and enterprise ID (these don't require async operations)
 		setSystemID(requestingSystem);
-		setActiveFlagID(activeFlag);
 		setEnterpriseID(enterprise);
 
+		// For backward compatibility, we need to block here to get the active flag
+		// This is not ideal in a reactive context, but necessary to maintain compatibility
+		IActiveFlagService<?> activeFlagService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+		try {
+			IActiveFlag<?,?> activeFlag = activeFlagService.getActiveFlag(enterprise)
+				.await().indefinitely();
+			setActiveFlagID(activeFlag);
+		} catch (Exception e) {
+			// Log the error but continue
+			log.error("Error getting active flag: {}", e.getMessage(), e);
+		}
+
 		return (J) this;
+	}
+
+	/**
+	 * Configures default system values for this entity in a reactive way.
+	 * This method is reactive as it needs to get the active flag asynchronously.
+	 * 
+	 * @param requestingSystem The system requesting the configuration
+	 * @return A Uni that completes with this instance for method chaining
+	 */
+	@NotNull
+	protected Uni<J> configureDefaultsSystemValuesReactive(Systems requestingSystem)
+	{
+		// Get the enterprise directly from the requesting system
+		IEnterprise<?,?> enterprise = requestingSystem.getEnterpriseID();
+
+		// Get the active flag service and active flag
+		IActiveFlagService<?> activeFlagService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+
+		// Set the system ID and enterprise ID (these don't require async operations)
+		setSystemID(requestingSystem);
+		setEnterpriseID(enterprise);
+
+		// Get the active flag asynchronously and set it
+		return activeFlagService.getActiveFlag(enterprise)
+			.onSubscription().invoke(() -> log.debug("Getting active flag for enterprise: {}", enterprise.getName()))
+			.onItem().invoke(activeFlag -> log.debug("Retrieved active flag: {}", activeFlag.getName()))
+			.onFailure().invoke(error -> log.error("Error getting active flag: {}", error.getMessage(), error))
+			.map(activeFlag -> {
+				setActiveFlagID(activeFlag);
+				log.debug("Set active flag ID for entity");
+				return (J) this;
+			});
 	}
 
 
@@ -107,37 +147,58 @@ public abstract class WarehouseSCDTable<
 	 * 
 	 * @return A Uni that completes when the removal is done
 	 */
-	@SuppressWarnings("unchecked")
 	public Uni<J> remove()
 	{
 		IEnterprise<?,?> enterprise = getEnterpriseID();
 		ActiveFlagSystem activeSystem = get(ActiveFlagSystem.class);
 		UUID systemToken = activeSystem.getSystemToken(enterprise);
 
-		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-			.getDeletedFlag(enterprise, systemToken));
-		setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-		return update();
+		log.info("Removing entity with ID: {}", getId());
+
+		IActiveFlagService<?> activeFlagService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+		return activeFlagService
+			.getDeletedFlag(enterprise, systemToken)
+			.onSubscription().invoke(() -> log.debug("Getting deleted flag for enterprise: {}", enterprise.getName()))
+			.onItem().invoke(activeFlag -> log.debug("Retrieved deleted flag: {}", activeFlag.getName()))
+			.onFailure().invoke(error -> log.error("Error getting deleted flag: {}", error.getMessage(), error))
+			.chain(activeFlag -> {
+				log.debug("Setting active flag to deleted for entity: {}", getId());
+				setActiveFlagID(activeFlag);
+				setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+				return update()
+					.onItem().invoke(entity -> log.info("Successfully marked entity as removed: {}", entity.getId()))
+					.onFailure().invoke(error -> log.error("Error updating entity as removed: {}", error.getMessage(), error));
+			});
 	}
 
 	/**
 	 * Archives the entity by setting its active flag to archived.
-	 * This method is non-reactive as it simply sets property values and calls update().
+	 * This method performs actions and returns a Uni that completes when the archiving is done.
+	 * It returns the result of calling update().
 	 * 
-	 * @return This instance for method chaining
+	 * @return A Uni that completes when the archiving is done
 	 */
-	@SuppressWarnings("unchecked")
-	public J archive()
+	public Uni<J> archive()
 	{
 		IEnterprise<?,?> enterprise = getEnterpriseID();
 		ActiveFlagSystem activeSystem = get(ActiveFlagSystem.class);
 		UUID systemToken = activeSystem.getSystemToken(enterprise);
 
-		setActiveFlagID(com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-			.getArchivedFlag(enterprise, systemToken));
-		update();
+		log.info("Archiving entity with ID: {}", getId());
 
-		return (J) this;
+		IActiveFlagService<?> activeFlagService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+		return activeFlagService
+			.getArchivedFlag(enterprise, systemToken)
+			.onSubscription().invoke(() -> log.debug("Getting archived flag for enterprise: {}", enterprise.getName()))
+			.onItem().invoke(activeFlag -> log.debug("Retrieved archived flag: {}", activeFlag.getName()))
+			.onFailure().invoke(error -> log.error("Error getting archived flag: {}", error.getMessage(), error))
+			.chain(activeFlag -> {
+				log.debug("Setting active flag to archived for entity: {}", getId());
+				setActiveFlagID(activeFlag);
+				return update()
+					.onItem().invoke(entity -> log.info("Successfully archived entity: {}", entity.getId()))
+					.onFailure().invoke(error -> log.error("Error archiving entity: {}", error.getMessage(), error));
+			});
 	}
 
 	/**

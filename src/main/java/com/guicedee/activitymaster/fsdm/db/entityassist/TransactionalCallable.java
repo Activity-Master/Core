@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @param <T> The generic type parameter for the result of the {@link Callable}.
  */
 @Log
+@Deprecated(forRemoval = true)
 public class TransactionalCallable<T> implements Callable<T> {
 
     /**

@@ -98,7 +98,7 @@ public class AddressService
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        addy.createDefaultSecurity(system, identifyingToken)
+		                                        persisted.createDefaultSecurity(system, identifyingToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully

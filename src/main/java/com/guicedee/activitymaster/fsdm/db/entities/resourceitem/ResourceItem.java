@@ -1,12 +1,16 @@
 package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
 import com.fasterxml.jackson.annotation.*;
-import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
+import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.*;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceData;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.address.AddressXResourceItem;
@@ -18,7 +22,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.geography.GeographyXResource
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedPartyXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.product.ProductXResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemQueryBuilder;
-import com.guicedee.client.IGuiceContext;
+import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -29,13 +34,17 @@ import lombok.Setter;
 import lombok.extern.java.Log;
 
 import java.io.Serial;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 
-import static com.entityassist.enumerations.Operand.*;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.FetchType.*;
+import static com.entityassist.enumerations.Operand.Equals;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
+import static jakarta.persistence.FetchType.EAGER;
 
 /**
  * @author Marc Magon
@@ -142,58 +151,73 @@ public class ResourceItem
     }
 
     @Override
-    public IResourceItem<?, ?> updateDataTypeValue(String newValue)
+    public Uni<IResourceItem<?, ?>> updateDataTypeValue(String newValue)
     {
-        setResourceItemDataType(newValue);
-        builder().find(getId())
-                .update(this);
-        return this;
-    }
-
-    public byte[] getData(java.util.UUID... identityToken)
-    {
-        var dr = getDataRow();
-        Optional<byte[]> d
-                = new ResourceItemData().builder()
-                .inActiveRange()
-                .inDateRange()
-                .where(ResourceItemData_.resource, Equals, this)
-                .selectColumn(ResourceItemData_.resourceItemData)
-                .get(byte[].class);
-        if (d.isPresent())
-        {
-            byte[] data = d.get();
-            //	byte[] data = (byte[]) dataObject[0];
-            return unzip(data);
-        }
-        else
-        {
-            log.log(Level.FINE, "No resource item data exists");
-            return new byte[]{};
-        }
+        return ReactiveTransactionUtil.withTransaction(session -> {
+            setResourceItemDataType(newValue);
+            //todo update this using the builder().getEntityManager
+            builder().find(getId())
+                    .update(this)
+            ;
+            return Uni.createFrom()
+                           .item((IResourceItem<?, ?>) this);
+        });
     }
 
     @Override
-    public String getFilename()
+    public Uni<byte[]> getData(java.util.UUID... identityToken)
     {
-        var dr = getDataRow();
-        if (dr.isPresent())
-        {
-            ResourceItemData r = (ResourceItemData) dr.get();
-            var id = r.getId();
-            return "data/" + id + ".dat";
-        }
-        return null;
+        return ReactiveTransactionUtil.withTransaction(session -> {
+            ResourceItemData rid = new ResourceItemData();
+            return rid.builder()
+                           .inActiveRange()
+                           .inDateRange()
+                           .where(ResourceItemData_.resource, Equals, this)
+                           .selectColumn(ResourceItemData_.resourceItemData)
+                           .get(byte[].class)
+                           .onItem()
+                           .ifNotNull()
+                           .transform(data -> unzip(data))
+                           .onItem()
+                           .ifNull()
+                           .continueWith(() -> {
+                               log.log(Level.SEVERE, "No resource item data exists");
+                               return new byte[]{};
+                           });
+        });
     }
 
     @Override
-    public Optional<IResourceData<?, ?, ?>> getDataRow(UUID... identityToken)
+    public Uni<String> getFilename()
     {
-        return (Optional) new ResourceItemData().builder()
-                .inActiveRange()
-                .inDateRange()
-                .where(ResourceItemData_.resource, Equals, this)
-                .get();
+        return ReactiveTransactionUtil.withTransaction(session -> {
+            ResourceItemData rid = new ResourceItemData();
+            return rid.builder()
+                           .inActiveRange()
+                           .inDateRange()
+                           .where(ResourceItemData_.resource, Equals, this)
+                           .get()
+                           .onItem()
+                           .ifNotNull()
+                           .transform(r -> "data/" + r.getId() + ".dat")
+                           .onItem()
+                           .ifNull()
+                           .continueWith(() -> null);
+        });
+    }
+
+    @Override
+    public Uni<IResourceData<?, ?, ?>> getDataRow(UUID... identityToken)
+    {
+        return ReactiveTransactionUtil.withTransaction(session -> {
+            ResourceItemData rid = new ResourceItemData();
+            return rid.builder()
+                           .inActiveRange()
+                           .inDateRange()
+                           .where(ResourceItemData_.resource, Equals, this)
+                           .get()
+                           .map(ridd -> ridd);
+        });
     }
 
     /**
@@ -221,75 +245,66 @@ public class ResourceItem
     }
 
 
-    //@SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
-    public CompletableFuture<Void> updateData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
+    public Uni<Void> updateData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
     {
         if (data == null || data.length == 0)
         {
-            throw new RuntimeException("Cannot store 0 data into a resource item");
+            return Uni.createFrom()
+                           .failure(new RuntimeException("Cannot store 0 data into a resource item"));
         }
-        //	System.out.println(LocalDateTime.now() + " start search");
 
-        //	System.out.println(LocalDateTime.now() + " start zip - " + data.length);
-        TransactionalSupplier<Void> ts = IGuiceContext.get(TransactionalSupplier.class);
-        ts.setConsumer(() -> {
-            Optional<ResourceItemData> d
-                    = new ResourceItemData().builder()
-                    .inActiveRange()
-                    //    .inDateRange()
-                    .where(ResourceItemData_.resource, Equals, this)
-                    .latestFirst()
-                    .setReturnFirst(true)
-                    .get();
-            if (d.isPresent())
-            {
-                ResourceItemData rid = d.get();
-                rid.setResourceItemData(data);
-                rid.update();
-            }
-            return null;
-        });
-        return CompletableFuture.supplyAsync(ts).whenCompleteAsync((response, error) -> {
-            if (error != null)
-            {
-                log.log(Level.SEVERE, "Error search for resource item update", error);
-            }
-        });
+        return ReactiveTransactionUtil.withTransaction(session -> {
+                    ResourceItemData rid = new ResourceItemData();
+                    return rid.builder()
+                               .inActiveRange()
+                               .where(ResourceItemData_.resource, Equals, this)
+                               .latestFirst()
+                               .setReturnFirst(true)
+                               .get()
+                               .onItem().ifNotNull().invoke(resourceItemData -> {
+                                   resourceItemData.setResourceItemData(data);
+                                   resourceItemData.update();
+                               })
+                               .onItem().transformToUni(item -> Uni.createFrom().voidItem());
+                })
+                .onFailure()
+                .invoke(error -> {
+                    log.log(Level.SEVERE, "Error search for resource item update", error);
+                });
     }
 
     @Override
-    public void updateAndKeepHistoryData(byte[] data, ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Uni<Void> updateAndKeepHistoryData(byte[] data, ISystems<?, ?> system, java.util.UUID... identityToken)
     {
-        data = zip(data);
+        final byte[] zippedData = zip(data);
 
-        Optional<ResourceItemData> d
-                = new ResourceItemData().builder()
-                .inActiveRange()
-                // .inDateRange()
-                .where(ResourceItemData_.resource, Equals, this)
-                .latestFirst()
-                .setReturnFirst(true)
-                .get();
-
-        if (d.isPresent())
-        {
-            ResourceItemData resourceItemData = d.get();
-            resourceItemData.archive();
-        }
-
-        ResourceItemData rid = new ResourceItemData();
-        rid.setResource(this);
-        rid.setEffectiveFromDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-        rid.setWarehouseCreatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-        rid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-        rid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-        rid.setResourceItemData(data);
-        rid.setActiveFlagID(getActiveFlagID());
-        rid.setOriginalSourceSystemID(getSystemID());
-        rid.setSystemID(getSystemID());
-        rid.setEnterpriseID(system.getEnterpriseID());
-        rid.persist();
+        return ReactiveTransactionUtil.withTransaction(session -> {
+            ResourceItemData rid = new ResourceItemData();
+            return rid.builder()
+                       .inActiveRange()
+                       .where(ResourceItemData_.resource, Equals, this)
+                       .latestFirst()
+                       .setReturnFirst(true)
+                       .get()
+                       .onItem().ifNotNull().invoke(resourceItemData -> {
+                           resourceItemData.archive();
+                       })
+                       .onItem().transformToUni(item -> {
+                           ResourceItemData newRid = new ResourceItemData();
+                           newRid.setResource(this);
+                           newRid.setEffectiveFromDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                           newRid.setWarehouseCreatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                           newRid.setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
+                           newRid.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                           newRid.setResourceItemData(zippedData);
+                           newRid.setActiveFlagID(getActiveFlagID());
+                           newRid.setOriginalSourceSystemID(getSystemID());
+                           newRid.setSystemID(getSystemID());
+                           newRid.setEnterpriseID(system.getEnterpriseID());
+                           return newRid.persist().onItem().transformToUni(persisted -> Uni.createFrom().voidItem());
+                       });
+        });
     }
 
     @Override
@@ -319,9 +334,32 @@ public class ResourceItem
         return getId() + "";
     }
 
-    public @Size(max = 150) String getResourceItemDataType()
+    /**
+     * Archives the entity by setting its active flag to archived.
+     * This method is reactive as it performs a database operation.
+     *
+     * @return A Uni that completes when the archiving is done
+     */
+    @SuppressWarnings("unchecked")
+    public Uni<ResourceItem> archiveReactive()
     {
-        return this.resourceItemDataType;
+        IEnterprise<?, ?> enterprise = getEnterpriseID();
+        ActiveFlagSystem activeSystem = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
+        UUID systemToken = activeSystem.getSystemToken(enterprise);
+
+        return com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
+                       .getArchivedFlag(enterprise, systemToken)
+                       .chain(archivedFlag -> {
+                           setActiveFlagID((IActiveFlag<?, ?>) archivedFlag);
+                           return update();
+                       });
+    }
+
+    @Override
+    public Uni<String> getResourceItemDataType()
+    {
+        return Uni.createFrom()
+                       .item(this.resourceItemDataType);
     }
 
     public ResourceItem setResourceItemDataType(@Size(max = 150) String resourceItemDataType)
