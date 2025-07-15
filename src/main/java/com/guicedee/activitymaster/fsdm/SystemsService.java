@@ -132,95 +132,77 @@ public class SystemsService
                                    activityMasterSystemUUID
                            )
                            .chain(classification -> {
-                               // Now that we have the classification, use an emitter to handle the rest
-                               return Uni.createFrom()
-                                          .emitter(emitter -> {
-                                              try
-                                              {
-                                                  // Create first security token
-                                                  ISecurityToken<?, ?> newSystemsSecurityToken = securityTokenService.create(
-                                                          UserGroupSecurityTokenClassifications.System.toString(),
-                                                          newSystem.getName(),
-                                                          newSystem.getDescription(),
-                                                          activityMasterSystem
-                                                  );
+                               // Now that we have the classification, chain the reactive operations
+                               return securityTokenService.create(
+                                       UserGroupSecurityTokenClassifications.System.toString(),
+                                       newSystem.getName(),
+                                       newSystem.getDescription(),
+                                       activityMasterSystem
+                               )
+                               .chain(newSystemsSecurityToken -> {
+                                   // Create second security token (reactive)
+                                   return securityTokenService.create(
+                                           UserGroupSecurityTokenClassifications.System.toString(),
+                                           UserGroupSecurityTokenClassifications.System.toString(),
+                                           UserGroupSecurityTokenClassifications.System.classificationDescription(),
+                                           activityMasterSystem
+                                   )
+                                   .chain(systemsToken -> {
+                                       // Link tokens (reactive)
+                                       return securityTokenService.link(
+                                               systemsToken,
+                                               newSystemsSecurityToken,
+                                               classification
+                                       )
+                                       .chain(v -> {
+                                           // Add classification to new system
+                                           newSystem.addOrReuseClassification(
+                                                   SystemsClassifications.SystemIdentity,
+                                                   ((SecurityToken) newSystemsSecurityToken).getSecurityToken(),
+                                                   newSystem,
+                                                   activityMasterSystemUUID
+                                           );
 
-                                                  // Create second security token
-                                                  ISecurityToken<?, ?> systemsToken = securityTokenService.create(
-                                                          UserGroupSecurityTokenClassifications.System.toString(),
-                                                          UserGroupSecurityTokenClassifications.System.toString(),
-                                                          UserGroupSecurityTokenClassifications.System.classificationDescription(),
-                                                          activityMasterSystem
-                                                  );
+                                           // Get security identity token
+                                           return getSecurityIdentityToken(newSystem, activityMasterSystemUUID)
+                                               .chain(newSystemUUID -> {
+                                                   // Create default security in parallel (fire and forget)
+                                                   ((SecurityToken) newSystemsSecurityToken).createDefaultSecurity(
+                                                           activityMasterSystem,
+                                                           activityMasterSystemUUID
+                                                   ).subscribe().with(
+                                                       result -> {
+                                                           // Security setup completed successfully
+                                                       },
+                                                       error -> {
+                                                           // Log error but don't fail the main operation
+                                                           log.warn("Error in createDefaultSecurity for newSystemsSecurityToken", error);
+                                                       }
+                                                   );
 
-                                                  // Link tokens
-                                                  securityTokenService.link(
-                                                          systemsToken,
-                                                          newSystemsSecurityToken,
-                                                          classification
-                                                  );
+                                                   ((SecurityToken) systemsToken).createDefaultSecurity(
+                                                           activityMasterSystem,
+                                                           activityMasterSystemUUID
+                                                   ).subscribe().with(
+                                                       result -> {
+                                                           // Security setup completed successfully
+                                                       },
+                                                       error -> {
+                                                           // Log error but don't fail the main operation
+                                                           log.warn("Error in createDefaultSecurity for systemsToken", error);
+                                                       }
+                                                   );
 
-                                                  // Add classification to new system
-                                                  newSystem.addOrReuseClassification(
-                                                          SystemsClassifications.SystemIdentity,
-                                                          ((SecurityToken) newSystemsSecurityToken).getSecurityToken(),
-                                                          newSystem,
-                                                          activityMasterSystemUUID
-                                                  );
+                                                   // Create involved party
+                                                   SystemsSystem systemsSystem = IGuiceContext.get(SystemsSystem.class);
+                                                   systemsSystem.createInvolvedPartyForNewSystem(newSystem);
 
-                                                  // Get security identity token
-                                                  getSecurityIdentityToken(newSystem, activityMasterSystemUUID)
-                                                          .subscribe()
-                                                          .with(
-                                                              newSystemUUID -> {
-                                                                  try {
-                                                                      // Create default security in parallel (fire and forget)
-                                                                      ((SecurityToken) newSystemsSecurityToken).createDefaultSecurity(
-                                                                              activityMasterSystem,
-                                                                              activityMasterSystemUUID
-                                                                      ).subscribe().with(
-                                                                          result -> {
-                                                                              // Security setup completed successfully
-                                                                          },
-                                                                          error -> {
-                                                                              // Log error but don't fail the main operation
-                                                                              log.warn("Error in createDefaultSecurity for newSystemsSecurityToken", error);
-                                                                          }
-                                                                      );
-
-                                                                      ((SecurityToken) systemsToken).createDefaultSecurity(
-                                                                              activityMasterSystem,
-                                                                              activityMasterSystemUUID
-                                                                      ).subscribe().with(
-                                                                          result -> {
-                                                                              // Security setup completed successfully
-                                                                          },
-                                                                          error -> {
-                                                                              // Log error but don't fail the main operation
-                                                                              log.warn("Error in createDefaultSecurity for systemsToken", error);
-                                                                          }
-                                                                      );
-
-                                                                      // Create involved party
-                                                                      SystemsSystem systemsSystem = IGuiceContext.get(SystemsSystem.class);
-                                                                      systemsSystem.createInvolvedPartyForNewSystem(newSystem);
-
-                                                                      // Complete with the new system UUID
-                                                                      emitter.complete(newSystemUUID.toString());
-                                                                  }
-                                                                  catch (Exception e)
-                                                                  {
-                                                                      emitter.fail(e);
-                                                                  }
-                                                              },
-                                                              emitter::fail
-                                                          );
-                                              }
-                                              catch (Exception e)
-                                              {
-                                                  emitter.fail(e);
-                                              }
-                                          });
+                                                   // Return the new system UUID
+                                                   return Uni.createFrom().item(newSystemUUID.toString());
+                                               });
+                                       });
+                                   });
+                               });
                            });
                        });
     }

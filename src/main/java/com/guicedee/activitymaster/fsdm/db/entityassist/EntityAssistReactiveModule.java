@@ -9,11 +9,16 @@ import org.hibernate.reactive.mutiny.Mutiny;
  * Guice module for configuring Hibernate Reactive with EntityAssist.
  * This module registers the reactive session factory and session providers.
  */
-public class EntityAssistReactiveModule extends AbstractModule implements IGuiceModule<EntityAssistReactiveModule> {
+@Deprecated(forRemoval = true)
+public class EntityAssistReactiveModule extends AbstractModule implements IGuiceModule<EntityAssistReactiveModule>
+{
 
     @Override
-    protected void configure() {
-        bind(Mutiny.SessionFactory.class).toProvider(ReactiveSessionFactoryProvider.class).in(Singleton.class);
+    protected void configure()
+    {
+        bind(Mutiny.SessionFactory.class).toProvider(ReactiveSessionFactoryProvider.class)
+                .in(Singleton.class)
+        ;
         bind(Mutiny.Session.class).toProvider(ReactiveSessionProvider.class);
     }
 }

@@ -14,6 +14,8 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
 import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTokenQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
+import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
+import io.smallrye.mutiny.Uni;
 import jakarta.validation.constraints.NotNull;
 
 import javax.cache.annotation.CacheKey;
@@ -30,161 +32,175 @@ public class SecurityTokenService
 {
 	@Inject
 	private IEnterprise<?,?> enterprise;
-	
+
 	@Inject
 	private IClassificationService<?> classificationService;
-	
+
 	@Override
-	public ISecurityToken<?, ?> get()
+	public Uni<ISecurityToken<?, ?>> get()
 	{
-		return new SecurityToken();
+		return Uni.createFrom().item(new SecurityToken());
 	}
-	
+
 	@Override
-	public void grantAccessToToken(ISecurityToken<?,?> fromToken, ISecurityToken<?,?> toToken,
+	public Uni<Void> grantAccessToToken(ISecurityToken<?,?> fromToken, ISecurityToken<?,?> toToken,
 	                               boolean create, boolean update, boolean delete, boolean read, ISystems<?,?> system)
-	
 	{
-		grantAccessToToken(fromToken, toToken, create, update, delete, read, system, null, null, null);
+		return grantAccessToToken(fromToken, toToken, create, update, delete, read, system, null, null, null);
 	}
-	
+
 	@Override
-	//@Transactional()
-	public void grantAccessToToken(@NotNull ISecurityToken<?,?> fromToken, @NotNull ISecurityToken<?,?> toToken,
+	public Uni<Void> grantAccessToToken(@NotNull ISecurityToken<?,?> fromToken, @NotNull ISecurityToken<?,?> toToken,
 	                               boolean create, boolean update, boolean delete, boolean read,
 	                               ISystems<?,?> system, String originalId,
 	                               Date effectiveFromDate, Date effectiveToDate)
 	{
-		SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
-		Optional<SecurityTokensSecurityToken> exists = sta.builder()
-		                                                  .withEnterprise(enterprise)
-		                                                  .inActiveRange()
-		                                                  .inDateRange()
-		                                                  .findBySecurityToken((SecurityToken) fromToken, (SecurityToken) toToken)
-		                                                  .get();
-		if (exists.isEmpty())
-		{
-			sta.setSystemID((Systems) system);
-			sta.setOriginalSourceSystemID((Systems) system);
-			sta.setEnterpriseID(enterprise);
-			sta.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
-			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
-			sta.setActiveFlagID((ActiveFlag) activeFlag);
-			sta.setSecurityTokenID((SecurityToken) fromToken);
-			sta.setBase((SecurityToken) toToken);
-			sta.setCreateAllowed(create);
-			sta.setUpdateAllowed(update);
-			sta.setDeleteAllowed(delete);
-			sta.setReadAllowed(read);
-			sta.persist();
-		}
-		else
-		{
-			sta = exists.get();
-		}
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
+			return sta.builder()
+				.withEnterprise(enterprise)
+				.inActiveRange()
+				.inDateRange()
+				.findBySecurityToken((SecurityToken) fromToken, (SecurityToken) toToken)
+				.get()
+				.onItem().ifNotNull().transform(exists -> exists)
+				.onItem().ifNull().switchTo(() -> {
+					sta.setSystemID((Systems) system);
+					sta.setOriginalSourceSystemID((Systems) system);
+					sta.setEnterpriseID(enterprise);
+					sta.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
+					IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+					return acService.getActiveFlag(enterprise)
+						.chain(activeFlag -> {
+							sta.setActiveFlagID((ActiveFlag) activeFlag);
+							sta.setSecurityTokenID((SecurityToken) fromToken);
+							sta.setBase((SecurityToken) toToken);
+							sta.setCreateAllowed(create);
+							sta.setUpdateAllowed(update);
+							sta.setDeleteAllowed(delete);
+							sta.setReadAllowed(read);
+							return sta.persist().map(s -> sta);
+						});
+				})
+				.chain(result -> Uni.createFrom().voidItem());
+		});
 	}
-	
+
 	@Override
-	public ISecurityToken<?,?> create(String classificationValue, String name, String description, ISystems<?,?> system)
+	public Uni<ISecurityToken<?,?>> create(String classificationValue, String name, String description, ISystems<?,?> system)
 	{
 		return create(classificationValue, name, description, system, null);
 	}
-	
+
 	@Override
-	//@Transactional()
-	public ISecurityToken<?,?> create(String classificationValue, String name, String description, ISystems<?,?> system, ISecurityToken<?,?> parent, java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> create(String classificationValue, String name, String description, ISystems<?,?> system, ISecurityToken<?,?> parent, java.util.UUID... identityToken)
 	{
-		Classification classification = (Classification) classificationService.find(classificationValue, system, identityToken);
-		
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .withEnterprise(enterprise)
-		                                   .findBySecurityToken(name, enterprise)
-		                                   .inActiveRange()
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   .get();
-		if (exists.isEmpty())
-		{
-			exists = st.builder()
-			           .withName(name)
-			           .inActiveRange()
-			           .inDateRange()
-			           .get();
-			
-			if (exists.isEmpty())
-			{
-				st.setName(name);
-				st.setDescription(description);
-				st.setSystemID(system);
-				st.setSecurityToken(UUID.randomUUID()
-				                        .toString());
-				st.setEnterpriseID(enterprise);
-				st.setSystemID(classification.getSystemID());
-				IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-				IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
-				st.setActiveFlagID(activeFlag);
-				st.setOriginalSourceSystemID(classification.getSystemID());
-				st.setSecurityTokenClassificationID(classification);
-				st.persist();
-				st.createDefaultSecurity(system, identityToken);
-			}
-			else
-			{
-				st = exists.get();
-			}
-		}
-		else
-		{
-			st = exists.get();
-		}
-		if (parent == null)
-		{
-			return st;
-		}
-		
-		link(parent, st, classification);
-		
-		return st;
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			return classificationService.find(classificationValue, system, identityToken)
+				.chain(classification -> {
+					SecurityToken st = new SecurityToken();
+
+					// First try to find by security token and enterprise
+					return st.builder()
+						.withEnterprise(enterprise)
+						.findBySecurityToken(name, enterprise)
+						.inActiveRange()
+						.inDateRange()
+						.withEnterprise(enterprise)
+						.get()
+						.onFailure(NoSuchElementException.class).recoverWithNull()
+						.chain(existingToken -> {
+							if (existingToken != null) {
+								// Token already exists
+								return Uni.createFrom().item(existingToken);
+							}
+
+							// Try to find by name
+							return st.builder()
+								.withName(name)
+								.inActiveRange()
+								.inDateRange()
+								.get()
+								.onFailure(NoSuchElementException.class).recoverWithNull()
+								.chain(existingNameToken -> {
+									if (existingNameToken != null) {
+										// Token with this name already exists
+										return Uni.createFrom().item(existingNameToken);
+									}
+
+									// Create new token
+									st.setName(name);
+									st.setDescription(description);
+									st.setSystemID(system);
+									st.setSecurityToken(UUID.randomUUID().toString());
+									st.setEnterpriseID(enterprise);
+									st.setSystemID(((Classification) classification).getSystemID());
+									st.setOriginalSourceSystemID(((Classification) classification).getSystemID());
+									st.setSecurityTokenClassificationID((Classification) classification);
+
+									IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+									return acService.getActiveFlag(enterprise)
+										.chain(activeFlag -> {
+											st.setActiveFlagID((ActiveFlag) activeFlag);
+											return st.persist()
+												.chain(() -> st.createDefaultSecurity(system, identityToken))
+												.map(v -> st);
+										});
+								});
+						})
+						.chain(securityToken -> {
+							if (parent == null) {
+								return Uni.createFrom().item(securityToken);
+							}
+
+							return link(parent, securityToken, (Classification) classification)
+								.map(v -> securityToken);
+						});
+				});
+		});
 	}
-	
+
 	@Override
-	//@Transactional()
-	public void link(ISecurityToken<?,?> parent, ISecurityToken<?,?> child, IClassification<?,?> classification, java.lang.String... identifyingToken)
+	public Uni<Void> link(ISecurityToken<?,?> parent, ISecurityToken<?,?> child, IClassification<?,?> classification, java.lang.String... identifyingToken)
 	{
-		SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
-		Optional<SecurityTokenXSecurityToken> exists = root.builder()
-		                                                   .withEnterprise(enterprise)
-		                                                   .findLink((SecurityToken) parent, (SecurityToken) child,null)
-		                                                   .withClassification(classification)
-		                                                   .inActiveRange()
-		                                                   .inDateRange()
-		                                                   .get();
-		if (exists.isEmpty())
-		{
-			root.setParentSecurityTokenID((SecurityToken) parent);
-			root.setChildSecurityTokenID((SecurityToken) child);
-			root.setClassificationID(classification);
-			root.setSystemID(((SecurityToken) parent).getSystemID());
-			root.setOriginalSourceSystemID(((SecurityToken) parent).getSystemID());
-			root.setValue(child.getSecurityToken());
-			root.setEnterpriseID(enterprise);
-			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
-			root.setActiveFlagID(activeFlag);
-			root.persist();
-			updateSecurityHierarchy(child.getId());
-		}
-		else
-		{
-			root = exists.get();
-		}
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
+			return root.builder()
+				.withEnterprise(enterprise)
+				.findLink((SecurityToken) parent, (SecurityToken) child, null)
+				.withClassification(classification)
+				.inActiveRange()
+				.inDateRange()
+				.get()
+				.onFailure(NoSuchElementException.class).recoverWithItem(() -> {
+					// No existing link found, create a new one
+					root.setParentSecurityTokenID((SecurityToken) parent);
+					root.setChildSecurityTokenID((SecurityToken) child);
+					root.setClassificationID(classification);
+					root.setSystemID(((SecurityToken) parent).getSystemID());
+					root.setOriginalSourceSystemID(((SecurityToken) parent).getSystemID());
+					root.setValue(child.getSecurityToken());
+					root.setEnterpriseID(enterprise);
+
+					IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
+					return acService.getActiveFlag(enterprise)
+						.chain(activeFlag -> {
+							root.setActiveFlagID((ActiveFlag) activeFlag);
+							return root.persist()
+								.map(v -> {
+									updateSecurityHierarchy(child.getId());
+									return root;
+								});
+						})
+						.await().indefinitely(); // This is needed to convert from Uni to actual value in this recovery path
+				})
+				.chain(existingLink -> Uni.createFrom().voidItem());
+		});
 	}
-	
+
 	private void updateSecurityHierarchy(UUID securityTokenID)
 	{
-		
+
 		//TODO hierarchy updates? i wonder
 		/*javax.sql.DataSource ds = get(javax.sql.DataSource.class, ActivityMasterDB.class);
 
@@ -203,182 +219,194 @@ public class SecurityTokenService
 			log.log(Level.SEVERE, "Unable to execute updates to hierarchy", e);
 		}*/
 	}
-	//@Transactional()
 	//@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	@Override
-	public ISecurityToken<?,?> getEveryoneGroup(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getEveryoneGroup(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup.toString(), system, identityToken)
-		                                   .withName(Everyone)
-		                                   .inActiveRange()
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   //   .canRead(enterprise, identityToken)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(UserGroup.toString(), system, identityToken)
+				.withName(Everyone)
+				.inActiveRange()
+				.inDateRange()
+				.withEnterprise(enterprise)
+				//   .canRead(enterprise, identityToken)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 	//@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
 	@Override
-	public ISecurityToken<?,?> getEverywhereGroup(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getEverywhereGroup(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup.toString(), system, identityToken)
-		                                   .withName(Everywhere)
-		                                   .inActiveRange()
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   //      .canRead(enterprise, identityToken)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(UserGroup.toString(), system, identityToken)
+				.withName(Everywhere)
+				.inActiveRange()
+				.inDateRange()
+				.withEnterprise(enterprise)
+				//      .canRead(enterprise, identityToken)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 	//@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
 	@Override
-	public ISecurityToken<?,?> getGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup.toString(), system, identityToken)
-		                                   .withName(Guests)
-		                                   .inActiveRange()
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   //     .canRead(enterprise,identityToken)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(UserGroup.toString(), system, identityToken)
+				.withName(Guests)
+				.inActiveRange()
+				.inDateRange()
+				.withEnterprise(enterprise)
+				//     .canRead(enterprise,identityToken)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 	//@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
 	@Override
-	public ISecurityToken<?,?> getRegisteredGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getRegisteredGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup.toString(), system, identityToken)
-		                                   .withName(Registered)
-		                                   .inActiveRange()
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   //    .canRead(enterprise, identityToken)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(UserGroup.toString(), system, identityToken)
+				.withName(Registered)
+				.inActiveRange()
+				.inDateRange()
+				.withEnterprise(enterprise)
+				//    .canRead(enterprise, identityToken)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 	//@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
 	@Override
-	public ISecurityToken<?,?> getVisitorsGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getVisitorsGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup.toString(), system, identityToken)
-		                                   .withName(Visitors)
-		                                   .inActiveRange()
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   //     .canRead(enterprise, identityToken)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(UserGroup.toString(), system, identityToken)
+				.withName(Visitors)
+				.inActiveRange()
+				.inDateRange()
+				.withEnterprise(enterprise)
+				//     .canRead(enterprise, identityToken)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 	//@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
 	@Override
-	public ISecurityToken<?,?> getAdministratorsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getAdministratorsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroup.toString(), system, identityToken)
-		                                   .withName(Administrators)
-		                                   .inActiveRange()
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   //  .canRead(enterprise, identityToken)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(UserGroup.toString(), system, identityToken)
+				.withName(Administrators)
+				.inActiveRange()
+				.inDateRange()
+				.withEnterprise(enterprise)
+				//  .canRead(enterprise, identityToken)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 	//@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
 	@Override
-	public ISecurityToken<?,?> getSystemsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getSystemsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(UserGroupSecurityTokenClassifications.System.toString(), system, identityToken)
-		                                   .withName(System)
-		                                   .inActiveRange()
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   //.canRead(enterprise, identityToken)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(UserGroupSecurityTokenClassifications.System.toString(), system, identityToken)
+				.withName(System)
+				.inActiveRange()
+				.inDateRange()
+				.withEnterprise(enterprise)
+				//.canRead(enterprise, identityToken)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 	//@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
 	@Override
-	public ISecurityToken<?,?> getPluginsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getPluginsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(Plugin.toString(), system, identityToken)
-		                                   .withName(Plugins)
-		                                   .inActiveRange()
-		                                   //  .canRead(enterprise, identityToken)
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(Plugin.toString(), system, identityToken)
+				.withName(Plugins)
+				.inActiveRange()
+				//  .canRead(enterprise, identityToken)
+				.inDateRange()
+				.withEnterprise(enterprise)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 //	//@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
 	@Override
-	public ISecurityToken<?,?> getApplicationsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getApplicationsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken st = new SecurityToken();
-		Optional<SecurityToken> exists = st.builder()
-		                                   .findFolder(Application.toString(), system, identityToken)
-		                                   .withName(Applications)
-		                                   .inActiveRange()
-		                                   //   .canRead(enterprise, identityToken)
-		                                   .inDateRange()
-		                                   .withEnterprise(enterprise)
-		                                   .get();
-		return exists.orElseThrow();
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityToken st = new SecurityToken();
+			return st.builder()
+				.findFolder(Application.toString(), system, identityToken)
+				.withName(Applications)
+				.inActiveRange()
+				//   .canRead(enterprise, identityToken)
+				.inDateRange()
+				.withEnterprise(enterprise)
+				.get()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
-	//@Transactional()
 //	//@CacheResult(cacheName = "SecurityGetSecurityToken")
 	@Override
-	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
-		SecurityToken view = new SecurityToken().builder()
-		                                        .findBySecurityToken(identifyingToken.toString())
-		                                        .withEnterprise(enterprise)
-		                                        .inActiveRange()
-		                                        .inDateRange()
-		                                        .withEnterprise(enterprise)
-		                                        // .canRead(enterprise, identityToken)
-		                                        .get()
-		                                        .orElse(null);
-		return view;
-	}
-	//@Transactional()
-	//@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
-	public ISecurityToken<?,?> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
-	{
-		SecurityTokenQueryBuilder builder = new SecurityToken().builder();
-		builder = builder.findBySecurityToken(identifyingToken.toString())
-		                 .withEnterprise(enterprise)
-		                 .inDateRange();
-		if (overrideActiveFlag)
-		{
-			builder.inActiveRange();
-		}
-		
-		SecurityToken view = builder
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			return new SecurityToken().builder()
+				.findBySecurityToken(identifyingToken.toString())
+				.withEnterprise(enterprise)
+				.inActiveRange()
+				.inDateRange()
+				.withEnterprise(enterprise)
+				// .canRead(enterprise, identityToken)
 				.get()
-				.orElse(null);
-		return view;
+				.onFailure(NoSuchElementException.class).recoverWithNull()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
+	}
+	//@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
+	@Override
+	public Uni<ISecurityToken<?,?>> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	{
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			SecurityTokenQueryBuilder builder = new SecurityToken().builder();
+			builder = builder.findBySecurityToken(identifyingToken.toString())
+					.withEnterprise(enterprise)
+					.inDateRange();
+			if (overrideActiveFlag)
+			{
+				builder.inActiveRange();
+			}
+
+			return builder
+				.get()
+				.onFailure(NoSuchElementException.class).recoverWithNull()
+				.onItem().transform(token -> (ISecurityToken<?,?>) token);
+		});
 	}
 }

@@ -4,8 +4,10 @@ import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
+import com.guicedee.activitymaster.fsdm.client.services.IArrangementsService;
+import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
+import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangementType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
@@ -14,9 +16,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ArrangementException;
-import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.*;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
@@ -32,14 +32,17 @@ import lombok.extern.log4j.Log4j2;
 import javax.cache.annotation.CacheKey;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
-import static com.entityassist.enumerations.OrderByType.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
+import static com.entityassist.enumerations.OrderByType.DESC;
+import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
+import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.EndOfTime;
 
 @Log4j2
 public class ArrangementsService
@@ -55,11 +58,10 @@ public class ArrangementsService
     private Vertx vertx;
 
     @Override
-    public Uni<IArrangement<?, ?>> get()
+    public IArrangement<?, ?> get()
     {
         log.debug("Getting new Arrangement instance");
-        return Uni.createFrom()
-                       .item(new Arrangement());
+        return new Arrangement();
     }
 
 
@@ -210,7 +212,7 @@ public class ArrangementsService
                            .map(xips -> {
                                List<IArrangement<?, ?>> result = xips.stream()
                                                                          .map(ArrangementXInvolvedParty::getArrangementID)
-                                                                         .filter(a -> QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow())
+                                                                         .filter(a -> convertToUTCDateTime(com.entityassist.RootEntity.getNow())
                                                                                               .isBefore(a.getEffectiveToDate()))
                                                                          .collect(Collectors.toList())
                                        ;

@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutionException;
  * In a fully reactive application, you would typically not use this provider directly,
  * but instead use ReactiveTransactionUtil.withTransaction() to execute operations within a transaction.
  */
+@Deprecated(forRemoval = true)
 public class ReactiveSessionProvider implements Provider<Mutiny.Session> {
 
     @Inject
