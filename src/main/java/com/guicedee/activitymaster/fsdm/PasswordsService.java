@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
-import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
@@ -19,12 +18,12 @@ import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.pairing.Pair;
+import io.smallrye.mutiny.Uni;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.log4j.Log4j2;
 
-import javax.cache.annotation.CacheRemove;
-import javax.cache.annotation.CacheResult;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.NoSuchElementException;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.InvolvedPartyClassifications.*;
@@ -32,14 +31,15 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.t
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.NameTypes.*;
 import static com.guicedee.client.IGuiceContext.*;
 
+@Log4j2
 public class PasswordsService implements IPasswordsService<PasswordsService>
 {
 	@Inject
 	private IEnterprise<?, ?> enterprise;
-	
+
 	@Inject
 	private IInvolvedPartyService<?> involvedPartyService;
-	
+
 	private String encrypt(String toEncrypt, byte[] salt)
 	{
 		Passwords passwords = new Passwords();
@@ -52,182 +52,246 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		//String passEncrypted = new String(passHashed);
 		return passEncrypted;
 	}
-	
-	//@Transactional()
-	@Override
-	public IInvolvedParty<?, ?> findByUsername(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
+
+ @Override
+	public Uni<IInvolvedParty<?, ?>> findByUsername(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		IInvolvedParty<?, ?> party = new InvolvedParty().builder()
-		                                                .withEnterprise(enterprise)
-		                                                .findByIdentificationType(IdentificationTypeUserName, username,
-				                                                system, identityToken)
-		                                                .get()
-		                                                .orElseThrow(() -> new SecurityAccessException("Involved Party Does Not Exist"));
-		return party;
+		log.debug("Finding involved party by username: {}", username);
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			return new InvolvedParty().builder()
+					.withEnterprise(enterprise)
+					.findByIdentificationType(IdentificationTypeUserName, username, system, identityToken)
+					.get()
+					.onItem().ifNull().failWith(() -> new SecurityAccessException("Involved Party Does Not Exist"))
+					.map(party -> (IInvolvedParty<?, ?>) party);
+		});
 	}
-	
-	//@Transactional()
-	@Override
-	public IInvolvedParty<?, ?> findByUsernameAndPassword(String username, String password, ISystems<?, ?> system, boolean throwForNoUser, java.util.UUID... identityToken)
+
+ @Override
+	public Uni<IInvolvedParty<?, ?>> findByUsernameAndPassword(String username, String password, ISystems<?, ?> system, boolean throwForNoUser, java.util.UUID... identityToken)
 	{
-		if (!doesUsernameExist(username, system, identityToken))
-		{
-			if (throwForNoUser)
-			{
-				throw new SecurityAccessException("Invalid Username");
-			}
-			else
-			{
-				return null;
-			}
-		}
-		
-		UUID systemToken = get(InvolvedPartySystem.class).getSystemToken(system.getEnterpriseID());
-		InvolvedParty foundPart = new InvolvedParty().builder()
-		                                             .findByIdentificationType(IdentificationTypeUserName,
-				                                             username, system,
-				                                             systemToken)
-		                                             .get()
-		                                             .orElse(null);
-		if (foundPart == null)
-		{
-			throw new SecurityAccessException("Unable to find any Involved Party with that username");
-		}
-		
-		Optional<IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?>> saltEntity = foundPart.findClassification(SecurityPasswordSalt, system, systemToken);
-		Optional<IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?>> passEntity = foundPart.findClassification(SecurityPassword, system, systemToken);
-		if (saltEntity.isEmpty() || passEntity.isEmpty())
-		{
-			if (throwForNoUser)
-			{
-				throw new SecurityAccessException("Involved Party does not have Username/Password credentials");
-			}
-		}
-		
-		String saltString = saltEntity.get()
-		                              .getValue();
-		byte[] salt = new Passwords().integerDecrypt(saltString);
-		//saltString = new String();
-		String passMatch = passEntity.get()
-		                             .getValue();
-		String passEncrypted = encrypt(password, salt);
-		if (!passEncrypted.equalsIgnoreCase(passMatch))
-		{
-			throw new SecurityAccessException("Password Incorrect");
-		}
-		return foundPart;
+		log.debug("Finding involved party by username and password: {}", username);
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			return doesUsernameExist(username, system, identityToken)
+				.chain(exists -> {
+					if (!exists) {
+						if (throwForNoUser) {
+							return Uni.createFrom().failure(new SecurityAccessException("Invalid Username"));
+						} else {
+							return Uni.createFrom().nullItem();
+						}
+					}
+
+					// Get system token
+					return Uni.createFrom().item(() -> get(InvolvedPartySystem.class).getSystemToken(system.getEnterpriseID()))
+						.chain(systemToken -> {
+							// Find involved party by username
+							return new InvolvedParty().builder()
+								.findByIdentificationType(IdentificationTypeUserName, username, system, systemToken)
+								.get()
+								.onItem().ifNull().failWith(() -> new SecurityAccessException("Unable to find any Involved Party with that username"))
+								.chain(foundPart -> {
+									// Get salt and password classifications
+									Uni<IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?>> saltEntityUni = 
+										foundPart.findClassification(SecurityPasswordSalt, system, systemToken)
+											.onItem().ifNull().failWith(() -> new SecurityAccessException("Involved Party does not have salt credentials"));
+
+									Uni<IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?>> passEntityUni = 
+										foundPart.findClassification(SecurityPassword, system, systemToken)
+											.onItem().ifNull().failWith(() -> new SecurityAccessException("Involved Party does not have password credentials"));
+
+									// Combine salt and password entities
+									return Uni.combine().all().unis(saltEntityUni, passEntityUni)
+										.asTuple()
+										.chain(tuple -> {
+											IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?> saltEntity = tuple.getItem1();
+											IRelationshipValue<InvolvedParty, IClassification<?, ?>, ?> passEntity = tuple.getItem2();
+
+											String saltString = saltEntity.getValue();
+											byte[] salt = new Passwords().integerDecrypt(saltString);
+											String passMatch = passEntity.getValue();
+											String passEncrypted = encrypt(password, salt);
+
+											if (!passEncrypted.equalsIgnoreCase(passMatch)) {
+												return Uni.createFrom().failure(new SecurityAccessException("Password Incorrect"));
+											}
+
+											return Uni.createFrom().item((IInvolvedParty<?, ?>) foundPart);
+										});
+								});
+						});
+				});
+		});
 	}
-	
-	//@Transactional()
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	//@CacheResult(cacheName = "UsersList")
+
+ @SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
-	public List<IInvolvedParty<?, ?>> getAllUsers(ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IInvolvedParty<?, ?>>> getAllUsers(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		return (List) new InvolvedParty().builder()
-		                                 .findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
-		                                 .getAll();
+		log.debug("Getting all users for system: {}", system.getName());
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			return new InvolvedParty().builder()
+					.findByIdentificationType(IdentificationTypeUserName, null, system, identityToken)
+					.getAll()
+					.onFailure().invoke(error -> log.error("Error getting all users: {}", error.getMessage(), error))
+					.map(list -> {
+						List<IInvolvedParty<?, ?>> result = new ArrayList<>();
+						for (Object item : list) {
+							result.add((IInvolvedParty<?, ?>) item);
+						}
+						return result;
+					});
+		});
 	}
-	//@Transactional()
-	@Override
-	@CacheRemove(cacheName = "UsersList")
-	////@Transactional()
-	public IInvolvedParty<?, ?> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken)
+ @Override
+	public Uni<IInvolvedParty<?, ?>> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		byte[] salt = System.getProperty("systemSalt") != null ? System.getProperty("systemSalt")
-		                                                               .getBytes() : new Passwords().getNextSalt();
-		
-		String passEncrypted = encrypt(password, salt);
-		String saltEncrypted = new Passwords().integerEncrypt(salt);
-		;
-		
-		involvedParty.addOrUpdateClassification(SecurityPassword, null, passEncrypted, system, identityToken);
-		involvedParty.addOrUpdateClassification(SecurityPasswordSalt, null, saltEncrypted, system, identityToken);
-		IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = involvedPartyService.findInvolvedPartyIdentificationType(IdentificationTypeUserName.toString(), system, identityToken);
-		involvedParty.addOrUpdateInvolvedPartyIdentificationType(NoClassification.toString(), involvedPartyIdentificationType,
-				null, username, system, identityToken);
-		
-		return involvedParty;
+		log.debug("Adding/updating username and password for involved party: {}", involvedParty.getId());
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			// Generate salt and encrypt password
+			byte[] salt = System.getProperty("systemSalt") != null ? 
+				System.getProperty("systemSalt").getBytes() : 
+				new Passwords().getNextSalt();
+
+			String passEncrypted = encrypt(password, salt);
+			String saltEncrypted = new Passwords().integerEncrypt(salt);
+
+			// First add password classification
+			return involvedParty.addOrUpdateClassification(SecurityPassword, null, passEncrypted, system, identityToken)
+				.chain(() -> {
+					// Then add salt classification
+					return involvedParty.addOrUpdateClassification(SecurityPasswordSalt, null, saltEncrypted, system, identityToken);
+				})
+				.chain(() -> {
+					// Get identification type
+					return involvedPartyService.findInvolvedPartyIdentificationType(
+						IdentificationTypeUserName.toString(), system, identityToken);
+				})
+				.chain(identificationType -> {
+					// Add identification type
+					return involvedParty.addOrUpdateInvolvedPartyIdentificationType(
+						NoClassification.toString(), identificationType,
+						null, username, system, identityToken);
+				})
+				.map(result -> involvedParty)
+				.onFailure().invoke(error -> log.error("Error adding/updating username and password: {}", error.getMessage(), error));
+		});
 	}
-	//@Transactional()
-	@Override
-	public boolean doesUsernameExist(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
+ @Override
+	public Uni<Boolean> doesUsernameExist(String username, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
-		return new InvolvedParty().builder()
-		                          .withEnterprise(enterprise)
-		                          .inActiveRange()
-		                          .inDateRange()
-		                          .findByIdentificationType(IdentificationTypeUserName, username, system, identityToken)
-		                          .getCount() > 0;
+		log.debug("Checking if username exists: {}", username);
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			return new InvolvedParty().builder()
+					.withEnterprise(enterprise)
+					.inActiveRange()
+					.inDateRange()
+					.findByIdentificationType(IdentificationTypeUserName, username, system, identityToken)
+					.getCount()
+					.onFailure().invoke(error -> log.error("Error checking if username exists: {}", error.getMessage(), error))
+					.map(count -> count > 0);
+		});
 	}
-	
-	@Override
-	//@Transactional()
-	public IInvolvedParty<?, ?> createAdminAndCreatorUserForEnterprise(ISystems<?, ?> system, String adminUserName,
+
+ @Override
+	public Uni<IInvolvedParty<?, ?>> createAdminAndCreatorUserForEnterprise(ISystems<?, ?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey)
 	{
+		log.debug("Creating admin and creator user for enterprise: {}", system.getEnterpriseID());
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1);
-		
-		UUID identityToken = get(ISystemsService.class).getSecurityIdentityToken(system);
-		
-		SecurityToken administratorsGroup = (SecurityToken) get(SecurityTokenService.class).getAdministratorsFolder(system);
-		
-		InvolvedPartyService service = get(InvolvedPartyService.class);
-		
-		Pair<String, String> pair = new Pair<>(
-				IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(), adminUserName);
-		Optional<InvolvedParty> exists = new InvolvedParty().builder()
-		                                                    .findByIdentificationType(
-				                                                    IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
-				                                                    adminUserName, system)
-		                                                    .get();
-		
-		IInvolvedParty<?, ?> administratorUser;
-		if (exists.isEmpty())
-		{
-			var c = service.create(system, pair, true)
-					.whenCompleteAsync((adminUser,error)->{
-						TransactionalSupplier<IInvolvedParty<?,?>> ts = IGuiceContext.get(TransactionalSupplier.class);
-						ts.setConsumer(()->{
-							adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeUserName.toString(),
-									adminUserName, system, identityToken);
-							
-							adminUser.addOrReuseInvolvedPartyType(NoClassification.toString(), IPTypes.TypeIndividual.toString(), "Creator Individual", system, identityToken);
-							adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), PreferredNameType.toString(), "Enterprise Creator", system, identityToken);
-							adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), CommonNameType.toString(), "Enterprise Creator", system, identityToken);
-							adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FullNameType.toString(), "Enterprise Creator", system, identityToken);
-							adminUser.addOrReuseInvolvedPartyNameType(NoClassification.toString(), FirstNameType.toString(), "Administrator", system, identityToken);
-							
-							get(SecurityTokenService.class).create(SecurityTokenClassifications.Identity.toString(),
-									adminUserName,
-									"The creator of the enterprise", system, administratorsGroup, identityToken);
-							
-							adminUser.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(),
-									adminUserName, system, identityToken);
-							
-							addUpdateUsernamePassword(adminUserName, adminPassword, adminUser, system, identityToken);
-							((InvolvedParty)adminUser).createDefaultSecurity(system, identityToken);
-							return adminUser;
+
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			// Get security identity token
+			return Uni.createFrom().item(() -> get(ISystemsService.class).getSecurityIdentityToken(system))
+				.chain(identityToken -> {
+					// Get administrators folder
+					return Uni.createFrom().item(() -> get(SecurityTokenService.class).getAdministratorsFolder(system))
+						.chain(administratorsGroup -> {
+							// Check if user already exists
+							Pair<String, String> pair = new Pair<>(
+								IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(), adminUserName);
+
+							return new InvolvedParty().builder()
+								.findByIdentificationType(
+									IdentificationTypes.IdentificationTypeEnterpriseCreatorRole,
+									adminUserName, system)
+								.get()
+								.onItem().ifNotNull().transform(existingUser -> (IInvolvedParty<?, ?>) existingUser)
+								.onItem().ifNull().switchTo(() -> {
+									// Create new user
+									InvolvedPartyService service = get(InvolvedPartyService.class);
+									return service.create(system, pair, true)
+										.chain(adminUser -> {
+											// Add identification types
+											return adminUser.addOrReuseInvolvedPartyIdentificationType(
+												NoClassification.toString(), 
+												IdentificationTypes.IdentificationTypeUserName.toString(),
+												adminUserName, system, identityToken)
+												.chain(() -> {
+													// Add party type
+													return adminUser.addOrReuseInvolvedPartyType(
+														NoClassification.toString(), 
+														IPTypes.TypeIndividual.toString(), 
+														"Creator Individual", system, identityToken);
+												})
+												.chain(() -> {
+													// Add name types in sequence
+													return adminUser.addOrReuseInvolvedPartyNameType(
+														NoClassification.toString(), 
+														PreferredNameType.toString(), 
+														"Enterprise Creator", system, identityToken);
+												})
+												.chain(() -> {
+													return adminUser.addOrReuseInvolvedPartyNameType(
+														NoClassification.toString(), 
+														CommonNameType.toString(), 
+														"Enterprise Creator", system, identityToken);
+												})
+												.chain(() -> {
+													return adminUser.addOrReuseInvolvedPartyNameType(
+														NoClassification.toString(), 
+														FullNameType.toString(), 
+														"Enterprise Creator", system, identityToken);
+												})
+												.chain(() -> {
+													return adminUser.addOrReuseInvolvedPartyNameType(
+														NoClassification.toString(), 
+														FirstNameType.toString(), 
+														"Administrator", system, identityToken);
+												})
+												.chain(() -> {
+													// Create security token
+													SecurityTokenService tokenService = get(SecurityTokenService.class);
+													return tokenService.create(
+														SecurityTokenClassifications.Identity.toString(),
+														adminUserName,
+														"The creator of the enterprise", 
+														system, 
+														(SecurityToken)administratorsGroup, 
+														identityToken);
+												})
+												.chain(() -> {
+													// Add enterprise creator role
+													return adminUser.addOrReuseInvolvedPartyIdentificationType(
+														NoClassification.toString(), 
+														IdentificationTypes.IdentificationTypeEnterpriseCreatorRole.toString(),
+														adminUserName, system, identityToken);
+												})
+												.chain(() -> {
+													// Add username and password
+													return addUpdateUsernamePassword(
+														adminUserName, adminPassword, adminUser, system, identityToken);
+												})
+												.chain(() -> {
+													// Create default security
+													return ((InvolvedParty)adminUser).createDefaultSecurity(system, identityToken);
+												})
+												.map(result -> adminUser);
+										});
+								});
 						});
-					})
-					;
-			try
-			{
-				administratorUser = c.get();
-			}
-			catch (InterruptedException e)
-			{
-				throw new RuntimeException(e);
-			}
-			catch (ExecutionException e)
-			{
-				throw new RuntimeException(e);
-			}
-		}
-		else
-		{
-			administratorUser = exists.get();
-		}
-		return administratorUser;
+				})
+				.onFailure().invoke(error -> log.error("Error creating admin user: {}", error.getMessage(), error));
+		});
 	}
 }

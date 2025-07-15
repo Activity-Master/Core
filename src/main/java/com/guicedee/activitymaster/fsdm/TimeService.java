@@ -4,8 +4,8 @@ package com.guicedee.activitymaster.fsdm;
 import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
 import com.guicedee.activitymaster.fsdm.db.entities.time.DayParts;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
@@ -77,7 +77,7 @@ public class TimeService<J extends TimeService<J>>
 	}
 	//@Transactional()
 	//@CacheResult(cacheName = "TimeDayParts")
-	public DayParts getDayPart(@CacheKey int hour, @CacheKey int minute)
+	public DayParts getDayPart( int hour,  int minute)
 	{
 		if (hour <= 3)
 		{

@@ -16,8 +16,8 @@ import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 import com.guicedee.activitymaster.fsdm.threads.TimeLoaderThread;
 import com.guicedee.guicedinjection.JobService;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+
+
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -128,7 +128,7 @@ public class TimeSystem
 	}
 	//@Transactional()
 	////@CacheResult(cacheName = "Years")
-	public Years getYear(@CacheKey Date date)
+	public Years getYear( Date date)
 	{
 		Years year = null;
 		year = getYearFromID(date);
@@ -238,7 +238,7 @@ public class TimeSystem
 	
 	//@Transactional()
 	//@CacheResult
-	public Quarters getQuarter(@CacheKey Date date)
+	public Quarters getQuarter( Date date)
 	{
 		Quarters month = null;
 		try
@@ -318,7 +318,7 @@ public class TimeSystem
 	 * @return
 	 */
 	//@CacheResult
-	public Months getMonth(@CacheKey Date date)
+	public Months getMonth( Date date)
 	{
 		Months month = null;
 		month = getMonthFromID(date);
@@ -337,7 +337,7 @@ public class TimeSystem
 	}
 	//@Transactional()
 	//@CacheResult
-	MonthOfYear getMonthOfYear(@CacheKey Integer MonthOfYear)
+	MonthOfYear getMonthOfYear( Integer MonthOfYear)
 	{
 		return new MonthOfYear().builder()
 		                        .where(MonthOfYear_.monthInYearNumber, Equals, MonthOfYear)
@@ -429,7 +429,7 @@ public class TimeSystem
 	 * @return
 	 */
 	//@CacheResult
-	public Weeks getWeek(@CacheKey Date date)
+	public Weeks getWeek( Date date)
 	{
 		Weeks month = null;
 		try
@@ -499,7 +499,7 @@ public class TimeSystem
 	//@Transactional()
 	//@CacheResult
 	@Override
-	public boolean getDay(@CacheKey Date date)
+	public boolean getDay( Date date)
 	{
 		Days day = null;
 		try
@@ -529,7 +529,7 @@ public class TimeSystem
 	}
 	//@Transactional()
 	//@CacheResult
-	DayNames getDayName(@CacheKey String dayName)
+	DayNames getDayName( String dayName)
 	{
 		return new DayNames().builder()
 		                     .where(DayNames_.dayName, Equals, dayName)

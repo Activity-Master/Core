@@ -1,14 +1,10 @@
 package com.guicedee.activitymaster.fsdm.db;
 
-import bitronix.tm.TransactionManagerServices;
-import com.guicedee.activitymaster.fsdm.ActivityMasterStatics;
 import com.guicedee.client.Environment;
-import com.guicedee.guicedpersistence.btm.BTMConnectionBaseInfo;
-import com.guicedee.guicedpersistence.btm.BTMTransactionIsolation;
-import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
-import com.guicedee.guicedpersistence.db.DatabaseModule;
+import com.guicedee.vertxpersistence.ConnectionBaseInfo;
+import com.guicedee.vertxpersistence.DatabaseModule;
+import com.guicedee.vertxpersistence.implementations.postgres.PostgresConnectionBaseInfo;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
 import java.util.Properties;
@@ -24,44 +20,18 @@ public class ActivityMasterDBModule
 		return persistenceUnitName;
 	}
 
-
-
 	@Override
 	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnitDescriptor persistenceUnit, Properties properties)
 	{
-		TransactionManagerServices.getConfiguration()
-		                          .setAllowMultipleLrc(false)
-		                          .setAsynchronous2Pc(true)
-		                          .setDisableJmx(true)
-		                          .setMaxLogSizeInMb(100)
-		                          .setSkipCorruptedLogs(true)
-		                          .setDefaultTransactionTimeout(ActivityMasterStatics.transactionDebugTimeout)
-		                          .setWarnAboutZeroResourceTransaction(false);
-		
-		return new BTMConnectionBaseInfo()
-				.setEnableJdbc4ConnectionTest(true)
-				.setMaxPoolSize(100)
-				.setMinPoolSize(5)
-				.setPrefill(true)
-				.setMaxIdleTime(300)
-				.setApplyTransactionTimeout(true)
-				.setMaxLifeTime(60)
-				.setShareTransactionConnections(true)
-				.setAllowLocalTransactions(true)
-				.setAcquireIncrement(5)
-				.setTestQuery("SELECT 1")
-				.setUrl("jdbc:postgresql://" + Environment.getProperty("FSDM_DBSERVER","localhost:5432") + "/" + Environment.getProperty("FSDM_DBNAME","fsdm"))
-				.setTransactionIsolation(BTMTransactionIsolation.READ_COMMITTED.toString())
-				.setXa(true)
-				.setDriver("org.postgresql.Driver")
-				.setClassName("org.postgresql.xa.PGXADataSource")
-				//.setDriverClass("org.postgresql.xa.PGXADataSource")
-				.setUsername(Environment.getProperty("FSDM_USER","fsdm"))
-				.setServerName(Environment.getProperty("FSDM_DBSERVER","localhost"))
-				.setDatabaseName(Environment.getProperty("FSDM_DBNAME","fsdm"))
-				//.setPort("5432")
-				.setPassword(Environment.getProperty("PG_PASSWORD","nopassword"))
-				;
+		 PostgresConnectionBaseInfo connectionInfo = new PostgresConnectionBaseInfo();
+        connectionInfo.setServerName(Environment.getProperty("FSDM_DBSERVER","localhost"));
+        connectionInfo.setPort(Environment.getProperty("FSDM_DBPORT","5432"));
+        connectionInfo.setDatabaseName(Environment.getProperty("FSDM_DBNAME","fsdm"));
+        connectionInfo.setUsername(Environment.getProperty("FSDM_USER","fsdm"));
+        connectionInfo.setPassword(Environment.getProperty("FSDM_DBNAME","fsdm"));
+        connectionInfo.setDefaultConnection(true);
+        connectionInfo.setReactive(true);
+        return connectionInfo;
 	}
 	
 	@Override

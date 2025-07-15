@@ -14,8 +14,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.guicedee.services</groupId>
+            <groupId>io.vertx</groupId>
             <artifactId>vertx-pg-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>scram</artifactId>
         </dependency>
 
         <!--        <dependency>
@@ -51,13 +55,13 @@
                 </dependency>
         -->
 
-        <dependency>
+<!--        <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>cache-api</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
-            <groupId>com.guicedee.services</groupId>
+            <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
 
@@ -81,12 +85,15 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>com.guicedee.persistence</groupId>
             <artifactId>guiced-hazelcast</artifactId>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.guicedee</groupId>
+            <artifactId>guiced-vertx-persistence</artifactId>
         </dependency>
-
-
         <!--
 
 
@@ -97,15 +104,19 @@
                 </dependency>
         -->
 
+<!--
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>cache-annotations-ri-guice</artifactId>
         </dependency>
+-->
 
+<!--
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>guice-persist</artifactId>
         </dependency>
+-->
 
         <dependency>
             <groupId>com.guicedee.services</groupId>

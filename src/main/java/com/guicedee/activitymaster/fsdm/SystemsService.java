@@ -17,7 +17,7 @@ import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 
-import javax.cache.annotation.CacheKey;
+
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -43,14 +43,14 @@ public class SystemsService
 
     @Override
     //@CacheResult(cacheName = "GetActivityMaster")
-    public Uni<ISystems<?, ?>> getActivityMaster(@CacheKey ISystems<?, ?> requestingSystem, @CacheKey java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> getActivityMaster( ISystems<?, ?> requestingSystem,  java.util.UUID... identityToken)
     {
         return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
     }
 
     @Override
     //@CacheResult(cacheName = "GetActivityMasterEnterprise")
-    public Uni<ISystems<?, ?>> getActivityMaster(@CacheKey IEnterprise<?, ?> requestingSystem, java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> getActivityMaster( IEnterprise<?, ?> requestingSystem, java.util.UUID... identityToken)
     {
         return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
     }
@@ -72,7 +72,7 @@ public class SystemsService
     //@Transactional()
     //@CacheResult(cacheName = "FindSystemEnterpriseLevel")
     @Override
-    public Uni<ISystems<?, ?>> findSystem(@CacheKey IEnterprise<?, ?> enterprise, @CacheKey String systemName, java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> findSystem( IEnterprise<?, ?> enterprise,  String systemName, java.util.UUID... identityToken)
     {
         Systems search = new Systems();
         return search.builder()
@@ -89,7 +89,7 @@ public class SystemsService
     //@Transactional()
     //@CacheResult(cacheName = "FindSystemByIdentityClassification")
     @Override
-    public Uni<ISystems<?, ?>> findSystem(@CacheKey ISystems<?, ?> requestingSystem, @CacheKey String parentSystem, java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> findSystem( ISystems<?, ?> requestingSystem,  String parentSystem, java.util.UUID... identityToken)
     {
         SystemsXClassification systemClassifications = new SystemsXClassification();
 
@@ -308,7 +308,7 @@ public class SystemsService
 
     //@Transactional()
     //@CacheResult(cacheName = "SystemGetSecurityToken")
-    public Uni<ISecurityToken<?, ?>> getSecurityToken(@CacheKey String uuidIdentity, @CacheKey ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Uni<ISecurityToken<?, ?>> getSecurityToken( String uuidIdentity,  ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return new SecurityToken().builder()
                        .findBySecurityToken(uuidIdentity.toString(), enterprise)
@@ -323,7 +323,7 @@ public class SystemsService
 
     //@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
     @Override
-    public Uni<UUID> getSecurityIdentityToken(@CacheKey ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Uni<UUID> getSecurityIdentityToken( ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return system.findClassification(SystemIdentity, system, identityToken)
                        .onFailure().recoverWithItem(() -> null) // Handle failure case

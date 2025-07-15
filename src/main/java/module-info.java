@@ -1,30 +1,25 @@
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule;
-import com.guicedee.activitymaster.fsdm.db.entityassist.EntityAssistReactiveModule;
 import com.guicedee.activitymaster.fsdm.implementations.*;
 import com.guicedee.activitymaster.fsdm.injections.*;
 import com.guicedee.activitymaster.fsdm.systems.*;
-import com.guicedee.guicedhazelcast.services.IGuicedHazelcastServerConfig;
 import com.guicedee.guicedinjection.interfaces.*;
 
 module com.guicedee.activitymaster.fsdm {
 	requires transitive com.guicedee.activitymaster.fsdm.client;
 
 	exports com.guicedee.activitymaster.fsdm;
-
-	exports com.guicedee.activitymaster.fsdm.async;
 	exports com.guicedee.activitymaster.fsdm.services;
 
 	exports com.guicedee.activitymaster.fsdm.services.system;
 	exports com.guicedee.activitymaster.fsdm.db.entities.time;
 
-	exports com.guicedee.activitymaster.fsdm.threads;
+	//exports com.guicedee.activitymaster.fsdm.threads;
 	exports com.guicedee.activitymaster.fsdm.implementations.interceptors;
 
 
-	requires org.postgresql.jdbc;
+	requires io.vertx.sql.client.pg;
 	requires com.guicedee.guicedinjection;
 
 	requires com.guicedee.jsonrepresentation;
@@ -42,8 +37,6 @@ module com.guicedee.activitymaster.fsdm {
 	requires jakarta.activation;
 	requires jakarta.validation;
 
-	requires cache.annotations.ri.guice;
-
 	requires java.naming;
 
 	requires java.logging;
@@ -51,15 +44,13 @@ module com.guicedee.activitymaster.fsdm {
 	requires com.google.guice;
 	requires org.hibernate.validator;
 
-	requires com.guicedee.guicedhazelcast;
-
 	requires org.apache.commons.compress;
-	requires tm.bitronix.btm;
+	//requires tm.bitronix.btm;
 	requires org.jboss.logging;
 
 	provides IGuiceModule with
 			EventInterceptorsBinder,
-			ActivityMasterDBModule,
+		//	ActivityMasterDBModule,
 			ActivityMasterBinder,
 			EnterpriseBinder,
 			ClassificationConceptsBinder,
@@ -75,8 +66,7 @@ module com.guicedee.activitymaster.fsdm {
 			ProductsBinder,
 			RulesBinder,
 			ActivityMasterSystemBinder,
-			PasswordsServiceBinder,
-			EntityAssistReactiveModule;
+			PasswordsServiceBinder;
 
 
 	provides IGuiceConfigurator with ActivityMasterScanConfiguration;
@@ -95,11 +85,11 @@ module com.guicedee.activitymaster.fsdm {
 			ProductsSystem
 			;
 
-	provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
-	provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
-	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
+	//provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
+	//provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
+	//provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 
-	provides IGuicePreStartup with FSDMHazelcastPreStartup;
+//	provides IGuicePreStartup with FSDMHazelcastPreStartup;
 	provides IGuicePostStartup with ActivityMasterPostStartup;
 
 

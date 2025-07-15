@@ -17,8 +17,8 @@ import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+
+
 import java.util.NoSuchElementException;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
@@ -187,7 +187,7 @@ public class ClassificationService
 
 	//@CacheResult(cacheName = "ClassificationFindWithSimpleString")
 	@Override
-	public Uni<IClassification<?, ?>> find(@CacheKey String name, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> find( String name,  ISystems<?, ?> system,  java.util.UUID... identityToken)
 	{
 		return find(name, null, system, identityToken);
 	}
@@ -195,7 +195,7 @@ public class ClassificationService
 	//@Transactional()
 	//@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
 	@Override
-	public Uni<IClassification<?, ?>> find(@CacheKey String name, @CacheKey EnterpriseClassificationDataConcepts concept, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> find( String name,  EnterpriseClassificationDataConcepts concept,  ISystems<?, ?> system,  java.util.UUID... identityToken)
 	{
 		Classification search = new Classification();
 		return search.builder()
@@ -213,7 +213,7 @@ public class ClassificationService
 	//@Transactional()
 	//@CacheResult(cacheName = "GetHierarchyTypeClassification")
 	@Override
-	public Uni<IClassification<?, ?>> getHierarchyType(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> getHierarchyType( ISystems<?, ?> system,  java.util.UUID... identityToken)
 	{
 		return find(HierarchyTypeClassification.toString(),
 				system,
@@ -223,7 +223,7 @@ public class ClassificationService
 	//@Transactional()
 	//@CacheResult(cacheName = "GetNoClassification")
 	@Override
-	public Uni<IClassification<?, ?>> getNoClassification(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> getNoClassification( ISystems<?, ?> system,  java.util.UUID... identityToken)
 	{
 		return find(NoClassification.toString(),
 				system,
@@ -233,7 +233,7 @@ public class ClassificationService
 	//@Transactional()
 	//@CacheResult(cacheName = "IdentityTypeClassification")
 	@Override
-	public Uni<IClassification<?, ?>> getIdentityType(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> getIdentityType( ISystems<?, ?> system,  java.util.UUID... identityToken)
 	{
 		return find(Identity.name(),
 				system,

@@ -29,7 +29,7 @@ import io.vertx.core.Vertx;
 import jakarta.persistence.criteria.JoinType;
 import lombok.extern.log4j.Log4j2;
 
-import javax.cache.annotation.CacheKey;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ public class ArrangementsService
     @Override
     ////@CacheResult(cacheName = "ArrangementTypes")
     //
-    public Uni<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.util.UUID key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+    public Uni<IArrangementType<?, ?>> createArrangementType( String type, java.util.UUID key,  ISystems<?, ?> system,  java.util.UUID... identityToken)
     {
         log.debug("Creating arrangement type: {}, key: {}", type, key);
 
@@ -1031,7 +1031,7 @@ public class ArrangementsService
 
     /// /@CacheResult(cacheName = "ArrangementArrangementTypeString")
     @Override
-    public Uni<IArrangementType<?, ?>> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+    public Uni<IArrangementType<?, ?>> find( String idType,  ISystems<?, ?> system,  java.util.UUID... identityToken)
     {
         log.debug("Finding arrangement type by name: {}", idType);
         return ReactiveTransactionUtil.withTransaction(session -> {
@@ -1058,7 +1058,7 @@ public class ArrangementsService
 
     @Override
     ////@CacheResult
-    public Uni<IArrangement<?, ?>> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Uni<IArrangement<?, ?>> find( java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         log.debug("Finding arrangement by ID: {}", id);
         return ReactiveTransactionUtil.withTransaction(session -> {
@@ -1081,7 +1081,7 @@ public class ArrangementsService
 
     @Override
     ////@CacheResult
-    public Uni<IArrangement<?, ?>> find(@CacheKey UUID id)
+    public Uni<IArrangement<?, ?>> find( UUID id)
     {
         log.debug("Finding arrangement by ID (no system): {}", id);
         return ReactiveTransactionUtil.withTransaction(session -> {

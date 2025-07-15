@@ -21,39 +21,71 @@ public class ClassificationsSystem
 
 	@Inject
 	private ISystemsService<?> systemsService;
-	
+
 	@Override
 	public ISystems<?,?>  registerSystem(IEnterprise<?,?> enterprise)
 	{
 		return systemsService
-		              .create(enterprise, getSystemName(), getSystemDescription());
+		              .create(enterprise, getSystemName(), getSystemDescription())
+		              .await().atMost(java.time.Duration.ofMinutes(1));
 	}
-	
+
 	@Override
 	public void createDefaults(IEnterprise<?,?> enterprise)
 	{
-		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName);;
-		//Create Root Enterprise Name
-		service.create(enterprise.getName(),enterprise.getName(),
-				EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, activityMasterSystem);
-		
-		logProgress("Classifications System", "Loaded Default Classifications...", 1);
-		
-		service.create(DefaultClassifications.HierarchyTypeClassification, activityMasterSystem);
-		service.create(DefaultClassifications.HierarchyTypeClassification, activityMasterSystem, enterprise.getName());
-		service.create(DefaultClassifications.NoClassification, activityMasterSystem, enterprise.getName());
-		service.create(DefaultClassifications.DefaultClassification, activityMasterSystem, enterprise.getName());
-		service.create(DefaultClassifications.Security, activityMasterSystem, enterprise.getName());
-		
-		logProgress("Classifications System", "Loading Security Classifications...", 1);
-		
-		service.create(SystemsClassifications.SystemIdentity, activityMasterSystem, DefaultClassifications.Security);
-		service.create(InvolvedPartyClassifications.SecurityPassword, activityMasterSystem, DefaultClassifications.Security);
-		service.create(InvolvedPartyClassifications.SecurityPasswordSalt, activityMasterSystem, DefaultClassifications.Security);
+		// Get the ActivityMaster system
+		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+		                                                           .await().atMost(java.time.Duration.ofMinutes(1));
 
-		service.create(EnterpriseClassifications.LastUpdateDate, activityMasterSystem, enterprise.getName());
-		service.create(EnterpriseClassifications.UpdateClass, activityMasterSystem, enterprise.getName());
-		service.create(EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterprise.getName());
+		// Create Root Enterprise Name - this is a foundational classification
+		service.create(enterprise.getName(), enterprise.getName(),
+				EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, activityMasterSystem)
+				.await().atMost(java.time.Duration.ofMinutes(1));
+
+		logProgress("Classifications System", "Loaded Default Classifications...", 1);
+
+		// Create base classifications sequentially as they are foundational
+		// These don't have parent-child relationships so we can create them in parallel
+		java.util.List<io.smallrye.mutiny.Uni<?>> baseClassifications = new java.util.ArrayList<>();
+		baseClassifications.add(service.create(DefaultClassifications.HierarchyTypeClassification, activityMasterSystem));
+		baseClassifications.add(service.create(DefaultClassifications.HierarchyTypeClassification, activityMasterSystem, enterprise.getName()));
+		baseClassifications.add(service.create(DefaultClassifications.NoClassification, activityMasterSystem, enterprise.getName()));
+		baseClassifications.add(service.create(DefaultClassifications.DefaultClassification, activityMasterSystem, enterprise.getName()));
+
+		// Execute all base classifications in parallel and wait for completion
+		io.smallrye.mutiny.Uni.combine().all().unis(baseClassifications)
+		                     .discardItems()
+		                     .await().atMost(java.time.Duration.ofMinutes(1));
+
+		// Create Security classification - this is a parent for other classifications
+		service.create(DefaultClassifications.Security, activityMasterSystem, enterprise.getName())
+		      .await().atMost(java.time.Duration.ofMinutes(1));
+
+		logProgress("Classifications System", "Loading Security Classifications...", 1);
+
+		// Create security-related classifications in parallel since they all have the same parent
+		// and the parent has already been created
+		java.util.List<io.smallrye.mutiny.Uni<?>> securityClassifications = new java.util.ArrayList<>();
+		securityClassifications.add(service.create(SystemsClassifications.SystemIdentity, activityMasterSystem, DefaultClassifications.Security));
+		securityClassifications.add(service.create(InvolvedPartyClassifications.SecurityPassword, activityMasterSystem, DefaultClassifications.Security));
+		securityClassifications.add(service.create(InvolvedPartyClassifications.SecurityPasswordSalt, activityMasterSystem, DefaultClassifications.Security));
+
+		// Execute all security classifications in parallel and wait for completion
+		io.smallrye.mutiny.Uni.combine().all().unis(securityClassifications)
+		                     .discardItems()
+		                     .await().atMost(java.time.Duration.ofMinutes(1));
+
+		// Create enterprise-related classifications in parallel since they all have the same parent
+		// and the parent has already been created
+		java.util.List<io.smallrye.mutiny.Uni<?>> enterpriseClassifications = new java.util.ArrayList<>();
+		enterpriseClassifications.add(service.create(EnterpriseClassifications.LastUpdateDate, activityMasterSystem, enterprise.getName()));
+		enterpriseClassifications.add(service.create(EnterpriseClassifications.UpdateClass, activityMasterSystem, enterprise.getName()));
+		enterpriseClassifications.add(service.create(EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterprise.getName()));
+
+		// Execute all enterprise classifications in parallel and wait for completion
+		io.smallrye.mutiny.Uni.combine().all().unis(enterpriseClassifications)
+		                     .discardItems()
+		                     .await().atMost(java.time.Duration.ofMinutes(1));
 	}
 
 	@Override

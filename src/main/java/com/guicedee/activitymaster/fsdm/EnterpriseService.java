@@ -30,8 +30,8 @@ import io.vertx.core.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+
+
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -368,7 +368,7 @@ public class EnterpriseService
     //@Transactional()
     @Override
     //@CacheResult(cacheName = "FindEnterpriseWithClassifications")
-    public Uni<List<IEnterprise<?, ?>>> findEnterprisesWithClassification(@CacheKey IClassification<?, ?> classification)
+    public Uni<List<IEnterprise<?, ?>>> findEnterprisesWithClassification( IClassification<?, ?> classification)
     {
         return Uni.createFrom()
                        .emitter(emitter -> {
@@ -436,7 +436,7 @@ public class EnterpriseService
     //@Transactional()
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
-    public Uni<IEnterprise<?, ?>> getEnterprise(@CacheKey String name)
+    public Uni<IEnterprise<?, ?>> getEnterprise( String name)
     {
         return new Enterprise().builder()
                        .withName(name)
@@ -450,7 +450,7 @@ public class EnterpriseService
     //@Transactional()
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
-    public Uni<IEnterprise<?, ?>> getEnterprise(@CacheKey UUID uuid)
+    public Uni<IEnterprise<?, ?>> getEnterprise( UUID uuid)
     {
         return new Enterprise().builder()
                        .find(uuid)
@@ -490,7 +490,7 @@ public class EnterpriseService
     //@Transactional()
     //@CacheResult
     @Override
-    public Uni<IEnterprise<?, ?>> getIEnterpriseFromName(@CacheKey String enterprise)
+    public Uni<IEnterprise<?, ?>> getIEnterpriseFromName( String enterprise)
     {
         return new Enterprise().builder()
                        .withName(enterprise)
@@ -503,7 +503,7 @@ public class EnterpriseService
     //@Transactional()
     //@CacheResult
     @Override
-    public Uni<IEnterprise<?, ?>> getIEnterpriseFromID(@CacheKey UUID enterprise)
+    public Uni<IEnterprise<?, ?>> getIEnterpriseFromID( UUID enterprise)
     {
         return new Enterprise().builder()
                        .find(enterprise)

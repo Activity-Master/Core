@@ -17,8 +17,8 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import lombok.extern.java.Log;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+
+
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
@@ -122,7 +122,7 @@ public class EventsService
 	
 	@Override
 	//@CacheResult(cacheName = "EventTypesStrings")
-	public IEventType<?, ?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+	public IEventType<?, ?> findEventType( String eventType,  ISystems<?, ?> system,  java.util.UUID... identityToken)
 	{
 		return new EventType().builder()
 		                      .withName(eventType)

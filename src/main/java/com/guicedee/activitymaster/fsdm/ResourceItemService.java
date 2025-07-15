@@ -25,7 +25,7 @@ import io.vertx.core.Vertx;
 import jakarta.persistence.criteria.*;
 import lombok.extern.log4j.Log4j2;
 
-import javax.cache.annotation.CacheKey;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -542,7 +542,7 @@ public class ResourceItemService
 
 
     @Override
-    public Uni<IResourceItem<?, ?>> findByUUID(@CacheKey UUID uuid)
+    public Uni<IResourceItem<?, ?>> findByUUID( UUID uuid)
     {
         log.debug("Finding resource by UUID: {}", uuid);
         return ReactiveTransactionUtil.withTransaction(session -> {
@@ -558,9 +558,9 @@ public class ResourceItemService
 
 
     @Override
-    public Uni<IResourceItem<?, ?>> findByOriginalSourceUniqueID(@CacheKey UUID originalSourceUniqueID,
-                                                                 @CacheKey ISystems<?, ?> systems,
-                                                                 @CacheKey java.util.UUID... identityToken)
+    public Uni<IResourceItem<?, ?>> findByOriginalSourceUniqueID( UUID originalSourceUniqueID,
+                                                                  ISystems<?, ?> systems,
+                                                                  java.util.UUID... identityToken)
     {
         log.debug("Finding resource by original source unique ID: {}", originalSourceUniqueID);
         return ReactiveTransactionUtil.withTransaction(session -> {
@@ -590,7 +590,7 @@ public class ResourceItemService
     private final Map<String, ResourceItemType> resourceItemTypeCache = new HashMap<>();
 
     @Override
-    public Uni<IResourceItemType<?, ?>> findResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+    public Uni<IResourceItemType<?, ?>> findResourceItemType( String type,  ISystems<?, ?> system,  java.util.UUID... identityToken)
     {
         log.debug("Finding resource item type: {}", type);
 
@@ -627,7 +627,7 @@ public class ResourceItemService
     }
 
     @Override
-    public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(@CacheKey String type, @CacheKey ISystems<?, ?> systems, @CacheKey java.util.UUID... identityToken)
+    public Uni<List<IResourceItem<?, ?>>> findByResourceItemType( String type,  ISystems<?, ?> systems,  java.util.UUID... identityToken)
     {
         log.debug("Finding resources by type: {}", type);
         return findByResourceItemType(type, null, systems, identityToken);
@@ -635,7 +635,7 @@ public class ResourceItemService
 
 
     @Override
-    public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(@CacheKey String type, String value, @CacheKey ISystems<?, ?> systems, @CacheKey java.util.UUID... identityToken)
+    public Uni<List<IResourceItem<?, ?>>> findByResourceItemType( String type, String value,  ISystems<?, ?> systems,  java.util.UUID... identityToken)
     {
         log.debug("Finding resources by type: {} and value: {}", type, value);
         return ReactiveTransactionUtil.withTransaction(session -> {

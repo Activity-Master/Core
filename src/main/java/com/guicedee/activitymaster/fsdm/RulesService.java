@@ -18,8 +18,8 @@ import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -222,7 +222,7 @@ public class RulesService
 
 	@Override
 	//@CacheResult(cacheName = "RulesTypesString")
-	public Uni<IRulesType<?, ?>> findRulesTypes(@CacheKey String rulesType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IRulesType<?, ?>> findRulesTypes( String rulesType,  ISystems<?, ?> system,  java.util.UUID... identityToken)
 	{
 		return new RulesType().builder()
 		                      .withName(rulesType)

@@ -18,8 +18,8 @@ import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.constraints.NotNull;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
+
+
 import java.util.*;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications.*;
@@ -221,7 +221,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	@Override
-	public Uni<ISecurityToken<?,?>> getEveryoneGroup(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getEveryoneGroup( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -238,7 +238,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
 	@Override
-	public Uni<ISecurityToken<?,?>> getEverywhereGroup(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getEverywhereGroup( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -255,7 +255,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getGuestsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -272,7 +272,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getRegisteredGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getRegisteredGuestsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -289,7 +289,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getVisitorsGuestsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getVisitorsGuestsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -306,7 +306,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getAdministratorsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getAdministratorsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -323,7 +323,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getSystemsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getSystemsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -340,7 +340,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getPluginsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getPluginsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -357,7 +357,7 @@ public class SecurityTokenService
 	}
 //	//@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getApplicationsFolder(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getApplicationsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
@@ -374,7 +374,7 @@ public class SecurityTokenService
 	}
 //	//@CacheResult(cacheName = "SecurityGetSecurityToken")
 	@Override
-	public Uni<ISecurityToken<?,?>> getSecurityToken(@CacheKey UUID identifyingToken, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getSecurityToken( UUID identifyingToken,  ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			return new SecurityToken().builder()
@@ -391,7 +391,7 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
 	@Override
-	public Uni<ISecurityToken<?,?>> getSecurityToken(@CacheKey UUID identifyingToken, boolean overrideActiveFlag, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getSecurityToken( UUID identifyingToken, boolean overrideActiveFlag,  ISystems<?,?> system,  java.util.UUID... identityToken)
 	{
 		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityTokenQueryBuilder builder = new SecurityToken().builder();
