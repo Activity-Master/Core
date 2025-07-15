@@ -10,6 +10,9 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.ClassificationDataConcept;
+import com.guicedee.client.IGuiceContext;
+import io.smallrye.mutiny.Uni;
+import lombok.extern.log4j.Log4j2;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -17,95 +20,115 @@ import java.util.NoSuchElementException;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 
-
+@Log4j2
 public class ClassificationsDataConceptService
 		implements IClassificationDataConceptService<ClassificationsDataConceptService>
 {
 	@Inject
 	private IEnterprise<?,?> enterprise;
-	
+
 	@Override
 	public IClassificationDataConcept<?,?> get()
 	{
 		return new ClassificationDataConcept();
 	}
-	
+
 	//@Transactional()
-	public ClassificationDataConcept createDataConcept(EnterpriseClassificationDataConcepts name,
+	public Uni<IClassificationDataConcept<?,?>> createDataConcept(EnterpriseClassificationDataConcepts name,
 	                                                   String description,
 	                                                   ISystems<?,?> system,
 	                                                   java.util.UUID... identityToken)
 	{
 		ClassificationDataConcept newConcept = new ClassificationDataConcept();
-		boolean exists = newConcept.builder()
-		                           .withName(name.classificationValue())
-		                           .withEnterprise(enterprise)
-		                           .inActiveRange()
-		                           .inDateRange()
-		                           .getCount() > 0;
-		if (!exists)
-		{
-			newConcept.setDescription(description);
-			newConcept.setName(name.classificationValue());
-			newConcept.setSystemID(system);
-			newConcept.setOriginalSourceSystemID(system.getId());
-			IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-			IActiveFlag<?,?> activeFlag = acService.getActiveFlag(enterprise);
-			newConcept.setActiveFlagID(activeFlag);
-			newConcept.setEnterpriseID(enterprise);
-			newConcept.persist();
-				newConcept.createDefaultSecurity(system, identityToken);
-			
-		}
-		else
-		{
-			return find(name, system, identityToken);
-		}
-		
-		return newConcept;
+		return newConcept.builder()
+		                 .withName(name.classificationValue())
+		                 .withEnterprise(enterprise)
+		                 .inActiveRange()
+		                 .inDateRange()
+		                 .getCount()
+		                 .onFailure().invoke(error -> log.error("Error checking if concept exists: {}", error.getMessage(), error))
+		                 .chain(count -> {
+		                     boolean exists = count > 0;
+		                     if (!exists)
+		                     {
+		                         newConcept.setDescription(description);
+		                         newConcept.setName(name.classificationValue());
+		                         newConcept.setSystemID(system);
+		                         newConcept.setOriginalSourceSystemID(system.getId());
+
+		                         IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+		                         return acService.getActiveFlag(enterprise)
+		                                        .chain(activeFlag -> {
+		                                            newConcept.setActiveFlagID(activeFlag);
+		                                            newConcept.setEnterpriseID(enterprise);
+		                                            return newConcept.persist()
+		                                                           .map(persisted -> {
+		                                                               // Start createDefaultSecurity in parallel without waiting for it
+		                                                               persisted.createDefaultSecurity(system, identityToken)
+		                                                                       .subscribe().with(
+		                                                                           result -> {
+		                                                                               // Security setup completed successfully
+		                                                                           },
+		                                                                           error -> {
+		                                                                               // Log error but don't fail the main operation
+		                                                                               log.warn("Error in createDefaultSecurity", error);
+		                                                                           }
+		                                                                       );
+
+		                                                               // Return the persisted concept immediately without waiting for security setup
+		                                                               return (IClassificationDataConcept<?,?>) persisted;
+		                                                           });
+		                                        });
+		                     }
+		                     else
+		                     {
+		                         return find(name, system, identityToken);
+		                     }
+		                 });
 	}
-	
+
 	@Override
 	//@CacheResult(cacheName = "GetGlobalConcept")
-	public ClassificationDataConcept getGlobalConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassificationDataConcept<?,?>> getGlobalConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(GlobalClassificationsDataConceptName, system, identityToken);
 	}
-	
+
 	@Override
 	//@CacheResult(cacheName = "FindConceptWithConceptValueAndSystem")
-	public ClassificationDataConcept find(@CacheKey EnterpriseClassificationDataConcepts name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassificationDataConcept<?,?>> find(@CacheKey EnterpriseClassificationDataConcepts name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(name.classificationValue(), system, identityToken);
 	}
+
 	//@Transactional()
 	//@CacheResult(cacheName = "FindConceptWithConceptValueAndSystemString")
-	public ClassificationDataConcept find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassificationDataConcept<?,?>> find(@CacheKey String name, @CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
-		cdc = cdc.builder()
+		return cdc.builder()
 		         .withName(name)
 		         .withEnterprise(enterprise)
 		         .inActiveRange()
 		         .inDateRange()
 		       //  .canRead(system, identityToken)
 		         .get()
-		         .orElseThrow(()-> new NoSuchElementException("Cannot find Classification Data Concept with name - " + name));
-		return cdc;
+		         .onFailure().invoke(error -> log.error("Error finding concept by name: {}", error.getMessage(), error))
+		         .onItem().ifNull().failWith(() -> new NoSuchElementException("Cannot find Classification Data Concept with name - " + name))
+		         .map(concept -> (IClassificationDataConcept<?,?>) concept);
 	}
-	
+
 	@Override
 	//@CacheResult(cacheName = "NoDataConcept")
-	public ClassificationDataConcept getNoConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassificationDataConcept<?,?>> getNoConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(NoClassificationDataConceptName, system, identityToken);
 	}
-	
+
 	@Override
 	//@CacheResult(cacheName = "SecurityHierarchyConcept")
-	public ClassificationDataConcept getSecurityHierarchyConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
+	public Uni<IClassificationDataConcept<?,?>> getSecurityHierarchyConcept(@CacheKey ISystems<?,?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return find(EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken, system, identityToken);
 	}
-	
 }

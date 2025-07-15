@@ -63,13 +63,15 @@ public class EnterpriseService
         return enterprise.builder()
                        .withName(name)
                        .get()
-                       .onFailure().recoverWithItem(() -> {
+                       .onFailure()
+                       .recoverWithItem(() -> {
                            // If get() fails (no enterprise found), create a new one
                            enterprise.setName(name);
                            enterprise.setDescription(description);
                            return null; // This null will be handled in the chain below
                        })
-                       .onFailure().invoke(error -> log.error("Error checking if enterprise exists: {}", error.getMessage(), error))
+                       .onFailure()
+                       .invoke(error -> log.error("Error checking if enterprise exists: {}", error.getMessage(), error))
                        .chain(exists -> {
                            if (exists == null)
                            {
@@ -426,7 +428,8 @@ public class EnterpriseService
                        .withName(name)
                        .inDateRange()
                        .get()
-                       .onFailure().invoke(error -> log.error("Error finding enterprise by name: {}", error.getMessage(), error))
+                       .onFailure()
+                       .invoke(error -> log.error("Error finding enterprise by name: {}", error.getMessage(), error))
                        .map(enterprise -> enterprise);
     }
 
@@ -439,7 +442,8 @@ public class EnterpriseService
                        .withName(name)
                        .inDateRange()
                        .get()
-                       .onFailure().invoke(error -> log.error("Error getting enterprise by name: {}", error.getMessage(), error))
+                       .onFailure()
+                       .invoke(error -> log.error("Error getting enterprise by name: {}", error.getMessage(), error))
                        .map(enterprise -> enterprise);
     }
 
@@ -452,7 +456,8 @@ public class EnterpriseService
                        .find(uuid)
                        .inDateRange()
                        .get()
-                       .onFailure().invoke(error -> log.error("Error getting enterprise by UUID: {}", error.getMessage(), error))
+                       .onFailure()
+                       .invoke(error -> log.error("Error getting enterprise by UUID: {}", error.getMessage(), error))
                        .map(enterprise -> enterprise);
     }
 
@@ -464,7 +469,8 @@ public class EnterpriseService
                        .withName(name)
                        .inDateRange()
                        .getCount()
-                       .onFailure().invoke(error -> log.error("Error checking if enterprise exists: {}", error.getMessage(), error))
+                       .onFailure()
+                       .invoke(error -> log.error("Error checking if enterprise exists: {}", error.getMessage(), error))
                        .map(count -> count > 0);
     }
 
@@ -476,7 +482,8 @@ public class EnterpriseService
                        .inDateRange()
                        .orderBy(Enterprise_.name)
                        .getAll()
-                       .onFailure().invoke(error -> log.error("Error getting all enterprises: {}", error.getMessage(), error))
+                       .onFailure()
+                       .invoke(error -> log.error("Error getting all enterprises: {}", error.getMessage(), error))
                        .map(LinkedHashSet::new);
     }
 
@@ -488,7 +495,8 @@ public class EnterpriseService
         return new Enterprise().builder()
                        .withName(enterprise)
                        .get()
-                       .onFailure().invoke(error -> log.error("Error getting enterprise from name: {}", error.getMessage(), error))
+                       .onFailure()
+                       .invoke(error -> log.error("Error getting enterprise from name: {}", error.getMessage(), error))
                        .map(enterprises -> enterprises);
     }
 
@@ -500,7 +508,8 @@ public class EnterpriseService
         return new Enterprise().builder()
                        .find(enterprise)
                        .get()
-                       .onFailure().invoke(error -> log.error("Error getting enterprise from ID: {}", error.getMessage(), error))
+                       .onFailure()
+                       .invoke(error -> log.error("Error getting enterprise from ID: {}", error.getMessage(), error))
                        .map(enterprises -> enterprises);
     }
 

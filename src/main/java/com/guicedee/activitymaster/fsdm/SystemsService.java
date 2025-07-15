@@ -93,18 +93,19 @@ public class SystemsService
     {
         SystemsXClassification systemClassifications = new SystemsXClassification();
 
-        // Get identity classification - wrap non-reactive result in Uni
-        IClassification<?, ?> identifyClassification = classificationService.getIdentityType(requestingSystem, identityToken);
-
-        // Use the classification to build the query
-        return systemClassifications.builder()
-                       .findLink(null, (Classification) identifyClassification, parentSystem)
-                       .inDateRange()
-                       .withEnterprise(enterprise)
-                       .canRead(requestingSystem, identityToken)
-                       .get()
-                       .onFailure().invoke(error -> log.error("Error finding system by identity classification: {}", error.getMessage(), error))
-                       .map(system -> system.getSystemID());
+        // Get identity classification using reactive pattern
+        return classificationService.getIdentityType(requestingSystem, identityToken)
+                .chain(identifyClassification -> {
+                    // Use the classification to build the query
+                    return systemClassifications.builder()
+                               .findLink(null, (Classification) identifyClassification, parentSystem)
+                               .inDateRange()
+                               .withEnterprise(enterprise)
+                               .canRead(requestingSystem, identityToken)
+                               .get()
+                               .onFailure().invoke(error -> log.error("Error finding system by identity classification: {}", error.getMessage(), error))
+                               .map(system -> system.getSystemID());
+                });
     }
 
     @Override
@@ -124,8 +125,15 @@ public class SystemsService
                            ISystems<?, ?> activityMasterSystem = tuple.getItem1();
                            UUID activityMasterSystemUUID = tuple.getItem2();
 
-                           // Create security tokens using non-reactive service
-                           return Uni.createFrom()
+                           // Use the reactive classification service but handle other operations with emitter
+                           return classificationService.find(
+                                   UserGroupSecurityTokenClassifications.System,
+                                   activityMasterSystem,
+                                   activityMasterSystemUUID
+                           )
+                           .chain(classification -> {
+                               // Now that we have the classification, use an emitter to handle the rest
+                               return Uni.createFrom()
                                           .emitter(emitter -> {
                                               try
                                               {
@@ -145,13 +153,6 @@ public class SystemsService
                                                           activityMasterSystem
                                                   );
 
-                                                  // Find classification
-                                                  IClassification<?, ?> classification = classificationService.find(
-                                                          UserGroupSecurityTokenClassifications.System,
-                                                          activityMasterSystem,
-                                                          activityMasterSystemUUID
-                                                  );
-
                                                   // Link tokens
                                                   securityTokenService.link(
                                                           systemsToken,
@@ -168,62 +169,73 @@ public class SystemsService
                                                   );
 
                                                   // Get security identity token
-                                                  UUID newSystemUUID = getSecurityIdentityToken(newSystem, activityMasterSystemUUID)
-                                                                               .await()
-                                                                               .indefinitely()
-                                                          ;
+                                                  getSecurityIdentityToken(newSystem, activityMasterSystemUUID)
+                                                          .subscribe()
+                                                          .with(
+                                                              newSystemUUID -> {
+                                                                  try {
+                                                                      // Create default security in parallel (fire and forget)
+                                                                      ((SecurityToken) newSystemsSecurityToken).createDefaultSecurity(
+                                                                              activityMasterSystem,
+                                                                              activityMasterSystemUUID
+                                                                      ).subscribe().with(
+                                                                          result -> {
+                                                                              // Security setup completed successfully
+                                                                          },
+                                                                          error -> {
+                                                                              // Log error but don't fail the main operation
+                                                                              log.warn("Error in createDefaultSecurity for newSystemsSecurityToken", error);
+                                                                          }
+                                                                      );
 
-                                                  // Create default security
-                                                  ((SecurityToken) newSystemsSecurityToken).createDefaultSecurity(
-                                                          activityMasterSystem,
-                                                          activityMasterSystemUUID
-                                                  );
+                                                                      ((SecurityToken) systemsToken).createDefaultSecurity(
+                                                                              activityMasterSystem,
+                                                                              activityMasterSystemUUID
+                                                                      ).subscribe().with(
+                                                                          result -> {
+                                                                              // Security setup completed successfully
+                                                                          },
+                                                                          error -> {
+                                                                              // Log error but don't fail the main operation
+                                                                              log.warn("Error in createDefaultSecurity for systemsToken", error);
+                                                                          }
+                                                                      );
 
-                                                  ((SecurityToken) systemsToken).createDefaultSecurity(
-                                                          activityMasterSystem,
-                                                          activityMasterSystemUUID
-                                                  );
+                                                                      // Create involved party
+                                                                      SystemsSystem systemsSystem = IGuiceContext.get(SystemsSystem.class);
+                                                                      systemsSystem.createInvolvedPartyForNewSystem(newSystem);
 
-                                                  // Create involved party
-                                                  SystemsSystem systemsSystem = IGuiceContext.get(SystemsSystem.class);
-                                                  systemsSystem.createInvolvedPartyForNewSystem(newSystem);
-
-                                                  // Complete with the new system UUID
-                                                  emitter.complete(newSystemUUID.toString());
+                                                                      // Complete with the new system UUID
+                                                                      emitter.complete(newSystemUUID.toString());
+                                                                  }
+                                                                  catch (Exception e)
+                                                                  {
+                                                                      emitter.fail(e);
+                                                                  }
+                                                              },
+                                                              emitter::fail
+                                                          );
                                               }
                                               catch (Exception e)
                                               {
                                                   emitter.fail(e);
                                               }
                                           });
+                           });
                        });
     }
 
     // Helper methods for reactive operations
     private Uni<ISystems<?, ?>> getISystemReactive(String systemName)
     {
-        return Uni.createFrom()
-                       .item(() -> {
-                           ISystems<?, ?> system = IActivityMasterService.getISystem(systemName);
-                           if (system == null)
-                           {
-                               throw new NoSuchElementException("System not found: " + systemName);
-                           }
-                           return system;
-                       });
+        return IActivityMasterService.getISystem(systemName, enterprise)
+                       .onItem().ifNull().failWith(() -> new NoSuchElementException("System not found: " + systemName));
     }
 
     private Uni<UUID> getISystemTokenReactive(String systemName)
     {
-        return Uni.createFrom()
-                       .item(() -> {
-                           UUID token = IActivityMasterService.getISystemToken(systemName);
-                           if (token == null)
-                           {
-                               throw new NoSuchElementException("System token not found: " + systemName);
-                           }
-                           return token;
-                       });
+        return IActivityMasterService.getISystemToken(systemName, enterprise)
+                       .onItem().ifNull().failWith(() -> new NoSuchElementException("System token not found: " + systemName));
     }
 
     @Override
