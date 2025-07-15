@@ -9,7 +9,9 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
+
 import java.util.ArrayList;
+
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
@@ -26,6 +28,7 @@ import io.github.classgraph.ClassInfo;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Future;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.log4j.Log4j2;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -33,8 +36,6 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.*;
@@ -42,14 +43,13 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.E
 import static com.guicedee.activitymaster.fsdm.services.ActivityMasterSystemsManager.*;
 
 @SuppressWarnings("DuplicatedCode")
+@Log4j2
 public class EnterpriseService
         implements IProgressable,
                            IEnterpriseService<EnterpriseService>
 {
     @Inject
     private ActivityMasterConfiguration configuration;
-
-    private static final Logger log = Logger.getLogger(EnterpriseService.class.getName());
 
     public IEnterprise<?, ?> get()
     {
@@ -61,22 +61,33 @@ public class EnterpriseService
     {
         Enterprise enterprise = new Enterprise();
         return enterprise.builder()
-                .withName(name)
-                .get()
-                .chain(exists -> {
-                    if (exists == null) {
-                        enterprise.setName(name);
-                        enterprise.setDescription(description);
-                        return enterprise.persist()
-                                .map(persisted -> {
-                                    EnterpriseProvider.loadedEnterprise = enterprise;
-                                    return enterprise;
-                                });
-                    } else {
-                        EnterpriseProvider.loadedEnterprise = exists;
-                        return Uni.createFrom().item(exists);
-                    }
-                });
+                       .withName(name)
+                       .get()
+                       .onFailure().recoverWithItem(() -> {
+                           // If get() fails (no enterprise found), create a new one
+                           enterprise.setName(name);
+                           enterprise.setDescription(description);
+                           return null; // This null will be handled in the chain below
+                       })
+                       .onFailure().invoke(error -> log.error("Error checking if enterprise exists: {}", error.getMessage(), error))
+                       .chain(exists -> {
+                           if (exists == null)
+                           {
+                               // Enterprise doesn't exist or get() failed, create a new one
+                               return enterprise.persist()
+                                              .map(persisted -> {
+                                                  EnterpriseProvider.loadedEnterprise = persisted;
+                                                  return persisted;
+                                              });
+                           }
+                           else
+                           {
+                               // Enterprise exists, use it
+                               EnterpriseProvider.loadedEnterprise = exists;
+                               return Uni.createFrom()
+                                              .item(exists);
+                           }
+                       });
     }
 
     @Override
@@ -86,54 +97,59 @@ public class EnterpriseService
         ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
 
         return getUpdates(enterprise)
-                .chain(availableUpdates -> {
-                    log.config(MessageFormat.format("There are {0} required updates", availableUpdates.size()));
+                       .chain(availableUpdates -> {
+                           log.info(MessageFormat.format("There are {} required updates", availableUpdates.size()));
 
-                    setCurrentTask(0);
-                    int tasks = 0;
-                    for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
-                    {
-                        Class<? extends ISystemUpdate> aClass = entry.getValue();
-                        tasks += aClass.getAnnotation(SortedUpdate.class)
-                                         .taskCount();
-                    }
+                           setCurrentTask(0);
+                           int tasks = 0;
+                           for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
+                           {
+                               Class<? extends ISystemUpdate> aClass = entry.getValue();
+                               tasks += aClass.getAnnotation(SortedUpdate.class)
+                                                .taskCount();
+                           }
 
-                    @SuppressWarnings({"rawtypes", "unchecked"})
-                    Set<IOnSystemUpdate> systemUpdateEventHandlers = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
+                           @SuppressWarnings({"rawtypes", "unchecked"})
+                           Set<IOnSystemUpdate> systemUpdateEventHandlers = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemUpdate.class));
 
-                    setTotalTasks(tasks);
+                           setTotalTasks(tasks);
 
-                    return systemsService.getActivityMaster(enterprise)
-                            .chain(system -> {
-                                // Process updates sequentially using recursion
-                                return processUpdates(new ArrayList<>(availableUpdates.entrySet()), 0, enterprise, system, systemUpdateEventHandlers)
-                                        .chain(() -> {
-                                            updateLastUpdateDate(enterprise, system);
-                                            logProgress("Update System", "Finished Updates. Last Update Date - " + DateTimeFormatter.ofPattern("yyyy/MM/dd")
-                                                                                                                       .format(LocalDate.now()));
-                                            return Uni.createFrom().item(availableUpdates.size());
-                                        });
-                            });
-                });
+                           return systemsService.getActivityMaster(enterprise)
+                                          .chain(system -> {
+                                              // Process updates sequentially using recursion
+                                              return processUpdates(new ArrayList<>(availableUpdates.entrySet()), 0, enterprise, system, systemUpdateEventHandlers)
+                                                             .chain(() -> {
+                                                                 updateLastUpdateDate(enterprise, system);
+                                                                 logProgress("Update System", "Finished Updates. Last Update Date - " + DateTimeFormatter.ofPattern("yyyy/MM/dd")
+                                                                                                                                                .format(LocalDate.now()));
+                                                                 return Uni.createFrom()
+                                                                                .item(availableUpdates.size());
+                                                             });
+                                          });
+                       });
     }
 
     /**
      * Process updates sequentially using recursion
-     * @param updates List of updates to process
-     * @param index Current index in the list
-     * @param enterprise Enterprise to update
-     * @param system System to use
+     *
+     * @param updates                   List of updates to process
+     * @param index                     Current index in the list
+     * @param enterprise                Enterprise to update
+     * @param system                    System to use
      * @param systemUpdateEventHandlers Event handlers to notify
      * @return Uni that completes when all updates are processed
      */
-    private Uni<Void> processUpdates(List<Map.Entry<Integer, Class<? extends ISystemUpdate>>> updates, 
-                                    int index, 
-                                    IEnterprise<?, ?> enterprise, 
-                                    ISystems<?, ?> system,
-                                    Set<IOnSystemUpdate> systemUpdateEventHandlers) {
+    private Uni<Void> processUpdates(List<Map.Entry<Integer, Class<? extends ISystemUpdate>>> updates,
+                                     int index,
+                                     IEnterprise<?, ?> enterprise,
+                                     ISystems<?, ?> system,
+                                     Set<IOnSystemUpdate> systemUpdateEventHandlers)
+    {
         // Base case: if we've processed all updates, return a completed Uni
-        if (index >= updates.size()) {
-            return Uni.createFrom().voidItem();
+        if (index >= updates.size())
+        {
+            return Uni.createFrom()
+                           .voidItem();
         }
 
         // Get the current update
@@ -141,42 +157,52 @@ public class EnterpriseService
         Class<? extends ISystemUpdate> value = entry.getValue();
 
         // Create a Uni that processes the current update
-        return Uni.createFrom().item(() -> {
-            try {
-                logProgress("Update System", "Starting updates for " + value.getSimpleName());
-                for (IOnSystemUpdate<?> systemUpdateEventHandler : systemUpdateEventHandlers) {
-                    systemUpdateEventHandler.onSystemUpdateStart(value);
-                }
-                return com.guicedee.client.IGuiceContext.get(value);
-            } catch (Throwable T) {
-                log.log(Level.SEVERE, "Unable to perform update", T);
-                for (IOnSystemUpdate<?> a : systemUpdateEventHandlers) {
-                    a.onSystemUpdateFail(value);
-                }
-                throw new RuntimeException("Failed to process update", T);
-            }
-        })
-        .chain(o -> {
-            // Perform the update
-            return performUpdate(o, enterprise)
-                .onItem().invoke(() -> {
-                    for (IOnSystemUpdate<?> a : systemUpdateEventHandlers) {
-                        a.onSystemUpdateEnd(value);
-                    }
-                })
-                .onFailure().recoverWithItem(() -> {
-                    log.log(Level.SEVERE, "Unable to perform update");
-                    for (IOnSystemUpdate<?> a : systemUpdateEventHandlers) {
-                        a.onSystemUpdateFail(value);
-                    }
-                    return null;
-                });
-        })
-        // Process the next update recursively
-        .chain(() -> processUpdates(updates, index + 1, enterprise, system, systemUpdateEventHandlers));
+        return Uni.createFrom()
+                       .item(() -> {
+                           try
+                           {
+                               logProgress("Update System", "Starting updates for " + value.getSimpleName());
+                               for (IOnSystemUpdate<?> systemUpdateEventHandler : systemUpdateEventHandlers)
+                               {
+                                   systemUpdateEventHandler.onSystemUpdateStart(value);
+                               }
+                               return com.guicedee.client.IGuiceContext.get(value);
+                           }
+                           catch (Throwable T)
+                           {
+                               log.error("Unable to perform update", T);
+                               for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
+                               {
+                                   a.onSystemUpdateFail(value);
+                               }
+                               throw new RuntimeException("Failed to process update", T);
+                           }
+                       })
+                       .chain(o -> {
+                           // Perform the update
+                           return performUpdate(o, enterprise)
+                                          .onItem()
+                                          .invoke(() -> {
+                                              for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
+                                              {
+                                                  a.onSystemUpdateEnd(value);
+                                              }
+                                          })
+                                          .onFailure()
+                                          .recoverWithItem(() -> {
+                                              log.error("Unable to perform update");
+                                              for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
+                                              {
+                                                  a.onSystemUpdateFail(value);
+                                              }
+                                              return null;
+                                          });
+                       })
+                       // Process the next update recursively
+                       .chain(() -> processUpdates(updates, index + 1, enterprise, system, systemUpdateEventHandlers));
     }
 
-    @jakarta.transaction.Transactional
+    //@jakarta.transaction.Transactional
     void updateLastUpdateDate(IEnterprise<?, ?> enterprise, ISystems<?, ?> system)
     {
         enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
@@ -189,27 +215,31 @@ public class EnterpriseService
         @SuppressWarnings({"unchecked"})
         ISystemsService<?> systemsService = com.guicedee.client.IGuiceContext.get(ISystemsService.class);
         return systemsService.getActivityMaster(enterprise)
-                .chain(activityMasterSystem -> {
-                    // Explicitly cast to ISystems<?, ?>
-                    ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
+                       .chain(activityMasterSystem -> {
+                           // Explicitly cast to ISystems<?, ?>
+                           ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
 
-                    // Convert Vert.x Future to Mutiny Uni
-                    return Uni.createFrom().emitter(emitter -> {
-                        Future<Boolean> updateFuture = o.update(enterprise);
-                        updateFuture.onComplete(ar -> {
-                            if (ar.succeeded()) {
-                                emitter.complete(ar.result());
-                            } else {
-                                emitter.fail(ar.cause());
-                            }
-                        });
-                    })
-                    .chain(updateResult -> {
-                        return enterprise.addClassification(UpdateClass.toString(), o.getClass()
-                                .getCanonicalName(), system)
-                                .map(result -> null);
-                    });
-                });
+                           // Convert Vert.x Future to Mutiny Uni
+                           return Uni.createFrom()
+                                          .emitter(emitter -> {
+                                              Future<Boolean> updateFuture = o.update(enterprise);
+                                              updateFuture.onComplete(ar -> {
+                                                  if (ar.succeeded())
+                                                  {
+                                                      emitter.complete(ar.result());
+                                                  }
+                                                  else
+                                                  {
+                                                      emitter.fail(ar.cause());
+                                                  }
+                                              });
+                                          })
+                                          .chain(updateResult -> {
+                                              return enterprise.addClassification(UpdateClass.toString(), o.getClass()
+                                                                                                                  .getCanonicalName(), system)
+                                                             .map(result -> null);
+                                          });
+                       });
     }
 
     @Override
@@ -218,26 +248,26 @@ public class EnterpriseService
         ISystemsService<?> systemsService = com.guicedee.client.IGuiceContext.get(ISystemsService.class);
 
         return systemsService.getActivityMaster(enterprise)
-                .chain(system -> {
-                    return enterprise.findClassifications(UpdateClass.toString(), system)
-                            .map(classificationsAll -> {
-                                Set<String> set = new LinkedHashSet<>();
-                                for (IRelationshipValue<?, IClassification<?, ?>, ?> rel : classificationsAll)
-                                {
-                                    String classValue = rel.getValue();
-                                    if (classValue.contains("$$EnhancerByGuice$$"))
-                                    {
-                                        classValue = classValue.substring(0, classValue.indexOf("$$EnhancerByGuice$$"));
-                                    }
-                                    set.add(classValue);
-                                }
-                                return set;
-                            });
-                });
+                       .chain(system -> {
+                           return enterprise.findClassifications(UpdateClass.toString(), system)
+                                          .map(classificationsAll -> {
+                                              Set<String> set = new LinkedHashSet<>();
+                                              for (IRelationshipValue<?, IClassification<?, ?>, ?> rel : classificationsAll)
+                                              {
+                                                  String classValue = rel.getValue();
+                                                  if (classValue.contains("$$EnhancerByGuice$$"))
+                                                  {
+                                                      classValue = classValue.substring(0, classValue.indexOf("$$EnhancerByGuice$$"));
+                                                  }
+                                                  set.add(classValue);
+                                              }
+                                              return set;
+                                          });
+                       });
     }
 
     @Override
-    @jakarta.transaction.Transactional
+    //@jakarta.transaction.Transactional
     public Uni<Map<Integer, Class<? extends ISystemUpdate>>> getUpdates(IEnterprise<?, ?> enterprise)
     {
         return Uni.createFrom()
@@ -268,7 +298,7 @@ public class EnterpriseService
                                                    {
                                                        for (String enterpriseAppliedUpdate : enterpriseAppliedUpdates)
                                                        {
-                                                           log.config("System Installed Update [" + enterpriseAppliedUpdate + "]");
+                                                           log.info("System Installed Update [{}]", enterpriseAppliedUpdate);
                                                        }
                                                        Map<Integer, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
                                                        for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
@@ -342,8 +372,7 @@ public class EnterpriseService
                        .emitter(emitter -> {
                            try
                            {
-                               EnterpriseXClassification enterpriseXClassification = new EnterpriseXClassification();
-                               enterpriseXClassification.builder()
+                               new EnterpriseXClassification().builder()
                                        .withClassification(classification)
                                        .inActiveRange()
                                        .inDateRange()
@@ -393,35 +422,12 @@ public class EnterpriseService
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Uni<IEnterprise<?, ?>> findEnterprise(String name)
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               Enterprise enterprise = new Enterprise();
-                               enterprise.builder()
-                                       .withName(name)
-                                       .inDateRange()
-                                       .get()
-                                       .subscribe()
-                                       .with(
-                                               result -> {
-                                                   if (result != null)
-                                                   {
-                                                       emitter.complete(result);
-                                                   }
-                                                   else
-                                                   {
-                                                       emitter.fail(new EnterpriseException("No Such Enterprise - " + name));
-                                                   }
-                                               },
-                                               emitter::fail
-                                       );
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        return new Enterprise().builder()
+                       .withName(name)
+                       .inDateRange()
+                       .get()
+                       .onFailure().invoke(error -> log.error("Error finding enterprise by name: {}", error.getMessage(), error))
+                       .map(enterprise -> enterprise);
     }
 
     //@Transactional()
@@ -429,36 +435,12 @@ public class EnterpriseService
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
     public Uni<IEnterprise<?, ?>> getEnterprise(@CacheKey String name)
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               Enterprise enterprise = new Enterprise();
-                               enterprise.builder()
-                                       .withName(name)
-                                       .inDateRange()
-                                       .get()
-                                       .subscribe()
-                                       .with(
-                                               result -> {
-                                                   if (result != null)
-                                                   {
-                                                       emitter.complete(result);
-                                                   }
-                                                   else
-                                                   {
-                                                       emitter.fail(new EnterpriseException("No Such Enterprise - " + name));
-                                                   }
-                                               },
-                                               emitter::fail
-                                       )
-                               ;
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        return new Enterprise().builder()
+                       .withName(name)
+                       .inDateRange()
+                       .get()
+                       .onFailure().invoke(error -> log.error("Error getting enterprise by name: {}", error.getMessage(), error))
+                       .map(enterprise -> enterprise);
     }
 
     //@Transactional()
@@ -466,100 +448,36 @@ public class EnterpriseService
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
     public Uni<IEnterprise<?, ?>> getEnterprise(@CacheKey UUID uuid)
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               Enterprise enterprise = new Enterprise();
-                               enterprise.builder()
-                                       .find(uuid)
-                                       .inDateRange()
-                                       .get()
-                                       .subscribe()
-                                       .with(
-                                               result -> {
-                                                   if (result != null)
-                                                   {
-                                                       emitter.complete(result);
-                                                   }
-                                                   else
-                                                   {
-                                                       emitter.fail(new EnterpriseException("No Such Enterprise - " + uuid));
-                                                   }
-                                               },
-                                               emitter::fail
-                                       )
-                               ;
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        return new Enterprise().builder()
+                       .find(uuid)
+                       .inDateRange()
+                       .get()
+                       .onFailure().invoke(error -> log.error("Error getting enterprise by UUID: {}", error.getMessage(), error))
+                       .map(enterprise -> enterprise);
     }
 
     //@Transactional()
     @Override
     public Uni<Boolean> doesEnterpriseExist(String name)
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               Enterprise enterprise = new Enterprise();
-                               enterprise.builder()
-                                       .withName(name)
-                                       .inDateRange()
-                                       .getCount()
-                                       .subscribe()
-                                       .with(
-                                               count -> {
-                                                   emitter.complete(count > 0);
-                                               },
-                                               emitter::fail
-                                       )
-                               ;
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        return new Enterprise().builder()
+                       .withName(name)
+                       .inDateRange()
+                       .getCount()
+                       .onFailure().invoke(error -> log.error("Error checking if enterprise exists: {}", error.getMessage(), error))
+                       .map(count -> count > 0);
     }
 
     //@Transactional()
     @Override
     public Uni<Set<IEnterprise<?, ?>>> getIEnterprises()
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               Enterprise enterprise = new Enterprise();
-                               enterprise.builder()
-                                       .inDateRange()
-                                       .getAll()
-                                       .subscribe()
-                                       .with(
-                                               enterprises -> {
-                                                   try
-                                                   {
-                                                       emitter.complete(new TreeSet<>(enterprises));
-                                                   }
-                                                   catch (Exception e)
-                                                   {
-                                                       emitter.fail(e);
-                                                   }
-                                               },
-                                               emitter::fail
-                                       )
-                               ;
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        return new Enterprise().builder()
+                       .inDateRange()
+                       .orderBy(Enterprise_.name)
+                       .getAll()
+                       .onFailure().invoke(error -> log.error("Error getting all enterprises: {}", error.getMessage(), error))
+                       .map(LinkedHashSet::new);
     }
 
     //@Transactional()
@@ -567,35 +485,11 @@ public class EnterpriseService
     @Override
     public Uni<IEnterprise<?, ?>> getIEnterpriseFromName(@CacheKey String enterprise)
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               Enterprise ent = new Enterprise();
-                               ent.builder()
-                                       .withName(enterprise)
-                                       .get()
-                                       .subscribe()
-                                       .with(
-                                               result -> {
-                                                   if (result != null)
-                                                   {
-                                                       emitter.complete(result);
-                                                   }
-                                                   else
-                                                   {
-                                                       emitter.fail(new EnterpriseException("No Enterprise for the given name"));
-                                                   }
-                                               },
-                                               emitter::fail
-                                       )
-                               ;
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        return new Enterprise().builder()
+                       .withName(enterprise)
+                       .get()
+                       .onFailure().invoke(error -> log.error("Error getting enterprise from name: {}", error.getMessage(), error))
+                       .map(enterprises -> enterprises);
     }
 
     //@Transactional()
@@ -603,35 +497,11 @@ public class EnterpriseService
     @Override
     public Uni<IEnterprise<?, ?>> getIEnterpriseFromID(@CacheKey UUID enterprise)
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               Enterprise ent = new Enterprise();
-                               ent.builder()
-                                       .find(enterprise)
-                                       .get()
-                                       .subscribe()
-                                       .with(
-                                               result -> {
-                                                   if (result != null)
-                                                   {
-                                                       emitter.complete(result);
-                                                   }
-                                                   else
-                                                   {
-                                                       emitter.fail(new EnterpriseException("No Enterprise for the given UUID"));
-                                                   }
-                                               },
-                                               emitter::fail
-                                       )
-                               ;
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        return new Enterprise().builder()
+                       .find(enterprise)
+                       .get()
+                       .onFailure().invoke(error -> log.error("Error getting enterprise from ID: {}", error.getMessage(), error))
+                       .map(enterprises -> enterprises);
     }
 
     @Override
@@ -657,27 +527,27 @@ public class EnterpriseService
         logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks);
 
         return installEnterprise(enterpriseName)
-                .chain(enterprise -> {
-                    return createNewEnterprise(enterprise)
-                            .chain(() -> {
-                                ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
-                                return systemsService
-                                        .getActivityMaster(enterprise)
-                                        .chain(activityMasterSystem -> {
-                                            // Explicitly cast to ISystems<?, ?>
-                                            ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
+                       .chain(enterprise -> {
+                           return createNewEnterprise(enterprise)
+                                          .chain(() -> {
+                                              ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
+                                              return systemsService
+                                                             .getActivityMaster(enterprise)
+                                                             .chain(activityMasterSystem -> {
+                                                                 // Explicitly cast to ISystems<?, ?>
+                                                                 ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
 
-                                            IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
-                                            // createAdminAndCreatorUserForEnterprise returns IInvolvedParty directly, not a Uni
-                                            // Wrap it in a Uni to continue the reactive chain
-                                            IInvolvedParty<?, ?> user = passwordsService.createAdminAndCreatorUserForEnterprise(system, adminUserName, adminPassword, uuidIdentifier);
-                                            wipeCaches();
-                                            logProgress("Systems", "Running Systems Post Startups", 1);
-                                            return performPostStartup(enterprise)
-                                                    .map(v -> enterprise);
-                                        });
-                            });
-                });
+                                                                 IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
+                                                                 // createAdminAndCreatorUserForEnterprise returns IInvolvedParty directly, not a Uni
+                                                                 // Wrap it in a Uni to continue the reactive chain
+                                                                 IInvolvedParty<?, ?> user = passwordsService.createAdminAndCreatorUserForEnterprise(system, adminUserName, adminPassword, uuidIdentifier);
+                                                                 wipeCaches();
+                                                                 logProgress("Systems", "Running Systems Post Startups", 1);
+                                                                 return performPostStartup(enterprise)
+                                                                                .map(v -> enterprise);
+                                                             });
+                                          });
+                       });
     }
 
 
@@ -760,12 +630,12 @@ public class EnterpriseService
                                                                                }
                                                                                catch (Exception e)
                                                                                {
-                                                                                   log.log(Level.WARNING, "Error completing emitter", e);
+                                                                                   log.warn("Error completing emitter", e);
                                                                                    emitter.complete(false);
                                                                                }
                                                                            },
                                                                            error -> {
-                                                                               log.log(Level.WARNING, "Error checking classification count", error);
+                                                                               log.warn("Error checking classification count", error);
                                                                                emitter.complete(false);
                                                                            }
                                                                    )
@@ -773,23 +643,23 @@ public class EnterpriseService
                                                        }
                                                        catch (SystemsException e)
                                                        {
-                                                           log.log(Level.WARNING, "System is not ready", e);
+                                                           log.warn("System is not ready", e);
                                                            emitter.complete(false);
                                                        }
                                                        catch (Exception e)
                                                        {
-                                                           log.log(Level.WARNING, "Error in enterprise ready check", e);
+                                                           log.warn("Error in enterprise ready check", e);
                                                            emitter.complete(false);
                                                        }
                                                    },
                                                    error -> {
                                                        if (error instanceof EnterpriseException)
                                                        {
-                                                           log.log(Level.WARNING, "Enterprise is not ready", error);
+                                                           log.warn("Enterprise is not ready", error);
                                                        }
                                                        else
                                                        {
-                                                           log.log(Level.WARNING, "Error getting enterprise", error);
+                                                           log.warn("Error getting enterprise", error);
                                                        }
                                                        emitter.complete(false);
                                                    }
@@ -803,7 +673,7 @@ public class EnterpriseService
                            }
                            catch (Exception e)
                            {
-                               log.log(Level.WARNING, "Unexpected error in isEnterpriseReady", e);
+                               log.warn("Unexpected error in isEnterpriseReady", e);
                                emitter.complete(false);
                            }
                        });

@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
+//import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
 import com.guicedee.guicedpersistence.lambda.TransactionalSupplier;
 import com.guicedee.activitymaster.fsdm.client.services.*;

@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.fsdm.systems;
 
 import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
+//import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.ActivityMasterService;
 import com.guicedee.activitymaster.fsdm.TimeService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
@@ -116,8 +116,8 @@ public class TimeSystem
 		setTotalTasks(difference * 12);
 		
 		//Create data storage partitions
-		com.guicedee.client.IGuiceContext.get(ActivityMasterService.class)
-		            .updatePartitionBases();
+		//com.guicedee.client.IGuiceContext.get(ActivityMasterService.class)
+		//            .updatePartitionBases();
 		
 		System.out.println("Waiting for Time Range Loading... 1 Hour");
 		JobService.INSTANCE

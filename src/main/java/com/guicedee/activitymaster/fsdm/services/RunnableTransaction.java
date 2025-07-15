@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.fsdm.services;
 
-import com.google.inject.persist.Transactional;
+//import com.google.inject.persist.Transactional;
 
 import java.util.function.Supplier;
 

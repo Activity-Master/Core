@@ -1,6 +1,6 @@
 package com.guicedee.activitymaster.fsdm;
 
-import com.google.inject.persist.Transactional;
+//import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
 import com.guicedee.activitymaster.fsdm.db.entities.time.DayParts;
 

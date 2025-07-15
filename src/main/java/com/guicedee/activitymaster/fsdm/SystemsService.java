@@ -2,14 +2,12 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.UserGroupSecurityTokenClassifications;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.SystemsException;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
@@ -17,24 +15,18 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassificati
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
-import org.hibernate.reactive.mutiny.Mutiny;
+import lombok.extern.log4j.Log4j2;
 
 import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications.*;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications.SystemIdentity;
 
+@Log4j2
 public class SystemsService
         implements ISystemsService<SystemsService>
 {
-    private static final Logger log = Logger.getLogger(SystemsService.class.getName());
-
     @Inject
     private IEnterprise<?, ?> enterprise;
 
@@ -73,6 +65,7 @@ public class SystemsService
                        .inActiveRange()
                        .inDateRange()
                        .getCount()
+                       .onFailure().invoke(error -> log.error("Error checking if system exists: {}", error.getMessage(), error))
                        .map(count -> count > 0);
     }
 
@@ -89,18 +82,8 @@ public class SystemsService
                        .inDateRange()
                        //.canRead(enterprise, identityToken)
                        .get()
-                       .chain(result -> {
-                           if (result != null)
-                           {
-                               return Uni.createFrom()
-                                              .item(result);
-                           }
-                           else
-                           {
-                               return Uni.createFrom()
-                                              .failure(new SystemsException("Cannot find a system named - " + systemName + " - in enterprise - " + enterprise));
-                           }
-                       });
+                       .onFailure().invoke(error -> log.error("Error finding system by enterprise: {}", error.getMessage(), error))
+                       .map(system -> system);
     }
 
     //@Transactional()
@@ -120,19 +103,8 @@ public class SystemsService
                        .withEnterprise(enterprise)
                        .canRead(requestingSystem, identityToken)
                        .get()
-                       .chain(result -> {
-                           if (result == null)
-                           {
-                               return Uni.createFrom()
-                                              .failure(new SystemsException("Cannot find a child system for - " + requestingSystem + " - in enterprise - " + enterprise));
-                           }
-                           else
-                           {
-                               // Get the system from the relationship and return it as ISystems<?,?>
-                               return Uni.createFrom()
-                                              .item(result.getSystemID());
-                           }
-                       });
+                       .onFailure().invoke(error -> log.error("Error finding system by identity classification: {}", error.getMessage(), error))
+                       .map(system -> system.getSystemID());
     }
 
     @Override
@@ -271,51 +243,71 @@ public class SystemsService
                        .withEnterprise(enterprise)
                        .withName(systemName)
                        .get()
+                       .onFailure().recoverWithItem(() -> {
+                           // If get() fails (no system found), we'll create a new one
+                           return null; // This null will be handled in the chain below
+                       })
+                       .onFailure().invoke(error -> log.error("Error checking if system exists for creation: {}", error.getMessage(), error))
                        .chain(exists -> {
                            if (exists == null)
                            {
-                               // System doesn't exist, create it
-                               return Uni.createFrom()
-                                              .emitter(emitter -> {
-                                                  try
-                                                  {
-                                                      // Set up the new system
-                                                      newSystem.setName(systemName);
-                                                      newSystem.setDescription(systemDesc);
-                                                      newSystem.setSystemHistoryName(historyName);
-                                                      newSystem.setEnterpriseID(enterprise);
+                               // System doesn't exist or get() failed, create it
+                               // Set up the new system
+                               newSystem.setName(systemName);
+                               newSystem.setDescription(systemDesc);
+                               newSystem.setSystemHistoryName(historyName);
+                               newSystem.setEnterpriseID(enterprise);
 
-                                                      // Get active flag service
-                                                      IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+                               // Get active flag service
+                               IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-                                                      // Get active flag (non-reactive)
-                                                      IActiveFlag<?, ?> activeFlag = acService.getActiveFlag(enterprise);
-                                                      newSystem.setActiveFlagID(activeFlag);
+                               // Get active flag (reactive)
+                               return acService.getActiveFlag(enterprise)
+                                   .chain(activeFlag -> {
+                                       // Set active flag
+                                       newSystem.setActiveFlagID(activeFlag);
 
-                                                      // Persist the new system
-                                                      newSystem.persist();
+                                       // Persist the new system (reactive)
+                                       return newSystem.persist()
+                                           .map(persistedSystem -> {
+                                               // Start getActivityMaster in parallel without waiting for it
+                                               getActivityMaster(enterprise)
+                                                   .subscribe().with(
+                                                       activityMaster -> {
+                                                               try {
+                                                                   // Call createDefaultSecurity
+                                                                   persistedSystem.createDefaultSecurity(activityMaster, identityToken)
+                                                                       .subscribe().with(
+                                                                           result -> {
+                                                                               // Security setup completed successfully
+                                                                           },
+                                                                           error -> {
+                                                                               // Log error but don't fail the main operation
+                                                                               log.warn("Error in createDefaultSecurity", error);
+                                                                           }
+                                                                       );
+                                                               } catch (Exception e) {
+                                                                   // Log error but don't fail the main operation
+                                                                   log.warn("Error in createDefaultSecurity", e);
+                                                               }
 
-                                                      // Get activity master
-                                                      ISystems<?, ?> activityMaster = getActivityMaster(enterprise).await()
-                                                                                              .indefinitely()
-                                                              ;
+                                                       },
+                                                       error -> {
+                                                           // Log error but don't fail the main operation
+                                                           log.warn("Error in getActivityMaster", error);
+                                                       }
+                                                   );
 
-                                                      // Create default security (non-reactive)
-                                                      newSystem.createDefaultSecurity(activityMaster, identityToken);
-
-                                                      // Complete with the new system
-                                                      emitter.complete(newSystem);
-                                                  }
-                                                  catch (Exception e)
-                                                  {
-                                                      emitter.fail(e);
-                                                  }
-                                              });
+                                               // Return the persisted system immediately without waiting for getActivityMaster or security setup
+                                               return persistedSystem;
+                                           });
+                                   });
                            }
                            else
                            {
-                               // System already exists, find it
-                               return findSystem(enterprise, systemName, identityToken);
+                               // System already exists, use it
+                               return Uni.createFrom()
+                                              .item(exists);
                            }
                        });
     }
@@ -331,6 +323,7 @@ public class SystemsService
                        .withEnterprise(enterprise)
                        //      .canRead(system, identityToken)
                        .get()
+                       .onFailure().invoke(error -> log.error("Error getting security token: {}", error.getMessage(), error))
                        .map(securityToken -> securityToken);
     }
 
@@ -339,6 +332,7 @@ public class SystemsService
     public Uni<UUID> getSecurityIdentityToken(@CacheKey ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         return system.findClassification(SystemIdentity, system, identityToken)
+                       .onFailure().recoverWithItem(() -> null) // Handle failure case
                        .map(systemToken -> systemToken != null ? systemToken.getValueAsUUID() : null);
     }
 }
