@@ -120,7 +120,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 	
 	//@Transactional()
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	@CacheResult(cacheName = "UsersList")
+	//@CacheResult(cacheName = "UsersList")
 	@Override
 	public List<IInvolvedParty<?, ?>> getAllUsers(ISystems<?, ?> system, java.util.UUID... identityToken)
 	{

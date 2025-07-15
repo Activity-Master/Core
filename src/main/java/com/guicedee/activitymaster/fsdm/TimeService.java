@@ -76,7 +76,7 @@ public class TimeService<J extends TimeService<J>>
 		               .get(ChronoField.MINUTE_OF_HOUR);
 	}
 	//@Transactional()
-	@CacheResult(cacheName = "TimeDayParts")
+	//@CacheResult(cacheName = "TimeDayParts")
 	public DayParts getDayPart(@CacheKey int hour, @CacheKey int minute)
 	{
 		if (hour <= 3)

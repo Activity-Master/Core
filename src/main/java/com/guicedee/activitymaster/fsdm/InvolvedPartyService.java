@@ -52,7 +52,7 @@ public class InvolvedPartyService
 	
 	
 	@Override
-	//@CacheResult(cacheName = "InvovledPartyByID")
+	////@CacheResult(cacheName = "InvovledPartyByID")
 	public IInvolvedParty<?, ?> findByID(@CacheKey UUID id)
 	{
 		return new InvolvedParty().builder()
@@ -190,7 +190,7 @@ public class InvolvedPartyService
 	}
 	
 	
-	//@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
+	////@CacheResult(cacheName = "InvolvedPartyGetIdentificationTypeString")
 	@Override
 	public IInvolvedPartyIdentificationType<?, ?> findInvolvedPartyIdentificationType(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -206,7 +206,7 @@ public class InvolvedPartyService
 	
 	
 	@Override
-	//@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
+	////@CacheResult(cacheName = "InvolvedPartyFindByIdentificationType")
 	public IInvolvedParty<?, ?> findByResourceItem(@CacheKey IResourceItem<?, ?> idType, @CacheKey String value, ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		Optional<InvolvedPartyXResourceItem> builder = new InvolvedPartyXResourceItem()
@@ -293,7 +293,7 @@ public class InvolvedPartyService
 	}
 	
 	
-	//@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
+	////@CacheResult(cacheName = "InvolvedPartyFindTypeByString")
 	@Override
 	public IInvolvedPartyType<?, ?> findType(@CacheKey String nameType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -309,7 +309,7 @@ public class InvolvedPartyService
 	}
 	
 	
-	//@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
+	////@CacheResult(cacheName = "InvolvedPartyGetNameTypeString")
 	@Override
 	public IInvolvedPartyNameType<?, ?> findInvolvedPartyNameType(@CacheKey String nameType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -326,7 +326,7 @@ public class InvolvedPartyService
 	
 	
 	@Override
-	//@CacheResult(cacheName = "InvolvedPartyFindByToken")
+	////@CacheResult(cacheName = "InvolvedPartyFindByToken")
 	public IInvolvedParty<?, ?> findByToken(@CacheKey ISecurityToken<?, ?> token, @CacheKey java.util.UUID... identityToken)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();
@@ -385,7 +385,7 @@ public class InvolvedPartyService
 	
 	
 	@Override
-	//@CacheResult(cacheName = "InvolvedPartyFindByUUID")
+	////@CacheResult(cacheName = "InvolvedPartyFindByUUID")
 	public IInvolvedParty<?, ?> findByUUID(@CacheKey UUID token, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();

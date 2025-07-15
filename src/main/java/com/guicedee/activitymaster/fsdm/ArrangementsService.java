@@ -147,7 +147,7 @@ public class ArrangementsService
     }
 
     @Override
-    //@CacheResult(cacheName = "ArrangementTypes")
+    ////@CacheResult(cacheName = "ArrangementTypes")
     //
     public Future<IArrangementType<?, ?>> createArrangementType(@CacheKey String type, java.util.UUID key, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
     {
@@ -720,7 +720,7 @@ public class ArrangementsService
     }
 
 
-    //@CacheResult(cacheName = "ArrangementArrangementTypeString")
+    ////@CacheResult(cacheName = "ArrangementArrangementTypeString")
     @Override
     public IArrangementType<?, ?> find(@CacheKey String idType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
     {
@@ -737,7 +737,7 @@ public class ArrangementsService
 
 
     @Override
-    //@CacheResult
+    ////@CacheResult
     public IArrangement<?, ?> find(@CacheKey java.util.UUID id, ISystems<?, ?> system, java.util.UUID... identityToken)
     {
         Arrangement xr = new Arrangement();
@@ -749,7 +749,7 @@ public class ArrangementsService
 
 
     @Override
-    //@CacheResult
+    ////@CacheResult
     public IArrangement<?, ?> find(@CacheKey UUID id)
     {
         Arrangement xr = new Arrangement();

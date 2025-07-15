@@ -129,7 +129,7 @@ public class ClassificationService
 		return rootCl;
 	}
 	
-	@CacheResult(cacheName = "ClassificationFindWithSimpleString")
+	//@CacheResult(cacheName = "ClassificationFindWithSimpleString")
 	@Override
 	public IClassification<?, ?> find(@CacheKey String name, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -137,7 +137,7 @@ public class ClassificationService
 	}
 	
 	//@Transactional()
-	@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
+	//@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
 	@Override
 	public IClassification<?, ?> find(@CacheKey String name, @CacheKey EnterpriseClassificationDataConcepts concept, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -154,7 +154,7 @@ public class ClassificationService
 	}
 	
 	//@Transactional()
-	@CacheResult(cacheName = "GetHierarchyTypeClassification")
+	//@CacheResult(cacheName = "GetHierarchyTypeClassification")
 	@Override
 	public IClassification<?, ?> getHierarchyType(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -164,7 +164,7 @@ public class ClassificationService
 	}
 	
 	//@Transactional()
-	@CacheResult(cacheName = "GetNoClassification")
+	//@CacheResult(cacheName = "GetNoClassification")
 	@Override
 	public IClassification<?, ?> getNoClassification(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
@@ -174,7 +174,7 @@ public class ClassificationService
 	}
 	
 	//@Transactional()
-	@CacheResult(cacheName = "IdentityTypeClassification")
+	//@CacheResult(cacheName = "IdentityTypeClassification")
 	@Override
 	public IClassification<?, ?> getIdentityType(@CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{

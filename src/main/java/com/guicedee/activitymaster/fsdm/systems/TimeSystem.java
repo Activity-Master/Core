@@ -127,7 +127,7 @@ public class TimeSystem
 		          .removeJob("TimeRangeLoading");
 	}
 	//@Transactional()
-	//@CacheResult(cacheName = "Years")
+	////@CacheResult(cacheName = "Years")
 	public Years getYear(@CacheKey Date date)
 	{
 		Years year = null;
@@ -237,7 +237,7 @@ public class TimeSystem
 	}
 	
 	//@Transactional()
-	@CacheResult
+	//@CacheResult
 	public Quarters getQuarter(@CacheKey Date date)
 	{
 		Quarters month = null;
@@ -317,7 +317,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	@CacheResult
+	//@CacheResult
 	public Months getMonth(@CacheKey Date date)
 	{
 		Months month = null;
@@ -336,7 +336,7 @@ public class TimeSystem
 		return month;
 	}
 	//@Transactional()
-	@CacheResult
+	//@CacheResult
 	MonthOfYear getMonthOfYear(@CacheKey Integer MonthOfYear)
 	{
 		return new MonthOfYear().builder()
@@ -428,7 +428,7 @@ public class TimeSystem
 	 * @param date
 	 * @return
 	 */
-	@CacheResult
+	//@CacheResult
 	public Weeks getWeek(@CacheKey Date date)
 	{
 		Weeks month = null;
@@ -497,7 +497,7 @@ public class TimeSystem
 	 * @return
 	 */
 	//@Transactional()
-	@CacheResult
+	//@CacheResult
 	@Override
 	public boolean getDay(@CacheKey Date date)
 	{
@@ -528,7 +528,7 @@ public class TimeSystem
 		return true;
 	}
 	//@Transactional()
-	@CacheResult
+	//@CacheResult
 	DayNames getDayName(@CacheKey String dayName)
 	{
 		return new DayNames().builder()

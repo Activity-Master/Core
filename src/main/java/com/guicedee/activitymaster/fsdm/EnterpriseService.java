@@ -335,7 +335,7 @@ public class EnterpriseService
 
     //@Transactional()
     @Override
-    @CacheResult(cacheName = "FindEnterpriseWithClassifications")
+    //@CacheResult(cacheName = "FindEnterpriseWithClassifications")
     public Uni<List<IEnterprise<?, ?>>> findEnterprisesWithClassification(@CacheKey IClassification<?, ?> classification)
     {
         return Uni.createFrom()
@@ -426,7 +426,7 @@ public class EnterpriseService
 
     //@Transactional()
     @Override
-    @CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
+    //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
     public Uni<IEnterprise<?, ?>> getEnterprise(@CacheKey String name)
     {
         return Uni.createFrom()
@@ -463,7 +463,7 @@ public class EnterpriseService
 
     //@Transactional()
     @Override
-    @CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
+    //@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
     public Uni<IEnterprise<?, ?>> getEnterprise(@CacheKey UUID uuid)
     {
         return Uni.createFrom()
@@ -563,7 +563,7 @@ public class EnterpriseService
     }
 
     //@Transactional()
-    @CacheResult
+    //@CacheResult
     @Override
     public Uni<IEnterprise<?, ?>> getIEnterpriseFromName(@CacheKey String enterprise)
     {
@@ -599,7 +599,7 @@ public class EnterpriseService
     }
 
     //@Transactional()
-    @CacheResult
+    //@CacheResult
     @Override
     public Uni<IEnterprise<?, ?>> getIEnterpriseFromID(@CacheKey UUID enterprise)
     {

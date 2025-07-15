@@ -192,7 +192,7 @@ public class RulesService
 	}
 	
 	@Override
-	@CacheResult(cacheName = "RulesTypesString")
+	//@CacheResult(cacheName = "RulesTypesString")
 	public IRulesType<?, ?> findRulesTypes(@CacheKey String rulesType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return new RulesType().builder()

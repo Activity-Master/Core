@@ -121,7 +121,7 @@ public class EventsService
 	
 	
 	@Override
-	@CacheResult(cacheName = "EventTypesStrings")
+	//@CacheResult(cacheName = "EventTypesStrings")
 	public IEventType<?, ?> findEventType(@CacheKey String eventType, @CacheKey ISystems<?, ?> system, @CacheKey java.util.UUID... identityToken)
 	{
 		return new EventType().builder()
