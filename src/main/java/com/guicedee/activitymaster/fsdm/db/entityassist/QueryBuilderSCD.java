@@ -71,8 +71,8 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E exte
     @SuppressWarnings("unchecked")
     public J inDateRange(LocalDateTime betweenThisDate)
     {
-        where(getAttribute(EFFECTIVE_FROM_DATE_COLUMN_NAME), Operand.LessThanEqualTo, convertToUTCDateTime(betweenThisDate));
-        where(getAttribute(EFFECTIVE_TO_DATE_COLUMN_NAME), Operand.GreaterThanEqualTo, convertToUTCDateTime(betweenThisDate));
+        where(getAttribute(EFFECTIVE_FROM_DATE_COLUMN_NAME), Operand.LessThanEqualTo, IQueryBuilderSCD.convertToUTCDateTime(betweenThisDate));
+        where(getAttribute(EFFECTIVE_TO_DATE_COLUMN_NAME), Operand.GreaterThanEqualTo, IQueryBuilderSCD.convertToUTCDateTime(betweenThisDate));
         return (J) this;
     }
 
@@ -87,7 +87,7 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E exte
     @SuppressWarnings("unchecked")
     public J inDateRange(LocalDateTime effectiveToDate, boolean toDate)
     {
-        where(getAttribute(EFFECTIVE_TO_DATE_COLUMN_NAME), Operand.LessThanEqualTo, convertToUTCDateTime(effectiveToDate));
+        where(getAttribute(EFFECTIVE_TO_DATE_COLUMN_NAME), Operand.LessThanEqualTo, IQueryBuilderSCD.convertToUTCDateTime(effectiveToDate));
         return (J) this;
     }
 
@@ -119,12 +119,12 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E exte
     {
         if (fromDate != null)
         {
-            where(getAttribute(EFFECTIVE_FROM_DATE_COLUMN_NAME), Operand.GreaterThanEqualTo, convertToUTCDateTime(fromDate));
+            where(getAttribute(EFFECTIVE_FROM_DATE_COLUMN_NAME), Operand.GreaterThanEqualTo, IQueryBuilderSCD.convertToUTCDateTime(fromDate));
         }
         //noinspection ReplaceNullCheck
         if (toDate != null)
         {
-            where(getAttribute(EFFECTIVE_TO_DATE_COLUMN_NAME), Operand.LessThanEqualTo, convertToUTCDateTime(toDate));
+            where(getAttribute(EFFECTIVE_TO_DATE_COLUMN_NAME), Operand.LessThanEqualTo, IQueryBuilderSCD.convertToUTCDateTime(toDate));
         }
         else
         {
@@ -138,7 +138,7 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E exte
     {
         if (time != null)
         {
-            where(getAttribute(WAREHOUSE_CREATED_DATE_COLUMN_NAME), Operand.Equals, convertToUTCDateTime(time));
+            where(getAttribute(WAREHOUSE_CREATED_DATE_COLUMN_NAME), Operand.Equals, IQueryBuilderSCD.convertToUTCDateTime(time));
         }
         //noinspection unchecked
         return (J) this;
@@ -148,7 +148,7 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E exte
     {
         if (time != null)
         {
-            where(getAttribute(WAREHOUSE_UPDATED_DATE_COLUMN_NAME), Operand.Equals, convertToUTCDateTime(time));
+            where(getAttribute(WAREHOUSE_UPDATED_DATE_COLUMN_NAME), Operand.Equals, IQueryBuilderSCD.convertToUTCDateTime(time));
         }
         //noinspection unchecked
         return (J) this;
@@ -157,15 +157,15 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E exte
     @Override
     public @NotNull Uni<E> update(E entity)
     {
-        entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(getNow()));
+        entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
         return super.update(entity);
     }
 
     public @NotNull Uni<E> update(E entity, java.time.Duration expiresIn)
     {
-        entity.setEffectiveToDate(convertToUTCDateTime(getNow())
+        entity.setEffectiveToDate(IQueryBuilderSCD.convertToUTCDateTime(getNow())
                 .plus(expiresIn));
-        entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(getNow()));
+        entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
         return super.update(entity);
     }
 
@@ -196,15 +196,15 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E exte
     {
         if (entity.getWarehouseCreatedTimestamp() == null)
         {
-            entity.setWarehouseCreatedTimestamp(convertToUTCDateTime(getNow()));
+            entity.setWarehouseCreatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
         }
         if (entity.getWarehouseLastUpdatedTimestamp() == null)
         {
-            entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(getNow()));
+            entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
         }
         if (entity.getEffectiveFromDate() == null)
         {
-            entity.setEffectiveFromDate(convertToUTCDateTime(getNow()));
+            entity.setEffectiveFromDate(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
         }
         if (entity.getEffectiveToDate() == null)
         {
@@ -222,7 +222,7 @@ public abstract class QueryBuilderSCD<J extends QueryBuilderSCD<J, E, I>, E exte
     @Override
     public boolean onUpdate(E entity)
     {
-        entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(getNow()));
+        entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
         return true;
     }
 

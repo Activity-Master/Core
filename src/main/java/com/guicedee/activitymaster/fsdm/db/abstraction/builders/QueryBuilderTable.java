@@ -18,9 +18,11 @@ public abstract class QueryBuilderTable<
 	{
 		if (entity.getOriginalSourceSystemUniqueID() == null)
 		{
+			// In reactive version, this would be chained, but since onCreate returns boolean,
+			// we need to set it directly for now
 			entity.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
 		}
-		
+
 		return super.onCreate(entity);
 	}
 }

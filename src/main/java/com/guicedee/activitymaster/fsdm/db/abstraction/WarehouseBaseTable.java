@@ -18,7 +18,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD.convertToUTCDateTime;
+import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
 
 @MappedSuperclass()
 public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
@@ -39,12 +39,11 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public J expireIn(Duration duration)
+    public io.smallrye.mutiny.Uni<J> expireIn(Duration duration)
     {
         setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow())
                 .plus(duration));
-        update();
-        return (J) this;
+        return update();
     }
 
     @Override

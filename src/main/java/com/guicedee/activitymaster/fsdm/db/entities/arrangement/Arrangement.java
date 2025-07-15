@@ -21,6 +21,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.RulesType;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
@@ -142,9 +143,17 @@ public class Arrangement
     }
 
 
+    /**
+     * Removes this arrangement and all its related entities.
+     * This method performs actions and returns a Uni that completes when the removal is done.
+     * It returns the result of calling super.remove().
+     *
+     * @return A Uni that completes when the removal is done
+     */
     @Override
-    public Arrangement remove()
+    public Uni<Arrangement> remove()
     {
+        // First remove all child entities
         if (classifications != null)
         {
             for (ArrangementXClassification classification : classifications)
@@ -187,6 +196,8 @@ public class Arrangement
                 arrangementXArrangement.remove();
             }
         }
+
+        // Then call super.remove() which returns a Uni
         return super.remove();
     }
 

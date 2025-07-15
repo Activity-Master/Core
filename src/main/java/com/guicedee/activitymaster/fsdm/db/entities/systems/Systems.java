@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQueryBuilder;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -29,6 +30,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
 import static com.guicedee.client.IGuiceContext.*;
 
 /**
@@ -138,13 +140,19 @@ public class Systems
         classificationLink.setSystemID(this);
     }
 
-    public Systems remove()
+    /**
+     * Marks the entity as removed by setting its active flag to deleted.
+     * This method performs actions and returns a Uni that completes when the removal is done.
+     * It returns the result of calling update().
+     *
+     * @return A Uni that completes when the removal is done
+     */
+    public Uni<Systems> remove()
     {
         setActiveFlagID((ActiveFlag) com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
                 .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
         setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-        update();
-        return this;
+        return update();
     }
 
 

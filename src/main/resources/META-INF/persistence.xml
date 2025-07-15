@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-    <persistence-unit name="ActivityMaster" transaction-type="JTA">
+    <persistence-unit name="ActivityMaster">
 
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>jdbc/activitymaster</jta-data-source>
+        <provider>org.hibernate.reactive.provider.ReactivePersistenceProvider</provider>
 
         <class>com.entityassist.converters.LocalDateAttributeConverter</class>
         <class>com.entityassist.converters.LocalDateTimeAttributeConverter</class>
@@ -239,52 +238,39 @@
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
 
-            <property name="hibernate.show_sql" value="${FSDM_SHOWSQL}"/>
-            <property name="hibernate.format_sql" value="${FSDM_FORMATSQL}"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.use_sql_comments" value="false"/>
             <!--<property name="hibernate.hbm2ddl.auto" value="update"/>-->
 
-            <property name="hibernate.connection.autocommit" value="false"/>
-            <!--<property name="hibernate.current_session_context_class" value="thread"/>-->
-            <property name="hibernate.current_session_context_class" value="jta"/>
+            <!-- Reactive connection properties -->
+            <property name="hibernate.connection.provider_class" 
+                      value="org.hibernate.reactive.vertx.VertxConnectionPool"/>
+            <property name="hibernate.reactive.vertx.pool.url" 
+                      value="postgresql://${FSDM_DBSERVER}/${FSDM_DBNAME}"/>
+            <property name="hibernate.reactive.vertx.pool.max_size" 
+                      value="10"/>
+            <property name="hibernate.reactive.vertx.pool.username" value="${FSDM_USER}"/>
+            <property name="hibernate.reactive.vertx.pool.password" value="${FSDM_PASSWORD}"/>
 
             <property name="hibernate.jdbc.batch_size" value="10"/>
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             <property name="hibernate.javax.cache.missing_cache_strategy" value="create"/>
 
             <property name="hibernate.connection.useUnicode" value="yes"/>
-            <property name="hibernate.cache.use_query_cache" value="true"/>
             <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
-            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
 
-            <property name="jakarta.persistence.jdbc.user" value="${FSDM_USER}" /> <!-- DB User -->
-            <property name="jakarta.persistence.jdbc.password" value="${FSDM_PASSWORD}" /> <!-- DB Password -->
-
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://${FSDM_DBSERVER}/${FSDM_DBNAME}"/>
-
-            <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
             <property name="hibernate.max_fetch_depth" value="1"/>
 
-            <property name="hibernate.jdbc.timeout" value="60"/> <!-- 1 minute -->
-            <property name="hibernate.transaction.coordinator_class" value="jta"/>
-            <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.engine.transaction.jta.platform.internal.BitronixJtaPlatform"/>
-            <!--<property name="hibernate.generate_statistics" value="true"/>-->
-
-            <!-- Optional -->
-            <property name="hibernate.jta.platform" value="org.hibernate.engine.transaction.jta.platform.internal.BitronixJtaPlatform"/>
-
+            <!-- Hibernate Reactive 2nd Level Cache with Hazelcast -->
             <property name="hibernate.cache.use_second_level_cache" value="true"/>
-            <property name="hibernate.connection.release_mode" value="after_transaction"/>
+            <property name="hibernate.cache.region.factory_class" 
+                      value="org.hibernate.cache.hazelcast.HazelcastCacheRegionFactory"/>
+            <property name="hibernate.cache.hazelcast.instance_name" value="ActivityMasterHazelcast"/>
+            <property name="hibernate.cache.use_query_cache" value="true"/>
 
-            <!-- Add PostgreSQL optimizations -->
-            <!--<property name="hibernate.connection.provider_class" value="org.postgresql.xa.PGXADataSource"/>-->
+            <!-- PostgreSQL optimizations -->
             <property name="hibernate.jdbc.lob.non_contextual_creation" value="true"/>
-            <property name="hibernate.connection.provider_disables_autocommit" value="true"/>
-
-
-            <!--<property name="hibernate.enhancer.enableLazyInitialization" value="false"/>
-            <property name="hibernate.enhancer.enableDirtyTracking" value="false"/>
-            <property name="hibernate.enhancer.enableAssociationManagement" value="false"/>-->
 
         </properties>
 

@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.entityassist;
 import com.entityassist.RootEntity;
 import com.entityassist.enumerations.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderCore;
+import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
@@ -66,8 +67,8 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>, E ex
 	@Override
 	public Uni<E> delete(ActiveFlag newActiveFlagType, E entity)
 	{
-		entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
-		entity.setEffectiveToDate(convertToUTCDateTime(RootEntity.getNow()));
+		entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+		entity.setEffectiveToDate(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
 		entity.setActiveFlag(newActiveFlagType);
 		return getEntityManager().merge(entity);
 	}
@@ -81,8 +82,8 @@ public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>, E ex
 	@Override
 	public Uni<E> delete(E entity)
 	{
-		entity.setWarehouseLastUpdatedTimestamp(convertToUTCDateTime(RootEntity.getNow()));
-		entity.setEffectiveToDate(convertToUTCDateTime(RootEntity.getNow()));
+		entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
+		entity.setEffectiveToDate(IQueryBuilderSCD.convertToUTCDateTime(RootEntity.getNow()));
 		entity.setActiveFlag(ActiveFlag.Deleted);
 		return getEntityManager().merge(entity);
 	}

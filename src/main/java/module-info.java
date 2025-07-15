@@ -2,6 +2,7 @@ import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule;
+import com.guicedee.activitymaster.fsdm.db.entityassist.EntityAssistReactiveModule;
 import com.guicedee.activitymaster.fsdm.implementations.*;
 import com.guicedee.activitymaster.fsdm.injections.*;
 import com.guicedee.activitymaster.fsdm.systems.*;
@@ -74,7 +75,8 @@ module com.guicedee.activitymaster.fsdm {
 			ProductsBinder,
 			RulesBinder,
 			ActivityMasterSystemBinder,
-			PasswordsServiceBinder;
+			PasswordsServiceBinder,
+			EntityAssistReactiveModule;
 
 
 	provides IGuiceConfigurator with ActivityMasterScanConfiguration;

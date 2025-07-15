@@ -4,6 +4,7 @@ import com.entityassist.enumerations.Operand;
 import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
+import io.smallrye.mutiny.Uni;
 
 import java.time.LocalDate;
 import java.util.UUID;

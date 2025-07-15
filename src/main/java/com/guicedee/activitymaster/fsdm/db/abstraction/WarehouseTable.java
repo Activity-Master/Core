@@ -6,11 +6,11 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderTable;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.UUID;
 
@@ -69,26 +69,52 @@ public abstract class WarehouseTable<
 	@SuppressWarnings("unchecked")
 	protected J configureDefaultsSystemValues(Systems requestingSystem)
 	{
-		setOriginalSourceSystemID(requestingSystem);
-		return (J) this;
+		return setOriginalSourceSystemID(requestingSystem);
 	}
 
+	/**
+	 * Gets the original source system unique ID.
+	 * This method is non-reactive as it simply returns a property value.
+	 * 
+	 * @return The original source system unique ID
+	 */
 	public @NotNull UUID getOriginalSourceSystemUniqueID()
 	{
 		return this.originalSourceSystemUniqueID;
 	}
 
+	/**
+	 * Sets the original source system unique ID.
+	 * This method is non-reactive as it simply sets a property value.
+	 * 
+	 * @param originalSourceSystemUniqueID The original source system unique ID to set
+	 * @return This instance for method chaining
+	 */
+	@SuppressWarnings("unchecked")
 	public J setOriginalSourceSystemUniqueID(@NotNull UUID originalSourceSystemUniqueID)
 	{
 		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
 		return (J) this;
 	}
 
+	/**
+	 * Gets the original source system ID.
+	 * This method is non-reactive as it simply returns a property value.
+	 * 
+	 * @return The original source system ID
+	 */
 	public UUID getOriginalSourceSystemID()
 	{
 		return this.originalSourceSystemID;
 	}
 
+	/**
+	 * Sets the original source system ID.
+	 * This method is non-reactive as it simply sets a property value.
+	 * 
+	 * @param originalSourceSystemID The original source system ID to set
+	 * @return This instance for method chaining
+	 */
 	@SuppressWarnings("unchecked")
 	public J setOriginalSourceSystemID(UUID originalSourceSystemID)
 	{
@@ -96,6 +122,14 @@ public abstract class WarehouseTable<
 		return (J)this;
 	}
 
+	/**
+	 * Sets the original source system ID using an ISystems object.
+	 * This method is non-reactive as it simply sets a property value.
+	 * 
+	 * @param originalSourceSystemID The original source system to set
+	 * @return This instance for method chaining
+	 */
+	@SuppressWarnings("unchecked")
 	public J setOriginalSourceSystemID(ISystems<?, ?> originalSourceSystemID)
 	{
 		if(originalSourceSystemID == null)
@@ -106,11 +140,25 @@ public abstract class WarehouseTable<
 		return (J) this;
 	}
 
-	public Enterprise getEnterpriseID()
+	/**
+	 * Gets the enterprise ID associated with this entity.
+	 * This method is non-reactive as it simply returns a property value.
+	 * 
+	 * @return The enterprise ID
+	 */
+	public IEnterprise<?, ?> getEnterpriseID()
 	{
 		return this.enterpriseID;
 	}
 
+	/**
+	 * Sets the enterprise ID for this entity.
+	 * This method is non-reactive as it simply sets a property value.
+	 * 
+	 * @param enterpriseID The enterprise ID to set
+	 * @return This instance for method chaining
+	 */
+	@SuppressWarnings("unchecked")
 	public J setEnterpriseID(IEnterprise<?, ?> enterpriseID)
 	{
 		this.enterpriseID = (Enterprise) enterpriseID;

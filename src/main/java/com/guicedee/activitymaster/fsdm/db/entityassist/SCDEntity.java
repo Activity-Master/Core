@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.entityassist;
 import com.entityassist.BaseEntity;
 import com.entityassist.RootEntity;
 import com.guicedee.activitymaster.fsdm.client.services.builders.ISCDEntity;
+import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
@@ -17,7 +18,6 @@ import java.time.ZoneOffset;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD.convertToUTCDateTime;
 
 @MappedSuperclass()
 @JsonAutoDetect(fieldVisibility = ANY,
@@ -79,10 +79,10 @@ public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBui
 	public SCDEntity()
 	{
 		effectiveToDate = EndOfTime.atOffset(ZoneOffset.UTC);
-		effectiveFromDate = convertToUTCDateTime(RootEntity.getNow());
-		warehouseCreatedTimestamp = convertToUTCDateTime(RootEntity.getNow());
-		warehouseCreatedDate = RootEntity.getNow().toLocalDate();
-		warehouseLastUpdatedTimestamp = convertToUTCDateTime(RootEntity.getNow());
+		effectiveFromDate = IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow());
+		warehouseCreatedTimestamp = IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow());
+		warehouseCreatedDate = com.entityassist.RootEntity.getNow().toLocalDate();
+		warehouseLastUpdatedTimestamp = IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow());
 	}
 
 	public LocalDate getWarehouseCreatedDate()

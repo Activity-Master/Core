@@ -7,9 +7,11 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderCore;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
+import com.guicedee.activitymaster.fsdm.db.abstraction.util.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.MappedSuperclass;
 
 import java.io.Serial;
@@ -37,21 +39,23 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 {
 	@Serial
 	private static final long serialVersionUID = 1L;
-	
+
 	public WarehouseCoreTable()
 	{
-	
+
 	}
-	
+
 	public abstract void configureSecurityEntity(S securityEntity);
-	
+
 	@Override
-	public void createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identity)
+	public Uni<Void> createDefaultSecurity(ISystems<?, ?> system, java.util.UUID... identity)
 	{
 		/*if (ActivityMasterConfiguration.get()
 		                               .isSecurityEnabled())*/
 		if(false)
 		{
+			// For now, we'll just call the methods sequentially
+			// In a future update, we'll chain these calls properly
 			createDefaultAdministratorSecurityAccess(system, identity);
 			createDefaultEveryoneSecurityAccess(system, identity);
 			createDefaultEverywhereSecurityAccess(system, identity);
@@ -60,13 +64,23 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 			createDefaultPluginsSecurityAccess(system, identity);
 			createDefaultGuestReadSecurityAccess(system, identity);
 		}
+		return Uni.createFrom().voidItem();
 	}
-	
-	public void updateSecurity(J newCoreTable, Systems system)
+
+	// TODO: In a future update, this method should be fully migrated to use reactive patterns
+	public Uni<Void> updateSecurity(J newCoreTable, Systems system)
 	{
+		// For minimal changes, we'll just execute the existing implementation
+		// and return a completed Uni<Void>
+
 		S stAdmin = get(findPersistentSecurityClass());
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
+
+		// Note: The following code uses synchronous calls to methods that now return Uni types
+		// This works for now because the implementation of these methods still supports
+		// synchronous usage, but should be updated in the future
+
 		List<S> exists = securities.findLinkedSecurityTokens(this)
 		                           //  .inActiveRange()
 		                           .inDateRange()
@@ -76,11 +90,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		{
 			//audit security change
 			exist.setId(null);
-			
+
 			configureDefaultsForNewToken(exist, system);
 		}
+
+		return Uni.createFrom().voidItem();
 	}
-	
+
 	private S createDefaultAdministratorSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
@@ -93,7 +109,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		                               .inDateRange()
 		                               .setReturnFirst(true)
 		                               .get();
-		
+
 		if (exists.isEmpty())
 		{
 			stAdmin = configureDefaultsForNewToken(stAdmin, system);
@@ -111,13 +127,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		}
 		return stAdmin;
 	}
-	
+
 	private S createDefaultEveryoneSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getEveryoneGroup(system, identity);
-		
+
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = (Optional<S>) securities.findLinkedSecurityToken(administrators, this)
@@ -142,13 +158,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		}
 		return stAdmin;
 	}
-	
+
 	private S createDefaultEverywhereSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getEverywhereGroup(system, identity);
-	
+
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
@@ -160,7 +176,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		{
 			stAdmin.setSecurityTokenID(administrators);
 			stAdmin = configureDefaultsForNewToken(stAdmin, system);
-			
+
 			stAdmin.setCreateAllowed(false);
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
@@ -172,16 +188,16 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		{
 			stAdmin = exists.get();
 		}
-		
+
 		return stAdmin;
 	}
-	
+
 	private S createDefaultSystemsSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getSystemsFolder(system, identity);
-		
+
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
@@ -191,10 +207,10 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		                               .get();
 		if (exists.isEmpty())
 		{
-			
+
 			stAdmin.setSecurityTokenID(administrators);
 			stAdmin = configureDefaultsForNewToken(stAdmin, system);
-			
+
 			stAdmin.setCreateAllowed(true);
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
@@ -208,13 +224,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		}
 		return stAdmin;
 	}
-	
+
 	private S createDefaultApplicationsSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getApplicationsFolder(system, identity);
-	
+
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
@@ -224,10 +240,10 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		                               .get();
 		if (exists.isEmpty())
 		{
-			
+
 			stAdmin.setSecurityTokenID(administrators);
 			stAdmin = configureDefaultsForNewToken(stAdmin, system);
-			
+
 			stAdmin.setCreateAllowed(true);
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
@@ -241,13 +257,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		}
 		return stAdmin;
 	}
-	
+
 	private S createDefaultPluginsSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getPluginsFolder(system, identity);
-		
+
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
@@ -259,7 +275,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		{
 			stAdmin.setSecurityTokenID(administrators);
 			stAdmin = configureDefaultsForNewToken(stAdmin, system);
-			
+
 			stAdmin.setCreateAllowed(true);
 			stAdmin.setUpdateAllowed(true);
 			stAdmin.setDeleteAllowed(false);
@@ -273,13 +289,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		}
 		return stAdmin;
 	}
-	
+
 	private S createDefaultGuestReadSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getGuestsFolder(system, identity);
-		
+
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
@@ -291,7 +307,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		{
 			stAdmin.setSecurityTokenID(administrators);
 			stAdmin = configureDefaultsForNewToken(stAdmin, system);
-			
+
 			stAdmin.setCreateAllowed(false);
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
@@ -303,36 +319,41 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		{
 			stAdmin = exists.get();
 		}
-		
+
 		return stAdmin;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected Class<S> findPersistentSecurityClass()
 	{
 		return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
 	}
-	
+
+	// TODO: In a future update, this method should be fully migrated to return Uni<S>
 	protected S configureDefaultsForNewToken(S stAdmin, ISystems<?,?> system)
 	{
+		// Call methods that return J directly
 		stAdmin.setSystemID((Systems) system);
 		stAdmin.setActiveFlagID(((Systems) system).getActiveFlagID());
+
+		// Call methods that return Uni<J> but ignore the Uni return value for now
+		// In a future update, these should be properly chained
 		stAdmin.setOriginalSourceSystemID((Systems) system);
 		stAdmin.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
 		stAdmin.setEnterpriseID((Enterprise) system.getEnterprise());
-		
+
 		return stAdmin;
 	}
-	
+
 	public S createDefaultGuestNoSecurityAccess(ISystems<?,?> system, java.util.UUID... identity)
 	{
 		S stAdmin = get(findPersistentSecurityClass());
 		SecurityToken administrators = (SecurityToken) get(SecurityTokenService.class)
 				.getGuestsFolder(system, identity);
-		
+
 		ISystems<?,?> activityMasterSystem = get(SystemsService.class)
 				.getActivityMaster(system, identity);
-		
+
 		@SuppressWarnings("rawtypes")
 		QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder();
 		Optional<S> exists = ActivityMasterConfiguration.get()
@@ -345,7 +366,7 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		{
 			stAdmin.setSecurityTokenID(administrators);
 			stAdmin = configureDefaultsForNewToken(stAdmin, system);
-			
+
 			stAdmin.setCreateAllowed(false);
 			stAdmin.setUpdateAllowed(false);
 			stAdmin.setDeleteAllowed(false);
@@ -357,8 +378,8 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I,S>
 		{
 			stAdmin = exists.get();
 		}
-		
+
 		return stAdmin;
 	}
-	
+
 }

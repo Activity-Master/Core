@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSe
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
 
@@ -33,47 +34,49 @@ public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J,
 {
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public J findLinkedSecurityToken(SecurityToken identityToken, I id)
+	public Uni<J> findLinkedSecurityToken(SecurityToken identityToken, I id)
 	{
 		where(getSecurityTokenAttribute(), Equals, identityToken);
 		where(getMyAttribute(), Equals, id);
-		return (J) this;
+		return Uni.createFrom().item((J) this);
 	}
-	
+
 	protected Attribute getSecurityTokenAttribute()
 	{
 		return getAttribute("securityTokenID");
 	}
-	
+
 	protected Attribute getBaseEntityAttribute()
 	{
 		return getAttribute("base");
 	}
-	
+
 	protected abstract Attribute getMyAttribute();
-	
-	public J findBySecurityToken(SecurityToken uuid)
+
+	public Uni<J> findBySecurityToken(SecurityToken uuid)
 	{
 		where(getSecurityTokenAttribute(), Equals, uuid);
-		return (J) this;
+		return Uni.createFrom().item((J) this);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public J findLinkedSecurityToken(SecurityToken identityToken, WarehouseBaseTable id)
+	public Uni<J> findLinkedSecurityToken(SecurityToken identityToken, WarehouseBaseTable id)
 	{
-		findLinkedSecurityTokens(id);
-		Attribute securityAttribute = getSecurityTokenAttribute();
-		where(securityAttribute, Equals, identityToken);
-		return (J) this;
+		return findLinkedSecurityTokens(id)
+			.chain(result -> {
+				Attribute securityAttribute = getSecurityTokenAttribute();
+				where(securityAttribute, Equals, identityToken);
+				return Uni.createFrom().item((J) this);
+			});
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@NotNull
-	public J findLinkedSecurityTokens(WarehouseBaseTable id)
+	public Uni<J> findLinkedSecurityTokens(WarehouseBaseTable id)
 	{
 		Attribute myAttribute = getMyAttribute();
 		where(myAttribute, Equals, id);
-		return (J) this;
+		return Uni.createFrom().item((J) this);
 	}
 }
