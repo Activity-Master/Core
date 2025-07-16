@@ -238,13 +238,13 @@
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
 
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.show_sql" value="${FSDM_SHOWSQL}"/>
+            <property name="hibernate.format_sql" value="${FSDM_FORMATSQL}"/>
             <property name="hibernate.use_sql_comments" value="false"/>
             <!--<property name="hibernate.hbm2ddl.auto" value="update"/>-->
 
             <!-- Reactive connection properties -->
-            <property name="hibernate.connection.provider_class" 
+         <!--   <property name="hibernate.connection.provider_class"
                       value="org.hibernate.reactive.vertx.VertxConnectionPool"/>
             <property name="hibernate.reactive.vertx.pool.url" 
                       value="postgresql://${FSDM_DBSERVER}/${FSDM_DBNAME}"/>
@@ -252,7 +252,7 @@
                       value="10"/>
             <property name="hibernate.reactive.vertx.pool.username" value="${FSDM_USER}"/>
             <property name="hibernate.reactive.vertx.pool.password" value="${FSDM_PASSWORD}"/>
-
+-->
             <property name="hibernate.jdbc.batch_size" value="10"/>
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
             <property name="hibernate.javax.cache.missing_cache_strategy" value="create"/>
@@ -260,14 +260,14 @@
             <property name="hibernate.connection.useUnicode" value="yes"/>
             <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
 
-            <property name="hibernate.max_fetch_depth" value="1"/>
+            <!--<property name="hibernate.max_fetch_depth" value="1"/>-->
 
             <!-- Hibernate Reactive 2nd Level Cache with Hazelcast -->
-            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+       <!--     <property name="hibernate.cache.use_second_level_cache" value="true"/>
             <property name="hibernate.cache.region.factory_class" 
                       value="org.hibernate.cache.hazelcast.HazelcastCacheRegionFactory"/>
             <property name="hibernate.cache.hazelcast.instance_name" value="ActivityMasterHazelcast"/>
-            <property name="hibernate.cache.use_query_cache" value="true"/>
+            <property name="hibernate.cache.use_query_cache" value="true"/>-->
 
             <!-- PostgreSQL optimizations -->
             <property name="hibernate.jdbc.lob.non_contextual_creation" value="true"/>

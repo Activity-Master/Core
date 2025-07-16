@@ -2,8 +2,6 @@ package com.guicedee.activitymaster.fsdm.services;
 
 import lombok.extern.java.Log;
 
-import javax.cache.CacheManager;
-
 @Log
 public class ActivityMasterSystemsManager
 {
@@ -17,7 +15,7 @@ public class ActivityMasterSystemsManager
 	public static void wipeCaches()
 	{
 		log.info("Wiping Caches");
-		CacheManager cacheManager = com.guicedee.client.IGuiceContext.get(CacheManager.class);
+		/*CacheManager cacheManager = com.guicedee.client.IGuiceContext.get(CacheManager.class);
 		try
 		{
 			for (String cacheName : cacheManager.getCacheNames())
@@ -36,6 +34,6 @@ public class ActivityMasterSystemsManager
 		catch (Throwable T)
 		{
 			//ignore failed clear
-		}
+		}*/
 	}
 }

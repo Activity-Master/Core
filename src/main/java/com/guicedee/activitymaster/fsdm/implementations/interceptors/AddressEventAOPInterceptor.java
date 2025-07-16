@@ -2,24 +2,33 @@ package com.guicedee.activitymaster.fsdm.implementations.interceptors;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
+import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ClassificationException;
 import com.guicedee.guicedinjection.pairing.Pair;
+import io.smallrye.mutiny.Uni;
+import lombok.extern.java.Log;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts.*;
 
+@Log
 public class AddressEventAOPInterceptor implements MethodInterceptor
 {
 	@Inject
@@ -31,7 +40,10 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 	 */
 	@Inject
 	private IEvent<?, ?> event;
-	
+
+	@Inject
+	private IEnterpriseService<?> enterpriseService;
+
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
 	{
@@ -39,65 +51,141 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 		{
 			com.guicedee.client.IGuiceContext.instance().inject().injectMembers(this);
 		}
-		if (!configuration.isEnterpriseReady() || getISystem(ActivityMasterSystemName) == null)
+
+		// Check if enterprise is ready
+		if (!configuration.isEnterpriseReady())
 		{
 			return methodInvocation.proceed();
 		}
+
+		// Check if event ID is null
 		if (event.getId() == null)
 		{
 			return methodInvocation.proceed();
 		}
-		AddressEvent event = methodInvocation.getMethod()
+
+		// Get the address event annotation
+		AddressEvent addressEvent = methodInvocation.getMethod()
 		                                     .getAnnotation(AddressEvent.class);
-		
-		var refObject
-				= getRefObject(methodInvocation);
-		for (Pair<Address, IAddress<?, ?>> pair : refObject)
-		{
-			if (pair.getValue() == null)
-			{
-				continue;
-			}
-			String classification = pair.getKey()
-			                                 .value();
-			checkClassificationExists(classification);
-			this.event.addAddress(pair.getValue(), classification, event.classificationName(), getISystem(ActivityMasterSystemName),
-					getISystemToken(ActivityMasterSystemName));
-		}
-		
-		Object o = null;
+
+		// Get reference objects
+		var refObject = getRefObject(methodInvocation);
+
+		// Get enterprise from configuration
+		String enterpriseName = configuration.getApplicationEnterpriseName();
+
+		// Create a list to hold all operations
+		List<Uni<?>> operations = new ArrayList<>();
+
+		// Get enterprise from name
+		enterpriseService.getEnterprise(enterpriseName)
+			.subscribe().with(
+				enterprise -> {
+					// Process each address in parallel
+					for (Pair<Address, IAddress<?, ?>> pair : refObject)
+					{
+						if (pair.getValue() == null)
+						{
+							continue;
+						}
+
+						String classification = pair.getKey().value();
+
+						// Create an operation for each address
+						Uni<?> operation = checkClassificationExists(classification, enterprise)
+							.chain(result -> {
+								// Get system and token
+								return getISystem(ActivityMasterSystemName, enterprise)
+									.chain(system -> {
+										return getISystemToken(ActivityMasterSystemName, enterprise)
+											.chain(token -> {
+												// Add address to event
+												return Uni.createFrom().item(() -> {
+													this.event.addAddress(pair.getValue(), classification, addressEvent.classificationName(), system, token);
+													return null;
+												});
+											});
+									});
+							})
+							.onFailure().invoke(error -> log.log(Level.SEVERE, "Error processing address: " + classification, error));
+
+						// Add operation to list
+						operations.add(operation);
+					}
+
+					// Run all operations in parallel
+					if (!operations.isEmpty()) {
+						Uni.combine().all().unis(operations)
+							.discardItems()
+							.subscribe().with(
+								result -> log.info("All address operations completed successfully"),
+								error -> log.log(Level.SEVERE, "Error in parallel address operations", error)
+							);
+					}
+				},
+				error -> log.log(Level.SEVERE, "Error getting enterprise: " + error.getMessage(), error)
+			);
+
+		// Proceed with method invocation
+		Object result = null;
 		try
 		{
-			o = methodInvocation.proceed();
-		}catch (Throwable t)
+			result = methodInvocation.proceed();
+		}
+		catch (Throwable t)
 		{
 			throw t;
 		}
-		if (methodInvocation.getMethod()
-		                    .isAnnotationPresent(LogItem.class))
+
+		// Process log item if present
+		if (methodInvocation.getMethod().isAnnotationPresent(LogItem.class))
 		{
 			LogItemEventAOPInterceptor logItemEventAOPInterceptor = com.guicedee.client.IGuiceContext.get(LogItemEventAOPInterceptor.class);
-			logItemEventAOPInterceptor.processLogItemEntry(Pair.of(methodInvocation.getMethod().getAnnotation(LogItem.class),o));
+			final Object finalResult = result; // Create a final copy of the result
+			enterpriseService.getEnterprise(enterpriseName)
+				.subscribe().with(
+					enterprise -> {
+						logItemEventAOPInterceptor.processLogItemEntry(Pair.of(methodInvocation.getMethod().getAnnotation(LogItem.class), finalResult), enterprise)
+							.subscribe().with(
+								success -> log.info("Log item processed successfully"),
+								error -> log.log(Level.SEVERE, "Error processing log item", error)
+							);
+					},
+					error -> log.log(Level.SEVERE, "Error getting enterprise for log item", error)
+				);
 		}
-		return o;
+
+		return result;
 	}
-	
-	private void checkClassificationExists(String classificationName)
+
+	private Uni<Void> checkClassificationExists(String classificationName, IEnterprise<?,?> enterprise)
 	{
-		try
-		{
-			classificationService.find(classificationName, getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName));
-		}catch (ClassificationException e)
-		{
-			classificationService.create(classificationName, classificationName, EventXAddress, getISystem(ActivityMasterSystemName), 0, "LogItemTypes", getISystemToken(ActivityMasterSystemName));
-		}
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			return getISystem(ActivityMasterSystemName, enterprise)
+				.chain(system -> {
+					return getISystemToken(ActivityMasterSystemName, enterprise)
+						.chain(token -> {
+							// Try to find the classification
+							return Uni.createFrom().item(() -> {
+								try {
+									classificationService.find(classificationName, system, token);
+									return null;
+								} catch (ClassificationException e) {
+									// Create the classification if it doesn't exist
+									classificationService.create(classificationName, classificationName, EventXAddress, system, 0, "LogItemTypes", token);
+									return null;
+								}
+							});
+						});
+				});
+		});
 	}
-	
+
 	private List<Pair<Address, IAddress<?, ?>>> getRefObject(MethodInvocation methodInvocation)
 	{
 		List<Pair<Address, IAddress<?, ?>>> output = new ArrayList<>();
-		
-		
+
+
 		Parameter[] parameters = methodInvocation.getMethod()
 		                                         .getParameters();
 		for (int i = 0; i < parameters.length; i++)
@@ -114,6 +202,6 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 		}
 		return output;
 	}
-	
-	
+
+
 }

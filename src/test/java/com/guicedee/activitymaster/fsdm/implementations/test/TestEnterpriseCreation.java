@@ -1,17 +1,17 @@
-package com.guicedee.activitymaster.fsdm.implementations;
+package com.guicedee.activitymaster.fsdm.implementations.test;
 
 import com.guicedee.activitymaster.fsdm.DefaultEnterprise;
 import com.guicedee.activitymaster.fsdm.EnterpriseService;
+import com.guicedee.activitymaster.fsdm.implementations.DefaultTestConfig;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.logging.Logger;
 
 @ExtendWith(DefaultTestConfig.class)
+@Log4j2
 public class TestEnterpriseCreation
 {
-	private static final Logger log = Logger.getLogger(TestEnterpriseCreation.class.getName());
-
 	@Test
 	public void testEnterpriseCreation()
 	{

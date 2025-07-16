@@ -16,4 +16,4 @@ com.guicedee.activitymaster.fsdm.implementations.RulesBinder
 com.guicedee.activitymaster.fsdm.implementations.ActivityMasterSystemBinder
 com.guicedee.activitymaster.fsdm.implementations.PasswordsServiceBinder
 com.guicedee.activitymaster.fsdm.implementations.EventInterceptorsBinder
-com.guicedee.activitymaster.fsdm.db.entityassist.EntityAssistReactiveModule
+#com.guicedee.activitymaster.fsdm.db.entityassist.EntityAssistReactiveModule

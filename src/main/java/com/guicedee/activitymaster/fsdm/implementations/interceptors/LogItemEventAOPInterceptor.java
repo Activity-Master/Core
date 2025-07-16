@@ -3,16 +3,21 @@ package com.guicedee.activitymaster.fsdm.implementations.interceptors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
+import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.IResourceItemService;
+import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItem;
 import com.guicedee.activitymaster.fsdm.client.services.annotations.LogItemTypes;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEvent;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.*;
 import com.guicedee.guicedinjection.pairing.Pair;
 import com.guicedee.services.jsonrepresentation.IJsonRepresentation;
 import com.guicedee.services.xmlrepresentation.IXmlRepresentation;
+import io.smallrye.mutiny.Uni;
 import lombok.extern.java.Log;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -20,7 +25,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
@@ -43,6 +48,8 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 	private IResourceItemService<?> resourceItemService;
 	@Inject
 	private IClassificationService<?> classificationService;
+	@Inject
+	private IEnterpriseService<?> enterpriseService;
 	
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
@@ -52,58 +59,122 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 			com.guicedee.client.IGuiceContext.instance().inject()
 			            .injectMembers(this);
 		}
-		if (!configuration.isEnterpriseReady() || getISystem(ActivityMasterSystemName) == null)
+		
+		// Check if enterprise is ready
+		if (!configuration.isEnterpriseReady())
 		{
 			return methodInvocation.proceed();
 		}
+		
+		// Check if event ID is null
 		if (event == null || event.getId() == null)
 		{
 			return methodInvocation.proceed();
 		}
 		
+		// Get reference objects
 		var refObject = getRefObject(methodInvocation);
-		for (Pair<LogItem, Object> pair : refObject)
-		{
-			if (pair.getValue() == null)
-			{
-				pair.setValue("null");
-			}
-			checkClassificationExists(pair.getKey().value());
-			processLogItemEntry(pair);
-		}
-		return methodInvocation.proceed();
 		
+		// Get enterprise from configuration
+		String enterpriseName = configuration.getApplicationEnterpriseName();
+		
+		// Create a list to hold all operations
+		List<Uni<?>> operations = new ArrayList<>();
+		
+		// Get enterprise from name
+		enterpriseService.getEnterprise(enterpriseName)
+			.subscribe().with(
+				enterprise -> {
+					// Process each log item in parallel
+					for (Pair<LogItem, Object> pair : refObject)
+					{
+						if (pair.getValue() == null)
+						{
+							pair.setValue("null");
+						}
+						
+						String classification = pair.getKey().value();
+						
+						// Create an operation for each log item
+						Uni<?> operation = checkClassificationExists(classification, enterprise)
+							.chain(result -> {
+								try {
+									return processLogItemEntry(pair, enterprise);
+								} catch (Exception e) {
+									log.log(Level.SEVERE, "Error processing log item: " + classification, e);
+									return Uni.createFrom().failure(e);
+								}
+							})
+							.onFailure().invoke(error -> log.log(Level.SEVERE, "Error processing log item: " + classification, error));
+						
+						// Add operation to list
+						operations.add(operation);
+					}
+					
+					// Run all operations in parallel
+					if (!operations.isEmpty()) {
+						Uni.combine().all().unis(operations)
+							.discardItems()
+							.subscribe().with(
+								result -> log.info("All log item operations completed successfully"),
+								error -> log.log(Level.SEVERE, "Error in parallel log item operations", error)
+							);
+					}
+				},
+				error -> log.log(Level.SEVERE, "Error getting enterprise: " + error.getMessage(), error)
+			);
+		
+		// Proceed with method invocation
+		return methodInvocation.proceed();
 	}
 	
-	private void checkClassificationExists(String classificationName)
+	private Uni<Void> checkClassificationExists(String classificationName, IEnterprise<?,?> enterprise)
 	{
-		try
-		{
-			classificationService.find(classificationName, getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName));
-		}catch (ClassificationException e)
-		{
-			classificationService.create(classificationName, classificationName, EventXAddress, getISystem(ActivityMasterSystemName), 0, "LogItemTypes", getISystemToken(ActivityMasterSystemName));
-		}
-	}
-	
-	
-	public void processLogItemEntry(Pair<LogItem, Object> logItemObjectPair) throws ExecutionException, InterruptedException {
-		Pair<Object, LogItemTypes> of = Pair.of(logItemObjectPair.getValue(), logItemObjectPair.getKey()
-		                                                                                       .type());
-		byte[] bytes = decodeReferenceObject(of);
-		resourceItemService.create("LogItem", logItemObjectPair.getKey()
-						.type()
-						.getMimeType(), bytes, getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName))
-				.onSuccess(rih -> {
-					event.addResourceItem(logItemObjectPair.getKey()
-									.value(), rih,
-							logItemObjectPair.getKey()
-									.value()
-							, getISystem(ActivityMasterSystemName), getISystemToken(ActivityMasterSystemName) );
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			return getISystem(ActivityMasterSystemName, enterprise)
+				.chain(system -> {
+					return getISystemToken(ActivityMasterSystemName, enterprise)
+						.chain(token -> {
+							// Try to find the classification
+							return Uni.createFrom().item(() -> {
+								try {
+									classificationService.find(classificationName, system, token);
+									return null;
+								} catch (ClassificationException e) {
+									// Create the classification if it doesn't exist
+									classificationService.create(classificationName, classificationName, EventXAddress, system, 0, "LogItemTypes", token);
+									return null;
+								}
+							});
+						});
 				});
+		});
 	}
 	
-	private byte[] decodeReferenceObject(Pair<Object, LogItemTypes> pair)
+	public Uni<Void> processLogItemEntry(Pair<LogItem, Object> logItemObjectPair, IEnterprise<?,?> enterprise) {
+		return ReactiveTransactionUtil.withTransaction(session -> {
+			Pair<Object, LogItemTypes> of = Pair.of(logItemObjectPair.getValue(), logItemObjectPair.getKey().type());
+			
+			return decodeReferenceObject(of)
+				.chain(bytes -> {
+					return getISystem(ActivityMasterSystemName, enterprise)
+						.chain(system -> {
+							return getISystemToken(ActivityMasterSystemName, enterprise)
+								.chain(token -> {
+									return resourceItemService.create("LogItem", logItemObjectPair.getKey().type().getMimeType(), bytes, system, token)
+										.chain(rih -> {
+											return Uni.createFrom().item(() -> {
+												event.addResourceItem(logItemObjectPair.getKey().value(), rih, logItemObjectPair.getKey().value(), system, token);
+												return null;
+											});
+										});
+								});
+						});
+				});
+		});
+	}
+	
+	private Uni<byte[]> decodeReferenceObject(Pair<Object, LogItemTypes> pair)
 	{
 		Object key = pair.getKey();
 		if (key instanceof IResourceItem)
@@ -113,8 +184,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 		}
 		if (key instanceof String)
 		{
-			return key.toString()
-			          .getBytes();
+			return Uni.createFrom().item(key.toString().getBytes());
 		}
 		
 		switch (pair.getValue())
@@ -123,8 +193,7 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 				if (key instanceof IXmlRepresentation<?>)
 				{
 					IXmlRepresentation<?> xml = (IXmlRepresentation<?>) key;
-					return xml.toXml()
-					          .getBytes();
+					return Uni.createFrom().item(xml.toXml().getBytes());
 				}
 				break;
 			case Excel:
@@ -138,40 +207,37 @@ public class LogItemEventAOPInterceptor implements MethodInterceptor
 			{
 				if (key instanceof byte[])
 				{
-					return (byte[]) key;
+					return Uni.createFrom().item((byte[]) key);
 				}
-				throw new ResourceItemException("Log Item Type is not a byte[] for the specified type - " + pair.getValue());
+				return Uni.createFrom().failure(new ResourceItemException("Log Item Type is not a byte[] for the specified type - " + pair.getValue()));
 			}
 			case CSV:
 			case CSS:
 			case TLDCSV:
 			case JavaScript:
 			case Text:
-				return key.toString()
-				          .getBytes();
+				return Uni.createFrom().item(key.toString().getBytes());
 			case Json:
 			default:
 				if (key instanceof IJsonRepresentation<?>)
 				{
 					IJsonRepresentation<?> rep = (IJsonRepresentation<?>) key;
-					return rep.toJson()
-					          .getBytes();
+					return Uni.createFrom().item(rep.toJson().getBytes());
 				}
 				try
 				{
-					return com.guicedee.client.IGuiceContext.get(DefaultObjectMapper)
+					return Uni.createFrom().item(com.guicedee.client.IGuiceContext.get(DefaultObjectMapper)
 					                   .writerWithDefaultPrettyPrinter()
-					                   .writeValueAsBytes(key);
+					                   .writeValueAsBytes(key));
 				}
 				catch (JsonProcessingException e)
 				{
 					log.log(Level.SEVERE, "Unable to decode LogEventItem to JSON", e);
-					break;
+					return Uni.createFrom().failure(e);
 				}
 		}
-		return new byte[]{};
+		return Uni.createFrom().item(new byte[]{});
 	}
-	
 	
 	/**
 	 * @param methodInvocation
