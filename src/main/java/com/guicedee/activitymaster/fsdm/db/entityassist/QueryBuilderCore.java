@@ -9,6 +9,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import static com.entityassist.enumerations.Operand.InList;
 import static java.time.ZoneOffset.UTC;
@@ -18,7 +19,7 @@ import static java.time.ZoneOffset.UTC;
  * @param <E> Entity Class
  * @author GedMarc
  */
-public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>, E extends CoreEntity<E, J, I>, I extends Serializable>
+public abstract class QueryBuilderCore<J extends QueryBuilderCore<J, E, I>, E extends CoreEntity<E, J, I>, I extends UUID>
 		extends QueryBuilderSCD<J, E, I>
 		implements IQueryBuilderCore<J, E, I>
 {

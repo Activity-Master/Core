@@ -1,19 +1,18 @@
 package com.guicedee.activitymaster.fsdm.db.entityassist;
 
 import com.entityassist.BaseEntity;
-import com.entityassist.RootEntity;
-import com.guicedee.activitymaster.fsdm.client.services.builders.ISCDEntity;
-import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD;
+import com.guicedee.activitymaster.fsdm.client.services.builders.ISCDEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
@@ -24,7 +23,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 		getterVisibility = NONE,
 		setterVisibility = NONE)
 @JsonInclude(NON_NULL)
-public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBuilderSCD<Q, J, I>, I extends Serializable>
+public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBuilderSCD<Q, J, I>, I extends UUID>
 		extends BaseEntity<J, Q, I>
 	implements ISCDEntity<J,Q,I>
 {

@@ -53,7 +53,7 @@ public class ArrangementEventAOPInterceptor implements MethodInterceptor
 		}
 
 		// Check if enterprise is ready
-		if (!configuration.isEnterpriseReady())
+  if (!configuration.isEnterpriseReady())
 		{
 			return methodInvocation.proceed();
 		}

@@ -219,7 +219,7 @@ module com.guicedee.activitymaster.fsdm {
 
 
 	//opens com.guicedee.activitymaster.fsdm.services.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
-	opens com.guicedee.activitymaster.fsdm.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
+	//opens com.guicedee.activitymaster.fsdm.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
 
 	opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice;
 

@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
@@ -33,7 +34,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
         getterVisibility = NONE,
         setterVisibility = NONE)
 @JsonInclude(NON_NULL)
-public abstract class CoreEntity<J extends CoreEntity<J, Q, I>, Q extends QueryBuilderCore<Q, J, I>, I extends Serializable>
+public abstract class CoreEntity<J extends CoreEntity<J, Q, I>, Q extends QueryBuilderCore<Q, J, I>, I extends UUID>
         extends SCDEntity<J, Q, I>
         implements ICoreEntity<J, Q, I>
 {

@@ -53,7 +53,7 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 		}
 
 		// Check if enterprise is ready
-		if (!configuration.isEnterpriseReady())
+  if (!configuration.isEnterpriseReadySync())
 		{
 			return methodInvocation.proceed();
 		}

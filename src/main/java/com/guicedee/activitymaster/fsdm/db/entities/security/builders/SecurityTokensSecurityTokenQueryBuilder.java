@@ -1,7 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.security.builders;
 
-import com.entityassist.services.querybuilders.IQueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
 import jakarta.persistence.metamodel.Attribute;
@@ -13,7 +13,7 @@ import static com.entityassist.enumerations.Operand.*;
 public class SecurityTokensSecurityTokenQueryBuilder
 		extends QueryBuilderSecurities<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, UUID>
 		implements IQueryBuilderEnterprise<SecurityTokensSecurityTokenQueryBuilder, SecurityTokensSecurityToken, UUID>,
-		           IQueryBuilderSCD<SecurityTokensSecurityTokenQueryBuilder,SecurityTokensSecurityToken,java.util.UUID>
+						   IQueryBuilderSCD<SecurityTokensSecurityTokenQueryBuilder,SecurityTokensSecurityToken, UUID>
 {
 	public SecurityTokensSecurityTokenQueryBuilder findBySecurityToken(SecurityToken fromToken, SecurityToken forToken)
 	{
