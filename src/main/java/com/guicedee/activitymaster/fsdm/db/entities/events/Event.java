@@ -367,7 +367,7 @@ public class Event
     }
 
     @Override
-    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Event primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Event primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         EventXResourceItem e = (EventXResourceItem) linkTable;
         e.setEventID(primary);

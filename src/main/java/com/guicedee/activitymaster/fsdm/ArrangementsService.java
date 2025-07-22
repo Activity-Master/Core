@@ -40,10 +40,11 @@ import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.entityassist.enumerations.OrderByType.DESC;
+import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.EndOfTime;
 import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.NoClassification;
-import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.EndOfTime;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Log4j2
 public class ArrangementsService
         implements IArrangementsService<ArrangementsService>
@@ -89,7 +90,7 @@ public class ArrangementsService
         log.debug("Creating arrangement - type: {}, key: {}, classification: {}, value: {}",
                 type, key, arrangementTypeClassification, arrangementTypeValue);
 
-        return ReactiveTransactionUtil.withTransaction(session -> {
+        return (Uni) ReactiveTransactionUtil.withTransaction(session -> {
             // Step 1: Create the arrangement
             Arrangement arrangement = new Arrangement();
             arrangement.setId(key != null ? key : UUID.randomUUID());
@@ -428,7 +429,7 @@ public class ArrangementsService
                                         .failure(new ArrangementException("Classification name not provided"));
         }
 
-        return classificationUni.chain(classification -> {
+        return (Uni) classificationUni.chain(classification -> {
                     return ReactiveTransactionUtil.withTransaction(session -> {
                         ArrangementQueryBuilder aqb = new Arrangement().builder();
                         aqb.withEnterprise(enterprise)
@@ -532,6 +533,8 @@ public class ArrangementsService
                        .onFailure()
                        .invoke(error ->
                                        log.error("Error finding arrangements by classification GTE with IP: {}", error.getMessage(), error));
+
+
     }
 
 
@@ -541,7 +544,7 @@ public class ArrangementsService
         log.debug("Finding arrangements by classification LT - type: {}, value: {}", arrType, value);
 
         // First get the classification using reactive pattern
-        return classificationService.find(arrType, systems, identityToken)
+        return (Uni) classificationService.find(arrType, systems, identityToken)
                        .onItem()
                        .ifNull()
                        .continueWith(() -> {
@@ -759,7 +762,7 @@ public class ArrangementsService
 
         final String finalClassificationName = classificationName;
 
-        return classificationService.find(classificationName, system, identityToken)
+        return (Uni) classificationService.find(classificationName, system, identityToken)
                 .chain(classification -> {
                     return ReactiveTransactionUtil.withTransaction(session -> {
                         return new ArrangementXResourceItem().builder()
@@ -796,7 +799,7 @@ public class ArrangementsService
 
         final String finalClassificationName = classificationName;
 
-        return classificationService.find(classificationName, system, identityToken)
+        return (Uni)classificationService.find(classificationName, system, identityToken)
                 .chain(classification -> {
                     return ReactiveTransactionUtil.withTransaction(session -> {
                         return new ArrangementXInvolvedParty().builder()
@@ -811,7 +814,7 @@ public class ArrangementsService
                                 .map(result -> {
                                     log.debug("Found arrangement for involved party: {}, classification: {}", 
                                             involvedParty.getId(), finalClassificationName);
-                                    return result != null ? result.getArrangementID() : null;
+                                    return result.getArrangementID();
                                 });
                     });
                 })

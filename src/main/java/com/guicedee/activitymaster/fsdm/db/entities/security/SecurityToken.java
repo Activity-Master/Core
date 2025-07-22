@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.FetchType.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static jakarta.persistence.FetchType.EAGER;
 
 /**
  * @author Marc Magon

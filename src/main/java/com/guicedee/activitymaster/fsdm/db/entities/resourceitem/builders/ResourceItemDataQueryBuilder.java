@@ -1,14 +1,12 @@
 package com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders;
 
 import com.entityassist.enumerations.Operand;
-import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderCore;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceDataQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemData;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItemData_;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 public class ResourceItemDataQueryBuilder

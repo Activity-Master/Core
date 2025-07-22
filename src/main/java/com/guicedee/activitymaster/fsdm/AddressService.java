@@ -678,23 +678,10 @@ public class AddressService
 		if (involvedParty == null) {
 			return Uni.createFrom().failure(new AddressException("Involved party cannot be null"));
 		}
-
-		// Convert the synchronous findAddress to reactive using Uni.createFrom().item()
-		return Uni.createFrom().deferred(() -> {
-			try {
-				Optional<? extends IRelationshipValue<?, IAddress<?, ?>, ?>> result = 
-					involvedParty.findAddress(HomeCellNumber.name(), null, system, true, true, identityToken);
-
-				if (result.isPresent()) {
-					return Uni.createFrom().item(result.get());
-				} else {
-					return Uni.createFrom().failure(new AddressException("No cell phone contact found for involved party"));
-				}
-			} catch (Exception e) {
-				return Uni.createFrom().failure(new AddressException("Error finding cell phone contact", e));
-			}
-		});
+		return involvedParty.findAddress(HomeCellNumber.name(), null, system, true, true, identityToken)
+					   .map(result->result);
 	}
+
 	//@Transactional()
 	@Override
 	////@Transactional()

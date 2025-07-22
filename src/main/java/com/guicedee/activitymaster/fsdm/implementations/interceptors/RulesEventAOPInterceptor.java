@@ -52,13 +52,6 @@ public class RulesEventAOPInterceptor implements MethodInterceptor
 			com.guicedee.client.IGuiceContext.instance().inject()
 			            .injectMembers(this);
 		}
-
-		// Check if enterprise is ready
-		if (!configuration.isEnterpriseReady())
-		{
-			return methodInvocation.proceed();
-		}
-
 		// Check if event ID is null
 		if (event.getId() == null)
 		{

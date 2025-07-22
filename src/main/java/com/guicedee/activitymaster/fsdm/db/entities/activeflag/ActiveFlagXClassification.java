@@ -42,12 +42,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class ActiveFlagXClassification
 		extends WarehouseClassificationRelationshipTable<
-		ActiveFlag,
-		Classification,
-		ActiveFlagXClassification,
-		ActiveFlagXClassificationQueryBuilder,
-		UUID,
-		ActiveFlagXClassificationSecurityToken>
+                                ActiveFlag,
+                                Classification,
+                                ActiveFlagXClassification,
+                                ActiveFlagXClassificationQueryBuilder,
+                                UUID,
+                                ActiveFlagXClassificationSecurityToken>
 		implements Serializable
 {
 	

@@ -91,7 +91,7 @@ public class ClassificationsDataConceptSystem
 	}
 
 	@Override
-	public void postStartup(IEnterprise<?,?> enterprise)
+	public Uni<Void> postStartup(IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting reactive postStartup for Classification Data Concept System");
 
@@ -117,6 +117,7 @@ public class ClassificationsDataConceptSystem
 			result -> log.info("Classification Data Concept System postStartup completed successfully"),
 			error -> log.error("Error in Classification Data Concept System postStartup: {}", error.getMessage(), error)
 		);
+		return postStartupChain.replaceWith(Uni.createFrom().voidItem());
 	}
 
 	private Uni<Void> createDefaultConcepts(IEnterprise<?,?> enterprise)

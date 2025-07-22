@@ -188,7 +188,7 @@ public class InvolvedPartySystem
 	}
 
 	@Override
-	public void postStartup(IEnterprise<?,?> enterprise)
+	public Uni<Void> postStartup(IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting reactive postStartup for Involved Party System");
 
@@ -214,6 +214,7 @@ public class InvolvedPartySystem
 			result -> log.info("Involved Party System postStartup completed successfully"),
 			error -> log.error("Error in Involved Party System postStartup: {}", error.getMessage(), error)
 		);
+		return postStartupChain.replaceWith(Uni.createFrom().voidItem());
 	}
 
 	@Override

@@ -40,11 +40,11 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class ClassificationDataConceptXResourceItem
         extends WarehouseClassificationRelationshipTable<ClassificationDataConcept,
-        ResourceItem,
-        ClassificationDataConceptXResourceItem,
-        ClassificationDataConceptXResourceItemQueryBuilder,
-        UUID,
-        ClassificationDataConceptXResourceItemSecurityToken>
+                                ResourceItem,
+                                ClassificationDataConceptXResourceItem,
+                                ClassificationDataConceptXResourceItemQueryBuilder,
+                                UUID,
+                                ClassificationDataConceptXResourceItemSecurityToken>
         implements Serializable
 {
 

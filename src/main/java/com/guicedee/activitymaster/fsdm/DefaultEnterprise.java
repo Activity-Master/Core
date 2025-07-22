@@ -1,9 +1,10 @@
 package com.guicedee.activitymaster.fsdm;
 
 
+import com.guicedee.activitymaster.fsdm.client.IEnterpriseNames;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 
-public enum DefaultEnterprise
+public enum DefaultEnterprise implements IEnterpriseNames<DefaultEnterprise>
 {
 	TestEnterprise("The test enterprise")
 	;

@@ -22,6 +22,8 @@ import io.smallrye.mutiny.Uni;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.NoSuchElementException;
 
@@ -143,11 +145,12 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 					});
 		});
 	}
+ @SuppressWarnings("unchecked")
  @Override
 	public Uni<IInvolvedParty<?, ?>> addUpdateUsernamePassword(String username, String password, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		log.debug("Adding/updating username and password for involved party: {}", involvedParty.getId());
-		return ReactiveTransactionUtil.withTransaction(session -> {
+		return (Uni) ReactiveTransactionUtil.withTransaction(session -> {
 			// Generate salt and encrypt password
 			byte[] salt = System.getProperty("systemSalt") != null ? 
 				System.getProperty("systemSalt").getBytes() : 
@@ -193,6 +196,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		});
 	}
 
+ @SuppressWarnings("unchecked")
  @Override
 	public Uni<IInvolvedParty<?, ?>> createAdminAndCreatorUserForEnterprise(ISystems<?, ?> system, String adminUserName,
 	                                                                   @NotNull String adminPassword, UUID existingLocalKey)
@@ -200,9 +204,10 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 		log.debug("Creating admin and creator user for enterprise: {}", system.getEnterpriseID());
 		logProgress("Checking base administrator user", "The default user is being checked for compliance", 1);
 
-		return ReactiveTransactionUtil.withTransaction(session -> {
+		return (Uni) ReactiveTransactionUtil.withTransaction(session -> {
 			// Get security identity token
-			return Uni.createFrom().item(() -> get(ISystemsService.class).getSecurityIdentityToken(system))
+			ISystemsService<?> systemsService =  get(ISystemsService.class);
+			return systemsService.getSecurityIdentityToken(system)
 				.chain(identityToken -> {
 					// Get administrators folder
 					return Uni.createFrom().item(() -> get(SecurityTokenService.class).getAdministratorsFolder(system))
@@ -217,17 +222,17 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 									adminUserName, system)
 								.get()
 								.onItem().ifNotNull().transform(existingUser -> (IInvolvedParty<?, ?>) existingUser)
-								.onItem().ifNull().switchTo(() -> {
+								.onFailure().recoverWithItem(() -> {
 									// Create new user
-									InvolvedPartyService service = get(InvolvedPartyService.class);
+									IInvolvedPartyService<?> service = get(IInvolvedPartyService.class);
 									return service.create(system, pair, true)
 										.chain(adminUser -> {
 											// Add identification types
-											return adminUser.addOrReuseInvolvedPartyIdentificationType(
+											adminUser.addOrReuseInvolvedPartyIdentificationType(
 												NoClassification.toString(), 
 												IdentificationTypes.IdentificationTypeUserName.toString(),
-												adminUserName, system, identityToken)
-												.chain(() -> {
+												adminUserName,system, identityToken)
+																.chain(() -> {
 													// Add party type
 													return adminUser.addOrReuseInvolvedPartyType(
 														NoClassification.toString(), 
@@ -285,13 +290,16 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
 												.chain(() -> {
 													// Create default security
 													return ((InvolvedParty)adminUser).createDefaultSecurity(system, identityToken);
-												})
-												.map(result -> adminUser);
-										});
+												});
+													return Uni.createFrom().item((IInvolvedParty<?,?>)adminUser);
+										})
+												   .map(result->(IInvolvedParty)result)
+												   .await()
+												   .atMost(Duration.of(50L, ChronoUnit.SECONDS));
 								});
 						});
 				})
-				.onFailure().invoke(error -> log.error("Error creating admin user: {}", error.getMessage(), error));
+				.onFailure().invoke(error -> log.error("Error creating admin user: {}",error));
 		});
 	}
 }

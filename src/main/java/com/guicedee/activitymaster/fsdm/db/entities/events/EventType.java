@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.entities.events;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseNameAndDescriptionTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.events.IEventType;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.events.builders.EventTypeQueryBuilder;
 import jakarta.persistence.*;
@@ -19,7 +20,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 /**
  * @author Marc Magon

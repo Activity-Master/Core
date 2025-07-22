@@ -273,7 +273,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     @SuppressWarnings("unchecked")
     public Uni<IInvolvedParty<?, ?>> findByResourceItem(IResourceItem<?, ?> idType, String value, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Finding InvolvedParty by ResourceItem: value={}", value);
-        return ReactiveTransactionUtil.withTransaction(session -> {
+        return (Uni)ReactiveTransactionUtil.withTransaction(session -> {
             return new InvolvedPartyXResourceItem()
                     .builder()
                     .canRead(system, identityToken)
@@ -440,7 +440,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     @SuppressWarnings("unchecked")
     public Uni<IInvolvedPartyType<?, ?>> findType(String nameType, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Finding InvolvedPartyType by name: {}", nameType);
-        return ReactiveTransactionUtil.withTransaction(session -> {
+        return (Uni) ReactiveTransactionUtil.withTransaction(session -> {
             InvolvedPartyType xr = new InvolvedPartyType();
             Uni<InvolvedPartyType> result = xr.builder()
                     .withName(nameType)
@@ -459,7 +459,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     @SuppressWarnings("unchecked")
     public Uni<IInvolvedPartyNameType<?, ?>> findInvolvedPartyNameType(String nameType, ISystems<?, ?> system, UUID... identityToken) {
         log.debug("Finding InvolvedPartyNameType by name: {}", nameType);
-        return ReactiveTransactionUtil.withTransaction(session -> {
+        return (Uni) ReactiveTransactionUtil.withTransaction(session -> {
             InvolvedPartyNameType xr = new InvolvedPartyNameType();
             Uni<InvolvedPartyNameType> result = xr.builder()
                     .withName(nameType)

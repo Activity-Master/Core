@@ -1,29 +1,23 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
-import com.entityassist.BaseEntity;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.IWarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
-import com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD;
-import com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
-import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.UUID;
-
-import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
 
 @MappedSuperclass()
 public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
-        Q extends QueryBuilderSCD<Q, J, I>, I extends java.util.UUID>
+        Q extends QueryBuilderDefault<Q, J, I>, I extends java.util.UUID>
         extends SCDEntity<J, Q, I>
         implements IWarehouseBaseTable<J, Q, I>
 {
@@ -40,11 +34,12 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public io.smallrye.mutiny.Uni<J> expireIn(Duration duration)
+    public J expireIn(Duration duration)
     {
-        setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow())
+        setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow())
                 .plus(duration));
-        return update();
+        update();
+        return (J) this;
     }
 
     @Override
@@ -60,4 +55,9 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
         return getId() == null;
     }
 
+    @Override
+    public @NotNull Uni<J> persist()
+    {
+        return super.persist();
+    }
 }

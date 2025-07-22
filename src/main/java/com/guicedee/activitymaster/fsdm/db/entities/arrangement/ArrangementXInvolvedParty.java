@@ -1,6 +1,7 @@
 package com.guicedee.activitymaster.fsdm.db.entities.arrangement;
 
 import com.fasterxml.jackson.annotation.*;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.arrangements.IArrangement;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRelationshipTable;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.builders.ArrangementXInvolvedPartyQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.involvedparty.InvolvedParty;
@@ -40,12 +41,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class ArrangementXInvolvedParty
 		extends WarehouseClassificationRelationshipTable<Arrangement,
-		InvolvedParty,
-		ArrangementXInvolvedParty,
-		ArrangementXInvolvedPartyQueryBuilder,
-		UUID,
-		ArrangementXInvolvedPartySecurityToken
-		>
+                                InvolvedParty,
+                                ArrangementXInvolvedParty,
+                                ArrangementXInvolvedPartyQueryBuilder,
+                                UUID,
+                                ArrangementXInvolvedPartySecurityToken
+                                >
 		implements Serializable
 {
 	
@@ -105,7 +106,7 @@ public class ArrangementXInvolvedParty
 	@Override
 	public Arrangement getPrimary()
 	{
-		return getArrangementID();
+		return (Arrangement) getArrangementID();
 	}
 	
 	@Override
@@ -114,7 +115,7 @@ public class ArrangementXInvolvedParty
 		return getInvolvedPartyID();
 	}
 
-	public Arrangement getArrangementID()
+	public IArrangement<?,?> getArrangementID()
 	{
 		return arrangementID;
 	}

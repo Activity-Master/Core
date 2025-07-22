@@ -9,7 +9,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSe
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSecurityTable;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
-import io.smallrye.mutiny.Uni;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.validation.constraints.NotNull;
 
@@ -40,26 +39,25 @@ public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J,
 		where(getMyAttribute(), Equals, id);
 		return (J) this;
 	}
-
+	
 	protected Attribute getSecurityTokenAttribute()
 	{
 		return getAttribute("securityTokenID");
 	}
-
+	
 	protected Attribute getBaseEntityAttribute()
 	{
 		return getAttribute("base");
 	}
-
+	
 	protected abstract Attribute getMyAttribute();
-
-	@SuppressWarnings("unchecked")
+	
 	public J findBySecurityToken(SecurityToken uuid)
 	{
 		where(getSecurityTokenAttribute(), Equals, uuid);
 		return (J) this;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@NotNull
 	public J findLinkedSecurityToken(SecurityToken identityToken, WarehouseBaseTable id)
@@ -69,7 +67,7 @@ public abstract class QueryBuilderSecurities<J extends QueryBuilderSecurities<J,
 		where(securityAttribute, Equals, identityToken);
 		return (J) this;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@NotNull
 	public J findLinkedSecurityTokens(WarehouseBaseTable id)

@@ -1,12 +1,11 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 
 import com.entityassist.enumerations.Operand;
-import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderDefault;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseBaseTable;
-import com.guicedee.activitymaster.fsdm.db.entityassist.QueryBuilderSCD;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.LocalDate;
@@ -16,7 +15,7 @@ import java.util.UUID;
 public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>,
         E extends WarehouseBaseTable<E, J, I>,
         I extends java.util.UUID>
-        extends QueryBuilderSCD<J, E, I>
+        extends QueryBuilderSCDEntity<J, E, I>
         implements IQueryBuilderDefault<J, E, I>
 {
     public QueryBuilderDefault()
@@ -69,11 +68,16 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
     }
 
     @Override
-    public Mutiny.Session getEntityManager()
+    public @NotNull Uni<E> persist(E entity)
     {
-        return IGuiceContext.get(Mutiny.SessionFactory.class)
-                       .getCurrentSession();
+        return super.persist(entity);
     }
+
+  	@Override
+	public Mutiny.Session getEntityManager()
+	{
+		return IGuiceContext.get(Mutiny.SessionFactory.class).getCurrentSession();
+	}
 
     @Override
     public boolean isIdGenerated()

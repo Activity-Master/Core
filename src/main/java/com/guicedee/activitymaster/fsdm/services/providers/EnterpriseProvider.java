@@ -12,6 +12,9 @@ import com.guicedee.activitymaster.fsdm.systems.SecurityTokenSystem;
 //import jakarta.transaction.Transactional;
 import lombok.extern.java.Log;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 @Log
 public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, EnterpriseQueryBuilder>>
 {
@@ -34,24 +37,16 @@ public class EnterpriseProvider implements Provider<IEnterprise<Enterprise, Ente
 		ActivityMasterConfiguration activityMasterConfiguration = configuration.get();
 		if (!Strings.isNullOrEmpty(activityMasterConfiguration.getApplicationEnterpriseName()))
 		{
-			if(enterpriseService.get().doesEnterpriseExist(activityMasterConfiguration.getApplicationEnterpriseName()))
-			{
-				@SuppressWarnings("unchecked")
-				IEnterprise<Enterprise, EnterpriseQueryBuilder> ent = (IEnterprise<Enterprise, EnterpriseQueryBuilder>)
-						enterpriseService.get()
-						                 .getEnterprise(activityMasterConfiguration.getApplicationEnterpriseName());
-				loadedEnterprise = ent;
-				if (com.guicedee.client.IGuiceContext.get(SecurityTokenSystem.class)
-				                .hasSystemInstalled(ent))
-				{
-				//	log.info("Enabling Enterprise Security Stack.....");
-					//activityMasterConfiguration.setSecurityEnabled(true);
-				}
-			}
+			enterpriseService.get().isEnterpriseReady()
+					.chain(enterprise->{
+						EnterpriseProvider.loadedEnterprise = (IEnterprise<Enterprise, EnterpriseQueryBuilder>) enterprise;
+						return null;
+					})
+					.await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 		}
 		if (loadedEnterprise == null)
 		{
-			return new Enterprise();
+			return null;
 		}
 		return loadedEnterprise;
 	}

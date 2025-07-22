@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.entities.involvedparty;
 import com.fasterxml.jackson.annotation.*;
 import com.google.common.base.Strings;
 import com.guicedee.activitymaster.fsdm.client.services.IInvolvedPartyService;
+import com.guicedee.activitymaster.fsdm.client.services.IRelationshipValue;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
@@ -25,6 +26,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.ProductType;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.Rules;
 import com.guicedee.activitymaster.fsdm.systems.InvolvedPartySystem;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
@@ -62,8 +64,8 @@ import static com.guicedee.client.IGuiceContext.*;
 @AllArgsConstructor
 public class InvolvedParty
         extends WarehouseSCDTable<InvolvedParty, InvolvedPartyQueryBuilder, UUID,
-        InvolvedPartySecurityToken
-        >
+                                                InvolvedPartySecurityToken
+                                                >
         implements IInvolvedParty<InvolvedParty, InvolvedPartyQueryBuilder>
 {
     private static final Logger log = Logger.getLogger(InvolvedParty.class.getName());
@@ -125,14 +127,13 @@ public class InvolvedParty
     private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
 
     @Override
-    public UUID getSecurityIdentity()
+    public Uni<UUID> getSecurityIdentity()
     {
         IInvolvedPartyService<?> partyService = get(IInvolvedPartyService.class);
-        String value = this.findInvolvedPartyIdentificationType(NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
+        return this.findInvolvedPartyIdentificationType(NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
                         get(InvolvedPartySystem.class).getSystemToken(getEnterprise()))
-                .orElseThrow()
-                .getValue();
-        return UUID.fromString(value);
+                       .map(IRelationshipValue::getValue)
+                       .map(UUID::fromString);
     }
 
     @Override
@@ -236,7 +237,7 @@ public class InvolvedParty
     }
 
     @Override
-    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         InvolvedPartyXResourceItem r = (InvolvedPartyXResourceItem) linkTable;
         r.setInvolvedPartyID(primary);

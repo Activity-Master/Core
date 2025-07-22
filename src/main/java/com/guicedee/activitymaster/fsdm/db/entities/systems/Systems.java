@@ -9,10 +9,12 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IContainsNameAndDescription;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQueryBuilder;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
+import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -59,7 +61,7 @@ import static com.guicedee.client.IGuiceContext.*;
 public class Systems
         extends WarehouseCoreTable<Systems, SystemsQueryBuilder, UUID, SystemsSecurityToken>
         implements ISystems<Systems, SystemsQueryBuilder>,
-        IContainsNameAndDescription<Systems>
+                           IContainsNameAndDescription<Systems>
 {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -149,19 +151,23 @@ public class Systems
      */
     public Uni<Systems> remove()
     {
-        setActiveFlagID((ActiveFlag) com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-                .getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-        setEffectiveToDate(convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-        return update();
+        IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
+        return service.getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID()))
+                       .chain(deletedFlag -> {
+                           setActiveFlagID((ActiveFlag) deletedFlag);
+                           return update();
+                       });
     }
 
 
-    public Systems archive()
+    public Uni<Systems> archive()
     {
-        setActiveFlagID((ActiveFlag) com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-                .getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID())));
-        update();
-        return this;
+        IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
+        return service.getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID()))
+                       .chain(archivedFlag -> {
+                           setActiveFlagID((ActiveFlag) archivedFlag);
+                           return update();
+                       });
     }
 
     @Override

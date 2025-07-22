@@ -40,12 +40,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class AddressXGeography
 		extends WarehouseClassificationRelationshipTable<Address,
-		Geography,
-		AddressXGeography,
-		AddressXGeographyQueryBuilder,
-		UUID,
-		AddressXGeographySecurityToken
-		>
+                                Geography,
+                                AddressXGeography,
+                                AddressXGeographyQueryBuilder,
+                                UUID,
+                                AddressXGeographySecurityToken
+                                >
 		implements Serializable
 {
 	

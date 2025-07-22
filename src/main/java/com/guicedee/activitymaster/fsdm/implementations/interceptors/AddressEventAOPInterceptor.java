@@ -19,6 +19,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import java.lang.reflect.Parameter;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -53,7 +55,7 @@ public class AddressEventAOPInterceptor implements MethodInterceptor
 		}
 
 		// Check if enterprise is ready
-  if (!configuration.isEnterpriseReadySync())
+  		if (configuration.isEnterpriseReady().await().atMost(Duration.of(50L, ChronoUnit.SECONDS)) != null)
 		{
 			return methodInvocation.proceed();
 		}

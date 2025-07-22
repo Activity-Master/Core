@@ -8,6 +8,7 @@ package com.guicedee.activitymaster.fsdm.db.entities.geography;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.geography.IGeography;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -296,7 +297,7 @@ public class Geography
     }
 
     @Override
-    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Geography primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Geography primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         GeographyXResourceItem g = (GeographyXResourceItem) linkTable;
         g.setGeographyID(primary);

@@ -5,6 +5,8 @@ import com.google.inject.Provider;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 
@@ -35,7 +37,13 @@ public class SystemsTokenProvider implements Provider<UUID>
 			return UUID.randomUUID();
 		}
 		return systemsService.get()
-		                     .getSecurityIdentityToken(systemsService.get()
-		                                                             .findSystem(enterprise.get(), systemName));
+				.findSystem(enterprise.get(), systemName)
+				.chain(system -> {
+					return systemsService.get()
+							.getSecurityIdentityToken(system);
+				})
+				.await()
+				.atMost(Duration.of(50L, ChronoUnit.SECONDS))
+		;
 	}
 }

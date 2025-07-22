@@ -1,4 +1,4 @@
-com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule
+#com.guicedee.activitymaster.fsdm.db.ActivityMasterDBModule
 com.guicedee.activitymaster.fsdm.implementations.ActivityMasterBinder
 com.guicedee.activitymaster.fsdm.implementations.EnterpriseBinder
 com.guicedee.activitymaster.fsdm.implementations.ClassificationConceptsBinder

@@ -42,7 +42,7 @@ public class ArrangementsSystem
 	}
 
 	@Override
-	public void postStartup(IEnterprise<?,?> enterprise)
+	public Uni<Void> postStartup(IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting reactive postStartup for Arrangements System");
 
@@ -68,6 +68,7 @@ public class ArrangementsSystem
 			result -> log.info("Arrangements System postStartup completed successfully"),
 			error -> log.error("Error in Arrangements System postStartup: {}", error.getMessage(), error)
 		);
+		return postStartupChain.replaceWith(Uni.createFrom().voidItem());
 	}
 
 	@Override

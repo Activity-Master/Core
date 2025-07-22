@@ -1,14 +1,19 @@
-package com.guicedee.activitymaster.fsdm.db.entityassist;
+package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.entityassist.BaseEntity;
+import com.entityassist.RootEntity;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.client.services.builders.ISCDEntity;
-import jakarta.persistence.*;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCDEntity;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -17,13 +22,14 @@ import java.util.UUID;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
 
 @MappedSuperclass()
 @JsonAutoDetect(fieldVisibility = ANY,
 		getterVisibility = NONE,
 		setterVisibility = NONE)
 @JsonInclude(NON_NULL)
-public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBuilderSCD<Q, J, I>, I extends UUID>
+public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBuilderSCDEntity<Q, J, I>, I extends UUID>
 		extends BaseEntity<J, Q, I>
 	implements ISCDEntity<J,Q,I>
 {
@@ -56,16 +62,7 @@ public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBui
 	@Column(nullable = false,
 			name = "WarehouseCreatedTimestamp")
 	private OffsetDateTime warehouseCreatedTimestamp;
-	/**
-	 * A date to mark when a warehouse can fetch the given record
-	 */
-	@Basic(optional = false,
-			fetch = FetchType.LAZY)
-	@Column(nullable = false,
-			name = "WarehouseCreatedDate")
-	@Access(AccessType.FIELD)
 
-	private LocalDate warehouseCreatedDate;
 	/**
 	 * A marker for the warehouse to identify when last this field was updated
 	 */
@@ -78,19 +75,9 @@ public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBui
 	public SCDEntity()
 	{
 		effectiveToDate = EndOfTime.atOffset(ZoneOffset.UTC);
-		effectiveFromDate = IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow());
-		warehouseCreatedTimestamp = IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow());
-		warehouseCreatedDate = com.entityassist.RootEntity.getNow().toLocalDate();
-		warehouseLastUpdatedTimestamp = IQueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow());
-	}
-
-	public LocalDate getWarehouseCreatedDate()
-	{
-		if (warehouseCreatedDate == null)
-		{
-			warehouseCreatedDate = warehouseCreatedTimestamp.toLocalDate();
-		}
-		return warehouseCreatedDate;
+		effectiveFromDate = convertToUTCDateTime(RootEntity.getNow());
+		warehouseCreatedTimestamp = convertToUTCDateTime(RootEntity.getNow());
+		warehouseLastUpdatedTimestamp = convertToUTCDateTime(RootEntity.getNow());
 	}
 
 	/**
@@ -195,4 +182,5 @@ public abstract class SCDEntity<J extends SCDEntity<J, Q, I>, Q extends QueryBui
 		this.warehouseLastUpdatedTimestamp = warehouseLastUpdatedTimestamp;
 		return (J) this;
 	}
+
 }

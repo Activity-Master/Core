@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseNameAndDescriptionTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItemType;
+import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.builders.ResourceItemTypeQueryBuilder;
 import jakarta.persistence.*;
@@ -20,8 +21,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static jakarta.persistence.FetchType.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static jakarta.persistence.FetchType.EAGER;
 
 /**
  * @author Marc Magon

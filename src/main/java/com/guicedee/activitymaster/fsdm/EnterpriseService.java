@@ -3,13 +3,13 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications;
@@ -26,10 +26,8 @@ import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.GuiceContext;
 import io.github.classgraph.ClassInfo;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
-
 
 
 import java.text.MessageFormat;
@@ -224,17 +222,17 @@ public class EnterpriseService
                            // Convert Vert.x Future to Mutiny Uni
                            return Uni.createFrom()
                                           .emitter(emitter -> {
-                                              Future<Boolean> updateFuture = o.update(enterprise);
-                                              updateFuture.onComplete(ar -> {
-                                                  if (ar.succeeded())
-                                                  {
-                                                      emitter.complete(ar.result());
-                                                  }
-                                                  else
-                                                  {
-                                                      emitter.fail(ar.cause());
-                                                  }
-                                              });
+                                              o.update(enterprise)
+                                                      .onItemOrFailure()
+                                                      .invoke((result,error)->{
+                                                          if (error != null)
+                                                          {
+                                                              emitter.fail(error);
+                                                          }else {
+                                                              emitter.complete(true);
+                                                          }
+                                                      })
+                                                      ;
                                           })
                                           .chain(updateResult -> {
                                               return enterprise.addClassification(UpdateClass.toString(), o.getClass()
@@ -368,7 +366,7 @@ public class EnterpriseService
     //@Transactional()
     @Override
     //@CacheResult(cacheName = "FindEnterpriseWithClassifications")
-    public Uni<List<IEnterprise<?, ?>>> findEnterprisesWithClassification( IClassification<?, ?> classification)
+    public Uni<List<IEnterprise<?, ?>>> findEnterprisesWithClassification(IClassification<?, ?> classification)
     {
         return Uni.createFrom()
                        .emitter(emitter -> {
@@ -436,7 +434,7 @@ public class EnterpriseService
     //@Transactional()
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
-    public Uni<IEnterprise<?, ?>> getEnterprise( String name)
+    public Uni<IEnterprise<?, ?>> getEnterprise(String name)
     {
         return new Enterprise().builder()
                        .withName(name)
@@ -450,7 +448,7 @@ public class EnterpriseService
     //@Transactional()
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
-    public Uni<IEnterprise<?, ?>> getEnterprise( UUID uuid)
+    public Uni<IEnterprise<?, ?>> getEnterprise(UUID uuid)
     {
         return new Enterprise().builder()
                        .find(uuid)
@@ -490,7 +488,7 @@ public class EnterpriseService
     //@Transactional()
     //@CacheResult
     @Override
-    public Uni<IEnterprise<?, ?>> getIEnterpriseFromName( String enterprise)
+    public Uni<IEnterprise<?, ?>> getIEnterpriseFromName(String enterprise)
     {
         return new Enterprise().builder()
                        .withName(enterprise)
@@ -503,7 +501,7 @@ public class EnterpriseService
     //@Transactional()
     //@CacheResult
     @Override
-    public Uni<IEnterprise<?, ?>> getIEnterpriseFromID( UUID enterprise)
+    public Uni<IEnterprise<?, ?>> getIEnterpriseFromID(UUID enterprise)
     {
         return new Enterprise().builder()
                        .find(enterprise)
@@ -549,7 +547,9 @@ public class EnterpriseService
                                                                  IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
                                                                  // createAdminAndCreatorUserForEnterprise returns IInvolvedParty directly, not a Uni
                                                                  // Wrap it in a Uni to continue the reactive chain
-                                                                 IInvolvedParty<?, ?> user = passwordsService.createAdminAndCreatorUserForEnterprise(system, adminUserName, adminPassword, uuidIdentifier);
+                                                                 return passwordsService.createAdminAndCreatorUserForEnterprise(system, adminUserName, adminPassword, uuidIdentifier);
+                                                             })
+                                                             .chain(user -> {
                                                                  wipeCaches();
                                                                  logProgress("Systems", "Running Systems Post Startups", 1);
                                                                  return performPostStartup(enterprise)
@@ -606,7 +606,7 @@ public class EnterpriseService
 
     //@Transactional()
     @Override
-    public Uni<Boolean> isEnterpriseReady()
+    public Uni<IEnterprise<?, ?>> isEnterpriseReady()
     {
         return Uni.createFrom()
                        .emitter(emitter -> {
@@ -635,17 +635,17 @@ public class EnterpriseService
                                                                            count -> {
                                                                                try
                                                                                {
-                                                                                   emitter.complete(count > 0);
+                                                                                   emitter.complete(enterprise);
                                                                                }
                                                                                catch (Exception e)
                                                                                {
                                                                                    log.warn("Error completing emitter", e);
-                                                                                   emitter.complete(false);
+                                                                                   emitter.complete(enterprise);
                                                                                }
                                                                            },
                                                                            error -> {
                                                                                log.warn("Error checking classification count", error);
-                                                                               emitter.complete(false);
+                                                                               emitter.complete(enterprise);
                                                                            }
                                                                    )
                                                            ;
@@ -653,12 +653,12 @@ public class EnterpriseService
                                                        catch (SystemsException e)
                                                        {
                                                            log.warn("System is not ready", e);
-                                                           emitter.complete(false);
+                                                           emitter.fail(e);
                                                        }
                                                        catch (Exception e)
                                                        {
                                                            log.warn("Error in enterprise ready check", e);
-                                                           emitter.complete(false);
+                                                           emitter.fail(e);
                                                        }
                                                    },
                                                    error -> {
@@ -670,20 +670,26 @@ public class EnterpriseService
                                                        {
                                                            log.warn("Error getting enterprise", error);
                                                        }
-                                                       emitter.complete(false);
+                                                       emitter.fail(error);
                                                    }
                                            )
                                    ;
                                }
                                else
                                {
-                                   emitter.complete(false);
+                                   IEnterpriseService<?> enterpriseService = com.guicedee.client.IGuiceContext.get(IEnterpriseService.class);
+                                   var enterprise = enterpriseService.getEnterprise(applicationEnterpriseName);
+                                   enterprise.onItem()
+                                           .invoke(emitter::complete)
+                                           .await()
+                                           .atMost(Duration.of(60L, ChronoUnit.SECONDS))
+                                   ;
                                }
                            }
                            catch (Exception e)
                            {
                                log.warn("Unexpected error in isEnterpriseReady", e);
-                               emitter.complete(false);
+                               emitter.fail(e);
                            }
                        });
     }

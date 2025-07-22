@@ -22,13 +22,13 @@ public abstract class DefaultTimeQueryBuilder<
 	//	setUseDirectConnection(true);
 	//	setDetach(true);
 	}
-
+	
 	@Override
 	public Mutiny.Session getEntityManager()
 	{
 		return IGuiceContext.get(Mutiny.SessionFactory.class).getCurrentSession();
 	}
-
+	
 	@Override
 	public boolean isIdGenerated()
 	{

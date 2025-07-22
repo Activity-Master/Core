@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.db.entities.rules;
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.rules.IRulesType;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -208,7 +209,7 @@ public class RulesType
     }
 
     @Override
-    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, RulesType primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, RulesType primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         RulesTypeXResourceItem r = (RulesTypeXResourceItem) linkTable;
         r.setRulesTypeID(primary);

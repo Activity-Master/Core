@@ -32,8 +32,8 @@ import java.util.*;
 
 //import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.*;
 import static com.entityassist.enumerations.Operand.*;
+import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.EndOfTime;
 import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
-import static com.guicedee.activitymaster.fsdm.db.entityassist.SCDEntity.EndOfTime;
 import static jakarta.persistence.criteria.JoinType.*;
 
 

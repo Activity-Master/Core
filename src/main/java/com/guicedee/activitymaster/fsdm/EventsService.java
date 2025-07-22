@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.EventException;
 import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.db.entities.events.EventType;
+import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.Vertx;
 import lombok.extern.java.Log;
@@ -45,7 +46,8 @@ public class EventsService
 		return new Event().builder()
 		                  .find(id)
 		                  .get()
-		                  .onItem().ifNull().failWith(() -> new NoSuchElementException("Event not found with id: " + id));
+		                  .onItem().ifNull().failWith(() -> new NoSuchElementException("Event not found with id: " + id))
+					   .map(result->result);
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class EventsService
 			event.setSystemID(system);
 			event.setOriginalSourceSystemID(system.getId());
 
-			IActiveFlagService<?> acService = get(IActiveFlagService.class);
+			IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 			return acService.getActiveFlag(enterprise)
 				.chain(activeFlag -> {
 					event.setActiveFlagID(activeFlag);
@@ -108,7 +110,7 @@ public class EventsService
 						etBuilt.setSystemID(system);
 						etBuilt.setEnterpriseID(enterprise);
 
-						IActiveFlagService<?> acService = get(IActiveFlagService.class);
+						IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 						return acService.getActiveFlag(enterprise)
 							.chain(activeFlag -> {
 								etBuilt.setActiveFlagID(activeFlag);
@@ -138,6 +140,7 @@ public class EventsService
 			.inDateRange()
 			//  .canRead(system, identityToken)
 			.get()
-			.onItem().ifNull().failWith(() -> new EventException("Invalid Event Type - " + eventType));
+			.onItem().ifNull().failWith(() -> new EventException("Invalid Event Type - " + eventType))
+					   .map(result->result);
 	}
 }

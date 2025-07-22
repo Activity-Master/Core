@@ -40,12 +40,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class EventXInvolvedParty
         extends WarehouseClassificationRelationshipTable<Event,
-        InvolvedParty,
-        EventXInvolvedParty,
-        EventXInvolvedPartyQueryBuilder,
-        UUID,
-        EventXInvolvedPartySecurityToken
-        >
+                                InvolvedParty,
+                                EventXInvolvedParty,
+                                EventXInvolvedPartyQueryBuilder,
+                                UUID,
+                                EventXInvolvedPartySecurityToken
+                                >
 {
 
     @Serial

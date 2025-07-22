@@ -5,10 +5,11 @@ import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
 import com.guicedee.activitymaster.fsdm.db.entities.time.DayParts;
 
 
-
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.types.DateTimeFormats.*;
@@ -86,21 +87,21 @@ public class TimeService<J extends TimeService<J>>
 				return new DayParts().builder()
 				                     .findByName("Midnight Morning")
 				                     .get()
-				                     .orElseThrow();
+							   		.await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else if (hour < 3)
 			{
 				return new DayParts().builder()
 				                     .findByName("Midnight Morning")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else
 			{
 				return new DayParts().builder()
 				                     .findByName("Early Morning")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 		}
 		else if (hour <= 6)
@@ -110,21 +111,21 @@ public class TimeService<J extends TimeService<J>>
 				return new DayParts().builder()
 				                     .findByName("Early Morning")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else if (hour < 6)
 			{
 				return new DayParts().builder()
 				                     .findByName("Early Morning")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else
 			{
 				return new DayParts().builder()
 				                     .findByName("Morning")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 		}
 		else if (hour <= 9)
@@ -132,7 +133,7 @@ public class TimeService<J extends TimeService<J>>
 			return new DayParts().builder()
 			                     .findByName("Morning")
 			                     .get()
-			                     .orElseThrow();
+			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 		}
 		else if (hour <= 10)
 		{
@@ -141,21 +142,21 @@ public class TimeService<J extends TimeService<J>>
 				return new DayParts().builder()
 				                     .findByName("Late Morning")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else if (hour < 10)
 			{
 				return new DayParts().builder()
 				                     .findByName("Late Morning")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else
 			{
 				return new DayParts().builder()
 				                     .findByName("Early Afternoon")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 				
 			}
 		}
@@ -164,14 +165,14 @@ public class TimeService<J extends TimeService<J>>
 			return new DayParts().builder()
 			                     .findByName("Early Afternoon")
 			                     .get()
-			                     .orElseThrow();
+			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 		}
 		else if (hour <= 14)
 		{
 			return new DayParts().builder()
 			                     .findByName("Afternoon")
 			                     .get()
-			                     .orElseThrow();
+			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 		}
 		else if (hour <= 15)
 		{
@@ -180,21 +181,21 @@ public class TimeService<J extends TimeService<J>>
 				return new DayParts().builder()
 				                     .findByName("Late Afternoon")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else if (hour < 10)
 			{
 				return new DayParts().builder()
 				                     .findByName("Late Afternoon")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else
 			{
 				return new DayParts().builder()
 				                     .findByName("Early Evening")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 		}
 		else if (hour <= 16)
@@ -204,21 +205,21 @@ public class TimeService<J extends TimeService<J>>
 				return new DayParts().builder()
 				                     .findByName("Early Evening")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else if (hour < 16)
 			{
 				return new DayParts().builder()
 				                     .findByName("Early Evening")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else
 			{
 				return new DayParts().builder()
 				                     .findByName("Evening")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 		}
 		else if (hour <= 19)
@@ -226,7 +227,7 @@ public class TimeService<J extends TimeService<J>>
 			return new DayParts().builder()
 			                     .findByName("Evening")
 			                     .get()
-			                     .orElseThrow();
+			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 		}
 		else if (hour <= 21)
 		{
@@ -235,21 +236,21 @@ public class TimeService<J extends TimeService<J>>
 				return new DayParts().builder()
 				                     .findByName("Late Evening")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else if (hour < 21)
 			{
 				return new DayParts().builder()
 				                     .findByName("Late Evening")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 			else
 			{
 				return new DayParts().builder()
 				                     .findByName("Midnight Evening")
 				                     .get()
-				                     .orElseThrow();
+				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 			}
 		}
 		else if (hour <= 24)
@@ -257,7 +258,7 @@ public class TimeService<J extends TimeService<J>>
 			return new DayParts().builder()
 			                     .findByName("Midnight Evening")
 			                     .get()
-			                     .orElseThrow();
+			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 		}
 		
 		else
@@ -265,7 +266,7 @@ public class TimeService<J extends TimeService<J>>
 			return new DayParts().builder()
 			                     .findByName("Midnight Morning")
 			                     .get()
-			                     .orElseThrow();
+			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
 		}
 	}
 	

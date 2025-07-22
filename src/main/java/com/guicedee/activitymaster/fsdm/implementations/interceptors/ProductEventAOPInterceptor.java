@@ -58,10 +58,12 @@ public class ProductEventAOPInterceptor implements MethodInterceptor
 		}
 
 		// Check if enterprise is ready
+/*
 		if (!configuration.isEnterpriseReady() || system.isFake())
 		{
 			return methodInvocation.proceed();
 		}
+*/
 
 		// Check if event ID is null
 		if (event.getId() == null)

@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
@@ -221,7 +222,7 @@ public class ClassificationDataConcept
     }
 
     @Override
-    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, ClassificationDataConcept primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, ClassificationDataConcept primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         ClassificationDataConceptXResourceItem cdc = (ClassificationDataConceptXResourceItem) linkTable;
         cdc.setClassificationDataConceptID(primary);

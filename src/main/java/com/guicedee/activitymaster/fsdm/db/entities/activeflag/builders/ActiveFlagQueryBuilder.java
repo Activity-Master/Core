@@ -4,6 +4,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderNa
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlagQueryBuilder;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderCore;
+import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 
 import java.util.UUID;

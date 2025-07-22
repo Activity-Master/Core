@@ -22,12 +22,6 @@
             <artifactId>scram</artifactId>
         </dependency>
 
-        <!--        <dependency>
-                    <groupId>com.graphql-java</groupId>
-                    <artifactId>graphql-java</artifactId>
-                    <version>22.3</version>
-                </dependency>-->
-
         <dependency>
             <groupId>com.entityassist</groupId>
             <artifactId>entity-assist-reactive</artifactId>
@@ -47,18 +41,6 @@
             <groupId>com.guicedee.activitymaster</groupId>
             <artifactId>activity-master-client</artifactId>
         </dependency>
-        <!--
-
-                <dependency>
-                    <groupId>com.guicedee.persistence</groupId>
-                    <artifactId>guiced-persistence</artifactId>
-                </dependency>
-        -->
-
-<!--        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>cache-api</artifactId>
-        </dependency>-->
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -85,38 +67,10 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
-<!--        <dependency>
-            <groupId>com.guicedee.persistence</groupId>
-            <artifactId>guiced-hazelcast</artifactId>
-        </dependency>-->
-
         <dependency>
             <groupId>com.guicedee</groupId>
             <artifactId>guiced-vertx-persistence</artifactId>
         </dependency>
-        <!--
-
-
-
-                <dependency>
-                    <groupId>com.guicedee.services</groupId>
-                    <artifactId>hibernate-jcache</artifactId>
-                </dependency>
-        -->
-
-<!--
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>cache-annotations-ri-guice</artifactId>
-        </dependency>
--->
-
-<!--
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>guice-persist</artifactId>
-        </dependency>
--->
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
@@ -134,13 +88,16 @@
         </dependency>
 
         <dependency>
-            <groupId>io.cloudevents</groupId>
-            <artifactId>cloudevents-json-jackson</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
+
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -179,6 +136,12 @@
                         <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
                     </annotationProcessors>
                     <failOnError>true</failOnError>
+                    <compilerArgs>
+                        <arg>--add-reads</arg>
+                        <arg>org.jboss.logging=org.hibernate.reactive</arg>
+                        <arg>--add-reads</arg>
+                        <arg>org.hibernate.orm.core=com.guicedee.activitymaster.fsdm</arg>
+                    </compilerArgs>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -192,6 +155,18 @@
                         <version>${jakarta.xml.jaxb.api.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-reads org.jboss.logging=org.hibernate.reactive
+                        --add-reads org.hibernate.orm.core=com.guicedee.activitymaster.fsdm
+                    </argLine>
+                </configuration>
             </plugin>
 
         </plugins>

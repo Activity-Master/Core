@@ -48,7 +48,7 @@ import static jakarta.persistence.FetchType.*;
 @AllArgsConstructor
 public class InvolvedPartyIdentificationType
         extends WarehouseSCDTable<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder, UUID,
-        InvolvedPartyIdentificationTypeSecurityToken>
+                                                InvolvedPartyIdentificationTypeSecurityToken>
         implements IInvolvedPartyIdentificationType<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder>,
         IWarehouseNameAndDescriptionTable<InvolvedPartyIdentificationType, InvolvedPartyIdentificationTypeQueryBuilder, UUID>
 {

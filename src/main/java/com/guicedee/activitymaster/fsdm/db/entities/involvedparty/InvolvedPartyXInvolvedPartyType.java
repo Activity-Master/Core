@@ -40,11 +40,11 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class InvolvedPartyXInvolvedPartyType
         extends WarehouseClassificationRelationshipTypesTable<InvolvedParty,
-        InvolvedPartyType,
-        InvolvedPartyXInvolvedPartyType,
-        InvolvedPartyXInvolvedPartyTypeQueryBuilder,
-        UUID,
-        InvolvedPartyXInvolvedPartyTypeSecurityToken>
+                                InvolvedPartyType,
+                                InvolvedPartyXInvolvedPartyType,
+                                InvolvedPartyXInvolvedPartyTypeQueryBuilder,
+                                UUID,
+                                InvolvedPartyXInvolvedPartyTypeSecurityToken>
 {
     @Serial
     private static final long serialVersionUID = 1L;

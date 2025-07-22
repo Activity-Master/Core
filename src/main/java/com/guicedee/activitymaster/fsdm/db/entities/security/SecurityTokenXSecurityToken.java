@@ -39,11 +39,11 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class SecurityTokenXSecurityToken
         extends WarehouseClassificationRelationshipTable<SecurityToken,
-        SecurityToken,
-        SecurityTokenXSecurityToken,
-        SecurityTokenXSecurityTokenQueryBuilder,
-        UUID,
-        SecurityTokenXSecurityTokenSecurityToken>
+                                SecurityToken,
+                                SecurityTokenXSecurityToken,
+                                SecurityTokenXSecurityTokenQueryBuilder,
+                                UUID,
+                                SecurityTokenXSecurityTokenSecurityToken>
         implements Serializable
 {
 

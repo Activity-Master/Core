@@ -316,7 +316,7 @@ public class Product
     }
 
     @Override
-    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Product primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Product primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         ProductXResourceItem pxt = (ProductXResourceItem) linkTable;
         pxt.setProductID(primary);

@@ -276,16 +276,6 @@ public class Rules
         rxp.setValue(value);
     }
 
-    @Override
-    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Rules primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
-    {
-        RulesXResourceItem r = (RulesXResourceItem) linkTable;
-        r.setRulesID(primary);
-        r.setResourceItemID((ResourceItem) secondary);
-        r.setClassificationID(classificationValue);
-        r.setValue(value);
-
-    }
 
     @Override
     public void configureRuleTypeLinkValue(IWarehouseRelationshipTable linkTable, Rules primary, IRulesType<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
@@ -295,5 +285,16 @@ public class Rules
         r.setRulesTypeID((RulesType) secondary);
         r.setClassificationID(classificationValue);
         r.setValue(value);
+    }
+
+    @Override
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Rules primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?, ?> enterprise)
+    {
+         RulesXResourceItem r = (RulesXResourceItem) linkTable;
+        r.setRulesID(primary);
+        r.setResourceItemID((ResourceItem) secondary);
+        r.setClassificationID(classificationValue);
+        r.setValue(value);
+
     }
 }

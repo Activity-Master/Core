@@ -98,7 +98,7 @@ module com.guicedee.activitymaster.fsdm {
 
 
 	opens com.guicedee.activitymaster.fsdm to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
-	opens com.guicedee.activitymaster.fsdm.async to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
+	//opens com.guicedee.activitymaster.fsdm.async to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
 	opens com.guicedee.activitymaster.fsdm.implementations to com.google.guice, org.hibernate.orm.core, com.entityassist, com.fasterxml.jackson.databind, com.guicedee.activitymaster.geography;
 	opens com.guicedee.activitymaster.fsdm.db to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind,net.bytebuddy;
 	opens com.guicedee.activitymaster.fsdm.db.abstraction to com.google.guice, org.hibernate.orm.core, com.entityassist, com.guicedee.guicedinjection,com.guicedee.client, com.fasterxml.jackson.databind,net.bytebuddy;

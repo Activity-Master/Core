@@ -6,6 +6,7 @@ import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
+import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.resourceitem.IResourceItem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassificationDataConcepts;
@@ -23,6 +24,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -251,7 +254,7 @@ public class Classification
 	
 	
 	@Override
-	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Classification primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+	public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Classification primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
 	{
 		ClassificationXResourceItem x = (ClassificationXResourceItem) linkTable;
 		x.setClassificationID(primary);
@@ -270,6 +273,6 @@ public class Classification
 		c.setChildClassificationID((Classification) classificationValue);
 
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		c.setClassificationID(classificationService.getNoClassification(system));
+		c.setClassificationID(classificationService.getNoClassification(system).await().atMost(Duration.of(50L, ChronoUnit.SECONDS)));
 	}
 }

@@ -39,12 +39,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class ArrangementXArrangementType
 		extends WarehouseClassificationRelationshipTypesTable<Arrangement,
-		ArrangementType,
-		ArrangementXArrangementType,
-		ArrangementXArrangementTypeQueryBuilder,
-		UUID,
-		ArrangementXArrangementTypeSecurityToken
-		>
+                                ArrangementType,
+                                ArrangementXArrangementType,
+                                ArrangementXArrangementTypeQueryBuilder,
+                                UUID,
+                                ArrangementXArrangementTypeSecurityToken
+                                >
 {
 	@Serial
 	private static final long serialVersionUID = 1L;

@@ -30,7 +30,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SecurityTokensSecurityToken
         extends WarehouseSecurityTable<SecurityTokensSecurityToken,
-        SecurityTokensSecurityTokenQueryBuilder, UUID>
+                                SecurityTokensSecurityTokenQueryBuilder, UUID>
         implements Serializable
 {
 

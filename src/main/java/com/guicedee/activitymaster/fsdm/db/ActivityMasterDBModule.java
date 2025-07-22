@@ -3,21 +3,32 @@ package com.guicedee.activitymaster.fsdm.db;
 import com.guicedee.client.Environment;
 import com.guicedee.vertxpersistence.ConnectionBaseInfo;
 import com.guicedee.vertxpersistence.DatabaseModule;
+import com.guicedee.vertxpersistence.annotations.EntityManager;
 import com.guicedee.vertxpersistence.implementations.postgres.PostgresConnectionBaseInfo;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
 import java.util.Properties;
 
+@EntityManager(value = "ActivityMaster", defaultEm = false)
 public class ActivityMasterDBModule
 		extends DatabaseModule<ActivityMasterDBModule>
 {
 	public static String persistenceUnitName = "ActivityMaster";
+	public static Boolean forTests = false;
 	
 	@Override
 	protected @NotNull String getPersistenceUnitName()
 	{
 		return persistenceUnitName;
+	}
+
+
+	@Override
+	protected void configure()
+	{
+		if(!forTests)
+			super.configure();
 	}
 
 	@Override
@@ -45,4 +56,5 @@ public class ActivityMasterDBModule
 	{
 		return 20;
 	}
+
 }

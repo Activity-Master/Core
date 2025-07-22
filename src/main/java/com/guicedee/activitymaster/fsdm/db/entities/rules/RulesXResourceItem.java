@@ -41,10 +41,10 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class RulesXResourceItem
         extends WarehouseClassificationRelationshipTable<Rules,
-        ResourceItem,
-        RulesXResourceItem,
-        RulesXResourceItemQueryBuilder,
-        UUID, RulesXResourceItemSecurityToken>
+                                ResourceItem,
+                                RulesXResourceItem,
+                                RulesXResourceItemQueryBuilder,
+                                UUID, RulesXResourceItemSecurityToken>
         implements Serializable
 {
 

@@ -1,8 +1,28 @@
-open module activity.master.test {
-    requires transitive com.guicedee.activitymaster.fsdm;
+import com.guicedee.activitymaster.ActivityMasterTestBinder;
+import com.guicedee.activitymaster.PostgreSQLTestDBModule;
+import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
-    requires transitive org.junit.jupiter.api;
+open module activity.master.test {
+    requires transitive com.entityassist;
+    requires transitive com.guicedee.vertxpersistence;
+
+    requires org.junit.jupiter.api;
+    requires junit;
+
+    requires jakarta.xml.bind;
+    requires jakarta.persistence;
+
+
+
+    requires transitive org.hibernate.reactive;
+    requires io.smallrye.mutiny;
+    requires com.google.guice;
     requires static lombok;
 
+    requires org.testcontainers;
+    requires io.vertx.sql.client.pg;
+    requires com.guicedee.activitymaster.fsdm;
+
+    provides IGuiceModule with ActivityMasterTestBinder, PostgreSQLTestDBModule;
 
 }

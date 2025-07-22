@@ -11,6 +11,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.metamodel.Attribute;
 
@@ -55,11 +56,10 @@ public class SecurityTokenQueryBuilder
      * @param name
      * @return
      */
-    public SecurityToken getIdentity(Systems system, UUID name)
+    public Uni<SecurityToken> getIdentity(Systems system, UUID name)
     {
         return withName(name.toString()).inActiveRange()
                 .inDateRange()
-                .get()
                 .get();
     }
 

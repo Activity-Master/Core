@@ -30,7 +30,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -317,7 +316,7 @@ public class Arrangement
     }
 
     @Override
-    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureResourceItemAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IResourceItem<?, ?> secondary, IClassification<?, ?> classificationValue, String value, IEnterprise<?,?> enterprise)
     {
         ArrangementXResourceItem axr = (ArrangementXResourceItem) linkTable;
         ((ArrangementXResourceItem) linkTable).setArrangementID(primary);

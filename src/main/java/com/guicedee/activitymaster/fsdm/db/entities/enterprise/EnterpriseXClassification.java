@@ -43,12 +43,12 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 @AllArgsConstructor
 public class EnterpriseXClassification
         extends WarehouseClassificationRelationshipTable<Enterprise,
-        Classification,
-        EnterpriseXClassification,
-        EnterpriseXClassificationQueryBuilder,
-        UUID,
-        EnterpriseXClassificationSecurityToken
-        >
+                                Classification,
+                                EnterpriseXClassification,
+                                EnterpriseXClassificationQueryBuilder,
+                                UUID,
+                                EnterpriseXClassificationSecurityToken
+                                >
 {
     @Serial
     private static final long serialVersionUID = 1L;

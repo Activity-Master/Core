@@ -54,10 +54,10 @@ public class ResourceItemEventAOPInterceptor implements MethodInterceptor
 		}
 
 		// Check if enterprise is ready
-		if (!configuration.isEnterpriseReady())
+	/*	if (!configuration.isEnterpriseReady())
 		{
 			return methodInvocation.proceed();
-		}
+		}*/
 
 		// Check if event ID is null
 		if (event.getId() == null)

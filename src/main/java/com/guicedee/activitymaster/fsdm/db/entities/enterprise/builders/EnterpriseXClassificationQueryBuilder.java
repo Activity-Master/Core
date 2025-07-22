@@ -4,7 +4,9 @@ import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseClassificationRe
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseTable;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderRelationshipClassification;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.EnterpriseXClassification;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.EnterpriseXClassification_;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import java.util.UUID;
