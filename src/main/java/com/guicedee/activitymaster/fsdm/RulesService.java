@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProduct;
@@ -17,16 +16,13 @@ import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
-
+@SuppressWarnings("unchecked")
 @Log4j2
 public class RulesService
 		implements IRulesService<RulesService>
@@ -43,13 +39,13 @@ public class RulesService
 	}
 
 	@Override
-	public Uni<IRules<?, ?>> createRules(String rulesType, String name, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IRules<?, ?>> createRules(Mutiny.Session session, String rulesType, String name, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return createRules(rulesType, null, name, description, system, identityToken);
+		return createRules(session, rulesType, null, name, description, system, identityToken);
 	}
 
 	@Override
-	public Uni<IRules<?, ?>> createRules(String rulesType, java.util.UUID key, String name, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IRules<?, ?>> createRules(Mutiny.Session session, String rulesType, UUID key, String name, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
 		Rules rules = new Rules();
 		if (key != null)
@@ -65,20 +61,20 @@ public class RulesService
 		IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		// Get active flag using reactive pattern
-		return acService.getActiveFlag(enterprise)
+		return acService.getActiveFlag(session, enterprise)
 		        .chain(activeFlag -> {
 		            rules.setActiveFlagID(activeFlag);
-		            return rules.persist();
+		            return session.persist(rules).replaceWith(Uni.createFrom().item(rules));
 		        })
 		        .chain(persisted -> {
 		            // Create rule type - we'll handle this in a separate step
-		            return createRulesType(rulesType, rulesType, system, identityToken);
+		            createRulesType(session, rulesType, rulesType, system, identityToken);
+					return Uni.createFrom().item(persisted);
 		        })
 		        .chain(ruleType -> {
 		            // Start createDefaultSecurity in parallel without waiting for it
 		            // We need to cast to RulesType to access the createDefaultSecurity method
-		            RulesType rulesTypeImpl = (RulesType) ruleType;
-		            rulesTypeImpl.createDefaultSecurity(system, identityToken)
+                    ruleType.createDefaultSecurity(session, system, identityToken)
 		                .subscribe().with(
 		                    result -> {
 		                        // Security setup completed successfully
@@ -95,75 +91,63 @@ public class RulesService
 	}
 
 	@Override
-	public Uni<IRules<?, ?>> find(UUID identity)
+	public Uni<IRules<?, ?>> find(Mutiny.Session session, UUID identity)
 	{
-		return new Rules().builder()
+		return (Uni)  new Rules().builder(session)
 		                  .find(identity)
-		                  .get()
-		                  .onFailure().invoke(error -> log.error("Error finding rule by ID: {}", error.getMessage(), error))
-		                  .onItem().ifNull().continueWith(() -> null)
-		                  .map(rule -> (IRules<?, ?>) rule);
+		                  .get();
 	}
 
 	@Override
-	public Uni<IRulesType<?, ?>> findType(UUID identity)
+	public Uni<IRulesType<?, ?>> findType(Mutiny.Session session, UUID identity)
 	{
-		return new RulesType().builder()
+		return (Uni)  new RulesType().builder(session)
 		                      .find(identity)
-		                      .get()
-		                      .onFailure().invoke(error -> log.error("Error finding rule type by ID: {}", error.getMessage(), error))
-		                      .onItem().ifNull().continueWith(() -> null)
-		                      .map(ruleType -> (IRulesType<?, ?>) ruleType);
+		                      .get();
 	}
 
 	@Override
-	public Uni<IRules<?, ?>> findRules(String name, IEnterprise<?, ?> enterprise, java.util.UUID... identityToken)
+	public Uni<IRules<?, ?>> findRules(Mutiny.Session session, String name, IEnterprise<?, ?> enterprise, UUID... identityToken)
 	{
-		return new Rules().builder()
+		return (Uni) new Rules().builder(session)
 		                  .withName(name)
 		                  .inActiveRange()
 		                  .inDateRange()
 		                  .withEnterprise(enterprise)
-		                  .get()
-		                  .onFailure().invoke(error -> log.error("Error finding rule by name: {}", error.getMessage(), error))
-		                  .onItem().ifNull().continueWith(() -> null)
-		                  .map(rule -> (IRules<?, ?>) rule);
+		                  .get();
 	}
 
 	@Override
-	public Uni<IRules<?, ?>> findRules(String productName, IClassification<?, ?> classification, IEnterprise<?, ?> enterprise, java.util.UUID... identityToken)
+	public Uni<IRules<?, ?>> findRules(Mutiny.Session session, String productName, IClassification<?, ?> classification, IEnterprise<?, ?> enterprise, UUID... identityToken)
 	{
-		return new Rules().builder()
+		return (Uni) new Rules().builder(session)
 		                  .withName(productName)
 		                  .withClassification(classification)
 		                  .inActiveRange()
 		                  .inDateRange()
 		                  .withEnterprise(enterprise)
-		                  .get()
-		                  .onFailure().invoke(error -> log.error("Error finding rule by name and classification: {}", error.getMessage(), error))
-		                  .onItem().ifNull().continueWith(() -> null)
-		                  .map(rule -> (IRules<?, ?>) rule);
+		                  .get();
 	}
 
 	@Override
-	public Uni<IRulesType<?, ?>> createRulesType(String rulesType, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IRulesType<?, ?>> createRulesType(Mutiny.Session session, String rulesType, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return createRulesType(rulesType, rulesType, system, identityToken);
+		return createRulesType(session, rulesType, rulesType, system, identityToken);
 	}
 
 	@Override
-	public Uni<IRulesType<?, ?>> createRulesType(String rulesType, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IRulesType<?, ?>> createRulesType(Mutiny.Session session, String rulesType, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return createRulesType(rulesType, null, description, system, identityToken);
+		return createRulesType(session, rulesType, null, description, system, identityToken);
 	}
 
 	@Override
-	public Uni<IRulesType<?, ?>> createRulesType(String rulesType, java.util.UUID key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IRulesType<?, ?>> createRulesType(Mutiny.Session session, String rulesType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
 		RulesType et = new RulesType();
 
 		// Check if rule type exists
-		return et.builder()
+		return et.builder(session)
 		         .withName(rulesType)
 		         .withEnterprise(enterprise)
 		         .inActiveRange()
@@ -188,16 +172,16 @@ public class RulesService
 		                 IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                 // Get active flag using reactive pattern
-		                 return acService.getActiveFlag(enterprise)
+		                 return acService.getActiveFlag(session, enterprise)
 		                        .chain(activeFlag -> {
 		                            et.setActiveFlagID(activeFlag);
-		                            return et.persist();
+		                            return session.persist(et).replaceWith(Uni.createFrom().item(et));
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
 		                            // We need to cast to RulesType to access the createDefaultSecurity method
 		                            RulesType rulesTypeImpl = (RulesType) persisted;
-		                            rulesTypeImpl.createDefaultSecurity(system, identityToken)
+		                            rulesTypeImpl.createDefaultSecurity(session, system, identityToken)
 		                              .subscribe().with(
 		                                  result -> {
 		                                      // Security setup completed successfully
@@ -215,135 +199,102 @@ public class RulesService
 		             else
 		             {
 		                 // Rule type exists, find and return it
-		                 return findRulesTypes(rulesType, system, identityToken);
+		                 return findRulesTypes(session, rulesType, system, identityToken);
 		             }
 		         });
 	}
 
 	@Override
 	//@CacheResult(cacheName = "RulesTypesString")
-	public Uni<IRulesType<?, ?>> findRulesTypes( String rulesType,  ISystems<?, ?> system,  java.util.UUID... identityToken)
+	public Uni<IRulesType<?, ?>> findRulesTypes(Mutiny.Session session, String rulesType, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new RulesType().builder()
+		return (Uni) new RulesType().builder(session)
 		                      .withName(rulesType)
 		                      .withEnterprise(enterprise)
 		                      .inActiveRange()
 		                      .inDateRange()
 		                      //      .canRead(system, identityToken)
-		                      .get()
-		                      .onFailure().invoke(error -> log.error("Error finding rule type by name: {}", error.getMessage(), error))
-		                      .onItem().ifNull().failWith(() -> new NoSuchElementException("Rule type not found with name: " + rulesType))
-		                      .map(ruleType -> (IRulesType<?, ?>) ruleType);
+		                      .get();
 	}
 
 	@Override
-	public Uni<List<IRulesType<?, ?>>> findRulesTypes(String classifications, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IRulesType<?, ?>>> findRulesTypes(Mutiny.Session session, String classifications, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return classificationService.find(classifications, system, identityToken)
+		return (Uni) classificationService.find(session, classifications, system, identityToken)
 		        .chain(classification -> {
-		            return new RulesType().builder()
+		            return new RulesType().builder(session)
 		                                .withClassification((Classification) classification, value)
 		                                .withEnterprise(enterprise)
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                //     .canRead(system, identityToken)
-		                                .getAll()
-		                                .onFailure().invoke(error -> log.error("Error finding rule types by classification: {}", error.getMessage(), error))
-		                                .map(ruleTypes -> (List<IRulesType<?, ?>>) (List<?>) ruleTypes);
+		                                .getAll();
 		        });
 	}
 
 	@Override
-	public Uni<List<IRules<?, ?>>> findByRulesTypes(IRulesType<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IRules<?, ?>>> findByRulesTypes(Mutiny.Session session, IRulesType<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new RulesXRulesType().builder()
+		return (Uni) new RulesXRulesType().builder(session)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink(null, (RulesType) rulesType, value)
 		                                .withEnterprise(enterprise)
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
-		                                .getAll()
-		                                .onFailure().invoke(error -> log.error("Error finding rules by rule type: {}", error.getMessage(), error))
-		                                .map(list -> {
-		                                    List<IRules<?, ?>> result = new ArrayList<>();
-		                                    for (RulesXRulesType item : list) {
-		                                        result.add(item.getRulesID());
-		                                    }
-		                                    return result;
-		                                });
+		                                .getAll();
 	}
 
 	@Override
-	public Uni<List<IRulesType<?, ?>>> findRuleTypesByRules(IRules<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IRulesType<?, ?>>> findRuleTypesByRules(Mutiny.Session session, IRules<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new RulesXRulesType().builder()
+		return  (Uni)  new RulesXRulesType().builder(session)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink((Rules) rulesType, null, value)
 		                                .withEnterprise(enterprise)
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
-		                                .getAll()
-		                                .onFailure().invoke(error -> log.error("Error finding rule types by rule: {}", error.getMessage(), error))
-		                                .map(list -> {
-		                                    List<IRulesType<?, ?>> result = new ArrayList<>();
-		                                    for (RulesXRulesType item : list) {
-		                                        result.add(item.getRulesTypeID());
-		                                    }
-		                                    return result;
-		                                });
+		                                .getAll();
 	}
 
 	@Override
-	public Uni<List<IRelationshipValue<IRules<?, ?>, IRulesType<?, ?>, ?>>> findRuleTypeValuesByRules(IRules<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IRelationshipValue<IRules<?, ?>, IRulesType<?, ?>, ?>>> findRuleTypeValuesByRules(Mutiny.Session session, IRules<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new RulesXRulesType().builder()
+		return (Uni)  new RulesXRulesType().builder(session)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink((Rules) rulesType, null, value)
 		                                .withEnterprise(enterprise)
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
-		                                .getAll()
-		                                .onFailure().invoke(error -> log.error("Error finding rule type values by rule: {}", error.getMessage(), error))
-		                                .map(list -> (List<IRelationshipValue<IRules<?, ?>, IRulesType<?, ?>, ?>>) (List<?>) list);
+		                                .getAll();
 	}
 
 	@Override
-	public Uni<List<IRules<?, ?>>> findRulesByProduct(IProduct<?, ?> product, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IRules<?, ?>>> findRulesByProduct(Mutiny.Session session, IProduct<?, ?> product, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new RulesXProduct().builder()
+		return (Uni)  new RulesXProduct().builder(session)
 		                              .withClassification(classificationName, value, system, identityToken)
 		                              .findLink(null, (Product) product, value)
 		                              .withEnterprise(enterprise)
 		                              .inActiveRange()
 		                              .inDateRange()
 		                              .canRead(system, identityToken)
-		                              .getAll()
-		                              .onFailure().invoke(error -> log.error("Error finding rules by product: {}", error.getMessage(), error))
-		                              .map(list -> {
-		                                  List<IRules<?, ?>> result = new ArrayList<>();
-		                                  for (RulesXProduct item : list) {
-		                                      result.add(item.getRulesID());
-		                                  }
-		                                  return result;
-		                              });
+		                              .getAll();
 	}
 
 
 	@Override
-	public Uni<List<IRelationshipValue<IRules<?, ?>, IResourceItem<?, ?>, ?>>> findRulesByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IRelationshipValue<IRules<?, ?>, IResourceItem<?, ?>, ?>>> findRulesByResourceItem(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new RulesXResourceItem().builder()
+		return (Uni) new RulesXResourceItem().builder(session)
 		                                   .withClassification(classificationName, system)
 		                                   .findLink(null, (ResourceItem) resourceItem, value)
 		                                   .withEnterprise(enterprise)
 		                                   .inActiveRange()
 		                                   .inDateRange()
 		                                   .canRead(system, identityToken)
-		                                   .getAll()
-		                                   .onFailure().invoke(error -> log.error("Error finding rules by resource item: {}", error.getMessage(), error))
-		                                   .map(list -> (List<IRelationshipValue<IRules<?, ?>, IResourceItem<?, ?>, ?>>) (List<?>) list);
+		                                   .getAll();
 	}
 }

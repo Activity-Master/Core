@@ -36,7 +36,7 @@ public class InvolvedPartyXProductTypeQueryBuilder
 		if (typeValue != null)
 		{
 			IProductService<?> service = com.guicedee.client.IGuiceContext.get(IProductService.class);
-			ProductType at = (ProductType) service.findProductTypeForProduct(typeValue, system, identityToken);
+			ProductType at = (ProductType) service.findProductTypeForProduct(getEntityManager(), typeValue, system, identityToken);
 			where(InvolvedPartyXProductType_.involvedPartyTypeID, Operand.Equals, at);
 		}
 		return this;

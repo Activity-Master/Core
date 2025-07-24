@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm.db.entities.resourceitem;
 
 import com.fasterxml.jackson.annotation.*;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
@@ -32,6 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.java.Log;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.util.List;
@@ -150,25 +150,22 @@ public class ResourceItem
     }
 
     @Override
-    public Uni<IResourceItem<?, ?>> updateDataTypeValue(String newValue)
+    public Uni<IResourceItem<?, ?>> updateDataTypeValue(Mutiny.Session session, String newValue)
     {
-        return ReactiveTransactionUtil.withTransaction(session -> {
             setResourceItemDataType(newValue);
-            //todo update this using the builder().getEntityManager
-            builder().find(getId())
+            //todo update this using the builder(session).getEntityManager
+            builder(session).find(getId())
                     .update(this)
             ;
             return Uni.createFrom()
                            .item((IResourceItem<?, ?>) this);
-        });
     }
 
     @Override
-    public Uni<byte[]> getData(java.util.UUID... identityToken)
+    public Uni<byte[]> getData(Mutiny.Session session, UUID... identityToken)
     {
-        return ReactiveTransactionUtil.withTransaction(session -> {
             ResourceItemData rid = new ResourceItemData();
-            return rid.builder()
+            return rid.builder(session)
                            .inActiveRange()
                            .inDateRange()
                            .where(ResourceItemData_.resource, Equals, this)
@@ -183,15 +180,13 @@ public class ResourceItem
                                log.log(Level.SEVERE, "No resource item data exists");
                                return new byte[]{};
                            });
-        });
     }
 
     @Override
-    public Uni<String> getFilename()
+    public Uni<String> getFilename(Mutiny.Session session)
     {
-        return ReactiveTransactionUtil.withTransaction(session -> {
             ResourceItemData rid = new ResourceItemData();
-            return rid.builder()
+            return rid.builder(session)
                            .inActiveRange()
                            .inDateRange()
                            .where(ResourceItemData_.resource, Equals, this)
@@ -202,21 +197,18 @@ public class ResourceItem
                            .onItem()
                            .ifNull()
                            .continueWith(() -> null);
-        });
     }
 
     @Override
-    public Uni<IResourceData<?, ?, ?>> getDataRow(UUID... identityToken)
+    public Uni<IResourceData<?, ?, ?>> getDataRow(Mutiny.Session session, UUID... identityToken)
     {
-        return ReactiveTransactionUtil.withTransaction(session -> {
             ResourceItemData rid = new ResourceItemData();
-            return rid.builder()
+            return rid.builder(session)
                            .inActiveRange()
                            .inDateRange()
                            .where(ResourceItemData_.resource, Equals, this)
                            .get()
                            .map(ridd -> ridd);
-        });
     }
 
     /**
@@ -245,49 +237,42 @@ public class ResourceItem
 
 
     @Override
-    public Uni<Void> updateData(byte[] data, ISystems<?, ?> system, UUID... identityToken)
+    public Uni<Void> updateData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
     {
         if (data == null || data.length == 0)
         {
             return Uni.createFrom()
                            .failure(new RuntimeException("Cannot store 0 data into a resource item"));
         }
-
-        return ReactiveTransactionUtil.withTransaction(session -> {
                     ResourceItemData rid = new ResourceItemData();
-                    return rid.builder()
+                    return rid.builder(session)
                                .inActiveRange()
                                .where(ResourceItemData_.resource, Equals, this)
                                .latestFirst()
                                .setReturnFirst(true)
                                .get()
-                               .onItem().ifNotNull().invoke(resourceItemData -> {
+                               .chain(resourceItemData -> {
                                    resourceItemData.setResourceItemData(data);
-                                   resourceItemData.update();
+                                   return session.merge(resourceItemData);
                                })
                                .onItem().transformToUni(item -> Uni.createFrom().voidItem());
-                })
-                .onFailure()
-                .invoke(error -> {
-                    log.log(Level.SEVERE, "Error search for resource item update", error);
-                });
+
     }
 
     @Override
-    public Uni<Void> updateAndKeepHistoryData(byte[] data, ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Uni<Void> updateAndKeepHistoryData(Mutiny.Session session, byte[] data, ISystems<?, ?> system, UUID... identityToken)
     {
         final byte[] zippedData = zip(data);
-
-        return ReactiveTransactionUtil.withTransaction(session -> {
+        
             ResourceItemData rid = new ResourceItemData();
-            return rid.builder()
+            return rid.builder(session)
                        .inActiveRange()
                        .where(ResourceItemData_.resource, Equals, this)
                        .latestFirst()
                        .setReturnFirst(true)
                        .get()
                        .onItem().ifNotNull().invoke(resourceItemData -> {
-                           resourceItemData.archive();
+                           resourceItemData.archive(session);
                        })
                        .onItem().transformToUni(item -> {
                            ResourceItemData newRid = new ResourceItemData();
@@ -301,9 +286,8 @@ public class ResourceItem
                            newRid.setOriginalSourceSystemID(getSystemID());
                            newRid.setSystemID(getSystemID());
                            newRid.setEnterpriseID(system.getEnterpriseID());
-                           return newRid.persist().onItem().transformToUni(persisted -> Uni.createFrom().voidItem());
+                           return session.persist(newRid);
                        });
-        });
     }
 
     @Override
@@ -340,18 +324,19 @@ public class ResourceItem
      * @return A Uni that completes when the archiving is done
      */
     @SuppressWarnings("unchecked")
-    public Uni<ResourceItem> archiveReactive()
+    public Uni<ResourceItem> archive(Mutiny.Session session)
     {
         IEnterprise<?, ?> enterprise = getEnterpriseID();
         ActiveFlagSystem activeSystem = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
-        UUID systemToken = activeSystem.getSystemToken(enterprise);
-
-        return com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
-                       .getArchivedFlag(enterprise, systemToken)
+        return activeSystem.getSystemToken(session, enterprise)
+                .chain(systemToken -> {
+                    return com.guicedee.client.IGuiceContext.get(IActiveFlagService.class)
+                       .getArchivedFlag(session, enterprise, systemToken)
                        .chain(archivedFlag -> {
                            setActiveFlagID((IActiveFlag<?, ?>) archivedFlag);
-                           return update();
+                           return session.merge(this);
                        });
+                });
     }
 
     @Override
@@ -377,7 +362,7 @@ public class ResourceItem
     }
 
     @Override
-    public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         ResourceItemXClassification rxc = (ResourceItemXClassification) linkTable;
         rxc.setResourceItemID(this);

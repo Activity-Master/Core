@@ -7,7 +7,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders.ActiveFlagQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import jakarta.persistence.*;
@@ -19,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.util.List;
@@ -161,7 +161,7 @@ public class ActiveFlag
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+	public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		ActiveFlagXClassification x = (ActiveFlagXClassification) linkTable;
 		x.setActiveFlagID(this);

@@ -37,7 +37,7 @@ public class ProductXProductTypeQueryBuilder
 		if (!Strings.isNullOrEmpty(productTypeValue))
 		{
 			IProductService<?> productService = com.guicedee.client.IGuiceContext.get(IProductService.class);
-			ProductType pt = (ProductType) productService.findProductTypeForProduct(productTypeValue, system, identityToken);
+			ProductType pt = (ProductType) productService.findProductTypeForProduct(getEntityManager(), productTypeValue, system, identityToken);
 			where(ProductXProductType_.productTypeID, Equals, pt);
 		}
 		return this;

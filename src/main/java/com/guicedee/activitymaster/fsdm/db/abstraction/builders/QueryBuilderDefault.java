@@ -8,7 +8,9 @@ import io.smallrye.mutiny.Uni;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.reactive.mutiny.Mutiny;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 
@@ -72,12 +74,6 @@ public abstract class QueryBuilderDefault<J extends QueryBuilderDefault<J, E, I>
     {
         return super.persist(entity);
     }
-
-  	@Override
-	public Mutiny.Session getEntityManager()
-	{
-		return IGuiceContext.get(Mutiny.SessionFactory.class).getCurrentSession();
-	}
 
     @Override
     public boolean isIdGenerated()

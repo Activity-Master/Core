@@ -1,8 +1,17 @@
 package com.guicedee.activitymaster.tests;
 
+import com.google.inject.Key;
+import com.google.inject.name.Names;
+import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
+import com.guicedee.client.IGuiceContext;
+import com.guicedee.vertxpersistence.PersistService;
+import com.guicedee.vertxpersistence.bind.JtaPersistService;
 import io.smallrye.mutiny.Uni;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.engine.config.spi.ConfigurationService;
 import org.hibernate.reactive.mutiny.Mutiny;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,38 +22,55 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.guicedee.activitymaster.fsdm.DefaultEnterprise.TestEnterprise;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@Log4j2
 public abstract class TestDatabaseSetup
 {
 
-    static void runScript(Mutiny.SessionFactory sessionFactory, String resourcePath) {
+    static void runScript(Mutiny.SessionFactory sessionFactory, String resourcePath)
+    {
         String sql;
-        try (InputStream in = TestDatabaseConnectivity.class.getClassLoader().getResourceAsStream(resourcePath)) {
-            if (in == null) throw new IllegalArgumentException("Script not found: " + resourcePath);
+        try (InputStream in = TestDatabaseConnectivity.class.getClassLoader()
+                                      .getResourceAsStream(resourcePath))
+        {
+            if (in == null)
+            {
+                throw new IllegalArgumentException("Script not found: " + resourcePath);
+            }
             sql = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new RuntimeException("Failed to read SQL script: " + resourcePath, e);
         }
 
         // Split by semicolon only if not inside function bodies (simplified)
         List<String> statements = Arrays.stream(sql.split(";\\s*(?=(?:[^']*'[^']*')*[^']*$)"))
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .toList();
+                                          .map(String::trim)
+                                          .filter(s -> !s.isEmpty())
+                                          .toList()
+                ;
 
         sessionFactory.withSession(session1 -> {
-            return session1.withTransaction(tx -> {
-                List<Uni<?>> executions = new ArrayList<>();
-                for (String stmt : statements)
-                {
-                    executions.add(session1.createNativeQuery(stmt)
-                                           .executeUpdate().log("Executed: " + stmt));
-                }
-                return Uni.combine()
-                               .all()
-                               .unis(executions)
-                               .discardItems();
-            });
-        }).await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+                    return session1.withTransaction(tx -> {
+                        List<Uni<?>> executions = new ArrayList<>();
+                        for (String stmt : statements)
+                        {
+                            executions.add(session1.createNativeQuery(stmt)
+                                                   .executeUpdate()
+                                                   .log("Executed: " + stmt));
+                        }
+                        return Uni.combine()
+                                       .all()
+                                       .unis(executions)
+                                       .discardItems();
+                    });
+                })
+                .await()
+                .atMost(Duration.of(50L, ChronoUnit.SECONDS))
+        ;
         System.out.println("Done");
     }
 }

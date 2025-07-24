@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.ProductC
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,22 +28,22 @@ public class ProductsBaseSetup implements ISystemUpdate
 	private ISystems<?,?> activityMasterSystem;
 
 	@Override
-	public Uni<Boolean> update(IEnterprise<?,?> enterprise)
+	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting parallel creation of product classifications");
 
 		// Create the base product classification first
-		return service.create(ProductClassifications.Products, activityMasterSystem)
+		return service.create(session, ProductClassifications.Products, activityMasterSystem)
 			.chain(baseClassification -> {
 				// Create a list of operations to run in parallel
 				List<Uni<?>> operations = new ArrayList<>();
 
 				// Add all product-related classification creation operations to the list
 				// These all have the same parent (ProductClassifications.Products or ProductClassifications.ProductGroup)
-				operations.add(service.create(ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
-				operations.add(service.create(ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
-				operations.add(service.create(ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
-				operations.add(service.create(ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
+				operations.add(service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
+				operations.add(service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
+				operations.add(service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
+				operations.add(service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
 
 				log.info("Running {} product classification creation operations in parallel", operations.size());
 

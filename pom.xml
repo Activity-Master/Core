@@ -57,6 +57,13 @@
             <artifactId>hibernate-core</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>hibernate-reactive</artifactId>
+        </dependency>
+
+
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
@@ -111,7 +118,7 @@
                         <annotationProcessorPath>
                             <groupId>org.hibernate.orm</groupId>
                             <artifactId>hibernate-processor</artifactId>
-                            <version>${maven.hibernate.version}</version>
+                            <version>${maven.hibernate.enhance.version}</version>
                         </annotationProcessorPath>
                         <path>
                             <groupId>org.projectlombok</groupId>

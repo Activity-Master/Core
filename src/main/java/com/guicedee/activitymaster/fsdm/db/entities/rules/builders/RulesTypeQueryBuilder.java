@@ -24,7 +24,7 @@ public class RulesTypeQueryBuilder
 		JoinExpression joinExpression = new JoinExpression();
 		RulesTypeXClassificationQueryBuilder builder =
 				new RulesTypeXClassification()
-						.builder()
+						.builder(getEntityManager())
 						.inActiveRange()
 						.inDateRange()
 						.where(RulesTypeXClassification_.classificationID, Equals, classification);

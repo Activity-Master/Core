@@ -37,7 +37,7 @@ public class EventXEventTypeQueryBuilder
 		if (typeValue != null)
 		{
 			IEventService<?> service = com.guicedee.client.IGuiceContext.get(IEventService.class);
-			EventType at = (EventType) service.findEventType(typeValue, system, identityToken);
+			EventType at = (EventType) service.findEventType(getEntityManager(), typeValue, system, identityToken);
 			where(EventXEventType_.eventTypeID, Operand.Equals, at);
 		}
 		return this;

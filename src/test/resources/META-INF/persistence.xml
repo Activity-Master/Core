@@ -261,10 +261,6 @@
             <property name="hibernate.generate_statistics" value="false"/>
             <property name="hibernate.bytecode.use_reflection_optimizer" value="true"/>
 
-            <property name="hibernate.hbm2ddl.auto" value="create"/>
-            <property name="hibernate.hbm2ddl.schema-generation.scripts.create-target" value="postgres_fsdm.sql"/>
-            <property name="hibernate.hbm2ddl.schema-generation.scripts.action" value="create"/>
-
              <property name="hibernate.cache.use_second_level_cache" value="false"/>
 
         </properties>

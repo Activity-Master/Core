@@ -9,7 +9,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IContainsNameAndDescription;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.builders.SystemsQueryBuilder;
@@ -24,7 +23,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.util.List;
@@ -32,7 +33,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static com.guicedee.activitymaster.fsdm.client.services.builders.IQueryBuilderSCD.convertToUTCDateTime;
 import static com.guicedee.client.IGuiceContext.*;
 
 /**
@@ -58,6 +58,7 @@ import static com.guicedee.client.IGuiceContext.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Log4j2
 public class Systems
         extends WarehouseCoreTable<Systems, SystemsQueryBuilder, UUID, SystemsSecurityToken>
         implements ISystems<Systems, SystemsQueryBuilder>,
@@ -149,24 +150,40 @@ public class Systems
      *
      * @return A Uni that completes when the removal is done
      */
-    public Uni<Systems> remove()
+    public Uni<Systems> remove(Mutiny.Session  session)
     {
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
-        return service.getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID()))
+        return service.getDeletedFlag(session, getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID()).await().atMost(java.time.Duration.ofSeconds(50)))
                        .chain(deletedFlag -> {
                            setActiveFlagID((ActiveFlag) deletedFlag);
-                           return update();
+                           return session.persist(this).replaceWith(Uni.createFrom().item(this));
+                       })
+                       .onItem()
+                       .invoke(result -> {
+                           System.out.println("✅ System " + getName() + " successfully marked as removed");
+                       })
+                       .onFailure()
+                       .invoke(error -> {
+                           System.err.println("❌ Failed to remove system " + getName() + ": " + error.getMessage());
                        });
     }
 
 
-    public Uni<Systems> archive()
+    public Uni<Systems> archive(Mutiny.Session session)
     {
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
-        return service.getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID()))
+        return service.getArchivedFlag(session, getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID()).await().atMost(java.time.Duration.ofSeconds(50)))
                        .chain(archivedFlag -> {
                            setActiveFlagID((ActiveFlag) archivedFlag);
-                           return update();
+                           return session.merge(this);
+                       })
+                       .onItem()
+                       .invoke(result -> {
+                           log.debug("✅ System {} successfully archived", getName());
+                       })
+                       .onFailure()
+                       .invoke(error -> {
+                           log.error("❌ Failed to archive system {}: {}", getName(), error.getMessage(), error);
                        });
     }
 
@@ -259,7 +276,7 @@ public class Systems
     }
 
     @Override
-    public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         ((SystemsXClassification) linkTable)
                 .setSystemID(this);

@@ -3,7 +3,6 @@ package com.guicedee.activitymaster.fsdm;
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
@@ -14,10 +13,9 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classificati
 import com.guicedee.activitymaster.fsdm.db.entities.security.*;
 import com.guicedee.activitymaster.fsdm.db.entities.security.builders.SecurityTokenQueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
-import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.constraints.NotNull;
-
+import org.hibernate.reactive.mutiny.Mutiny;
 
 
 import java.util.*;
@@ -43,21 +41,20 @@ public class SecurityTokenService
 	}
 
 	@Override
-	public Uni<Void> grantAccessToToken(ISecurityToken<?,?> fromToken, ISecurityToken<?,?> toToken,
-	                               boolean create, boolean update, boolean delete, boolean read, ISystems<?,?> system)
+	public Uni<Void> grantAccessToToken(Mutiny.Session session, ISecurityToken<?,?> fromToken, ISecurityToken<?,?> toToken,
+										boolean create, boolean update, boolean delete, boolean read, ISystems<?,?> system)
 	{
-		return grantAccessToToken(fromToken, toToken, create, update, delete, read, system, null, null, null);
+		return grantAccessToToken(session, fromToken, toToken, create, update, delete, read, system, null, null, null);
 	}
 
 	@Override
-	public Uni<Void> grantAccessToToken(@NotNull ISecurityToken<?,?> fromToken, @NotNull ISecurityToken<?,?> toToken,
-	                               boolean create, boolean update, boolean delete, boolean read,
-	                               ISystems<?,?> system, String originalId,
-	                               Date effectiveFromDate, Date effectiveToDate)
+	public Uni<Void> grantAccessToToken(Mutiny.Session session, @NotNull ISecurityToken<?,?> fromToken, @NotNull ISecurityToken<?,?> toToken,
+										boolean create, boolean update, boolean delete, boolean read,
+										ISystems<?,?> system, String originalId,
+										Date effectiveFromDate, Date effectiveToDate)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
-			return sta.builder()
+			return sta.builder(session)
 				.withEnterprise(enterprise)
 				.inActiveRange()
 				.inDateRange()
@@ -70,7 +67,7 @@ public class SecurityTokenService
 					sta.setEnterpriseID(enterprise);
 					sta.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
 					IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-					return acService.getActiveFlag(enterprise)
+					return acService.getActiveFlag(session, enterprise)
 						.chain(activeFlag -> {
 							sta.setActiveFlagID((ActiveFlag) activeFlag);
 							sta.setSecurityTokenID((SecurityToken) fromToken);
@@ -79,29 +76,28 @@ public class SecurityTokenService
 							sta.setUpdateAllowed(update);
 							sta.setDeleteAllowed(delete);
 							sta.setReadAllowed(read);
-							return sta.persist().map(s -> sta);
+							return session.persist(sta).replaceWith(Uni.createFrom().item(sta));
 						});
 				})
 				.chain(result -> Uni.createFrom().voidItem());
-		});
+
 	}
 
 	@Override
-	public Uni<ISecurityToken<?,?>> create(String classificationValue, String name, String description, ISystems<?,?> system)
+	public Uni<ISecurityToken<?,?>> create(Mutiny.Session session, String classificationValue, String name, String description, ISystems<?,?> system)
 	{
-		return create(classificationValue, name, description, system, null);
+		return create(session, classificationValue, name, description, system, null);
 	}
 
 	@Override
-	public Uni<ISecurityToken<?,?>> create(String classificationValue, String name, String description, ISystems<?,?> system, ISecurityToken<?,?> parent, java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> create(Mutiny.Session session, String classificationValue, String name, String description, ISystems<?,?> system, ISecurityToken<?,?> parent, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
-			return classificationService.find(classificationValue, system, identityToken)
+			return classificationService.find(session, classificationValue, system, identityToken)
 				.chain(classification -> {
 					SecurityToken st = new SecurityToken();
 
 					// First try to find by security token and enterprise
-					return st.builder()
+					return st.builder(session)
 						.withEnterprise(enterprise)
 						.findBySecurityToken(name, enterprise)
 						.inActiveRange()
@@ -116,7 +112,7 @@ public class SecurityTokenService
 							}
 
 							// Try to find by name
-							return st.builder()
+							return st.builder(session)
 								.withName(name)
 								.inActiveRange()
 								.inDateRange()
@@ -139,12 +135,14 @@ public class SecurityTokenService
 									st.setSecurityTokenClassificationID((Classification) classification);
 
 									IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-									return acService.getActiveFlag(enterprise)
+									return acService.getActiveFlag(session, enterprise)
 										.chain(activeFlag -> {
 											st.setActiveFlagID((ActiveFlag) activeFlag);
-											return st.persist()
-												.chain(() -> st.createDefaultSecurity(system, identityToken))
-												.map(v -> st);
+											return session.persist(st).replaceWith(Uni.createFrom().item(st))
+												.chain(() -> {
+													st.createDefaultSecurity(session, system, identityToken);
+													return Uni.createFrom().item(st);
+												});
 										});
 								});
 						})
@@ -153,19 +151,17 @@ public class SecurityTokenService
 								return Uni.createFrom().item(securityToken);
 							}
 
-							return link(parent, securityToken, (Classification) classification)
+							return link(session, parent, securityToken, (Classification) classification)
 								.map(v -> securityToken);
 						});
 				});
-		});
 	}
 
 	@Override
-	public Uni<Void> link(ISecurityToken<?,?> parent, ISecurityToken<?,?> child, IClassification<?,?> classification, java.lang.String... identifyingToken)
+	public Uni<Void> link(Mutiny.Session session, ISecurityToken<?,?> parent, ISecurityToken<?,?> child, IClassification<?,?> classification, String... identifyingToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
-			return root.builder()
+			return root.builder(session)
 				.withEnterprise(enterprise)
 				.findLink((SecurityToken) parent, (SecurityToken) child, null)
 				.withClassification(classification)
@@ -183,10 +179,10 @@ public class SecurityTokenService
 					root.setEnterpriseID(enterprise);
 
 					IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-					return acService.getActiveFlag(enterprise)
+					return acService.getActiveFlag(session, enterprise)
 						.chain(activeFlag -> {
 							root.setActiveFlagID((ActiveFlag) activeFlag);
-							return root.persist()
+							return session.persist(root).replaceWith(Uni.createFrom().item(root))
 								.map(v -> {
 									updateSecurityHierarchy(child.getId());
 									return root;
@@ -195,7 +191,6 @@ public class SecurityTokenService
 						.await().indefinitely(); // This is needed to convert from Uni to actual value in this recovery path
 				})
 				.chain(existingLink -> Uni.createFrom().voidItem());
-		});
 	}
 
 	private void updateSecurityHierarchy(UUID securityTokenID)
@@ -221,11 +216,11 @@ public class SecurityTokenService
 	}
 	//@CacheResult(cacheName = "SecuritiesGetEveryoneGroup")
 	@Override
-	public Uni<ISecurityToken<?,?>> getEveryoneGroup( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getEveryoneGroup(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
+		
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Everyone)
 				.inActiveRange()
@@ -234,15 +229,15 @@ public class SecurityTokenService
 				//   .canRead(enterprise, identityToken)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+
 	}
 	//@CacheResult(cacheName = "SecuritiesGetEverywhereGroup")
 	@Override
-	public Uni<ISecurityToken<?,?>> getEverywhereGroup( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getEverywhereGroup(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
+	
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Everywhere)
 				.inActiveRange()
@@ -251,15 +246,15 @@ public class SecurityTokenService
 				//      .canRead(enterprise, identityToken)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+	
 	}
 	//@CacheResult(cacheName = "SecuritiesGetGuestsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getGuestsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getGuestsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
+	
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Guests)
 				.inActiveRange()
@@ -268,15 +263,14 @@ public class SecurityTokenService
 				//     .canRead(enterprise,identityToken)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+	
 	}
 	//@CacheResult(cacheName = "SecuritiesGetRegisteredGuestsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getRegisteredGuestsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getRegisteredGuestsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Registered)
 				.inActiveRange()
@@ -285,15 +279,14 @@ public class SecurityTokenService
 				//    .canRead(enterprise, identityToken)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+
 	}
 	//@CacheResult(cacheName = "SecuritiesGetVisitorsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getVisitorsGuestsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getVisitorsGuestsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Visitors)
 				.inActiveRange()
@@ -302,15 +295,14 @@ public class SecurityTokenService
 				//     .canRead(enterprise, identityToken)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+		
 	}
 	//@CacheResult(cacheName = "SecuritiesGetAdministratorsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getAdministratorsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getAdministratorsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Administrators)
 				.inActiveRange()
@@ -319,15 +311,15 @@ public class SecurityTokenService
 				//  .canRead(enterprise, identityToken)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+
 	}
 	//@CacheResult(cacheName = "SecuritiesGetSystemsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getSystemsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getSystemsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
+	
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(UserGroupSecurityTokenClassifications.System.toString(), system, identityToken)
 				.withName(System)
 				.inActiveRange()
@@ -336,15 +328,15 @@ public class SecurityTokenService
 				//.canRead(enterprise, identityToken)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+	
 	}
 	//@CacheResult(cacheName = "SecuritiesGetPluginsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getPluginsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getPluginsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
+
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(Plugin.toString(), system, identityToken)
 				.withName(Plugins)
 				.inActiveRange()
@@ -353,15 +345,15 @@ public class SecurityTokenService
 				.withEnterprise(enterprise)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+	
 	}
 //	//@CacheResult(cacheName = "SecuritiesGetApplicationsFolder")
 	@Override
-	public Uni<ISecurityToken<?,?>> getApplicationsFolder( ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getApplicationsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
+	
 			SecurityToken st = new SecurityToken();
-			return st.builder()
+			return st.builder(session)
 				.findFolder(Application.toString(), system, identityToken)
 				.withName(Applications)
 				.inActiveRange()
@@ -370,14 +362,14 @@ public class SecurityTokenService
 				.withEnterprise(enterprise)
 				.get()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+	
 	}
 //	//@CacheResult(cacheName = "SecurityGetSecurityToken")
 	@Override
-	public Uni<ISecurityToken<?,?>> getSecurityToken( UUID identifyingToken,  ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getSecurityToken(Mutiny.Session session, UUID identifyingToken, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
-			return new SecurityToken().builder()
+
+			return new SecurityToken().builder(session)
 				.findBySecurityToken(identifyingToken.toString())
 				.withEnterprise(enterprise)
 				.inActiveRange()
@@ -387,14 +379,14 @@ public class SecurityTokenService
 				.get()
 				.onFailure(NoSuchElementException.class).recoverWithNull()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+	
 	}
 	//@CacheResult(cacheName = "SecurityGetSecurityTokenNoActiveFlag")
 	@Override
-	public Uni<ISecurityToken<?,?>> getSecurityToken( UUID identifyingToken, boolean overrideActiveFlag,  ISystems<?,?> system,  java.util.UUID... identityToken)
+	public Uni<ISecurityToken<?,?>> getSecurityToken(Mutiny.Session session, UUID identifyingToken, boolean overrideActiveFlag, ISystems<?,?> system, UUID... identityToken)
 	{
-		return ReactiveTransactionUtil.withTransaction(session -> {
-			SecurityTokenQueryBuilder builder = new SecurityToken().builder();
+
+			SecurityTokenQueryBuilder builder = new SecurityToken().builder(session);
 			builder = builder.findBySecurityToken(identifyingToken.toString())
 					.withEnterprise(enterprise)
 					.inDateRange();
@@ -407,6 +399,6 @@ public class SecurityTokenService
 				.get()
 				.onFailure(NoSuchElementException.class).recoverWithNull()
 				.onItem().transform(token -> (ISecurityToken<?,?>) token);
-		});
+
 	}
 }

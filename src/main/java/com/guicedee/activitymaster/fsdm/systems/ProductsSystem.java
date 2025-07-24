@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.ProductC
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -30,36 +31,37 @@ public class ProductsSystem
 	private ISystemsService<?> systemsService;
 
 	@Override
-	public ISystems<?,?>  registerSystem(IEnterprise<?,?> enterprise)
+	public ISystems<?,?>  registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		ISystems<?, ?> iSystems = systemsService
-		                                        .create(enterprise, getSystemName(), getSystemDescription())
+		                                        .create(session, enterprise, getSystemName(), getSystemDescription())
 		                                        .await().atMost(Duration.ofMinutes(1));
-		systemsService
-		              .registerNewSystem(enterprise, getSystem(enterprise))
-		              .await().atMost(Duration.ofMinutes(1));
+		getSystem(session, enterprise).chain(system ->{
+					return systemsService
+								   .registerNewSystem(session, enterprise, system);
+		}).await().atMost(Duration.ofMinutes(1));
 		return iSystems;
 	}
 
 	@Override
-	public void createDefaults(IEnterprise<?,?> enterprise)
+	public void createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		// Get the ActivityMaster system
 		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
 		                                                           .await().atMost(Duration.ofMinutes(1));
 
 		// Create base product classification
-		service.create(ProductClassifications.Products, activityMasterSystem)
+		service.create(session, ProductClassifications.Products, activityMasterSystem)
 		      .await().atMost(Duration.ofMinutes(1));
 
 		logProgress("Products System", "Creating product classifications...");
 
 		// Create product-related classifications in parallel since they all have the same parent
 		List<Uni<?>> productClassifications = new ArrayList<>();
-		productClassifications.add(service.create(ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
-		productClassifications.add(service.create(ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
-		productClassifications.add(service.create(ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
-		productClassifications.add(service.create(ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
+		productClassifications.add(service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
+		productClassifications.add(service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
+		productClassifications.add(service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
+		productClassifications.add(service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
 
 		// Execute all product classifications in parallel and wait for completion
 		Uni.combine().all().unis(productClassifications)

@@ -7,9 +7,9 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.sql.Connection;
-import java.util.logging.Level;
 
 import static com.guicedee.client.IGuiceContext.*;
 
@@ -22,16 +22,16 @@ public class ActivityMasterService
 	private IEnterpriseService<?> enterpriseService;
 
 	@Override
-	public Uni<Void> loadSystems(String enterpriseName)
+	public Uni<Void> loadSystems(Mutiny.Session session, String enterpriseName)
 	{
-		return enterpriseService.getEnterprise(enterpriseName)
-				.chain(enterprise -> enterpriseService.performPostStartup(enterprise));
+		return enterpriseService.getEnterprise(session, enterpriseName)
+				.chain(enterprise -> enterpriseService.performPostStartup(session, enterprise));
 	}
 
 	@Override
-	public Uni<Void> loadUpdates(IEnterprise<?, ?> enterprise)
+	public Uni<Void> loadUpdates(Mutiny.Session session, IEnterprise<?, ?> enterprise)
 	{
-		return enterpriseService.loadUpdates(enterprise)
+		return enterpriseService.loadUpdates(session, enterprise)
 				.map(result -> null);
 	}
 

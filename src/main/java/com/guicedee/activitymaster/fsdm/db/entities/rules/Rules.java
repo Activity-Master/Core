@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.util.List;
@@ -260,14 +261,14 @@ public class Rules
     }
 
     @Override
-    public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         RulesXClassification rxc = (RulesXClassification) linkTable;
         rxc.setRulesID(this);
     }
 
     @Override
-    public void configureProductAddable(IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, Rules primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         RulesXProduct rxp = (RulesXProduct) linkTable;
         rxp.setRulesID(primary);

@@ -4,10 +4,13 @@ import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseHierarchyView;
 import com.guicedee.activitymaster.fsdm.db.hierarchies.SecurityHierarchyView_;
 import com.guicedee.client.IGuiceContext;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.TypedQuery;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 import static com.entityassist.enumerations.Operand.*;
 
@@ -19,12 +22,6 @@ public abstract class QueryBuilderHierarchyView<J extends QueryBuilderHierarchyV
 	{
 		org.hibernate.query.Query<?> q = query.unwrap(org.hibernate.query.Query.class);
 		q.addQueryHint("MAXRECURSION 0");
-	}
-	
-	@Override
-	public Mutiny.Session getEntityManager()
-	{
-		return IGuiceContext.get(Mutiny.SessionFactory.class).getCurrentSession();
 	}
 
 	@Override

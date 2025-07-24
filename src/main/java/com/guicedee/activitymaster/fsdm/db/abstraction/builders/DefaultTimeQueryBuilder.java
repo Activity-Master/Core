@@ -3,10 +3,13 @@ package com.guicedee.activitymaster.fsdm.db.abstraction.builders;
 import com.entityassist.BaseEntity;
 import com.entityassist.querybuilder.QueryBuilder;
 import com.guicedee.client.IGuiceContext;
+import io.smallrye.mutiny.Uni;
 import jakarta.persistence.EntityManager;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public abstract class DefaultTimeQueryBuilder<
@@ -22,13 +25,7 @@ public abstract class DefaultTimeQueryBuilder<
 	//	setUseDirectConnection(true);
 	//	setDetach(true);
 	}
-	
-	@Override
-	public Mutiny.Session getEntityManager()
-	{
-		return IGuiceContext.get(Mutiny.SessionFactory.class).getCurrentSession();
-	}
-	
+    
 	@Override
 	public boolean isIdGenerated()
 	{

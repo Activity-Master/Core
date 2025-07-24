@@ -10,6 +10,7 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.Involved
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,24 +31,24 @@ public class ClassificationBaseSetup implements ISystemUpdate
 	private ISystems<?,?> activityMasterSystem;
 
 	@Override
-	public Uni<Boolean> update(IEnterprise<?,?> enterprise)
+	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting parallel creation of classifications");
 
 		log.info("Creating Languages and Hardware classifications in parallel");
 
 		// Create the Languages classification and its children
-		Uni<Void> languagesUni = service.create(Languages, activityMasterSystem, DefaultClassifications.DefaultClassification)
+		Uni<Void> languagesUni = service.create(session, Languages, activityMasterSystem, DefaultClassifications.DefaultClassification)
 			.chain(baseLanguage -> {
 				// Create a list of operations to run in parallel for language classifications
 				List<Uni<?>> languageOperations = new ArrayList<>();
 
 				// Add all language-related classification creation operations to the list
-				languageOperations.add(service.create(InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages));
-				languageOperations.add(service.create(InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages));
-				languageOperations.add(service.create(ISO6392EnglishName, activityMasterSystem, Languages));
-				languageOperations.add(service.create(ISO6392FrenchName, activityMasterSystem, Languages));
-				languageOperations.add(service.create(ISO6392GermanName, activityMasterSystem, Languages));
+				languageOperations.add(service.create(session, InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages));
+				languageOperations.add(service.create(session, InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages));
+				languageOperations.add(service.create(session, ISO6392EnglishName, activityMasterSystem, Languages));
+				languageOperations.add(service.create(session, ISO6392FrenchName, activityMasterSystem, Languages));
+				languageOperations.add(service.create(session, ISO6392GermanName, activityMasterSystem, Languages));
 
 				log.info("Running {} language classification creation operations in parallel", languageOperations.size());
 
@@ -60,22 +61,22 @@ public class ClassificationBaseSetup implements ISystemUpdate
 			});
 
 		// Create the Hardware classification and its children (including Computer and its children)
-		Uni<Void> hardwareUni = service.create(Hardware, activityMasterSystem)
+		Uni<Void> hardwareUni = service.create(session, Hardware, activityMasterSystem)
 			.chain(baseHardware -> {
 				// First create the Computer classification
-				return service.create(Computer, activityMasterSystem, Hardware)
+				return service.create(session, Computer, activityMasterSystem, Hardware)
 					.chain(computerClassification -> {
 						// Create a list of operations to run in parallel for all hardware-related classifications
 						List<Uni<?>> hardwareOperations = new ArrayList<>();
 
 						// Add hardware-related classification creation operations to the list
-						hardwareOperations.add(service.create(Scanner, activityMasterSystem, Hardware));
-						hardwareOperations.add(service.create(Printer, activityMasterSystem, Hardware));
-						hardwareOperations.add(service.create(Phone, activityMasterSystem, Hardware));
+						hardwareOperations.add(service.create(session, Scanner, activityMasterSystem, Hardware));
+						hardwareOperations.add(service.create(session, Printer, activityMasterSystem, Hardware));
+						hardwareOperations.add(service.create(session, Phone, activityMasterSystem, Hardware));
 
 						// Add computer-specific classification creation operations to the list
-						hardwareOperations.add(service.create(Desktop, activityMasterSystem, Computer));
-						hardwareOperations.add(service.create(Laptop, activityMasterSystem, Computer));
+						hardwareOperations.add(service.create(session, Desktop, activityMasterSystem, Computer));
+						hardwareOperations.add(service.create(session, Laptop, activityMasterSystem, Computer));
 
 						log.info("Running {} hardware and computer classification creation operations in parallel", hardwareOperations.size());
 

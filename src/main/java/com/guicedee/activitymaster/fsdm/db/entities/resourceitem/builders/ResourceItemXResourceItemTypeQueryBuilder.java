@@ -36,7 +36,7 @@ public class ResourceItemXResourceItemTypeQueryBuilder
 		if (typeValue != null)
 		{
 			IResourceItemService<?> service = com.guicedee.client.IGuiceContext.get(IResourceItemService.class);
-			ResourceItemType at = (ResourceItemType) service.findResourceItemType(typeValue, system, identityToken);
+			ResourceItemType at = (ResourceItemType) service.findResourceItemType(getEntityManager(), typeValue, system, identityToken);
 			where(ResourceItemXResourceItemType_.resourceItemTypeID, Operand.Equals, at);
 		}
 		return this;

@@ -8,9 +8,10 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
-import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
+import java.time.Duration;
 import java.util.Date;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IEventService.*;
@@ -36,19 +37,20 @@ public class EventsSystem
 	private IClassificationService<?> classificationServiceProvider;
 
 	@Override
-	public ISystems<?,?> registerSystem(IEnterprise<?,?> enterprise)
+	public ISystems<?,?> registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		ISystems<?, ?> iSystems = systemsService
-		                                        .create(enterprise, getSystemName(), getSystemDescription())
+		                                        .create(session, enterprise, getSystemName(), getSystemDescription())
 		                                        .await().atMost(java.time.Duration.ofMinutes(1));
-		systemsService
-		              .registerNewSystem(enterprise, getSystem(enterprise))
-		              .await().atMost(java.time.Duration.ofMinutes(1));
+		getSystem(session, enterprise).chain(system ->{
+					return systemsService
+								   .registerNewSystem(session, enterprise, system);
+		}).await().atMost(Duration.ofMinutes(1));
 		return iSystems;
 	}
 
 	@Override
-	public void createDefaults(IEnterprise<?,?> enterprise)
+	public void createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Loading Events", "Events creating default types");
 
@@ -65,17 +67,17 @@ public class EventsSystem
 		logProgress("Loading Logging Types", "Creating Log Types");
 
 		// Create base classifications sequentially as they are foundational
-		classificationServiceProvider.create("LogItemTypes", "The log item event registered types", Classification, activityMasterSystem, getSystemToken(enterprise))
+		classificationServiceProvider.create(session, "LogItemTypes", "The log item event registered types", Classification, activityMasterSystem, getSystemToken(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1)))
 		                            .await().atMost(java.time.Duration.ofMinutes(1));
 
-		classificationServiceProvider.create("EventStatus", "The status of the event", EventXClassification, activityMasterSystem, getSystemToken(enterprise))
+		classificationServiceProvider.create(session, "EventStatus", "The status of the event", EventXClassification, activityMasterSystem, getSystemToken(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1)))
 		                            .await().atMost(java.time.Duration.ofMinutes(1));
 
 		// Create LogItemTypes classifications in parallel
 		java.util.List<io.smallrye.mutiny.Uni<?>> logItemTypeOperations = new java.util.ArrayList<>();
 		for (LogItemTypes value : LogItemTypes.values())
 		{
-			logItemTypeOperations.add(classificationServiceProvider.create(value, activityMasterSystem, "LogItemTypes", getSystemToken(enterprise)));
+			logItemTypeOperations.add(classificationServiceProvider.create(session, value, activityMasterSystem, "LogItemTypes", getSystemToken(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1))));
 		}
 
 		// Execute all LogItemTypes classifications in parallel and wait for completion
@@ -86,12 +88,12 @@ public class EventsSystem
 		                     .await().atMost(java.time.Duration.ofMinutes(1));
 
 		// Create LogItem resource type
-		resourceItemServiceProvider.createType("LogItem", "An attached log item", activityMasterSystem, getSystemToken(enterprise))
+		resourceItemServiceProvider.createType(session, "LogItem", "An attached log item", activityMasterSystem, getSystemToken(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1)))
 		                          .await().atMost(java.time.Duration.ofMinutes(1));
 
 		logProgress("Loading Time", "Creating Hours and Minutes");
 
-		// Create time synchronously since ITimeSystem is not reactive yet
+		//todo Create time synchronously since ITimeSystem is not reactive yet
 		com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
 		            .createTime();
 	}

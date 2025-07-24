@@ -28,6 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.util.List;
@@ -150,54 +151,54 @@ public class Arrangement
      * @return A Uni that completes when the removal is done
      */
     @Override
-    public Uni<Arrangement> remove()
+    public Uni<Arrangement> remove(Mutiny.Session session)
     {
         // First remove all child entities
         if (classifications != null)
         {
             for (ArrangementXClassification classification : classifications)
             {
-                classification.remove();
+                classification.remove(session);
             }
         }
         if (products != null)
         {
             for (ArrangementXProduct product : products)
             {
-                product.remove();
+                product.remove(session);
             }
         }
         if (securities != null)
         {
             for (ArrangementSecurityToken security : securities)
             {
-                security.remove();
+                security.remove(session);
             }
         }
         if (types != null)
         {
             for (ArrangementXArrangementType type : types)
             {
-                type.remove();
+                type.remove(session);
             }
         }
         if (arrangementXArrangementList != null)
         {
             for (ArrangementXArrangement arrangementXArrangement : arrangementXArrangementList)
             {
-                arrangementXArrangement.remove();
+                arrangementXArrangement.remove(session);
             }
         }
         if (arrangementXArrangementList1 != null)
         {
             for (ArrangementXArrangement arrangementXArrangement : arrangementXArrangementList1)
             {
-                arrangementXArrangement.remove();
+                arrangementXArrangement.remove(session);
             }
         }
 
         // Then call super.remove() which returns a Uni
-        return super.remove();
+        return super.remove(session);
     }
 
     public Arrangement setClassifications(List<ArrangementXClassification> classifications)
@@ -280,13 +281,13 @@ public class Arrangement
     }
 
     @Override
-    public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         ((ArrangementXClassification) linkTable).setArrangementID(this);
     }
 
     @Override
-    public void configureProductAddable(IWarehouseRelationshipTable linkTable, Arrangement primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, Arrangement primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         ArrangementXProduct axa = (ArrangementXProduct) linkTable;
         axa.setArrangementID(primary);

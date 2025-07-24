@@ -1,27 +1,30 @@
 package com.guicedee.activitymaster.fsdm.db.abstraction;
 
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.*;
+import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IContainsActiveFlags;
+import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IContainsEnterprise;
+import com.guicedee.activitymaster.fsdm.client.services.capabilities.contains.IContainsSystem;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
-import jakarta.persistence.*;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
-import static com.guicedee.client.IGuiceContext.*;
+import static com.guicedee.client.IGuiceContext.get;
 
 /**
  * @param <J>
@@ -30,7 +33,6 @@ import static com.guicedee.client.IGuiceContext.*;
  * @since 06 Dec 2016
  */
 @MappedSuperclass
-
 public abstract class WarehouseSCDTable<
                                                J extends WarehouseSCDTable<J, Q, I, S>,
                                                Q extends QueryBuilderSCD<Q, J, I,?>,
@@ -38,8 +40,7 @@ public abstract class WarehouseSCDTable<
                                                S extends WarehouseSecurityTable<S, ?, I>
                                                >
         extends WarehouseTable<J, Q, I, S>
-        implements IWarehouseTable<J, Q, I, S>,
-                           IContainsActiveFlags<J>,
+        implements IContainsActiveFlags<J>,
                            IContainsEnterprise<J>,
                            IContainsSystem<J>
 {
@@ -68,20 +69,21 @@ public abstract class WarehouseSCDTable<
     }
 
     @NotNull
+    @SuppressWarnings("unchecked")
     public Class<S> findPersistentSecurityClass()
     {
         return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
     }
 
-
-    protected J configureDefaultsSystemValues(Systems requestingSystem)
+    @SuppressWarnings("unchecked")
+    protected J configureDefaultsSystemValues(Mutiny.Session session, Systems requestingSystem)
     {
         setSystemID(requestingSystem);
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
-        service.getActiveFlag(requestingSystem.getEnterpriseID())
+        service.getActiveFlag(session, requestingSystem.getEnterpriseID())
                        .chain(flag->{
                            setActiveFlagID(flag);
-                           return null;
+                           return Uni.createFrom().voidItem();
                        })
                 .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
         setEnterpriseID(requestingSystem.getEnterpriseID());
@@ -89,31 +91,39 @@ public abstract class WarehouseSCDTable<
     }
 
 
-    public Uni<J> remove()
+    @SuppressWarnings("unchecked")
+    public Uni<J> remove(Mutiny.Session session)
     {
         IActiveFlagService<?> service = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-        return service.getDeletedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID()))
+        return (Uni)get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID())
+                .chain(systemToken -> 
+                    service.getDeletedFlag(session, getEnterpriseID(), systemToken)
+                )
                 .onItem()
                 .invoke(flag -> {
                     setActiveFlagID(flag);
                     setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
                 })
-                .chain(this::update)
+                .chain(flag -> session.merge(this))
                 .log("Removed record from database")
         ;
     }
 
 
-    public Uni<J> archive()
+    @SuppressWarnings("unchecked")
+    public Uni<J> archive(Mutiny.Session session)
     {
         IActiveFlagService<?> service = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
-        return service.getArchivedFlag(getEnterpriseID(), get(ActiveFlagSystem.class).getSystemToken(getEnterpriseID()))
+        return (Uni) get(ActiveFlagSystem.class).getSystemToken(session, getEnterpriseID())
+                .chain(systemToken -> 
+                    service.getArchivedFlag(session, getEnterpriseID(), systemToken)
+                )
                 .onItem()
                 .invoke(flag -> {
                     setActiveFlagID(flag);
                     setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
                 })
-                .chain(this::update)
+                .chain(flag -> session.merge(this))
                 .log("Archived record in database");
     }
 
@@ -122,6 +132,7 @@ public abstract class WarehouseSCDTable<
         return this.activeFlagID;
     }
 
+    @SuppressWarnings("unchecked")
     public J setActiveFlagID(IActiveFlag<?, ?> activeFlagID)
     {
         this.activeFlagID = (ActiveFlag) activeFlagID;

@@ -9,6 +9,7 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,22 +28,22 @@ public class ArrangementsBaseSetup implements ISystemUpdate
 	private ISystems<?,?> activityMasterSystem;
 
 	@Override
-	public Uni<Boolean> update(IEnterprise<?,?> enterprise)
+	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting parallel creation of arrangement classifications");
 		logProgress("Arrangements", "Creating Base...");
 
 		// Create the base InvolvedPartyArrangements classification first
-		return service.create(ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements, activityMasterSystem)
+		return service.create(session, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements, activityMasterSystem)
 			.chain(baseInvolvedPartyArrangement -> {
 				// Create a list of operations to run in parallel for involved party arrangement classifications
 				List<Uni<?>> involvedPartyOperations = new ArrayList<>();
 
 				// Add all involved party arrangement classification creation operations to the list
-				involvedPartyOperations.add(service.create(ArrangementInvolvedPartyClassifications.PurchasedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements));
-				involvedPartyOperations.add(service.create(ArrangementInvolvedPartyClassifications.SoldBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements));
-				involvedPartyOperations.add(service.create(ArrangementInvolvedPartyClassifications.OwnedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements));
-				involvedPartyOperations.add(service.create(ArrangementInvolvedPartyClassifications.ManagedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements));
+				involvedPartyOperations.add(service.create(session, ArrangementInvolvedPartyClassifications.PurchasedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements));
+				involvedPartyOperations.add(service.create(session, ArrangementInvolvedPartyClassifications.SoldBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements));
+				involvedPartyOperations.add(service.create(session, ArrangementInvolvedPartyClassifications.OwnedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements));
+				involvedPartyOperations.add(service.create(session, ArrangementInvolvedPartyClassifications.ManagedBy, activityMasterSystem, ArrangementInvolvedPartyClassifications.InvolvedPartyArrangements));
 
 				log.info("Running {} involved party arrangement classification creation operations in parallel", involvedPartyOperations.size());
 
@@ -53,21 +54,21 @@ public class ArrangementsBaseSetup implements ISystemUpdate
 					.invoke(() -> logProgress("Arrangements", "Loaded Arrangement InvolvedParty Classifications...", 1))
 					.chain(() -> {
 						// Now create the ArrangementPurchase classification
-						return service.create(ArrangementProductClassifications.ArrangementPurchase, activityMasterSystem)
+						return service.create(session, ArrangementProductClassifications.ArrangementPurchase, activityMasterSystem)
 							.chain(baseArrangementPurchase -> {
 								// Create a list of operations to run in parallel for purchase classifications
 								List<Uni<?>> purchaseOperations = new ArrayList<>();
 
 								// Add purchase-related classification creation operations to the list
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchaseName, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchaseInvoiceName, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchaseCost, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchaseVat, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchaseTotalCost, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchaseInvoiceDate, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchasePaidDate, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchasePromotionCode, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
-								purchaseOperations.add(service.create(ArrangementProductClassifications.PurchaseStatus, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchaseName, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchaseInvoiceName, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchaseCost, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchaseVat, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchaseTotalCost, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchaseInvoiceDate, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchasePaidDate, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchasePromotionCode, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
+								purchaseOperations.add(service.create(session, ArrangementProductClassifications.PurchaseStatus, activityMasterSystem, ArrangementProductClassifications.ArrangementPurchase));
 
 								log.info("Running {} purchase classification creation operations in parallel", purchaseOperations.size());
 
@@ -78,15 +79,15 @@ public class ArrangementsBaseSetup implements ISystemUpdate
 									.invoke(() -> logProgress("Arrangements", "Loaded Arrangement Product Classifications...", 1))
 									.chain(() -> {
 										// Finally, create ArrangementProductTypes classification and its children
-										return service.create(ArrangementTypeClassifications.ArrangementProductTypes, activityMasterSystem)
+										return service.create(session, ArrangementTypeClassifications.ArrangementProductTypes, activityMasterSystem)
 											.chain(baseArrangementProductTypes -> {
 												// Create a list of operations for product type classifications
 												List<Uni<?>> productTypeOperations = new ArrayList<>();
-												productTypeOperations.add(service.create(ArrangementTypeClassifications.ProductPurchase, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
-												productTypeOperations.add(service.create(ArrangementTypeClassifications.ProductBid, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
-												productTypeOperations.add(service.create(ArrangementTypeClassifications.ProductInterest, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
-												productTypeOperations.add(service.create(ArrangementTypeClassifications.ProductQuote, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
-												productTypeOperations.add(service.create(ArrangementTypeClassifications.ProductLead, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
+												productTypeOperations.add(service.create(session, ArrangementTypeClassifications.ProductPurchase, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
+												productTypeOperations.add(service.create(session, ArrangementTypeClassifications.ProductBid, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
+												productTypeOperations.add(service.create(session, ArrangementTypeClassifications.ProductInterest, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
+												productTypeOperations.add(service.create(session, ArrangementTypeClassifications.ProductQuote, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
+												productTypeOperations.add(service.create(session, ArrangementTypeClassifications.ProductLead, activityMasterSystem, ArrangementTypeClassifications.ArrangementProductTypes));
 
 												log.info("Running {} product type classification creation operations in parallel", productTypeOperations.size());
 

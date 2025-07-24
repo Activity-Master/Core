@@ -33,7 +33,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.reactive.mutiny.Mutiny;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -127,11 +129,11 @@ public class InvolvedParty
     private List<InvolvedPartyXInvolvedPartyIdentificationType> identities;
 
     @Override
-    public Uni<UUID> getSecurityIdentity()
+    public Uni<UUID> getSecurityIdentity(Mutiny.Session session)
     {
         IInvolvedPartyService<?> partyService = get(IInvolvedPartyService.class);
-        return this.findInvolvedPartyIdentificationType(NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
-                        get(InvolvedPartySystem.class).getSystemToken(getEnterprise()))
+        return this.findInvolvedPartyIdentificationType(session, NoClassification, IdentificationTypes.IdentificationTypeUUID, null, getSystemID(), true, true,
+                        get(InvolvedPartySystem.class).getSystemToken(session, getEnterprise()).await().atMost(Duration.ofSeconds(50)))
                        .map(IRelationshipValue::getValue)
                        .map(UUID::fromString);
     }
@@ -179,7 +181,7 @@ public class InvolvedParty
     }
 
     @Override
-    public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         InvolvedPartyXClassification i = (InvolvedPartyXClassification) linkTable;
         i.setInvolvedPartyID(this);
@@ -227,7 +229,7 @@ public class InvolvedParty
     }
 
     @Override
-    public void configureProductAddable(IWarehouseRelationshipTable linkTable, InvolvedParty primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, InvolvedParty primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         InvolvedPartyXProduct p = (InvolvedPartyXProduct) linkTable;
         p.setInvolvedPartyID(primary);

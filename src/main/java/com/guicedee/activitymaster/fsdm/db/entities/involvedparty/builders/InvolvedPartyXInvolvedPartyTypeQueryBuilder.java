@@ -36,7 +36,7 @@ public class InvolvedPartyXInvolvedPartyTypeQueryBuilder
 		if (typeValue != null)
 		{
 			IInvolvedPartyService<?> service = com.guicedee.client.IGuiceContext.get(IInvolvedPartyService.class);
-			InvolvedPartyType at = (InvolvedPartyType) service.findType(typeValue, system, identityToken);
+			InvolvedPartyType at = (InvolvedPartyType) service.findType(getEntityManager(), typeValue, system, identityToken);
 			where(InvolvedPartyXInvolvedPartyType_.involvedPartyTypeID, Operand.Equals, at);
 		}
 		return this;

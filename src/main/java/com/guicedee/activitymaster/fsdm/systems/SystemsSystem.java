@@ -3,9 +3,7 @@ package com.guicedee.activitymaster.fsdm.systems;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.guicedee.activitymaster.fsdm.InvolvedPartyService;
-import com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
-import com.guicedee.activitymaster.fsdm.client.services.ReactiveTransactionUtil;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterDefaultSystem;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.*;
@@ -14,8 +12,8 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.types.*;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
 import com.guicedee.guicedinjection.pairing.Pair;
-import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.Duration;
 import java.util.*;
@@ -38,18 +36,20 @@ public class SystemsSystem
 	/**
 	 * Creates all the applicable systems that are required before the actual activity master system can be created.
 	 * After the user groups setup then security controls kick in
+	 *
+	 * @param session
 	 * @param enterprise
 	 * @return
 	 */
 	@Override
-	public ISystems<?, ?> registerSystem(IEnterprise<?, ?> enterprise)
+	public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
 	{
 		log.info("Registering systems for enterprise: {}", enterprise.getName());
 
 		// Create Enterprise System
 		log.debug("Creating Enterprise System");
 		ISystems<?, ?> entSystem = systemsService.get()
-		                                         .create(enterprise, EnterpriseSystemName, "The system for handling enterprises")
+		                                         .create(session, enterprise, EnterpriseSystemName, "The system for handling enterprises")
 		                                         .onItem().invoke(system -> log.debug("Created Enterprise System: {}", system.getName()))
 		                                         .onFailure().invoke(error -> log.error("Error creating Enterprise System: {}", error.getMessage(), error))
 		                                         .await().atMost(Duration.ofMinutes(1));
@@ -57,7 +57,7 @@ public class SystemsSystem
 		// Create Active Flag System
 		log.debug("Creating Active Flag System");
 		ISystems<?, ?> flagSystem = systemsService.get()
-		                                          .create(enterprise, ActivateFlagSystemName, "The system for the active flag management")
+		                                          .create(session, enterprise, ActivateFlagSystemName, "The system for the active flag management")
 		                                          .onItem().invoke(system -> log.debug("Created Active Flag System: {}", system.getName()))
 		                                          .onFailure().invoke(error -> log.error("Error creating Active Flag System: {}", error.getMessage(), error))
 		                                          .await().atMost(Duration.ofMinutes(1));
@@ -65,7 +65,7 @@ public class SystemsSystem
 		// Create Activity Master System
 		log.debug("Creating Activity Master System");
 		ISystems<?, ?> activityMasterSystem = systemsService.get()
-		                                                    .create(enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master")
+		                                                    .create(session, enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master")
 		                                                    .onItem().invoke(system -> log.debug("Created Activity Master System: {}", system.getName()))
 		                                                    .onFailure().invoke(error -> log.error("Error creating Activity Master System: {}", error.getMessage(), error))
 		                                                    .await().atMost(Duration.ofMinutes(1));
@@ -75,7 +75,7 @@ public class SystemsSystem
 	}
 
 	@Override
-	public void createDefaults(IEnterprise<?, ?> enterprise)
+	public void createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
 	{
 
 	}
@@ -86,27 +86,27 @@ public class SystemsSystem
 		return 2;
 	}
 
-	public IInvolvedParty<?, ?> createInvolvedPartyForNewSystem(ISystems<?, ?> system, java.util.UUID... identityToken)
+	public IInvolvedParty<?, ?> createInvolvedPartyForNewSystem(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
 	{
 		log.info("Creating involved party for system: {}", system.getName());
 
 		// Get Activity Master System
 		ISystems<?, ?> activityMasterSystem = systemsService.get()
-		                                                    .getActivityMaster(system.getEnterpriseID())
+		                                                    .getActivityMaster(session, system.getEnterpriseID())
 		                                                    .onItem().invoke(s -> log.debug("Got Activity Master System"))
 		                                                    .onFailure().invoke(error -> log.error("Error getting Activity Master System: {}", error.getMessage(), error))
 		                                                    .await().atMost(Duration.ofMinutes(1));
 
 		// Get Activity Master System UUID
 		UUID activityMasterSystemUUID = systemsService.get()
-		                                              .getSecurityIdentityToken(activityMasterSystem)
+		                                              .getSecurityIdentityToken(session, activityMasterSystem)
 		                                              .onItem().invoke(uuid -> log.debug("Got Activity Master System UUID: {}", uuid))
 		                                              .onFailure().invoke(error -> log.error("Error getting Activity Master System UUID: {}", error.getMessage(), error))
 		                                              .await().atMost(Duration.ofMinutes(1));
 
 		// Get System UUID
 		UUID newSystemUUID = systemsService.get()
-		                                   .getSecurityIdentityToken(system, activityMasterSystemUUID)
+		                                   .getSecurityIdentityToken(session, system, activityMasterSystemUUID)
 		                                   .onItem().invoke(uuid -> log.debug("Got System UUID: {}", uuid))
 		                                   .onFailure().invoke(error -> log.error("Error getting System UUID: {}", error.getMessage(), error))
 		                                   .await().atMost(Duration.ofMinutes(1));
@@ -122,7 +122,7 @@ public class SystemsSystem
 		try
 		{
 			// Create the involved party
-			IInvolvedParty<?, ?> involvedParty = ipService.create(system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), 
+			IInvolvedParty<?, ?> involvedParty = ipService.create(session, system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(),
 			                                                                      newSystemUUID.toString()), 
 			                                                      false, activityMasterSystemUUID)
 			                                             .onItem().invoke(ip -> log.debug("Created involved party for system: {}", system.getName()))
@@ -131,7 +131,7 @@ public class SystemsSystem
 
 			// Find identification type
 			IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = ipService.findInvolvedPartyIdentificationType(
-			                                                                                  IdentificationTypes.IdentificationTypeSystemID.toString(), 
+                            session, IdentificationTypes.IdentificationTypeSystemID.toString(),
 			                                                                                  system, identityToken)
 			                                                                                 .onItem().invoke(type -> log.debug("Found identification type"))
 			                                                                                 .onFailure().invoke(error -> log.error("Error finding identification type: {}", error.getMessage(), error))
@@ -139,35 +139,35 @@ public class SystemsSystem
 
 			// Add identification type to involved party
 			log.debug("Adding identification type to involved party");
-			involvedParty.addOrReuseInvolvedPartyIdentificationType(NoClassification.toString(), 
+			involvedParty.addOrReuseInvolvedPartyIdentificationType(session, NoClassification.toString(),
 			                                                        involvedPartyIdentificationType, 
 			                                                        system.getId().toString(), 
 			                                                        system, 
 			                                                        activityMasterSystemUUID);
 
 			// Find party type
-			IInvolvedPartyType<?, ?> ipType = ipService.findType(IPTypes.TypeSystem.toString(), system, identityToken)
+			IInvolvedPartyType<?, ?> ipType = ipService.findType(session, IPTypes.TypeSystem.toString(), system, identityToken)
 			                                          .onItem().invoke(type -> log.debug("Found party type"))
 			                                          .onFailure().invoke(error -> log.error("Error finding party type: {}", error.getMessage(), error))
 			                                          .await().atMost(Duration.ofMinutes(1));
 
 			// Add party type to involved party
 			log.debug("Adding party type to involved party");
-			involvedParty.addOrReuseInvolvedPartyType(NoClassification.toString(), 
+			involvedParty.addOrReuseInvolvedPartyType(session, NoClassification.toString(),
 			                                         ipType, 
 			                                         newSystemUUID.toString(), 
 			                                         system, 
 			                                         activityMasterSystemUUID);
 
 			// Find name type
-			IInvolvedPartyNameType<?, ?> nameType = ipService.findInvolvedPartyNameType(NameTypes.PreferredNameType.toString(), system, identityToken)
+			IInvolvedPartyNameType<?, ?> nameType = ipService.findInvolvedPartyNameType(session, NameTypes.PreferredNameType.toString(), system, identityToken)
 			                                                .onItem().invoke(type -> log.debug("Found name type"))
 			                                                .onFailure().invoke(error -> log.error("Error finding name type: {}", error.getMessage(), error))
 			                                                .await().atMost(Duration.ofMinutes(1));
 
 			// Add name type to involved party
 			log.debug("Adding name type to involved party");
-			involvedParty.addOrReuseInvolvedPartyNameType(NoClassification.toString(), 
+			involvedParty.addOrReuseInvolvedPartyNameType(session, NoClassification.toString(),
 			                                             nameType, 
 			                                             system.getName(), 
 			                                             system, 

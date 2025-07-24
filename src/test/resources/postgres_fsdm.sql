@@ -179,7 +179,7 @@ CREATE TABLE address.address
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -207,7 +207,7 @@ CREATE TABLE address.addresssecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -232,7 +232,7 @@ CREATE TABLE address.addressxclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -261,7 +261,7 @@ CREATE TABLE address.addressxclassificationsecuritytoken
     securitytokenid                       UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
     addressxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -288,7 +288,7 @@ CREATE TABLE address.addressxgeography
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -317,7 +317,7 @@ CREATE TABLE address.addressxgeographysecuritytoken
     securitytokenid                  UUID                        NOT NULL,
     systemid                         UUID                        NOT NULL,
     addressxgeographyid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -343,7 +343,7 @@ CREATE TABLE address.addressxresourceitem
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -371,7 +371,7 @@ CREATE TABLE address.addressxresourceitemsecuritytoken
     securitytokenid                     UUID                        NOT NULL,
     systemid                            UUID                        NOT NULL,
     addressxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -393,7 +393,7 @@ CREATE TABLE arrangement.arrangement
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -421,7 +421,7 @@ CREATE TABLE arrangement.arrangementsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -445,7 +445,7 @@ CREATE TABLE arrangement.arrangementtype
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -473,7 +473,7 @@ CREATE TABLE arrangement.arrangementtypesecuritytoken
     securitytokenid                UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
     arrangementtypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -498,7 +498,7 @@ CREATE TABLE arrangement.arrangementtypexclassification
     originalsourcesystemid           UUID                        NOT NULL,
     classificationid                 UUID                        NOT NULL,
     arrangementtypeid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -526,7 +526,7 @@ CREATE TABLE arrangement.arrangementtypexclassificationsecuritytoken
     securitytokenid                               UUID                        NOT NULL,
     systemid                                      UUID                        NOT NULL,
     arrangementtypexclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -552,7 +552,7 @@ CREATE TABLE arrangement.arrangementxarrangement
     classificationid              UUID                        NOT NULL,
     childarrangementid            UUID                        NOT NULL,
     parentarrangementid           UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -580,7 +580,7 @@ CREATE TABLE arrangement.arrangementxarrangementsecuritytoken
     securitytokenid                        UUID                        NOT NULL,
     systemid                               UUID                        NOT NULL,
     arrangementxarrangementid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -606,7 +606,7 @@ CREATE TABLE arrangement.arrangementxarrangementtype
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     arrangementtypeid             UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -634,7 +634,7 @@ CREATE TABLE arrangement.arrangementxarrangementtypesecuritytoken
     securitytokenid                            UUID                        NOT NULL,
     systemid                                   UUID                        NOT NULL,
     arrangementxarrangementtypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -659,7 +659,7 @@ CREATE TABLE arrangement.arrangementxclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -687,7 +687,7 @@ CREATE TABLE arrangement.arrangementxclassificationsecuritytoken
     securitytokenid                           UUID                        NOT NULL,
     systemid                                  UUID                        NOT NULL,
     arrangementxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -713,7 +713,7 @@ CREATE TABLE arrangement.arrangementxinvolvedparty
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -741,7 +741,7 @@ CREATE TABLE arrangement.arrangementxinvolvedpartysecuritytoken
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     arrangementxinvolvedpartyid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -767,7 +767,7 @@ CREATE TABLE arrangement.arrangementxproduct
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     productid                     UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -795,7 +795,7 @@ CREATE TABLE arrangement.arrangementxproductsecuritytoken
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     arrangementxproductid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -821,7 +821,7 @@ CREATE TABLE arrangement.arrangementxresourceitem
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -849,7 +849,7 @@ CREATE TABLE arrangement.arrangementxresourceitemsecuritytoken
     securitytokenid                         UUID                        NOT NULL,
     systemid                                UUID                        NOT NULL,
     arrangementxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -875,7 +875,7 @@ CREATE TABLE arrangement.arrangementxrules
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -903,7 +903,7 @@ CREATE TABLE arrangement.arrangementxrulessecuritytoken
     securitytokenid                  UUID                        NOT NULL,
     systemid                         UUID                        NOT NULL,
     arrangementxrulesid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -929,7 +929,7 @@ CREATE TABLE arrangement.arrangementxrulestype
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     rulestypeid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -957,7 +957,7 @@ CREATE TABLE arrangement.arrangementxrulestypesecuritytoken
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     arrangementxrulestypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -983,7 +983,7 @@ CREATE TABLE classification.classification
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL,
     classificationdataconceptid   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1007,7 +1007,7 @@ CREATE TABLE classification.classificationdataconcept
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1035,7 +1035,7 @@ CREATE TABLE classification.classificationdataconceptsecuritytoken
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     classificationdataconceptid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1061,7 +1061,7 @@ CREATE TABLE classification.classificationdataconceptxclassification
     originalsourcesystemid                     UUID                        NOT NULL,
     classificationid                           UUID                        NOT NULL,
     classificationdataconceptid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1089,7 +1089,7 @@ CREATE TABLE classification.classificationdataconceptxclassificationsecuritytoke
     securitytokenid                                         UUID                        NOT NULL,
     systemid                                                UUID                        NOT NULL,
     classificationdataconceptxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1115,7 +1115,7 @@ CREATE TABLE classification.classificationdataconceptxresourceitem
     classificationid                         UUID                        NOT NULL,
     classificationdataconceptid              UUID                        NOT NULL,
     resourceitemid                           UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1143,7 +1143,7 @@ CREATE TABLE classification.classificationdataconceptxresourceitemsecuritytoken
     securitytokenid                                       UUID                        NOT NULL,
     systemid                                              UUID                        NOT NULL,
     classificationdataconceptxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1171,7 +1171,7 @@ CREATE TABLE classification.classificationsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1197,7 +1197,7 @@ CREATE TABLE classification.classificationxclassification
     classificationid                UUID                        NOT NULL,
     childclassificationid           UUID                        NOT NULL,
     parentclassificationid          UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1225,7 +1225,7 @@ CREATE TABLE classification.classificationxclassificationsecuritytoken
     securitytokenid                              UUID                        NOT NULL,
     systemid                                     UUID                        NOT NULL,
     classificationxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1250,7 +1250,7 @@ CREATE TABLE classification.classificationxresourceitem
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1278,7 +1278,7 @@ CREATE TABLE classification.classificationxresourceitemsecuritytoken
     securitytokenid                            UUID                        NOT NULL,
     systemid                                   UUID                        NOT NULL,
     classificationxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1299,7 +1299,7 @@ CREATE TABLE dbo.activeflag
     activeflagdescription         character varying(100)      NOT NULL,
     activeflagname                character varying(100)      NOT NULL,
     enterpriseid                  UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1327,7 +1327,7 @@ CREATE TABLE dbo.activeflagsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     securitytokenactiveflagid     UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1351,7 +1351,7 @@ CREATE TABLE dbo.activeflagxclassification
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1379,7 +1379,7 @@ CREATE TABLE dbo.activeflagxclassificationsecuritytoken
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     activeflagxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1398,7 +1398,7 @@ CREATE TABLE dbo.enterprise
     warehouselastupdatedtimestamp timestamp(6) with time zone NOT NULL,
     enterprisedesc                character varying(255)      NOT NULL,
     enterprisename                character varying(255)      NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1425,7 +1425,7 @@ CREATE TABLE dbo.enterprisesecuritytoken
     originalsourcesystemid        UUID                        NOT NULL,
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1449,7 +1449,7 @@ CREATE TABLE dbo.enterprisexclassification
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1477,7 +1477,7 @@ CREATE TABLE dbo.enterprisexclassificationsecuritytoken
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     enterprisexclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1499,7 +1499,7 @@ CREATE TABLE dbo.systems
     systemhistoryname             character varying(250)      NOT NULL,
     activeflagid                  UUID                        NOT NULL,
     enterpriseid                  UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1526,7 +1526,7 @@ CREATE TABLE dbo.systemssecuritytoken
     originalsourcesystemid        UUID                        NOT NULL,
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1550,7 +1550,7 @@ CREATE TABLE dbo.systemxclassification
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1578,7 +1578,7 @@ CREATE TABLE dbo.systemxclassificationsecuritytoken
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     systemxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1604,7 +1604,7 @@ CREATE TABLE event.event
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1632,7 +1632,7 @@ CREATE TABLE event.eventsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     eventsid                      UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1656,7 +1656,7 @@ CREATE TABLE event.eventtype
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1684,7 +1684,7 @@ CREATE TABLE event.eventtypessecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     eventtypesid                  UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1710,7 +1710,7 @@ CREATE TABLE event.eventxaddress
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1738,7 +1738,7 @@ CREATE TABLE event.eventxaddresssecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     eventxaddressid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1764,7 +1764,7 @@ CREATE TABLE event.eventxarrangement
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1792,7 +1792,7 @@ CREATE TABLE event.eventxarrangementssecuritytoken
     securitytokenid                   UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
     eventxarrangementsid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1817,7 +1817,7 @@ CREATE TABLE event.eventxclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1845,7 +1845,7 @@ CREATE TABLE event.eventxclassificationsecuritytoken
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     eventxclassificationsid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1871,7 +1871,7 @@ CREATE TABLE event.eventxevent
     classificationid              UUID                        NOT NULL,
     childeventid                  UUID                        NOT NULL,
     parenteventid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1899,7 +1899,7 @@ CREATE TABLE event.eventxeventsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     eventxeventid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1925,7 +1925,7 @@ CREATE TABLE event.eventxeventtype
     classificationid              UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL,
     eventtypeid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1953,7 +1953,7 @@ CREATE TABLE event.eventxeventtypesecuritytoken
     securitytokenid                UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
     eventxeventtypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -1979,7 +1979,7 @@ CREATE TABLE event.eventxgeography
     classificationid              UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2007,7 +2007,7 @@ CREATE TABLE event.eventxgeographysecuritytoken
     securitytokenid                UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
     eventxgeographyid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2033,7 +2033,7 @@ CREATE TABLE event.eventxinvolvedparty
     classificationid              UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2061,7 +2061,7 @@ CREATE TABLE event.eventxinvolvedpartysecuritytoken
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     eventxinvolvedpartyid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2087,7 +2087,7 @@ CREATE TABLE event.eventxproduct
     classificationid              UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL,
     productid                     UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2115,7 +2115,7 @@ CREATE TABLE event.eventxproductsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     eventxproductid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2141,7 +2141,7 @@ CREATE TABLE event.eventxresourceitem
     classificationid              UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2169,7 +2169,7 @@ CREATE TABLE event.eventxresourceitemsecuritytoken
     securitytokenid                   UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
     eventxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2195,7 +2195,7 @@ CREATE TABLE event.eventxrules
     classificationid              UUID                        NOT NULL,
     eventid                       UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2223,7 +2223,7 @@ CREATE TABLE event.eventxrulessecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     eventxrulesid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2248,7 +2248,7 @@ CREATE TABLE geography.geography
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2276,7 +2276,7 @@ CREATE TABLE geography.geographysecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2301,7 +2301,7 @@ CREATE TABLE geography.geographyxclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2329,7 +2329,7 @@ CREATE TABLE geography.geographyxclassificationsecuritytoken
     securitytokenid                         UUID                        NOT NULL,
     systemid                                UUID                        NOT NULL,
     geographyxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2355,7 +2355,7 @@ CREATE TABLE geography.geographyxgeography
     classificationid              UUID                        NOT NULL,
     childgeographyid              UUID                        NOT NULL,
     parentgeographyid             UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2383,7 +2383,7 @@ CREATE TABLE geography.geographyxgeographysecuritytoken
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     geographyxgeographyid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2409,7 +2409,7 @@ CREATE TABLE geography.geographyxresourceitem
     classificationid              UUID                        NOT NULL,
     geographyid                   UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2437,7 +2437,7 @@ CREATE TABLE geography.geographyxresourceitemsecuritytoken
     securitytokenid                       UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
     geographyxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2459,7 +2459,7 @@ CREATE TABLE party.involvedparty
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2483,7 +2483,7 @@ CREATE TABLE party.involvedpartyidentificationtype
     enterpriseid                      UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
     originalsourcesystemid            UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2511,7 +2511,7 @@ CREATE TABLE party.involvedpartyidentificationtypesecuritytoken
     securitytokenid                                UUID                        NOT NULL,
     systemid                                       UUID                        NOT NULL,
     involvedpartyidentificationtypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2535,7 +2535,7 @@ CREATE TABLE party.involvedpartynametype
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2563,7 +2563,7 @@ CREATE TABLE party.involvedpartynametypesecuritytoken
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     involvedpartynametypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2585,7 +2585,7 @@ CREATE TABLE party.involvedpartynonorganic
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2613,7 +2613,7 @@ CREATE TABLE party.involvedpartynonorganicsecuritytoken
     securitytokenid                        UUID                        NOT NULL,
     systemid                               UUID                        NOT NULL,
     involvedpartynonorganicid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2635,7 +2635,7 @@ CREATE TABLE party.involvedpartyorganic
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2663,7 +2663,7 @@ CREATE TABLE party.involvedpartyorganicsecuritytoken
     securitytokenid                     UUID                        NOT NULL,
     systemid                            UUID                        NOT NULL,
     involvedpartyorganicid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2687,7 +2687,7 @@ CREATE TABLE party.involvedpartyorganictype
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2715,7 +2715,7 @@ CREATE TABLE party.involvedpartyorganictypesecuritytoken
     securitytokenid                         UUID                        NOT NULL,
     systemid                                UUID                        NOT NULL,
     involvedpartyorganictypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2743,7 +2743,7 @@ CREATE TABLE party.involvedpartysecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2767,7 +2767,7 @@ CREATE TABLE party.involvedpartytype
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2795,7 +2795,7 @@ CREATE TABLE party.involvedpartytypesecuritytoken
     securitytokenid                  UUID                        NOT NULL,
     systemid                         UUID                        NOT NULL,
     involvedpartytypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2821,7 +2821,7 @@ CREATE TABLE party.involvedpartyxaddress
     classificationid              UUID                        NOT NULL,
     addressid                     UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2849,7 +2849,7 @@ CREATE TABLE party.involvedpartyxaddresssecuritytoken
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     involvedpartyxaddressid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2874,7 +2874,7 @@ CREATE TABLE party.involvedpartyxclassification
     originalsourcesystemid         UUID                        NOT NULL,
     classificationid               UUID                        NOT NULL,
     involvedpartyid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2902,7 +2902,7 @@ CREATE TABLE party.involvedpartyxclassificationsecuritytoken
     securitytokenid                             UUID                        NOT NULL,
     systemid                                    UUID                        NOT NULL,
     involvedpartyxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2928,7 +2928,7 @@ CREATE TABLE party.involvedpartyxinvolvedparty
     classificationid              UUID                        NOT NULL,
     childinvolvedpartyid          UUID                        NOT NULL,
     parentinvolvedpartyid         UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2954,7 +2954,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtype
     classificationid                                UUID                        NOT NULL,
     involvedpartyid                                 UUID                        NOT NULL,
     involvedpartyidentificationtypeid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -2982,7 +2982,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartyidentificationtypesecuritytoken
     securitytokenid                                              UUID                        NOT NULL,
     systemid                                                     UUID                        NOT NULL,
     involvedpartyxinvolvedpartyidentificationtypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3008,7 +3008,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartynametype
     classificationid                      UUID                        NOT NULL,
     involvedpartyid                       UUID                        NOT NULL,
     involvedpartynametypeid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3036,7 +3036,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartynametypesecuritytoken
     securitytokenid                                    UUID                        NOT NULL,
     systemid                                           UUID                        NOT NULL,
     involvedpartyxinvolvedpartynametypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3064,7 +3064,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartysecuritytoken
     securitytokenid                            UUID                        NOT NULL,
     systemid                                   UUID                        NOT NULL,
     involvedpartyxinvolvedpartyid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3090,7 +3090,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartytype
     classificationid                  UUID                        NOT NULL,
     involvedpartyid                   UUID                        NOT NULL,
     involvedpartytypeid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3118,7 +3118,7 @@ CREATE TABLE party.involvedpartyxinvolvedpartytypesecuritytoken
     securitytokenid                                UUID                        NOT NULL,
     systemid                                       UUID                        NOT NULL,
     involvedpartyxinvolvedpartytypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3144,7 +3144,7 @@ CREATE TABLE party.involvedpartyxproduct
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     productid                     UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3172,7 +3172,7 @@ CREATE TABLE party.involvedpartyxproductsecuritytoken
     securitytokenid                      UUID                        NOT NULL,
     systemid                             UUID                        NOT NULL,
     involvedpartyxproductid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3198,7 +3198,7 @@ CREATE TABLE party.involvedpartyxproducttype
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     producttypeid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3226,7 +3226,7 @@ CREATE TABLE party.involvedpartyxproducttypesecuritytoken
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     involvedpartyxproducttypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3252,7 +3252,7 @@ CREATE TABLE party.involvedpartyxresourceitem
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3280,7 +3280,7 @@ CREATE TABLE party.involvedpartyxresourceitemsecuritytoken
     securitytokenid                           UUID                        NOT NULL,
     systemid                                  UUID                        NOT NULL,
     involvedpartyxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3306,7 +3306,7 @@ CREATE TABLE party.involvedpartyxrules
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3334,7 +3334,7 @@ CREATE TABLE party.involvedpartyxrulessecuritytoken
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     involvedpartyxrulesid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3359,7 +3359,7 @@ CREATE TABLE product.product
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3387,7 +3387,7 @@ CREATE TABLE product.productsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     productid                     UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3411,7 +3411,7 @@ CREATE TABLE product.producttype
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3439,7 +3439,7 @@ CREATE TABLE product.producttypessecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     producttypesid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3464,7 +3464,7 @@ CREATE TABLE product.producttypexclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     producttypeid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3492,7 +3492,7 @@ CREATE TABLE product.producttypexclassificationsecuritytoken
     securitytokenid                           UUID                        NOT NULL,
     systemid                                  UUID                        NOT NULL,
     producttypexclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3517,7 +3517,7 @@ CREATE TABLE product.productxclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     productid                     UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3545,7 +3545,7 @@ CREATE TABLE product.productxclassificationsecuritytoken
     securitytokenid                       UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
     productxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3571,7 +3571,7 @@ CREATE TABLE product.productxproduct
     classificationid              UUID                        NOT NULL,
     childproductid                UUID                        NOT NULL,
     parentproductid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3599,7 +3599,7 @@ CREATE TABLE product.productxproductsecuritytoken
     securitytokenid                UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
     productxproductid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3625,7 +3625,7 @@ CREATE TABLE product.productxproducttype
     classificationid              UUID                        NOT NULL,
     productid                     UUID                        NOT NULL,
     producttypeid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3653,7 +3653,7 @@ CREATE TABLE product.productxproducttypesecuritytoken
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     productxproducttypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3679,7 +3679,7 @@ CREATE TABLE product.productxresourceitem
     classificationid              UUID                        NOT NULL,
     productid                     UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3707,7 +3707,7 @@ CREATE TABLE product.productxresourceitemsecuritytoken
     securitytokenid                     UUID                        NOT NULL,
     systemid                            UUID                        NOT NULL,
     productxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3850,7 +3850,7 @@ CREATE TABLE resource.resourceitem
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3874,7 +3874,7 @@ CREATE TABLE resource.resourceitemdata
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3902,7 +3902,7 @@ CREATE TABLE resource.resourceitemdatasecuritytoken
     securitytokenid                 UUID                        NOT NULL,
     systemid                        UUID                        NOT NULL,
     resourceitemdataid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3927,7 +3927,7 @@ CREATE TABLE resource.resourceitemdataxclassification
     originalsourcesystemid            UUID                        NOT NULL,
     classificationid                  UUID                        NOT NULL,
     resourceitemdataid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3955,7 +3955,7 @@ CREATE TABLE resource.resourceitemdataxclassificationsecuritytoken
     securitytokenid                                UUID                        NOT NULL,
     systemid                                       UUID                        NOT NULL,
     resourceitemdataxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -3983,7 +3983,7 @@ CREATE TABLE resource.resourceitemsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4007,7 +4007,7 @@ CREATE TABLE resource.resourceitemtype
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4035,7 +4035,7 @@ CREATE TABLE resource.resourceitemtypesecuritytoken
     securitytokenid                 UUID                        NOT NULL,
     systemid                        UUID                        NOT NULL,
     resourceitemtypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4060,7 +4060,7 @@ CREATE TABLE resource.resourceitemxclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4088,7 +4088,7 @@ CREATE TABLE resource.resourceitemxclassificationsecuritytoken
     securitytokenid                            UUID                        NOT NULL,
     systemid                                   UUID                        NOT NULL,
     resourceitemxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4114,7 +4114,7 @@ CREATE TABLE resource.resourceitemxresourceitem
     classificationid              UUID                        NOT NULL,
     childresourceitemid           UUID                        NOT NULL,
     parentresourceitemid          UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4142,7 +4142,7 @@ CREATE TABLE resource.resourceitemxresourceitemsecuritytoken
     securitytokenid                          UUID                        NOT NULL,
     systemid                                 UUID                        NOT NULL,
     resourceitemxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4168,7 +4168,7 @@ CREATE TABLE resource.resourceitemxresourceitemtype
     classificationid                UUID                        NOT NULL,
     resourceitemid                  UUID                        NOT NULL,
     resourceitemtypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4196,7 +4196,7 @@ CREATE TABLE resource.resourceitemxresourceitemtypesecuritytoken
     securitytokenid                              UUID                        NOT NULL,
     systemid                                     UUID                        NOT NULL,
     resourceitemxresourceitemtypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4220,7 +4220,7 @@ CREATE TABLE rules.rules
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4248,7 +4248,7 @@ CREATE TABLE rules.rulessecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4272,7 +4272,7 @@ CREATE TABLE rules.rulestype
     enterpriseid                  UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     originalsourcesystemid        UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4300,7 +4300,7 @@ CREATE TABLE rules.rulestypessecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     rulestypesid                  UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4325,7 +4325,7 @@ CREATE TABLE rules.rulestypexclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     rulestypeid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4353,7 +4353,7 @@ CREATE TABLE rules.rulestypexclassificationsecuritytoken
     securitytokenid                         UUID                        NOT NULL,
     systemid                                UUID                        NOT NULL,
     rulestypexclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4379,7 +4379,7 @@ CREATE TABLE rules.rulestypexresourceitem
     classificationid              UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL,
     rulestypeid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4407,7 +4407,7 @@ CREATE TABLE rules.rulestypexresourceitemsecuritytoken
     securitytokenid                       UUID                        NOT NULL,
     systemid                              UUID                        NOT NULL,
     rulestypexresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4433,7 +4433,7 @@ CREATE TABLE rules.rulesxarrangement
     classificationid              UUID                        NOT NULL,
     arrangementid                 UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4461,7 +4461,7 @@ CREATE TABLE rules.rulesxarrangementssecuritytoken
     securitytokenid                   UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
     rulesxarrangementsid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4486,7 +4486,7 @@ CREATE TABLE rules.rulesxclassification
     originalsourcesystemid        UUID                        NOT NULL,
     classificationid              UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4514,7 +4514,7 @@ CREATE TABLE rules.rulesxclassificationsecuritytoken
     securitytokenid                     UUID                        NOT NULL,
     systemid                            UUID                        NOT NULL,
     rulesxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4540,7 +4540,7 @@ CREATE TABLE rules.rulesxinvolvedparty
     classificationid              UUID                        NOT NULL,
     involvedpartyid               UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4568,7 +4568,7 @@ CREATE TABLE rules.rulesxinvolvedpartysecuritytoken
     securitytokenid                    UUID                        NOT NULL,
     systemid                           UUID                        NOT NULL,
     rulesxinvolvedpartyid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4594,7 +4594,7 @@ CREATE TABLE rules.rulesxproduct
     classificationid              UUID                        NOT NULL,
     productid                     UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4622,7 +4622,7 @@ CREATE TABLE rules.rulesxproductsecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     rulesxproductid               UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4648,7 +4648,7 @@ CREATE TABLE rules.rulesxresourceitem
     classificationid              UUID                        NOT NULL,
     resourceitemid                UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4676,7 +4676,7 @@ CREATE TABLE rules.rulesxresourceitemsecuritytoken
     securitytokenid                   UUID                        NOT NULL,
     systemid                          UUID                        NOT NULL,
     rulesxresourceitemid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4702,7 +4702,7 @@ CREATE TABLE rules.rulesxrules
     classificationid              UUID                        NOT NULL,
     childrulesid                  UUID                        NOT NULL,
     parentrulesid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4730,7 +4730,7 @@ CREATE TABLE rules.rulesxrulessecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     rulesxrulesid                 UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4756,7 +4756,7 @@ CREATE TABLE rules.rulesxrulestype
     classificationid              UUID                        NOT NULL,
     rulesid                       UUID                        NOT NULL,
     rulestypeid                   UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4784,7 +4784,7 @@ CREATE TABLE rules.rulesxrulestypesecuritytoken
     securitytokenid                UUID                        NOT NULL,
     systemid                       UUID                        NOT NULL,
     rulesxrulestypeid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4826,7 +4826,7 @@ CREATE TABLE security.securitytoken
     systemid                         UUID                        NOT NULL,
     originalsourcesystemid           UUID                        NOT NULL,
     securitytokenclassificationid    UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4854,7 +4854,7 @@ CREATE TABLE security.securitytokenssecuritytoken
     securitytokenid               UUID                        NOT NULL,
     systemid                      UUID                        NOT NULL,
     securitytokentoid             UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4882,7 +4882,7 @@ CREATE TABLE security.securitytokensxsecuritytokensecuritytoken
     securitytokenid                            UUID                        NOT NULL,
     systemid                                   UUID                        NOT NULL,
     securitytokenxsecuritytokenid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4907,7 +4907,7 @@ CREATE TABLE security.securitytokenxclassification
     originalsourcesystemid         UUID                        NOT NULL,
     classificationid               UUID                        NOT NULL,
     securitytokenid                UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4935,7 +4935,7 @@ CREATE TABLE security.securitytokenxclassificationsecuritytoken
     securitytokenid                             UUID                        NOT NULL,
     systemid                                    UUID                        NOT NULL,
     securitytokenxclassificationid              UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --
@@ -4961,7 +4961,7 @@ CREATE TABLE security.securitytokenxsecuritytoken
     classificationid              UUID                        NOT NULL,
     childsecuritytokenid          UUID                        NOT NULL,
     parentsecuritytokenid         UUID                        NOT NULL
-) PARTITION BY RANGE (warehousefromdate);
+) ;
 
 
 --

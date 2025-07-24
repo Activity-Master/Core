@@ -24,10 +24,10 @@ public class InvolvedPartyQueryBuilder
 	@Override
 	public InvolvedPartyQueryBuilder findByIdentificationType(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
-		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyIdentificationType().builder();
+		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyIdentificationType().builder(getEntityManager());
 		
 		InvolvedPartyIdentificationType type = (InvolvedPartyIdentificationType)
-				involvedPartyService.findInvolvedPartyIdentificationType(idType, system, identityTokens);
+				involvedPartyService.findInvolvedPartyIdentificationType(getEntityManager(), idType, system, identityTokens);
 		
 		joinTableQueryBuilder.where(InvolvedPartyXInvolvedPartyIdentificationType_.involvedPartyIdentificationTypeID, Equals, type);
 		if (value != null)
@@ -48,8 +48,8 @@ public class InvolvedPartyQueryBuilder
 	@Override
 	public InvolvedPartyQueryBuilder findByType(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
-		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder();
-		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(idType, system, identityTokens);
+		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder(getEntityManager());
+		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(getEntityManager(), idType, system, identityTokens);
 		
 		joinTableQueryBuilder.where(InvolvedPartyXInvolvedPartyType_.involvedPartyTypeID, Equals, type);
 		if (value != null)
@@ -69,8 +69,8 @@ public class InvolvedPartyQueryBuilder
 	@Override
 	public InvolvedPartyQueryBuilder findByTypeAll(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
-		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder();
-		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(idType, system, identityTokens);
+		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder(getEntityManager());
+		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(getEntityManager(), idType, system, identityTokens);
 		
 		joinTableQueryBuilder.where(InvolvedPartyXInvolvedPartyType_.involvedPartyTypeID, Equals, type);
 		if (value != null)
@@ -88,7 +88,7 @@ public class InvolvedPartyQueryBuilder
 		JoinExpression joinExpression = new JoinExpression();
 		InvolvedPartyXClassificationQueryBuilder builder =
 				new InvolvedPartyXClassification()
-						.builder()
+						.builder(getEntityManager())
 						.inActiveRange()
 						.inDateRange()
 						.withValue(value)

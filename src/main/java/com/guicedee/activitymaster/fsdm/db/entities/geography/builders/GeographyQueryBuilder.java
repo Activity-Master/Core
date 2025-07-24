@@ -30,7 +30,7 @@ public class GeographyQueryBuilder
 		JoinExpression joinExpression = new JoinExpression();
 		GeographyXGeographyQueryBuilder builder =
 				new GeographyXGeography()
-						.builder()
+						.builder(getEntityManager())
 						.inActiveRange()
 						.inDateRange()
 						.where(GeographyXGeography_.parentGeographyID, Equals, ((Geography) parent));

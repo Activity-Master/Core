@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.systems.SortedUpdate;
 import com.guicedee.activitymaster.fsdm.systems.TimeSystem;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 @SortedUpdate(sortOrder = Integer.MAX_VALUE - 200, taskCount = 1)
 @Log4j2
@@ -16,7 +17,7 @@ public class TimeServiceSetup implements ISystemUpdate
 	private TimeSystem timeSystem;
 
 	@Override
-	public Uni<Boolean> update(IEnterprise<?, ?> enterprise)
+	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?, ?> enterprise)
 	{
 		log.info("Starting time service setup");
 		logProgress("Time Service", "Loading Time Specifications", 1);

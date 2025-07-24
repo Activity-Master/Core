@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.address.IAddress;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.IInvolvedParty;
@@ -15,14 +14,14 @@ import com.guicedee.activitymaster.fsdm.client.services.dto.PhoneNumberDTO;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.AddressException;
 import com.guicedee.activitymaster.fsdm.db.entities.address.Address;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.Classification;
-import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,22 +50,22 @@ public class AddressService
 	}
 
 	@Override
-	public Uni<IAddress<?, ?>> create(String addressClassification, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
+	public Uni<IAddress<?, ?>> create(Mutiny.Session session, String addressClassification, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
-		return create(addressClassification, null, system, value, identifyingToken);
+		return create(session, addressClassification, null, system, value, identifyingToken);
 	}
 	//@Transactional()
 	@Override
 	////@Transactional()
-	public Uni<IAddress<?, ?>> create(String addressClassification, java.util.UUID key, ISystems<?, ?> system, String value, java.util.UUID... identifyingToken)
+	public Uni<IAddress<?, ?>> create(Mutiny.Session session, String addressClassification, UUID key, ISystems<?, ?> system, String value, UUID... identifyingToken)
 	{
 		Address addy = new Address();
 
 		// First, get the classification using reactive pattern
-		return classificationServiceProvider.find(addressClassification, system, identifyingToken)
+		return classificationServiceProvider.find(session, addressClassification, system, identifyingToken)
 		        .chain(classification -> {
 		            // Check if address exists
-		            return addy.builder()
+		            return addy.builder(session)
 		                    .withClassification(addressClassification, system)
 		                    .withValue(value)
 		                    .withEnterprise(enterprise)
@@ -91,14 +90,14 @@ public class AddressService
 		                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                            // Get active flag using reactive pattern
-		                            return acService.getActiveFlag(enterprise)
+		                            return acService.getActiveFlag(session, enterprise)
 		                                    .chain(activeFlag -> {
 		                                        addy.setActiveFlagID(activeFlag);
-		                                        return addy.persist();
+		                                        return session.persist(addy).replaceWith(Uni.createFrom().item(addy));
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        persisted.createDefaultSecurity(system, identifyingToken)
+		                                        persisted.createDefaultSecurity(session, system, identifyingToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully
@@ -116,7 +115,7 @@ public class AddressService
 		                        else
 		                        {
 		                            // Address exists, find and return it
-		                            return addy.builder()
+		                            return addy.builder(session)
 		                                    .withClassification(addressClassification, system)
 		                                    .withEnterprise(enterprise)
 		                                    .withValue(value)
@@ -133,7 +132,7 @@ public class AddressService
 	//@Transactional()
 	@Override
 	////@Transactional()
-	public Uni<IAddress<?, ?>> addOrFindIPAddress(String ipAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
+	public Uni<IAddress<?, ?>> addOrFindIPAddress(Mutiny.Session session, String ipAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		if (!ipAddressPattern.matcher(ipAddress)
 		                     .matches())
@@ -144,10 +143,10 @@ public class AddressService
 		Address address = new Address();
 
 		// First, get the classification using reactive pattern
-		return classificationServiceProvider.find(RemoteAddressIPAddress.name(), system, identityToken)
+		return classificationServiceProvider.find(session, RemoteAddressIPAddress.name(), system, identityToken)
 		        .chain(ipAddressClassification -> {
 		            // Check if address exists
-		            return address.builder()
+		            return address.builder(session)
 		                    .withClassification((Classification) ipAddressClassification)
 		                    .withValue(ipAddress)
 		                    .withEnterprise(enterprise)
@@ -170,14 +169,14 @@ public class AddressService
 		                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                            // Get active flag using reactive pattern
-		                            return acService.getActiveFlag(enterprise)
+		                            return acService.getActiveFlag(session, enterprise)
 		                                    .chain(activeFlag -> {
 		                                        address.setActiveFlagID(activeFlag);
-		                                        return address.persist();
+		                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(system, identityToken)
+		                                        address.createDefaultSecurity(session, system, identityToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully
@@ -195,7 +194,7 @@ public class AddressService
 		                        else
 		                        {
 		                            // Address exists, find and return it
-		                            return address.builder()
+		                            return address.builder(session)
 		                                    .withClassification((Classification) ipAddressClassification)
 		                                    .withValue(ipAddress)
 		                                    .withEnterprise(enterprise)
@@ -212,15 +211,15 @@ public class AddressService
 	//@Transactional()
 	@Override
 	////@Transactional()
-	public Uni<IAddress<?, ?>> addOrFindHostName(String hostName, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
+	public Uni<IAddress<?, ?>> addOrFindHostName(Mutiny.Session session, String hostName, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address address = new Address();
 
 		// First, get the classification using reactive pattern
-		return classificationServiceProvider.find(RemoteAddressHostName.name(), system, identityToken)
+		return classificationServiceProvider.find(session, RemoteAddressHostName.name(), system, identityToken)
 		        .chain(hostNameClassification -> {
 		            // Check if address exists
-		            return address.builder()
+		            return address.builder(session)
 		                    .withClassification((Classification) hostNameClassification)
 		                    .withValue(hostName)
 		                    .withEnterprise(enterprise)
@@ -243,14 +242,14 @@ public class AddressService
 		                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                            // Get active flag using reactive pattern
-		                            return acService.getActiveFlag(enterprise)
+		                            return acService.getActiveFlag(session, enterprise)
 		                                    .chain(activeFlag -> {
 		                                        address.setActiveFlagID(activeFlag);
-		                                        return address.persist();
+		                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(system, identityToken)
+		                                        address.createDefaultSecurity(session, system, identityToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully
@@ -268,7 +267,7 @@ public class AddressService
 		                        else
 		                        {
 		                            // Address exists, find and return it
-		                            return address.builder()
+		                            return address.builder(session)
 		                                    .withClassification((Classification) hostNameClassification)
 		                                    .withValue(hostName)
 		                                    .withEnterprise(enterprise)
@@ -285,15 +284,15 @@ public class AddressService
 	//@Transactional()
 	@Override
 	////@Transactional()
-	public Uni<IAddress<?, ?>> addOrFindWebAddress(String webAddress, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
+	public Uni<IAddress<?, ?>> addOrFindWebAddress(Mutiny.Session session, String webAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address address = new Address();
 
 		// First, get the classification using reactive pattern
-		return classificationServiceProvider.find(WebAddress.name(), system, identityToken)
+		return classificationServiceProvider.find(session, WebAddress.name(), system, identityToken)
 		        .chain(webAddressClassification -> {
 		            // Check if address exists
-		            return address.builder()
+		            return address.builder(session)
 		                    .withClassification(WebAddress.name(), system)
 		                    .withValue(webAddress)
 		                    .withEnterprise(enterprise)
@@ -316,14 +315,14 @@ public class AddressService
 		                            IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                            // Get active flag using reactive pattern
-		                            return acService.getActiveFlag(enterprise)
+		                            return acService.getActiveFlag(session, enterprise)
 		                                    .chain(activeFlag -> {
 		                                        address.setActiveFlagID(activeFlag);
-		                                        return address.persist();
+		                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(system, identityToken)
+		                                        address.createDefaultSecurity(session, system, identityToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully
@@ -347,7 +346,7 @@ public class AddressService
 
 		                                            // Process web details in a simpler way
 		                                            // We'll get the port classification first
-		                                            return classificationServiceProvider.find(WebAddressPort.name(), system, identityToken)
+		                                            return classificationServiceProvider.find(session, WebAddressPort.name(), system, identityToken)
 		                                                .chain(webPortClassification -> {
 		                                                    // Create port address
 		                                                    Address webDetails = new Address();
@@ -358,14 +357,14 @@ public class AddressService
 		                                                    webDetails.setEnterpriseID(enterprise);
 
 		                                                    // We need to get the active flag again for this entity
-		                                                    return acService.getActiveFlag(enterprise)
+		                                                    return acService.getActiveFlag(session, enterprise)
 		                                                        .chain(portActiveFlag -> {
 		                                                            webDetails.setActiveFlagID(portActiveFlag);
-		                                                            return webDetails.persist();
+		                                                            return session.persist(webDetails).replaceWith(Uni.createFrom().item(webDetails));
 		                                                        })
 		                                                        .chain(portPersisted -> {
 		                                                            // Now get the domain classification
-		                                                            return classificationServiceProvider.find(WebAddressDomain.name(), system, identityToken);
+		                                                            return classificationServiceProvider.find(session, WebAddressDomain.name(), system, identityToken);
 		                                                        });
 		                                                })
 		                                                .chain(webDomainClassification -> {
@@ -378,14 +377,14 @@ public class AddressService
 		                                                    domainDetails.setEnterpriseID(enterprise);
 
 		                                                    // We need to get the active flag again for this entity
-		                                                    return acService.getActiveFlag(enterprise)
+		                                                    return acService.getActiveFlag(session, enterprise)
 		                                                        .chain(domainActiveFlag -> {
 		                                                            domainDetails.setActiveFlagID(domainActiveFlag);
-		                                                            return domainDetails.persist();
+		                                                            return session.persist(domainDetails).replaceWith(Uni.createFrom().item(domainDetails));
 		                                                        })
 		                                                        .chain(domainPersisted -> {
 		                                                            // Now get the protocol classification
-		                                                            return classificationServiceProvider.find(WebAddressProtocol.name(), system, identityToken);
+		                                                            return classificationServiceProvider.find(session, WebAddressProtocol.name(), system, identityToken);
 		                                                        });
 		                                                })
 		                                                .chain(webProtocolClassification -> {
@@ -398,14 +397,14 @@ public class AddressService
 		                                                    protocolDetails.setEnterpriseID(enterprise);
 
 		                                                    // We need to get the active flag again for this entity
-		                                                    return acService.getActiveFlag(enterprise)
+		                                                    return acService.getActiveFlag(session, enterprise)
 		                                                        .chain(protocolActiveFlag -> {
 		                                                            protocolDetails.setActiveFlagID(protocolActiveFlag);
-		                                                            return protocolDetails.persist();
+		                                                            return session.persist(protocolDetails).replaceWith(Uni.createFrom().item(protocolDetails));
 		                                                        })
 		                                                        .chain(protocolPersisted -> {
 		                                                            // Now get the site classification
-		                                                            return classificationServiceProvider.find(WebAddressSite.name(), system, identityToken);
+		                                                            return classificationServiceProvider.find(session, WebAddressSite.name(), system, identityToken);
 		                                                        });
 		                                                })
 		                                                .chain(webSiteClassification -> {
@@ -418,14 +417,10 @@ public class AddressService
 		                                                    siteDetails.setEnterpriseID(enterprise);
 
 		                                                    // We need to get the active flag again for this entity
-		                                                    return acService.getActiveFlag(enterprise)
+		                                                    return acService.getActiveFlag(session, enterprise)
 		                                                        .chain(siteActiveFlag -> {
 		                                                            siteDetails.setActiveFlagID(siteActiveFlag);
-		                                                            return siteDetails.persist();
-		                                                        })
-		                                                        .chain(sitePersisted -> {
-		                                                            // Return the original address
-		                                                            return Uni.createFrom().item((IAddress<?, ?>) address);
+		                                                            return session.persist(siteDetails).replaceWith(Uni.createFrom().item(siteDetails));
 		                                                        });
 		                                                });
 		                                        } catch (MalformedURLException e) {
@@ -438,7 +433,7 @@ public class AddressService
 		                        else
 		                        {
 		                            // Address exists, find and return it
-		                            return address.builder()
+		                            return address.builder(session)
 		                                    .withClassification((Classification) webAddressClassification)
 		                                    .withValue(webAddress)
 		                                    .withEnterprise(enterprise)
@@ -455,16 +450,16 @@ public class AddressService
 	//@Transactional()
 	@Override
 	////@Transactional()
-	public Uni<IAddress<?, ?>> addOrFindPhoneContact(String phoneNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
+	public Uni<IAddress<?, ?>> addOrFindPhoneContact(Mutiny.Session session, String phoneNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phoneNumber);
 		Address streetAddress = new Address();
 
 		// First get the main phone classification and check if phone exists
-		return classificationServiceProvider.find(TelephoneNumber.name(), system, identityToken)
+		return classificationServiceProvider.find(session, TelephoneNumber.name(), system, identityToken)
 		    .chain(homePhoneNumber -> {
 		        // Check if the phone number exists
-		        return streetAddress.builder()
+		        return streetAddress.builder(session)
 		            .withClassification(TelephoneNumber.name(), system)
 		            .withValue(phoneNumber)
 		            .withEnterprise(enterprise)
@@ -486,14 +481,14 @@ public class AddressService
 		                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                    // Get active flag using reactive pattern
-		                    return acService.getActiveFlag(enterprise)
+		                    return acService.getActiveFlag(session, enterprise)
 		                        .chain(activeFlag -> {
 		                            streetAddress.setActiveFlagID(activeFlag);
-		                            return streetAddress.persist();
+		                            return session.persist(streetAddress).replaceWith(Uni.createFrom().item(streetAddress));
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            streetAddress.createDefaultSecurity(system, identityToken)
+		                            streetAddress.createDefaultSecurity(session, system, identityToken)
 		                                .subscribe().with(
 		                                    result -> {
 		                                        // Security setup completed successfully
@@ -506,28 +501,28 @@ public class AddressService
 
 		                            // Create a Uni for each find-and-add pair
 		                            // Each Uni first finds the classification and then adds it
-		                            Uni<?> countryCodePairUni = classificationServiceProvider.find(TelephoneCountryCode.name(), system, identityToken)
+		                            Uni<?> countryCodePairUni = classificationServiceProvider.find(session, TelephoneCountryCode.name(), system, identityToken)
 		                                .chain(homePhoneNumberCountryCodeClassification -> {
 		                                    return streetAddress.addClassification(
-		                                        ((Classification) homePhoneNumberCountryCodeClassification).getName(), 
+													session, ((Classification) homePhoneNumberCountryCodeClassification).getName(),
 		                                        phoneNumberDTO.getCountryCode(), 
 		                                        system, 
 		                                        identityToken);
 		                                });
 
-		                            Uni<?> extensionPairUni = classificationServiceProvider.find(TelephoneExtensionNumber.name(), system, identityToken)
+		                            Uni<?> extensionPairUni = classificationServiceProvider.find(session, TelephoneExtensionNumber.name(), system, identityToken)
 		                                .chain(homePhoneExtensionNumberClassification -> {
 		                                    return streetAddress.addClassification(
-		                                        ((Classification) homePhoneExtensionNumberClassification).getName(), 
+													session, ((Classification) homePhoneExtensionNumberClassification).getName(),
 		                                        Strings.nullToEmpty(phoneNumberDTO.getExtension()), 
 		                                        system, 
 		                                        identityToken);
 		                                });
 
-		                            Uni<?> areaCodePairUni = classificationServiceProvider.find(TelephoneAreaCode.name(), system, identityToken)
+		                            Uni<?> areaCodePairUni = classificationServiceProvider.find(session, TelephoneAreaCode.name(), system, identityToken)
 		                                .chain(homePhoneAreaCodeClassification -> {
 		                                    return streetAddress.addClassification(
-		                                        ((Classification) homePhoneAreaCodeClassification).getName(), 
+													session, ((Classification) homePhoneAreaCodeClassification).getName(),
 		                                        phoneNumberDTO.getAreaCode(), 
 		                                        system, 
 		                                        identityToken);
@@ -543,7 +538,7 @@ public class AddressService
 		                        });
 		                } else {
 		                    // Phone number exists, find and return it
-		                    return streetAddress.builder()
+		                    return streetAddress.builder(session)
 		                        .withClassification(TelephoneNumber.name(), system)
 		                        .withValue(phoneNumber)
 		                        .withEnterprise(enterprise)
@@ -560,7 +555,7 @@ public class AddressService
 	//@Transactional()
 	@Override
 	////@Transactional()
-	public Uni<IAddress<?, ?>> addOrFindEmailContact(String emailAddressString, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
+	public Uni<IAddress<?, ?>> addOrFindEmailContact(Mutiny.Session session, String emailAddressString, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address emailAddy = new Address();
 		String host, user, domain;
@@ -574,10 +569,10 @@ public class AddressService
 		}
 
 		// First get the main email classification and check if email exists
-		return classificationServiceProvider.find(AddressEmailClassifications.EmailAddress.name(), system, identityToken)
+		return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddress.name(), system, identityToken)
 		    .chain(emailAddress -> {
 		        // Check if the email address exists
-		        return emailAddy.builder()
+		        return emailAddy.builder(session)
 		            .withClassification(AddressEmailClassifications.EmailAddress.name(), system)
 		            .withValue(emailAddressString)
 		            .withEnterprise(enterprise)
@@ -599,14 +594,14 @@ public class AddressService
 		                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                    // Get active flag using reactive pattern
-		                    return acService.getActiveFlag(enterprise)
+		                    return acService.getActiveFlag(session, enterprise)
 		                        .chain(activeFlag -> {
 		                            emailAddy.setActiveFlagID(activeFlag);
-		                            return emailAddy.persist();
+		                            return session.persist(emailAddy).replaceWith(Uni.createFrom().item(emailAddy));
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            emailAddy.createDefaultSecurity(system, identityToken)
+		                            emailAddy.createDefaultSecurity(session, system, identityToken)
 		                                .subscribe().with(
 		                                    result -> {
 		                                        // Security setup completed successfully
@@ -619,28 +614,28 @@ public class AddressService
 
 		                            // Create a Uni for each find-and-add pair
 		                            // Each Uni first finds the classification and then adds it
-		                            Uni<?> hostPairUni = classificationServiceProvider.find(AddressEmailClassifications.EmailAddressHost.name(), system, identityToken)
+		                            Uni<?> hostPairUni = classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressHost.name(), system, identityToken)
 		                                .chain(emailAddressHost -> {
 		                                    return emailAddy.addOrReuseClassification(
-		                                        ((Classification) emailAddressHost).toString(), 
+													session, ((Classification) emailAddressHost).toString(),
 		                                        host, 
 		                                        system, 
 		                                        identityToken);
 		                                });
 
-		                            Uni<?> domainPairUni = classificationServiceProvider.find(AddressEmailClassifications.EmailAddressDomain.name(), system, identityToken)
+		                            Uni<?> domainPairUni = classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressDomain.name(), system, identityToken)
 		                                .chain(emailAddressDomain -> {
 		                                    return emailAddy.addOrReuseClassification(
-		                                        ((Classification) emailAddressDomain).toString(), 
+													session, ((Classification) emailAddressDomain).toString(),
 		                                        domain, 
 		                                        system, 
 		                                        identityToken);
 		                                });
 
-		                            Uni<?> userPairUni = classificationServiceProvider.find(AddressEmailClassifications.EmailAddressUser.name(), system, identityToken)
+		                            Uni<?> userPairUni = classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressUser.name(), system, identityToken)
 		                                .chain(emailAddressUser -> {
 		                                    return emailAddy.addOrReuseClassification(
-		                                        ((Classification) emailAddressUser).toString(), 
+													session, ((Classification) emailAddressUser).toString(),
 		                                        user, 
 		                                        system, 
 		                                        identityToken);
@@ -656,7 +651,7 @@ public class AddressService
 		                        });
 		                } else {
 		                    // Email address exists, find and return it
-		                    return emailAddy.builder()
+		                    return emailAddy.builder(session)
 		                        .withClassification(AddressEmailClassifications.EmailAddress.name(), system)
 		                        .withValue(emailAddressString)
 		                        .withEnterprise(enterprise)
@@ -672,28 +667,28 @@ public class AddressService
 	}
 	//@Transactional()
 	@Override
-	public Uni<IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
+	public Uni<IRelationshipValue<?, IAddress<?, ?>, ?>> findCellPhoneContact(Mutiny.Session session, IInvolvedParty<?, ?> involvedParty, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		// Check if the involvedParty is null
 		if (involvedParty == null) {
 			return Uni.createFrom().failure(new AddressException("Involved party cannot be null"));
 		}
-		return involvedParty.findAddress(HomeCellNumber.name(), null, system, true, true, identityToken)
+		return involvedParty.findAddress(session, HomeCellNumber.name(), null, system, true, true, identityToken)
 					   .map(result->result);
 	}
 
 	//@Transactional()
 	@Override
 	////@Transactional()
-	public Uni<IAddress<?, ?>> addOrFindStreetAddress(String number, String street, String streetType, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
+	public Uni<IAddress<?, ?>> addOrFindStreetAddress(Mutiny.Session session, String number, String street, String streetType, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
 
 		// First get the building address classification and check if address exists
-		return classificationServiceProvider.find(AddressBuildingClassifications.BuildingAddress.name(), system, identityToken)
+		return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingAddress.name(), system, identityToken)
 		    .chain(buildingAddressClassification -> {
 		        // Check if the street address exists
-		        return streetAddress.builder()
+		        return streetAddress.builder(session)
 		            .withClassification(AddressBuildingClassifications.BuildingAddress.name(), system)
 		            .withValue(number + " " + street + " " + streetType)
 		            .withEnterprise(enterprise)
@@ -716,14 +711,14 @@ public class AddressService
 		                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                    // Get active flag using reactive pattern
-		                    return acService.getActiveFlag(enterprise)
+		                    return acService.getActiveFlag(session, enterprise)
 		                        .chain(activeFlag -> {
 		                            address.setActiveFlagID(activeFlag);
-		                            return address.persist();
+		                            return session.persist(address).replaceWith(Uni.createFrom().item(address));
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            address.createDefaultSecurity(system, identityToken)
+		                            address.createDefaultSecurity(session, system, identityToken)
 		                                .subscribe().with(
 		                                    result -> {
 		                                        // Security setup completed successfully
@@ -736,28 +731,28 @@ public class AddressService
 
 		                            // Create a Uni for each find-and-add pair
 		                            // Each Uni first finds the classification and then adds it
-		                            Uni<?> numberPairUni = classificationServiceProvider.find(AddressBuildingClassifications.BuildingNumber.name(), system, identityToken)
+		                            Uni<?> numberPairUni = classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingNumber.name(), system, identityToken)
 		                                .chain(buildingNumberClassification -> {
 		                                    return address.addClassification(
-		                                        ((Classification) buildingNumberClassification).getName(), 
+													session, ((Classification) buildingNumberClassification).getName(),
 		                                        number, 
 		                                        system, 
 		                                        identityToken);
 		                                });
 
-		                            Uni<?> streetPairUni = classificationServiceProvider.find(AddressBuildingClassifications.BuildingStreet.name(), system, identityToken)
+		                            Uni<?> streetPairUni = classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingStreet.name(), system, identityToken)
 		                                .chain(buildingStreetClassification -> {
 		                                    return address.addClassification(
-		                                        ((Classification) buildingStreetClassification).getName(), 
+													session, ((Classification) buildingStreetClassification).getName(),
 		                                        street, 
 		                                        system, 
 		                                        identityToken);
 		                                });
 
-		                            Uni<?> typePairUni = classificationServiceProvider.find(AddressBuildingClassifications.BuildingStreetType.name(), system, identityToken)
+		                            Uni<?> typePairUni = classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingStreetType.name(), system, identityToken)
 		                                .chain(buildingStreetTypeClassification -> {
 		                                    return address.addClassification(
-		                                        ((Classification) buildingStreetTypeClassification).getName(), 
+													session, ((Classification) buildingStreetTypeClassification).getName(),
 		                                        streetType, 
 		                                        system, 
 		                                        identityToken);
@@ -773,7 +768,7 @@ public class AddressService
 		                        });
 		                } else {
 		                    // Street address exists, find and return it
-		                    return streetAddress.builder()
+		                    return streetAddress.builder(session)
 		                        .withClassification(AddressBuildingClassifications.BuildingAddress.name(), system)
 		                        .withValue(number + " " + street + " " + streetType)
 		                        .withEnterprise(enterprise)
@@ -790,15 +785,15 @@ public class AddressService
 	//@Transactional()
 	@Override
 	////@Transactional()
-	public Uni<IAddress<?, ?>> addOrFindPostalAddress(String boxIdentifier, String boxNumber, ISystems<?, ?> system, java.util.UUID... identityToken) throws AddressException
+	public Uni<IAddress<?, ?>> addOrFindPostalAddress(Mutiny.Session session, String boxIdentifier, String boxNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address address = new Address();
 
 		// First get the box address classification and check if address exists
-		return classificationServiceProvider.find(BoxAddress.name(), system, identityToken)
+		return classificationServiceProvider.find(session, BoxAddress.name(), system, identityToken)
 		    .chain(boxAddressClassification -> {
 		        // Check if the postal address exists
-		        return address.builder()
+		        return address.builder(session)
 		            .withClassification(BoxAddress.name(), system)
 		            .withValue(boxIdentifier + " " + boxNumber)
 		            .withEnterprise(enterprise)
@@ -821,14 +816,14 @@ public class AddressService
 		                    IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                    // Get active flag using reactive pattern
-		                    return acService.getActiveFlag(enterprise)
+		                    return acService.getActiveFlag(session, enterprise)
 		                        .chain(activeFlag -> {
 		                            postalAddress.setActiveFlagID(activeFlag);
-		                            return postalAddress.persist();
+		                            return session.persist(postalAddress).replaceWith(Uni.createFrom().item(postalAddress));
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            postalAddress.createDefaultSecurity(system, identityToken)
+		                            postalAddress.createDefaultSecurity(session, system, identityToken)
 		                                .subscribe().with(
 		                                    result -> {
 		                                        // Security setup completed successfully
@@ -841,19 +836,19 @@ public class AddressService
 
 		                            // Create a Uni for each find-and-add pair
 		                            // Each Uni first finds the classification and then adds it
-		                            Uni<?> numberPairUni = classificationServiceProvider.find(BoxNumber.name(), system, identityToken)
+		                            Uni<?> numberPairUni = classificationServiceProvider.find(session, BoxNumber.name(), system, identityToken)
 		                                .chain(boxNumberClassification -> {
 		                                    return postalAddress.addClassification(
-		                                        ((Classification) boxNumberClassification).getName(), 
+													session, ((Classification) boxNumberClassification).getName(),
 		                                        boxNumber, 
 		                                        system, 
 		                                        identityToken);
 		                                });
 
-		                            Uni<?> identifierPairUni = classificationServiceProvider.find(BoxIdentifier.name(), system, identityToken)
+		                            Uni<?> identifierPairUni = classificationServiceProvider.find(session, BoxIdentifier.name(), system, identityToken)
 		                                .chain(boxidentifierClassification -> {
 		                                    return postalAddress.addClassification(
-		                                        ((Classification) boxidentifierClassification).getName(), 
+													session, ((Classification) boxidentifierClassification).getName(),
 		                                        boxIdentifier, 
 		                                        system, 
 		                                        identityToken);
@@ -869,7 +864,7 @@ public class AddressService
 		                        });
 		                } else {
 		                    // Postal address exists, find and return it
-		                    return address.builder()
+		                    return address.builder(session)
 		                        .withClassification(BoxAddress.name(), system)
 		                        .withValue(boxIdentifier + " " + boxNumber)
 		                        .withEnterprise(enterprise)

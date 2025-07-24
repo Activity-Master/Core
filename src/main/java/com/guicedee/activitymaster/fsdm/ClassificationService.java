@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IClassificationService;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -16,10 +15,10 @@ import com.guicedee.activitymaster.fsdm.db.entities.classifications.builders.Cla
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 
-
-import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SecurityTokenClassifications.*;
@@ -41,63 +40,63 @@ public class ClassificationService
 	}
 
 	@Override
-	public Uni<IClassification<?, ?>> create(String name, String description, EnterpriseClassificationDataConcepts concept,
-	                                    ISystems<?, ?> system, Integer sequenceOrder, String parentName, java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts concept,
+											 ISystems<?, ?> system, Integer sequenceOrder, String parentName, UUID... identityToken)
 	{
-		return find(parentName, system, identityToken)
-		        .chain(classification -> create(name, description, concept, system, sequenceOrder, classification, identityToken));
+		return find(session, parentName, system, identityToken)
+		        .chain(classification -> create(session, name, description, concept, system, sequenceOrder, classification, identityToken));
 	}
 
 	@Override
-	public Uni<IClassification<?, ?>> create(String name,
-	                                    ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name,
+											 ISystems<?, ?> system, UUID... identityToken)
 	{
-		return create(name, name, null, system, 0, identityToken);
+		return create(session, name, name, null, system, 0, identityToken);
 	}
 
 	@Override
-	public Uni<IClassification<?, ?>> create(String name, String description,
-	                                    ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description,
+											 ISystems<?, ?> system, UUID... identityToken)
 	{
-		return create(name, description, null, system, 0, identityToken);
+		return create(session, name, description, null, system, 0, identityToken);
 	}
 
 	@Override
-	public Uni<IClassification<?, ?>> create(String name, String description, EnterpriseClassificationDataConcepts conceptName,
-	                                    ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+											 ISystems<?, ?> system, UUID... identityToken)
 	{
-		return create(name, description, conceptName, system, 0, identityToken);
+		return create(session, name, description, conceptName, system, 0, identityToken);
 	}
 
 	@Override
-	public Uni<IClassification<?, ?>> create(String name, String description, EnterpriseClassificationDataConcepts conceptName,
-	                                    ISystems<?, ?> system,
-	                                    Integer sequenceNumber, java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+											 ISystems<?, ?> system,
+											 Integer sequenceNumber, UUID... identityToken)
 	{
-		return create(name, description, conceptName, system, sequenceNumber, (IClassification<?, ?>) null, identityToken);
+		return create(session, name, description, conceptName, system, sequenceNumber, (IClassification<?, ?>) null, identityToken);
 	}
 
 	@Override
 	//@Transactional()
-	public Uni<IClassification<?, ?>> create(String name, String description, EnterpriseClassificationDataConcepts conceptName,
-	                                    ISystems<?, ?> system,
-	                                    Integer sequenceNumber, IClassification<?, ?> parent, java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+											 ISystems<?, ?> system,
+											 Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken)
 	{
 		// Get the data concept based on conceptName
 		Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept<?, ?>> dataConceptUni;
 		if (conceptName != null)
 		{
-			dataConceptUni = dataConceptService.find(conceptName, system, identityToken);
+			dataConceptUni = dataConceptService.find(session, conceptName, system, identityToken);
 		}
 		else
 		{
-			dataConceptUni = dataConceptService.find("NoClassification", system, identityToken);
+			dataConceptUni = dataConceptService.find(session, "NoClassification", system, identityToken);
 		}
 
 		Classification rootCl = new Classification();
 
 		// Check if classification exists
-		return rootCl.builder()
+		return rootCl.builder(session)
 		             .withName(name)
 		             .withEnterprise(enterprise)
 		             .inActiveRange()
@@ -133,15 +132,15 @@ public class ClassificationService
 		                                     // In a real implementation, we might need to fetch the concrete instance
 		                                     // or handle this differently
 		                                 }
-		                                 return acService.getActiveFlag(enterprise);
+		                                 return acService.getActiveFlag(session, enterprise);
 		                             })
 		                             .chain(activeFlag -> {
 		                                 rootCl.setActiveFlagID(activeFlag);
-		                                 return rootCl.persist();
+		                                 return rootCl.builder(session).persist(rootCl);
 		                             })
 		                             .map(persisted -> {
 		                                 // Start createDefaultSecurity in parallel without waiting for it
-		                                 rootCl.createDefaultSecurity(system, identityToken)
+		                                 rootCl.createDefaultSecurity(session, system, identityToken)
 		                                       .subscribe().with(
 		                                           result -> {
 		                                               // Security setup completed successfully
@@ -155,14 +154,14 @@ public class ClassificationService
 		                                 // Handle parent relationship if needed
 		                                 if (parent != null && !NoClassification.toString().equals(name))
 		                                 {
-		                                     find(parent.getName(), system, identityToken)
+		                                     find(session, parent.getName(), system, identityToken)
 		                                         .subscribe().with(
 		                                             foundParent -> {
 		                                                 try {
 		                                                     @SuppressWarnings("unchecked")
 		                                                     IClassification<Classification, ClassificationQueryBuilder> pp = 
 		                                                         (IClassification<Classification, ClassificationQueryBuilder>) foundParent;
-		                                                     pp.addChild(rootCl, NoClassification.toString(), null, system, identityToken);
+		                                                     pp.addChild(session, rootCl, NoClassification.toString(), null, system, identityToken);
 		                                                 } catch (Exception e) {
 		                                                     log.warn("Error adding child to parent classification", e);
 		                                                 }
@@ -180,25 +179,25 @@ public class ClassificationService
 		                 else
 		                 {
 		                     // Classification exists, find and return it
-		                     return find(name, conceptName, system, identityToken);
+		                     return find(session, name, conceptName, system, identityToken);
 		                 }
 		             });
 	}
 
 	//@CacheResult(cacheName = "ClassificationFindWithSimpleString")
 	@Override
-	public Uni<IClassification<?, ?>> find( String name,  ISystems<?, ?> system,  java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return find(name, null, system, identityToken);
+		return find(session, name, null, system, identityToken);
 	}
 
 	//@Transactional()
 	//@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
 	@Override
-	public Uni<IClassification<?, ?>> find( String name,  EnterpriseClassificationDataConcepts concept,  ISystems<?, ?> system,  java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken)
 	{
 		Classification search = new Classification();
-		return search.builder()
+		return search.builder(session)
 		               .withName(name)
 		               .inActiveRange()
 		               .inDateRange()
@@ -213,30 +212,30 @@ public class ClassificationService
 	//@Transactional()
 	//@CacheResult(cacheName = "GetHierarchyTypeClassification")
 	@Override
-	public Uni<IClassification<?, ?>> getHierarchyType( ISystems<?, ?> system,  java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> getHierarchyType(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return find(HierarchyTypeClassification.toString(),
-				system,
-				identityToken);
+		return find(session,
+				HierarchyTypeClassification.toString(),
+				system, identityToken);
 	}
 
 	//@Transactional()
 	//@CacheResult(cacheName = "GetNoClassification")
 	@Override
-	public Uni<IClassification<?, ?>> getNoClassification( ISystems<?, ?> system,  java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> getNoClassification(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return find(NoClassification.toString(),
-				system,
-				identityToken);
+		return find(session,
+				NoClassification.toString(),
+				system, identityToken);
 	}
 
 	//@Transactional()
 	//@CacheResult(cacheName = "IdentityTypeClassification")
 	@Override
-	public Uni<IClassification<?, ?>> getIdentityType( ISystems<?, ?> system,  java.util.UUID... identityToken)
+	public Uni<IClassification<?, ?>> getIdentityType(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return find(Identity.name(),
-				system,
-				identityToken);
+		return find(session,
+				Identity.name(),
+				system, identityToken);
 	}
 }

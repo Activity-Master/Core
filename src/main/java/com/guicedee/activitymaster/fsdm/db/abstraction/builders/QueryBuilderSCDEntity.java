@@ -24,12 +24,6 @@ public abstract class QueryBuilderSCDEntity<J extends QueryBuilderSCDEntity<J, E
     implements IQueryBuilderSCD<J,E,I>
 {
     @Override
-    public Mutiny.Session getEntityManager()
-    {
-        return IGuiceContext.get(Mutiny.SessionFactory.class).getCurrentSession();
-    }
-
-    @Override
     public boolean isIdGenerated()
     {
         return false;

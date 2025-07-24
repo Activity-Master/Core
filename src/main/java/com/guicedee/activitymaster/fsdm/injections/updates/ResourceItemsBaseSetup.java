@@ -11,6 +11,7 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.Resource
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,20 +33,20 @@ public class ResourceItemsBaseSetup implements ISystemUpdate
 	private IResourceItemService<?> resourceItemService;
 
 	@Override
-	public Uni<Boolean> update(IEnterprise<?,?> enterprise)
+	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting parallel creation of resource item types and classifications");
 		logProgress("Resource Items", "Loading Default Resource Items...", 1);
 
 		// Create document-related resource item types in parallel
 		List<Uni<?>> documentTypeOperations = new ArrayList<>();
-		documentTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Documents, activityMasterSystem));
-		documentTypeOperations.add(resourceItemService.createType(ResourceItemTypes.JsonPacket, activityMasterSystem));
-		documentTypeOperations.add(resourceItemService.createType(ResourceItemTypes.XMLPacket, activityMasterSystem));
-		documentTypeOperations.add(resourceItemService.createType(ResourceItemTypes.PhysicalDocuments, activityMasterSystem));
-		documentTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Invoices, activityMasterSystem));
-		documentTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Statements, activityMasterSystem));
-		documentTypeOperations.add(resourceItemService.createType(ResourceItemTypes.ElectronicDocuments, activityMasterSystem));
+		documentTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Documents, activityMasterSystem));
+		documentTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.JsonPacket, activityMasterSystem));
+		documentTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.XMLPacket, activityMasterSystem));
+		documentTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.PhysicalDocuments, activityMasterSystem));
+		documentTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Invoices, activityMasterSystem));
+		documentTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Statements, activityMasterSystem));
+		documentTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.ElectronicDocuments, activityMasterSystem));
 
 		log.info("Running {} document-related resource item type creation operations in parallel", documentTypeOperations.size());
 
@@ -58,17 +59,17 @@ public class ResourceItemsBaseSetup implements ISystemUpdate
 
 				// Create image-related resource item types in parallel
 				List<Uni<?>> imageTypeOperations = new ArrayList<>();
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Icon, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Logo, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Flag, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Banner, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Gravatar, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Screenshot, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.Background, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.StyleSheets, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.JavaScriptTemplates, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.HtmlTemplate, activityMasterSystem));
-				imageTypeOperations.add(resourceItemService.createType(ResourceItemTypes.StringTemplate, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Icon, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Logo, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Flag, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Banner, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Gravatar, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Screenshot, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.Background, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.StyleSheets, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.JavaScriptTemplates, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.HtmlTemplate, activityMasterSystem));
+				imageTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.StringTemplate, activityMasterSystem));
 
 				log.info("Running {} image-related resource item type creation operations in parallel", imageTypeOperations.size());
 
@@ -81,8 +82,8 @@ public class ResourceItemsBaseSetup implements ISystemUpdate
 
 						// Create device-related resource item types in parallel
 						List<Uni<?>> deviceTypeOperations = new ArrayList<>();
-						deviceTypeOperations.add(resourceItemService.createType(ResourceItemTypes.MobileDevice, activityMasterSystem));
-						deviceTypeOperations.add(resourceItemService.createType(ResourceItemTypes.BrowserInformation, activityMasterSystem));
+						deviceTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.MobileDevice, activityMasterSystem));
+						deviceTypeOperations.add(resourceItemService.createType(session, ResourceItemTypes.BrowserInformation, activityMasterSystem));
 
 						log.info("Running {} device-related resource item type creation operations in parallel", deviceTypeOperations.size());
 
@@ -94,19 +95,19 @@ public class ResourceItemsBaseSetup implements ISystemUpdate
 								log.info("Creating FileResourceItemClassifications and EventDefaultResourceItemClassifications in parallel");
 
 								// Create FileResourceItemClassifications and its children
-								Uni<Void> fileClassificationsUni = service.create(ResourceItemClassifications.FileResourceItemClassifications, activityMasterSystem)
+								Uni<Void> fileClassificationsUni = service.create(session, ResourceItemClassifications.FileResourceItemClassifications, activityMasterSystem)
 									.chain(baseFileClassification -> {
 										// Create file-related classifications in parallel
 										List<Uni<?>> fileClassificationOperations = new ArrayList<>();
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.AddedANewDevice, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.HadNewConnectionDetails, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.Description, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.Extension, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.FileName, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.Size, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.UUID, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.Icon, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
-										fileClassificationOperations.add(service.create(ResourceItemClassifications.FileLocation, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.AddedANewDevice, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.HadNewConnectionDetails, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.Description, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.Extension, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.FileName, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.Size, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.UUID, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.Icon, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
+										fileClassificationOperations.add(service.create(session, ResourceItemClassifications.FileLocation, activityMasterSystem, ResourceItemClassifications.FileResourceItemClassifications));
 
 										log.info("Running {} file-related classification creation operations in parallel", fileClassificationOperations.size());
 
@@ -118,14 +119,14 @@ public class ResourceItemsBaseSetup implements ISystemUpdate
 									});
 
 								// Create EventDefaultResourceItemClassifications and its children
-								Uni<Void> eventClassificationsUni = service.create(ResourceItemClassifications.EventDefaultResourceItemClassifications, activityMasterSystem)
+								Uni<Void> eventClassificationsUni = service.create(session, ResourceItemClassifications.EventDefaultResourceItemClassifications, activityMasterSystem)
 									.chain(baseEventClassification -> {
 										// Create event-related classifications in parallel
 										List<Uni<?>> eventClassificationOperations = new ArrayList<>();
-										eventClassificationOperations.add(service.create(ResourceItemClassifications.Added, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications));
-										eventClassificationOperations.add(service.create(ResourceItemClassifications.Removed, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications));
-										eventClassificationOperations.add(service.create(ResourceItemClassifications.Updated, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications));
-										eventClassificationOperations.add(service.create(ResourceItemClassifications.MovedTo, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications));
+										eventClassificationOperations.add(service.create(session, ResourceItemClassifications.Added, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications));
+										eventClassificationOperations.add(service.create(session, ResourceItemClassifications.Removed, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications));
+										eventClassificationOperations.add(service.create(session, ResourceItemClassifications.Updated, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications));
+										eventClassificationOperations.add(service.create(session, ResourceItemClassifications.MovedTo, activityMasterSystem, ResourceItemClassifications.EventDefaultResourceItemClassifications));
 
 										log.info("Running {} event-related classification creation operations in parallel", eventClassificationOperations.size());
 

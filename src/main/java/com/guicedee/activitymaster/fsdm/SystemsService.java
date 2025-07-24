@@ -2,7 +2,6 @@ package com.guicedee.activitymaster.fsdm;
 
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -16,6 +15,7 @@ import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 
 import java.util.NoSuchElementException;
@@ -43,23 +43,23 @@ public class SystemsService
 
     @Override
     //@CacheResult(cacheName = "GetActivityMaster")
-    public Uni<ISystems<?, ?>> getActivityMaster( ISystems<?, ?> requestingSystem,  java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> getActivityMaster(Mutiny.Session session, ISystems<?, ?> requestingSystem, UUID... identityToken)
     {
-        return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
+        return findSystem(session, requestingSystem, ActivityMasterSystemName, identityToken);
     }
 
     @Override
     //@CacheResult(cacheName = "GetActivityMasterEnterprise")
-    public Uni<ISystems<?, ?>> getActivityMaster( IEnterprise<?, ?> requestingSystem, java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> getActivityMaster(Mutiny.Session session, IEnterprise<?, ?> requestingSystem, UUID... identityToken)
     {
-        return findSystem(requestingSystem, ActivityMasterSystemName, identityToken);
+        return findSystem(session, requestingSystem, ActivityMasterSystemName, identityToken);
     }
 
     //@Transactional()
     @Override
-    public Uni<Boolean> doesSystemExist(IEnterprise<?, ?> enterprise, String systemName, java.util.UUID... identityToken)
+    public Uni<Boolean> doesSystemExist(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken)
     {
-        return new Systems().builder()
+        return new Systems().builder(session)
                        .withName(systemName)
                        .withEnterprise(enterprise)
                        .inActiveRange()
@@ -72,10 +72,10 @@ public class SystemsService
     //@Transactional()
     //@CacheResult(cacheName = "FindSystemEnterpriseLevel")
     @Override
-    public Uni<ISystems<?, ?>> findSystem( IEnterprise<?, ?> enterprise,  String systemName, java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken)
     {
         Systems search = new Systems();
-        return search.builder()
+        return search.builder(session)
                        .withName(systemName)
                        .withEnterprise(enterprise)
                        .inActiveRange()
@@ -89,15 +89,15 @@ public class SystemsService
     //@Transactional()
     //@CacheResult(cacheName = "FindSystemByIdentityClassification")
     @Override
-    public Uni<ISystems<?, ?>> findSystem( ISystems<?, ?> requestingSystem,  String parentSystem, java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session, ISystems<?, ?> requestingSystem, String parentSystem, UUID... identityToken)
     {
         SystemsXClassification systemClassifications = new SystemsXClassification();
 
         // Get identity classification using reactive pattern
-        return classificationService.getIdentityType(requestingSystem, identityToken)
+        return classificationService.getIdentityType(session, requestingSystem, identityToken)
                 .chain(identifyClassification -> {
                     // Use the classification to build the query
-                    return systemClassifications.builder()
+                    return systemClassifications.builder(session)
                                .findLink(null, (Classification) identifyClassification, parentSystem)
                                .inDateRange()
                                .withEnterprise(enterprise)
@@ -110,7 +110,7 @@ public class SystemsService
 
     @Override
     //@Transactional()
-    public Uni<String> registerNewSystem(IEnterprise<?, ?> enterprise, ISystems<?, ?> newSystem)
+    public Uni<String> registerNewSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> newSystem)
     {
         // Get the activity master system and token
         Uni<ISystems<?, ?>> activityMasterSystemUni = getISystemReactive(ActivityMasterSystemName);
@@ -127,14 +127,14 @@ public class SystemsService
 
                            // Use the reactive classification service but handle other operations with emitter
                            return classificationService.find(
-                                   UserGroupSecurityTokenClassifications.System,
+                                           session, UserGroupSecurityTokenClassifications.System,
                                    activityMasterSystem,
                                    activityMasterSystemUUID
                            )
                            .chain(classification -> {
                                // Now that we have the classification, chain the reactive operations
                                return securityTokenService.create(
-                                       UserGroupSecurityTokenClassifications.System.toString(),
+                                               session, UserGroupSecurityTokenClassifications.System.toString(),
                                        newSystem.getName(),
                                        newSystem.getDescription(),
                                        activityMasterSystem
@@ -142,7 +142,7 @@ public class SystemsService
                                .chain(newSystemsSecurityToken -> {
                                    // Create second security token (reactive)
                                    return securityTokenService.create(
-                                           UserGroupSecurityTokenClassifications.System.toString(),
+                                                   session, UserGroupSecurityTokenClassifications.System.toString(),
                                            UserGroupSecurityTokenClassifications.System.toString(),
                                            UserGroupSecurityTokenClassifications.System.classificationDescription(),
                                            activityMasterSystem
@@ -150,25 +150,25 @@ public class SystemsService
                                    .chain(systemsToken -> {
                                        // Link tokens (reactive)
                                        return securityTokenService.link(
-                                               systemsToken,
+                                                       session, systemsToken,
                                                newSystemsSecurityToken,
                                                classification
                                        )
                                        .chain(v -> {
                                            // Add classification to new system
                                            newSystem.addOrReuseClassification(
-                                                   SystemsClassifications.SystemIdentity,
+                                                   session, SystemsClassifications.SystemIdentity,
                                                    ((SecurityToken) newSystemsSecurityToken).getSecurityToken(),
                                                    newSystem,
                                                    activityMasterSystemUUID
                                            );
 
                                            // Get security identity token
-                                           return getSecurityIdentityToken(newSystem, activityMasterSystemUUID)
+                                           return getSecurityIdentityToken(session, newSystem, activityMasterSystemUUID)
                                                .chain(newSystemUUID -> {
                                                    // Create default security in parallel (fire and forget)
                                                    ((SecurityToken) newSystemsSecurityToken).createDefaultSecurity(
-                                                           activityMasterSystem,
+                                                           session, activityMasterSystem,
                                                            activityMasterSystemUUID
                                                    ).subscribe().with(
                                                        result -> {
@@ -181,7 +181,7 @@ public class SystemsService
                                                    );
 
                                                    ((SecurityToken) systemsToken).createDefaultSecurity(
-                                                           activityMasterSystem,
+                                                           session, activityMasterSystem,
                                                            activityMasterSystemUUID
                                                    ).subscribe().with(
                                                        result -> {
@@ -195,7 +195,7 @@ public class SystemsService
 
                                                    // Create involved party
                                                    SystemsSystem systemsSystem = IGuiceContext.get(SystemsSystem.class);
-                                                   systemsSystem.createInvolvedPartyForNewSystem(newSystem);
+                                                   systemsSystem.createInvolvedPartyForNewSystem(session, newSystem);
 
                                                    // Return the new system UUID
                                                    return Uni.createFrom().item(newSystemUUID.toString());
@@ -221,19 +221,19 @@ public class SystemsService
     }
 
     @Override
-    public Uni<ISystems<?, ?>> create(IEnterprise<?, ?> enterprise, String systemName, String systemDesc, java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, String systemDesc, UUID... identityToken)
     {
-        return create(enterprise, systemName, systemDesc, systemName, identityToken);
+        return create(session, enterprise, systemName, systemDesc, systemName, identityToken);
     }
 
     @Override
     //@Transactional()
-    public Uni<ISystems<?, ?>> create(IEnterprise<?, ?> enterprise, String systemName, String systemDesc, String historyName, java.util.UUID... identityToken)
+    public Uni<ISystems<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, String systemDesc, String historyName, UUID... identityToken)
     {
         Systems newSystem = new Systems();
 
         // Check if system exists
-        return newSystem.builder()
+        return newSystem.builder(session)
                        .withEnterprise(enterprise)
                        .withName(systemName)
                        .get()
@@ -256,21 +256,21 @@ public class SystemsService
                                IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
                                // Get active flag (reactive)
-                               return acService.getActiveFlag(enterprise)
+                               return acService.getActiveFlag(session, enterprise)
                                    .chain(activeFlag -> {
                                        // Set active flag
                                        newSystem.setActiveFlagID(activeFlag);
 
                                        // Persist the new system (reactive)
-                                       return newSystem.persist()
+                                       return session.persist(newSystem).replaceWith(Uni.createFrom().item(newSystem))
                                            .map(persistedSystem -> {
                                                // Start getActivityMaster in parallel without waiting for it
-                                               getActivityMaster(enterprise)
+                                               getActivityMaster(session, enterprise)
                                                    .subscribe().with(
                                                        activityMaster -> {
                                                                try {
                                                                    // Call createDefaultSecurity
-                                                                   persistedSystem.createDefaultSecurity(activityMaster, identityToken)
+                                                                   persistedSystem.createDefaultSecurity(session, activityMaster, identityToken)
                                                                        .subscribe().with(
                                                                            result -> {
                                                                                // Security setup completed successfully
@@ -308,9 +308,9 @@ public class SystemsService
 
     //@Transactional()
     //@CacheResult(cacheName = "SystemGetSecurityToken")
-    public Uni<ISecurityToken<?, ?>> getSecurityToken( String uuidIdentity,  ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Uni<ISecurityToken<?, ?>> getSecurityToken(Mutiny.Session session, String uuidIdentity, ISystems<?, ?> system, UUID... identityToken)
     {
-        return new SecurityToken().builder()
+        return new SecurityToken().builder(session)
                        .findBySecurityToken(uuidIdentity.toString(), enterprise)
                        .inActiveRange()
                        .inDateRange()
@@ -323,9 +323,9 @@ public class SystemsService
 
     //@CacheResult(cacheName = "SystemSetSecurityTokenUUID")
     @Override
-    public Uni<UUID> getSecurityIdentityToken( ISystems<?, ?> system, java.util.UUID... identityToken)
+    public Uni<UUID> getSecurityIdentityToken(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
     {
-        return system.findClassification(SystemIdentity, system, identityToken)
+        return system.findClassification(session, SystemIdentity, system, identityToken)
                        .onFailure().recoverWithItem(() -> null) // Handle failure case
                        .map(systemToken -> systemToken != null ? systemToken.getValueAsUUID() : null);
     }

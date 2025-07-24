@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.*;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.products.IProduct;
@@ -16,13 +15,14 @@ import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.entityassist.enumerations.Operand.*;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
 
+@SuppressWarnings("unchecked")
 @Log4j2
 public class ProductService
 		implements IProductService<ProductService>
@@ -40,26 +40,20 @@ public class ProductService
 	}
 	//@Transactional()
 	@Override
-	public Uni<IProduct<?, ?>> find(UUID id)
+	public Uni<IProduct<?, ?>> find(Mutiny.Session session, UUID id)
 	{
-		return new Product().builder()
+		return (Uni)new Product().builder(session)
 		                    .find(id)
-		                    .get()
-		                    .onFailure().invoke(error -> log.error("Error finding product by ID: {}", error.getMessage(), error))
-		                    .onItem().ifNull().continueWith(() -> null)
-		                    .map(product -> (IProduct<?, ?>) product);
+		                    .get();
 	}
 
 	//@Transactional()
 	@Override
-	public Uni<IProductType<?, ?>> findType(UUID id)
+	public Uni<IProductType<?, ?>> findType(Mutiny.Session session, UUID id)
 	{
-		return new ProductType().builder()
+		return (Uni) new ProductType().builder(session)
 		                        .find(id)
-		                        .get()
-		                        .onFailure().invoke(error -> log.error("Error finding product type by ID: {}", error.getMessage(), error))
-		                        .onItem().ifNull().continueWith(() -> null)
-		                        .map(productType -> (IProductType<?, ?>) productType);
+		                        .get();
 	}
 
 	@Override
@@ -69,13 +63,13 @@ public class ProductService
 	}
 
 	@Override
-	public Uni<IProduct<?, ?>> createProduct(String productType, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProduct<?, ?>> createProduct(Mutiny.Session session, String productType, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return createProduct(productType, null, name, description, code, system, identityToken);
+		return createProduct(session, productType, null, name, description, code, system, identityToken);
 	}
 
 	@Override
-	public Uni<IProduct<?, ?>> createProduct(String productType, java.util.UUID key, String name, String description, String code, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProduct<?, ?>> createProduct(Mutiny.Session session, String productType, UUID key, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken)
 	{
 		Product product = new Product();
 		product.setId(key);
@@ -89,14 +83,16 @@ public class ProductService
 		IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		// Get active flag using reactive pattern
-		return acService.getActiveFlag(enterprise)
+		return acService.getActiveFlag(session, enterprise)
 		        .chain(activeFlag -> {
 		            product.setActiveFlagID(activeFlag);
-		            return product.persist();
+					return session.persist(product)
+								   .replaceWith(Uni.createFrom()
+														.item(product));
 		        })
 		        .chain(persisted -> {
 		            // Start createDefaultSecurity in parallel without waiting for it
-		            product.createDefaultSecurity(system, identityToken)
+		            product.createDefaultSecurity(session, system, identityToken)
 		                   .subscribe().with(
 		                       result -> {
 		                           // Security setup completed successfully
@@ -108,13 +104,13 @@ public class ProductService
 		                   );
 
 		            // Create product type
-		            return createProductType(productType, productType, system, identityToken)
+		            return createProductType(session, productType, productType, system, identityToken)
 		                   .chain(pType -> {
 		                       // Add product types - this is a synchronous operation in the current implementation
 		                       // We'll wrap it in a Uni to make it reactive
 		                       return Uni.createFrom().emitter(emitter -> {
 		                           try {
-		                               product.addProductTypes(productType, "", NoClassification.toString(), system, identityToken);
+		                               product.addProductTypes(session, productType, "", NoClassification.toString(), system, identityToken);
 		                               emitter.complete((IProduct<?, ?>) product);
 		                           } catch (Exception e) {
 		                               emitter.fail(e);
@@ -126,21 +122,18 @@ public class ProductService
 
 	//@Transactional()
 	@Override
-	public Uni<IProduct<?, ?>> findProduct(String name, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProduct<?, ?>> findProduct(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new Product().builder()
+		return (Uni) new Product().builder(session)
 		                    .withName(name)
 		                    .inActiveRange()
 		                    .inDateRange()
 		                    .withEnterprise(enterprise)
-		                    .get()
-		                    .onFailure().invoke(error -> log.error("Error finding product by name: {}", error.getMessage(), error))
-		                    .onItem().ifNull().failWith(() -> new NoSuchElementException("Product not found with name: " + name))
-		                    .map(product -> (IProduct<?, ?>) product);
+		                    .get();
 	}
 	//@Transactional()
 	@Override
-	public Uni<List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>>> findProductByResourceItem(IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>>> findProductByResourceItem(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
 		if (Strings.isNullOrEmpty(classificationName))
 		{
@@ -148,36 +141,34 @@ public class ProductService
 		}
 		final String finalClassificationName = classificationName;
 
-		return classificationService.find(classificationName, system, identityToken)
+		return (Uni) classificationService.find(session, classificationName, system, identityToken)
 		        .chain(classification -> {
-		            return new ProductXResourceItem().builder()
+		            return new ProductXResourceItem().builder(session)
 		                                            .inActiveRange()
 		                                            .inDateRange()
 		                                            .withEnterprise(enterprise)
 		                                            .withClassification(classification)
 		                                            .withValue(value)
 		                                            .where(ProductXResourceItem_.resourceItemID, Equals, (ResourceItem) resourceItem)
-		                                            .getAll()
-		                                            .onFailure().invoke(error -> log.error("Error finding products by resource item: {}", error.getMessage(), error))
-		                                            .map(list -> (List<IRelationshipValue<IProduct<?, ?>, IResourceItem<?, ?>, ?>>) (List<?>) list);
+		                                            .getAll();
 		        });
 	}
 
 
 	@Override
-	public Uni<IProductType<?, ?>> createProductType(String productsType, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProductType<?, ?>> createProductType(Mutiny.Session session, String productsType, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return createProductType(productsType, null, description, system, identityToken);
+		return createProductType(session, productsType, null, description, system, identityToken);
 	}
 
 	@Override
 	//@Transactional()
-	public Uni<IProductType<?, ?>> createProductType(String productsType, java.util.UUID key, String description, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProductType<?, ?>> createProductType(Mutiny.Session session, String productsType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
 		ProductType et = new ProductType();
 
 		// Check if product type exists
-		return et.builder()
+		return et.builder(session)
 		         .withName(productsType)
 		         .withEnterprise(enterprise)
 		         .inActiveRange()
@@ -196,15 +187,17 @@ public class ProductService
 		                 IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
 		                 // Get active flag using reactive pattern
-		                 return acService.getActiveFlag(enterprise)
+		                 return acService.getActiveFlag(session, enterprise)
 		                        .chain(activeFlag -> {
 		                            et.setActiveFlagID(activeFlag);
 		                            et.setOriginalSourceSystemID(system.getId());
-		                            return et.persist();
+									return session.persist(et)
+												   .replaceWith(Uni.createFrom()
+																		.item(et));
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            et.createDefaultSecurity(system, identityToken)
+		                            et.createDefaultSecurity(session, system, identityToken)
 		                              .subscribe().with(
 		                                  result -> {
 		                                      // Security setup completed successfully
@@ -221,78 +214,69 @@ public class ProductService
 		             }
 		             else
 		             {
-		                 return findProductTypeForProduct(productsType, system, identityToken);
+		                 return findProductTypeForProduct(session, productsType, system, identityToken);
 		             }
 		         });
 	}
 
 	//@Transactional()
 	@Override
-	public Uni<IProductType<?, ?>> findProductTypeForProduct(String productType, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, String productType, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new ProductType().builder()
+		return (Uni) new ProductType().builder(session)
 		                        .withName(productType)
 		                        .withEnterprise(enterprise)
 		                        .inActiveRange()
 		                        .inDateRange()
 		                        // .canRead(system, identityToken)
-		                        .get()
-		                        .onFailure().invoke(error -> log.error("Error finding product type: {}", error.getMessage(), error))
-		                        .onItem().ifNull().failWith(() -> new NoSuchElementException("Product Type - " + productType + " not found"))
-		                        .map(productTypeObj -> (IProductType<?, ?>) productTypeObj);
+		                        .get();
 	}
 
 	//@Transactional()
 	@Override
-	public Uni<IProduct<?, ?>> findProduct(String productName, IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProduct<?, ?>> findProduct(Mutiny.Session session, String productName, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new Product().builder()
+		return (Uni) new Product().builder(session)
 		                    .withName(productName)
 		                    .withClassification(classification)
 		                    .inActiveRange()
 		                    .inDateRange()
 		                    .withEnterprise(enterprise)
-		                    .get()
-		                    .onFailure().invoke(error -> log.error("Error finding product by name and classification: {}", error.getMessage(), error))
-		                    .onItem().ifNull().failWith(() -> new NoSuchElementException("Product not found with name: " + productName))
-		                    .map(product -> (IProduct<?, ?>) product);
+		                    .get();
 	}
 
 
 	@Override
-	public Uni<IProductType<?, ?>> findProductTypeForProduct(IProduct<?, ?> product, IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, IProduct<?, ?> product, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return findProductTypeForProduct(product, classification.getName(), system, identityToken);
+		return findProductTypeForProduct(session, product, classification.getName(), system, identityToken);
 	}
 
 	//@Transactional()
 	@Override
-	public Uni<IProductType<?, ?>> findProductTypeForProduct(IProduct<?, ?> product, String classification, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, IProduct<?, ?> product, String classification, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return classificationService.find(classification, system, identityToken)
+		return (Uni) classificationService.find(session, classification, system, identityToken)
 		        .chain(classification1 -> {
-		            return new ProductXProductType().builder()
+		            return new ProductXProductType().builder(session)
 		                                .findLink((Product) product, null, null)
 		                                .withClassification(classification1)
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                .withEnterprise(enterprise)
-		                                .get()
-		                                .onFailure().invoke(error -> log.error("Error finding product type for product: {}", error.getMessage(), error))
-		                                .onItem().ifNull().failWith(() -> new NoSuchElementException("Product Type not found for product: " + product.getName()))
-		                                .map(productXProductType -> (IProductType<?, ?>) productXProductType.getSecondary());
+		                                .get();
 		        });
 	}
 
-	public Uni<List<IProductType<?, ?>>> findProductTypes(IClassification<?, ?> classification, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IProductType<?, ?>>> findProductTypes(Mutiny.Session session, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return findProductTypes(classification.getName(), system, identityToken);
+		return findProductTypes(session, classification.getName(), system, identityToken);
 	}
 	//@Transactional()
 	@Override
-	public Uni<List<IProductType<?, ?>>> findProductTypes(String classification, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IProductType<?, ?>>> findProductTypes(Mutiny.Session session, String classification, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new ProductType().findClassifications(classification, system, identityToken)
+		return new ProductType().findClassifications(session, classification, system, identityToken)
 		        .onFailure().invoke(error -> log.error("Error finding product types: {}", error.getMessage(), error))
 		        .map(classifications -> {
 		            List<IProductType<?, ?>> list = new ArrayList<>();
@@ -306,28 +290,20 @@ public class ProductService
 	}
 
 	@Override
-	public Uni<List<IProduct<?, ?>>> findByProductTypes(IProductType<?, ?> type, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IProduct<?, ?>>> findByProductTypes(Mutiny.Session session, IProductType<?, ?> type, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return findByProductTypes(type.getName(), system, identityToken);
+		return findByProductTypes(session, type.getName(), system, identityToken);
 	}
 	//@Transactional()
 	@Override
-	public Uni<List<IProduct<?, ?>>> findByProductTypes(String type, ISystems<?, ?> system, java.util.UUID... identityToken)
+	public Uni<List<IProduct<?, ?>>> findByProductTypes(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken)
 	{
-		return new ProductXProductType().builder()
+		return (Uni) new ProductXProductType().builder(session)
 		                                .withEnterprise(enterprise)
 		                                .inActiveRange()
 		                                .inDateRange()
 		                                .canRead(system, identityToken)
 		                                .withType(type, system, identityToken)
-		                                .getAll()
-		                                .onFailure().invoke(error -> log.error("Error finding products by type: {}", error.getMessage(), error))
-		                                .map(productXProductTypes -> {
-		                                    List<IProduct<?, ?>> products = new ArrayList<>();
-		                                    for (ProductXProductType pxpt : productXProductTypes) {
-		                                        products.add(pxpt.getProductID());
-		                                    }
-		                                    return products;
-		                                });
+		                                .getAll();
 	}
 }

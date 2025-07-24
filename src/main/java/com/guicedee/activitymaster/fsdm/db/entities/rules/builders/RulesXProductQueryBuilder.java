@@ -36,7 +36,7 @@ public class RulesXProductQueryBuilder
 		JoinExpression joinExpression = new JoinExpression();
 		RulesXProductQueryBuilder builder =
 				new RulesXProduct()
-						.builder()
+						.builder(getEntityManager())
 						.withClassification(classification, system)
 						.withValue(value)
 						.inActiveRange()

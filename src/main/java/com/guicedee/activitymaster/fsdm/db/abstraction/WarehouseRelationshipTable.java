@@ -9,9 +9,9 @@ import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -122,30 +122,34 @@ public abstract class WarehouseRelationshipTable<
     }
 
     @SuppressWarnings("unchecked")
-    public @NotNull Uni<J> update(String newValue, java.util.UUID... identifyingToken)
+    public @NotNull Uni<J> update(Mutiny.Session session, String newValue, UUID... identifyingToken)
     {
         IActiveFlagService<?> service = IGuiceContext.get(IActiveFlagService.class);
-        return service.getDeletedFlag(getEnterpriseID(), identifyingToken)
-                .chain(flag -> {
-                    setActiveFlagID(flag);
-                    setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                    setWarehouseLastUpdatedTimestamp(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                    return update();
-                })
-                .chain(deleted -> {
-                    setId(null);
-                    setValue(newValue);
-                    setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                    setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
-                    setWarehouseCreatedTimestamp(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                    setWarehouseLastUpdatedTimestamp(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
-                    return service.getActiveFlag(getEnterpriseID(), identifyingToken)
-                                   .chain(flag -> {
-                                       setActiveFlagID(flag);
-                                       var persist =  persist();
-                                       createDefaultSecurity(getSystemID());
-                                       return persist;
-                                   });
-                });
+        return (Uni) service.getDeletedFlag(session, getEnterpriseID(), identifyingToken)
+                       .chain(flag -> {
+                           setActiveFlagID(flag);
+                           setEffectiveToDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                           setWarehouseLastUpdatedTimestamp(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                           return session.merge(this);
+                       })
+                       .chain(deleted -> {
+                           setId(null);
+                           setValue(newValue);
+                           setEffectiveFromDate(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                           setEffectiveToDate(EndOfTime.atOffset(java.time.ZoneOffset.UTC));
+                           setWarehouseCreatedTimestamp(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                           setWarehouseLastUpdatedTimestamp(QueryBuilderSCD.convertToUTCDateTime(com.entityassist.RootEntity.getNow()));
+                           return service.getActiveFlag(session, getEnterpriseID(), identifyingToken)
+                                          .chain(flag -> {
+                                              setActiveFlagID(flag);
+                                              return session.persist(this)
+                                                                    .chain(a -> {
+                                                                        createDefaultSecurity(session, getSystemID());
+                                                                        return Uni.createFrom()
+                                                                                       .item(this);
+                                                                    });
+
+                                          });
+                       });
     }
 }

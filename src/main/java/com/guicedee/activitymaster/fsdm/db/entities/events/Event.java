@@ -30,6 +30,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.util.List;
@@ -317,7 +318,7 @@ public class Event
     }
 
     @Override
-    public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+    public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
     {
         EventXClassification e = (EventXClassification) linkTable;
         e.setEventID(this);
@@ -356,7 +357,7 @@ public class Event
     }
 
     @Override
-    public void configureProductAddable(IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
+    public void configureProductAddable(Mutiny.Session session, IWarehouseRelationshipTable linkTable, Event primary, IProduct<?, ?> secondary, IClassification<?, ?> classificationValue, String value, ISystems<?, ?> system)
     {
         EventXProduct product = (EventXProduct) linkTable;
         product.setEventID(primary);

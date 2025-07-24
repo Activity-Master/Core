@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.time.Duration;
@@ -121,10 +122,10 @@ public class Classification
 		securityEntity.setBase(this);
 	}
 	
-	public void configureForClassification(ClassificationXClassification classificationLink, ISystems<?, ?> system)
+	public void configureForClassification(Mutiny.Session session, ClassificationXClassification classificationLink, ISystems<?, ?> system)
 	{
 		Classification hierarchyClassification = (Classification) get(ClassificationService.class)
-				.getHierarchyType(system);
+				.getHierarchyType(session, system);
 		Classification incomingClassification = classificationLink.getClassificationID();
 		
 		classificationLink.setChildClassificationID(incomingClassification);
@@ -265,7 +266,7 @@ public class Classification
 	}
 	
 	@Override
-	public void configureForClassification(IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
+	public void configureForClassification(Mutiny.Session session, IWarehouseRelationshipClassificationTable linkTable, IClassification<?, ?> classificationValue, ISystems<?, ?> system)
 	{
 		ClassificationXClassification c = (ClassificationXClassification) linkTable;
 
@@ -273,6 +274,6 @@ public class Classification
 		c.setChildClassificationID((Classification) classificationValue);
 
 		IClassificationService<?> classificationService = get(IClassificationService.class);
-		c.setClassificationID(classificationService.getNoClassification(system).await().atMost(Duration.of(50L, ChronoUnit.SECONDS)));
+		c.setClassificationID(classificationService.getNoClassification(session, system).await().atMost(Duration.of(50L, ChronoUnit.SECONDS)));
 	}
 }

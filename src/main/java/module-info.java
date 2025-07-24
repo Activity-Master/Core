@@ -16,8 +16,9 @@ module com.guicedee.activitymaster.fsdm {
 	exports com.guicedee.activitymaster.fsdm.db.entities.time;
 
 	//exports com.guicedee.activitymaster.fsdm.threads;
-	exports com.guicedee.activitymaster.fsdm.implementations.interceptors;
+	//todo exports com.guicedee.activitymaster.fsdm.implementations.interceptors;
 
+	requires transitive com.fasterxml.jackson.databind;
 
 	requires io.vertx.sql.client.pg;
 	requires com.guicedee.guicedinjection;
@@ -221,7 +222,7 @@ module com.guicedee.activitymaster.fsdm {
 	//opens com.guicedee.activitymaster.fsdm.services.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
 	//opens com.guicedee.activitymaster.fsdm.threads to com.google.guice, com.entityassist, com.fasterxml.jackson.databind,net.bytebuddy;
 
-	opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice;
+	//opens com.guicedee.activitymaster.fsdm.implementations.interceptors to com.google.guice;
 
 	exports com.guicedee.activitymaster.fsdm.db.entities.systems to com.guicedee.activitymaster.geography;
 	exports com.guicedee.activitymaster.fsdm.db.entities.enterprise to com.guicedee.activitymaster.geography;

@@ -21,7 +21,7 @@ public class ClassificationQueryBuilder
 	public ClassificationQueryBuilder withConcept(EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, java.util.UUID... identityToken)
 	{
 		IClassificationDataConceptService<?> service = com.guicedee.client.IGuiceContext.get(IClassificationDataConceptService.class);
-		ClassificationDataConcept dc = (ClassificationDataConcept) service.find(concept, system, identityToken);
+		ClassificationDataConcept dc = (ClassificationDataConcept) service.find(getEntityManager(), concept, system, identityToken);
 		where(Classification_.concept, Operand.Equals, dc);
 		return this;
 	}

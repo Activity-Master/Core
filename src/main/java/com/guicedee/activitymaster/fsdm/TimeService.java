@@ -3,6 +3,8 @@ package com.guicedee.activitymaster.fsdm;
 //import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.ITimeService;
 import com.guicedee.activitymaster.fsdm.db.entities.time.DayParts;
+import io.smallrye.mutiny.Uni;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 
 import java.time.Duration;
@@ -78,195 +80,171 @@ public class TimeService<J extends TimeService<J>>
 	}
 	//@Transactional()
 	//@CacheResult(cacheName = "TimeDayParts")
-	public DayParts getDayPart( int hour,  int minute)
+	public Uni<DayParts> getDayPart(Mutiny.StatelessSession session, int hour, int minute)
 	{
 		if (hour <= 3)
 		{
 			if (hour == 3 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Midnight Morning")
-				                     .get()
-							   		.await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else if (hour < 3)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Midnight Morning")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Early Morning")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 		}
 		else if (hour <= 6)
 		{
 			if (hour == 6 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Early Morning")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else if (hour < 6)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Early Morning")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Morning")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 		}
 		else if (hour <= 9)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(session)
 			                     .findByName("Morning")
-			                     .get()
-			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+			                     .get();
 		}
 		else if (hour <= 10)
 		{
 			if (hour == 10 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Late Morning")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else if (hour < 10)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Late Morning")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Early Afternoon")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 				
 			}
 		}
 		else if (hour < 12)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(session)
 			                     .findByName("Early Afternoon")
-			                     .get()
-			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+			                     .get();
 		}
 		else if (hour <= 14)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(session)
 			                     .findByName("Afternoon")
-			                     .get()
-			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+			                     .get();
 		}
 		else if (hour <= 15)
 		{
 			if (hour == 15 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Late Afternoon")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else if (hour < 10)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Late Afternoon")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Early Evening")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 		}
 		else if (hour <= 16)
 		{
 			if (hour == 16 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Early Evening")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else if (hour < 16)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Early Evening")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Evening")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 		}
 		else if (hour <= 19)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(session)
 			                     .findByName("Evening")
-			                     .get()
-			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+			                     .get();
 		}
 		else if (hour <= 21)
 		{
 			if (hour == 21 && minute <= 30)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Late Evening")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else if (hour < 21)
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Late Evening")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 			else
 			{
-				return new DayParts().builder()
+				return new DayParts().builder(session)
 				                     .findByName("Midnight Evening")
-				                     .get()
-				                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+				                     .get();
 			}
 		}
 		else if (hour <= 24)
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(session)
 			                     .findByName("Midnight Evening")
-			                     .get()
-			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+			                     .get();
 		}
 		
 		else
 		{
-			return new DayParts().builder()
+			return new DayParts().builder(session)
 			                     .findByName("Midnight Morning")
-			                     .get()
-			                     .await().atMost(Duration.of(50L, ChronoUnit.SECONDS));
+			                     .get();
 		}
 	}
 	

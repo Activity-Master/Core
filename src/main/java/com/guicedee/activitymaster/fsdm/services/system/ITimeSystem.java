@@ -7,7 +7,7 @@ import java.util.Date;
 
 public interface ITimeSystem
 {
-	Uni<Void> loadTimeRange(int startYear, int endYear);
+	void loadTimeRange(int startYear, int endYear);
 
 	/**
 	 * True if available
@@ -18,5 +18,5 @@ public interface ITimeSystem
 	 */
 	boolean getDay(Date date);
 
-	Uni<Void> createTime();
+	void createTime();
 }

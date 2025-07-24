@@ -7,8 +7,8 @@ import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityM
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
-import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.Duration;
 
@@ -25,20 +25,21 @@ public class ResourceItemSystem
 	private ISystemsService<?> systemsService;
 
 	@Override
-	public ISystems<?,?> registerSystem(IEnterprise<?,?> enterprise)
+	public ISystems<?,?> registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		ISystems<?, ?> iSystems = systemsService
-		                                        .create(enterprise, getSystemName(), getSystemDescription())
+		                                        .create(session, enterprise, getSystemName(), getSystemDescription())
 		                                        .await().atMost(Duration.ofMinutes(1));
-		systemsService
-		              .registerNewSystem(enterprise, getSystem(enterprise))
-		              .await().atMost(Duration.ofMinutes(1));
+		getSystem(session, enterprise).chain(system ->{
+					return systemsService
+								   .registerNewSystem(session, enterprise, system);
+		}).await().atMost(Duration.ofMinutes(1));
 
 		return iSystems;
 	}
 
 	@Override
-	public void createDefaults(IEnterprise<?,?> enterprise)
+	public void createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting createDefaults for Resource Item System");
 

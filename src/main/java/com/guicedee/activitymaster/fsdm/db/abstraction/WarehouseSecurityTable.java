@@ -5,16 +5,12 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWare
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.security.ISecurityToken;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSecurities;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
-import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.sql.Types;
-import java.util.UUID;
 
 import static com.guicedee.client.IGuiceContext.*;
 
@@ -76,13 +72,13 @@ public abstract class WarehouseSecurityTable<J extends WarehouseSecurityTable<J,
 	 * @return
 	 */
 	@SuppressWarnings("UnusedReturnValue")
-	public Uni<J> remove()
+	public Uni<J> remove(Mutiny.Session session)
 	{
 		IActiveFlagService<?> service = get(IActiveFlagService.class);
-		return service.getDeletedFlag(getEnterpriseID())
+		return (Uni) service.getDeletedFlag(session, getEnterpriseID())
 							  .chain(flag->{
 								  setActiveFlagID(flag);
-								  return update();
+								  return session.merge(this);
 							  });
 	}
 	

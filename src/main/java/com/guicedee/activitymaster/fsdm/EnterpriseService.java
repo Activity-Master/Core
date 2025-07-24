@@ -1,6 +1,5 @@
 package com.guicedee.activitymaster.fsdm;
 
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
@@ -8,26 +7,23 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.class
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.EnterpriseException;
-import com.guicedee.activitymaster.fsdm.client.services.exceptions.SystemsException;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
-import com.guicedee.activitymaster.fsdm.services.providers.EnterpriseProvider;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.GuiceContext;
 import io.github.classgraph.ClassInfo;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 
 import java.text.MessageFormat;
@@ -49,16 +45,19 @@ public class EnterpriseService
     @Inject
     private ActivityMasterConfiguration configuration;
 
+    @Inject
+    Mutiny.SessionFactory sessionFactory;
+
     public IEnterprise<?, ?> get()
     {
         return new Enterprise();
     }
 
     //@Transactional()
-    public Uni<Enterprise> create(@NotNull String name, @NotNull String description)
+    public Uni<Enterprise> create(Mutiny.Session session, @NotNull String name, @NotNull String description)
     {
         Enterprise enterprise = new Enterprise();
-        return enterprise.builder()
+        return enterprise.builder(session)
                        .withName(name)
                        .get()
                        .onFailure()
@@ -74,16 +73,12 @@ public class EnterpriseService
                            if (exists == null)
                            {
                                // Enterprise doesn't exist or get() failed, create a new one
-                               return enterprise.persist()
-                                              .map(persisted -> {
-                                                  EnterpriseProvider.loadedEnterprise = persisted;
-                                                  return persisted;
-                                              });
+                               return session.persist(enterprise)
+                                              .replaceWith(Uni.createFrom()
+                                                                   .item(enterprise));
                            }
                            else
                            {
-                               // Enterprise exists, use it
-                               EnterpriseProvider.loadedEnterprise = exists;
                                return Uni.createFrom()
                                               .item(exists);
                            }
@@ -91,12 +86,12 @@ public class EnterpriseService
     }
 
     @Override
-    public Uni<Integer> loadUpdates(IEnterprise<?, ?> enterprise)
+    public Uni<Integer> loadUpdates(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         @SuppressWarnings({"unchecked"})
         ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
 
-        return getUpdates(enterprise)
+        return getUpdates(session, enterprise)
                        .chain(availableUpdates -> {
                            log.info(MessageFormat.format("There are {} required updates", availableUpdates.size()));
 
@@ -114,12 +109,12 @@ public class EnterpriseService
 
                            setTotalTasks(tasks);
 
-                           return systemsService.getActivityMaster(enterprise)
+                           return systemsService.getActivityMaster(session, enterprise)
                                           .chain(system -> {
                                               // Process updates sequentially using recursion
-                                              return processUpdates(new ArrayList<>(availableUpdates.entrySet()), 0, enterprise, system, systemUpdateEventHandlers)
+                                              return processUpdates(session, new ArrayList<>(availableUpdates.entrySet()), 0, enterprise, system, systemUpdateEventHandlers)
                                                              .chain(() -> {
-                                                                 updateLastUpdateDate(enterprise, system);
+                                                                 updateLastUpdateDate(session, enterprise, system);
                                                                  logProgress("Update System", "Finished Updates. Last Update Date - " + DateTimeFormatter.ofPattern("yyyy/MM/dd")
                                                                                                                                                 .format(LocalDate.now()));
                                                                  return Uni.createFrom()
@@ -132,6 +127,7 @@ public class EnterpriseService
     /**
      * Process updates sequentially using recursion
      *
+     * @param session
      * @param updates                   List of updates to process
      * @param index                     Current index in the list
      * @param enterprise                Enterprise to update
@@ -139,7 +135,7 @@ public class EnterpriseService
      * @param systemUpdateEventHandlers Event handlers to notify
      * @return Uni that completes when all updates are processed
      */
-    private Uni<Void> processUpdates(List<Map.Entry<Integer, Class<? extends ISystemUpdate>>> updates,
+    private Uni<Void> processUpdates(Mutiny.Session session, List<Map.Entry<Integer, Class<? extends ISystemUpdate>>> updates,
                                      int index,
                                      IEnterprise<?, ?> enterprise,
                                      ISystems<?, ?> system,
@@ -180,7 +176,7 @@ public class EnterpriseService
                        })
                        .chain(o -> {
                            // Perform the update
-                           return performUpdate(o, enterprise)
+                           return performUpdate(session, o, enterprise)
                                           .onItem()
                                           .invoke(() -> {
                                               for (IOnSystemUpdate<?> a : systemUpdateEventHandlers)
@@ -199,22 +195,22 @@ public class EnterpriseService
                                           });
                        })
                        // Process the next update recursively
-                       .chain(() -> processUpdates(updates, index + 1, enterprise, system, systemUpdateEventHandlers));
+                       .chain(() -> processUpdates(session, updates, index + 1, enterprise, system, systemUpdateEventHandlers));
     }
 
     //@jakarta.transaction.Transactional
-    void updateLastUpdateDate(IEnterprise<?, ?> enterprise, ISystems<?, ?> system)
+    void updateLastUpdateDate(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> system)
     {
-        enterprise.addOrUpdateClassification(EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
+        enterprise.addOrUpdateClassification(session, EnterpriseClassifications.LastUpdateDate.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd")
                                                                                                           .format(LocalDate.now()), system);
     }
 
     //@Transactional()
-    Uni<Void> performUpdate(ISystemUpdate o, IEnterprise<?, ?> enterprise)
+    Uni<Void> performUpdate(Mutiny.Session session, ISystemUpdate o, IEnterprise<?, ?> enterprise)
     {
         @SuppressWarnings({"unchecked"})
         ISystemsService<?> systemsService = com.guicedee.client.IGuiceContext.get(ISystemsService.class);
-        return systemsService.getActivityMaster(enterprise)
+        return systemsService.getActivityMaster(session, enterprise)
                        .chain(activityMasterSystem -> {
                            // Explicitly cast to ISystems<?, ?>
                            ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
@@ -222,20 +218,22 @@ public class EnterpriseService
                            // Convert Vert.x Future to Mutiny Uni
                            return Uni.createFrom()
                                           .emitter(emitter -> {
-                                              o.update(enterprise)
+                                              o.update(session, enterprise)
                                                       .onItemOrFailure()
-                                                      .invoke((result,error)->{
+                                                      .invoke((result, error) -> {
                                                           if (error != null)
                                                           {
                                                               emitter.fail(error);
-                                                          }else {
+                                                          }
+                                                          else
+                                                          {
                                                               emitter.complete(true);
                                                           }
                                                       })
-                                                      ;
+                                              ;
                                           })
                                           .chain(updateResult -> {
-                                              return enterprise.addClassification(UpdateClass.toString(), o.getClass()
+                                              return enterprise.addClassification(session, UpdateClass.toString(), o.getClass()
                                                                                                                   .getCanonicalName(), system)
                                                              .map(result -> null);
                                           });
@@ -243,13 +241,13 @@ public class EnterpriseService
     }
 
     @Override
-    public Uni<Set<String>> getEnterpriseAppliedUpdates(IEnterprise<?, ?> enterprise)
+    public Uni<Set<String>> getEnterpriseAppliedUpdates(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         ISystemsService<?> systemsService = com.guicedee.client.IGuiceContext.get(ISystemsService.class);
 
-        return systemsService.getActivityMaster(enterprise)
+        return systemsService.getActivityMaster(session, enterprise)
                        .chain(system -> {
-                           return enterprise.findClassifications(UpdateClass.toString(), system)
+                           return enterprise.findClassifications(session, UpdateClass.toString(), system)
                                           .map(classificationsAll -> {
                                               Set<String> set = new LinkedHashSet<>();
                                               for (IRelationshipValue<?, IClassification<?, ?>, ?> rel : classificationsAll)
@@ -268,7 +266,7 @@ public class EnterpriseService
 
     @Override
     //@jakarta.transaction.Transactional
-    public Uni<Map<Integer, Class<? extends ISystemUpdate>>> getUpdates(IEnterprise<?, ?> enterprise)
+    public Uni<Map<Integer, Class<? extends ISystemUpdate>>> getUpdates(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         return Uni.createFrom()
                        .emitter(emitter -> {
@@ -290,7 +288,7 @@ public class EnterpriseService
                                    availableUpdates.put(du.sortOrder(), clazz);
                                }
 
-                               getEnterpriseAppliedUpdates(enterprise)
+                               getEnterpriseAppliedUpdates(session, enterprise)
                                        .subscribe()
                                        .with(
                                                enterpriseAppliedUpdates -> {
@@ -364,65 +362,32 @@ public class EnterpriseService
     }
 
     //@Transactional()
+    @SuppressWarnings("unchecked")
     @Override
     //@CacheResult(cacheName = "FindEnterpriseWithClassifications")
-    public Uni<List<IEnterprise<?, ?>>> findEnterprisesWithClassification(IClassification<?, ?> classification)
+    public Uni<List<IEnterprise<?, ?>>> findEnterprisesWithClassification(Mutiny.Session session, IClassification<?, ?> classification)
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               new EnterpriseXClassification().builder()
-                                       .withClassification(classification)
-                                       .inActiveRange()
-                                       .inDateRange()
-                                       .selectColumn(EnterpriseXClassification_.enterpriseID)
-                                       .getAll(UUID.class)
-                                       .subscribe()
-                                       .with(
-                                               classy -> {
-                                                   try
-                                                   {
-                                                       EnterpriseQueryBuilder builder = new Enterprise().builder();
-                                                       builder = builder.where(Enterprise_.id, InList, classy);
-                                                       builder.getAll()
-                                                               .subscribe()
-                                                               .with(
-                                                                       enterprises -> {
-                                                                           try
-                                                                           {
-                                                                               emitter.complete(new ArrayList<>(enterprises));
-                                                                           }
-                                                                           catch (Exception e)
-                                                                           {
-                                                                               emitter.fail(e);
-                                                                           }
-                                                                       },
-                                                                       emitter::fail
-                                                               )
-                                                       ;
-                                                   }
-                                                   catch (Exception e)
-                                                   {
-                                                       emitter.fail(e);
-                                                   }
-                                               },
-                                               emitter::fail
-                                       )
-                               ;
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        return (Uni)new EnterpriseXClassification().builder(session)
+                       .withClassification(classification)
+                       .inActiveRange()
+                       .inDateRange()
+                       .selectColumn(EnterpriseXClassification_.enterpriseID)
+                       .getAll(UUID.class)
+                       .chain(
+                               classy -> {
+                                   EnterpriseQueryBuilder builder = new Enterprise().builder(session);
+                                   builder = builder.where(Enterprise_.id, InList, classy);
+                                   return builder.getAll()
+                                   ;
+                               });
+
     }
 
     //@Transactional()
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Uni<IEnterprise<?, ?>> findEnterprise(String name)
+    public Uni<IEnterprise<?, ?>> findEnterprise(Mutiny.Session session, String name)
     {
-        return new Enterprise().builder()
+        return new Enterprise().builder(session)
                        .withName(name)
                        .inDateRange()
                        .get()
@@ -432,25 +397,45 @@ public class EnterpriseService
     }
 
     //@Transactional()
+    @SuppressWarnings("unchecked")
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
-    public Uni<IEnterprise<?, ?>> getEnterprise(String name)
+    public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.Session session, String name)
     {
-        return new Enterprise().builder()
-                       .withName(name)
-                       .inDateRange()
-                       .get()
-                       .onFailure()
-                       .invoke(error -> log.error("Error getting enterprise by name: {}", error.getMessage(), error))
-                       .map(enterprise -> enterprise);
+        log.info("🔍 Starting fetch for enterprise: {}", name);
+
+        log.debug("📦 Session & transaction started for enterprise lookup: {}", name);
+
+        return (Uni) new Enterprise().builder(session)
+                             .withName(name)
+                             .inDateRange()
+                             .get()
+                             .onFailure()
+                             .invoke(error ->
+                                             log.error("❌ Failed to fetch enterprise '{}': {}", name, error.getMessage(), error)
+                             )
+                             .invoke(ent -> {
+                                 if (ent != null)
+                                 {
+                                     log.info("✅ Enterprise found: {} (ID: {})", ent.getName(), ent.getId());
+                                 }
+                                 else
+                                 {
+                                     log.warn("⚠️ No enterprise found for: {}", name);
+                                 }
+                             })
+                             .onFailure()
+                             .invoke(err ->
+                                             log.error("❌ Session/transaction failure during getEnterprise('{}')", name, err)
+                             );
     }
 
     //@Transactional()
     @Override
     //@CacheResult(cacheName = "GetEnterpriseByEnterpriseByUUID")
-    public Uni<IEnterprise<?, ?>> getEnterprise(UUID uuid)
+    public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.Session session, UUID uuid)
     {
-        return new Enterprise().builder()
+        return new Enterprise().builder(session)
                        .find(uuid)
                        .inDateRange()
                        .get()
@@ -461,9 +446,9 @@ public class EnterpriseService
 
     //@Transactional()
     @Override
-    public Uni<Boolean> doesEnterpriseExist(String name)
+    public Uni<Boolean> doesEnterpriseExist(Mutiny.Session session, String name)
     {
-        return new Enterprise().builder()
+        return new Enterprise().builder(session)
                        .withName(name)
                        .inDateRange()
                        .getCount()
@@ -474,9 +459,9 @@ public class EnterpriseService
 
     //@Transactional()
     @Override
-    public Uni<Set<IEnterprise<?, ?>>> getIEnterprises()
+    public Uni<Set<IEnterprise<?, ?>>> getIEnterprises(Mutiny.Session session)
     {
-        return new Enterprise().builder()
+        return new Enterprise().builder(session)
                        .inDateRange()
                        .orderBy(Enterprise_.name)
                        .getAll()
@@ -488,9 +473,9 @@ public class EnterpriseService
     //@Transactional()
     //@CacheResult
     @Override
-    public Uni<IEnterprise<?, ?>> getIEnterpriseFromName(String enterprise)
+    public Uni<IEnterprise<?, ?>> getIEnterpriseFromName(Mutiny.Session session, String enterprise)
     {
-        return new Enterprise().builder()
+        return new Enterprise().builder(session)
                        .withName(enterprise)
                        .get()
                        .onFailure()
@@ -501,9 +486,9 @@ public class EnterpriseService
     //@Transactional()
     //@CacheResult
     @Override
-    public Uni<IEnterprise<?, ?>> getIEnterpriseFromID(UUID enterprise)
+    public Uni<IEnterprise<?, ?>> getIEnterpriseFromID(Mutiny.Session session, UUID enterprise)
     {
-        return new Enterprise().builder()
+        return new Enterprise().builder(session)
                        .find(enterprise)
                        .get()
                        .onFailure()
@@ -512,14 +497,14 @@ public class EnterpriseService
     }
 
     @Override
-    public Uni<IEnterprise<?, ?>> startNewEnterprise(String enterpriseName,
+    public Uni<IEnterprise<?, ?>> startNewEnterprise(Mutiny.Session session, String enterpriseName,
                                                      @NotNull String adminUserName, @NotNull String adminPassword)
     {
-        return startNewEnterprise(enterpriseName, adminUserName, adminPassword, null);
+        return startNewEnterprise(session, enterpriseName, adminUserName, adminPassword, null);
     }
 
     @Override
-    public Uni<IEnterprise<?, ?>> startNewEnterprise(String enterpriseName,
+    public Uni<IEnterprise<?, ?>> startNewEnterprise(Mutiny.Session session, String enterpriseName,
                                                      @NotNull String adminUserName, @NotNull String adminPassword, UUID uuidIdentifier)
     {
         com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
@@ -533,13 +518,13 @@ public class EnterpriseService
 
         logProgress("Create Enterprise", "Creating Enterprise", 0, totalTasks);
 
-        return installEnterprise(enterpriseName)
+        return installEnterprise(session, enterpriseName)
                        .chain(enterprise -> {
-                           return createNewEnterprise(enterprise)
+                           return createNewEnterprise(session, enterprise)
                                           .chain(() -> {
                                               ISystemsService<?> systemsService = IGuiceContext.get(ISystemsService.class);
                                               return systemsService
-                                                             .getActivityMaster(enterprise)
+                                                             .getActivityMaster(session, enterprise)
                                                              .chain(activityMasterSystem -> {
                                                                  // Explicitly cast to ISystems<?, ?>
                                                                  ISystems<?, ?> system = (ISystems<?, ?>) activityMasterSystem;
@@ -547,12 +532,12 @@ public class EnterpriseService
                                                                  IPasswordsService<?> passwordsService = com.guicedee.client.IGuiceContext.get(IPasswordsService.class);
                                                                  // createAdminAndCreatorUserForEnterprise returns IInvolvedParty directly, not a Uni
                                                                  // Wrap it in a Uni to continue the reactive chain
-                                                                 return passwordsService.createAdminAndCreatorUserForEnterprise(system, adminUserName, adminPassword, uuidIdentifier);
+                                                                 return passwordsService.createAdminAndCreatorUserForEnterprise(session, system, adminUserName, adminPassword, uuidIdentifier);
                                                              })
                                                              .chain(user -> {
                                                                  wipeCaches();
                                                                  logProgress("Systems", "Running Systems Post Startups", 1);
-                                                                 return performPostStartup(enterprise)
+                                                                 return performPostStartup(session, enterprise)
                                                                                 .map(v -> enterprise);
                                                              });
                                           });
@@ -560,219 +545,211 @@ public class EnterpriseService
     }
 
 
-    private Uni<Enterprise> installEnterprise(String enterpriseName)
+    private Uni<Enterprise> installEnterprise(Mutiny.Session session, String enterpriseName)
     {
         com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
                 .setApplicationEnterpriseName(enterpriseName);
-        return create(enterpriseName, enterpriseName);
+        return create(session, enterpriseName, enterpriseName);
     }
 
     @Override
-    public Uni<Void> createNewEnterprise(@NotNull IEnterprise<?, ?> enterprise)
+    public Uni<IEnterprise<?, ?>> createNewEnterprise(Mutiny.Session session, @NotNull IEnterprise<?, ?> enterprise)
     {
-        return Uni.createFrom()
-                       .emitter(emitter -> {
-                           try
-                           {
-                               com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
-                                       .setSecurityEnabled(false);
-                               Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
-                               createBase(allSystems, enterprise);
-                               createBaseSystems(allSystems, enterprise);
-                               installSystems(allSystems, enterprise);
-                               setCurrentTask(0);
-                               logProgress("System Configuration", "Starting system updates", 1);
+        // 🔓 Disable security before starting
+        IGuiceContext.get(ActivityMasterConfiguration.class)
+                .setSecurityEnabled(false);
 
-                               loadUpdates(enterprise)
-                                       .subscribe()
-                                       .with(
-                                               result -> {
-                                                   logProgress("System Configuration", "Done", 1);
-                                                   //todo securities
-                                                   //com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
-                                                   //		.setSecurityEnabled(true);
-                                                   emitter.complete(null);
-                                               },
-                                               emitter::fail
-                                       )
-                               ;
-                           }
-                           catch (Exception e)
-                           {
-                               emitter.fail(e);
-                           }
-                       });
+        Set<IActivityMasterSystem<?>> allSystems = configuration.getAllSystems();
+
+        return createBase(session, allSystems, enterprise)
+                       .chain(() -> createBaseSystems(session, allSystems, enterprise))
+                       .chain(() -> installSystems(session, allSystems, enterprise))
+                       .invoke(() -> {
+                           setCurrentTask(0);
+                           logProgress("System Configuration", "Starting system updates", 1);
+                       })
+                       .chain(() -> loadUpdates(session, enterprise))
+                       .invoke(() -> {
+                           logProgress("System Configuration", "Done", 1);
+                           // 🔒 Re-enable security here if needed
+                           // IGuiceContext.get(ActivityMasterConfiguration.class).setSecurityEnabled(true);
+                       })
+                       .onFailure()
+                       .invoke(err ->
+                                       log.error("❌ Failed during createNewEnterprise()", err)
+                       )
+                       .map(res -> enterprise);
     }
 
     //@Transactional()
     @Override
-    public Uni<IEnterprise<?, ?>> isEnterpriseReady()
+    public Uni<IEnterprise<?, ?>> isEnterpriseReady(Mutiny.Session session)
+    {
+        return getEnterprise(session, applicationEnterpriseName);
+    }
+
+    private Uni<Void> installSystems(Mutiny.Session session, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise)
+    {
+        boolean found = false;
+        List<IActivityMasterSystem<?>> filtered = new ArrayList<>();
+        for (IActivityMasterSystem<?> system : allSystems)
+        {
+            if (!found && SystemsSystem.class.isAssignableFrom(system.getClass()))
+            {
+                found = true;
+            }
+
+            if (found)
+            {
+                filtered.add(system);
+            }
+        }
+
+        if (filtered.isEmpty())
+        {
+            log.warn("⚠️ No systems found from SystemsSystem onward to install.");
+            return Uni.createFrom()
+                           .voidItem();
+        }
+
+        logProgress("Installing Systems", "Starting from SystemsSystem");
+
+        return Multi.createFrom()
+                       .iterable(filtered)
+                       .onItem()
+                       .transformToUni(system -> installSystem(session, system, enterprise))
+                       .merge()
+                       .collect()
+                       .asList()
+                       .invoke(installed -> log.info("✅ Installed " + installed.size() + " systems starting from SystemsSystem."))
+                       .replaceWithVoid()
+                       .onFailure()
+                       .invoke(err -> log.error("❌ Error during post-SystemsSystem installs", err));
+    }
+
+    private Uni<Void> installSystem(Mutiny.Session session, IActivityMasterSystem<?> system, IEnterprise<?, ?> enterprise)
+    {
+        String className = system.getClass()
+                                   .getSimpleName();
+        logProgress("Running System", className);
+        log.info("🚀 Starting single system install: " + className);
+
+        return performSystemInstall(session, enterprise, system)
+                       .invoke(() -> log.info("✅ System install completed: " + className))
+                       .onFailure()
+                       .invoke(err -> log.error("❌ System install failed: " + className, err));
+    }
+
+
+    private Uni<Void> performSystemInstall(Mutiny.Session session, IEnterprise<?, ?> enterprise, IActivityMasterSystem<?> system)
     {
         return Uni.createFrom()
-                       .emitter(emitter -> {
+                       .voidItem()
+                       .invoke(() -> {
+                           String className = system.getClass()
+                                                      .getSimpleName();
+                           String systemName = system.getSystemName();
+                           String cleanedName = cleanName(className);
+
+                           log.info("➡️ Starting install for: " + systemName + " [" + cleanedName + "]");
+
+                           IActivityMasterSystem<?> registeredSystem = system;
+
+                           @SuppressWarnings({"rawtypes", "unchecked"})
+                           Set<IOnSystemInstall> listeners = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
+                           log.debug("🔧 Notifying " + listeners.size() + " install listeners for system: " + systemName);
+
+                           for (IOnSystemInstall listener : listeners)
+                           {
+                               try
+                               {
+                                   listener.onSystemInstallStart(systemName);
+                                   log.trace("🟢 Start: " + listener.getClass()
+                                                                   .getSimpleName());
+                               }
+                               catch (Exception e)
+                               {
+                                   log.warn("⚠️ Start listener failed: " + listener.getClass()
+                                                                                   .getSimpleName(), e);
+                               }
+                           }
+
                            try
                            {
-                               if (!Strings.isNullOrEmpty(applicationEnterpriseName))
-                               {
-                                   IEnterpriseService<?> enterpriseService = com.guicedee.client.IGuiceContext.get(IEnterpriseService.class);
-
-                                   enterpriseService.getEnterprise(applicationEnterpriseName)
-                                           .subscribe()
-                                           .with(
-                                                   enterprise -> {
-                                                       try
-                                                       {
-                                                           // Get system synchronously since it's not reactive yet
-                                                           ISystems<?, ?> system = com.guicedee.client.IGuiceContext.get(IActivityMasterSystem.class)
-                                                                                           .getSystem(applicationEnterpriseName);
-
-                                                           // Check if enterprise has the LastUpdateDate classification
-                                                           enterprise.builder()
-                                                                   .hasClassification(EnterpriseClassifications.LastUpdateDate.toString(), system)
-                                                                   .getCount()
-                                                                   .subscribe()
-                                                                   .with(
-                                                                           count -> {
-                                                                               try
-                                                                               {
-                                                                                   emitter.complete(enterprise);
-                                                                               }
-                                                                               catch (Exception e)
-                                                                               {
-                                                                                   log.warn("Error completing emitter", e);
-                                                                                   emitter.complete(enterprise);
-                                                                               }
-                                                                           },
-                                                                           error -> {
-                                                                               log.warn("Error checking classification count", error);
-                                                                               emitter.complete(enterprise);
-                                                                           }
-                                                                   )
-                                                           ;
-                                                       }
-                                                       catch (SystemsException e)
-                                                       {
-                                                           log.warn("System is not ready", e);
-                                                           emitter.fail(e);
-                                                       }
-                                                       catch (Exception e)
-                                                       {
-                                                           log.warn("Error in enterprise ready check", e);
-                                                           emitter.fail(e);
-                                                       }
-                                                   },
-                                                   error -> {
-                                                       if (error instanceof EnterpriseException)
-                                                       {
-                                                           log.warn("Enterprise is not ready", error);
-                                                       }
-                                                       else
-                                                       {
-                                                           log.warn("Error getting enterprise", error);
-                                                       }
-                                                       emitter.fail(error);
-                                                   }
-                                           )
-                                   ;
-                               }
-                               else
-                               {
-                                   IEnterpriseService<?> enterpriseService = com.guicedee.client.IGuiceContext.get(IEnterpriseService.class);
-                                   var enterprise = enterpriseService.getEnterprise(applicationEnterpriseName);
-                                   enterprise.onItem()
-                                           .invoke(emitter::complete)
-                                           .await()
-                                           .atMost(Duration.of(60L, ChronoUnit.SECONDS))
-                                   ;
-                               }
+                               registeredSystem.createDefaults(session, enterprise);
+                               log.info("✅ Defaults created for: " + systemName);
                            }
                            catch (Exception e)
                            {
-                               log.warn("Unexpected error in isEnterpriseReady", e);
-                               emitter.fail(e);
+                               log.error("❌ Failed to create defaults for: " + systemName, e);
+                               throw e;
                            }
-                       });
+
+                           for (IOnSystemInstall listener : listeners)
+                           {
+                               try
+                               {
+                                   listener.onSystemInstallEnd(systemName);
+                                   log.trace("🟢 End: " + listener.getClass()
+                                                                 .getSimpleName());
+                               }
+                               catch (Exception e)
+                               {
+                                   log.warn("⚠️ End listener failed: " + listener.getClass()
+                                                                                 .getSimpleName(), e);
+                               }
+                           }
+
+                           logProgress("Installed System", cleanedName, 1);
+                           log.info("✅ Finished install: " + systemName + " [" + cleanedName + "]");
+                       })
+                       .onFailure()
+                       .invoke(err ->
+                                       log.error("❌ Exception during install for: " + system.getSystemName(), err)
+                       );
     }
 
-    private void installSystems(Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise)
-    {
-        //then from classifications data service do both
-        boolean tillHere = false;
-        for (Iterator<IActivityMasterSystem<?>> iterator = allSystems.iterator(); iterator.hasNext(); )
-        {
-            IActivityMasterSystem<?> allSystem = iterator.next();
-            if (allSystem.getClass()
-                        .isAssignableFrom(SystemsSystem.class))
-            {
-                tillHere = true;
-            }
-            if (tillHere)
-            {
-                logProgress("Running System ", allSystem.getClass()
-                                                       .getSimpleName());
-                installSystem(allSystem, enterprise);
-            }
-        }
-    }
-
-    private void installSystem(IActivityMasterSystem<?> system, IEnterprise<?, ?> enterprise)
-    {
-        logProgress("Running System ", system.getClass()
-                                               .getSimpleName());
-        performSystemInstall(enterprise, system);
-    }
-
-
-    private void performSystemInstall(IEnterprise<?, ?> enterprise, IActivityMasterSystem<?> allSystem)
-    {
-        String nameC = cleanName(allSystem.getClass()
-                                         .getSimpleName());
-
-        IActivityMasterSystem<?> registeredSystem = allSystem;//com.guicedee.client.IGuiceContext.get(allSystem.getClass());
-
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        Set<IOnSystemInstall> systemInstallEventListeners = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
-        for (IOnSystemInstall systemInstallEventListener : systemInstallEventListeners)
-        {
-            systemInstallEventListener.onSystemInstallStart(registeredSystem.getSystemName());
-        }
-
-        ISystems<?, ?> registerSystem = registeredSystem.registerSystem(enterprise);
-
-        registeredSystem.createDefaults(enterprise);
-        for (IOnSystemInstall a : systemInstallEventListeners)
-        {
-            a.onSystemInstallEnd(registeredSystem.getSystemName());
-        }
-
-        logProgress("Installed System", nameC, 1);
-    }
-
-    private void createBaseSystems(Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise)
+    private Uni<Void> createBaseSystems(Mutiny.Session session, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise)
     {
         logProgress("Creating Base Systems", "Initializing Base Systems");
-        for (IActivityMasterSystem<?> allSystem : allSystems)
-        {
-            if (allSystem.getClass()
-                        .isAssignableFrom(SystemsSystem.class))
-            {
-                break;
-            }
-            performSystemInstall(enterprise, allSystem);
-        }
+
+        List<IActivityMasterSystem<?>> filtered = allSystems.stream()
+                                                          .takeWhile(system -> !SystemsSystem.class.isAssignableFrom(system.getClass()))
+                                                          .toList()
+                ;
+
+        return Multi.createFrom()
+                       .iterable(filtered)
+                       .onItem()
+                       .transformToUni(system -> performSystemInstall(session, enterprise, system))
+                       .merge()
+                       .collect()
+                       .asList()
+                       .invoke(installed -> log.info("✅ Base systems installed: " + installed.size()))
+                       .replaceWithVoid()
+                       .onFailure()
+                       .invoke(err -> log.error("❌ Error during base system installs", err));
     }
 
-    private void createBase(Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise)
+    private Uni<Void> createBase(Mutiny.Session session, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise)
     {
         logProgress("Creating Core", "Initializing Core Systems");
-        for (IActivityMasterSystem<?> allSystem : allSystems)
-        {
-            if (allSystem.getClass()
-                        .isAssignableFrom(SystemsSystem.class))
-            {
-                break;
-            }
-            performSystemInstall(enterprise, allSystem);
-        }
+
+        List<IActivityMasterSystem<?>> filtered = allSystems.stream()
+                                                          .takeWhile(system -> !SystemsSystem.class.isAssignableFrom(system.getClass()))
+                                                          .toList()
+                ;
+
+        return Multi.createFrom()
+                       .iterable(filtered)
+                       .onItem()
+                       .transformToUni(system -> performSystemInstall(session, enterprise, system))
+                       .merge()
+                       .collect()
+                       .asList()
+                       .invoke(installs -> log.info("✅ All core systems installed successfully: " + installs.size() + " systems"))
+                       .replaceWithVoid()
+                       .onFailure()
+                       .invoke(err -> log.error("❌ Failed during system installation", err));
     }
 }
