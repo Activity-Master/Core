@@ -28,9 +28,6 @@ public class ProductService
 		implements IProductService<ProductService>
 {
 	@Inject
-	private IEnterprise<?, ?> enterprise;
-
-	@Inject
 	private IClassificationService<?> classificationService;
 
 	@Override
@@ -76,7 +73,7 @@ public class ProductService
 		product.setName(name);
 		product.setProductCode(code);
 		product.setDescription(description);
-
+		var enterprise = system.getEnterprise();
 		product.setEnterpriseID(enterprise);
 		product.setSystemID(system);
 		product.setOriginalSourceSystemID(system.getId());
@@ -124,6 +121,7 @@ public class ProductService
 	@Override
 	public Uni<IProduct<?, ?>> findProduct(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) new Product().builder(session)
 		                    .withName(name)
 		                    .inActiveRange()
@@ -140,7 +138,7 @@ public class ProductService
 			classificationName = NoClassification.toString();
 		}
 		final String finalClassificationName = classificationName;
-
+		var enterprise = system.getEnterprise();
 		return (Uni) classificationService.find(session, classificationName, system, identityToken)
 		        .chain(classification -> {
 		            return new ProductXResourceItem().builder(session)
@@ -166,7 +164,7 @@ public class ProductService
 	public Uni<IProductType<?, ?>> createProductType(Mutiny.Session session, String productsType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
 		ProductType et = new ProductType();
-
+		var enterprise = system.getEnterprise();
 		// Check if product type exists
 		return et.builder(session)
 		         .withName(productsType)
@@ -223,6 +221,7 @@ public class ProductService
 	@Override
 	public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, String productType, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) new ProductType().builder(session)
 		                        .withName(productType)
 		                        .withEnterprise(enterprise)
@@ -236,6 +235,7 @@ public class ProductService
 	@Override
 	public Uni<IProduct<?, ?>> findProduct(Mutiny.Session session, String productName, IClassification<?, ?> classification, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) new Product().builder(session)
 		                    .withName(productName)
 		                    .withClassification(classification)
@@ -256,6 +256,7 @@ public class ProductService
 	@Override
 	public Uni<IProductType<?, ?>> findProductTypeForProduct(Mutiny.Session session, IProduct<?, ?> product, String classification, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) classificationService.find(session, classification, system, identityToken)
 		        .chain(classification1 -> {
 		            return new ProductXProductType().builder(session)
@@ -298,6 +299,7 @@ public class ProductService
 	@Override
 	public Uni<List<IProduct<?, ?>>> findByProductTypes(Mutiny.Session session, String type, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) new ProductXProductType().builder(session)
 		                                .withEnterprise(enterprise)
 		                                .inActiveRange()

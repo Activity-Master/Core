@@ -73,8 +73,6 @@ import static jakarta.persistence.criteria.JoinType.*;
 public class ResourceItemService
         implements IResourceItemService<ResourceItemService>
 {
-    @Inject
-    private IEnterprise<?, ?> enterprise;
 
     @Inject
     private IClassificationService<?> classificationService;
@@ -133,7 +131,7 @@ public class ResourceItemService
     {
         log.debug("Creating resource type with value: {}, key: {}, description: {}", value, key, description);
         ResourceItemType xr = new ResourceItemType();
-
+      var enterprise = system.getEnterprise();
         // First check if the resource type already exists
         return xr.builder(session)
                        .withName(value)
@@ -250,7 +248,7 @@ public class ResourceItemService
                                            ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Creating resource item - type: {}, value: {}", identityResourceType, resourceItemDataValue);
-
+        var enterprise = system.getEnterprise();
         // Step 1: Create the resource item
         ResourceItem xr = new ResourceItem();
         xr.setId(key);
@@ -325,7 +323,7 @@ public class ResourceItemService
     private Uni<Void> findResourceItemDataForUpdate(Mutiny.Session session, ResourceItem resourceItem, byte[] data, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Updating data for resource item: {}", resourceItem.getId());
-
+      var enterprise = system.getEnterprise();
         // Find the existing data relationship
         ResourceItemData rid = new ResourceItemData();
         return rid.builder(session)
@@ -371,7 +369,7 @@ public class ResourceItemService
     private Uni<Void> addResourceItemTypeRelationship(Mutiny.Session session, ResourceItem resourceItem, String typeName, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Adding resource item type relationship: {} for item: {}", typeName, resourceItem.getId());
-
+      var enterprise = system.getEnterprise();
         return findResourceItemType(session, typeName, system, identityToken)
                        .chain(resourceItemType -> {
                            ResourceItemXResourceItemType relationship = new ResourceItemXResourceItemType();
@@ -562,6 +560,7 @@ public class ResourceItemService
 
         // Not in cache, need to query the database
         ResourceItemType xr = new ResourceItemType();
+        var enterprise = system.getEnterprise();
         return (Uni) xr.builder(session)
                        .withEnterprise(enterprise)
                        .withName(type)
@@ -583,6 +582,7 @@ public class ResourceItemService
     public Uni<List<IResourceItem<?, ?>>> findByResourceItemType(Mutiny.Session session, String type, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
         log.debug("Finding resources by type: {} and value: {}", type, value);
+        var enterprise = systems.getEnterprise();
         return new ResourceItemXResourceItemType().builder(session)
                        .withEnterprise(enterprise)
                        .inActiveRange()

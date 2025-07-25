@@ -24,8 +24,6 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.E
 public class ClassificationsDataConceptService
 		implements IClassificationDataConceptService<ClassificationsDataConceptService>
 {
-	@Inject
-	private IEnterprise<?,?> enterprise;
 
 	@Override
 	public IClassificationDataConcept<?,?> get()
@@ -40,6 +38,7 @@ public class ClassificationsDataConceptService
 																  UUID... identityToken)
 	{
 		ClassificationDataConcept newConcept = new ClassificationDataConcept();
+		var enterprise = system.getEnterprise();
 		return newConcept.builder(session)
 		                 .withName(name.classificationValue())
 		                 .withEnterprise(enterprise)
@@ -106,6 +105,7 @@ public class ClassificationsDataConceptService
 	public Uni<IClassificationDataConcept<?,?>> find(Mutiny.Session session, String name, ISystems<?,?> system, UUID... identityToken)
 	{
 		ClassificationDataConcept cdc = new ClassificationDataConcept();
+		var enterprise = system.getEnterprise();
 		return cdc.builder(session)
 		         .withName(name)
 		         .withEnterprise(enterprise)

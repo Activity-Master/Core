@@ -5,7 +5,6 @@ import com.entityassist.RootEntity;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.guicedee.activitymaster.fsdm.client.services.builders.ISCDEntity;
-import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCD;
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderSCDEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -13,7 +12,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

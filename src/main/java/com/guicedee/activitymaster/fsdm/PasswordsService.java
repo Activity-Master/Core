@@ -36,8 +36,6 @@ import static com.guicedee.client.IGuiceContext.*;
 @Log4j2
 public class PasswordsService implements IPasswordsService<PasswordsService>
 {
-    @Inject
-    private IEnterprise<?, ?> enterprise;
 
     @Inject
     private IInvolvedPartyService<?> involvedPartyService;
@@ -59,6 +57,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
     public Uni<IInvolvedParty<?, ?>> findByUsername(Mutiny.Session session, String username, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Finding involved party by username: {}", username);
+        var enterprise = system.getEnterprise();
         return new InvolvedParty().builder(session)
                        .withEnterprise(enterprise)
                        .findByIdentificationType(IdentificationTypeUserName, username, system, identityToken)
@@ -203,6 +202,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
     public Uni<Boolean> doesUsernameExist(Mutiny.Session session, String username, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Checking if username exists: {}", username);
+        var enterprise = system.getEnterprise();
         return new InvolvedParty().builder(session)
                        .withEnterprise(enterprise)
                        .inActiveRange()

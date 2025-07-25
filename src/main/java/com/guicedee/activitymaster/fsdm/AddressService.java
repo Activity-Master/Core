@@ -40,9 +40,6 @@ public class AddressService
 	@Inject
 	private IClassificationService<?> classificationServiceProvider;
 
-	@Inject
-	private IEnterprise<?, ?> enterprise;
-
 	@Override
 	public IAddress<?, ?> get()
 	{
@@ -62,6 +59,7 @@ public class AddressService
 		Address addy = new Address();
 
 		// First, get the classification using reactive pattern
+		var enterprise = system.getEnterprise();
 		return classificationServiceProvider.find(session, addressClassification, system, identifyingToken)
 		        .chain(classification -> {
 		            // Check if address exists
@@ -141,7 +139,7 @@ public class AddressService
 		}
 
 		Address address = new Address();
-
+		var enterprise = system.getEnterprise();
 		// First, get the classification using reactive pattern
 		return classificationServiceProvider.find(session, RemoteAddressIPAddress.name(), system, identityToken)
 		        .chain(ipAddressClassification -> {
@@ -214,7 +212,7 @@ public class AddressService
 	public Uni<IAddress<?, ?>> addOrFindHostName(Mutiny.Session session, String hostName, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address address = new Address();
-
+		var enterprise = system.getEnterprise();
 		// First, get the classification using reactive pattern
 		return classificationServiceProvider.find(session, RemoteAddressHostName.name(), system, identityToken)
 		        .chain(hostNameClassification -> {
@@ -287,7 +285,7 @@ public class AddressService
 	public Uni<IAddress<?, ?>> addOrFindWebAddress(Mutiny.Session session, String webAddress, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address address = new Address();
-
+		var enterprise = system.getEnterprise();
 		// First, get the classification using reactive pattern
 		return classificationServiceProvider.find(session, WebAddress.name(), system, identityToken)
 		        .chain(webAddressClassification -> {
@@ -454,7 +452,7 @@ public class AddressService
 	{
 		PhoneNumberDTO phoneNumberDTO = new PhoneNumberDTO(phoneNumber);
 		Address streetAddress = new Address();
-
+		var enterprise = system.getEnterprise();
 		// First get the main phone classification and check if phone exists
 		return classificationServiceProvider.find(session, TelephoneNumber.name(), system, identityToken)
 		    .chain(homePhoneNumber -> {
@@ -567,6 +565,7 @@ public class AddressService
 		} catch (Throwable T) {
 			return Uni.createFrom().failure(new AddressException("Unable to create email address - invalid value", T));
 		}
+		var enterprise = system.getEnterprise();
 
 		// First get the main email classification and check if email exists
 		return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddress.name(), system, identityToken)
@@ -683,7 +682,7 @@ public class AddressService
 	public Uni<IAddress<?, ?>> addOrFindStreetAddress(Mutiny.Session session, String number, String street, String streetType, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address streetAddress = new Address();
-
+		var enterprise = system.getEnterprise();
 		// First get the building address classification and check if address exists
 		return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingAddress.name(), system, identityToken)
 		    .chain(buildingAddressClassification -> {
@@ -788,7 +787,7 @@ public class AddressService
 	public Uni<IAddress<?, ?>> addOrFindPostalAddress(Mutiny.Session session, String boxIdentifier, String boxNumber, ISystems<?, ?> system, UUID... identityToken) throws AddressException
 	{
 		Address address = new Address();
-
+		var enterprise = system.getEnterprise();
 		// First get the box address classification and check if address exists
 		return classificationServiceProvider.find(session, BoxAddress.name(), system, identityToken)
 		    .chain(boxAddressClassification -> {

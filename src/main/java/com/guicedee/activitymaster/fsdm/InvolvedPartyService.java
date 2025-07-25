@@ -32,8 +32,6 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.t
 @Log4j2
 public class InvolvedPartyService implements IInvolvedPartyService<InvolvedPartyService>
 {
-    @Inject
-    private IEnterprise<?, ?> enterprise;
 
     @Inject
     private IClassificationService<?> classificationService;
@@ -66,6 +64,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     {
         log.debug("Creating InvolvedPartyNameType: name={}, description={}", name, description);
         InvolvedPartyNameType xr = new InvolvedPartyNameType();
+        var enterprise = system.getEnterprise();
         return xr.builder(session)
                        .withName(name)
                        .inActiveRange()
@@ -119,7 +118,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     {
         log.debug("Creating InvolvedPartyIdentificationType: name={}, description={}", name, description);
         InvolvedPartyIdentificationType xr = new InvolvedPartyIdentificationType();
-
+var enterprise = system.getEnterprise();
         return xr.builder(session)
                        .withName(name)
                        .inActiveRange()
@@ -173,7 +172,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
         log.debug("Creating InvolvedPartyType: name={}, description={}", name, description);
 
         InvolvedPartyType xr = new InvolvedPartyType();
-
+var enterprise = system.getEnterprise();
         return xr.builder(session)
                        .withName(name)
                        .inActiveRange()
@@ -228,6 +227,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     public Uni<InvolvedPartyOrganicType> createOrganicType(Mutiny.Session session, ISystems<?, ?> system, UUID key, String name, String description, UUID... identityToken)
     {
         log.debug("Creating InvolvedPartyOrganicType: name={}, description={}", name, description);
+        var enterprise = system.getEnterprise();
         InvolvedPartyOrganicType xr = new InvolvedPartyOrganicType();
         xr.setId(key);
         xr.setName(name);
@@ -307,6 +307,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     {
         log.debug("Creating InvolvedParty: key={}, idTypes={}, isOrganic={}", key, idTypes, isOrganic);
         final InvolvedParty ip = new InvolvedParty();
+        var enterprise = system.getEnterprise();
         ip.setEnterpriseID(enterprise);
 
         final UUID finalKey = (key == null) ? UUID.randomUUID() : key;
@@ -401,7 +402,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     {
         log.debug("Setting up InvolvedParty organic status: isOrganic={}, id={}", isOrganic, ip.getId());
         IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
-
+        var enterprise = system.getEnterprise();
         if (isOrganic)
         {
             InvolvedPartyOrganic ipo = new InvolvedPartyOrganic();
@@ -476,6 +477,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     {
         log.debug("Finding InvolvedPartyType by name: {}", nameType);
         InvolvedPartyType xr = new InvolvedPartyType();
+        var enterprise = system.getEnterprise();
         Uni<InvolvedPartyType> result = xr.builder(session)
                                                 .withName(nameType)
                                                 .inActiveRange()
@@ -495,7 +497,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     public Uni<IInvolvedPartyNameType<?, ?>> findInvolvedPartyNameType(Mutiny.Session session, String nameType, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Finding InvolvedPartyNameType by name: {}", nameType);
-
+var enterprise = system.getEnterprise();
         InvolvedPartyNameType xr = new InvolvedPartyNameType();
         return (Uni) xr.builder(session)
                              .withName(nameType)
@@ -519,7 +521,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                           .findLink(null, (InvolvedPartyIdentificationType) id, token.getSecurityToken())
                                           .inActiveRange()
                                           .inDateRange()
-                                          .withEnterprise(enterprise)
+                                          //.withEnterprise(enterprise)
                                           .canRead(((SecurityToken) token).getSystemID(), identityToken)
                                           .get()
                                           .onItem()
@@ -571,6 +573,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
     public Uni<IInvolvedParty<?, ?>> findByUUID(Mutiny.Session session, UUID token, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Finding InvolvedParty by UUID token: {}", token);
+        var enterprise = system.getEnterprise();
         return findInvolvedPartyIdentificationType(session, IdentificationTypeUUID.toString(), system, identityToken)
                        .chain(id -> {
                            InvolvedPartyXInvolvedPartyIdentificationType idType = new InvolvedPartyXInvolvedPartyIdentificationType();

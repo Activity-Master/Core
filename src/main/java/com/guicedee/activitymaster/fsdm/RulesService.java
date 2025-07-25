@@ -28,9 +28,6 @@ public class RulesService
 		implements IRulesService<RulesService>
 {
 	@Inject
-	private IEnterprise<?, ?> enterprise;
-
-	@Inject
 	private IClassificationService<?> classificationService;
 
 	public IRules<?, ?> get()
@@ -54,6 +51,7 @@ public class RulesService
 		}
 		rules.setName(name);
 		rules.setDescription(description);
+		var enterprise = system.getEnterprise();
 
 		rules.setEnterpriseID(enterprise);
 		rules.setSystemID(system);
@@ -146,6 +144,7 @@ public class RulesService
 	{
 		RulesType et = new RulesType();
 
+		var enterprise = system.getEnterprise();
 		// Check if rule type exists
 		return et.builder(session)
 		         .withName(rulesType)
@@ -208,6 +207,7 @@ public class RulesService
 	//@CacheResult(cacheName = "RulesTypesString")
 	public Uni<IRulesType<?, ?>> findRulesTypes(Mutiny.Session session, String rulesType, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) new RulesType().builder(session)
 		                      .withName(rulesType)
 		                      .withEnterprise(enterprise)
@@ -220,6 +220,7 @@ public class RulesService
 	@Override
 	public Uni<List<IRulesType<?, ?>>> findRulesTypes(Mutiny.Session session, String classifications, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) classificationService.find(session, classifications, system, identityToken)
 		        .chain(classification -> {
 		            return new RulesType().builder(session)
@@ -235,6 +236,7 @@ public class RulesService
 	@Override
 	public Uni<List<IRules<?, ?>>> findByRulesTypes(Mutiny.Session session, IRulesType<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) new RulesXRulesType().builder(session)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink(null, (RulesType) rulesType, value)
@@ -248,6 +250,7 @@ public class RulesService
 	@Override
 	public Uni<List<IRulesType<?, ?>>> findRuleTypesByRules(Mutiny.Session session, IRules<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return  (Uni)  new RulesXRulesType().builder(session)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink((Rules) rulesType, null, value)
@@ -261,6 +264,7 @@ public class RulesService
 	@Override
 	public Uni<List<IRelationshipValue<IRules<?, ?>, IRulesType<?, ?>, ?>>> findRuleTypeValuesByRules(Mutiny.Session session, IRules<?, ?> rulesType, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni)  new RulesXRulesType().builder(session)
 		                                .withClassification(classificationName, value, system, identityToken)
 		                                .findLink((Rules) rulesType, null, value)
@@ -274,6 +278,7 @@ public class RulesService
 	@Override
 	public Uni<List<IRules<?, ?>>> findRulesByProduct(Mutiny.Session session, IProduct<?, ?> product, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni)  new RulesXProduct().builder(session)
 		                              .withClassification(classificationName, value, system, identityToken)
 		                              .findLink(null, (Product) product, value)
@@ -288,6 +293,7 @@ public class RulesService
 	@Override
 	public Uni<List<IRelationshipValue<IRules<?, ?>, IResourceItem<?, ?>, ?>>> findRulesByResourceItem(Mutiny.Session session, IResourceItem<?, ?> resourceItem, String classificationName, String value, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		return (Uni) new RulesXResourceItem().builder(session)
 		                                   .withClassification(classificationName, system)
 		                                   .findLink(null, (ResourceItem) resourceItem, value)

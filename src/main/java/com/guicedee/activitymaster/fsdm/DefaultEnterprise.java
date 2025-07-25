@@ -10,7 +10,6 @@ public enum DefaultEnterprise implements IEnterpriseNames<DefaultEnterprise>
 	;
 
 	private String description;
-	private IEnterprise<?,?> enterprise;
 
 	DefaultEnterprise(String description)
 	{
@@ -22,13 +21,4 @@ public enum DefaultEnterprise implements IEnterpriseNames<DefaultEnterprise>
 		return description;
 	}
 
-	public IEnterprise<?,?> getEnterprise()
-	{
-		return enterprise;
-	}
-
-	public void setEnterprise(IEnterprise<?,?> enterprise)
-	{
-		this.enterprise = enterprise;
-	}
 }

@@ -14,7 +14,7 @@ public class EnterpriseBinder extends PrivateModule implements IGuiceModule<Ente
 	@Override
 	protected void configure()
 	{
-		@SuppressWarnings("Convert2Diamond")
+	/*	@SuppressWarnings("Convert2Diamond")
 		Key<IEnterprise<?,?>> enterpriseKey = Key.get(new TypeLiteral<IEnterprise<?,?>>() {});
 		@SuppressWarnings("Convert2Diamond")
 		Key<IEnterprise<Enterprise, EnterpriseQueryBuilder>> enterpriseKeyLegit = Key.get(new TypeLiteral<IEnterprise<Enterprise, EnterpriseQueryBuilder>>() {});
@@ -23,7 +23,7 @@ public class EnterpriseBinder extends PrivateModule implements IGuiceModule<Ente
 		bind(enterpriseKeyLegit).toProvider(EnterpriseProvider.class);
 		
 		expose(enterpriseKey);
-		expose(IEnterprise.class);
+		expose(IEnterprise.class);*/
 		
 		@SuppressWarnings("Convert2Diamond")
 		Key<IEnterpriseService<?>> enterpriseServiceKey = Key.get(new TypeLiteral<IEnterpriseService<?>>() {});

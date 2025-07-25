@@ -29,9 +29,6 @@ public class SecurityTokenService
 		implements ISecurityTokenService<SecurityTokenService>
 {
 	@Inject
-	private IEnterprise<?,?> enterprise;
-
-	@Inject
 	private IClassificationService<?> classificationService;
 
 	@Override
@@ -54,6 +51,7 @@ public class SecurityTokenService
 										Date effectiveFromDate, Date effectiveToDate)
 	{
 			SecurityTokensSecurityToken sta = new SecurityTokensSecurityToken();
+			var enterprise = system.getEnterprise();
 			return sta.builder(session)
 				.withEnterprise(enterprise)
 				.inActiveRange()
@@ -92,6 +90,7 @@ public class SecurityTokenService
 	@Override
 	public Uni<ISecurityToken<?,?>> create(Mutiny.Session session, String classificationValue, String name, String description, ISystems<?,?> system, ISecurityToken<?,?> parent, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 			return classificationService.find(session, classificationValue, system, identityToken)
 				.chain(classification -> {
 					SecurityToken st = new SecurityToken();
@@ -161,6 +160,7 @@ public class SecurityTokenService
 	public Uni<Void> link(Mutiny.Session session, ISecurityToken<?,?> parent, ISecurityToken<?,?> child, IClassification<?,?> classification, String... identifyingToken)
 	{
 			SecurityTokenXSecurityToken root = new SecurityTokenXSecurityToken();
+			var enterprise = child.getEnterprise();
 			return root.builder(session)
 				.withEnterprise(enterprise)
 				.findLink((SecurityToken) parent, (SecurityToken) child, null)
@@ -220,6 +220,7 @@ public class SecurityTokenService
 	{
 		
 			SecurityToken st = new SecurityToken();
+			var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Everyone)
@@ -237,6 +238,7 @@ public class SecurityTokenService
 	{
 	
 			SecurityToken st = new SecurityToken();
+			var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Everywhere)
@@ -254,6 +256,7 @@ public class SecurityTokenService
 	{
 	
 			SecurityToken st = new SecurityToken();
+			var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Guests)
@@ -270,6 +273,7 @@ public class SecurityTokenService
 	public Uni<ISecurityToken<?,?>> getRegisteredGuestsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
 			SecurityToken st = new SecurityToken();
+			var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Registered)
@@ -286,6 +290,7 @@ public class SecurityTokenService
 	public Uni<ISecurityToken<?,?>> getVisitorsGuestsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
 			SecurityToken st = new SecurityToken();
+			var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Visitors)
@@ -302,6 +307,7 @@ public class SecurityTokenService
 	public Uni<ISecurityToken<?,?>> getAdministratorsFolder(Mutiny.Session session, ISystems<?,?> system, UUID... identityToken)
 	{
 			SecurityToken st = new SecurityToken();
+			var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(UserGroup.toString(), system, identityToken)
 				.withName(Administrators)
@@ -319,6 +325,7 @@ public class SecurityTokenService
 	{
 	
 			SecurityToken st = new SecurityToken();
+			var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(UserGroupSecurityTokenClassifications.System.toString(), system, identityToken)
 				.withName(System)
@@ -336,6 +343,7 @@ public class SecurityTokenService
 	{
 
 			SecurityToken st = new SecurityToken();
+			var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(Plugin.toString(), system, identityToken)
 				.withName(Plugins)
@@ -353,6 +361,7 @@ public class SecurityTokenService
 	{
 	
 			SecurityToken st = new SecurityToken();
+		var enterprise = system.getEnterprise();
 			return st.builder(session)
 				.findFolder(Application.toString(), system, identityToken)
 				.withName(Applications)
@@ -368,7 +377,7 @@ public class SecurityTokenService
 	@Override
 	public Uni<ISecurityToken<?,?>> getSecurityToken(Mutiny.Session session, UUID identifyingToken, ISystems<?,?> system, UUID... identityToken)
 	{
-
+var enterprise = system.getEnterprise();
 			return new SecurityToken().builder(session)
 				.findBySecurityToken(identifyingToken.toString())
 				.withEnterprise(enterprise)
@@ -387,6 +396,7 @@ public class SecurityTokenService
 	{
 
 			SecurityTokenQueryBuilder builder = new SecurityToken().builder(session);
+			var enterprise = system.getEnterprise();
 			builder = builder.findBySecurityToken(identifyingToken.toString())
 					.withEnterprise(enterprise)
 					.inDateRange();

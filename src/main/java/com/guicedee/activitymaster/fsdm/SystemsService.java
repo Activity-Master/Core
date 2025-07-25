@@ -28,9 +28,6 @@ public class SystemsService
         implements ISystemsService<SystemsService>
 {
     @Inject
-    private IEnterprise<?, ?> enterprise;
-
-    @Inject
     private IClassificationService<?> classificationService;
 
     @Inject
@@ -92,7 +89,7 @@ public class SystemsService
     public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session, ISystems<?, ?> requestingSystem, String parentSystem, UUID... identityToken)
     {
         SystemsXClassification systemClassifications = new SystemsXClassification();
-
+        var enterprise = requestingSystem.getEnterprise();
         // Get identity classification using reactive pattern
         return classificationService.getIdentityType(session, requestingSystem, identityToken)
                 .chain(identifyClassification -> {
@@ -113,8 +110,8 @@ public class SystemsService
     public Uni<String> registerNewSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, ISystems<?, ?> newSystem)
     {
         // Get the activity master system and token
-        Uni<ISystems<?, ?>> activityMasterSystemUni = getISystemReactive(ActivityMasterSystemName);
-        Uni<UUID> activityMasterSystemUUIDUni = getISystemTokenReactive(ActivityMasterSystemName);
+        Uni<ISystems<?, ?>> activityMasterSystemUni = getISystemReactive(enterprise, ActivityMasterSystemName);
+        Uni<UUID> activityMasterSystemUUIDUni = getISystemTokenReactive(enterprise, ActivityMasterSystemName);
 
         // Chain the operations
         return Uni.combine()
@@ -208,13 +205,13 @@ public class SystemsService
     }
 
     // Helper methods for reactive operations
-    private Uni<ISystems<?, ?>> getISystemReactive(String systemName)
+    private Uni<ISystems<?, ?>> getISystemReactive(IEnterprise<?, ?> enterprise, String systemName)
     {
         return IActivityMasterService.getISystem(systemName, enterprise)
                        .onItem().ifNull().failWith(() -> new NoSuchElementException("System not found: " + systemName));
     }
 
-    private Uni<UUID> getISystemTokenReactive(String systemName)
+    private Uni<UUID> getISystemTokenReactive(IEnterprise<?, ?> enterprise, String systemName)
     {
         return IActivityMasterService.getISystemToken(systemName, enterprise)
                        .onItem().ifNull().failWith(() -> new NoSuchElementException("System token not found: " + systemName));
@@ -310,6 +307,7 @@ public class SystemsService
     //@CacheResult(cacheName = "SystemGetSecurityToken")
     public Uni<ISecurityToken<?, ?>> getSecurityToken(Mutiny.Session session, String uuidIdentity, ISystems<?, ?> system, UUID... identityToken)
     {
+        var enterprise = system.getEnterprise();
         return new SecurityToken().builder(session)
                        .findBySecurityToken(uuidIdentity.toString(), enterprise)
                        .inActiveRange()

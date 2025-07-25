@@ -28,8 +28,6 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.S
 public class ClassificationService
 		implements IClassificationService<ClassificationService>
 {
-	@Inject
-	private IEnterprise<?, ?> enterprise;
 
 	@Inject
 	private ClassificationsDataConceptService dataConceptService;
@@ -94,7 +92,7 @@ public class ClassificationService
 		}
 
 		Classification rootCl = new Classification();
-
+		var enterprise = system.getEnterprise();
 		// Check if classification exists
 		return rootCl.builder(session)
 		             .withName(name)
@@ -196,6 +194,7 @@ public class ClassificationService
 	@Override
 	public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken)
 	{
+		var enterprise = system.getEnterprise();
 		Classification search = new Classification();
 		return search.builder(session)
 		               .withName(name)

@@ -27,9 +27,6 @@ public class EventsService
         implements IEventService<EventsService>
 {
     @Inject
-    private IEnterprise<?, ?> enterprise;
-
-    @Inject
     private Vertx vertx;
 
     @Override
@@ -65,7 +62,7 @@ public class EventsService
         {
             event.setId(key);
         }
-
+      var enterprise = system.getEnterprise();
         event.setEnterpriseID(enterprise);
         event.setSystemID(system);
         event.setOriginalSourceSystemID(system.getId());
@@ -91,6 +88,7 @@ public class EventsService
     public Uni<IEventType<?, ?>> createEventType(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
     {
         EventType et = new EventType();
+        var enterprise = system.getEnterprise();
         return et.builder(session)
                        .withName(eventType)
                        .withEnterprise(enterprise)
@@ -138,6 +136,7 @@ public class EventsService
     //@CacheResult(cacheName = "EventTypesStrings")
     public Uni<IEventType<?, ?>> findEventType(Mutiny.Session session, String eventType, ISystems<?, ?> system, UUID... identityToken)
     {
+        var enterprise = system.getEnterprise();
         return new EventType().builder(session)
                        .withName(eventType)
                        .withEnterprise(enterprise)

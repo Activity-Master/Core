@@ -1,3 +1,4 @@
+/*
 package com.guicedee.activitymaster.fsdm.services.providers;
 
 import com.google.inject.Inject;
@@ -21,8 +22,6 @@ import java.time.Duration;
 @Singleton
 public class ActiveFlagProvider implements Provider<IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder>>
 {
-    @Inject
-    private Provider<IEnterprise<?, ?>> enterprise;
 
     @Inject
     private Provider<IActiveFlagService<?>> activeFlagService;
@@ -37,11 +36,6 @@ public class ActiveFlagProvider implements Provider<IActiveFlag<ActiveFlag, Acti
     @Override
     public IActiveFlag<ActiveFlag, ActiveFlagQueryBuilder> get()
     {
-        if (enterprise.get()
-                    .isFake())
-        {
-            return new ActiveFlag();
-        }
         var factory = IGuiceContext.get(Mutiny.SessionFactory.class);
 
         log.info("🔍 Starting enterprise fetch...");
@@ -61,3 +55,4 @@ public class ActiveFlagProvider implements Provider<IActiveFlag<ActiveFlag, Acti
                        .atMost(Duration.ofSeconds(50));
     }
 }
+*/

@@ -53,9 +53,6 @@ public class ArrangementsService
     private IClassificationService<?> classificationService;
 
     @Inject
-    private IEnterprise<?, ?> enterprise;
-
-    @Inject
     private Vertx vertx;
 
     @Override
@@ -96,7 +93,7 @@ public class ArrangementsService
         arrangement.setOriginalSourceSystemID(system.getId());
         arrangement.setEnterpriseID(system.getEnterpriseID());
         IActiveFlagService<?> activeFlagService = IGuiceContext.get(IActiveFlagService.class);
-
+        var enterprise = system.getEnterprise();
         return (Uni) activeFlagService.getActiveFlag(session, system.getEnterprise())
                        .chain(activeFlag -> {
                            arrangement.setActiveFlagID(activeFlag);
@@ -146,6 +143,7 @@ public class ArrangementsService
         xr.setDescription(type);
         xr.setSystemID(system);
         xr.setOriginalSourceSystemID(system.getId());
+        var enterprise = system.getEnterprise();
         xr.setEnterpriseID(enterprise);
         IActiveFlagService<?> acService = com.guicedee.client.IGuiceContext.get(IActiveFlagService.class);
 
@@ -172,6 +170,7 @@ public class ArrangementsService
     {
         log.debug("Finding arrangement type: {}", type);
         ArrangementType xr = new ArrangementType();
+        var enterprise = system.getEnterprise();
         return (Uni) xr.builder(session)
                              .withName(type)
                              .inActiveRange()
@@ -193,6 +192,7 @@ public class ArrangementsService
     public Uni<List<IArrangement<?, ?>>> findInvolvedPartyArrangements(Mutiny.Session session, IInvolvedParty<?, ?> ip, String arrType, ISystems<?, ?> systems, UUID... identityToken)
     {
         log.debug("Finding involved party arrangements for IP: {}, type: {}", ip.getId(), arrType);
+        var enterprise = systems.getEnterprise();
         return new ArrangementXInvolvedParty()
                        .builder(session)
                        .withEnterprise(enterprise)
@@ -221,7 +221,7 @@ public class ArrangementsService
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassification(Mutiny.Session session, String classificationName, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
         log.debug("Finding arrangements by classification - name: {}, value: {}", classificationName, value);
-
+        var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, classificationName, systems, identityToken)
                        .chain(classification -> {
@@ -268,7 +268,7 @@ public class ArrangementsService
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGT(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
         log.debug("Finding arrangements by classification GT - type: {}, value: {}", arrType, value);
-
+      var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, arrType, systems, identityToken)
                        .chain(classification -> {
@@ -330,7 +330,7 @@ public class ArrangementsService
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationGTE(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
         log.debug("Finding arrangements by classification GTE - type: {}, value: {}", arrType, value);
-
+      var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, arrType, systems, identityToken)
                        .chain(classification -> {
@@ -412,7 +412,7 @@ public class ArrangementsService
             classificationUni = Uni.createFrom()
                                         .failure(new ArrangementException("Classification name not provided"));
         }
-
+        var enterprise = system.getEnterprise();
         return (Uni) classificationUni.chain(classification -> {
                     ArrangementQueryBuilder aqb = new Arrangement().builder(session);
                     aqb.withEnterprise(enterprise)
@@ -524,7 +524,7 @@ public class ArrangementsService
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationLT(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
         log.debug("Finding arrangements by classification LT - type: {}, value: {}", arrType, value);
-
+      var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return (Uni) classificationService.find(session, arrType, systems, identityToken)
                              .onItem()
@@ -587,7 +587,7 @@ public class ArrangementsService
     public Uni<List<IArrangement<?, ?>>> findArrangementsByClassificationLTE(Mutiny.Session session, String arrType, IArrangement<?, ?> withParent, String value, ISystems<?, ?> systems, UUID... identityToken)
     {
         log.debug("Finding arrangements by classification LTE - type: {}, value: {}", arrType, value);
-
+      var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, arrType, systems, identityToken)
                        .onItem()
@@ -655,7 +655,7 @@ public class ArrangementsService
     {
         log.debug("Finding arrangements by classification - type: {}, withParent: {}, value: {}",
                 arrType, withParent != null ? withParent.getId() : "null", value);
-
+      var enterprise = systems.getEnterprise();
         // First get the classification using reactive pattern
         return classificationService.find(session, arrType, systems, identityToken)
                        .onItem()
@@ -736,7 +736,7 @@ public class ArrangementsService
         {
             classificationName = NoClassification.toString();
         }
-
+        var enterprise = system.getEnterprise();
         final String finalClassificationName = classificationName;
 
         return (Uni) classificationService.find(session, classificationName, system, identityToken)
@@ -774,7 +774,7 @@ public class ArrangementsService
         }
 
         final String finalClassificationName = classificationName;
-
+        var enterprise = system.getEnterprise();
         return (Uni) classificationService.find(session, classificationName, system, identityToken)
                              .chain(classification -> {
 
@@ -811,7 +811,7 @@ public class ArrangementsService
         }
 
         final String finalClassificationName = classificationName;
-
+        var enterprise = system.getEnterprise();
         return classificationService.find(session, classificationName, system, identityToken)
                        .chain(classification -> {
                            return new ArrangementXRulesType().builder(session)
@@ -852,7 +852,7 @@ public class ArrangementsService
         }
 
         final String finalClassificationName = classificationName;
-
+      var enterprise = system.getEnterprise();
         return classificationService.find(session, classificationName, system, identityToken)
                        .chain(classification -> {
                            return new ArrangementXInvolvedParty().builder(session)
@@ -893,7 +893,7 @@ public class ArrangementsService
         }
 
         final String finalClassificationName = classificationName;
-
+      var enterprise = system.getEnterprise();
         return classificationService.find(session, classificationName, system, identityToken)
                        .chain(classification -> {
                            return new ArrangementXInvolvedParty().builder(session)
@@ -934,7 +934,7 @@ public class ArrangementsService
         }
 
         final String finalClassificationName = classificationName;
-
+      var enterprise = system.getEnterprise();
         return classificationService.find(session, classificationName, system, identityToken)
                        .chain(classification -> {
                            return new ArrangementXInvolvedParty().builder(session)
@@ -974,7 +974,7 @@ public class ArrangementsService
         }
 
         final String finalClassificationName = classificationName;
-
+      var enterprise = system.getEnterprise();
         return classificationService.find(session, classificationName, system, identityToken)
                        .chain(classification -> {
                            return new ArrangementXInvolvedParty().builder(session)
@@ -1008,6 +1008,7 @@ public class ArrangementsService
     public Uni<IArrangementType<?, ?>> find(Mutiny.Session session, String idType, ISystems<?, ?> system, UUID... identityToken)
     {
         log.debug("Finding arrangement type by name: {}", idType);
+        var enterprise = system.getEnterprise();
         ArrangementType xr = new ArrangementType();
         return (Uni) xr.builder(session)
                              .withName(idType)

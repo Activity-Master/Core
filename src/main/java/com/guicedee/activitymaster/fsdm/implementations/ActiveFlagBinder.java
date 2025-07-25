@@ -1,13 +1,10 @@
 package com.guicedee.activitymaster.fsdm.implementations;
 
-import com.google.inject.*;
-import com.google.inject.name.Names;
-import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
-import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.activeflag.IActiveFlag;
+import com.google.inject.Key;
+import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
 import com.guicedee.activitymaster.fsdm.ActiveFlagService;
-import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
-import com.guicedee.activitymaster.fsdm.db.entities.activeflag.builders.ActiveFlagQueryBuilder;
-import com.guicedee.activitymaster.fsdm.services.providers.ActiveFlagProvider;
+import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 
 public class ActiveFlagBinder extends PrivateModule implements IGuiceModule<ActiveFlagBinder>
@@ -28,7 +25,7 @@ public class ActiveFlagBinder extends PrivateModule implements IGuiceModule<Acti
 		expose(genericKey);
 		expose(IActiveFlagService.class);
 		
-		for (com.entityassist.enumerations.ActiveFlag value : com.entityassist.enumerations.ActiveFlag.values())
+		/*for (com.entityassist.enumerations.ActiveFlag value : com.entityassist.enumerations.ActiveFlag.values())
 		{
 			@SuppressWarnings("Convert2Diamond")
 			Key<IActiveFlag<?,?>> genericATypeKey = Key.get(new TypeLiteral<IActiveFlag<?,?>>() {}, Names.named(value.name()));
@@ -39,6 +36,6 @@ public class ActiveFlagBinder extends PrivateModule implements IGuiceModule<Acti
 			bind(realATypeKey).toProvider(new ActiveFlagProvider(value));
 			
 			expose(genericATypeKey);
-		}
+		}*/
 	}
 }

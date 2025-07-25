@@ -27,46 +27,19 @@ public class ActiveFlagService
 		return new ActiveFlag();
 	}
 
-	//@Transactional()
+ //@Transactional()
 	public Uni<IActiveFlag<?,?>> create(Mutiny.Session session, IEnterprise<?,?> enterprise, String name, String description, UUID... identifyingToken)
 	{
-		return Uni.createFrom().emitter(emitter -> {
-			try {
-				doesFlagExist(session, name, enterprise, identifyingToken)
-					.subscribe().with(
-						exists -> {
-							try {
-								if (!exists) {
-									ActiveFlag af = new ActiveFlag();
-									af.setName(name);
-									af.setDescription(description);
-									af.setAllowAccess(true);
-									af.setEnterpriseID((Enterprise) enterprise);
-									af.builder(session)
-									  .persist(af)
-									  .subscribe().with(
-										persisted -> {
-											emitter.complete(af);
-										},
-										emitter::fail
-									  );
-								} else {
-									findFlagByName(session, name, enterprise, identifyingToken)
-										.subscribe().with(
-											emitter::complete,
-											emitter::fail
-										);
-								}
-							} catch (Exception e) {
-								emitter.fail(e);
-							}
-						},
-						emitter::fail
-					);
-			} catch (Exception e) {
-				emitter.fail(e);
-			}
-		});
+		return findFlagByName(session, name, enterprise, identifyingToken)
+			.onFailure(ActiveFlagException.class).recoverWithUni(() -> {
+				ActiveFlag af = new ActiveFlag();
+				af.setName(name);
+				af.setDescription(description);
+				af.setAllowAccess(true);
+				af.setEnterpriseID((Enterprise) enterprise);
+				return af.builder(session)
+					.persist(af).replaceWith(Uni.createFrom().item(af));
+			});
 	}
 
 	//@Transactional()
@@ -94,16 +67,12 @@ public class ActiveFlagService
 	@Override
 	public Uni<IActiveFlag<?,?>> findFlagByName(Mutiny.Session session, String flag, IEnterprise<?,?> enterprise, UUID... identifyingToken)
 	{
-		return new ActiveFlag().builder(session)
+		return (Uni) new ActiveFlag().builder(session)
 		                       .withName(flag)
 		                       .inDateRange()
 		                       //    .canRead(enterprise, identifyingToken)
 		                       .withEnterprise(enterprise)
-		                       .get()
-		                       .onItem().ifNull().failWith(() -> 
-		                           new ActiveFlagException("Unable to find a flag by name of - " + flag + " - in enterprise - " + enterprise)
-		                       )
-		                       .map(activeFlag -> (IActiveFlag<?,?>) activeFlag);
+		                       .get();
 	}
 
 	//@Transactional()
