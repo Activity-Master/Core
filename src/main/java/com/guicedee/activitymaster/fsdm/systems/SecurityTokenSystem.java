@@ -9,7 +9,6 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.syste
 import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
 import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseCoreTable;
-import com.guicedee.activitymaster.fsdm.db.abstraction.WarehouseSCDTable;
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.arrangement.*;
 import com.guicedee.activitymaster.fsdm.db.entities.classifications.*;
@@ -831,7 +830,7 @@ public class SecurityTokenSystem
                      WarehouseCoreTable<?, ?, ?, ?> tableItem = (WarehouseCoreTable<?, ?, ?, ?>) next;
                      logProgress("Security Token Service", "Checking - " + tableItem.getClass().getSimpleName(), 0);
                      // Add security creation operation to the list
-                     securityOperations.add(tableItem.createDefaultSecurity(session, system, identityToken));
+                     securityOperations.add(tableItem.createDefaultSecurity(system, identityToken));
                  }
 
                  if (securityOperations.isEmpty()) {

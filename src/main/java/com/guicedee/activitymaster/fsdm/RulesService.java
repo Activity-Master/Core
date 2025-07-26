@@ -72,7 +72,7 @@ public class RulesService
 		        .chain(ruleType -> {
 		            // Start createDefaultSecurity in parallel without waiting for it
 		            // We need to cast to RulesType to access the createDefaultSecurity method
-                    ruleType.createDefaultSecurity(session, system, identityToken)
+                    ruleType.createDefaultSecurity(system, identityToken)
 		                .subscribe().with(
 		                    result -> {
 		                        // Security setup completed successfully
@@ -180,7 +180,7 @@ public class RulesService
 		                            // Start createDefaultSecurity in parallel without waiting for it
 		                            // We need to cast to RulesType to access the createDefaultSecurity method
 		                            RulesType rulesTypeImpl = (RulesType) persisted;
-		                            rulesTypeImpl.createDefaultSecurity(session, system, identityToken)
+		                            rulesTypeImpl.createDefaultSecurity(system, identityToken)
 		                              .subscribe().with(
 		                                  result -> {
 		                                      // Security setup completed successfully

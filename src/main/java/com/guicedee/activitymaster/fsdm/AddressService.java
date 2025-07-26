@@ -94,7 +94,7 @@ public class AddressService
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        persisted.createDefaultSecurity(session, system, identifyingToken)
+		                                        persisted.createDefaultSecurity(system, identifyingToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully
@@ -173,7 +173,7 @@ public class AddressService
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(session, system, identityToken)
+		                                        address.createDefaultSecurity(system, identityToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully
@@ -246,7 +246,7 @@ public class AddressService
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(session, system, identityToken)
+		                                        address.createDefaultSecurity(system, identityToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully
@@ -319,7 +319,7 @@ public class AddressService
 		                                    })
 		                                    .chain(persisted -> {
 		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(session, system, identityToken)
+		                                        address.createDefaultSecurity(system, identityToken)
 		                                            .subscribe().with(
 		                                                result -> {
 		                                                    // Security setup completed successfully
@@ -485,7 +485,7 @@ public class AddressService
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            streetAddress.createDefaultSecurity(session, system, identityToken)
+		                            streetAddress.createDefaultSecurity(system, identityToken)
 		                                .subscribe().with(
 		                                    result -> {
 		                                        // Security setup completed successfully
@@ -599,7 +599,7 @@ public class AddressService
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            emailAddy.createDefaultSecurity(session, system, identityToken)
+		                            emailAddy.createDefaultSecurity(system, identityToken)
 		                                .subscribe().with(
 		                                    result -> {
 		                                        // Security setup completed successfully
@@ -716,7 +716,7 @@ public class AddressService
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            address.createDefaultSecurity(session, system, identityToken)
+		                            address.createDefaultSecurity(system, identityToken)
 		                                .subscribe().with(
 		                                    result -> {
 		                                        // Security setup completed successfully
@@ -821,7 +821,7 @@ public class AddressService
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            postalAddress.createDefaultSecurity(session, system, identityToken)
+		                            postalAddress.createDefaultSecurity(system, identityToken)
 		                                .subscribe().with(
 		                                    result -> {
 		                                        // Security setup completed successfully

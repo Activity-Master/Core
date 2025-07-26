@@ -138,7 +138,7 @@ public class SecurityTokenService
 											st.setActiveFlagID((ActiveFlag) activeFlag);
 											return session.persist(st).replaceWith(Uni.createFrom().item(st))
 												.chain(() -> {
-													st.createDefaultSecurity(session, system, identityToken);
+													st.createDefaultSecurity(system, identityToken);
 													return Uni.createFrom().item(st);
 												});
 										});

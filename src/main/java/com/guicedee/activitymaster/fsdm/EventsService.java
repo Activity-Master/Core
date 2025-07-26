@@ -76,7 +76,7 @@ public class EventsService
                        })
                        .chain(persistedEvent -> {
                            // Start the createDefaultSecurity operation but don't wait for it to complete
-                           persistedEvent.createDefaultSecurity(session, system, identityToken);
+                           persistedEvent.createDefaultSecurity(system, identityToken);
                            return persistedEvent.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken)
                                           .map(result -> persistedEvent);
                        });
@@ -119,7 +119,7 @@ public class EventsService
                                               })
                                               .chain(persistedEt -> {
                                                   // Start the createDefaultSecurity operation but don't wait for it to complete
-                                                  persistedEt.createDefaultSecurity(session, system, identityToken);
+                                                  persistedEt.createDefaultSecurity(system, identityToken);
                                                   return Uni.createFrom()
                                                                  .item(persistedEt);
                                               });

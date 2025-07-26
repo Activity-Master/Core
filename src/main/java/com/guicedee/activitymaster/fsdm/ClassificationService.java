@@ -137,7 +137,7 @@ public class ClassificationService
 		                             })
 		                             .map(persisted -> {
 		                                 // Start createDefaultSecurity in parallel without waiting for it
-		                                 rootCl.createDefaultSecurity(session, system, identityToken)
+		                                 rootCl.createDefaultSecurity(system, identityToken)
 		                                       .subscribe().with(
 		                                           result -> {
 		                                               // Security setup completed successfully

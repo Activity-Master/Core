@@ -9,7 +9,6 @@ import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import com.guicedee.activitymaster.fsdm.db.entities.security.SecurityToken;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.google.inject.Inject;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
@@ -18,7 +17,6 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,34 +34,37 @@ import static com.guicedee.client.IGuiceContext.*;
 @MappedSuperclass()
 @Log4j2
 public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S>,
-                                                Q extends QueryBuilderCore<Q, J, I>,
-                                                I extends java.util.UUID,
-                                                S extends WarehouseSecurityTable<S, ?, ?>
-                                                >
-        extends WarehouseBaseTable<J, Q, I>
-        implements IWarehouseCoreTable<J, Q, I, S>
+                                            Q extends QueryBuilderCore<Q, J, I>,
+                                            I extends java.util.UUID,
+                                            S extends WarehouseSecurityTable<S, ?, ?>
+                                            >
+    extends WarehouseBaseTable<J, Q, I>
+    implements IWarehouseCoreTable<J, Q, I, S>
 {
-    @Serial
-    private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
-    @Inject
-    @Transient
-    private SecurityTokenService securityTokenService;
+  @Inject
+  @Transient
+  private SecurityTokenService securityTokenService;
 
-    public WarehouseCoreTable()
-    {
+  public WarehouseCoreTable()
+  {
 
-    }
+  }
 
-    public abstract void configureSecurityEntity(S securityEntity);
+  public abstract void configureSecurityEntity(S securityEntity);
 
-    @Override
-    public Uni<Void> createDefaultSecurity(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🛡️ Creating default security for system: {}", system.getName());
-        
-        List<Uni<S>> securityOperations = new ArrayList<>();
-        
+  @Override
+  public Uni<Void> createDefaultSecurity(ISystems<?, ?> system, UUID... identity)
+  {
+    log.debug("🛡️ Creating default security for system: {}", system.getName());
+
+    List<Uni<S>> securityOperations = new ArrayList<>();
+
+    Mutiny.SessionFactory factory = get(Mutiny.SessionFactory.class);
+    return factory.withSession(session -> {
+      return session.withTransaction(tx -> {
         securityOperations.add(createDefaultAdministratorSecurityAccess(session, system, identity));
         securityOperations.add(createDefaultEveryoneSecurityAccess(session, system, identity));
         securityOperations.add(createDefaultEverywhereSecurityAccess(session, system, identity));
@@ -71,144 +72,153 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         securityOperations.add(createDefaultApplicationsSecurityAccess(session, system, identity));
         securityOperations.add(createDefaultPluginsSecurityAccess(session, system, identity));
         securityOperations.add(createDefaultGuestReadSecurityAccess(session, system, identity));
-        
+
         log.debug("🚀 Executing {} security operations in parallel", securityOperations.size());
-        
+
         return Uni.combine()
-                .all()
-                .unis(securityOperations)
-                .discardItems()
-                .onItem()
-                .invoke(() -> {
-                    log.debug("✅ All security operations completed successfully");
-                })
-                .onFailure()
-                .invoke(error -> {
-                    log.error("❌ Failed to complete security operations: {}", error.getMessage(), error);
-                })
-                .map(r -> null);
-    }
+                   .all()
+                   .unis(securityOperations)
+                   .discardItems()
+                   .onItem()
+                   .invoke(() -> {
+                     log.debug("✅ All security operations completed successfully");
+                   })
+                   .onFailure()
+                   .invoke(error -> {
+                     log.error("❌ Failed to complete security operations: {}", error.getMessage(), error);
+                   })
+                   .map(r -> null);
+      });
+    });
+  }
 
-    public Uni<Void> updateSecurity(Mutiny.Session session, J newCoreTable, Systems system)
-    {
-        log.debug("🔄 Updating security for table with system: {}", system.getName());
-        
-        S stAdmin = get(findPersistentSecurityClass());
-        @SuppressWarnings("rawtypes")
-        QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder(session);
-        
-        return securities.findLinkedSecurityTokens(this)
-                       .inDateRange()
-                       .getAll()
-                       .chain(result -> {
-                           List<Uni<Void>> updateOperations = new ArrayList<>();
-                           
-                           for (Object exist : result) {
-                               S existingToken = (S) exist;
-                               existingToken.setId(null);
-                               configureDefaultsForNewToken(existingToken, system);
-                               
-                               updateOperations.add(
-                                   session.persist(existingToken).map(persisted -> null)
-                               );
-                           }
-                           
-                           log.debug("🔄 Updating {} security tokens in parallel", updateOperations.size());
-                           
-                           return Uni.combine()
-                                   .all()
-                                   .unis(updateOperations)
-                                   .discardItems()
-                                   .onItem()
-                                   .invoke(() -> {
-                                       log.debug("✅ Security update completed successfully");
-                                   })
-                                   .map(r -> null);
-                       });
-    }
+  public Uni<Void> updateSecurity(Mutiny.Session session, J newCoreTable, Systems system)
+  {
+    log.debug("🔄 Updating security for table with system: {}", system.getName());
 
-    private Uni<S> createDefaultAdministratorSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🔧 Creating default administrator security access");
-        
-        S stAdmin = get(findPersistentSecurityClass());
-        return securityTokenService.getAdministratorsFolder(session, system, identity)
-                .chain(administrators -> {
-                    @SuppressWarnings("rawtypes")
-                    QueryBuilderSecurities<?, ?, ?> securities =(QueryBuilderSecurities) stAdmin.builder(session);
-                    return securities.findLinkedSecurityToken((SecurityToken) administrators, this)
+    S stAdmin = get(findPersistentSecurityClass());
+    @SuppressWarnings("rawtypes")
+    QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder(session);
+
+    return securities.findLinkedSecurityTokens(this)
+               .inDateRange()
+               .getAll()
+               .chain(result -> {
+                 List<Uni<Void>> updateOperations = new ArrayList<>();
+
+                 for (Object exist : result)
+                 {
+                   S existingToken = (S) exist;
+                   existingToken.setId(null);
+                   configureDefaultsForNewToken(existingToken, system);
+
+                   updateOperations.add(
+                       session.persist(existingToken)
+                           .map(persisted -> null)
+                   );
+                 }
+
+                 log.debug("🔄 Updating {} security tokens in parallel", updateOperations.size());
+
+                 return Uni.combine()
+                            .all()
+                            .unis(updateOperations)
+                            .discardItems()
+                            .onItem()
+                            .invoke(() -> {
+                              log.debug("✅ Security update completed successfully");
+                            })
+                            .map(r -> null);
+               });
+  }
+
+  private Uni<S> createDefaultAdministratorSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
+  {
+    log.debug("🔧 Creating default administrator security access");
+
+    S stAdmin = get(findPersistentSecurityClass());
+    return securityTokenService.getAdministratorsFolder(session, system, identity)
+               .chain(administrators -> {
+                 @SuppressWarnings("rawtypes")
+                 QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder(session);
+                 return securities.findLinkedSecurityToken((SecurityToken) administrators, this)
                             .inDateRange()
                             .setReturnFirst(true)
                             .get()
                             .onFailure()
                             .recoverWithUni(() -> {
-                                log.debug("🔧 Creating new administrator security token");
-                                S stEntity = get(findPersistentSecurityClass());
-                                configureDefaultsForNewToken(stEntity, system);
-                                stEntity.setSecurityTokenID((SecurityToken) administrators);
-                                stEntity.setCreateAllowed(true);
-                                stEntity.setUpdateAllowed(true);
-                                stEntity.setDeleteAllowed(true);
-                                stEntity.setReadAllowed(true);
+                              log.debug("🔧 Creating new administrator security token");
+                              S stEntity = get(findPersistentSecurityClass());
+                              configureDefaultsForNewToken(stEntity, system);
+                              stEntity.setSecurityTokenID((SecurityToken) administrators);
+                              stEntity.setCreateAllowed(true);
+                              stEntity.setUpdateAllowed(true);
+                              stEntity.setDeleteAllowed(true);
+                              stEntity.setReadAllowed(true);
 
-                                return (Uni) session.persist(stEntity)
-                                        .chain(s -> {
-                                            configureSecurityEntity(stEntity);
-                                            return session.merge(stEntity);
-                                        });
+                              return (Uni) session.persist(stEntity)
+                                               .chain(s -> {
+                                                 configureSecurityEntity(stEntity);
+                                                 return session.merge(stEntity);
+                                               });
                             })
                             .chain(result -> {
-                                if (result instanceof Uni) {
-                                    return (Uni<S>) result;
-                                }
-                                log.debug("✅ Administrator security token already exists");
-                                return Uni.createFrom().item((S) result);
+                              if (result instanceof Uni)
+                              {
+                                return (Uni<S>) result;
+                              }
+                              log.debug("✅ Administrator security token already exists");
+                              return Uni.createFrom()
+                                         .item((S) result);
                             });
-                });
-    }
+               });
+  }
 
-    private Uni<S> createDefaultEveryoneSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🔧 Creating default everyone security access with session");
-        
-        S stAdmin = get(findPersistentSecurityClass());
-        return (Uni)get(SecurityTokenService.class)
-                .getEveryoneGroup(session, system, identity)
-                .chain(everyoneGroup -> {
-                    @SuppressWarnings("rawtypes")
-                    QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder(session);
+  private Uni<S> createDefaultEveryoneSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
+  {
+    log.debug("🔧 Creating default everyone security access with session");
 
-                    return securities.findLinkedSecurityToken((SecurityToken) everyoneGroup, this)
-                            //.inActiveRange(enterprise)
-                            .inDateRange()
-                            .setReturnFirst(true)
-                            .get()
-                            .onItemOrFailure()
-                            .call((result, throwable) -> {
-                                if (throwable != null)
-                                {
-                                    log.debug("🔧 Creating new everyone security token");
-                                    S stEntity = get(findPersistentSecurityClass());
-                                    configureDefaultsForNewToken(stEntity, system);
-                                    stEntity.setSecurityTokenID((SecurityToken) everyoneGroup);
-                                    stEntity.setCreateAllowed(false);
-                                    stEntity.setUpdateAllowed(false);
-                                    stEntity.setDeleteAllowed(false);
-                                    stEntity.setReadAllowed(false);
+    S stAdmin = get(findPersistentSecurityClass());
+    return (Uni) get(SecurityTokenService.class)
+                     .getEveryoneGroup(session, system, identity)
+                     .chain(everyoneGroup -> {
+                       @SuppressWarnings("rawtypes")
+                       QueryBuilderSecurities<?, ?, ?> securities = (QueryBuilderSecurities) stAdmin.builder(session);
 
-                                    return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Everyone security token created successfully");
-                                                return Uni.createFrom().item(stEntity);
-                                            });
-                                }else {
-                                    log.debug("✅ Everyone security token already exists");
-                                    return Uni.createFrom()
-                                                   .item((S) result);
-                                }
-                            });
-                });
+                       return securities.findLinkedSecurityToken((SecurityToken) everyoneGroup, this)
+                                  //.inActiveRange(enterprise)
+                                  .inDateRange()
+                                  .setReturnFirst(true)
+                                  .get()
+                                  .onItemOrFailure()
+                                  .call((result, throwable) -> {
+                                    if (throwable != null)
+                                    {
+                                      log.debug("🔧 Creating new everyone security token");
+                                      S stEntity = get(findPersistentSecurityClass());
+                                      configureDefaultsForNewToken(stEntity, system);
+                                      stEntity.setSecurityTokenID((SecurityToken) everyoneGroup);
+                                      stEntity.setCreateAllowed(false);
+                                      stEntity.setUpdateAllowed(false);
+                                      stEntity.setDeleteAllowed(false);
+                                      stEntity.setReadAllowed(false);
+
+                                      return session.persist(stEntity)
+                                                 .chain(s -> {
+                                                   configureSecurityEntity(stEntity);
+                                                   log.debug("✅ Everyone security token created successfully");
+                                                   return Uni.createFrom()
+                                                              .item(stEntity);
+                                                 });
+                                    }
+                                    else
+                                    {
+                                      log.debug("✅ Everyone security token already exists");
+                                      return Uni.createFrom()
+                                                 .item((S) result);
+                                    }
+                                  });
+                     });
 
         /*
         Optional<S> exists = (Optional<S>) securities.findLinkedSecurityToken(administrators, this)
@@ -232,50 +242,53 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
             stAdmin = exists.get();
         }
         return stAdmin;*/
-    }
+  }
 
-    private Uni<S> createDefaultEverywhereSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🔧 Creating default everywhere security access with session");
-        
-        S stAdmin = get(findPersistentSecurityClass());
-        return get(SecurityTokenService.class)
-                .getEverywhereGroup(session, system, identity)
-                .chain(everywhereGroup -> {
-                    @SuppressWarnings("rawtypes")
-                    QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+  private Uni<S> createDefaultEverywhereSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
+  {
+    log.debug("🔧 Creating default everywhere security access with session");
 
-                    return securities.findLinkedSecurityToken((SecurityToken) everywhereGroup, this)
+    S stAdmin = get(findPersistentSecurityClass());
+    return get(SecurityTokenService.class)
+               .getEverywhereGroup(session, system, identity)
+               .chain(everywhereGroup -> {
+                 @SuppressWarnings("rawtypes")
+                 QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+
+                 return securities.findLinkedSecurityToken((SecurityToken) everywhereGroup, this)
                             //.inActiveRange(enterprise)
                             .inDateRange()
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
                             .call((result, throwable) -> {
-                                if (throwable != null)
-                                {
-                                    log.debug("🔧 Creating new everywhere security token");
-                                    S stEntity = get(findPersistentSecurityClass());
-                                    configureDefaultsForNewToken(stEntity, system);
-                                    stEntity.setSecurityTokenID((SecurityToken) everywhereGroup);
-                                    stEntity.setCreateAllowed(false);
-                                    stEntity.setUpdateAllowed(false);
-                                    stEntity.setDeleteAllowed(false);
-                                    stEntity.setReadAllowed(true);
+                              if (throwable != null)
+                              {
+                                log.debug("🔧 Creating new everywhere security token");
+                                S stEntity = get(findPersistentSecurityClass());
+                                configureDefaultsForNewToken(stEntity, system);
+                                stEntity.setSecurityTokenID((SecurityToken) everywhereGroup);
+                                stEntity.setCreateAllowed(false);
+                                stEntity.setUpdateAllowed(false);
+                                stEntity.setDeleteAllowed(false);
+                                stEntity.setReadAllowed(true);
 
-                                    return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Everywhere security token created successfully");
-                                                return Uni.createFrom().item(stEntity);
-                                            });
-                                }else {
-                                    log.debug("✅ Everywhere security token already exists");
-                                    return Uni.createFrom()
-                                                   .item((S) result);
-                                }
+                                return session.persist(stEntity)
+                                           .chain(s -> {
+                                             configureSecurityEntity(stEntity);
+                                             log.debug("✅ Everywhere security token created successfully");
+                                             return Uni.createFrom()
+                                                        .item(stEntity);
+                                           });
+                              }
+                              else
+                              {
+                                log.debug("✅ Everywhere security token already exists");
+                                return Uni.createFrom()
+                                           .item((S) result);
+                              }
                             });
-                });
+               });
         /*
         Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
                                      //.inActiveRange(enterprise)
@@ -300,51 +313,54 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
             stAdmin = exists.get();
         }*/
 
-        //return stAdmin;
-    }
+    //return stAdmin;
+  }
 
-    private Uni<S> createDefaultSystemsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🔧 Creating default systems security access with session");
-        
-        S stAdmin = get(findPersistentSecurityClass());
-        return get(SecurityTokenService.class)
-                .getSystemsFolder(session, system, identity)
-                .chain(systemsFolder -> {
-                    @SuppressWarnings("rawtypes")
-                    QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+  private Uni<S> createDefaultSystemsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
+  {
+    log.debug("🔧 Creating default systems security access with session");
 
-                    return securities.findLinkedSecurityToken((SecurityToken) systemsFolder, this)
+    S stAdmin = get(findPersistentSecurityClass());
+    return get(SecurityTokenService.class)
+               .getSystemsFolder(session, system, identity)
+               .chain(systemsFolder -> {
+                 @SuppressWarnings("rawtypes")
+                 QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+
+                 return securities.findLinkedSecurityToken((SecurityToken) systemsFolder, this)
                             //.inActiveRange(enterprise)
                             .inDateRange()
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
                             .call((result, throwable) -> {
-                                if (throwable != null)
-                                {
-                                    log.debug("🔧 Creating new systems security token");
-                                    S stEntity = get(findPersistentSecurityClass());
-                                    configureDefaultsForNewToken(stEntity, system);
-                                    stEntity.setSecurityTokenID((SecurityToken) systemsFolder);
-                                    stEntity.setCreateAllowed(true);
-                                    stEntity.setUpdateAllowed(true);
-                                    stEntity.setDeleteAllowed(false);
-                                    stEntity.setReadAllowed(true);
+                              if (throwable != null)
+                              {
+                                log.debug("🔧 Creating new systems security token");
+                                S stEntity = get(findPersistentSecurityClass());
+                                configureDefaultsForNewToken(stEntity, system);
+                                stEntity.setSecurityTokenID((SecurityToken) systemsFolder);
+                                stEntity.setCreateAllowed(true);
+                                stEntity.setUpdateAllowed(true);
+                                stEntity.setDeleteAllowed(false);
+                                stEntity.setReadAllowed(true);
 
-                                    return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Systems security token created successfully");
-                                                return Uni.createFrom().item(stEntity);
-                                            });
-                                }else {
-                                    log.debug("✅ Systems security token already exists");
-                                    return Uni.createFrom()
-                                                   .item((S) result);
-                                }
+                                return session.persist(stEntity)
+                                           .chain(s -> {
+                                             configureSecurityEntity(stEntity);
+                                             log.debug("✅ Systems security token created successfully");
+                                             return Uni.createFrom()
+                                                        .item(stEntity);
+                                           });
+                              }
+                              else
+                              {
+                                log.debug("✅ Systems security token already exists");
+                                return Uni.createFrom()
+                                           .item((S) result);
+                              }
                             });
-                });
+               });
 /*
         Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
                                      //.inActiveRange(enterprise)
@@ -370,50 +386,53 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
             stAdmin = exists.get();
         }
         return stAdmin;*/
-    }
+  }
 
-    private Uni<S> createDefaultApplicationsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🔧 Creating default applications security access with session");
-        
-        S stAdmin = get(findPersistentSecurityClass());
-        return get(SecurityTokenService.class)
-                .getApplicationsFolder(session, system, identity)
-                .chain(applicationsFolder -> {
-                    @SuppressWarnings("rawtypes")
-                    QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+  private Uni<S> createDefaultApplicationsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
+  {
+    log.debug("🔧 Creating default applications security access with session");
 
-                    return securities.findLinkedSecurityToken((SecurityToken) applicationsFolder, this)
+    S stAdmin = get(findPersistentSecurityClass());
+    return get(SecurityTokenService.class)
+               .getApplicationsFolder(session, system, identity)
+               .chain(applicationsFolder -> {
+                 @SuppressWarnings("rawtypes")
+                 QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+
+                 return securities.findLinkedSecurityToken((SecurityToken) applicationsFolder, this)
                             //.inActiveRange(enterprise)
                             .inDateRange()
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
                             .call((result, throwable) -> {
-                                if (throwable != null)
-                                {
-                                    log.debug("🔧 Creating new applications security token");
-                                    S stEntity = get(findPersistentSecurityClass());
-                                    configureDefaultsForNewToken(stEntity, system);
-                                    stEntity.setSecurityTokenID((SecurityToken) applicationsFolder);
-                                    stEntity.setCreateAllowed(true);
-                                    stEntity.setUpdateAllowed(true);
-                                    stEntity.setDeleteAllowed(false);
-                                    stEntity.setReadAllowed(true);
+                              if (throwable != null)
+                              {
+                                log.debug("🔧 Creating new applications security token");
+                                S stEntity = get(findPersistentSecurityClass());
+                                configureDefaultsForNewToken(stEntity, system);
+                                stEntity.setSecurityTokenID((SecurityToken) applicationsFolder);
+                                stEntity.setCreateAllowed(true);
+                                stEntity.setUpdateAllowed(true);
+                                stEntity.setDeleteAllowed(false);
+                                stEntity.setReadAllowed(true);
 
-                                    return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Applications security token created successfully");
-                                                return Uni.createFrom().item(stEntity);
-                                            });
-                                }else {
-                                    log.debug("✅ Applications security token already exists");
-                                    return Uni.createFrom()
-                                                   .item((S) result);
-                                }
+                                return session.persist(stEntity)
+                                           .chain(s -> {
+                                             configureSecurityEntity(stEntity);
+                                             log.debug("✅ Applications security token created successfully");
+                                             return Uni.createFrom()
+                                                        .item(stEntity);
+                                           });
+                              }
+                              else
+                              {
+                                log.debug("✅ Applications security token already exists");
+                                return Uni.createFrom()
+                                           .item((S) result);
+                              }
                             });
-                });
+               });
 /*
         Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
                                      //.inActiveRange(enterprise)
@@ -439,50 +458,53 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
             stAdmin = exists.get();
         }
         return stAdmin;*/
-    }
+  }
 
-    private Uni<S> createDefaultPluginsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🔧 Creating default plugins security access with session");
-        
-        S stAdmin = get(findPersistentSecurityClass());
-        return get(SecurityTokenService.class)
-                .getPluginsFolder(session, system, identity)
-                .chain(pluginsFolder -> {
-                    @SuppressWarnings("rawtypes")
-                    QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+  private Uni<S> createDefaultPluginsSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
+  {
+    log.debug("🔧 Creating default plugins security access with session");
 
-                    return securities.findLinkedSecurityToken((SecurityToken) pluginsFolder, this)
+    S stAdmin = get(findPersistentSecurityClass());
+    return get(SecurityTokenService.class)
+               .getPluginsFolder(session, system, identity)
+               .chain(pluginsFolder -> {
+                 @SuppressWarnings("rawtypes")
+                 QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+
+                 return securities.findLinkedSecurityToken((SecurityToken) pluginsFolder, this)
                             //.inActiveRange(enterprise)
                             .inDateRange()
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
                             .call((result, throwable) -> {
-                                if (throwable != null)
-                                {
-                                    log.debug("🔧 Creating new plugins security token");
-                                    S stEntity = get(findPersistentSecurityClass());
-                                    configureDefaultsForNewToken(stEntity, system);
-                                    stEntity.setSecurityTokenID((SecurityToken) pluginsFolder);
-                                    stEntity.setCreateAllowed(true);
-                                    stEntity.setUpdateAllowed(true);
-                                    stEntity.setDeleteAllowed(false);
-                                    stEntity.setReadAllowed(true);
+                              if (throwable != null)
+                              {
+                                log.debug("🔧 Creating new plugins security token");
+                                S stEntity = get(findPersistentSecurityClass());
+                                configureDefaultsForNewToken(stEntity, system);
+                                stEntity.setSecurityTokenID((SecurityToken) pluginsFolder);
+                                stEntity.setCreateAllowed(true);
+                                stEntity.setUpdateAllowed(true);
+                                stEntity.setDeleteAllowed(false);
+                                stEntity.setReadAllowed(true);
 
-                                    return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Plugins security token created successfully");
-                                                return Uni.createFrom().item(stEntity);
-                                            });
-                                }else {
-                                    log.debug("✅ Plugins security token already exists");
-                                    return Uni.createFrom()
-                                                   .item((S) result);
-                                }
+                                return session.persist(stEntity)
+                                           .chain(s -> {
+                                             configureSecurityEntity(stEntity);
+                                             log.debug("✅ Plugins security token created successfully");
+                                             return Uni.createFrom()
+                                                        .item(stEntity);
+                                           });
+                              }
+                              else
+                              {
+                                log.debug("✅ Plugins security token already exists");
+                                return Uni.createFrom()
+                                           .item((S) result);
+                              }
                             });
-                });
+               });
 /*
         Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
                                      //.inActiveRange(enterprise)
@@ -507,50 +529,53 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
             stAdmin = exists.get();
         }
         return stAdmin;*/
-    }
+  }
 
-    private Uni<S> createDefaultGuestReadSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🔧 Creating default guest read security access with session");
-        
-        S stAdmin = get(findPersistentSecurityClass());
-        return get(SecurityTokenService.class)
-                .getGuestsFolder(session, system, identity)
-                .chain(guestsFolder -> {
-                    @SuppressWarnings("rawtypes")
-                    QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+  private Uni<S> createDefaultGuestReadSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
+  {
+    log.debug("🔧 Creating default guest read security access with session");
 
-                    return securities.findLinkedSecurityToken((SecurityToken) guestsFolder, this)
+    S stAdmin = get(findPersistentSecurityClass());
+    return get(SecurityTokenService.class)
+               .getGuestsFolder(session, system, identity)
+               .chain(guestsFolder -> {
+                 @SuppressWarnings("rawtypes")
+                 QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+
+                 return securities.findLinkedSecurityToken((SecurityToken) guestsFolder, this)
                             //.inActiveRange(enterprise)
                             .inDateRange()
                             .setReturnFirst(true)
                             .get()
                             .onItemOrFailure()
                             .call((result, throwable) -> {
-                                if (throwable != null)
-                                {
-                                    log.debug("🔧 Creating new guest read security token");
-                                    S stEntity = get(findPersistentSecurityClass());
-                                    configureDefaultsForNewToken(stEntity, system);
-                                    stEntity.setSecurityTokenID((SecurityToken) guestsFolder);
-                                    stEntity.setCreateAllowed(false);
-                                    stEntity.setUpdateAllowed(false);
-                                    stEntity.setDeleteAllowed(false);
-                                    stEntity.setReadAllowed(true);
+                              if (throwable != null)
+                              {
+                                log.debug("🔧 Creating new guest read security token");
+                                S stEntity = get(findPersistentSecurityClass());
+                                configureDefaultsForNewToken(stEntity, system);
+                                stEntity.setSecurityTokenID((SecurityToken) guestsFolder);
+                                stEntity.setCreateAllowed(false);
+                                stEntity.setUpdateAllowed(false);
+                                stEntity.setDeleteAllowed(false);
+                                stEntity.setReadAllowed(true);
 
-                                    return session.persist(stEntity)
-                                            .chain(s -> {
-                                                configureSecurityEntity(stEntity);
-                                                log.debug("✅ Guest read security token created successfully");
-                                                return Uni.createFrom().item(stEntity);
-                                            });
-                                }else {
-                                    log.debug("✅ Guest read security token already exists");
-                                    return Uni.createFrom()
-                                                   .item((S) result);
-                                }
+                                return session.persist(stEntity)
+                                           .chain(s -> {
+                                             configureSecurityEntity(stEntity);
+                                             log.debug("✅ Guest read security token created successfully");
+                                             return Uni.createFrom()
+                                                        .item(stEntity);
+                                           });
+                              }
+                              else
+                              {
+                                log.debug("✅ Guest read security token already exists");
+                                return Uni.createFrom()
+                                           .item((S) result);
+                              }
                             });
-                });
+               });
 /*
         Optional<S> exists = securities.findLinkedSecurityToken(administrators, this)
                                      //.inActiveRange(enterprise)
@@ -576,63 +601,66 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
         }
 
         return stAdmin;*/
-    }
+  }
 
-    @SuppressWarnings("unchecked")
-    protected Class<S> findPersistentSecurityClass()
-    {
-        return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
-    }
+  @SuppressWarnings("unchecked")
+  protected Class<S> findPersistentSecurityClass()
+  {
+    return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];
+  }
 
-    protected void configureDefaultsForNewToken(S stAdmin, ISystems<?, ?> system)
-    {
-        stAdmin.setSystemID((Systems) system);
-        stAdmin.setActiveFlagID(((Systems) system).getActiveFlagID());
-        stAdmin.setOriginalSourceSystemID((Systems) system);
-        stAdmin.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
-        stAdmin.setEnterpriseID((Enterprise) system.getEnterprise());
-    }
+  protected void configureDefaultsForNewToken(S stAdmin, ISystems<?, ?> system)
+  {
+    stAdmin.setSystemID((Systems) system);
+    stAdmin.setActiveFlagID(((Systems) system).getActiveFlagID());
+    stAdmin.setOriginalSourceSystemID((Systems) system);
+    stAdmin.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
+    stAdmin.setEnterpriseID((Enterprise) system.getEnterprise());
+  }
 
-    public Uni<S> createDefaultGuestNoSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
-    {
-        log.debug("🎭 Creating default guest no-security access token for system: {}", system.getName());
-        
-        return securityTokenService.getGuestsFolder(session, system, identity)
-            .chain(administrators -> {
-                S stAdmin = get(findPersistentSecurityClass());
-                
-                @SuppressWarnings("rawtypes")
-                QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
-                
-                return securities.findLinkedSecurityToken((SecurityToken) administrators, this)
-                    .inDateRange()
-                    .setReturnFirst(true)
-                    .get()
-                    .onFailure()
-                    .recoverWithItem(() -> {
-                        // Create new token if not found
-                        S stEntity = get(findPersistentSecurityClass());
-                        configureDefaultsForNewToken(stEntity, system);
-                        stEntity.setSecurityTokenID(administrators);
-                        stEntity.setCreateAllowed(false);
-                        stEntity.setUpdateAllowed(false);
-                        stEntity.setDeleteAllowed(false);
-                        stEntity.setReadAllowed(false);
-                        
-                        return session.persist(stEntity)
-                            .chain(persisted -> {
-                                configureSecurityEntity(stEntity);
-                                log.debug("✅ Guest no-security token created successfully");
-                                return Uni.createFrom().item(stEntity);
+  public Uni<S> createDefaultGuestNoSecurityAccess(Mutiny.Session session, ISystems<?, ?> system, java.util.UUID... identity)
+  {
+    log.debug("🎭 Creating default guest no-security access token for system: {}", system.getName());
+
+    return securityTokenService.getGuestsFolder(session, system, identity)
+               .chain(administrators -> {
+                 S stAdmin = get(findPersistentSecurityClass());
+
+                 @SuppressWarnings("rawtypes")
+                 QueryBuilderSecurities securities = (QueryBuilderSecurities) stAdmin.builder(session);
+
+                 return securities.findLinkedSecurityToken((SecurityToken) administrators, this)
+                            .inDateRange()
+                            .setReturnFirst(true)
+                            .get()
+                            .onFailure()
+                            .recoverWithItem(() -> {
+                              // Create new token if not found
+                              S stEntity = get(findPersistentSecurityClass());
+                              configureDefaultsForNewToken(stEntity, system);
+                              stEntity.setSecurityTokenID(administrators);
+                              stEntity.setCreateAllowed(false);
+                              stEntity.setUpdateAllowed(false);
+                              stEntity.setDeleteAllowed(false);
+                              stEntity.setReadAllowed(false);
+
+                              return session.persist(stEntity)
+                                         .chain(persisted -> {
+                                           configureSecurityEntity(stEntity);
+                                           log.debug("✅ Guest no-security token created successfully");
+                                           return Uni.createFrom()
+                                                      .item(stEntity);
+                                         });
+                            })
+                            .chain(result -> {
+                              if (result instanceof Uni)
+                              {
+                                return (Uni<S>) result;
+                              }
+                              return Uni.createFrom()
+                                         .item((S) result);
                             });
-                    })
-                    .chain(result -> {
-                        if (result instanceof Uni) {
-                            return (Uni<S>) result;
-                        }
-                        return Uni.createFrom().item((S) result);
-                    });
-            });
-    }
+               });
+  }
 
 }

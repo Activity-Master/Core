@@ -294,7 +294,7 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
                                                                                     Uni<IInvolvedParty<?, ?>> usernamePassword = addUpdateUsernamePassword(
                                                                                             session, adminUserName, adminPassword, adminUser, system, identityToken);
 
-                                                                                    Uni<Void> defaultSecurity = ((InvolvedParty) adminUser).createDefaultSecurity(session, system, identityToken);
+                                                                                    Uni<Void> defaultSecurity = ((InvolvedParty) adminUser).createDefaultSecurity(system, identityToken);
 
                                                                                     // Combine all parallel operations
                                                                                     return Uni.combine()

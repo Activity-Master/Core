@@ -60,7 +60,7 @@ public class ClassificationsDataConceptSystem
         // First, create the default concepts
         // These are foundational and should be created before other concepts
         return createDefaultConcepts(session, enterprise)
-            .chain(v -> {
+            .invoke(v -> {
                 // Now create all other concepts in parallel
                 log.info("Starting parallel creation of classification data concepts");
 
@@ -80,14 +80,16 @@ public class ClassificationsDataConceptSystem
                 log.info("Running {} concept creation operations in parallel", operations.size());
 
                 // Run all operations in parallel
-                return Uni.combine()
+                Uni.combine()
                         .all()
                         .unis(operations)
                         .discardItems()
                         .onFailure()
                         .invoke(error -> log.error("Error in parallel concept creation operations: {}", error.getMessage(), error))
-                        .invoke(result -> log.info("Completed creation of classification data concepts"));
-            });
+                        .invoke(result -> log.info("Completed creation of classification data concepts"))
+                           .await().atMost(Duration.ofSeconds(50));
+            })
+                   .replaceWith(Uni.createFrom().voidItem());
     }
 
     @Override
@@ -120,7 +122,7 @@ public class ClassificationsDataConceptSystem
     {
         logProgress("Data Concept System", "Base Concepts");
 
-        return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                        .chain(activityMasterSystem -> {
                            log.debug("Got system: {}", activityMasterSystem.getName());
 

@@ -100,7 +100,7 @@ public class ArrangementsService
                        })
                        .chain(persisted -> {
                            // Step 2: Create default security
-                           persisted.createDefaultSecurity(session, system, identityToken);
+                           persisted.createDefaultSecurity(system, identityToken);
                            return find(session, type, system);
                        })
                        .chain(arrangementType -> {
@@ -153,7 +153,7 @@ public class ArrangementsService
                        })
                        .map(persisted -> {
                            // Create default security
-                           persisted.createDefaultSecurity(session, system, identityToken);
+                           persisted.createDefaultSecurity(system, identityToken);
                            return (IArrangementType<?, ?>) persisted;
                        })
                        .onFailure()

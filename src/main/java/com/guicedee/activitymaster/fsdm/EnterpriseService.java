@@ -16,6 +16,7 @@ import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
+import com.guicedee.activitymaster.fsdm.systems.ClassificationsDataConceptSystem;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -721,7 +722,7 @@ public class EnterpriseService
     logProgress("Creating Base Systems", "Initializing Base Systems");
 
     List<IActivityMasterSystem<?>> filtered = allSystems.stream()
-                                                  .takeWhile(system -> !SystemsSystem.class.isAssignableFrom(system.getClass()))
+                                                  .filter(a->a.getClass().equals(SystemsSystem.class))
                                                   .toList()
         ;
 

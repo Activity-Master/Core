@@ -92,7 +92,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                                   return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
                                               })
                                               .chain(persisted -> {
-                                                  persisted.createDefaultSecurity(session, system, identityToken)
+                                                  persisted.createDefaultSecurity(system, identityToken)
                                                           .subscribe()
                                                           .with(
                                                                   result -> {
@@ -146,7 +146,7 @@ var enterprise = system.getEnterprise();
                                                   return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
                                               })
                                               .chain(persisted -> {
-                                                  persisted.createDefaultSecurity(session, system, identityToken)
+                                                  persisted.createDefaultSecurity(system, identityToken)
                                                           .subscribe()
                                                           .with(
                                                                   result -> {
@@ -203,7 +203,7 @@ var enterprise = system.getEnterprise();
                                                   // Get activity master system
                                                   return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
                                                                  .chain(activityMasterSystem -> {
-                                                                     persisted.createDefaultSecurity(session, activityMasterSystem, identityToken)
+                                                                     persisted.createDefaultSecurity(activityMasterSystem, identityToken)
                                                                              .subscribe()
                                                                              .with(
                                                                                      result -> {
@@ -245,7 +245,7 @@ var enterprise = system.getEnterprise();
                            // Get activity master system
                            return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
                                           .chain(activityMasterSystem -> {
-                                              persisted.createDefaultSecurity(session, activityMasterSystem, identityToken)
+                                              persisted.createDefaultSecurity(activityMasterSystem, identityToken)
                                                       .subscribe()
                                                       .with(
                                                               result -> {
@@ -324,7 +324,7 @@ var enterprise = system.getEnterprise();
                        })
                        .chain(persisted -> {
                            // Start createDefaultSecurity in parallel without waiting for it
-                           persisted.createDefaultSecurity(session, system, identityToken)
+                           persisted.createDefaultSecurity(system, identityToken)
                                    .subscribe()
                                    .with(
                                            result -> {
@@ -419,7 +419,7 @@ var enterprise = system.getEnterprise();
                                                                    .item(ipo));
                            })
                            .chain(persisted -> {
-                               persisted.createDefaultSecurity(session, system, identityToken)
+                               persisted.createDefaultSecurity(system, identityToken)
                                        .subscribe()
                                        .with(
                                                result -> {
@@ -452,7 +452,7 @@ var enterprise = system.getEnterprise();
                                                                    .item(ipo));
                            })
                            .chain(persisted -> {
-                               persisted.createDefaultSecurity(session, system, identityToken)
+                               persisted.createDefaultSecurity(system, identityToken)
                                        .subscribe()
                                        .with(
                                                result -> {

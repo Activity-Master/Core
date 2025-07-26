@@ -159,7 +159,7 @@ public class ResourceItemService
                                               })
                                               .map(persisted -> {
                                                   // Create default security
-                                                  xr.createDefaultSecurity(session, system, identityToken);
+                                                  xr.createDefaultSecurity(system, identityToken);
                                                   return (IResourceItemType<?, ?>) xr;
                                               });
                            }
@@ -284,7 +284,7 @@ public class ResourceItemService
                                               return session.persist(rid).replaceWith(Uni.createFrom().item(rid))
                                                              .map(persistedData -> {
                                                                  // Create default security
-                                                                 persistedData.createDefaultSecurity(session, system, identityToken);
+                                                                 persistedData.createDefaultSecurity(system, identityToken);
                                                                  return persistedData;
                                                              })
                                                              .chain(resourceItem -> {
@@ -394,7 +394,7 @@ public class ResourceItemService
                                           })
                                           .map(persisted -> {
                                               // Create default security
-                                              relationship.createDefaultSecurity(session, system, identityToken);
+                                              relationship.createDefaultSecurity(system, identityToken);
                                               return null; // Return Void
                                           });
                        });

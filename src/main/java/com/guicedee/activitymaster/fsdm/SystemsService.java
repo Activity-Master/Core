@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications.SystemIdentity;
 
+@SuppressWarnings("unchecked")
 @Log4j2
 public class SystemsService
         implements ISystemsService<SystemsService>
@@ -72,15 +73,13 @@ public class SystemsService
     public Uni<ISystems<?, ?>> findSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, UUID... identityToken)
     {
         Systems search = new Systems();
-        return search.builder(session)
+        return (Uni) search.builder(session)
                        .withName(systemName)
                        .withEnterprise(enterprise)
                        .inActiveRange()
                        .inDateRange()
                        //.canRead(enterprise, identityToken)
-                       .get()
-                       .onFailure().invoke(error -> log.error("Error finding system by enterprise: {}", error.getMessage(), error))
-                       .map(system -> system);
+                       .get();
     }
 
     //@Transactional()
@@ -165,7 +164,7 @@ public class SystemsService
                                                .chain(newSystemUUID -> {
                                                    // Create default security in parallel (fire and forget)
                                                    ((SecurityToken) newSystemsSecurityToken).createDefaultSecurity(
-                                                           session, activityMasterSystem,
+                                                       activityMasterSystem,
                                                            activityMasterSystemUUID
                                                    ).subscribe().with(
                                                        result -> {
@@ -178,7 +177,7 @@ public class SystemsService
                                                    );
 
                                                    ((SecurityToken) systemsToken).createDefaultSecurity(
-                                                           session, activityMasterSystem,
+                                                       activityMasterSystem,
                                                            activityMasterSystemUUID
                                                    ).subscribe().with(
                                                        result -> {
@@ -267,7 +266,7 @@ public class SystemsService
                                                        activityMaster -> {
                                                                try {
                                                                    // Call createDefaultSecurity
-                                                                   persistedSystem.createDefaultSecurity(session, activityMaster, identityToken)
+                                                                   persistedSystem.createDefaultSecurity(activityMaster, identityToken)
                                                                        .subscribe().with(
                                                                            result -> {
                                                                                // Security setup completed successfully

@@ -88,7 +88,7 @@ public class ProductService
 		        })
 		        .chain(persisted -> {
 		            // Start createDefaultSecurity in parallel without waiting for it
-		            product.createDefaultSecurity(session, system, identityToken)
+		            product.createDefaultSecurity(system, identityToken)
 		                   .subscribe().with(
 		                       result -> {
 		                           // Security setup completed successfully
@@ -194,7 +194,7 @@ public class ProductService
 		                        })
 		                        .chain(persisted -> {
 		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            et.createDefaultSecurity(session, system, identityToken)
+		                            et.createDefaultSecurity(system, identityToken)
 		                              .subscribe().with(
 		                                  result -> {
 		                                      // Security setup completed successfully
