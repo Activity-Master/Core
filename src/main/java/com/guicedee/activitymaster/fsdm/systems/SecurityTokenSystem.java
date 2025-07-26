@@ -43,10 +43,13 @@ public class SecurityTokenSystem
     @Inject
     private IClassificationService<?> classificationService;
 
-    @Inject
-    private ISecurityTokenService<?> securityTokenService;
+   	@Inject
+   	private ISecurityTokenService<?> securityTokenService;
+	
+   	@Inject
+   	private Mutiny.SessionFactory sessionFactory;
 
-    @Inject
+   	@Inject
     private ISystemsService<?> systemsService;
 
     @Override
@@ -87,65 +90,70 @@ public class SecurityTokenSystem
     public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         logProgress("Security Token Service", "Starting Security Structure Checks/Install");
+        log.info("Creating security token defaults in a new session and transaction");
 
-        // Get the ActivityMaster system
-        return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
-            .invoke(activityMasterSystem -> {
-                SecurityTokenSystem instance = IGuiceContext.get(SecurityTokenSystem.class);
+        // Use sessionFactory.withTransaction to create a new session
+        return sessionFactory.withTransaction((newSession, tx) -> {
+            // Get the ActivityMaster system
+            return systemsService.findSystem(newSession, enterprise, ActivityMasterSystemName)
+                .invoke(activityMasterSystem -> {
+                    SecurityTokenSystem instance = IGuiceContext.get(SecurityTokenSystem.class);
 
-                // Call defaultsCreation which handles the core security setup
-                // Note: This is still synchronous but will be converted in a future update
-                instance.defaultsCreation(session, enterprise);
+                    // Call defaultsCreation which handles the core security setup
+                    // Note: This is still synchronous but will be converted in a future update
+                    // We're still using the newSession here since defaultsCreation is a complex method
+                    // with many dependencies and blocking calls
+                    instance.defaultsCreation(newSession, enterprise);
 
-                logProgress("Security Management", "Setting Security Configurator to Activity Master");
-            })
-            .chain(activityMasterSystem -> {
-                // Get all the systems that are created before this one
-                EnterpriseSystem enterpriseSystem = com.guicedee.client.IGuiceContext.get(EnterpriseSystem.class);
-                ActiveFlagSystem afs = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
-                ClassificationsSystem cfs = com.guicedee.client.IGuiceContext.get(ClassificationsSystem.class);
-                ClassificationsDataConceptSystem cdcs = com.guicedee.client.IGuiceContext.get(ClassificationsDataConceptSystem.class);
-                SystemsSystem ss = com.guicedee.client.IGuiceContext.get(SystemsSystem.class);
-                InvolvedPartySystem ips = com.guicedee.client.IGuiceContext.get(InvolvedPartySystem.class);
+                    logProgress("Security Management", "Setting Security Configurator to Activity Master");
+                })
+                .chain(activityMasterSystem -> {
+                    // Get all the systems that are created before this one
+                    EnterpriseSystem enterpriseSystem = com.guicedee.client.IGuiceContext.get(EnterpriseSystem.class);
+                    ActiveFlagSystem afs = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
+                    ClassificationsSystem cfs = com.guicedee.client.IGuiceContext.get(ClassificationsSystem.class);
+                    ClassificationsDataConceptSystem cdcs = com.guicedee.client.IGuiceContext.get(ClassificationsDataConceptSystem.class);
+                    SystemsSystem ss = com.guicedee.client.IGuiceContext.get(SystemsSystem.class);
+                    InvolvedPartySystem ips = com.guicedee.client.IGuiceContext.get(InvolvedPartySystem.class);
 
-                // For now, we'll still use the blocking approach for getting systems
-                // This will be converted to fully reactive in a future update
-                ISystems<?, ?> enterpriseSystemObj = enterpriseSystem.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
-                ISystems<?, ?> afsSystemObj = afs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
-                ISystems<?, ?> ssSystemObj = ss.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
-                ISystems<?, ?> cdcsSystemObj = cdcs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
-                ISystems<?, ?> cfsSystemObj = cfs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
-                ISystems<?, ?> ipsSystemObj = ips.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                    // For now, we'll still use the blocking approach for getting systems
+                    // This will be converted to fully reactive in a future update
+                    ISystems<?, ?> enterpriseSystemObj = enterpriseSystem.getSystem(newSession, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                    ISystems<?, ?> afsSystemObj = afs.getSystem(newSession, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                    ISystems<?, ?> ssSystemObj = ss.getSystem(newSession, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                    ISystems<?, ?> cdcsSystemObj = cdcs.getSystem(newSession, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                    ISystems<?, ?> cfsSystemObj = cfs.getSystem(newSession, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                    ISystems<?, ?> ipsSystemObj = ips.getSystem(newSession, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
 
-                // Create a list of operations to run in parallel
-                List<Uni<?>> registerOperations = new ArrayList<>();
+                    // Create a list of operations to run in parallel
+                    List<Uni<?>> registerOperations = new ArrayList<>();
 
-                // Add all system registration operations to the list
-                registerOperations.add(systemsService.registerNewSystem(session, enterprise, enterpriseSystemObj));
-                registerOperations.add(systemsService.registerNewSystem(session, enterprise, afsSystemObj));
-                registerOperations.add(systemsService.registerNewSystem(session, enterprise, ssSystemObj));
-                registerOperations.add(systemsService.registerNewSystem(session, enterprise, cdcsSystemObj));
-                registerOperations.add(systemsService.registerNewSystem(session, enterprise, cfsSystemObj));
-                registerOperations.add(systemsService.registerNewSystem(session, enterprise, ipsSystemObj));
+                    // Add all system registration operations to the list
+                    registerOperations.add(systemsService.registerNewSystem(newSession, enterprise, enterpriseSystemObj));
+                    registerOperations.add(systemsService.registerNewSystem(newSession, enterprise, afsSystemObj));
+                    registerOperations.add(systemsService.registerNewSystem(newSession, enterprise, ssSystemObj));
+                    registerOperations.add(systemsService.registerNewSystem(newSession, enterprise, cdcsSystemObj));
+                    registerOperations.add(systemsService.registerNewSystem(newSession, enterprise, cfsSystemObj));
+                    registerOperations.add(systemsService.registerNewSystem(newSession, enterprise, ipsSystemObj));
 
-                log.info("Running {} system registration operations in parallel", registerOperations.size());
+                    log.info("Running {} system registration operations in parallel", registerOperations.size());
 
-                // Execute all operations in parallel
-                return Uni.combine()
-                        .all()
-                        .unis(registerOperations)
-                        .discardItems()
-                        .onFailure()
-                        .invoke(error -> log.error("Error registering systems: {}", error.getMessage(), error))
-                        .invoke(v -> {
-                            logProgress("Security Token Service", "Enabling Security System");
-                            System.out.println("Enabling Authentication Modules");
-                            //todo enable security
-                            //	com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
-                            //            .setSecurityEnabled(true);
-                        });
-            })
-            .replaceWith(Uni.createFrom().voidItem());
+                    // Execute all operations in parallel
+                    return Uni.combine()
+                            .all()
+                            .unis(registerOperations)
+                            .discardItems()
+                            .onFailure()
+                            .invoke(error -> log.error("Error registering systems: {}", error.getMessage(), error))
+                            .invoke(v -> {
+                                logProgress("Security Token Service", "Enabling Security System");
+                                System.out.println("Enabling Authentication Modules");
+                                //todo enable security
+                                //	com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
+                                //            .setSecurityEnabled(true);
+                            });
+                });
+        }).replaceWithVoid();
     }
 
     //@Transactional
@@ -848,6 +856,33 @@ public class SecurityTokenSystem
                                                                 table.getClass().getSimpleName(), error.getMessage(), error))
                           .map(result -> null);
              });
+    }
+
+    @Override
+    public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+    {
+        log.info("Starting reactive postStartup for Security Token System");
+
+        // Create a reactive chain for the postStartup operations
+        // Get the system
+        return systemsService.findSystem(session, enterprise, getSystemName())
+                .onItem()
+                .ifNull()
+                .failWith(() -> new RuntimeException("System not found: " + getSystemName()))
+                .chain(system -> {
+                    log.debug("Found system: {}", system.getName());
+                    // Get the security token
+                    return systemsService.getSecurityIdentityToken(session, system)
+                            .onItem()
+                            .ifNull()
+                            .failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
+                            .map(token -> {
+                                log.debug("Found security token for system: {}", system.getName());
+                                return null; // Return Void
+                            });
+                })
+                .replaceWith(Uni.createFrom()
+                        .voidItem());
     }
 
     @Override

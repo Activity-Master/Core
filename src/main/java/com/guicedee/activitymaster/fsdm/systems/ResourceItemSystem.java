@@ -24,6 +24,9 @@ public class ResourceItemSystem
 {
 	@Inject
 	private ISystemsService<?> systemsService;
+	
+	@Inject
+	private Mutiny.SessionFactory sessionFactory;
 
 	@Override
 	public ISystems<?,?> registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
@@ -43,16 +46,46 @@ public class ResourceItemSystem
 	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting createDefaults for Resource Item System");
+		log.info("Creating resource item defaults in a new session and transaction");
 
-		// Get the ActivityMaster system
-		return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
-			.invoke(activityMasterSystem -> {
-				// Currently no default resource items to create
-				// This method is kept for consistency with other system classes
-				// and to provide a structure for future additions
-				log.info("Completed createDefaults for Resource Item System");
-			})
-			.replaceWith(Uni.createFrom().voidItem());
+		// Use sessionFactory.withTransaction to create a new session
+		return sessionFactory.withTransaction((newSession, tx) -> {
+			// Get the ActivityMaster system
+			return systemsService.findSystem(newSession, enterprise, ActivityMasterSystemName)
+				.invoke(activityMasterSystem -> {
+					// Currently no default resource items to create
+					// This method is kept for consistency with other system classes
+					// and to provide a structure for future additions
+					log.info("Completed createDefaults for Resource Item System");
+				});
+		}).replaceWithVoid();
+	}
+
+	@Override
+	public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+	{
+		log.info("Starting reactive postStartup for Resource Item System");
+
+		// Create a reactive chain for the postStartup operations
+		// Get the system
+		return systemsService.findSystem(session, enterprise, getSystemName())
+				.onItem()
+				.ifNull()
+				.failWith(() -> new RuntimeException("System not found: " + getSystemName()))
+				.chain(system -> {
+					log.debug("Found system: {}", system.getName());
+					// Get the security token
+					return systemsService.getSecurityIdentityToken(session, system)
+							.onItem()
+							.ifNull()
+							.failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
+							.map(token -> {
+								log.debug("Found security token for system: {}", system.getName());
+								return null; // Return Void
+							});
+				})
+				.replaceWith(Uni.createFrom()
+						.voidItem());
 	}
 
 	@Override

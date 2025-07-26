@@ -22,6 +22,9 @@ public class AddressSystem
 {
     @Inject
     private ISystemsService<?> systemsService;
+    
+    @Inject
+    private Mutiny.SessionFactory sessionFactory;
 
     @Override
     public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
@@ -45,7 +48,12 @@ public class AddressSystem
     public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         logProgress("Address System", "Starting Address Checks");
-        return Uni.createFrom().voidItem();
+        log.info("Creating address defaults in a new session and transaction");
+        
+        return sessionFactory.withTransaction((newSession, tx) -> {
+            // No actual operations needed, just return a void item
+            return Uni.createFrom().voidItem();
+        }).replaceWithVoid();
     }
 
     @Override

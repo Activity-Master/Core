@@ -28,6 +28,9 @@ public class ActiveFlagSystem
 
 	@Inject
 	private IActiveFlagService<?> activeFlagService;
+	
+	@Inject
+	private Mutiny.SessionFactory sessionFactory;
 	@Override
 	public ISystems<?,?> registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
@@ -46,32 +49,35 @@ public class ActiveFlagSystem
 	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Active Flag Service", "Loading Active Flags");
+		log.info("Creating active flags in a new session and transaction");
 
-		// Create a list of all active flags
-		ActiveFlag[] activeFlags = ActiveFlag.values();
+		return sessionFactory.withTransaction((newSession, tx) -> {
+			// Create a list of all active flags
+			ActiveFlag[] activeFlags = ActiveFlag.values();
 
-		// Create the first active flag and then chain the rest
-		Uni<Void> createChain = null;
+			// Create the first active flag and then chain the rest
+			Uni<Void> createChain = null;
 
-		for (ActiveFlag activeFlag : activeFlags) {
-			if (createChain == null) {
-				// First flag
-				createChain = ((ActiveFlagService)activeFlagService)
-					.create(session, enterprise, activeFlag.name(), activeFlag.getDescription())
-					.map(result -> null); // Convert to Void
-			} else {
-				// Chain subsequent flags
-				final Uni<Void> finalChain = createChain;
-				createChain = finalChain.chain(v -> 
-					((ActiveFlagService)activeFlagService)
-						.create(session, enterprise, activeFlag.name(), activeFlag.getDescription())
-						.map(result -> null) // Convert to Void
-				);
+			for (ActiveFlag activeFlag : activeFlags) {
+				if (createChain == null) {
+					// First flag
+					createChain = ((ActiveFlagService)activeFlagService)
+						.create(newSession, enterprise, activeFlag.name(), activeFlag.getDescription())
+						.map(result -> null); // Convert to Void
+				} else {
+					// Chain subsequent flags
+					final Uni<Void> finalChain = createChain;
+					createChain = finalChain.chain(v -> 
+						((ActiveFlagService)activeFlagService)
+							.create(newSession, enterprise, activeFlag.name(), activeFlag.getDescription())
+							.map(result -> null) // Convert to Void
+					);
+				}
 			}
-		}
 
-		// Return the reactive chain or an empty one if no flags were created
-		return createChain != null ? createChain : Uni.createFrom().voidItem();
+			// Return the reactive chain or an empty one if no flags were created
+			return createChain != null ? createChain : Uni.createFrom().voidItem();
+		}).replaceWithVoid();
 	}
 
 	@Override

@@ -45,6 +45,7 @@ public class ClassificationsDataConceptService
                  newConcept.setName(name.classificationValue());
                  newConcept.setSystemID(system);
                  newConcept.setOriginalSourceSystemID(system.getId());
+                 newConcept.setOriginalSourceSystemUniqueID(null);
 
                  IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
                  return acService.getActiveFlag(session, enterprise)

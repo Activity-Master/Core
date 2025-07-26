@@ -22,6 +22,9 @@ public class ArrangementsSystem
 {
     @Inject
     private ISystemsService<?> systemsService;
+    
+    @Inject
+    private Mutiny.SessionFactory sessionFactory;
 
     @Override
     public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
@@ -44,14 +47,19 @@ public class ArrangementsSystem
     @Override
     public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
-        return Uni.createFrom().voidItem();
+        logProgress("Arrangements System", "Starting Arrangements Checks");
+        log.info("Creating arrangement defaults in a new session and transaction");
+        
+        return sessionFactory.withTransaction((newSession, tx) -> {
+            // No actual operations needed, just return a void item
+            return Uni.createFrom().voidItem();
+        }).replaceWithVoid();
     }
 
     @Override
     public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         log.info("Starting reactive postStartup for Arrangements System");
-        log.info("Starting reactive postStartup for Active Flag System");
 
         // Create a reactive chain for the postStartup operations
         // Get the system

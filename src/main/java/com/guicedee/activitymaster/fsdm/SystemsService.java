@@ -83,9 +83,9 @@ public class SystemsService
                      .inActiveRange()
                      .inDateRange()
                      //.canRead(enterprise, identityToken)
-                     .get()
-                     .onFailure()
-                     .invoke(error -> log.error("Error finding system by name {}: {}", systemName, error.getMessage(), error));
+                     .get();
+                     //.onFailure()
+                     //.invoke(error -> log.error("Error finding system by name {}: {}", systemName, error.getMessage(), error));
   }
 
   //@Transactional()

@@ -33,6 +33,9 @@ public class ClassificationsDataConceptSystem
   @Inject
   private ClassificationsDataConceptService service;
 
+  @Inject
+  private Mutiny.SessionFactory sessionFactory;
+
   @Override
   public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
@@ -59,19 +62,19 @@ public class ClassificationsDataConceptSystem
 
     // First, create the default concepts
     // These are foundational and should be created before other concepts
-    return createDefaultConcepts(session, enterprise)
+    return createDefaultConcepts(enterprise)
                .flatMap(v -> {
                  log.info("📋 Starting sequential creation of classification data concepts");
-                 return createInvolvedPartyConcepts(session, enterprise)
-                            .flatMap(x -> createProductConcepts(session, enterprise))
-                            .flatMap(x -> createResourceItemConcepts(session, enterprise))
-                            .flatMap(x -> createRulesConcepts(session, enterprise))
-                            .flatMap(x -> createActiveFlagConcepts(session, enterprise))
-                            .flatMap(x -> createGeographyConcepts(session, enterprise))
-                            .flatMap(x -> createAddressConcepts(session, enterprise))
-                            .flatMap(x -> createArrangementConcepts(session, enterprise))
-                            .flatMap(x -> createClassificationsConcepts(session, enterprise))
-                            .flatMap(x -> createEventsConcepts(session, enterprise))
+                 return createInvolvedPartyConcepts(enterprise)
+                            .flatMap(x -> createProductConcepts(enterprise))
+                            .flatMap(x -> createResourceItemConcepts(enterprise))
+                            .flatMap(x -> createRulesConcepts(enterprise))
+                            .flatMap(x -> createActiveFlagConcepts(enterprise))
+                            .flatMap(x -> createGeographyConcepts(enterprise))
+                            .flatMap(x -> createAddressConcepts(enterprise))
+                            .flatMap(x -> createArrangementConcepts(enterprise))
+                            .flatMap(x -> createClassificationsConcepts(enterprise))
+                            .flatMap(x -> createEventsConcepts(enterprise))
                             .invoke(() -> log.info("🎉 Completed creation of all classification data concepts"));
                });
   }
@@ -102,385 +105,339 @@ public class ClassificationsDataConceptSystem
                                 .voidItem());
   }
 
-  private Uni<Void> createDefaultConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    logProgress("Data Concept System", "Base Concepts");
+  private Uni<Void> createDefaultConcepts(IEnterprise<?, ?> enterprise) {
+  logProgress("Data Concept System", "Base Concepts");
+  log.info("Creating default concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
+  return sessionFactory.withTransaction((session, tx) ->
+    systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+      .flatMap(system -> {
+        log.debug("Got system: {}", system.getName());
 
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.GlobalClassificationsDataConceptName, "Any general classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, "No classification is applicable", activityMasterSystem));
-                 //security
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.SecurityToken, "A security token identifies an entity possible to perform events on the system with", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.SecurityTokenXClassification, "Security Token Quick-Find Entries", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken, "Security Token Hierarchy", activityMasterSystem));
-                 //Enterprise
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.Enterprise, "An enterprise is the top level", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EnterpriseXClassification, "Classifications for an enterprise", activityMasterSystem));
-                 //System
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.Systems, "Systems are sub-applications that provide functions and features to an enterprise", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.SystemXClassification, "A set of system classifications", activityMasterSystem));
-
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.YesNo, "Designations for boolean entry fields", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.YesNoXClassification, "Different classifications for boolean fields", activityMasterSystem));
-
-                 log.info("Running {} default concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating default concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
-  }
+        return service.createDataConcept(session, EnterpriseClassificationDataConcepts.GlobalClassificationsDataConceptName,
+                  "Any general classification", system)
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.NoClassificationDataConceptName,
+                  "No classification is applicable", system))
+          // security
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.SecurityToken,
+                  "A security token identifies an entity possible to perform events on the system with", system))
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.SecurityTokenXClassification,
+                  "Security Token Quick-Find Entries", system))
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.SecurityTokenXSecurityToken,
+                  "Security Token Hierarchy", system))
+          // enterprise
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.Enterprise,
+                  "An enterprise is the top level", system))
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EnterpriseXClassification,
+                  "Classifications for an enterprise", system))
+          // system
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.Systems,
+                  "Systems are sub-applications that provide functions and features to an enterprise", system))
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.SystemXClassification,
+                  "A set of system classifications", system))
+          // boolean
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.YesNo,
+                  "Designations for boolean entry fields", system))
+          .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.YesNoXClassification,
+                  "Different classifications for boolean fields", system))
+          .invoke(() -> log.info("✅ Successfully created all default base concepts"));
+      })
+  ).replaceWithVoid();
+}
 
 
-  private Uni<Void> createInvolvedPartyConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+
+  private Uni<Void> createInvolvedPartyConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Involved Party Concepts");
+    log.info("Creating involved party concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedParty, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyIdentificationType, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyNameType, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyNonOrganic, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyOrganic, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyOrganicType, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyType, "Standard Table Based Classification", activityMasterSystem));
-
-                 operations.add(service.createDataConcept(session, InvolvedPartyXAddress, "All involved party identification types", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, InvolvedPartyXClassification, "All involved party custom classifications", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, InvolvedPartyXInvolvedParty, "Involved Party Hierarchy", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyNameType, "Involved Party Name Types", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyType, "Involved Party Types", activityMasterSystem));
-
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyIdentificationType,
-                     "All classifications for identification type and involved party relationships", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXProduct, "All classifications for involved party and product relationships", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXRules, "All classifications for involved party and product relationships", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXResourceItem, "All classifications for involved party and resource item relationships",
-                     activityMasterSystem));
-
-                 log.info("Running {} involved party concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating involved party concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedParty, 
+                    "Standard Table Based Classification", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyIdentificationType, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyNameType, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyNonOrganic, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyOrganic, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyOrganicType, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyType, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, InvolvedPartyXAddress, 
+                    "All involved party identification types", system))
+            .flatMap(v -> service.createDataConcept(session, InvolvedPartyXClassification, 
+                    "All involved party custom classifications", system))
+            .flatMap(v -> service.createDataConcept(session, InvolvedPartyXInvolvedParty, 
+                    "Involved Party Hierarchy", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyNameType, 
+                    "Involved Party Name Types", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyType, 
+                    "Involved Party Types", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXInvolvedPartyIdentificationType,
+                    "All classifications for identification type and involved party relationships", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXProduct, 
+                    "All classifications for involved party and product relationships", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXRules, 
+                    "All classifications for involved party and product relationships", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.InvolvedPartyXResourceItem, 
+                    "All classifications for involved party and resource item relationships", system))
+            .invoke(() -> log.info("✅ Successfully created all involved party concepts"));
+        })
+    ).replaceWithVoid();
   }
 
 
-  private Uni<Void> createProductConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createProductConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Product Concepts");
+    log.info("Creating product concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.Product, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductType, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductXProductType, "Product Types", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductXProduct, "Product Hierarchy", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductXResourceItem, "All product and resource item relationship classifications", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductXClassification, "All product classifications", activityMasterSystem));
-
-                 log.info("Running {} product concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating product concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.Product, 
+                    "Standard Table Based Classification", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductType, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductXProductType, 
+                    "Product Types", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductXProduct, 
+                    "Product Hierarchy", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductXResourceItem, 
+                    "All product and resource item relationship classifications", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ProductXClassification, 
+                    "All product classifications", system))
+            .invoke(() -> log.info("✅ Successfully created all product concepts"));
+        })
+    ).replaceWithVoid();
   }
 
-  private Uni<Void> createResourceItemConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createResourceItemConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Resource Item Concepts");
+    log.info("Creating resource item concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItem, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemData, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemType, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemXResourceItemType, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemDataXClassification, "Resource Item Data Classifications", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemXClassification, "all resource item classifications", activityMasterSystem));
-
-                 log.info("Running {} resource item concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating resource item concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItem, 
+                    "Standard Table Based Classification", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemData, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemType, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemXResourceItemType, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemDataXClassification, 
+                    "Resource Item Data Classifications", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ResourceItemXClassification, 
+                    "all resource item classifications", system))
+            .invoke(() -> log.info("✅ Successfully created all resource item concepts"));
+        })
+    ).replaceWithVoid();
   }
 
-  private Uni<Void> createRulesConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createRulesConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Rules Concepts");
+    log.info("Creating rules concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, Rules, "Calculated rules", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, RulesType, "Calculated rules types", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, RulesTypeXClassification, "Rule Types Calculations", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, RulesXProduct, "Rule Types Calculations", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, RulesXResourceItem, "Rule Types Calculations", activityMasterSystem));
-
-                 log.info("Running {} rules concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating rules concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, Rules, 
+                    "Calculated rules", system)
+            .flatMap(v -> service.createDataConcept(session, RulesType, 
+                    "Calculated rules types", system))
+            .flatMap(v -> service.createDataConcept(session, RulesTypeXClassification, 
+                    "Rule Types Calculations", system))
+            .flatMap(v -> service.createDataConcept(session, RulesXProduct, 
+                    "Rule Types Calculations", system))
+            .flatMap(v -> service.createDataConcept(session, RulesXResourceItem, 
+                    "Rule Types Calculations", system))
+            .invoke(() -> log.info("✅ Successfully created all rules concepts"));
+        })
+    ).replaceWithVoid();
   }
 
 
-  private Uni<Void> createActiveFlagConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createActiveFlagConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Active Flag Concepts");
+    log.info("Creating active flag concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ActiveFlag, "An Active Flag", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ActiveFlagXClassification, "Any active flag classifications", activityMasterSystem));
-
-                 log.info("Running {} active flag concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating active flag concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.ActiveFlag, 
+                    "An Active Flag", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ActiveFlagXClassification, 
+                    "Any active flag classifications", system))
+            .invoke(() -> log.info("✅ Successfully created all active flag concepts"));
+        })
+    ).replaceWithVoid();
   }
 
 
-  private Uni<Void> createGeographyConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createGeographyConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Geography Concepts");
+    log.info("Creating geography concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.Geography, "Specific to a geography item", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.GeographyXClassification, "All Geography Classifications", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.GeographyXGeography, "All Geography Relationships", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.GeographyXResourceItem, "All geography resource items", activityMasterSystem));
-
-                 log.info("Running {} geography concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating geography concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.Geography, 
+                    "Specific to a geography item", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.GeographyXClassification, 
+                    "All Geography Classifications", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.GeographyXGeography, 
+                    "All Geography Relationships", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.GeographyXResourceItem, 
+                    "All geography resource items", system))
+            .invoke(() -> log.info("✅ Successfully created all geography concepts"));
+        })
+    ).replaceWithVoid();
   }
 
-  private Uni<Void> createAddressConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createAddressConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Address Concepts");
+    log.info("Creating address concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.Address, "Addresses are a physical location in a certain geography", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.AddressXGeography, "Any classifications for Address Geography groupings", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.AddressXResourceItem, "Any classification for resource items", activityMasterSystem));
-
-                 log.info("Running {} address concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating address concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.Address, 
+                    "Addresses are a physical location in a certain geography", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.AddressXGeography, 
+                    "Any classifications for Address Geography groupings", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.AddressXResourceItem, 
+                    "Any classification for resource items", system))
+            .invoke(() -> log.info("✅ Successfully created all address concepts"));
+        })
+    ).replaceWithVoid();
   }
 
-  private Uni<Void> createArrangementConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createArrangementConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Arrangement Concepts");
+    log.info("Creating arrangement concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.Arrangement, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXInvolvedParty, "Any relationships for the arrangement and the involved party", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXClassification, "Any classifications for arrangements", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXArrangementType, "Any classifications for the type specified in the arrangement", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXArrangement, "Any classifications for the Relationships between Arrangement and X Arrangements", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.AddressXInvolvedParty, "Any Address Relationship with Involved Parties", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXProduct, "Arrangement classifications with product", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXResourceItem, "Any Arrangement Relationship with a Resource Item", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, ArrangementXRules, "Classifications for an arrangements link to a set of rules", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, ArrangementXRulesTypes, "Classifications for an arrangements link to a set of rules", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementType, "A type of arrangement or agreement", activityMasterSystem));
-
-                 log.info("Running {} arrangement concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating arrangement concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.Arrangement, 
+                    "Standard Table Based Classification", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXInvolvedParty, 
+                    "Any relationships for the arrangement and the involved party", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXClassification, 
+                    "Any classifications for arrangements", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXArrangementType, 
+                    "Any classifications for the type specified in the arrangement", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXArrangement, 
+                    "Any classifications for the Relationships between Arrangement and X Arrangements", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.AddressXInvolvedParty, 
+                    "Any Address Relationship with Involved Parties", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXProduct, 
+                    "Arrangement classifications with product", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementXResourceItem, 
+                    "Any Arrangement Relationship with a Resource Item", system))
+            .flatMap(v -> service.createDataConcept(session, ArrangementXRules, 
+                    "Classifications for an arrangements link to a set of rules", system))
+            .flatMap(v -> service.createDataConcept(session, ArrangementXRulesTypes, 
+                    "Classifications for an arrangements link to a set of rules", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ArrangementType, 
+                    "A type of arrangement or agreement", system))
+            .invoke(() -> log.info("✅ Successfully created all arrangement concepts"));
+        })
+    ).replaceWithVoid();
   }
 
-  private Uni<Void> createClassificationsConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createClassificationsConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Classification Concepts");
+    log.info("Creating classification concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationDataConcept, "A designation of a table", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationDataConceptXClassification, "All classifications for the data concepts", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationDataConceptXResourceItem, "Resource Items for data concepts", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.Classification, "Standard Table Based Classification", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationXClassification, "The Classification Hierarchy", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationXResourceItem, "Any classification type that exists for classification and resource items, usually icons etc", activityMasterSystem));
-
-                 log.info("Running {} classification concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating classification concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationDataConcept, 
+                    "A designation of a table", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationDataConceptXClassification, 
+                    "All classifications for the data concepts", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationDataConceptXResourceItem, 
+                    "Resource Items for data concepts", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.Classification, 
+                    "Standard Table Based Classification", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationXClassification, 
+                    "The Classification Hierarchy", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.ClassificationXResourceItem, 
+                    "Any classification type that exists for classification and resource items, usually icons etc", system))
+            .invoke(() -> log.info("✅ Successfully created all classification concepts"));
+        })
+    ).replaceWithVoid();
   }
 
-  private Uni<Void> createEventsConcepts(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  private Uni<Void> createEventsConcepts(IEnterprise<?, ?> enterprise)
   {
     logProgress("Data Concept System", "Event Concepts");
+    log.info("Creating event concepts in a new session and transaction");
 
-    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
-               .chain(activityMasterSystem -> {
-                 log.debug("Got system: {}", activityMasterSystem.getName());
-
-                 // Create a list of operations to run in parallel
-                 List<Uni<?>> operations = new ArrayList<>();
-
-                 // Add all concept creation operations to the list
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.Event, "An event is an audit of any change in the system, post installation", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventType, "A specific type of event ", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EventXEventType, "Classifications for events", activityMasterSystem));
-
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXClassification, "All classifications that relate to events", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXAddress, "Any classifications that relate to Events and Classifications, such as occured at", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXArrangement, "Any classifications for event and arrangements", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXInvolvedParty, "Any classifications for involved parties and events like bought, purchased, called, emailed", activityMasterSystem));
-
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXGeography, "Geographical mappings for events", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXProduct, "Any Product that exists for X product classifications", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXResourceItem, "Any event resource items, usually json or data received in some force", activityMasterSystem));
-                 operations.add(service.createDataConcept(session, EventXRules, "An events link to a set of rules", activityMasterSystem));
-
-                 log.info("Running {} event concept creation operations in parallel", operations.size());
-
-                 // Run all operations in parallel
-                 return Uni.combine()
-                            .all()
-                            .unis(operations)
-                            .discardItems()
-                            .onFailure()
-                            .invoke(error -> log.error("Error creating event concepts: {}", error.getMessage(), error))
-                            .map(result -> null); // Convert to Void
-               });
+    return sessionFactory.withTransaction((session, tx) ->
+      systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+        .flatMap(system -> {
+          log.debug("Got system: {}", system.getName());
+          
+          return service.createDataConcept(session, EnterpriseClassificationDataConcepts.Event, 
+                    "An event is an audit of any change in the system, post installation", system)
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventType, 
+                    "A specific type of event ", system))
+            .flatMap(v -> service.createDataConcept(session, EventXEventType, 
+                    "Classifications for events", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXClassification, 
+                    "All classifications that relate to events", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXAddress, 
+                    "Any classifications that relate to Events and Classifications, such as occured at", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXArrangement, 
+                    "Any classifications for event and arrangements", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXInvolvedParty, 
+                    "Any classifications for involved parties and events like bought, purchased, called, emailed", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXGeography, 
+                    "Geographical mappings for events", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXProduct, 
+                    "Any Product that exists for X product classifications", system))
+            .flatMap(v -> service.createDataConcept(session, EnterpriseClassificationDataConcepts.EventXResourceItem, 
+                    "Any event resource items, usually json or data received in some force", system))
+            .flatMap(v -> service.createDataConcept(session, EventXRules, 
+                    "An events link to a set of rules", system))
+            .invoke(() -> log.info("✅ Successfully created all event concepts"));
+        })
+    ).replaceWithVoid();
   }
 
 

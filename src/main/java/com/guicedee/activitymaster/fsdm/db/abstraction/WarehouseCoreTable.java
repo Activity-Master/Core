@@ -58,41 +58,49 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
   @Override
   public Uni<Void> createDefaultSecurity(ISystems<?, ?> system, UUID... identity)
   {
-    log.debug("🛡️ Creating default security for system: {}", system.getName());
-    log.debug("🔄 Opening a new session and transaction for security operations");
+    if (false)
+    {
+      log.debug("🛡️ Creating default security for system: {}", system.getName());
+      log.debug("🔄 Opening a new session and transaction for security operations");
 
-    // Always open a new session and transaction for security operations
-    Mutiny.SessionFactory factory = get(Mutiny.SessionFactory.class);
-    return factory.withSession(session -> {
-      return session.withTransaction(tx -> {
-        List<Uni<S>> securityOperations = new ArrayList<>();
-        
-        // Add all security operations to the list
-        securityOperations.add(createDefaultAdministratorSecurityAccess(session, system, identity));
-        securityOperations.add(createDefaultEveryoneSecurityAccess(session, system, identity));
-        securityOperations.add(createDefaultEverywhereSecurityAccess(session, system, identity));
-        securityOperations.add(createDefaultSystemsSecurityAccess(session, system, identity));
-        securityOperations.add(createDefaultApplicationsSecurityAccess(session, system, identity));
-        securityOperations.add(createDefaultPluginsSecurityAccess(session, system, identity));
-        securityOperations.add(createDefaultGuestReadSecurityAccess(session, system, identity));
+      // Always open a new session and transaction for security operations
+      Mutiny.SessionFactory factory = get(Mutiny.SessionFactory.class);
+      return factory.withSession(session -> {
+        return session.withTransaction(tx -> {
+          List<Uni<S>> securityOperations = new ArrayList<>();
 
-        log.debug("🚀 Executing {} security operations in parallel within new transaction", securityOperations.size());
+          // Add all security operations to the list
+          securityOperations.add(createDefaultAdministratorSecurityAccess(session, system, identity));
+          securityOperations.add(createDefaultEveryoneSecurityAccess(session, system, identity));
+          securityOperations.add(createDefaultEverywhereSecurityAccess(session, system, identity));
+          securityOperations.add(createDefaultSystemsSecurityAccess(session, system, identity));
+          securityOperations.add(createDefaultApplicationsSecurityAccess(session, system, identity));
+          securityOperations.add(createDefaultPluginsSecurityAccess(session, system, identity));
+          securityOperations.add(createDefaultGuestReadSecurityAccess(session, system, identity));
 
-        return Uni.combine()
-                   .all()
-                   .unis(securityOperations)
-                   .discardItems()
-                   .onItem()
-                   .invoke(() -> {
-                     log.debug("✅ All security operations completed successfully in new transaction");
-                   })
-                   .onFailure()
-                   .invoke(error -> {
-                     log.error("❌ Failed to complete security operations in new transaction: {}", error.getMessage(), error);
-                   })
-                   .map(r -> null);
+          log.debug("🚀 Executing {} security operations in parallel within new transaction", securityOperations.size());
+
+          return Uni.combine()
+                     .all()
+                     .unis(securityOperations)
+                     .discardItems()
+                     .onItem()
+                     .invoke(() -> {
+                       log.debug("✅ All security operations completed successfully in new transaction");
+                     })
+                     .onFailure()
+                     .invoke(error -> {
+                       log.error("❌ Failed to complete security operations in new transaction: {}", error.getMessage(), error);
+                     })
+                     .map(r -> null);
+        });
       });
-    });
+    }
+    else
+    {
+      return Uni.createFrom()
+                 .voidItem();
+    }
   }
 
   public Uni<Void> updateSecurity(Mutiny.Session session, J newCoreTable, Systems system)

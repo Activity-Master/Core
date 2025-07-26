@@ -36,7 +36,7 @@ public abstract class WarehouseTable<
 	@NotNull
 	@Column(nullable = true,
 	        name = "OriginalSourceSystemUniqueID")
-	private UUID originalSourceSystemUniqueID;
+	private UUID originalSourceSystemUniqueID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
 	/*@JoinColumn(name = "OriginalSourceSystemID",
 	            referencedColumnName = "SystemID",
@@ -44,7 +44,7 @@ public abstract class WarehouseTable<
 	@ManyToOne(optional = false,
 	           fetch = FetchType.LAZY)*/
 	@Column(name = "OriginalSourceSystemID",nullable = false)
-	private UUID originalSourceSystemID;
+	private UUID originalSourceSystemID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
 	@JoinColumn(name = "EnterpriseID",
 	            referencedColumnName = "EnterpriseID",
@@ -80,7 +80,12 @@ public abstract class WarehouseTable<
 
 	public J setOriginalSourceSystemUniqueID(@NotNull UUID originalSourceSystemUniqueID)
 	{
-		this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
+		if(originalSourceSystemUniqueID == null)
+		{
+			this.originalSourceSystemUniqueID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+		}
+		else
+			this.originalSourceSystemUniqueID = originalSourceSystemUniqueID;
 		return (J) this;
 	}
 
@@ -100,7 +105,7 @@ public abstract class WarehouseTable<
 	{
 		if(originalSourceSystemID == null)
 		{
-			this.originalSourceSystemUniqueID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+			this.originalSourceSystemID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 		}else
 			this.originalSourceSystemID = originalSourceSystemID.getId();
 		return (J) this;

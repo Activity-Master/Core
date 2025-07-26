@@ -16,7 +16,7 @@ import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-
+import java.time.Duration;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.DefaultClassifications.*;
@@ -25,215 +25,327 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.S
 
 @Log4j2
 public class ClassificationService
-		implements IClassificationService<ClassificationService>
+    implements IClassificationService<ClassificationService>
 {
 
-	@Inject
-	private ClassificationsDataConceptService dataConceptService;
+  @Inject
+  private ClassificationsDataConceptService dataConceptService;
 
-	public IClassification<?, ?> get()
-	{
-		return new Classification();
-	}
+  public IClassification<?, ?> get()
+  {
+    return new Classification();
+  }
 
-	@Override
-	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts concept,
-											 ISystems<?, ?> system, Integer sequenceOrder, String parentName, UUID... identityToken)
-	{
-		return find(session, parentName, system, identityToken)
-		        .chain(classification -> create(session, name, description, concept, system, sequenceOrder, classification, identityToken));
-	}
+  @Override
+  public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts concept,
+                                           ISystems<?, ?> system, Integer sequenceOrder, String parentName, UUID... identityToken)
+  {
+    return find(session, parentName, system, identityToken)
+               .chain(classification -> create(session, name, description, concept, system, sequenceOrder, classification, identityToken));
+  }
 
-	@Override
-	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name,
-											 ISystems<?, ?> system, UUID... identityToken)
-	{
-		return create(session, name, name, null, system, 0, identityToken);
-	}
+  @Override
+  public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name,
+                                           ISystems<?, ?> system, UUID... identityToken)
+  {
+    return create(session, name, name, null, system, 0, identityToken);
+  }
 
-	@Override
-	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description,
-											 ISystems<?, ?> system, UUID... identityToken)
-	{
-		return create(session, name, description, null, system, 0, identityToken);
-	}
+  @Override
+  public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description,
+                                           ISystems<?, ?> system, UUID... identityToken)
+  {
+    return create(session, name, description, null, system, 0, identityToken);
+  }
 
-	@Override
-	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
-											 ISystems<?, ?> system, UUID... identityToken)
-	{
-		return create(session, name, description, conceptName, system, 0, identityToken);
-	}
+  @Override
+  public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+                                           ISystems<?, ?> system, UUID... identityToken)
+  {
+    return create(session, name, description, conceptName, system, 0, identityToken);
+  }
 
-	@Override
-	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
-											 ISystems<?, ?> system,
-											 Integer sequenceNumber, UUID... identityToken)
-	{
-		return create(session, name, description, conceptName, system, sequenceNumber, (IClassification<?, ?>) null, identityToken);
-	}
+  @Override
+  public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+                                           ISystems<?, ?> system,
+                                           Integer sequenceNumber, UUID... identityToken)
+  {
+    return create(session, name, description, conceptName, system, sequenceNumber, (IClassification<?, ?>) null, identityToken);
+  }
 
-	@Override
-	//@Transactional()
-	public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
-											 ISystems<?, ?> system,
-											 Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken)
-	{
-		// Get the data concept based on conceptName
-		Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept<?, ?>> dataConceptUni;
-		if (conceptName != null)
-		{
-			dataConceptUni = dataConceptService.find(session, conceptName, system, identityToken);
-		}
-		else
-		{
-			dataConceptUni = dataConceptService.find(session, "NoClassification", system, identityToken);
-		}
+  @Override
+  //@Transactional()
+  public Uni<IClassification<?, ?>> create(Mutiny.Session session, String name, String description, EnterpriseClassificationDataConcepts conceptName,
+                                           ISystems<?, ?> system,
+                                           Integer sequenceNumber, IClassification<?, ?> parent, UUID... identityToken)
+  {
+    var sessionFactory = IGuiceContext.get(Mutiny.SessionFactory.class);
 
-		Classification rootCl = new Classification();
-		var enterprise = system.getEnterprise();
-		// Check if classification exists
-		return rootCl.builder(session)
-		             .withName(name)
-		             .withEnterprise(enterprise)
-		             .inActiveRange()
-		             .inDateRange()
-		             .getCount()
-		             .onFailure().invoke(error -> log.error("Error checking if classification exists: {}", error.getMessage(), error))
-		             .chain(count -> {
-		                 boolean exists = count > 0;
-		                 if (!exists)
-		                 {
-		                     // Classification doesn't exist, create it
-		                     rootCl.setName(name);
-		                     rootCl.setDescription(description);
-		                     rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
-		                     rootCl.setSystemID(system);
-		                     rootCl.setOriginalSourceSystemID(system.getId());
-		                     rootCl.setOriginalSourceSystemUniqueID(java.util.UUID.fromString("00000000-0000-0000-0000-000000000000"));
-		                     rootCl.setEnterpriseID(enterprise);
+    log.info("🚀 Creating new classification: '{}' for system: '{}' with external session", name, system.getName());
+    log.debug("📝 Classification details - Name: '{}', Description: '{}', System ID: {}, Session: {}",
+        name, description, system.getId(), session.hashCode());
 
-		                     // Get the active flag service
-		                     IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+    Uni<com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassificationDataConcept<?, ?>> dataConceptUni;
+    if (conceptName != null)
+    {
+      log.debug("📋 Finding data concept: '{}' for system: '{}' with session: {}", conceptName, system.getName(), session.hashCode());
+      dataConceptUni = dataConceptService.find(session, conceptName, system, identityToken);
+    }
+    else
+    {
+      log.debug("📋 Finding default 'NoClassification' data concept for system: '{}' with session: {}", system.getName(), session.hashCode());
+      dataConceptUni = dataConceptService.find(session, "NoClassification", system, identityToken);
+    }
 
-		                     // Chain the data concept and active flag operations
-		                     return dataConceptUni
-		                             .chain(dataConcept -> {
-		                                 // We need to handle the fact that dataConcept is an interface
-		                                 // and setConcept expects a concrete ClassificationDataConcept
-		                                 if (dataConcept instanceof ClassificationDataConcept) {
-		                                     rootCl.setConcept((ClassificationDataConcept) dataConcept);
-		                                 } else {
-		                                     log.warn("DataConcept is not an instance of ClassificationDataConcept: {}", 
-		                                              dataConcept.getClass().getName());
-		                                     // In a real implementation, we might need to fetch the concrete instance
-		                                     // or handle this differently
-		                                 }
-		                                 return acService.getActiveFlag(session, enterprise);
-		                             })
-		                             .chain(activeFlag -> {
-		                                 rootCl.setActiveFlagID(activeFlag);
-		                                 return rootCl.builder(session).persist(rootCl);
-		                             })
-		                             .map(persisted -> {
-		                                 // Start createDefaultSecurity in parallel without waiting for it
-		                                 rootCl.createDefaultSecurity(system, identityToken)
-		                                       .subscribe().with(
-		                                           result -> {
-		                                               // Security setup completed successfully
-		                                           },
-		                                           error -> {
-		                                               // Log error but don't fail the main operation
-		                                               log.warn("Error in createDefaultSecurity", error);
-		                                           }
-		                                       );
+    var enterprise = system.getEnterprise();
 
-		                                 // Handle parent relationship if needed
-		                                 if (parent != null && !NoClassification.toString().equals(name))
-		                                 {
-		                                     find(session, parent.getName(), system, identityToken)
-		                                         .subscribe().with(
-		                                             foundParent -> {
-		                                                 try {
-		                                                     @SuppressWarnings("unchecked")
-		                                                     IClassification<Classification, ClassificationQueryBuilder> pp = 
-		                                                         (IClassification<Classification, ClassificationQueryBuilder>) foundParent;
-		                                                     pp.addChild(session, rootCl, NoClassification.toString(), null, system, identityToken);
-		                                                 } catch (Exception e) {
-		                                                     log.warn("Error adding child to parent classification", e);
-		                                                 }
-		                                             },
-		                                             error -> {
-		                                                 log.warn("Error finding parent classification", error);
-		                                             }
-		                                         );
-		                                 }
+    log.debug("🔍 Checking if classification '{}' already exists with session: {}", name, session.hashCode());
+    return find(session, name, conceptName, system, identityToken)
+               .onItem()
+               .invoke(existing ->
+                           log.debug("✅ Found existing classification: '{}' with ID: {}", existing.getName(), existing.getId())
+               )
+               .onFailure()
+               .recoverWithUni(error -> {
+                 log.debug("📋 Classification '{}' not found, creating new one", name);
+                 log.debug("🏛️ Opening new session and transaction for classification creation");
 
-		                                 // Return the persisted classification immediately
-		                                 return (IClassification<?, ?>) rootCl;
-		                             });
-		                 }
-		                 else
-		                 {
-		                     // Classification exists, find and return it
-		                     return find(session, name, conceptName, system, identityToken);
-		                 }
-		             });
-	}
+                 log.debug("📋 Preparing classification entity with session: {}", session.hashCode());
 
-	//@CacheResult(cacheName = "ClassificationFindWithSimpleString")
-	@Override
-	public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken)
-	{
-		return find(session, name, null, system, identityToken);
-	}
+                 Classification rootCl = new Classification();
+                 rootCl.setName(name);
+                 rootCl.setDescription(description);
+                 rootCl.setClassificationSequenceNumber(sequenceNumber == null ? 1 : sequenceNumber);
+                 rootCl.setSystemID(system);
+                 rootCl.setOriginalSourceSystemID(system.getId());
+                 rootCl.setOriginalSourceSystemUniqueID(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+                 rootCl.setEnterpriseID(enterprise);
 
-	//@Transactional()
-	//@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
-	@Override
-	public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken)
-	{
-		var enterprise = system.getEnterprise();
-		Classification search = new Classification();
-		return search.builder(session)
-		               .withName(name)
-		               .inActiveRange()
-		               .inDateRange()
-		               //   .canRead(system, identityToken)
-		               .withEnterprise(enterprise)
-		               .get()
-		               .onFailure().invoke(error -> log.error("Error finding classification: {}", error.getMessage(), error))
-		               .onItem().ifNull().failWith(() -> new ClassificationException("Cannot find Classification with name - [" + name + "] - and concept - [" + concept + "]"))
-		               .map(classification -> (IClassification<?, ?>) classification);
-	}
+                 IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
 
-	//@Transactional()
-	//@CacheResult(cacheName = "GetHierarchyTypeClassification")
-	@Override
-	public Uni<IClassification<?, ?>> getHierarchyType(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
-	{
-		return find(session,
-				HierarchyTypeClassification.toString(),
-				system, identityToken);
-	}
+                 return dataConceptUni
+                            .onItem()
+                            .invoke(dataConcept -> log.debug("✅ Data concept retrieved for classification '{}'", name))
+                            .onFailure()
+                            .invoke(dataConceptError ->
+                                        log.error("❌ Failed to retrieve data concept for classification '{}': {}", name, dataConceptError.getMessage(), dataConceptError)
+                            )
+                            .chain(dataConcept -> {
+                              if (dataConcept instanceof ClassificationDataConcept cdc)
+                              {
+                                rootCl.setConcept(cdc);
+                                log.debug("🔗 Linked data concept to classification '{}'", name);
+                              }
+                              else
+                              {
+                                log.warn("⚠️ DataConcept is not an instance of ClassificationDataConcept: {}",
+                                    dataConcept.getClass()
+                                        .getName());
+                              }
 
-	//@Transactional()
-	//@CacheResult(cacheName = "GetNoClassification")
-	@Override
-	public Uni<IClassification<?, ?>> getNoClassification(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
-	{
-		return find(session,
-				NoClassification.toString(),
-				system, identityToken);
-	}
+                              log.debug("📋 Retrieving active flag for enterprise: '{}' with session: {}", enterprise.getName(), session.hashCode());
+                              return acService.getActiveFlag(session, enterprise);
+                            })
+                            .onItem()
+                            .invoke(activeFlag -> log.debug("✅ Active flag retrieved: {}", activeFlag.getId()))
+                            .onFailure()
+                            .invoke(activeFlagError ->
+                                        log.error("❌ Failed to retrieve active flag for enterprise '{}': {}", enterprise.getName(), activeFlagError.getMessage(), activeFlagError)
+                            )
+                            .chain(activeFlag -> {
+                              rootCl.setActiveFlagID(activeFlag);
+                              log.debug("🔗 Linked active flag to classification '{}'", name);
+                              log.info("💾 Persisting classification '{}' to database using session: {}", name, session.hashCode());
+                              return rootCl.builder(session)
+                                         .persist(rootCl);
+                            })
+                            .onItem()
+                            .invoke(persisted ->
+                                        log.info("✅ Classification '{}' successfully persisted with ID: {}", name, persisted.getId())
+                            )
+                            .onFailure()
+                            .invoke(persistError ->
+                                        log.error("❌ Failed to persist classification '{}': {}", name, persistError.getMessage(), persistError)
+                            )
+                            .chain(persisted -> {
+                              log.debug("🔐 Starting security creation for classification '{}'", name);
+                              // Use chain instead of await for reactive flow
+                              return rootCl.createDefaultSecurity(system, identityToken)
+                                         .onItem()
+                                         .invoke(result -> log.info("🛡️ Security setup completed successfully for classification '{}'", name))
+                                         .onFailure()
+                                         .recoverWithItem(securityError -> {
+                                           log.warn("⚠️ Security creation failed for classification '{}': {}", name, securityError.getMessage());
+                                           return null; // Continue the chain even if security creation fails
+                                         })
+                                         .chain(securityResult -> {
+                                           // Handle parent-child relationship if needed
+                                           if (parent != null && !NoClassification.toString()
+                                                                      .equals(name))
+                                           {
+                                             log.debug("👶 Setting up parent-child relationship for classification '{}' with parent '{}'", name, parent.getName());
+                                             return find(session, parent.getName(), system, identityToken)
+                                                        .onFailure()
+                                                        .recoverWithItem(e -> {
+                                                          log.warn("⚠️ Error finding parent classification '{}': {}", parent.getName(), e.getMessage());
+                                                          return null;
+                                                        })
+                                                        .chain(foundParent -> {
+                                                          if (foundParent != null)
+                                                          {
+                                                            log.debug("✅ Found parent classification: '{}'", parent.getName());
+                                                            try
+                                                            {
+                                                              @SuppressWarnings("unchecked")
+                                                              IClassification<Classification, ClassificationQueryBuilder> pp =
+                                                                  (IClassification<Classification, ClassificationQueryBuilder>) foundParent;
+                                                              pp.addChild(session, rootCl, NoClassification.toString(), null, system, identityToken);
+                                                              log.debug("🔗 Added classification '{}' as child to parent '{}'", name, parent.getName());
+                                                            }
+                                                            catch (Exception e)
+                                                            {
+                                                              log.warn("⚠️ Error adding child to parent: {}", e.getMessage(), e);
+                                                            }
+                                                          }
+                                                          log.info("🎉 Classification '{}' creation completed successfully", name);
+                                                          return Uni.createFrom()
+                                                                     .item((IClassification<?, ?>) rootCl);
+                                                        });
+                                           }
+                                           else
+                                           {
+                                             log.info("🎉 Classification '{}' creation completed successfully", name);
+                                             return Uni.createFrom()
+                                                        .item((IClassification<?, ?>) rootCl);
+                                           }
+                                         });
+                            });
+               });
+  }
 
-	//@Transactional()
-	//@CacheResult(cacheName = "IdentityTypeClassification")
-	@Override
-	public Uni<IClassification<?, ?>> getIdentityType(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
-	{
-		return find(session,
-				Identity.name(),
-				system, identityToken);
-	}
+
+  //@CacheResult(cacheName = "ClassificationFindWithSimpleString")
+  @Override
+  public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, ISystems<?, ?> system, UUID... identityToken)
+  {
+    log.debug("🔍 Finding classification '{}' for system: '{}' with session: {}",
+        name, system.getName(), session.hashCode());
+    return find(session, name, null, system, identityToken);
+  }
+
+  //@Transactional()
+  //@CacheResult(cacheName = "ClassificationFindWithSimpleStringWithConceptValue")
+  @Override
+  @SuppressWarnings("unchecked")
+  public Uni<IClassification<?, ?>> find(Mutiny.Session session, String name, EnterpriseClassificationDataConcepts concept, ISystems<?, ?> system, UUID... identityToken)
+  {
+    log.debug("🔍 Finding classification '{}' with concept: '{}' for system: '{}' with session: {}",
+        name, concept != null ? concept : "null", system.getName(), session.hashCode());
+
+    var enterprise = system.getEnterprise();
+    Classification search = new Classification();
+    log.debug("📋 Preparing classification query for name: '{}', enterprise: '{}'",
+        name, enterprise.getName());
+
+    return (Uni) search.builder(session)
+                     .withName(name)
+                     .inActiveRange()
+                     .inDateRange()
+                     //   .canRead(system, identityToken)
+                     .withEnterprise(enterprise)
+                     .get()
+                     .onItem()
+                     .invoke(result -> {
+                       if (result != null)
+                       {
+                         log.debug("✅ Found classification '{}' with ID: {}", name, result.getId());
+                       }
+                       else
+                       {
+                         log.debug("⚠️ Classification '{}' not found", name);
+                       }
+                     })
+		               /*.onFailure().invoke(findError ->
+		                   log.error("❌ Error finding classification '{}': {}", 
+		                       name, findError.getMessage(), findError))*/
+        ;
+  }
+
+  //@Transactional()
+  //@CacheResult(cacheName = "GetHierarchyTypeClassification")
+  @Override
+  public Uni<IClassification<?, ?>> getHierarchyType(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
+  {
+    log.debug("🔍 Getting hierarchy type classification for system: '{}' with session: {}",
+        system.getName(), session.hashCode());
+    return find(session,
+        HierarchyTypeClassification.toString(),
+        system, identityToken)
+               .onItem()
+               .invoke(result -> {
+                 if (result != null)
+                 {
+                   log.debug("✅ Found hierarchy type classification with ID: {}", result.getId());
+                 }
+                 else
+                 {
+                   log.debug("⚠️ Hierarchy type classification not found");
+                 }
+               })
+               .onFailure()
+               .invoke(error ->
+                           log.error("❌ Error finding hierarchy type classification: {}", error.getMessage(), error));
+  }
+
+  //@Transactional()
+  //@CacheResult(cacheName = "GetNoClassification")
+  @Override
+  public Uni<IClassification<?, ?>> getNoClassification(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
+  {
+    log.debug("🔍 Getting 'NoClassification' for system: '{}' with session: {}",
+        system.getName(), session.hashCode());
+    return find(session,
+        NoClassification.toString(),
+        system, identityToken)
+               .onItem()
+               .invoke(result -> {
+                 if (result != null)
+                 {
+                   log.debug("✅ Found 'NoClassification' with ID: {}", result.getId());
+                 }
+                 else
+                 {
+                   log.debug("⚠️ 'NoClassification' not found");
+                 }
+               })
+               .onFailure()
+               .invoke(error ->
+                           log.error("❌ Error finding 'NoClassification': {}", error.getMessage(), error));
+  }
+
+  //@Transactional()
+  //@CacheResult(cacheName = "IdentityTypeClassification")
+  @Override
+  public Uni<IClassification<?, ?>> getIdentityType(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
+  {
+    log.debug("🔍 Getting identity type classification for system: '{}' with session: {}",
+        system.getName(), session.hashCode());
+    return find(session,
+        Identity.name(),
+        system, identityToken)
+               .onItem()
+               .invoke(result -> {
+                 if (result != null)
+                 {
+                   log.debug("✅ Found identity type classification with ID: {}", result.getId());
+                 }
+                 else
+                 {
+                   log.debug("⚠️ Identity type classification not found");
+                 }
+               })
+               .onFailure()
+               .invoke(error ->
+                           log.error("❌ Error finding identity type classification: {}", error.getMessage(), error));
+  }
 }

@@ -612,7 +612,7 @@ public class EnterpriseService
     }
     
     // Start with the first system
-    Uni<Void> result = installSystem(session, filtered.getFirst(), enterprise);
+    Uni<Void> result = installSystem(session, filtered.get(0), enterprise);
     
     // Chain the rest of the systems sequentially
     for (int i = 1; i < filtered.size(); i++) {
@@ -635,10 +635,7 @@ public class EnterpriseService
     return performSystemInstall(session, enterprise, system)
                .invoke(() -> log.info("✅ System install completed: " + className))
                .onFailure()
-               .transform(err -> {
-                   log.error("❌ System install failed: " + className, err);
-                   throw new RuntimeException("System installation failed for " + className + ": " + err.getMessage(), err);
-               });
+               .invoke(err -> log.error("❌ System install failed: " + className, err));
   }
 
 

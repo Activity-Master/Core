@@ -29,6 +29,9 @@ public class ProductsSystem
 
 	@Inject
 	private ISystemsService<?> systemsService;
+	
+	@Inject
+	private Mutiny.SessionFactory sessionFactory;
 
 	@Override
 	public ISystems<?,?>  registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
@@ -46,30 +49,62 @@ public class ProductsSystem
 	@Override
 	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
-		// Get the ActivityMaster system
-		return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
-			.chain(activityMasterSystem -> {
-				// Create base product classification
-				return service.create(session, ProductClassifications.Products, activityMasterSystem)
-					.chain(baseClassification -> {
-						logProgress("Products System", "Creating product classifications...");
+		logProgress("Products System", "Starting Products Checks");
+		log.info("Creating product defaults in a new session and transaction");
+		
+		// Use sessionFactory.withTransaction to create a new session
+		return sessionFactory.withTransaction((newSession, tx) -> {
+			// Get the ActivityMaster system
+			return systemsService.findSystem(newSession, enterprise, ActivityMasterSystemName)
+				.chain(activityMasterSystem -> {
+					// Create base product classification
+					return service.create(newSession, ProductClassifications.Products, activityMasterSystem)
+						.chain(baseClassification -> {
+							logProgress("Products System", "Creating product classifications...");
 
-						// Create product-related classifications in parallel since they all have the same parent
-						List<Uni<?>> productClassifications = new ArrayList<>();
-						productClassifications.add(service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
-						productClassifications.add(service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
-						productClassifications.add(service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
-						productClassifications.add(service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
+							// Create product-related classifications in parallel since they all have the same parent
+							List<Uni<?>> productClassifications = new ArrayList<>();
+							productClassifications.add(service.create(newSession, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
+							productClassifications.add(service.create(newSession, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
+							productClassifications.add(service.create(newSession, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
+							productClassifications.add(service.create(newSession, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
 
-						// Execute all product classifications in parallel
-						return Uni.combine().all().unis(productClassifications)
-							.discardItems()
-							.onFailure().invoke(error -> 
-								log.error("Error creating product classifications: {}", error.getMessage(), error))
-							.invoke(v -> logProgress("Products System", "Loaded Product Classifications...", 4));
-					});
-			})
-			.replaceWith(Uni.createFrom().voidItem());
+							// Execute all product classifications in parallel
+							return Uni.combine().all().unis(productClassifications)
+								.discardItems()
+								.onFailure().invoke(error -> 
+									log.error("Error creating product classifications: {}", error.getMessage(), error))
+								.invoke(v -> logProgress("Products System", "Loaded Product Classifications...", 4));
+						});
+				});
+		}).replaceWithVoid();
+	}
+
+	@Override
+	public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+	{
+		log.info("Starting reactive postStartup for Products System");
+
+		// Create a reactive chain for the postStartup operations
+		// Get the system
+		return systemsService.findSystem(session, enterprise, getSystemName())
+				.onItem()
+				.ifNull()
+				.failWith(() -> new RuntimeException("System not found: " + getSystemName()))
+				.chain(system -> {
+					log.debug("Found system: {}", system.getName());
+					// Get the security token
+					return systemsService.getSecurityIdentityToken(session, system)
+							.onItem()
+							.ifNull()
+							.failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
+							.map(token -> {
+								log.debug("Found security token for system: {}", system.getName());
+								return null; // Return Void
+							});
+				})
+				.replaceWith(Uni.createFrom()
+						.voidItem());
 	}
 
 	@Override
