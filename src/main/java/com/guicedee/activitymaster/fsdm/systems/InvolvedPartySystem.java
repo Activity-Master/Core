@@ -80,7 +80,7 @@ public class InvolvedPartySystem
     {
         log.debug("Creating identification types for enterprise: {}", enterprise.getName());
 
-        return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                        .chain(system -> {
                            log.debug("Got system: {}", system.getName());
 
@@ -122,7 +122,7 @@ public class InvolvedPartySystem
     {
         log.debug("Creating name types for enterprise: {}", enterprise.getName());
 
-        return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                        .chain(system -> {
                            log.debug("Got system: {}", system.getName());
 
@@ -161,7 +161,7 @@ public class InvolvedPartySystem
     {
         log.debug("Creating types for enterprise: {}", enterprise.getName());
 
-        return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                        .chain(system -> {
                            log.debug("Got system: {}", system.getName());
 

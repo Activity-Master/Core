@@ -47,7 +47,7 @@ public class ProductsSystem
 	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		// Get the ActivityMaster system
-		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+		return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
 			.chain(activityMasterSystem -> {
 				// Create base product classification
 				return service.create(session, ProductClassifications.Products, activityMasterSystem)

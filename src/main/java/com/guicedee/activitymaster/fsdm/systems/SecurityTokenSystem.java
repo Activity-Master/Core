@@ -89,7 +89,7 @@ public class SecurityTokenSystem
         logProgress("Security Token Service", "Starting Security Structure Checks/Install");
 
         // Get the ActivityMaster system
-        return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
             .invoke(activityMasterSystem -> {
                 SecurityTokenSystem instance = IGuiceContext.get(SecurityTokenSystem.class);
 
@@ -152,7 +152,7 @@ public class SecurityTokenSystem
     void defaultsCreation(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         // Note: Using reactive programming internally but maintaining synchronous interface
-        ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        ISystems<?, ?> activityMasterSystem = systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                                                       .await()
                                                       .atMost(Duration.ofMinutes(1))
                 ;
@@ -270,7 +270,7 @@ public class SecurityTokenSystem
 
         // Note: Using reactive programming internally but maintaining synchronous interface
         UUID uuid = getSystemToken(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
-        ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        ISystems<?, ?> activityMasterSystem = systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                                                       .await()
                                                       .atMost(Duration.ofMinutes(1))
                 ;
@@ -325,7 +325,7 @@ public class SecurityTokenSystem
     {
         log.info("Creating groups and folders for enterprise: {}", enterprise.getName());
 
-        ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        ISystems<?, ?> activityMasterSystem = systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                                                       .await()
                                                       .atMost(Duration.ofMinutes(1))
                 ;
@@ -620,7 +620,7 @@ public class SecurityTokenSystem
         log.info("🏢 Starting reactive security defaults application for enterprise: {}", enterprise.getName());
         
         // Note: Using reactive programming internally but maintaining synchronous interface
-        ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        ISystems<?, ?> activityMasterSystem = systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                                                       .await()
                                                       .atMost(Duration.ofMinutes(1))
                 ;
@@ -687,7 +687,7 @@ public class SecurityTokenSystem
     void createActivityMasterInvolvedParty(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         // Note: Using reactive programming internally but maintaining synchronous interface
-        ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        ISystems<?, ?> activityMasterSystem = systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                                                       .await()
                                                       .atMost(Duration.ofMinutes(1))
                 ;
@@ -700,7 +700,7 @@ public class SecurityTokenSystem
         log.info("🏢 Starting reactive post-ActivityMaster security defaults for enterprise: {}", enterprise.getName());
         
         // Note: Using reactive programming internally but maintaining synchronous interface
-        ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+        ISystems<?, ?> activityMasterSystem = systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
                                                       .await()
                                                       .atMost(Duration.ofMinutes(1))
                 ;

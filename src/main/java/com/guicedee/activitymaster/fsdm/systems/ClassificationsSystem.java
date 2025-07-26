@@ -38,7 +38,7 @@ public class ClassificationsSystem
 	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		// Get the ActivityMaster system
-		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+		return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
 			.chain(activityMasterSystem -> {
 				// Create Root Enterprise Name - this is a foundational classification
 				return service.create(session, enterprise.getName(),

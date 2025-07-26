@@ -45,63 +45,69 @@ public class SystemsSystem
   @Override
   public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
+    log.info("🚀 Registering Activity Master System for enterprise: '{}'", enterprise.getName());
+    log.debug("📋 Creating Activity Master System with session: {}", session.hashCode());
+    
     return systemsService
         .create(session, enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master")
         .onItem()
-        .invoke(system -> log.debug("Created Activity Master System: {}", system.getName()))
+        .invoke(system -> log.debug("✅ Created Activity Master System: '{}' with session: {}", system.getName(), session.hashCode()))
         .onFailure()
-        .invoke(error -> log.error("Error creating Activity Master System: {}", error.getMessage(), error))
+        .invoke(error -> log.error("❌ Failed to create Activity Master System: '{}' with session {}: {}", 
+                                  ActivityMasterSystemName, session.hashCode(), error.getMessage(), error))
         .await()
         .atMost(Duration.ofMinutes(1));
   }
 
+  /**
+   * Creates default systems for the enterprise in parallel.
+   * 
+   * This method creates three systems concurrently:
+   * 1. Enterprise System
+   * 2. Active Flag System
+   * 3. Activity Master System
+   * 
+   * The systems are created in parallel using Uni.combine().all().unis() to improve performance.
+   * The method returns a Uni<Void> that completes only when all system creations are complete.
+   * 
+   * @param session The Hibernate reactive session
+   * @param enterprise The enterprise for which to create systems
+   * @return A Uni<Void> that completes when all systems have been created
+   */
   @Override
-  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-  {
-    log.info("Registering systems for enterprise: {}", enterprise.getName());
+public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise) {
+  log.info("🚀 Registering default systems for enterprise: '{}'", enterprise.getName());
+  log.debug("📋 Starting sequential system creation with session: {}", session.hashCode());
 
+  return systemsService
+    .create(session, enterprise, EnterpriseSystemName, "The system for handling enterprises")
+    .onItem().invoke(system ->
+      log.debug("✅ Created Enterprise System: '{}' with session: {}", system.getName(), session.hashCode()))
+    .onFailure().invoke(error ->
+      log.error("❌ Failed to create Enterprise System with session {}: {}", session.hashCode(), error.getMessage(), error))
 
-    // Create Enterprise System
-    log.debug("Creating Enterprise System");
-    ISystems<?, ?> entSystem = systemsService
-                                   .create(session, enterprise, EnterpriseSystemName, "The system for handling enterprises")
-                                   .onItem()
-                                   .invoke(system -> log.debug("Created Enterprise System: {}", system.getName()))
-                                   .onFailure()
-                                   .invoke(error -> log.error("Error creating Enterprise System: {}", error.getMessage(), error))
-                                   .await()
-                                   .atMost(Duration.ofMinutes(1))
-        ;
+    .flatMap(entSystem -> systemsService
+      .create(session, enterprise, ActivateFlagSystemName, "The system for the active flag management")
+      .onItem().invoke(system ->
+        log.debug("✅ Created Active Flag System: '{}' with session: {}", system.getName(), session.hashCode()))
+      .onFailure().invoke(error ->
+        log.error("❌ Failed to create Active Flag System with session {}: {}", session.hashCode(), error.getMessage(), error))
+    )
 
-    // Create Active Flag System
-    log.debug("Creating Active Flag System");
-    ISystems<?, ?> flagSystem = systemsService
-                                    .create(session, enterprise, ActivateFlagSystemName, "The system for the active flag management")
-                                    .onItem()
-                                    .invoke(system -> log.debug("Created Active Flag System: {}", system.getName()))
-                                    .onFailure()
-                                    .invoke(error -> log.error("Error creating Active Flag System: {}", error.getMessage(), error))
-                                    .await()
-                                    .atMost(Duration.ofMinutes(1))
-        ;
+    .flatMap(flagSystem -> systemsService
+      .create(session, enterprise, ActivityMasterSystemName,
+              "The Core Enterprise Activity Monitoring Application", "Activity Master")
+      .onItem().invoke(system ->
+        log.debug("✅ Created Activity Master System: '{}' with session: {}", system.getName(), session.hashCode()))
+      .onFailure().invoke(error ->
+        log.error("❌ Failed to create Activity Master System with session {}: {}", session.hashCode(), error.getMessage(), error))
+    )
 
-    // Create Activity Master System
-    log.debug("Creating Activity Master System");
-    ISystems<?, ?> activityMasterSystem = systemsService
-                                              .create(session, enterprise, ActivityMasterSystemName, "The Core Enterprise Activity Monitoring Application", "Activity Master")
-                                              .onItem()
-                                              .invoke(system -> log.debug("Created Activity Master System: {}", system.getName()))
-                                              .onFailure()
-                                              .invoke(error -> log.error("Error creating Activity Master System: {}", error.getMessage(), error))
-                                              .await()
-                                              .atMost(Duration.ofMinutes(1))
-        ;
+    .onItem().invoke(() ->
+      log.info("🎉 Successfully registered all systems for enterprise: '{}'", enterprise.getName()))
+    .replaceWithVoid();
+}
 
-    log.info("Successfully registered systems for enterprise: {}", enterprise.getName());
-
-    return Uni.createFrom()
-               .voidItem();
-  }
 
   @Override
   public int totalTasks()
@@ -109,130 +115,204 @@ public class SystemsSystem
     return 2;
   }
 
-  public IInvolvedParty<?, ?> createInvolvedPartyForNewSystem(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
+  /**
+   * Creates an involved party for a new system in a reactive way.
+   * 
+   * This method follows the reactive pattern by:
+   * 1. Retrieving the Activity Master System
+   * 2. Getting the Activity Master System UUID
+   * 3. Getting the System UUID
+   * 4. Creating the involved party
+   * 5. Running the remaining operations in parallel:
+   *    - Adding identification type to the involved party
+   *    - Adding party type to the involved party
+   *    - Adding name type to the involved party
+   *
+   * @param session The Hibernate reactive session
+   * @param system The system for which to create an involved party
+   * @param identityToken Optional identity tokens
+   * @return A Uni that emits the created involved party when complete
+   */
+  public Uni<IInvolvedParty<?, ?>> createInvolvedPartyForNewSystem(Mutiny.Session session, ISystems<?, ?> system, UUID... identityToken)
   {
-    log.info("Creating involved party for system: {}", system.getName());
-
-    // Get Activity Master System
-    ISystems<?, ?> activityMasterSystem = systemsService
-                                              .getActivityMaster(session, system.getEnterpriseID())
-                                              .onItem()
-                                              .invoke(s -> log.debug("Got Activity Master System"))
-                                              .onFailure()
-                                              .invoke(error -> log.error("Error getting Activity Master System: {}", error.getMessage(), error))
-                                              .await()
-                                              .atMost(Duration.ofMinutes(1))
-        ;
-
-    // Get Activity Master System UUID
-    UUID activityMasterSystemUUID = systemsService
-                                        .getSecurityIdentityToken(session, activityMasterSystem)
-                                        .onItem()
-                                        .invoke(uuid -> log.debug("Got Activity Master System UUID: {}", uuid))
-                                        .onFailure()
-                                        .invoke(error -> log.error("Error getting Activity Master System UUID: {}", error.getMessage(), error))
-                                        .await()
-                                        .atMost(Duration.ofMinutes(1))
-        ;
-
-    // Get System UUID
-    UUID newSystemUUID = systemsService
-                             .getSecurityIdentityToken(session, system, activityMasterSystemUUID)
-                             .onItem()
-                             .invoke(uuid -> log.debug("Got System UUID: {}", uuid))
-                             .onFailure()
-                             .invoke(error -> log.error("Error getting System UUID: {}", error.getMessage(), error))
-                             .await()
-                             .atMost(Duration.ofMinutes(1))
-        ;
-
-    if (newSystemUUID == null)
-    {
-      log.error("No UUID for newly created system: {}", system.getName());
-      throw new ActivityMasterException("No UUID for newly created system");
-    }
+    log.info("🚀 Creating involved party for system: '{}'", system.getName());
+    log.debug("📋 Starting involved party creation with session: {}", session.hashCode());
 
     InvolvedPartyService ipService = com.guicedee.client.IGuiceContext.get(InvolvedPartyService.class);
 
-    try
-    {
-      // Create the involved party
-      IInvolvedParty<?, ?> involvedParty = ipService.create(session, system, Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(),
-                  newSystemUUID.toString()),
-              false, activityMasterSystemUUID)
-                                               .onItem()
-                                               .invoke(ip -> log.debug("Created involved party for system: {}", system.getName()))
-                                               .onFailure()
-                                               .invoke(error -> log.error("Error creating involved party: {}", error.getMessage(), error))
-                                               .await()
-                                               .atMost(Duration.ofMinutes(2))
-          ;
-
-      // Find identification type
-      IInvolvedPartyIdentificationType<?, ?> involvedPartyIdentificationType = ipService.findInvolvedPartyIdentificationType(
-              session, IdentificationTypes.IdentificationTypeSystemID.toString(),
-              system, identityToken)
-                                                                                   .onItem()
-                                                                                   .invoke(type -> log.debug("Found identification type"))
-                                                                                   .onFailure()
-                                                                                   .invoke(error -> log.error("Error finding identification type: {}", error.getMessage(), error))
-                                                                                   .await()
-                                                                                   .atMost(Duration.ofMinutes(1))
-          ;
-
-      // Add identification type to involved party
-      log.debug("Adding identification type to involved party");
-      involvedParty.addOrReuseInvolvedPartyIdentificationType(session, NoClassification.toString(),
-          involvedPartyIdentificationType,
-          system.getId()
-              .toString(),
-          system,
-          activityMasterSystemUUID);
-
-      // Find party type
-      IInvolvedPartyType<?, ?> ipType = ipService.findType(session, IPTypes.TypeSystem.toString(), system, identityToken)
-                                            .onItem()
-                                            .invoke(type -> log.debug("Found party type"))
-                                            .onFailure()
-                                            .invoke(error -> log.error("Error finding party type: {}", error.getMessage(), error))
-                                            .await()
-                                            .atMost(Duration.ofMinutes(1))
-          ;
-
-      // Add party type to involved party
-      log.debug("Adding party type to involved party");
-      involvedParty.addOrReuseInvolvedPartyType(session, NoClassification.toString(),
-          ipType,
-          newSystemUUID.toString(),
-          system,
-          activityMasterSystemUUID);
-
-      // Find name type
-      IInvolvedPartyNameType<?, ?> nameType = ipService.findInvolvedPartyNameType(session, NameTypes.PreferredNameType.toString(), system, identityToken)
-                                                  .onItem()
-                                                  .invoke(type -> log.debug("Found name type"))
-                                                  .onFailure()
-                                                  .invoke(error -> log.error("Error finding name type: {}", error.getMessage(), error))
-                                                  .await()
-                                                  .atMost(Duration.ofMinutes(1))
-          ;
-
-      // Add name type to involved party
-      log.debug("Adding name type to involved party");
-      involvedParty.addOrReuseInvolvedPartyNameType(session, NoClassification.toString(),
-          nameType,
-          system.getName(),
-          system,
-          activityMasterSystemUUID);
-
-      log.info("Successfully created involved party for system: {}", system.getName());
-      return involvedParty;
-    }
-    catch (Exception e)
-    {
-      log.error("Cannot build InvolvedParty for system {}: {}", system.getName(), e.getMessage(), e);
-      return null;
-    }
+    // Get Activity Master System
+    log.debug("📋 Retrieving Activity Master System for enterprise: '{}' with session: {}", 
+             system.getEnterpriseID().getName(), session.hashCode());
+    
+    return systemsService
+        .getActivityMaster(session, system.getEnterpriseID())
+        .onItem()
+        .invoke(s -> log.debug("✅ Retrieved Activity Master System: '{}' with session: {}", 
+                             s.getName(), session.hashCode()))
+        .onFailure()
+        .invoke(error -> log.error("❌ Failed to retrieve Activity Master System with session {}: {}", 
+                                 session.hashCode(), error.getMessage(), error))
+        // Chain to get Activity Master System UUID
+        .chain(activityMasterSystem -> {
+            log.debug("📋 Retrieving security identity token for Activity Master System with session: {}", session.hashCode());
+            return systemsService
+                .getSecurityIdentityToken(session, activityMasterSystem)
+                .onItem()
+                .invoke(uuid -> log.debug("✅ Retrieved Activity Master System UUID: '{}' with session: {}", 
+                                       uuid, session.hashCode()))
+                .onFailure()
+                .invoke(error -> log.error("❌ Failed to retrieve Activity Master System UUID with session {}: {}", 
+                                         session.hashCode(), error.getMessage(), error))
+                // Chain to get System UUID
+                .chain(activityMasterSystemUUID -> {
+                    log.debug("📋 Retrieving security identity token for system: '{}' with session: {}", 
+                             system.getName(), session.hashCode());
+                    return systemsService
+                        .getSecurityIdentityToken(session, system, activityMasterSystemUUID)
+                        .onItem()
+                        .invoke(uuid -> log.debug("✅ Retrieved System UUID: '{}' with session: {}", 
+                                               uuid, session.hashCode()))
+                        .onFailure()
+                        .invoke(error -> log.error("❌ Failed to retrieve System UUID with session {}: {}", 
+                                                 session.hashCode(), error.getMessage(), error))
+                        // Chain to create involved party
+                        .chain(newSystemUUID -> {
+                            if (newSystemUUID == null) {
+                                log.error("❌ No UUID found for newly created system: '{}' with session: {}", 
+                                         system.getName(), session.hashCode());
+                                return Uni.createFrom().failure(
+                                    new ActivityMasterException("No UUID for newly created system"));
+                            }
+                            
+                            // Create the involved party
+                            log.debug("📋 Creating involved party with UUID identification for system: '{}' with session: {}", 
+                                     system.getName(), session.hashCode());
+                            return ipService.create(
+                                session, 
+                                system, 
+                                Pair.of(IdentificationTypes.IdentificationTypeUUID.toString(), newSystemUUID.toString()),
+                                false, 
+                                activityMasterSystemUUID
+                            )
+                            .onItem()
+                            .invoke(ip -> log.debug("✅ Created involved party for system: '{}' with session: {}", 
+                                                  system.getName(), session.hashCode()))
+                            .onFailure()
+                            .invoke(error -> log.error("❌ Failed to create involved party with session {}: {}", 
+                                                     session.hashCode(), error.getMessage(), error))
+                            // Chain to run the remaining operations in parallel
+                            .chain(involvedParty -> {
+                                log.debug("🔄 Starting parallel operations for involved party with session: {}", session.hashCode());
+                                
+                                // 1. Find and add identification type (as a Uni operation)
+                                Uni<?> identificationTypeUni = ipService.findInvolvedPartyIdentificationType(
+                                    session, 
+                                    IdentificationTypes.IdentificationTypeSystemID.toString(),
+                                    system, 
+                                    identityToken
+                                )
+                                .onItem()
+                                .invoke(type -> log.debug("✅ Found identification type with session: {}", session.hashCode()))
+                                .onFailure()
+                                .invoke(error -> log.error("❌ Failed to find identification type with session {}: {}", 
+                                                         session.hashCode(), error.getMessage(), error))
+                                .chain(involvedPartyIdentificationType -> {
+                                    log.debug("🔗 Linking identification type to involved party with session: {}", session.hashCode());
+                                    return involvedParty.addOrReuseInvolvedPartyIdentificationType(
+                                        session, 
+                                        NoClassification.toString(),
+                                        involvedPartyIdentificationType,
+                                        system.getId().toString(),
+                                        system,
+                                        activityMasterSystemUUID
+                                    );
+                                })
+                                .onItem()
+                                .invoke(result -> log.debug("✅ Successfully linked identification type with session: {}", session.hashCode()))
+                                .onFailure()
+                                .invoke(error -> log.error("❌ Failed to link identification type with session {}: {}", 
+                                                         session.hashCode(), error.getMessage(), error));
+                                
+                                // 2. Find and add party type (as a Uni operation)
+                                Uni<?> partyTypeUni = ipService.findType(
+                                    session, 
+                                    IPTypes.TypeSystem.toString(), 
+                                    system, 
+                                    identityToken
+                                )
+                                .onItem()
+                                .invoke(type -> log.debug("✅ Found party type with session: {}", session.hashCode()))
+                                .onFailure()
+                                .invoke(error -> log.error("❌ Failed to find party type with session {}: {}", 
+                                                         session.hashCode(), error.getMessage(), error))
+                                .chain(ipType -> {
+                                    log.debug("🔗 Linking party type to involved party with session: {}", session.hashCode());
+                                    return involvedParty.addOrReuseInvolvedPartyType(
+                                        session, 
+                                        NoClassification.toString(),
+                                        ipType,
+                                        newSystemUUID.toString(),
+                                        system,
+                                        activityMasterSystemUUID
+                                    );
+                                })
+                                .onItem()
+                                .invoke(result -> log.debug("✅ Successfully linked party type with session: {}", session.hashCode()))
+                                .onFailure()
+                                .invoke(error -> log.error("❌ Failed to link party type with session {}: {}", 
+                                                         session.hashCode(), error.getMessage(), error));
+                                
+                                // 3. Find and add name type (as a Uni operation)
+                                Uni<?> nameTypeUni = ipService.findInvolvedPartyNameType(
+                                    session, 
+                                    NameTypes.PreferredNameType.toString(), 
+                                    system, 
+                                    identityToken
+                                )
+                                .onItem()
+                                .invoke(type -> log.debug("✅ Found name type with session: {}", session.hashCode()))
+                                .onFailure()
+                                .invoke(error -> log.error("❌ Failed to find name type with session {}: {}", 
+                                                         session.hashCode(), error.getMessage(), error))
+                                .chain(nameType -> {
+                                    log.debug("🔗 Linking name type to involved party with session: {}", session.hashCode());
+                                    return involvedParty.addOrReuseInvolvedPartyNameType(
+                                        session, 
+                                        NoClassification.toString(),
+                                        nameType,
+                                        system.getName(),
+                                        system,
+                                        activityMasterSystemUUID
+                                    );
+                                })
+                                .onItem()
+                                .invoke(result -> log.debug("✅ Successfully linked name type with session: {}", session.hashCode()))
+                                .onFailure()
+                                .invoke(error -> log.error("❌ Failed to link name type with session {}: {}", 
+                                                         session.hashCode(), error.getMessage(), error));
+                                
+                                // Run all three operations in parallel
+                                return Uni.combine().all().unis(identificationTypeUni, partyTypeUni, nameTypeUni)
+                                    .discardItems() // We only care about completion, not the results
+                                    .onItem()
+                                    .invoke(() -> log.info("🎉 Successfully created involved party for system: '{}'", system.getName()))
+                                    .onFailure()
+                                    .invoke(error -> log.error("💥 Failed to complete parallel operations for system '{}' with session {}: {}", 
+                                                             system.getName(), session.hashCode(), error.getMessage(), error))
+                                    .replaceWith(involvedParty) // Return the involved party after all operations complete
+                                    .map(ip -> (IInvolvedParty<?, ?>) ip); // Ensure the return type matches the method signature exactly
+                            });
+                        });
+                });
+        })
+        .onFailure()
+        .recoverWithUni(error -> {
+            log.error("💥 Failed to build InvolvedParty for system '{}' with session {}: {}", 
+                     system.getName(), session.hashCode(), error.getMessage(), error);
+            return Uni.<IInvolvedParty<?, ?>>createFrom().failure(error);
+        })
+        // Final map to ensure the return type is exactly Uni<IInvolvedParty<?, ?>>
+        .map(involvedParty -> involvedParty);
   }
 
   @Override

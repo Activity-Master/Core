@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.*;
 import com.guicedee.activitymaster.fsdm.db.entities.resourceitem.ResourceItem;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -67,53 +68,58 @@ public class ProductService
 	@Override
 	public Uni<IProduct<?, ?>> createProduct(Mutiny.Session session, String productType, UUID key, String name, String description, String code, ISystems<?, ?> system, UUID... identityToken)
 	{
-		Product product = new Product();
-		product.setId(key);
-		product.setName(name);
-		product.setProductCode(code);
-		product.setDescription(description);
+		Product newProduct = new Product();
 		var enterprise = system.getEnterprise();
-		product.setEnterpriseID(enterprise);
-		product.setSystemID(system);
-		product.setOriginalSourceSystemID(system.getId());
-		IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+		
+		return findProduct(session, name, system, identityToken)
+		               .onFailure(NoResultException.class)
+		               .recoverWithUni(existingProduct -> {
+		                   newProduct.setId(key);
+		                   newProduct.setName(name);
+		                   newProduct.setProductCode(code);
+		                   newProduct.setDescription(description);
+		                   newProduct.setEnterpriseID(enterprise);
+		                   newProduct.setSystemID(system);
+		                   newProduct.setOriginalSourceSystemID(system.getId());
 
-		// Get active flag using reactive pattern
-		return acService.getActiveFlag(session, enterprise)
-		        .chain(activeFlag -> {
-		            product.setActiveFlagID(activeFlag);
-					return session.persist(product)
-								   .replaceWith(Uni.createFrom()
-														.item(product));
-		        })
-		        .chain(persisted -> {
-		            // Start createDefaultSecurity in parallel without waiting for it
-		            product.createDefaultSecurity(system, identityToken)
-		                   .subscribe().with(
-		                       result -> {
-		                           // Security setup completed successfully
-		                       },
-		                       error -> {
-		                           // Log error but don't fail the main operation
-		                           log.warn("Error in createDefaultSecurity", error);
-		                       }
-		                   );
+		                   IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+		                   return acService.getActiveFlag(session, enterprise)
+		                              .chain(activeFlag -> {
+		                                  newProduct.setActiveFlagID(activeFlag);
+		                                  return session.persist(newProduct)
+		                                             .replaceWith(Uni.createFrom()
+		                                                              .item(newProduct))
+		                                             .chain(persisted -> {
+		                                                 // Start createDefaultSecurity in parallel without waiting for it
+		                                                 persisted.createDefaultSecurity(system, identityToken)
+		                                                     .subscribe()
+		                                                     .with(
+		                                                         result -> {
+		                                                             // Security setup completed successfully
+		                                                         },
+		                                                         error -> {
+		                                                             // Log error but don't fail the main operation
+		                                                             log.warn("Error in createDefaultSecurity", error);
+		                                                         }
+		                                                     );
 
-		            // Create product type
-		            return createProductType(session, productType, productType, system, identityToken)
-		                   .chain(pType -> {
-		                       // Add product types - this is a synchronous operation in the current implementation
-		                       // We'll wrap it in a Uni to make it reactive
-		                       return Uni.createFrom().emitter(emitter -> {
-		                           try {
-		                               product.addProductTypes(session, productType, "", NoClassification.toString(), system, identityToken);
-		                               emitter.complete((IProduct<?, ?>) product);
-		                           } catch (Exception e) {
-		                               emitter.fail(e);
-		                           }
-		                       });
-		                   });
-		        });
+		                                                 // Create product type and add it to product
+		                                                 return createProductType(session, productType, productType, system, identityToken)
+		                                                        .chain(pType -> {
+		                                                            // Add product types - this is a synchronous operation in the current implementation
+		                                                            // We'll wrap it in a Uni to make it reactive
+		                                                            return Uni.createFrom().emitter(emitter -> {
+		                                                                try {
+		                                                                    newProduct.addProductTypes(session, productType, "", NoClassification.toString(), system, identityToken);
+		                                                                    emitter.complete((IProduct<?, ?>) newProduct);
+		                                                                } catch (Exception e) {
+		                                                                    emitter.fail(e);
+		                                                                }
+		                                                            });
+		                                                        });
+		                                             });
+		                              });
+		               });
 	}
 
 	//@Transactional()
@@ -162,58 +168,44 @@ public class ProductService
 	//@Transactional()
 	public Uni<IProductType<?, ?>> createProductType(Mutiny.Session session, String productsType, UUID key, String description, ISystems<?, ?> system, UUID... identityToken)
 	{
-		ProductType et = new ProductType();
+		ProductType newProductType = new ProductType();
 		var enterprise = system.getEnterprise();
-		// Check if product type exists
-		return et.builder(session)
-		         .withName(productsType)
-		         .withEnterprise(enterprise)
-		         .inActiveRange()
-		         .inDateRange()
-		         .getCount()
-		         .onFailure().invoke(error -> log.error("Error checking if product type exists: {}", error.getMessage(), error))
-		         .chain(count -> {
-		             boolean exists = count > 0;
-		             if (!exists)
-		             {
-		                 et.setId(key);
-		                 et.setName(productsType);
-		                 et.setDescription(description);
-		                 et.setSystemID(system);
-		                 et.setEnterpriseID(enterprise);
-		                 IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+		
+		return findProductTypeForProduct(session, productsType, system, identityToken)
+		               .onFailure(NoResultException.class)
+		               .recoverWithUni(existingProductType -> {
+		                   newProductType.setId(key);
+		                   newProductType.setName(productsType);
+		                   newProductType.setDescription(description);
+		                   newProductType.setSystemID(system);
+		                   newProductType.setEnterpriseID(enterprise);
+		                   newProductType.setOriginalSourceSystemID(system.getId());
 
-		                 // Get active flag using reactive pattern
-		                 return acService.getActiveFlag(session, enterprise)
-		                        .chain(activeFlag -> {
-		                            et.setActiveFlagID(activeFlag);
-		                            et.setOriginalSourceSystemID(system.getId());
-									return session.persist(et)
-												   .replaceWith(Uni.createFrom()
-																		.item(et));
-		                        })
-		                        .chain(persisted -> {
-		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            et.createDefaultSecurity(system, identityToken)
-		                              .subscribe().with(
-		                                  result -> {
-		                                      // Security setup completed successfully
-		                                  },
-		                                  error -> {
-		                                      // Log error but don't fail the main operation
-		                                      log.warn("Error in createDefaultSecurity", error);
-		                                  }
-		                              );
-
-		                            // Return the persisted product type immediately
-		                            return Uni.createFrom().item((IProductType<?, ?>) et);
-		                        });
-		             }
-		             else
-		             {
-		                 return findProductTypeForProduct(session, productsType, system, identityToken);
-		             }
-		         });
+		                   IActiveFlagService<?> acService = IGuiceContext.get(IActiveFlagService.class);
+		                   return acService.getActiveFlag(session, enterprise)
+		                              .chain(activeFlag -> {
+		                                  newProductType.setActiveFlagID(activeFlag);
+		                                  return session.persist(newProductType)
+		                                             .replaceWith(Uni.createFrom()
+		                                                              .item(newProductType))
+		                                             .map(persisted -> {
+		                                                 // Start createDefaultSecurity in parallel without waiting for it
+		                                                 persisted.createDefaultSecurity(system, identityToken)
+		                                                     .subscribe()
+		                                                     .with(
+		                                                         result -> {
+		                                                             // Security setup completed successfully
+		                                                         },
+		                                                         error -> {
+		                                                             // Log error but don't fail the main operation
+		                                                             log.warn("Error in createDefaultSecurity", error);
+		                                                         }
+		                                                     );
+		                                                 // Return the persisted product type immediately without waiting for security setup
+		                                                 return (IProductType<?, ?>) persisted;
+		                                             });
+		                              });
+		               });
 	}
 
 	//@Transactional()

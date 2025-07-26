@@ -53,7 +53,7 @@ public class RulesSystem
 		log.info("Starting createDefaults for Rules System");
 
 		// Get the ActivityMaster system
-		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+		return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
 			.chain(activityMasterSystem -> {
 				logProgress("Rules System", "Creating rule classifications...");
 

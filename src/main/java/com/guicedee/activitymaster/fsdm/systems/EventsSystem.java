@@ -61,7 +61,7 @@ public class EventsSystem
 		            .getDay(new Date());
 
 		// Start reactive chain with getting the ActivityMaster system
-		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+		return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
 			.chain(activityMasterSystem -> {
 				logProgress("Loading Logging Types", "Creating Log Types");
 				

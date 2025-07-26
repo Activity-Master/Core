@@ -525,7 +525,6 @@ public class EnterpriseService
                                            return passwordsService.createAdminAndCreatorUserForEnterprise(session, system, adminUserName, adminPassword, uuidIdentifier);
                                          })
                                          .chain(user -> {
-                                           wipeCaches();
                                            logProgress("Systems", "Running Systems Post Startups", 1);
                                            return performPostStartup(session, enterprise)
                                                       .map(v -> enterprise);
@@ -605,19 +604,25 @@ public class EnterpriseService
                  .voidItem();
     }
 
-    logProgress("Installing Systems", "Starting from SystemsSystem");
+    logProgress("Installing Systems", "Starting All Base Systems - " + filtered.toString());
 
-    return Multi.createFrom()
-               .iterable(filtered)
-               .onItem()
-               .transformToUni(system -> installSystem(session, system, enterprise))
-               .merge()
-               .collect()
-               .asList()
-               .invoke(installed -> log.info("✅ Installed " + installed.size() + " systems starting from SystemsSystem."))
-               .replaceWithVoid()
-               .onFailure()
-               .invoke(err -> log.error("❌ Error during post-SystemsSystem installs", err));
+    // Process systems sequentially in order
+    if (filtered.isEmpty()) {
+      return Uni.createFrom().voidItem();
+    }
+    
+    // Start with the first system
+    Uni<Void> result = installSystem(session, filtered.getFirst(), enterprise);
+    
+    // Chain the rest of the systems sequentially
+    for (int i = 1; i < filtered.size(); i++) {
+      final int index = i;
+      result = result.chain(() -> installSystem(session, filtered.get(index), enterprise));
+    }
+    
+    // Add final logging
+    return result
+            .invoke(v -> log.info("✅ Installed " + filtered.size() + " systems sequentially starting from SystemsSystem."));
   }
 
   private Uni<Void> installSystem(Mutiny.Session session, IActivityMasterSystem<?> system, IEnterprise<?, ?> enterprise)
@@ -630,7 +635,10 @@ public class EnterpriseService
     return performSystemInstall(session, enterprise, system)
                .invoke(() -> log.info("✅ System install completed: " + className))
                .onFailure()
-               .invoke(err -> log.error("❌ System install failed: " + className, err));
+               .transform(err -> {
+                   log.error("❌ System install failed: " + className, err);
+                   throw new RuntimeException("System installation failed for " + className + ": " + err.getMessage(), err);
+               });
   }
 
 

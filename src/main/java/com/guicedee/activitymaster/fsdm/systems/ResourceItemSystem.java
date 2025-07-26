@@ -45,7 +45,7 @@ public class ResourceItemSystem
 		log.info("Starting createDefaults for Resource Item System");
 
 		// Get the ActivityMaster system
-		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+		return systemsService.findSystem(session,enterprise,ActivityMasterSystemName)
 			.invoke(activityMasterSystem -> {
 				// Currently no default resource items to create
 				// This method is kept for consistency with other system classes
