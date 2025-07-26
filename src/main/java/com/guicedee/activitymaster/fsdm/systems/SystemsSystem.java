@@ -12,6 +12,7 @@ import com.guicedee.activitymaster.fsdm.client.services.classifications.types.*;
 import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActivityMasterException;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
 import com.guicedee.guicedinjection.pairing.Pair;
+import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -75,9 +76,9 @@ public class SystemsSystem
 	}
 
 	@Override
-	public void createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
 	{
-
+		return Uni.createFrom().voidItem();
 	}
 
 	@Override

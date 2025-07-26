@@ -49,12 +49,9 @@ public class InvolvedPartySystem
     }
 
     @Override
-    public void createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         logProgress("Involved Party System", "Starting Checks for Required Values");
-
-        // Note: This method is called synchronously, but we're using reactive programming internally
-        // We'll use await().atMost() to block until all operations are completed
 
         // Create all three types in parallel
         log.info("Starting parallel creation of identification types, name types, and types");
@@ -65,22 +62,18 @@ public class InvolvedPartySystem
         Uni<Void> typesChain = createTypes(session, enterprise);
 
         // Run all three operations in parallel
-        Uni<Void> parallelChain = Uni.combine()
-                                          .all()
-                                          .unis(identificationTypesChain, nameTypesChain, typesChain)
-                                          .discardItems()
-                                          .onFailure()
-                                          .invoke(error -> log.error("Error in parallel operations: {}", error.getMessage(), error))
-                ;
-
-        // Wait for all operations to complete
-        parallelChain.await()
-                .atMost(Duration.ofMinutes(5));
-
-        log.info("Completed parallel creation of identification types, name types, and types");
-
-        // Create default users
-        createDefaultUsers(enterprise);
+        return Uni.combine()
+                .all()
+                .unis(identificationTypesChain, nameTypesChain, typesChain)
+                .discardItems()
+                .onFailure()
+                .invoke(error -> log.error("Error in parallel operations: {}", error.getMessage(), error))
+                .invoke(v -> {
+                    log.info("Completed parallel creation of identification types, name types, and types");
+                    // Create default users
+                    createDefaultUsers(enterprise);
+                })
+                .replaceWith(Uni.createFrom().voidItem());
     }
 
     private Uni<Void> createIdentificationTypes(Mutiny.Session session, IEnterprise<?, ?> enterprise)

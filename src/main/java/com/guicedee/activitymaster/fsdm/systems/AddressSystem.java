@@ -42,9 +42,10 @@ public class AddressSystem
     }
 
     @Override
-    public void createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         logProgress("Address System", "Starting Address Checks");
+        return Uni.createFrom().voidItem();
     }
 
     @Override

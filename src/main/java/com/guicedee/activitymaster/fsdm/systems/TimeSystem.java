@@ -103,14 +103,13 @@ public class TimeSystem
     }
 
     @Override
-    public void createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         log.info("🔧 Creating TimeSystem defaults with external session");
         logProgress("Time System", "Loading Time Classifications...", 4);
 
-        // Call loadTimeRange which will create its own stateless sessions
-        loadTimeRange(2004, LocalDateTime.now()
-                                    .getYear());
+        // Directly use the reactive implementation without blocking
+        return loadTimeRangeReactive(2004, LocalDateTime.now().getYear());
     }
 
     // Post-startup operations (reactive)

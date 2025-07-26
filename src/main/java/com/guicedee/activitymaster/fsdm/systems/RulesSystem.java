@@ -48,32 +48,33 @@ public class RulesSystem
 
 
 	@Override
-	public void createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
+	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting createDefaults for Rules System");
 
 		// Get the ActivityMaster system
-		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
-		                                                           .await().atMost(Duration.ofMinutes(1));
+		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+			.chain(activityMasterSystem -> {
+				logProgress("Rules System", "Creating rule classifications...");
 
-		logProgress("Rules System", "Creating rule classifications...");
+				// Create rule-related classifications in parallel
+				List<Uni<?>> ruleClassifications = new ArrayList<>();
 
-		// Create rule-related classifications in parallel
-		List<Uni<?>> ruleClassifications = new ArrayList<>();
+				// Add operations to create rule classifications
+				ruleClassifications.add(classificationService.create(session, "Rules", "The main rules concept", activityMasterSystem));
+				ruleClassifications.add(classificationService.create(session, "RulesType", "The concept for rule types", activityMasterSystem));
 
-		// Add operations to create rule classifications
-		ruleClassifications.add(classificationService.create(session, "Rules", "The main rules concept", activityMasterSystem));
-		ruleClassifications.add(classificationService.create(session, "RulesType", "The concept for rule types", activityMasterSystem));
-
-		// Execute all rule classifications in parallel and wait for completion
-		Uni.combine().all().unis(ruleClassifications)
-		             .discardItems()
-		             .onFailure().invoke(error -> 
-		                 log.error("Error creating rule classifications: {}", error.getMessage(), error))
-		             .await().atMost(Duration.ofMinutes(1));
-
-		logProgress("Rules System", "Loaded Rules Classifications...", 4);
-		log.info("Completed createDefaults for Rules System");
+				// Execute all rule classifications in parallel
+				return Uni.combine().all().unis(ruleClassifications)
+					.discardItems()
+					.onFailure().invoke(error -> 
+						log.error("Error creating rule classifications: {}", error.getMessage(), error))
+					.invoke(v -> {
+						logProgress("Rules System", "Loaded Rules Classifications...", 4);
+						log.info("Completed createDefaults for Rules System");
+					});
+			})
+			.replaceWith(Uni.createFrom().voidItem());
 	}
 
 	@Override

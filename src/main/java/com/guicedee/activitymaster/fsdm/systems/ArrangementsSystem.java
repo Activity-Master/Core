@@ -42,9 +42,9 @@ public class ArrangementsSystem
     }
 
     @Override
-    public void createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
-
+        return Uni.createFrom().voidItem();
     }
 
     @Override

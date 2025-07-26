@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.exceptions.ActiveFlagExc
 import com.guicedee.activitymaster.fsdm.db.entities.activeflag.ActiveFlag;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -31,7 +32,7 @@ public class ActiveFlagService
 	public Uni<IActiveFlag<?,?>> create(Mutiny.Session session, IEnterprise<?,?> enterprise, String name, String description, UUID... identifyingToken)
 	{
 		return findFlagByName(session, name, enterprise, identifyingToken)
-			.onFailure(ActiveFlagException.class).recoverWithUni(() -> {
+			.onFailure(NoResultException.class).recoverWithUni(() -> {
 				ActiveFlag af = new ActiveFlag();
 				af.setName(name);
 				af.setDescription(description);
@@ -42,18 +43,6 @@ public class ActiveFlagService
 			});
 	}
 
-	//@Transactional()
-	Uni<Boolean> doesFlagExist(Mutiny.Session session, String flagName, IEnterprise<?,?> enterprise, UUID... identifyingToken)
-	{
-		return new ActiveFlag().builder(session)
-		                       .withName(flagName)
-		                       .inDateRange()
-		                       //    .canRead(enterprise, identifyingToken)
-		                       .withEnterprise(enterprise)
-		                       .getCount()
-		                       .onFailure().invoke(error -> log.error("Error checking if flag exists: {}", error.getMessage(), error))
-		                       .map(count -> count > 0);
-	}
 
 	//@Transactional()
 	@Override
@@ -80,8 +69,7 @@ public class ActiveFlagService
 	//@CacheResult(cacheName = "FindActiveFlagRange")
 	public Uni<List<IActiveFlag<?,?>>> findActiveRange(Mutiny.Session session, IEnterprise<?,?> enterprise, UUID... identifyingToken)
 	{
-		return find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken)
-		       .map(list -> (List<IActiveFlag<?,?>>) (List<?>) list);
+		return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getActiveRangeAndUp()), enterprise, identifyingToken);
 	}
 
 	//@Transactional()
@@ -92,12 +80,7 @@ public class ActiveFlagService
 		                       .inDateRange()
 		                       //     .canRead(enterprise, true, identifyingToken)
 		                       .withEnterprise(enterprise)
-		                       .getAll()
-		                       .onItem().invoke(list -> {
-		                           if (list.isEmpty()) {
-		                               throw new ActiveFlagException("No flags were found for the named list - " + Arrays.toString(name));
-		                           }
-		                       });
+		                       .getAll();
 	}
 
 	private String[] getNamesForFlags(Set<com.entityassist.enumerations.ActiveFlag> flags)
@@ -110,32 +93,28 @@ public class ActiveFlagService
 	//@CacheResult(cacheName = "GetVisibleRange")
 	public Uni<List<IActiveFlag<?,?>>> getVisibleRange(Mutiny.Session session, IEnterprise<?,?> enterprise, UUID... identifyingToken)
 	{
-		return find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()), enterprise, identifyingToken)
-		       .map(list -> (List<IActiveFlag<?,?>>) (List<?>) list);
+		return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getVisibleRangeAndUp()), enterprise, identifyingToken);
 	}
 
 	@Override
 	//@CacheResult
 	public Uni<List<IActiveFlag<?,?>>> getRemovedRange(Mutiny.Session session, IEnterprise<?,?> enterprise, UUID... identifyingToken)
 	{
-		return find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getRemovedRange()), enterprise, identifyingToken)
-		       .map(list -> (List<IActiveFlag<?,?>>) (List<?>) list);
+		return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getRemovedRange()), enterprise, identifyingToken);
 	}
 
 	@Override
 	//@CacheResult(cacheName = "GetArchivedRange")
 	public Uni<List<IActiveFlag<?,?>>> getArchiveRange(Mutiny.Session session, IEnterprise<?,?> enterprise, UUID... identifyingToken)
 	{
-		return find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getArchivedRange()), enterprise, identifyingToken)
-		       .map(list -> (List<IActiveFlag<?,?>>) (List<?>) list);
+		return (Uni) find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getArchivedRange()), enterprise, identifyingToken);
 	}
 
 	@Override
 	//@CacheResult(cacheName = "GetHighlightedRange")
 	public Uni<List<IActiveFlag<?,?>>> getHighlightedRange(Mutiny.Session session, IEnterprise<?,?> enterprise, UUID... identifyingToken)
 	{
-		return find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getHighlightedRange()), enterprise, identifyingToken)
-		       .map(list -> (List<IActiveFlag<?,?>>) (List<?>) list);
+		return (Uni)find(session, getNamesForFlags(com.entityassist.enumerations.ActiveFlag.getHighlightedRange()), enterprise, identifyingToken);
 	}
 
 	@Override

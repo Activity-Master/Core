@@ -17,8 +17,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.logging.log4j.core.config.plugins.convert.TypeConverters;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.reactive.mutiny.Mutiny;
+import org.hibernate.type.NumericBooleanConverter;
 
 import java.io.Serial;
 import java.util.List;
@@ -91,6 +93,7 @@ public class ActiveFlag
 	@NotNull
 	@Column(nullable = false,
 	        name = "AllowAccess")
+	@Convert(converter = NumericBooleanConverter.class)
 	private boolean allowAccess;
 	
 	@SuppressWarnings("unused")

@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enter
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.classifications.*;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import io.smallrye.mutiny.Uni;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.Duration;
@@ -34,61 +35,56 @@ public class ClassificationsSystem
 	}
 
 	@Override
-	public void createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
+	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		// Get the ActivityMaster system
-		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
-		                                                           .await().atMost(java.time.Duration.ofMinutes(1));
+		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+			.chain(activityMasterSystem -> {
+				// Create Root Enterprise Name - this is a foundational classification
+				return service.create(session, enterprise.getName(),
+						enterprise.getName(), EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, activityMasterSystem)
+					.invoke(result -> logProgress("Classifications System", "Loaded Default Classifications...", 1))
+					.chain(rootClassification -> {
+						// Create base classifications in parallel
+						java.util.List<Uni<?>> baseClassifications = new java.util.ArrayList<>();
+						baseClassifications.add(service.create(session, DefaultClassifications.HierarchyTypeClassification, activityMasterSystem));
+						baseClassifications.add(service.create(session, DefaultClassifications.HierarchyTypeClassification, activityMasterSystem, enterprise.getName()));
+						baseClassifications.add(service.create(session, DefaultClassifications.NoClassification, activityMasterSystem, enterprise.getName()));
+						baseClassifications.add(service.create(session, DefaultClassifications.DefaultClassification, activityMasterSystem, enterprise.getName()));
 
-		// Create Root Enterprise Name - this is a foundational classification
-		service.create(session, enterprise.getName(),
-                        enterprise.getName(), EnterpriseClassificationDataConcepts.NoClassificationDataConceptName, activityMasterSystem)
-				.await().atMost(java.time.Duration.ofMinutes(1));
+						// Execute all base classifications in parallel
+						return Uni.combine().all().unis(baseClassifications)
+							.discardItems()
+							.chain(v -> {
+								// Create Security classification - this is a parent for other classifications
+								return service.create(session, DefaultClassifications.Security, activityMasterSystem, enterprise.getName())
+									.invoke(result -> logProgress("Classifications System", "Loading Security Classifications...", 1))
+									.chain(securityClassification -> {
+										// Create security-related classifications in parallel
+										java.util.List<Uni<?>> securityClassifications = new java.util.ArrayList<>();
+										securityClassifications.add(service.create(session, SystemsClassifications.SystemIdentity, activityMasterSystem, DefaultClassifications.Security));
+										securityClassifications.add(service.create(session, InvolvedPartyClassifications.SecurityPassword, activityMasterSystem, DefaultClassifications.Security));
+										securityClassifications.add(service.create(session, InvolvedPartyClassifications.SecurityPasswordSalt, activityMasterSystem, DefaultClassifications.Security));
 
-		logProgress("Classifications System", "Loaded Default Classifications...", 1);
+										// Execute all security classifications in parallel
+										return Uni.combine().all().unis(securityClassifications)
+											.discardItems()
+											.chain(v2 -> {
+												// Create enterprise-related classifications in parallel
+												java.util.List<Uni<?>> enterpriseClassifications = new java.util.ArrayList<>();
+												enterpriseClassifications.add(service.create(session, EnterpriseClassifications.LastUpdateDate, activityMasterSystem, enterprise.getName()));
+												enterpriseClassifications.add(service.create(session, EnterpriseClassifications.UpdateClass, activityMasterSystem, enterprise.getName()));
+												enterpriseClassifications.add(service.create(session, EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterprise.getName()));
 
-		// Create base classifications sequentially as they are foundational
-		// These don't have parent-child relationships so we can create them in parallel
-		java.util.List<io.smallrye.mutiny.Uni<?>> baseClassifications = new java.util.ArrayList<>();
-		baseClassifications.add(service.create(session, DefaultClassifications.HierarchyTypeClassification, activityMasterSystem));
-		baseClassifications.add(service.create(session, DefaultClassifications.HierarchyTypeClassification, activityMasterSystem, enterprise.getName()));
-		baseClassifications.add(service.create(session, DefaultClassifications.NoClassification, activityMasterSystem, enterprise.getName()));
-		baseClassifications.add(service.create(session, DefaultClassifications.DefaultClassification, activityMasterSystem, enterprise.getName()));
-
-		// Execute all base classifications in parallel and wait for completion
-		io.smallrye.mutiny.Uni.combine().all().unis(baseClassifications)
-		                     .discardItems()
-		                     .await().atMost(java.time.Duration.ofMinutes(1));
-
-		// Create Security classification - this is a parent for other classifications
-		service.create(session, DefaultClassifications.Security, activityMasterSystem, enterprise.getName())
-		      .await().atMost(java.time.Duration.ofMinutes(1));
-
-		logProgress("Classifications System", "Loading Security Classifications...", 1);
-
-		// Create security-related classifications in parallel since they all have the same parent
-		// and the parent has already been created
-		java.util.List<io.smallrye.mutiny.Uni<?>> securityClassifications = new java.util.ArrayList<>();
-		securityClassifications.add(service.create(session, SystemsClassifications.SystemIdentity, activityMasterSystem, DefaultClassifications.Security));
-		securityClassifications.add(service.create(session, InvolvedPartyClassifications.SecurityPassword, activityMasterSystem, DefaultClassifications.Security));
-		securityClassifications.add(service.create(session, InvolvedPartyClassifications.SecurityPasswordSalt, activityMasterSystem, DefaultClassifications.Security));
-
-		// Execute all security classifications in parallel and wait for completion
-		io.smallrye.mutiny.Uni.combine().all().unis(securityClassifications)
-		                     .discardItems()
-		                     .await().atMost(java.time.Duration.ofMinutes(1));
-
-		// Create enterprise-related classifications in parallel since they all have the same parent
-		// and the parent has already been created
-		java.util.List<io.smallrye.mutiny.Uni<?>> enterpriseClassifications = new java.util.ArrayList<>();
-		enterpriseClassifications.add(service.create(session, EnterpriseClassifications.LastUpdateDate, activityMasterSystem, enterprise.getName()));
-		enterpriseClassifications.add(service.create(session, EnterpriseClassifications.UpdateClass, activityMasterSystem, enterprise.getName()));
-		enterpriseClassifications.add(service.create(session, EnterpriseClassifications.EnterpriseIdentity, activityMasterSystem, enterprise.getName()));
-
-		// Execute all enterprise classifications in parallel and wait for completion
-		io.smallrye.mutiny.Uni.combine().all().unis(enterpriseClassifications)
-		                     .discardItems()
-		                     .await().atMost(java.time.Duration.ofMinutes(1));
+												// Execute all enterprise classifications in parallel
+												return Uni.combine().all().unis(enterpriseClassifications)
+													.discardItems();
+											});
+									});
+							});
+					});
+			})
+			.replaceWith(Uni.createFrom().voidItem());
 	}
 
 	@Override

@@ -43,12 +43,9 @@ public class ActiveFlagSystem
 	}
 
 	@Override
-	public void createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
+	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Active Flag Service", "Loading Active Flags");
-
-		// Note: This method is called synchronously, but we're using reactive programming internally
-		// We'll use await().atMost() to block until all active flags are created
 
 		// Create a list of all active flags
 		ActiveFlag[] activeFlags = ActiveFlag.values();
@@ -73,10 +70,8 @@ public class ActiveFlagSystem
 			}
 		}
 
-		// Wait for all flags to be created
-		if (createChain != null) {
-			createChain.await().atMost(Duration.ofMinutes(2));
-		}
+		// Return the reactive chain or an empty one if no flags were created
+		return createChain != null ? createChain : Uni.createFrom().voidItem();
 	}
 
 	@Override

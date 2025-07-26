@@ -44,33 +44,32 @@ public class ProductsSystem
 	}
 
 	@Override
-	public void createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
+	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		// Get the ActivityMaster system
-		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
-		                                                           .await().atMost(Duration.ofMinutes(1));
+		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+			.chain(activityMasterSystem -> {
+				// Create base product classification
+				return service.create(session, ProductClassifications.Products, activityMasterSystem)
+					.chain(baseClassification -> {
+						logProgress("Products System", "Creating product classifications...");
 
-		// Create base product classification
-		service.create(session, ProductClassifications.Products, activityMasterSystem)
-		      .await().atMost(Duration.ofMinutes(1));
+						// Create product-related classifications in parallel since they all have the same parent
+						List<Uni<?>> productClassifications = new ArrayList<>();
+						productClassifications.add(service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
+						productClassifications.add(service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
+						productClassifications.add(service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
+						productClassifications.add(service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
 
-		logProgress("Products System", "Creating product classifications...");
-
-		// Create product-related classifications in parallel since they all have the same parent
-		List<Uni<?>> productClassifications = new ArrayList<>();
-		productClassifications.add(service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
-		productClassifications.add(service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
-		productClassifications.add(service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
-		productClassifications.add(service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
-
-		// Execute all product classifications in parallel and wait for completion
-		Uni.combine().all().unis(productClassifications)
-		             .discardItems()
-		             .onFailure().invoke(error -> 
-		                 log.error("Error creating product classifications: {}", error.getMessage(), error))
-		             .await().atMost(Duration.ofMinutes(1));
-
-		logProgress("Products System", "Loaded Product Classifications...", 4);
+						// Execute all product classifications in parallel
+						return Uni.combine().all().unis(productClassifications)
+							.discardItems()
+							.onFailure().invoke(error -> 
+								log.error("Error creating product classifications: {}", error.getMessage(), error))
+							.invoke(v -> logProgress("Products System", "Loaded Product Classifications...", 4));
+					});
+			})
+			.replaceWith(Uni.createFrom().voidItem());
 	}
 
 	@Override

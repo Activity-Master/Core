@@ -85,60 +85,68 @@ public class SecurityTokenSystem
     }
 
     @Override
-    public void createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         logProgress("Security Token Service", "Starting Security Structure Checks/Install");
 
-        // Note: Using reactive programming internally but maintaining synchronous interface
-        ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
-                                                      .await()
-                                                      .atMost(Duration.ofMinutes(1))
-                ;
+        // Get the ActivityMaster system
+        return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+            .invoke(activityMasterSystem -> {
+                SecurityTokenSystem instance = IGuiceContext.get(SecurityTokenSystem.class);
 
-        SecurityTokenSystem instance = IGuiceContext.get(SecurityTokenSystem.class);
+                // Call defaultsCreation which handles the core security setup
+                // Note: This is still synchronous but will be converted in a future update
+                instance.defaultsCreation(session, enterprise);
 
-        // Call defaultsCreation which handles the core security setup
-        instance.defaultsCreation(session, enterprise);
+                logProgress("Security Management", "Setting Security Configurator to Activity Master");
+            })
+            .chain(activityMasterSystem -> {
+                // Get all the systems that are created before this one
+                EnterpriseSystem enterpriseSystem = com.guicedee.client.IGuiceContext.get(EnterpriseSystem.class);
+                ActiveFlagSystem afs = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
+                ClassificationsSystem cfs = com.guicedee.client.IGuiceContext.get(ClassificationsSystem.class);
+                ClassificationsDataConceptSystem cdcs = com.guicedee.client.IGuiceContext.get(ClassificationsDataConceptSystem.class);
+                SystemsSystem ss = com.guicedee.client.IGuiceContext.get(SystemsSystem.class);
+                InvolvedPartySystem ips = com.guicedee.client.IGuiceContext.get(InvolvedPartySystem.class);
 
-        logProgress("Security Management", "Setting Security Configurator to Activity Master");
+                // For now, we'll still use the blocking approach for getting systems
+                // This will be converted to fully reactive in a future update
+                ISystems<?, ?> enterpriseSystemObj = enterpriseSystem.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                ISystems<?, ?> afsSystemObj = afs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                ISystems<?, ?> ssSystemObj = ss.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                ISystems<?, ?> cdcsSystemObj = cdcs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                ISystems<?, ?> cfsSystemObj = cfs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
+                ISystems<?, ?> ipsSystemObj = ips.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1));
 
-        // Get all the systems that are created before this one
-        EnterpriseSystem enterpriseSystem = com.guicedee.client.IGuiceContext.get(EnterpriseSystem.class);
-        ActiveFlagSystem afs = com.guicedee.client.IGuiceContext.get(ActiveFlagSystem.class);
-        ClassificationsSystem cfs = com.guicedee.client.IGuiceContext.get(ClassificationsSystem.class);
-        ClassificationsDataConceptSystem cdcs = com.guicedee.client.IGuiceContext.get(ClassificationsDataConceptSystem.class);
-        SystemsSystem ss = com.guicedee.client.IGuiceContext.get(SystemsSystem.class);
-        InvolvedPartySystem ips = com.guicedee.client.IGuiceContext.get(InvolvedPartySystem.class);
+                // Create a list of operations to run in parallel
+                List<Uni<?>> registerOperations = new ArrayList<>();
 
-        // Create a list of operations to run in parallel
-        List<Uni<?>> registerOperations = new ArrayList<>();
+                // Add all system registration operations to the list
+                registerOperations.add(systemsService.registerNewSystem(session, enterprise, enterpriseSystemObj));
+                registerOperations.add(systemsService.registerNewSystem(session, enterprise, afsSystemObj));
+                registerOperations.add(systemsService.registerNewSystem(session, enterprise, ssSystemObj));
+                registerOperations.add(systemsService.registerNewSystem(session, enterprise, cdcsSystemObj));
+                registerOperations.add(systemsService.registerNewSystem(session, enterprise, cfsSystemObj));
+                registerOperations.add(systemsService.registerNewSystem(session, enterprise, ipsSystemObj));
 
-        // Add all system registration operations to the list
-        registerOperations.add(systemsService.registerNewSystem(session, enterprise, enterpriseSystem.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1))));
-        registerOperations.add(systemsService.registerNewSystem(session, enterprise, afs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1))));
-        registerOperations.add(systemsService.registerNewSystem(session, enterprise, ss.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1))));
-        registerOperations.add(systemsService.registerNewSystem(session, enterprise, cdcs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1))));
-        registerOperations.add(systemsService.registerNewSystem(session, enterprise, cfs.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1))));
-        registerOperations.add(systemsService.registerNewSystem(session, enterprise, ips.getSystem(session, enterprise).await().atMost(java.time.Duration.ofMinutes(1))));
+                log.info("Running {} system registration operations in parallel", registerOperations.size());
 
-        log.info("Running {} system registration operations in parallel", registerOperations.size());
-
-        // Execute all operations in parallel
-        Uni.combine()
-                .all()
-                .unis(registerOperations)
-                .discardItems()
-                .onFailure()
-                .invoke(error -> log.error("Error registering systems: {}", error.getMessage(), error))
-                .await()
-                .atMost(Duration.ofMinutes(2))
-        ;
-
-        logProgress("Security Token Service", "Enabling Security System");
-        System.out.println("Enabling Authentication Modules");
-        //todo enable security
-        //	com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
-        //            .setSecurityEnabled(true);
+                // Execute all operations in parallel
+                return Uni.combine()
+                        .all()
+                        .unis(registerOperations)
+                        .discardItems()
+                        .onFailure()
+                        .invoke(error -> log.error("Error registering systems: {}", error.getMessage(), error))
+                        .invoke(v -> {
+                            logProgress("Security Token Service", "Enabling Security System");
+                            System.out.println("Enabling Authentication Modules");
+                            //todo enable security
+                            //	com.guicedee.client.IGuiceContext.get(ActivityMasterConfiguration.class)
+                            //            .setSecurityEnabled(true);
+                        });
+            })
+            .replaceWith(Uni.createFrom().voidItem());
     }
 
     //@Transactional

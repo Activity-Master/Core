@@ -48,8 +48,9 @@ module com.guicedee.activitymaster.fsdm {
 	requires org.apache.commons.compress;
 	//requires tm.bitronix.btm;
 	requires org.jboss.logging;
+  requires org.apache.logging.log4j.core;
 
-	provides IGuiceModule with
+  provides IGuiceModule with
 			EventInterceptorsBinder,
 		//	ActivityMasterDBModule,
 			ActivityMasterBinder,
@@ -88,7 +89,7 @@ module com.guicedee.activitymaster.fsdm {
 
 	//provides IGuicedHazelcastServerConfig with HazelcastServerConfig;
 	//provides com.guicedee.guicedhazelcast.services.IGuicedHazelcastClientConfig with HazelcastClientConfig;
-	//provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
+	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleInclusions with ActivityMasterModuleInclusion;
 
 //	provides IGuicePreStartup with FSDMHazelcastPreStartup;
 	provides IGuicePostStartup with ActivityMasterPostStartup;

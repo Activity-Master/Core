@@ -7,6 +7,7 @@ import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityM
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
 import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import io.smallrye.mutiny.Uni;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -39,19 +40,19 @@ public class ResourceItemSystem
 	}
 
 	@Override
-	public void createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
+	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		log.info("Starting createDefaults for Resource Item System");
 
 		// Get the ActivityMaster system
-		ISystems<?, ?> activityMasterSystem = IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
-		                                                           .await().atMost(Duration.ofMinutes(1));
-
-		// Currently no default resource items to create
-		// This method is kept for consistency with other system classes
-		// and to provide a structure for future additions
-
-		log.info("Completed createDefaults for Resource Item System");
+		return IActivityMasterService.getISystem(ActivityMasterSystemName, enterprise)
+			.invoke(activityMasterSystem -> {
+				// Currently no default resource items to create
+				// This method is kept for consistency with other system classes
+				// and to provide a structure for future additions
+				log.info("Completed createDefaults for Resource Item System");
+			})
+			.replaceWith(Uni.createFrom().voidItem());
 	}
 
 	@Override

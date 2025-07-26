@@ -53,53 +53,41 @@ public class ClassificationsDataConceptSystem
 
     @SuppressWarnings("Duplicates")
     @Override
-    public void createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+    public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
         logProgress("Classification Data Concept System", "Checking/Creating Base Concepts");
 
-        // Note: This method is called synchronously, but we're using reactive programming internally
-        // We'll use await().atMost() to block until all operations are completed
-
         // First, create the default concepts
         // These are foundational and should be created before other concepts
-        Uni<Void> defaultConceptsChain = createDefaultConcepts(session, enterprise);
+        return createDefaultConcepts(session, enterprise)
+            .chain(v -> {
+                // Now create all other concepts in parallel
+                log.info("Starting parallel creation of classification data concepts");
 
-        // Wait for default concepts to complete before proceeding
-        defaultConceptsChain.await()
-                .atMost(Duration.ofMinutes(2));
+                // Create all the Uni<Void> instances for concept creation
+                List<Uni<Void>> operations = new ArrayList<>();
+                operations.add(createInvolvedPartyConcepts(session, enterprise));
+                operations.add(createProductConcepts(session, enterprise));
+                operations.add(createResourceItemConcepts(session, enterprise));
+                operations.add(createRulesConcepts(session, enterprise));
+                operations.add(createActiveFlagConcepts(session, enterprise));
+                operations.add(createGeographyConcepts(session, enterprise));
+                operations.add(createAddressConcepts(session, enterprise));
+                operations.add(createArrangementConcepts(session, enterprise));
+                operations.add(createClassificationsConcepts(session, enterprise));
+                operations.add(createEventsConcepts(session, enterprise));
 
-        // Now create all other concepts in parallel
-        log.info("Starting parallel creation of classification data concepts");
+                log.info("Running {} concept creation operations in parallel", operations.size());
 
-        // Create all the Uni<Void> instances for concept creation
-        List<Uni<Void>> operations = new ArrayList<>();
-        operations.add(createInvolvedPartyConcepts(session, enterprise));
-        operations.add(createProductConcepts(session, enterprise));
-        operations.add(createResourceItemConcepts(session, enterprise));
-        operations.add(createRulesConcepts(session, enterprise));
-        operations.add(createActiveFlagConcepts(session, enterprise));
-        operations.add(createGeographyConcepts(session, enterprise));
-        operations.add(createAddressConcepts(session, enterprise));
-        operations.add(createArrangementConcepts(session, enterprise));
-        operations.add(createClassificationsConcepts(session, enterprise));
-        operations.add(createEventsConcepts(session, enterprise));
-
-        log.info("Running {} concept creation operations in parallel", operations.size());
-
-        // Run all operations in parallel
-        Uni<Void> parallelChain = Uni.combine()
-                                          .all()
-                                          .unis(operations)
-                                          .discardItems()
-                                          .onFailure()
-                                          .invoke(error -> log.error("Error in parallel concept creation operations: {}", error.getMessage(), error))
-                ;
-
-        // Wait for all operations to complete
-        parallelChain.await()
-                .atMost(Duration.ofMinutes(5));
-
-        log.info("Completed creation of classification data concepts");
+                // Run all operations in parallel
+                return Uni.combine()
+                        .all()
+                        .unis(operations)
+                        .discardItems()
+                        .onFailure()
+                        .invoke(error -> log.error("Error in parallel concept creation operations: {}", error.getMessage(), error))
+                        .invoke(result -> log.info("Completed creation of classification data concepts"));
+            });
     }
 
     @Override

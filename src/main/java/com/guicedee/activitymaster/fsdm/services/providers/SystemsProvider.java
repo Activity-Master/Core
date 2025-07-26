@@ -3,6 +3,7 @@ package com.guicedee.activitymaster.fsdm.services.providers;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
 import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
@@ -21,8 +22,7 @@ import java.time.Duration;
 @Singleton
 public class SystemsProvider implements Provider<ISystems<Systems, SystemsQueryBuilder>>
 {
-    @Inject
-    private Provider<IEnterprise<?, ?>> enterprise;
+
     @Inject
     private Provider<ISystemsService<?>> systemsService;
 
@@ -50,12 +50,16 @@ public class SystemsProvider implements Provider<ISystems<Systems, SystemsQueryB
         log.info("🔍 Starting enterprise fetch...");
 
         Uni<ISystems<Systems, SystemsQueryBuilder>> result = (Uni) factory.withSession(session -> {
-            log.info("📦 Enterprise Session opened");
+            log.info("📦 Systems Provider Session opened");
             return session.withTransaction(tx -> {
                 log.info("🔁 Transaction started");
-                return systemsService.get()
-                               .findSystem(session, enterprise.get(),
+                IEnterpriseService<?> enterpriseService = IGuiceContext.get(IEnterpriseService.class);
+                return enterpriseService.isEnterpriseReady(session)
+                    .chain(enterprise->{
+                         return systemsService.get()
+                               .findSystem(session, enterprise,
                                        systemName, null);
+                    });
             });
         });
 
