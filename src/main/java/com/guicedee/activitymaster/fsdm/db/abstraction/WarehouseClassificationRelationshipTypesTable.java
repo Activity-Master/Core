@@ -36,7 +36,7 @@ public abstract class WarehouseClassificationRelationshipTypesTable<
 	
 	public WarehouseClassificationRelationshipTypesTable()
 	{
-	
+
 	}
 	
 	@Override

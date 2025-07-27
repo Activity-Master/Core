@@ -662,30 +662,32 @@ public class SecurityTokenSystem
              .getAll()
              .onItem().invoke(items -> log.debug("Found {} items without security for {}", items.size(), table.getClass().getSimpleName()))
              .chain(items -> {
-                 // Create a list of operations to run in parallel
-                 List<Uni<Void>> securityOperations = new ArrayList<>();
-
-                 for (Object next : items) {
-                     WarehouseCoreTable<?, ?, ?, ?> tableItem = (WarehouseCoreTable<?, ?, ?, ?>) next;
-                     logProgress("Security Token Service", "Checking - " + tableItem.getClass().getSimpleName(), 0);
-                     // Add security creation operation to the list
-                     securityOperations.add(tableItem.createDefaultSecurity(system, identityToken));
-                 }
-
-                 if (securityOperations.isEmpty()) {
+                 // Check if there are any items to process
+                 if (items.isEmpty()) {
                      log.debug("✅ No security operations needed for {}", table.getClass().getSimpleName());
                      return Uni.createFrom().voidItem();
                  }
 
-                 log.debug("🚀 Executing {} security operations for {}", securityOperations.size(), table.getClass().getSimpleName());
-                 
-                 // Execute all operations in parallel
-                 return Uni.combine().all().unis(securityOperations)
-                          .discardItems()
-                          .onItem().invoke(() -> log.debug("✅ Completed security for {}", table.getClass().getSimpleName()))
-                          .onFailure().invoke(error -> log.error("❌ Error creating default security for {}: {}", 
-                                                                table.getClass().getSimpleName(), error.getMessage(), error))
-                          .map(result -> null);
+                 log.debug("🚀 Executing {} security operations sequentially for {}", items.size(), table.getClass().getSimpleName());
+                
+                 // Start with an empty Uni that completes immediately
+                 Uni<Void> chain = Uni.createFrom().voidItem();
+                
+                 // For each item, chain a security operation to run sequentially
+                 for (Object next : items) {
+                     WarehouseCoreTable<?, ?, ?, ?> tableItem = (WarehouseCoreTable<?, ?, ?, ?>) next;
+                     chain = chain.chain(v -> {
+                         logProgress("Security Token Service", "Checking - " + tableItem.getClass().getSimpleName(), 0);
+                         // Execute security operation and chain to the next one
+                         return tableItem.createDefaultSecurity(system, identityToken);
+                     });
+                 }
+                
+                 // Add logging for completion or failure
+                 return chain
+                     .onItem().invoke(() -> log.debug("✅ Completed security for {}", table.getClass().getSimpleName()))
+                     .onFailure().invoke(error -> log.error("❌ Error creating default security for {}: {}", 
+                                                          table.getClass().getSimpleName(), error.getMessage(), error));
              });
     }
 

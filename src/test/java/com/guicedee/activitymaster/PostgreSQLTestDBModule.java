@@ -32,6 +32,7 @@ public class PostgreSQLTestDBModule
          try {
         // Copy init.sql from classpath to container
         Path sqlPath = Paths.get("src/test/resources/postgres_fsdm.sql");
+
         postgresContainer.copyFileToContainer(
             MountableFile.forHostPath(sqlPath),
             "/docker-entrypoint-initdb.d/init.sql"

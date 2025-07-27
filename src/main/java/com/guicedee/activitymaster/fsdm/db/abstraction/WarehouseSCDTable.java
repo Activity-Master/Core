@@ -12,10 +12,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -23,6 +20,7 @@ import java.io.Serial;
 import java.lang.reflect.ParameterizedType;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 import static com.guicedee.client.IGuiceContext.get;
 

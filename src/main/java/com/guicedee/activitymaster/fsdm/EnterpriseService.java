@@ -761,6 +761,7 @@ public class EnterpriseService
                .collect()
                .asList()
                .invoke(installs -> log.info("✅ All core systems installed successfully: " + installs.size() + " systems"))
+               .invoke(installs -> filtered.getFirst().registerSystem(session,enterprise))
                .replaceWithVoid()
                .onFailure()
                .invoke(err -> log.error("❌ Failed during system installation", err));

@@ -22,147 +22,231 @@ import static com.guicedee.activitymaster.fsdm.client.services.classifications.E
 
 @Log4j2
 public class EventsSystem
-		extends ActivityMasterDefaultSystem<EventsSystem>
-		implements IActivityMasterSystem<EventsSystem>
+    extends ActivityMasterDefaultSystem<EventsSystem>
+    implements IActivityMasterSystem<EventsSystem>
 {
-	@Inject
-	private ISystemsService<?> systemsService;
+  @Inject
+  private ISystemsService<?> systemsService;
 
-	@Inject
-	private IEventService<?> eventService;
+  @Inject
+  private IEventService<?> eventService;
 
-	@Inject
-	private IResourceItemService<?> resourceItemServiceProvider;
+  @Inject
+  private IResourceItemService<?> resourceItemServiceProvider;
 
-	@Inject
-	private IClassificationService<?> classificationServiceProvider;
-	
-	@Inject
-	private Mutiny.SessionFactory sessionFactory;
+  @Inject
+  private IClassificationService<?> classificationServiceProvider;
 
-	@Override
-	public ISystems<?,?> registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
-	{
-		ISystems<?, ?> iSystems = systemsService
-		                                        .create(session, enterprise, getSystemName(), getSystemDescription())
-		                                        .await().atMost(java.time.Duration.ofMinutes(1));
-		getSystem(session, enterprise).chain(system ->{
-					return systemsService
-								   .registerNewSystem(session, enterprise, system);
-		}).await().atMost(Duration.ofMinutes(1));
-		return iSystems;
-	}
+  @Inject
+  private Mutiny.SessionFactory sessionFactory;
 
-	@Override
-	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
-	{
-		logProgress("Loading Events", "Events creating default types");
-		logProgress("Loading Time", "Loading in Today");
-		log.info("Creating events defaults in a new session and transaction");
+  @Override
+  public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  {
+    log.info("🚀 Registering Events System for enterprise: '{}'", enterprise.getName());
+    log.debug("📋 Creating Events System with session: {}", session.hashCode());
 
-		// Get the day synchronously since ITimeSystem is not reactive yet
-		com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
-		            .getDay(new Date());
+    ISystems<?, ?> iSystems = systemsService
+                                  .create(session, enterprise, getSystemName(), getSystemDescription())
+                                  .onItem()
+                                  .invoke(system -> log.debug("✅ Created Events System: '{}' with session: {}", system.getName(), session.hashCode()))
+                                  .onFailure()
+                                  .invoke(error -> log.error("❌ Failed to create Events System: '{}' with session {}: {}",
+                                      getSystemName(), session.hashCode(), error.getMessage(), error))
+                                  .await()
+                                  .atMost(java.time.Duration.ofMinutes(1))
+        ;
 
-		// Use sessionFactory.withTransaction to create a new session
-		return sessionFactory.withTransaction((newSession, tx) -> {
-			// Start reactive chain with getting the ActivityMaster system
-			return systemsService.findSystem(newSession, enterprise, ActivityMasterSystemName)
-				.chain(activityMasterSystem -> {
-					logProgress("Loading Logging Types", "Creating Log Types");
-					
-					// Get system token once and reuse it
-					return getSystemToken(newSession, enterprise)
-						.chain(systemToken -> {
-							// Create base classifications sequentially
-							return classificationServiceProvider.create(
-								newSession, "LogItemTypes", "The log item event registered types", 
-								Classification, activityMasterSystem, systemToken)
-								.chain(logItemTypes -> {
-									return classificationServiceProvider.create(
-										newSession, "EventStatus", "The status of the event", 
-										EventXClassification, activityMasterSystem, systemToken)
-										.chain(eventStatus -> {
-											// Create LogItemTypes classifications in parallel
-											java.util.List<Uni<?>> logItemTypeOperations = new java.util.ArrayList<>();
-											for (LogItemTypes value : LogItemTypes.values()) {
-												logItemTypeOperations.add(classificationServiceProvider.create(
-													newSession, value, activityMasterSystem, "LogItemTypes", systemToken));
-											}
+    getSystem(session, enterprise)
+        .chain(system -> systemsService.registerNewSystem(session, enterprise, system))
+        .onItem()
+        .invoke(() -> log.debug("✅ Registered system: {}", getSystemName()))
+        .onFailure()
+        .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
+        .await()
+        .atMost(Duration.ofMinutes(1))
+    ;
 
-											// Execute all LogItemTypes classifications in parallel
-											return Uni.combine().all().unis(logItemTypeOperations)
-												.discardItems()
-												.onFailure().invoke(error -> 
-													log.error("Error creating LogItemTypes classifications: {}", error.getMessage(), error))
-												.chain(v -> {
-													// Create LogItem resource type
-													return resourceItemServiceProvider.createType(
-														newSession, "LogItem", "An attached log item", 
-														activityMasterSystem, systemToken)
-														.invoke(result -> {
-															logProgress("Loading Time", "Creating Hours and Minutes");
-															
-															//todo Create time synchronously since ITimeSystem is not reactive yet
-															com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
-																.createTime();
-														});
-												});
-										});
-								});
-						});
-				});
-		}).replaceWithVoid();
-	}
+    log.info("🎉 Successfully registered Events System for enterprise: '{}'", enterprise.getName());
+    return iSystems;
+  }
 
-	@Override
-	public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
-	{
-		log.info("Starting reactive postStartup for Events System");
+  @Override
+  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  {
+    logProgress("Loading Events", "Events creating default types");
+    logProgress("Loading Time", "Loading in Today");
+    log.debug("📋 Starting event defaults creation for enterprise: '{}'", enterprise.getName());
+    // Get the day synchronously since ITimeSystem is not reactive yet
+    // todo
+    //com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
+    //           .getDay(new Date());
 
-		// Create a reactive chain for the postStartup operations
-		// Get the system
-		return systemsService.findSystem(session, enterprise, getSystemName())
-				.onItem()
-				.ifNull()
-				.failWith(() -> new RuntimeException("System not found: " + getSystemName()))
-				.chain(system -> {
-					log.debug("Found system: {}", system.getName());
-					// Get the security token
-					return systemsService.getSecurityIdentityToken(session, system)
-							.onItem()
-							.ifNull()
-							.failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
-							.map(token -> {
-								log.debug("Found security token for system: {}", system.getName());
-								return null; // Return Void
-							});
-				})
-				.replaceWith(Uni.createFrom()
-						.voidItem());
-	}
+    // Start reactive chain with getting the ActivityMaster system
+    return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+               .onItem()
+               .invoke(activityMasterSystem ->
+                           log.debug("✅ Found ActivityMaster system: '{}' with session: {}",
+                               activityMasterSystem.getName(), session.hashCode()))
+               .onFailure()
+               .invoke(error ->
+                           log.error("❌ Failed to find ActivityMaster system: {}", error.getMessage(), error))
+               .chain(activityMasterSystem -> {
+                 logProgress("Loading Logging Types", "Creating Log Types");
+                 log.debug("🔍 Creating event classifications and types");
 
-	@Override
-	public int totalTasks()
-	{
-		return 0;
-	}
+                 // Get system token once and reuse it
+                 return getSystemToken(session, enterprise)
+                            .onItem()
+                            .invoke(systemToken ->
+                                        log.debug("🔑 Retrieved system token for enterprise: '{}'", enterprise.getName()))
+                            .onFailure()
+                            .invoke(error ->
+                                        log.error("❌ Failed to retrieve system token: {}", error.getMessage(), error))
+                            .chain(systemToken -> {
+                              // Create base classifications sequentially
+                              log.debug("📋 Creating base event classifications");
+                              return classificationServiceProvider.create(
+                                      session, "LogItemTypes", "The log item event registered types",
+                                      Classification, activityMasterSystem, systemToken)
+                                         .onItem()
+                                         .invoke(logItemTypes ->
+                                                     log.debug("✅ Created LogItemTypes classification: '{}'", logItemTypes.getName()))
+                                         .onFailure()
+                                         .invoke(error ->
+                                                     log.error("❌ Failed to create LogItemTypes classification: {}", error.getMessage(), error))
+                                         .chain(logItemTypes -> {
+                                           return classificationServiceProvider.create(
+                                                   session, "EventStatus", "The status of the event",
+                                                   EventXClassification, activityMasterSystem, systemToken)
+                                                      .onItem()
+                                                      .invoke(eventStatus ->
+                                                                  log.debug("✅ Created EventStatus classification: '{}'", eventStatus.getName()))
+                                                      .onFailure()
+                                                      .invoke(error ->
+                                                                  log.error("❌ Failed to create EventStatus classification: {}", error.getMessage(), error))
+                                                      .chain(eventStatus -> {
+                                                        // Create LogItemTypes classifications sequentially
+                                                        log.debug("📋 Creating LogItemTypes classifications sequentially");
+                                                        
+                                                        // Start with a completed Uni to begin the chain
+                                                        Uni<Void> sequentialChain = Uni.createFrom().voidItem();
+                                                        
+                                                        // Process each LogItemType sequentially by chaining operations
+                                                        for (LogItemTypes value : LogItemTypes.values())
+                                                        {
+                                                          final LogItemTypes currentValue = value; // Create final reference for lambda
+                                                          sequentialChain = sequentialChain.chain(() -> 
+                                                              classificationServiceProvider.create(
+                                                                      session, currentValue, activityMasterSystem, "LogItemTypes", systemToken)
+                                                                  .onItem()
+                                                                  .invoke(classification ->
+                                                                              log.debug("✅ Created LogItemType classification: '{}'", classification.getName()))
+                                                                  .onFailure()
+                                                                  .invoke(error ->
+                                                                              log.error("❌ Failed to create LogItemType classification '{}': {}",
+                                                                                  currentValue, error.getMessage(), error))
+                                                                  .replaceWithVoid()
+                                                          );
+                                                        }
+                                                        
+                                                        // Continue with the chain after all LogItemTypes are processed
+                                                        return sequentialChain
+                                                                   .onItem()
+                                                                   .invoke(() -> log.debug("✅ Successfully created all LogItemTypes classifications sequentially"))
+                                                                   .onFailure()
+                                                                   .invoke(error ->
+                                                                               log.error("❌ Error creating LogItemTypes classifications: {}", error.getMessage(), error))
+                                                                   .chain(v -> {
+                                                                     // Create LogItem resource type
+                                                                     log.debug("📋 Creating LogItem resource type");
+                                                                     return resourceItemServiceProvider.createType(
+                                                                             session, "LogItem", "An attached log item",
+                                                                             activityMasterSystem, systemToken)
+                                                                                .onItem()
+                                                                                .invoke(result -> {
+                                                                                  log.debug("✅ Created LogItem resource type");
+                                                                                  logProgress("Loading Time", "Creating Hours and Minutes");
 
-	@Override
-	public Integer sortOrder()
-	{
-		return Integer.MIN_VALUE + 9;
-	}
+                                                                                  log.debug("⏰ Creating time synchronously since ITimeSystem is not reactive yet");
+                                                                                  //todo Create time synchronously since ITimeSystem is not reactive yet
+                                                                                  com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
+                                                                                      .createTime();
+                                                                                })
+                                                                                .onFailure()
+                                                                                .invoke(error ->
+                                                                                            log.error("❌ Failed to create LogItem resource type: {}", error.getMessage(), error));
+                                                                   });
+                                                      });
+                                         });
+                            });
+               })
+               .onItem()
+               .invoke(() -> log.info("✅ Successfully created all event defaults"))
+               .onFailure()
+               .invoke(error ->
+                           log.error("❌ Failed to create event defaults: {}", error.getMessage(), error))
+               .replaceWithVoid();
+  }
 
-	@Override
-	public String getSystemName()
-	{
-		return EventSystemName;
-	}
+  @Override
+  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  {
+    log.info("🚀 Starting reactive postStartup for Events System");
+    log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",
+        enterprise.getName(), session.hashCode());
 
-	@Override
-	public String getSystemDescription()
-	{
-		return "The system for managing events";
-	}
+    // Create a reactive chain for the postStartup operations
+    // Get the system
+    return systemsService.findSystem(session, enterprise, getSystemName())
+               .onItem()
+               .invoke(system -> log.debug("✅ Found system: '{}'", system.getName()))
+               .onItem()
+               .ifNull()
+               .failWith(() -> new RuntimeException("System not found: " + getSystemName()))
+               .onFailure()
+               .invoke(error -> log.error("❌ Failed to find system: {}", error.getMessage(), error))
+               .chain(system -> {
+                 log.debug("🔍 Retrieving security token for system: '{}'", system.getName());
+                 // Get the security token
+                 return systemsService.getSecurityIdentityToken(session, system)
+                            .onItem()
+                            .invoke(token -> log.debug("🔑 Found security token for system: '{}'", system.getName()))
+                            .onItem()
+                            .ifNull()
+                            .failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
+                            .onFailure()
+                            .invoke(error -> log.error("❌ Failed to retrieve security token: {}", error.getMessage(), error))
+                            .map(token -> {
+                              log.debug("✅ Successfully completed postStartup for Events System");
+                              return null; // Return Void
+                            });
+               })
+               .replaceWith(Uni.createFrom()
+                                .voidItem());
+  }
+
+  @Override
+  public int totalTasks()
+  {
+    return 0;
+  }
+
+  @Override
+  public Integer sortOrder()
+  {
+    return Integer.MIN_VALUE + 9;
+  }
+
+  @Override
+  public String getSystemName()
+  {
+    return EventSystemName;
+  }
+
+  @Override
+  public String getSystemDescription()
+  {
+    return "The system for managing events";
+  }
 }

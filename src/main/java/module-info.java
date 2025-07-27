@@ -20,7 +20,7 @@ module com.guicedee.activitymaster.fsdm {
 
 	requires transitive com.fasterxml.jackson.databind;
 
-	requires io.vertx.sql.client.pg;
+	requires transitive io.vertx.sql.client.pg;
 	requires com.guicedee.guicedinjection;
 
 	requires com.guicedee.jsonrepresentation;
@@ -49,6 +49,8 @@ module com.guicedee.activitymaster.fsdm {
 	//requires tm.bitronix.btm;
 	requires org.jboss.logging;
   requires org.apache.logging.log4j.core;
+
+	requires com.ehcache;
 
   provides IGuiceModule with
 			EventInterceptorsBinder,

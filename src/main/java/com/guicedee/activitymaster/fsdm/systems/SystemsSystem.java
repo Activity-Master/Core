@@ -203,12 +203,12 @@ public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterp
                             .onFailure()
                             .invoke(error -> log.error("❌ Failed to create involved party with session {}: {}", 
                                                      session.hashCode(), error.getMessage(), error))
-                            // Chain to run the remaining operations in parallel
+                            // Chain to run the remaining operations sequentially
                             .chain(involvedParty -> {
-                                log.debug("🔄 Starting parallel operations for involved party with session: {}", session.hashCode());
+                                log.debug("🔄 Starting sequential operations for involved party with session: {}", session.hashCode());
                                 
-                                // 1. Find and add identification type (as a Uni operation)
-                                Uni<?> identificationTypeUni = ipService.findInvolvedPartyIdentificationType(
+                                // 1. Find and add identification type (first operation in the chain)
+                                return ipService.findInvolvedPartyIdentificationType(
                                     session, 
                                     IdentificationTypes.IdentificationTypeSystemID.toString(),
                                     system, 
@@ -234,15 +234,18 @@ public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterp
                                 .invoke(result -> log.debug("✅ Successfully linked identification type with session: {}", session.hashCode()))
                                 .onFailure()
                                 .invoke(error -> log.error("❌ Failed to link identification type with session {}: {}", 
-                                                         session.hashCode(), error.getMessage(), error));
+                                                         session.hashCode(), error.getMessage(), error))
                                 
-                                // 2. Find and add party type (as a Uni operation)
-                                Uni<?> partyTypeUni = ipService.findType(
-                                    session, 
-                                    IPTypes.TypeSystem.toString(), 
-                                    system, 
-                                    identityToken
-                                )
+                                // 2. Chain to find and add party type (second operation in the chain)
+                                .chain(result -> {
+                                    log.debug("🔄 Starting second operation: find and add party type with session: {}", session.hashCode());
+                                    return ipService.findType(
+                                        session, 
+                                        IPTypes.TypeSystem.toString(), 
+                                        system, 
+                                        identityToken
+                                    );
+                                })
                                 .onItem()
                                 .invoke(type -> log.debug("✅ Found party type with session: {}", session.hashCode()))
                                 .onFailure()
@@ -263,15 +266,18 @@ public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterp
                                 .invoke(result -> log.debug("✅ Successfully linked party type with session: {}", session.hashCode()))
                                 .onFailure()
                                 .invoke(error -> log.error("❌ Failed to link party type with session {}: {}", 
-                                                         session.hashCode(), error.getMessage(), error));
+                                                         session.hashCode(), error.getMessage(), error))
                                 
-                                // 3. Find and add name type (as a Uni operation)
-                                Uni<?> nameTypeUni = ipService.findInvolvedPartyNameType(
-                                    session, 
-                                    NameTypes.PreferredNameType.toString(), 
-                                    system, 
-                                    identityToken
-                                )
+                                // 3. Chain to find and add name type (third operation in the chain)
+                                .chain(result -> {
+                                    log.debug("🔄 Starting third operation: find and add name type with session: {}", session.hashCode());
+                                    return ipService.findInvolvedPartyNameType(
+                                        session, 
+                                        NameTypes.PreferredNameType.toString(), 
+                                        system, 
+                                        identityToken
+                                    );
+                                })
                                 .onItem()
                                 .invoke(type -> log.debug("✅ Found name type with session: {}", session.hashCode()))
                                 .onFailure()
@@ -292,18 +298,16 @@ public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterp
                                 .invoke(result -> log.debug("✅ Successfully linked name type with session: {}", session.hashCode()))
                                 .onFailure()
                                 .invoke(error -> log.error("❌ Failed to link name type with session {}: {}", 
-                                                         session.hashCode(), error.getMessage(), error));
+                                                         session.hashCode(), error.getMessage(), error))
                                 
-                                // Run all three operations in parallel
-                                return Uni.combine().all().unis(identificationTypeUni, partyTypeUni, nameTypeUni)
-                                    .discardItems() // We only care about completion, not the results
-                                    .onItem()
-                                    .invoke(() -> log.info("🎉 Successfully created involved party for system: '{}'", system.getName()))
-                                    .onFailure()
-                                    .invoke(error -> log.error("💥 Failed to complete parallel operations for system '{}' with session {}: {}", 
-                                                             system.getName(), session.hashCode(), error.getMessage(), error))
-                                    .replaceWith(involvedParty) // Return the involved party after all operations complete
-                                    .map(ip -> (IInvolvedParty<?, ?>) ip); // Ensure the return type matches the method signature exactly
+                                // After all three operations complete sequentially
+                                .onItem()
+                                .invoke(() -> log.info("🎉 Successfully created involved party for system: '{}'", system.getName()))
+                                .onFailure()
+                                .invoke(error -> log.error("💥 Failed to complete sequential operations for system '{}' with session {}: {}", 
+                                                         system.getName(), session.hashCode(), error.getMessage(), error))
+                                .replaceWith(involvedParty) // Return the involved party after all operations complete
+                                .map(ip -> (IInvolvedParty<?, ?>) ip); // Ensure the return type matches the method signature exactly
                             });
                         });
                 });

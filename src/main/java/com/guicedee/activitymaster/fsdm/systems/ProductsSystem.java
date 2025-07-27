@@ -17,6 +17,7 @@ import java.util.List;
 
 import static com.guicedee.activitymaster.fsdm.SystemsService.*;
 import static com.guicedee.activitymaster.fsdm.client.services.IProductService.*;
+import static com.guicedee.activitymaster.fsdm.client.services.ISystemsService.ActivityMasterSystemName;
 
 
 @Log4j2
@@ -36,13 +37,29 @@ public class ProductsSystem
 	@Override
 	public ISystems<?,?>  registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
+		log.info("🚀 Registering Products System for enterprise: '{}'", enterprise.getName());
+		log.debug("📋 Creating Products System with session: {}", session.hashCode());
+		
 		ISystems<?, ?> iSystems = systemsService
 		                                        .create(session, enterprise, getSystemName(), getSystemDescription())
-		                                        .await().atMost(Duration.ofMinutes(1));
-		getSystem(session, enterprise).chain(system ->{
-					return systemsService
-								   .registerNewSystem(session, enterprise, system);
-		}).await().atMost(Duration.ofMinutes(1));
+		                                        .onItem()
+		                                        .invoke(system -> log.debug("✅ Created Products System: '{}' with session: {}", system.getName(), session.hashCode()))
+		                                        .onFailure()
+		                                        .invoke(error -> log.error("❌ Failed to create Products System: '{}' with session {}: {}", 
+		                                                                 getSystemName(), session.hashCode(), error.getMessage(), error))
+		                                        .await()
+		                                        .atMost(Duration.ofMinutes(1));
+		
+		getSystem(session, enterprise)
+		        .chain(system -> systemsService.registerNewSystem(session, enterprise, system))
+		        .onItem()
+		        .invoke(() -> log.debug("✅ Registered system: {}", getSystemName()))
+		        .onFailure()
+		        .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
+		        .await()
+		        .atMost(Duration.ofMinutes(1));
+		
+		log.info("🎉 Successfully registered Products System for enterprise: '{}'", enterprise.getName());
 		return iSystems;
 	}
 
@@ -50,56 +67,135 @@ public class ProductsSystem
 	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
 		logProgress("Products System", "Starting Products Checks");
-		log.info("Creating product defaults in a new session and transaction");
-		
-		// Use sessionFactory.withTransaction to create a new session
-		return sessionFactory.withTransaction((newSession, tx) -> {
+		log.info("🚀 Creating product defaults in a new session and transaction");
+		log.debug("📋 Starting product defaults creation for enterprise: '{}'", enterprise.getName());
+
+			log.debug("📋 Created new transaction with session: {}", session.hashCode());
+			
 			// Get the ActivityMaster system
-			return systemsService.findSystem(newSession, enterprise, ActivityMasterSystemName)
+			return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
+				.onItem()
+				.invoke(activityMasterSystem -> 
+					log.debug("✅ Found ActivityMaster system: '{}' with session: {}", 
+						activityMasterSystem.getName(), session.hashCode()))
+				.onFailure()
+				.invoke(error -> 
+					log.error("❌ Failed to find ActivityMaster system: {}", error.getMessage(), error))
 				.chain(activityMasterSystem -> {
-					// Create base product classification
-					return service.create(newSession, ProductClassifications.Products, activityMasterSystem)
-						.chain(baseClassification -> {
-							logProgress("Products System", "Creating product classifications...");
+					// Get system token once and reuse it
+					return getSystemToken(session, enterprise)
+						.onItem()
+						.invoke(systemToken -> 
+							log.debug("🔑 Retrieved system token for enterprise: '{}'", enterprise.getName()))
+						.onFailure()
+						.invoke(error -> 
+							log.error("❌ Failed to retrieve system token: {}", error.getMessage(), error))
+						.chain(systemToken -> {
+							// Create base product classification
+							log.debug("📋 Creating base product classification");
+							return service.create(session, ProductClassifications.Products, activityMasterSystem, systemToken)
+								.onItem()
+								.invoke(baseClassification -> 
+									log.debug("✅ Created base product classification: '{}'", baseClassification.getName()))
+								.onFailure()
+								.invoke(error -> 
+									log.error("❌ Failed to create base product classification: {}", error.getMessage(), error))
+								.chain(baseClassification -> {
+									logProgress("Products System", "Creating product classifications...");
+									log.debug("📋 Creating product classifications sequentially");
 
-							// Create product-related classifications in parallel since they all have the same parent
-							List<Uni<?>> productClassifications = new ArrayList<>();
-							productClassifications.add(service.create(newSession, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
-							productClassifications.add(service.create(newSession, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
-							productClassifications.add(service.create(newSession, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
-							productClassifications.add(service.create(newSession, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
-
-							// Execute all product classifications in parallel
-							return Uni.combine().all().unis(productClassifications)
-								.discardItems()
-								.onFailure().invoke(error -> 
-									log.error("Error creating product classifications: {}", error.getMessage(), error))
-								.invoke(v -> logProgress("Products System", "Loaded Product Classifications...", 4));
+									// Create product-related classifications sequentially
+									return service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products, systemToken)
+										.onItem()
+										.invoke(classification -> 
+											log.debug("✅ Created ProductGroup classification: '{}'", classification.getName()))
+										.onFailure()
+										.invoke(error -> 
+											log.error("❌ Failed to create ProductGroup classification: {}", error.getMessage(), error))
+										
+										// Then create ProductTypeName classification
+										.chain(productGroup -> 
+											service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup, systemToken)
+												.onItem()
+												.invoke(classification -> 
+													log.debug("✅ Created ProductTypeName classification: '{}'", classification.getName()))
+												.onFailure()
+												.invoke(error -> 
+													log.error("❌ Failed to create ProductTypeName classification: {}", error.getMessage(), error))
+										)
+										
+										// Then create ProductPremiumType classification
+										.chain(productTypeName -> 
+											service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup, systemToken)
+												.onItem()
+												.invoke(classification -> 
+													log.debug("✅ Created ProductPremiumType classification: '{}'", classification.getName()))
+												.onFailure()
+												.invoke(error -> 
+													log.error("❌ Failed to create ProductPremiumType classification: {}", error.getMessage(), error))
+										)
+										
+										// Then create ProductBaseCost classification
+										.chain(productPremiumType -> 
+											service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup, systemToken)
+												.onItem()
+												.invoke(classification -> 
+													log.debug("✅ Created ProductBaseCost classification: '{}'", classification.getName()))
+												.onFailure()
+												.invoke(error -> 
+													log.error("❌ Failed to create ProductBaseCost classification: {}", error.getMessage(), error))
+										)
+										
+										// Complete the sequence
+										.onItem()
+										.invoke(() -> {
+											log.debug("✅ Successfully created all product classifications sequentially");
+											logProgress("Products System", "Loaded Product Classifications...", 4);
+										})
+										.onFailure()
+										.invoke(error -> 
+											log.error("❌ Error creating product classifications: {}", error.getMessage(), error));
+								});
 						});
-				});
-		}).replaceWithVoid();
+				})
+				.onItem()
+				.invoke(() -> log.info("✅ Successfully created all product defaults"))
+				.onFailure()
+				.invoke(error -> 
+					log.error("❌ Failed to create product defaults: {}", error.getMessage(), error))
+		.replaceWithVoid();
 	}
 
 	@Override
 	public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
 	{
-		log.info("Starting reactive postStartup for Products System");
+		log.info("🚀 Starting reactive postStartup for Products System");
+		log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}", 
+		         enterprise.getName(), session.hashCode());
 
 		// Create a reactive chain for the postStartup operations
 		// Get the system
 		return systemsService.findSystem(session, enterprise, getSystemName())
 				.onItem()
+				.invoke(system -> log.debug("✅ Found system: '{}'", system.getName()))
+				.onItem()
 				.ifNull()
 				.failWith(() -> new RuntimeException("System not found: " + getSystemName()))
+				.onFailure()
+				.invoke(error -> log.error("❌ Failed to find system: {}", error.getMessage(), error))
 				.chain(system -> {
-					log.debug("Found system: {}", system.getName());
+					log.debug("🔍 Retrieving security token for system: '{}'", system.getName());
 					// Get the security token
 					return systemsService.getSecurityIdentityToken(session, system)
 							.onItem()
+							.invoke(token -> log.debug("🔑 Found security token for system: '{}'", system.getName()))
+							.onItem()
 							.ifNull()
 							.failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
+							.onFailure()
+							.invoke(error -> log.error("❌ Failed to retrieve security token: {}", error.getMessage(), error))
 							.map(token -> {
-								log.debug("Found security token for system: {}", system.getName());
+								log.debug("✅ Successfully completed postStartup for Products System");
 								return null; // Return Void
 							});
 				})

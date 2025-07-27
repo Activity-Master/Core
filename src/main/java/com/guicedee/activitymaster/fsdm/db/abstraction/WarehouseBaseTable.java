@@ -4,6 +4,7 @@ import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.base.
 import com.guicedee.activitymaster.fsdm.db.abstraction.builders.QueryBuilderDefault;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -44,5 +45,4 @@ public abstract class WarehouseBaseTable<J extends WarehouseBaseTable<J, Q, I>,
   {
     return getId() == null;
   }
-
 }
