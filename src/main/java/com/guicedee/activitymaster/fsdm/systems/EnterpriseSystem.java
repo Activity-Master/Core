@@ -24,9 +24,9 @@ public class EnterpriseSystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
-    return null;
+    return Uni.createFrom().nullItem();
   }
 
 
@@ -34,37 +34,58 @@ public class EnterpriseSystem
   public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
     logProgress("Enterprise System", "Starting Enterprise Checks");
-    log.info("Creating enterprise defaults in a new session and transaction");
+    log.info("🚀 Creating enterprise defaults for enterprise: '{}'", enterprise.getName());
+    log.debug("📋 Starting with session: {}", session.hashCode());
+    
     // No actual operations needed, just return a void item
+    log.debug("✅ No specific defaults needed for Enterprise System");
     return Uni.createFrom()
-               .voidItem();
+               .voidItem()
+               .onItem()
+               .invoke(() -> log.info("🎉 Successfully completed Enterprise System defaults"))
+               .onFailure()
+               .invoke(error -> log.error("❌ Error in Enterprise System defaults: {}", error.getMessage(), error))
+               .replaceWithVoid();
   }
 
   @Override
   public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
-    log.info("Starting reactive postStartup for Enterprise System");
+    log.info("🚀 Starting reactive postStartup for Enterprise System");
+    log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}", 
+             enterprise.getName(), session.hashCode());
 
     // Create a reactive chain for the postStartup operations
     // Get the system
     return systemsService.findSystem(session, enterprise, getSystemName())
                .onItem()
+               .invoke(system -> log.debug("✅ Found system: '{}'", system.getName()))
+               .onItem()
                .ifNull()
                .failWith(() -> new RuntimeException("System not found: " + getSystemName()))
+               .onFailure()
+               .invoke(error -> log.error("❌ Failed to find system: {}", error.getMessage(), error))
                .chain(system -> {
-                 log.debug("Found system: {}", system.getName());
+                 log.debug("🔍 Retrieving security token for system: '{}'", system.getName());
                  // Get the security token
                  return systemsService.getSecurityIdentityToken(session, system)
                             .onItem()
+                            .invoke(token -> log.debug("🔑 Found security token for system: '{}'", system.getName()))
+                            .onItem()
                             .ifNull()
                             .failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
+                            .onFailure()
+                            .invoke(error -> log.error("❌ Failed to retrieve security token: {}", error.getMessage(), error))
                             .map(token -> {
-                              log.debug("Found security token for system: {}", system.getName());
+                              log.debug("✅ Successfully completed postStartup for Enterprise System");
                               return null; // Return Void
                             });
                })
-               .replaceWith(Uni.createFrom()
-                                .voidItem());
+               .replaceWith(Uni.createFrom().voidItem())
+               .onItem()
+               .invoke(() -> log.info("🎉 Enterprise System postStartup completed successfully"))
+               .onFailure()
+               .invoke(error -> log.error("❌ Error in Enterprise System postStartup: {}", error.getMessage(), error));
   }
 
   @Override

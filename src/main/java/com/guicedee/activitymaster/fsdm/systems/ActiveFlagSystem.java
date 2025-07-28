@@ -20,108 +20,167 @@ import static com.guicedee.activitymaster.fsdm.client.services.IActiveFlagServic
 
 @Log4j2
 public class ActiveFlagSystem
-		extends ActivityMasterDefaultSystem<ActiveFlagSystem>
-		implements IActivityMasterSystem<ActiveFlagSystem>
+    extends ActivityMasterDefaultSystem<ActiveFlagSystem>
+    implements IActivityMasterSystem<ActiveFlagSystem>
 {
-	@Inject
-	private ISystemsService<?> systemsService;
+  @Inject
+  private ISystemsService<?> systemsService;
 
-	@Inject
-	private IActiveFlagService<?> activeFlagService;
-	
-	@Inject
-	private Mutiny.SessionFactory sessionFactory;
-	@Override
-	public ISystems<?,?> registerSystem(Mutiny.Session session, IEnterprise<?,?> enterprise)
-	{
-		ISystems<?, ?> iSystems = systemsService
-		                                        .create(session, enterprise, ActivateFlagSystemName, "The system for the active flag management")
-		                                        .await().atMost(Duration.ofMinutes(1));
+  @Inject
+  private IActiveFlagService<?> activeFlagService;
 
-		getSystem(session, enterprise).chain(system ->{
-					return systemsService
-								   .registerNewSystem(session, enterprise, system);
-		}).await().atMost(Duration.ofMinutes(1));
-		return iSystems;
-	}
+  @Inject
+  private Mutiny.SessionFactory sessionFactory;
 
-	@Override
-	public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?,?> enterprise)
-	{
-		logProgress("Active Flag Service", "Loading Active Flags");
-		log.info("Creating active flags in a new session and transaction");
+  @Override
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  {
+    log.info("🚀 Registering Active Flag System for enterprise: '{}'", enterprise.getName());
+    log.debug("📋 Creating Active Flag System with session: {}", session.hashCode());
 
-		return sessionFactory.withTransaction((newSession, tx) -> {
-			// Create a list of all active flags
-			ActiveFlag[] activeFlags = ActiveFlag.values();
+    return systemsService
+               .create(session, enterprise, ActivateFlagSystemName, "The system for the active flag management")
+               .onItem()
+               .invoke(system -> {
+                 log.debug("✅ Created Active Flag System: '{}' with session: {}", system.getName(), session.hashCode());
 
-			// Create the first active flag and then chain the rest
-			Uni<Void> createChain = null;
+                 // Chain the registerNewSystem call properly
+                 getSystem(session, enterprise)
+                            .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
+                            .onItem()
+                            .invoke(() -> {
+                                log.debug("✅ Registered system: {}", getSystemName());
+                                log.info("🎉 Successfully registered Active Flag System for enterprise: '{}'", enterprise.getName());
+                            })
+                            .onFailure()
+                            .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
+                            .chain(() -> Uni.createFrom().item(system)); // Chain back to return the original system
+               })
+               .onFailure()
+               .invoke(error -> log.error("❌ Failed to create Active Flag System: '{}' with session {}: {}",
+                   getSystemName(), session.hashCode(), error.getMessage(), error));
+  }
 
-			for (ActiveFlag activeFlag : activeFlags) {
-				if (createChain == null) {
-					// First flag
-					createChain = ((ActiveFlagService)activeFlagService)
-						.create(newSession, enterprise, activeFlag.name(), activeFlag.getDescription())
-						.map(result -> null); // Convert to Void
-				} else {
-					// Chain subsequent flags
-					final Uni<Void> finalChain = createChain;
-					createChain = finalChain.chain(v -> 
-						((ActiveFlagService)activeFlagService)
-							.create(newSession, enterprise, activeFlag.name(), activeFlag.getDescription())
-							.map(result -> null) // Convert to Void
-					);
-				}
-			}
+  @Override
+  public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  {
+    logProgress("Active Flag Service", "Loading Active Flags");
+    log.info("🚀 Creating active flags for enterprise: '{}'", enterprise.getName());
+    log.debug("📋 Starting with session: {}", session.hashCode());
 
-			// Return the reactive chain or an empty one if no flags were created
-			return createChain != null ? createChain : Uni.createFrom().voidItem();
-		}).replaceWithVoid();
-	}
+    // Create a list of all active flags
+    ActiveFlag[] activeFlags = ActiveFlag.values();
+    log.debug("📋 Found {} active flags to create", activeFlags.length);
 
-	@Override
-	public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?,?> enterprise)
-	{
-		log.info("Starting reactive postStartup for Active Flag System");
+    // Create the first active flag and then chain the rest
+    Uni<Void> createChain = null;
 
-		// Create a reactive chain for the postStartup operations
-			// Get the system
-			return systemsService.findSystem(session, enterprise, getSystemName())
-				.onItem().ifNull().failWith(() -> new RuntimeException("System not found: " + getSystemName()))
-				.chain(system -> {
-					log.debug("Found system: {}", system.getName());
-					// Get the security token
-					return systemsService.getSecurityIdentityToken(session, system)
-						.onItem().ifNull().failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
-						.map(token -> {
-							log.debug("Found security token for system: {}", system.getName());
-							return null; // Return Void
-						});
-				}).replaceWith(Uni.createFrom().voidItem());
-	}
+    for (ActiveFlag activeFlag : activeFlags)
+    {
+      if (createChain == null)
+      {
+        // First flag
+        log.debug("🔄 Creating first active flag: '{}'", activeFlag.name());
+        createChain = ((ActiveFlagService) activeFlagService)
+                          .create(session, enterprise, activeFlag.name(), activeFlag.getDescription())
+                          .onItem()
+                          .invoke(result -> log.debug("✅ Created active flag: '{}'", activeFlag.name()))
+                          .onFailure()
+                          .invoke(error -> log.error("❌ Failed to create active flag '{}': {}",
+                              activeFlag.name(), error.getMessage(), error))
+                          .map(result -> null); // Convert to Void
+      }
+      else
+      {
+        // Chain subsequent flags
+        final Uni<Void> finalChain = createChain;
+        final ActiveFlag currentFlag = activeFlag; // Create final reference for lambda
+        createChain = finalChain.chain(v -> {
+          log.debug("🔄 Creating next active flag: '{}'", currentFlag.name());
+          return ((ActiveFlagService) activeFlagService)
+                     .create(session, enterprise, currentFlag.name(), currentFlag.getDescription())
+                     .onItem()
+                     .invoke(result -> log.debug("✅ Created active flag: '{}'", currentFlag.name()))
+                     .onFailure()
+                     .invoke(error -> log.error("❌ Failed to create active flag '{}': {}",
+                         currentFlag.name(), error.getMessage(), error))
+                     .map(result -> null); // Convert to Void
+        });
+      }
+    }
 
-	@Override
-	public int totalTasks()
-	{
-		return ActiveFlag.values().length;
-	}
+    // Return the reactive chain or an empty one if no flags were created
+    return (createChain != null ? createChain : Uni.createFrom()
+                                                    .voidItem())
+               .onItem()
+               .invoke(() -> log.info("🎉 Successfully created all active flags"))
+               .onFailure()
+               .invoke(error -> log.error("❌ Error creating active flags: {}", error.getMessage(), error))
+               .replaceWithVoid();
+  }
 
-	@Override
-	public Integer sortOrder()
-	{
-		return Integer.MIN_VALUE + 1;
-	}
+  @Override
+  public Uni<Void> postStartup(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  {
+    log.info("🚀 Starting reactive postStartup for Active Flag System");
+    log.debug("📋 Beginning postStartup operations for enterprise: '{}' with session: {}",
+        enterprise.getName(), session.hashCode());
 
-	@Override
-	public String getSystemName()
-	{
-		return ActivateFlagSystemName;
-	}
+    // Create a reactive chain for the postStartup operations
+    // Get the system
+    return systemsService.findSystem(session, enterprise, getSystemName())
+               .onItem()
+               .invoke(system -> log.debug("✅ Found system: '{}'", system.getName()))
+               .onItem()
+               .ifNull()
+               .failWith(() -> new RuntimeException("System not found: " + getSystemName()))
+               .onFailure()
+               .invoke(error -> log.error("❌ Failed to find system: {}", error.getMessage(), error))
+               .chain(system -> {
+                 log.debug("🔍 Retrieving security token for system: '{}'", system.getName());
+                 // Get the security token
+                 return systemsService.getSecurityIdentityToken(session, system)
+                            .onItem()
+                            .invoke(token -> log.debug("🔑 Found security token for system: '{}'", system.getName()))
+                            .onItem()
+                            .ifNull()
+                            .failWith(() -> new RuntimeException("Security token not found for system: " + system.getName()))
+                            .onFailure()
+                            .invoke(error -> log.error("❌ Failed to retrieve security token: {}", error.getMessage(), error))
+                            .map(token -> {
+                              log.debug("✅ Successfully completed postStartup for Active Flag System");
+                              return null; // Return Void
+                            });
+               })
+               .replaceWith(Uni.createFrom()
+                                .voidItem())
+               .onItem()
+               .invoke(() -> log.info("🎉 Active Flag System postStartup completed successfully"))
+               .onFailure()
+               .invoke(error -> log.error("❌ Error in Active Flag System postStartup: {}", error.getMessage(), error));
+  }
 
-	@Override
-	public String getSystemDescription()
-	{
-		return "The system for the active flag management";
-	}
+  @Override
+  public int totalTasks()
+  {
+    return ActiveFlag.values().length;
+  }
+
+  @Override
+  public Integer sortOrder()
+  {
+    return Integer.MIN_VALUE + 1;
+  }
+
+  @Override
+  public String getSystemName()
+  {
+    return ActivateFlagSystemName;
+  }
+
+  @Override
+  public String getSystemDescription()
+  {
+    return "The system for the active flag management";
+  }
 }

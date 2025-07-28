@@ -46,7 +46,7 @@ public class SystemsSystem
    * @return
    */
   @Override
-  public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Activity Master System for enterprise: '{}'", enterprise.getName());
     log.debug("📋 Creating Activity Master System with session: {}", session.hashCode());
@@ -57,20 +57,18 @@ public class SystemsSystem
         .invoke(system -> log.debug("✅ Created Activity Master System: '{}' with session: {}", system.getName(), session.hashCode()))
         .onFailure()
         .invoke(error -> log.error("❌ Failed to create Activity Master System: '{}' with session {}: {}", 
-                                  ActivityMasterSystemName, session.hashCode(), error.getMessage(), error))
-        .await()
-        .atMost(Duration.ofMinutes(1));
+                                  ActivityMasterSystemName, session.hashCode(), error.getMessage(), error));
   }
 
   /**
-   * Creates default systems for the enterprise in parallel.
+   * Creates default systems for the enterprise sequentially.
    * 
-   * This method creates three systems concurrently:
+   * This method creates three systems in sequence:
    * 1. Enterprise System
    * 2. Active Flag System
    * 3. Activity Master System
    * 
-   * The systems are created in parallel using Uni.combine().all().unis() to improve performance.
+   * The systems are created sequentially using flatMap() to ensure database session consistency.
    * The method returns a Uni<Void> that completes only when all system creations are complete.
    * 
    * @param session The Hibernate reactive session
@@ -126,7 +124,7 @@ public Uni<Void> createDefaults(Mutiny.Session session, IEnterprise<?, ?> enterp
    * 2. Getting the Activity Master System UUID
    * 3. Getting the System UUID
    * 4. Creating the involved party
-   * 5. Running the remaining operations in parallel:
+   * 5. Running the remaining operations sequentially:
    *    - Adding identification type to the involved party
    *    - Adding party type to the involved party
    *    - Adding name type to the involved party

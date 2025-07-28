@@ -41,34 +41,32 @@ public class EventsSystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
     log.info("🚀 Registering Events System for enterprise: '{}'", enterprise.getName());
     log.debug("📋 Creating Events System with session: {}", session.hashCode());
 
-    ISystems<?, ?> iSystems = systemsService
-                                  .create(session, enterprise, getSystemName(), getSystemDescription())
-                                  .onItem()
-                                  .invoke(system -> log.debug("✅ Created Events System: '{}' with session: {}", system.getName(), session.hashCode()))
-                                  .onFailure()
-                                  .invoke(error -> log.error("❌ Failed to create Events System: '{}' with session {}: {}",
-                                      getSystemName(), session.hashCode(), error.getMessage(), error))
-                                  .await()
-                                  .atMost(java.time.Duration.ofMinutes(1))
-        ;
-
-    getSystem(session, enterprise)
-        .chain(system -> systemsService.registerNewSystem(session, enterprise, system))
+    return systemsService
+        .create(session, enterprise, getSystemName(), getSystemDescription())
         .onItem()
-        .invoke(() -> log.debug("✅ Registered system: {}", getSystemName()))
+        .invoke(system -> {
+            log.debug("✅ Created Events System: '{}' with session: {}", system.getName(), session.hashCode());
+            
+            // Chain the registerNewSystem call properly
+            getSystem(session, enterprise)
+                .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
+                .onItem()
+                .invoke(() -> {
+                    log.debug("✅ Registered system: {}", getSystemName());
+                    log.info("🎉 Successfully registered Events System for enterprise: '{}'", enterprise.getName());
+                })
+                .onFailure()
+                .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
+                .chain(() -> Uni.createFrom().item(system)); // Chain back to return the original system
+        })
         .onFailure()
-        .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
-        .await()
-        .atMost(Duration.ofMinutes(1))
-    ;
-
-    log.info("🎉 Successfully registered Events System for enterprise: '{}'", enterprise.getName());
-    return iSystems;
+        .invoke(error -> log.error("❌ Failed to create Events System: '{}' with session {}: {}",
+            getSystemName(), session.hashCode(), error.getMessage(), error));
   }
 
   @Override

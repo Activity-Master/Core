@@ -53,35 +53,32 @@ public class SecurityTokenSystem
     private ISystemsService<?> systemsService;
 
     @Override
-    public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+    public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
     {
-        log.info("Registering security token system for enterprise: {}", enterprise.getName());
+        log.info("🚀 Registering Security Token System for enterprise: '{}'", enterprise.getName());
+        log.debug("📋 Creating Security Token System with session: {}", session.hashCode());
 
-        // Create the system
-        ISystems<?, ?> iSystems = systemsService
-                                          .create(session, enterprise, getSystemName(), getSystemDescription())
-                                          .onItem()
-                                          .invoke(system -> log.debug("Created system: {}", system.getName()))
-                                          .onFailure()
-                                          .invoke(error -> log.error("Error creating system: {}", error.getMessage(), error))
-                                          .await()
-                                          .atMost(Duration.ofMinutes(1))
-                ;
-
-        // Register the system
-        getSystem(session, enterprise).chain(system -> 
-                    systemsService.registerNewSystem(session, enterprise, system)
-                )
-                .onItem()
-                .invoke(() -> log.debug("Registered system: {}", getSystemName()))
-                .onFailure()
-                .invoke(error -> log.error("Error registering system: {}", error.getMessage(), error))
-                .await()
-                .atMost(Duration.ofMinutes(1))
-        ;
-
-        log.info("Successfully registered security token system for enterprise: {}", enterprise.getName());
-        return iSystems;
+        return systemsService
+            .create(session, enterprise, getSystemName(), getSystemDescription())
+            .onItem()
+            .invoke(system -> {
+                log.debug("✅ Created Security Token System: '{}' with session: {}", system.getName(), session.hashCode());
+                
+                // Chain the registerNewSystem call properly
+                getSystem(session, enterprise)
+                    .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
+                    .onItem()
+                    .invoke(() -> {
+                        log.debug("✅ Registered system: {}", getSystemName());
+                        log.info("🎉 Successfully registered Security Token System for enterprise: '{}'", enterprise.getName());
+                    })
+                    .onFailure()
+                    .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
+                    .chain(() -> Uni.createFrom().item(system)); // Chain back to return the original system
+            })
+            .onFailure()
+            .invoke(error -> log.error("❌ Failed to create Security Token System: '{}' with session {}: {}",
+                getSystemName(), session.hashCode(), error.getMessage(), error));
     }
 
     @Override

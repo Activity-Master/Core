@@ -16,7 +16,9 @@ import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
 import com.guicedee.activitymaster.fsdm.client.services.systems.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
+import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
 import com.guicedee.activitymaster.fsdm.systems.ClassificationsDataConceptSystem;
+import com.guicedee.activitymaster.fsdm.systems.EnterpriseSystem;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.GuiceContext;
@@ -607,39 +609,41 @@ public class EnterpriseService
     logProgress("Installing Systems", "Starting All Base Systems - " + filtered.toString());
 
     // Process systems sequentially in order
-    if (filtered.isEmpty()) {
-      return Uni.createFrom().voidItem();
+    if (filtered.isEmpty())
+    {
+      return Uni.createFrom()
+                 .voidItem();
     }
-    
+
     // Start with the first system
-    Uni<Void> result = installSystem(session, filtered.get(0), enterprise);
-    
+    Uni<Void> result = installSystem(session, filtered.get(0), enterprise,false);
+
     // Chain the rest of the systems sequentially
-    for (int i = 1; i < filtered.size(); i++) {
+    for (int i = 1; i < filtered.size(); i++)
+    {
       final int index = i;
-      result = result.chain(() -> installSystem(session, filtered.get(index), enterprise));
+      result = result.chain(() -> installSystem(session, filtered.get(index), enterprise,false));
     }
-    
+
     // Add final logging
     return result
-            .invoke(v -> log.info("✅ Installed " + filtered.size() + " systems sequentially starting from SystemsSystem."));
+               .invoke(v -> log.info("✅ Installed " + filtered.size() + " systems sequentially starting from SystemsSystem."));
   }
 
-  private Uni<Void> installSystem(Mutiny.Session session, IActivityMasterSystem<?> system, IEnterprise<?, ?> enterprise)
+  private Uni<Void> installSystem(Mutiny.Session session, IActivityMasterSystem<?> system, IEnterprise<?, ?> enterprise,boolean registerSystem)
   {
     String className = system.getClass()
                            .getSimpleName();
     logProgress("Running System", className);
     log.info("🚀 Starting single system install: " + className);
 
-    return performSystemInstall(session, enterprise, system)
+    return performSystemInstall(session, enterprise, system,registerSystem)
                .invoke(() -> log.info("✅ System install completed: " + className))
                .onFailure()
                .invoke(err -> log.error("❌ System install failed: " + className, err));
   }
 
-
-  private Uni<Void> performSystemInstall(Mutiny.Session session, IEnterprise<?, ?> enterprise, IActivityMasterSystem<?> system)
+  private Uni<Void> performSystemInstall(Mutiny.Session session, IEnterprise<?, ?> enterprise, IActivityMasterSystem<?> system,boolean registerSystem)
   {
     String className = system.getClass()
                            .getSimpleName();
@@ -654,30 +658,26 @@ public class EnterpriseService
     Set<IOnSystemInstall> listeners = IGuiceContext.loaderToSet(ServiceLoader.load(IOnSystemInstall.class));
     log.debug("🔧 Notifying " + listeners.size() + " install listeners for system: " + systemName);
 
-    // Process start listeners reactively
-    return Multi.createFrom()
-               .iterable(listeners)
-               .onItem()
-               .transformToUni(listener -> {
-                 try
-                 {
-                   listener.onSystemInstallStart(systemName);
-                   log.trace("🟢 Start: " + listener.getClass()
-                                               .getSimpleName());
-                 }
-                 catch (Exception e)
-                 {
-                   log.warn("⚠️ Start listener failed: " + listener.getClass()
-                                                               .getSimpleName(), e);
-                 }
-                 return Uni.createFrom()
-                            .voidItem();
-               })
-               .merge()
-               .collect()
-               .asList()
-               .chain(startResults -> {
-                 // Chain the createDefaults call which now returns a Uni<Void>
+    // Process start listeners sequentially
+    List<IOnSystemInstall> listenersList = new ArrayList<>(listeners);
+    Uni<Void> startListenersChain = Uni.createFrom().voidItem();
+    
+    // Chain each start listener sequentially
+    for (IOnSystemInstall listener : listenersList) {
+        final IOnSystemInstall currentListener = listener; // Create final reference for lambda
+        startListenersChain = startListenersChain.chain(() -> {
+            try {
+                currentListener.onSystemInstallStart(systemName);
+                log.trace("🟢 Start: " + currentListener.getClass().getSimpleName());
+            } catch (Exception e) {
+                log.warn("⚠️ Start listener failed: " + currentListener.getClass().getSimpleName(), e);
+            }
+            return Uni.createFrom().voidItem();
+        });
+    }
+    
+    return startListenersChain
+               .chain(() -> {
                  return registeredSystem.createDefaults(session, enterprise)
                             .onItem()
                             .invoke(() -> log.info("✅ Defaults created for: " + systemName))
@@ -687,30 +687,29 @@ public class EnterpriseService
                               throw new RuntimeException(e);
                             });
                })
+               .chain(startResults -> {
+                 // Chain the createDefaults call which now returns a Uni<Void>
+                 return registeredSystem.registerSystem(session, enterprise);
+               })
                .chain(createResult -> {
-                 // Process end listeners reactively
-                 return Multi.createFrom()
-                            .iterable(listeners)
-                            .onItem()
-                            .transformToUni(listener -> {
-                              try
-                              {
-                                listener.onSystemInstallEnd(systemName);
-                                log.trace("🟢 End: " + listener.getClass()
-                                                          .getSimpleName());
-                              }
-                              catch (Exception e)
-                              {
-                                log.warn("⚠️ End listener failed: " + listener.getClass()
-                                                                          .getSimpleName(), e);
-                              }
-                              return Uni.createFrom()
-                                         .voidItem();
-                            })
-                            .merge()
-                            .collect()
-                            .asList()
-                            .replaceWithVoid();
+                 // Process end listeners sequentially
+                 Uni<Void> endListenersChain = Uni.createFrom().voidItem();
+                 
+                 // Chain each end listener sequentially
+                 for (IOnSystemInstall listener : listenersList) {
+                     final IOnSystemInstall currentListener = listener; // Create final reference for lambda
+                     endListenersChain = endListenersChain.chain(() -> {
+                         try {
+                             currentListener.onSystemInstallEnd(systemName);
+                             log.trace("🟢 End: " + currentListener.getClass().getSimpleName());
+                         } catch (Exception e) {
+                             log.warn("⚠️ End listener failed: " + currentListener.getClass().getSimpleName(), e);
+                         }
+                         return Uni.createFrom().voidItem();
+                     });
+                 }
+                 
+                 return endListenersChain;
                })
                .invoke(() -> {
                  logProgress("Installed System", cleanedName, 1);
@@ -727,19 +726,32 @@ public class EnterpriseService
     logProgress("Creating Base Systems", "Initializing Base Systems");
 
     List<IActivityMasterSystem<?>> filtered = allSystems.stream()
-                                                  .filter(a->a.getClass().equals(SystemsSystem.class))
-                                                  .toList()
-        ;
+                                                  .filter(a -> a.getClass()
+                                                                   .equals(SystemsSystem.class))
+                                                  .toList();
 
-    return Multi.createFrom()
-               .iterable(filtered)
-               .onItem()
-               .transformToUni(system -> performSystemInstall(session, enterprise, system))
-               .merge()
-               .collect()
-               .asList()
-               .invoke(installed -> log.info("✅ Base systems installed: " + installed.size()))
-               .replaceWithVoid()
+    log.debug("📋 Processing {} base systems sequentially", filtered.size());
+    
+    // If no systems to process, return immediately
+    if (filtered.isEmpty()) {
+        log.info("✅ No base systems to install");
+        return Uni.createFrom().voidItem();
+    }
+    
+    // Process systems sequentially
+    Uni<Void> systemsChain = Uni.createFrom().voidItem();
+    
+    // Chain each system installation sequentially
+    for (IActivityMasterSystem<?> system : filtered) {
+        final IActivityMasterSystem<?> currentSystem = system; // Create final reference for lambda
+        systemsChain = systemsChain.chain(() -> {
+            log.debug("🔄 Installing base system: {}", currentSystem.getSystemName());
+            return performSystemInstall(session, enterprise, currentSystem, false);
+        });
+    }
+    
+    return systemsChain
+               .invoke(() -> log.info("✅ Base systems installed: {}", filtered.size()))
                .onFailure()
                .invoke(err -> log.error("❌ Error during base system installs", err));
   }
@@ -750,20 +762,46 @@ public class EnterpriseService
 
     List<IActivityMasterSystem<?>> filtered = allSystems.stream()
                                                   .takeWhile(system -> !SystemsSystem.class.isAssignableFrom(system.getClass()))
-                                                  .toList()
-        ;
+                                                  .toList();
 
-    return Multi.createFrom()
-               .iterable(filtered)
-               .onItem()
-               .transformToUni(system -> performSystemInstall(session, enterprise, system))
-               .merge()
-               .collect()
-               .asList()
-               .invoke(installs -> log.info("✅ All core systems installed successfully: " + installs.size() + " systems"))
-               .invoke(installs -> filtered.getFirst().registerSystem(session,enterprise))
-               .replaceWithVoid()
+    log.debug("📋 Processing {} core systems sequentially", filtered.size());
+    
+    // If no systems to process, return immediately
+    if (filtered.isEmpty()) {
+        log.info("✅ No core systems to install");
+        return Uni.createFrom().voidItem();
+    }
+    
+    // Process systems sequentially
+    Uni<Void> systemsChain = Uni.createFrom().voidItem();
+    
+    // Chain each system installation sequentially
+    for (IActivityMasterSystem<?> system : filtered) {
+        final IActivityMasterSystem<?> currentSystem = system; // Create final reference for lambda
+        systemsChain = systemsChain.chain(() -> {
+            log.debug("🔄 Installing core system: {}", currentSystem.getSystemName());
+            return performSystemInstall(session, enterprise, currentSystem, false);
+        });
+    }
+    
+    // Properly chain the registerSystem call for the first system
+    return systemsChain
+               .invoke(() -> log.info("✅ All core systems installed successfully: {} systems", filtered.size()))
+               .chain(() -> {
+                   if (!filtered.isEmpty()) {
+                       log.debug("🔄 Registering first core system: {}", filtered.getFirst().getSystemName());
+                       return filtered.getFirst().registerSystem(session, enterprise)
+                                     .onItem()
+                                     .invoke(result -> log.debug("✅ Successfully registered first core system"))
+                                     .onFailure()
+                                     .invoke(err -> log.error("❌ Failed to register first core system", err))
+                                     .replaceWithVoid();
+                   } else {
+                       return Uni.createFrom().voidItem();
+                   }
+               })
                .onFailure()
                .invoke(err -> log.error("❌ Failed during system installation", err));
   }
+
 }

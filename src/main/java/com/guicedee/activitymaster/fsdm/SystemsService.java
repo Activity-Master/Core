@@ -13,6 +13,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.systems.Systems;
 import com.guicedee.activitymaster.fsdm.db.entities.systems.SystemsXClassification;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
+import com.guicedee.guicedinjection.pairing.Pair;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.NoResultException;
 import lombok.extern.log4j.Log4j2;
@@ -118,23 +119,26 @@ public class SystemsService
     log.info("🚀 Registering new system: '{}' for enterprise: '{}'", newSystem.getName(), enterprise.getName());
     log.debug("📋 Starting registration with session: {}", session.hashCode());
     
-    // Get the activity master system and token
-    Uni<ISystems<?, ?>> activityMasterSystemUni = getISystemReactive(enterprise, ActivityMasterSystemName);
-    Uni<UUID> activityMasterSystemUUIDUni = getISystemTokenReactive(enterprise, ActivityMasterSystemName);
-
-    // Chain the operations
-    return Uni.combine()
-               .all()
-               .unis(activityMasterSystemUni, activityMasterSystemUUIDUni)
-               .asTuple()
+    // Get the activity master system first, then get the token sequentially
+    return getISystemReactive(enterprise, ActivityMasterSystemName)
                .onItem()
-               .invoke(tuple -> log.debug("✅ Retrieved ActivityMaster system and UUID with session: {}", session.hashCode()))
+               .invoke(activityMasterSystem -> log.debug("✅ Retrieved ActivityMaster system with session: {}", session.hashCode()))
                .onFailure()
-               .invoke(error -> log.error("❌ Failed to retrieve ActivityMaster system and UUID with session {}: {}", 
+               .invoke(error -> log.error("❌ Failed to retrieve ActivityMaster system with session {}: {}", 
                                         session.hashCode(), error.getMessage(), error))
-               .chain(tuple -> {
-                 ISystems<?, ?> activityMasterSystem = tuple.getItem1();
-                 UUID activityMasterSystemUUID = tuple.getItem2();
+               // Chain to get the token after getting the system
+               .chain(activityMasterSystem -> 
+                   getISystemTokenReactive(enterprise, ActivityMasterSystemName)
+                       .onItem()
+                       .invoke(activityMasterSystemUUID -> log.debug("✅ Retrieved ActivityMaster system UUID with session: {}", session.hashCode()))
+                       .onFailure()
+                       .invoke(error -> log.error("❌ Failed to retrieve ActivityMaster system UUID with session {}: {}", 
+                                                session.hashCode(), error.getMessage(), error))
+                       .map(activityMasterSystemUUID -> new Pair<>(activityMasterSystem, activityMasterSystemUUID))
+               )
+               .chain(pair -> {
+                 ISystems<?, ?> activityMasterSystem = pair.getKey();
+                 UUID activityMasterSystemUUID = pair.getValue();
                  log.debug("📋 Finding classification with session: {}", session.hashCode());
 
                  // Use the reactive classification service

@@ -32,23 +32,23 @@ public class ClassificationsSystem
   private Mutiny.SessionFactory sessionFactory;
 
   @Override
-  public ISystems<?, ?> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
+  public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
-    ISystems<?, ?> iSystems = systemsService
-                                  .create(session, enterprise, getSystemName(), getSystemDescription())
-                                  .await()
-                                  .atMost(Duration.ofMinutes(1))
-        ;
-
-    getSystem(session, enterprise).chain(system -> {
-          return systemsService
-                     .registerNewSystem(session, enterprise, system);
-        })
-        .await()
-        .atMost(Duration.ofMinutes(1))
-    ;
-
-    return iSystems;
+    return systemsService
+            .create(session, enterprise, getSystemName(), getSystemDescription())
+            .onItem().invoke(iSystems -> {
+                log.debug("✅ Created system: '{}' with session: {}", getSystemName(), session.hashCode());
+                
+                // Chain the registerNewSystem call properly
+                getSystem(session, enterprise)
+                    .chain(system -> systemsService.registerNewSystem(session, enterprise, system))
+                    .onItem()
+                    .invoke(() -> log.debug("✅ Registered new system: '{}' with session: {}", getSystemName(), session.hashCode()))
+                    .onFailure()
+                    .invoke(error -> log.error("❌ Failed to register new system: '{}' with session {}: {}", 
+                            getSystemName(), session.hashCode(), error.getMessage(), error))
+                    .chain(() -> Uni.createFrom().item(iSystems)); // Chain back to return the original system
+            });
   }
 
   @Override
