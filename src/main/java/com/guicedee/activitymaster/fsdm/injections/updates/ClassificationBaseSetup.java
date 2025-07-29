@@ -33,64 +33,42 @@ public class ClassificationBaseSetup implements ISystemUpdate
 	@Override
 	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
-		log.info("Starting parallel creation of classifications");
+		log.info("Starting sequential creation of classifications");
 
-		log.info("Creating Languages and Hardware classifications in parallel");
+		log.info("Creating Languages and Hardware classifications sequentially");
 
 		// Create the Languages classification and its children
-		Uni<Void> languagesUni = service.create(session, Languages, activityMasterSystem, DefaultClassifications.DefaultClassification)
+		return service.create(session, Languages, activityMasterSystem, DefaultClassifications.DefaultClassification)
 			.chain(baseLanguage -> {
-				// Create a list of operations to run in parallel for language classifications
-				List<Uni<?>> languageOperations = new ArrayList<>();
-
-				// Add all language-related classification creation operations to the list
-				languageOperations.add(service.create(session, InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages));
-				languageOperations.add(service.create(session, InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages));
-				languageOperations.add(service.create(session, ISO6392EnglishName, activityMasterSystem, Languages));
-				languageOperations.add(service.create(session, ISO6392FrenchName, activityMasterSystem, Languages));
-				languageOperations.add(service.create(session, ISO6392GermanName, activityMasterSystem, Languages));
-
-				log.info("Running {} language classification creation operations in parallel", languageOperations.size());
-
-				// Run all language operations in parallel
-				return Uni.combine().all().unis(languageOperations)
-					.discardItems()
+				log.info("Creating language classifications sequentially");
+				
+				// Chain language-related classification creation operations sequentially
+				return service.create(session, InvolvedPartyClassifications.ISO639_1, activityMasterSystem, Languages)
+					.chain(() -> service.create(session, InvolvedPartyClassifications.ISO639_2, activityMasterSystem, Languages))
+					.chain(() -> service.create(session, ISO6392EnglishName, activityMasterSystem, Languages))
+					.chain(() -> service.create(session, ISO6392FrenchName, activityMasterSystem, Languages))
+					.chain(() -> service.create(session, ISO6392GermanName, activityMasterSystem, Languages))
 					.onFailure().invoke(error -> log.error("Error creating language classifications: {}", error.getMessage(), error))
-					.invoke(() -> logProgress("Classifications System", "Loading Base Languages...", 6))
-					.map(result -> null); // Return Void
-			});
-
-		// Create the Hardware classification and its children (including Computer and its children)
-		Uni<Void> hardwareUni = service.create(session, Hardware, activityMasterSystem)
+					.invoke(() -> logProgress("Classifications System", "Loading Base Languages...", 6));
+			})
+			// Chain to create the Hardware classification and its children
+			.chain(() -> service.create(session, Hardware, activityMasterSystem))
 			.chain(baseHardware -> {
 				// First create the Computer classification
-				return service.create(session, Computer, activityMasterSystem, Hardware)
-					.chain(computerClassification -> {
-						// Create a list of operations to run in parallel for all hardware-related classifications
-						List<Uni<?>> hardwareOperations = new ArrayList<>();
-
-						// Add hardware-related classification creation operations to the list
-						hardwareOperations.add(service.create(session, Scanner, activityMasterSystem, Hardware));
-						hardwareOperations.add(service.create(session, Printer, activityMasterSystem, Hardware));
-						hardwareOperations.add(service.create(session, Phone, activityMasterSystem, Hardware));
-
-						// Add computer-specific classification creation operations to the list
-						hardwareOperations.add(service.create(session, Desktop, activityMasterSystem, Computer));
-						hardwareOperations.add(service.create(session, Laptop, activityMasterSystem, Computer));
-
-						log.info("Running {} hardware and computer classification creation operations in parallel", hardwareOperations.size());
-
-						// Run all hardware and computer operations in parallel
-						return Uni.combine().all().unis(hardwareOperations)
-							.discardItems()
-							.onFailure().invoke(error -> log.error("Error creating hardware and computer classifications: {}", error.getMessage(), error))
-							.map(result -> null); // Return Void
-					});
-			});
-
-		// Run all classification creations in parallel
-		return Uni.combine().all().unis(languagesUni, hardwareUni)
-			.discardItems()
+				return service.create(session, Computer, activityMasterSystem, Hardware);
+			})
+			.chain(computerClassification -> {
+				log.info("Creating hardware and computer classifications sequentially");
+				
+				// Chain hardware-related classification creation operations sequentially
+				return service.create(session, Scanner, activityMasterSystem, Hardware)
+					.chain(() -> service.create(session, Printer, activityMasterSystem, Hardware))
+					.chain(() -> service.create(session, Phone, activityMasterSystem, Hardware))
+					// Chain computer-specific classification creation operations
+					.chain(() -> service.create(session, Desktop, activityMasterSystem, Computer))
+					.chain(() -> service.create(session, Laptop, activityMasterSystem, Computer))
+					.onFailure().invoke(error -> log.error("Error creating hardware and computer classifications: {}", error.getMessage(), error));
+			})
 			.onFailure().invoke(error -> log.error("Error creating classifications: {}", error.getMessage(), error))
 			.invoke(() -> logProgress("Classifications System", "Loading Default Devices...", 7))
 			.map(result -> true); // Return Boolean

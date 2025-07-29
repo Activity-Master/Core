@@ -1,5 +1,33 @@
 package com.guicedee.activitymaster.fsdm;
 
+/**
+ * Reactivity Migration Checklist:
+ * 
+ * [✓] One action per Mutiny.Session at a time
+ *     - All operations on a session are sequential
+ *     - No parallel operations on the same session
+ * 
+ * [✓] Pass Mutiny.Session through the chain
+ *     - All methods accept session as parameter
+ *     - Session is passed to all dependent operations
+ * 
+ * [✓] No await() usage
+ *     - Using reactive chains instead of blocking operations
+ * 
+ * [✓] Synchronous execution of reactive chains
+ *     - All reactive chains execute synchronously
+ * 
+ * [✓] No parallel operations on a session
+ *     - All operations on a session are sequential
+ *     - Parallel operations have been replaced with sequential chains
+ * 
+ * [✓] No session/transaction creation in libraries
+ *     - Sessions are passed in from the caller
+ *     - No sessionFactory.withTransaction() in methods
+ * 
+ * See ReactivityMigrationGuide.md for more details on these rules.
+ */
+
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.api.Passwords;
@@ -247,62 +275,79 @@ public class PasswordsService implements IPasswordsService<PasswordsService>
                                                                  IInvolvedPartyService<?> service = get(IInvolvedPartyService.class);
                                                                  return (Uni) service.create(session, system, pair, true)
                                                                                 .chain(adminUser -> {
-                                                                                    // Run all admin user setup operations in parallel
-                                                                                    Uni<? extends IRelationshipValue<?, IInvolvedPartyIdentificationType<?, ?>, ?>> userNameIdentification = adminUser.addOrReuseInvolvedPartyIdentificationType(
+                                                                                    log.debug("Created admin user, now setting up user properties sequentially");
+                                                                                    
+                                                                                    // Chain operations sequentially instead of in parallel
+                                                                                    return adminUser.addOrReuseInvolvedPartyIdentificationType(
                                                                                             session, NoClassification.toString(),
                                                                                             IdentificationTypeUserName.toString(),
-                                                                                            adminUserName, system, identityToken);
-
-                                                                                    Uni<? extends IRelationshipValue<?, IInvolvedPartyType<?, ?>, ?>> partyType = adminUser.addOrReuseInvolvedPartyType(
-                                                                                            session, NoClassification.toString(),
-                                                                                            IPTypes.TypeIndividual.toString(),
-                                                                                            "Creator Individual", system, identityToken);
-
-                                                                                    Uni<? extends IRelationshipValue<?, IInvolvedPartyNameType<?, ?>, ?>> preferredName = adminUser.addOrReuseInvolvedPartyNameType(
-                                                                                            session, NoClassification.toString(),
-                                                                                            PreferredNameType.toString(),
-                                                                                            "Enterprise Creator", system, identityToken);
-
-                                                                                    Uni<? extends IRelationshipValue<?, IInvolvedPartyNameType<?, ?>, ?>> commonName = adminUser.addOrReuseInvolvedPartyNameType(
-                                                                                            session, NoClassification.toString(),
-                                                                                            CommonNameType.toString(),
-                                                                                            "Enterprise Creator", system, identityToken);
-
-                                                                                    Uni<? extends IRelationshipValue<?, IInvolvedPartyNameType<?, ?>, ?>> fullName = adminUser.addOrReuseInvolvedPartyNameType(
-                                                                                            session, NoClassification.toString(),
-                                                                                            FullNameType.toString(),
-                                                                                            "Enterprise Creator", system, identityToken);
-
-                                                                                    Uni<? extends IRelationshipValue<?, IInvolvedPartyNameType<?, ?>, ?>> firstName = adminUser.addOrReuseInvolvedPartyNameType(
-                                                                                            session, NoClassification.toString(),
-                                                                                            FirstNameType.toString(),
-                                                                                            "Administrator", system, identityToken);
-
-                                                                                    Uni<ISecurityToken<?, ?>> securityToken = get(SecurityTokenService.class).create(
-                                                                                            session, SecurityTokenClassifications.Identity.toString(),
-                                                                                            adminUserName,
-                                                                                            "The creator of the enterprise",
-                                                                                            system,
-                                                                                            (SecurityToken) administratorsGroup,
-                                                                                            identityToken);
-
-                                                                                    Uni<? extends IRelationshipValue<?, IInvolvedPartyIdentificationType<?, ?>, ?>> creatorRole = adminUser.addOrReuseInvolvedPartyIdentificationType(
-                                                                                            session, NoClassification.toString(),
-                                                                                            IdentificationTypeEnterpriseCreatorRole.toString(),
-                                                                                            adminUserName, system, identityToken);
-
-                                                                                    Uni<IInvolvedParty<?, ?>> usernamePassword = addUpdateUsernamePassword(
-                                                                                            session, adminUserName, adminPassword, adminUser, system, identityToken);
-
-                                                                                    Uni<Void> defaultSecurity = ((InvolvedParty) adminUser).createDefaultSecurity(system, identityToken);
-
-                                                                                    // Combine all parallel operations
-                                                                                    return Uni.combine()
-                                                                                            .all()
-                                                                                            .unis(userNameIdentification, partyType, preferredName, commonName, 
-                                                                                                  fullName, firstName, securityToken, creatorRole, 
-                                                                                                  usernamePassword, defaultSecurity)
-                                                                                            .discardItems();
+                                                                                            adminUserName, system, identityToken)
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Added username identification type");
+                                                                                            return adminUser.addOrReuseInvolvedPartyType(
+                                                                                                session, NoClassification.toString(),
+                                                                                                IPTypes.TypeIndividual.toString(),
+                                                                                                "Creator Individual", system, identityToken);
+                                                                                        })
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Added party type");
+                                                                                            return adminUser.addOrReuseInvolvedPartyNameType(
+                                                                                                session, NoClassification.toString(),
+                                                                                                PreferredNameType.toString(),
+                                                                                                "Enterprise Creator", system, identityToken);
+                                                                                        })
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Added preferred name type");
+                                                                                            return adminUser.addOrReuseInvolvedPartyNameType(
+                                                                                                session, NoClassification.toString(),
+                                                                                                CommonNameType.toString(),
+                                                                                                "Enterprise Creator", system, identityToken);
+                                                                                        })
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Added common name type");
+                                                                                            return adminUser.addOrReuseInvolvedPartyNameType(
+                                                                                                session, NoClassification.toString(),
+                                                                                                FullNameType.toString(),
+                                                                                                "Enterprise Creator", system, identityToken);
+                                                                                        })
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Added full name type");
+                                                                                            return adminUser.addOrReuseInvolvedPartyNameType(
+                                                                                                session, NoClassification.toString(),
+                                                                                                FirstNameType.toString(),
+                                                                                                "Administrator", system, identityToken);
+                                                                                        })
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Added first name type");
+                                                                                            return get(SecurityTokenService.class).create(
+                                                                                                session, SecurityTokenClassifications.Identity.toString(),
+                                                                                                adminUserName,
+                                                                                                "The creator of the enterprise",
+                                                                                                system,
+                                                                                                (SecurityToken) administratorsGroup,
+                                                                                                identityToken);
+                                                                                        })
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Created security token");
+                                                                                            return adminUser.addOrReuseInvolvedPartyIdentificationType(
+                                                                                                session, NoClassification.toString(),
+                                                                                                IdentificationTypeEnterpriseCreatorRole.toString(),
+                                                                                                adminUserName, system, identityToken);
+                                                                                        })
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Added creator role identification type");
+                                                                                            return addUpdateUsernamePassword(
+                                                                                                session, adminUserName, adminPassword, adminUser, system, identityToken);
+                                                                                        })
+                                                                                        .chain(() -> {
+                                                                                            log.debug("Added username and password");
+                                                                                            // Pass session parameter to createDefaultSecurity
+                                                                                            return ((InvolvedParty) adminUser).createDefaultSecurity(session, system, identityToken);
+                                                                                        })
+                                                                                        .map(result -> {
+                                                                                            log.debug("Created default security, admin user setup complete");
+                                                                                            return adminUser;
+                                                                                        });
                                                                                 });
                                                              });
                                           });

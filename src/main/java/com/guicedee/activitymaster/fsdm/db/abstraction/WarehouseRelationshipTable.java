@@ -144,9 +144,9 @@ public abstract class WarehouseRelationshipTable<
                                               setActiveFlagID(flag);
                                               return session.persist(this)
                                                                     .chain(a -> {
-                                                                        createDefaultSecurity(getSystemID());
-                                                                        return Uni.createFrom()
-                                                                                       .item(this);
+                                                                        return createDefaultSecurity(session,getSystemID())
+                                                                                   .replaceWith(Uni.createFrom()
+                                                                                       .item(this));
                                                                     });
 
                                           });

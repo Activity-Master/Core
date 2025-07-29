@@ -1,5 +1,33 @@
 package com.guicedee.activitymaster.fsdm;
 
+/**
+ * Reactivity Migration Checklist:
+ * 
+ * [✓] One action per Mutiny.Session at a time
+ *     - All operations on a session are sequential
+ *     - No parallel operations on the same session
+ * 
+ * [✓] Pass Mutiny.Session through the chain
+ *     - All methods accept session as parameter
+ *     - Session is passed to all dependent operations
+ * 
+ * [✓] No await() usage
+ *     - Using reactive chains instead of blocking operations
+ * 
+ * [✓] Synchronous execution of reactive chains
+ *     - All reactive chains execute synchronously
+ *     - createDefaultSecurity is properly chained with error handling
+ * 
+ * [✓] No parallel operations on a session
+ *     - Not using Uni.combine().all().unis() with operations that share the same session
+ * 
+ * [✓] No session/transaction creation in libraries
+ *     - Sessions are passed in from the caller
+ *     - No sessionFactory.withTransaction() in methods
+ * 
+ * See ReactivityMigrationGuide.md for more details on these rules.
+ */
+
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.*;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.party.*;
@@ -90,7 +118,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                               })
                               .chain(persisted -> {
                                 // Handle security setup sequentially
-                                return persisted.createDefaultSecurity(system, identityToken)
+                                return persisted.createDefaultSecurity(session, system, identityToken)
                                     .onItem().invoke(result -> 
                                         log.debug("Security setup completed successfully for name type {}", persisted.getName())
                                     )
@@ -136,7 +164,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                               })
                               .chain(persisted -> {
                                 // Handle security setup sequentially
-                                return persisted.createDefaultSecurity(system, identityToken)
+                                return persisted.createDefaultSecurity(session, system, identityToken)
                                     .onItem().invoke(result -> 
                                         log.debug("Security setup completed successfully for identification type {}", persisted.getName())
                                     )
@@ -183,7 +211,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                                 // Get activity master system and handle security setup sequentially
                                 return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
                                            .chain(activityMasterSystem -> {
-                                             return persisted.createDefaultSecurity(activityMasterSystem, identityToken)
+                                             return persisted.createDefaultSecurity(session, activityMasterSystem, identityToken)
                                                  .onItem().invoke(result -> 
                                                      log.debug("Security setup completed successfully for type {}", persisted.getName())
                                                  )
@@ -221,7 +249,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                  // Get activity master system and handle security setup sequentially
                  return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
                             .chain(activityMasterSystem -> {
-                              return persisted.createDefaultSecurity(activityMasterSystem, identityToken)
+                              return persisted.createDefaultSecurity(session, activityMasterSystem, identityToken)
                                   .onItem().invoke(result -> 
                                       log.debug("Security setup completed successfully for organic type {}", persisted.getName())
                                   )
@@ -295,7 +323,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                })
                .chain(persisted -> {
                  // Handle security setup sequentially
-                 return persisted.createDefaultSecurity(system, identityToken)
+                 return persisted.createDefaultSecurity(session, system, identityToken)
                      .onItem().invoke(result -> 
                          log.debug("Security setup completed successfully for involved party {}", persisted.getId())
                      )
@@ -357,7 +385,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                  })
                  .chain(persisted -> {
                    // Handle security setup sequentially
-                   return persisted.createDefaultSecurity(system, identityToken)
+                   return persisted.createDefaultSecurity(session, system, identityToken)
                        .onItem().invoke(result -> 
                            log.debug("Security setup completed successfully for organic involved party {}", persisted.getId())
                        )
@@ -385,7 +413,7 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
                  })
                  .chain(persisted -> {
                    // Handle security setup sequentially
-                   return persisted.createDefaultSecurity(system, identityToken)
+                   return persisted.createDefaultSecurity(session, system, identityToken)
                        .onItem().invoke(result -> 
                            log.debug("Security setup completed successfully for non-organic involved party {}", persisted.getId())
                        )
@@ -632,3 +660,4 @@ public class InvolvedPartyService implements IInvolvedPartyService<InvolvedParty
 
   }
 }
+

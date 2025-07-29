@@ -1,5 +1,35 @@
 package com.guicedee.activitymaster.fsdm;
 
+/**
+ * Reactivity Migration Checklist:
+ * 
+ * [✓] One action per Mutiny.Session at a time
+ *     - All operations on a session are sequential
+ *     - No parallel operations on the same session
+ * 
+ * [✓] Pass Mutiny.Session through the chain
+ *     - All methods accept session as parameter
+ *     - Session is passed to all dependent operations
+ * 
+ * [✓] No await() usage
+ *     - Using reactive chains instead of blocking operations
+ * 
+ * [!] Synchronous execution of reactive chains
+ *     - Most reactive chains execute synchronously
+ *     - The create and createArrangementType methods call createDefaultSecurity
+ *       without properly chaining its result, potentially continuing before
+ *       the security setup is complete
+ * 
+ * [✓] No parallel operations on a session
+ *     - Not using Uni.combine().all().unis() with operations that share the same session
+ * 
+ * [✓] No session/transaction creation in libraries
+ *     - Sessions are passed in from the caller
+ *     - No sessionFactory.withTransaction() in methods
+ * 
+ * See ReactivityMigrationGuide.md for more details on these rules.
+ */
+
 import com.entityassist.enumerations.OrderByType;
 import com.entityassist.querybuilder.builders.JoinExpression;
 import com.google.common.base.Strings;
@@ -99,9 +129,12 @@ public class ArrangementsService
                            return session.persist(arrangement).replaceWith(Uni.createFrom().item(arrangement));
                        })
                        .chain(persisted -> {
-                           // Step 2: Create default security
-                           persisted.createDefaultSecurity(system, identityToken);
-                           return find(session, type, system);
+                           // Step 2: Create default security with proper chaining
+                           return persisted.createDefaultSecurity(session, system, identityToken)
+                               .onItem().invoke(() -> log.debug("Security setup completed successfully for arrangement"))
+                               .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for arrangement", error))
+                               .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                               .chain(() -> find(session, type, system));
                        })
                        .chain(arrangementType -> {
                            // Step 3: Add arrangement type
@@ -151,10 +184,13 @@ public class ArrangementsService
                            xr.setActiveFlagID(activeFlag);
                            return session.persist(xr).replaceWith(Uni.createFrom().item(xr));
                        })
-                       .map(persisted -> {
-                           // Create default security
-                           persisted.createDefaultSecurity(system, identityToken);
-                           return (IArrangementType<?, ?>) persisted;
+                       .chain(persisted -> {
+                           // Create default security with proper chaining
+                           return persisted.createDefaultSecurity(session, system, identityToken)
+                               .onItem().invoke(() -> log.debug("Security setup completed successfully for arrangement type"))
+                               .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for arrangement type", error))
+                               .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                               .map(result -> (IArrangementType<?, ?>) persisted);
                        })
                        .onFailure()
                        .invoke(error ->
@@ -1104,3 +1140,4 @@ public class ArrangementsService
 
     }
 }
+

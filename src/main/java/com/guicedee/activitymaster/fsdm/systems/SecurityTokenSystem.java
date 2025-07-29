@@ -676,7 +676,7 @@ public class SecurityTokenSystem
                      chain = chain.chain(v -> {
                          logProgress("Security Token Service", "Checking - " + tableItem.getClass().getSimpleName(), 0);
                          // Execute security operation and chain to the next one
-                         return tableItem.createDefaultSecurity(system, identityToken);
+                         return tableItem.createDefaultSecurity(session, system, identityToken);
                      });
                  }
                 
@@ -734,3 +734,4 @@ public class SecurityTokenSystem
         return "The system for managing Security Tokens";
     }
 }
+

@@ -159,7 +159,7 @@ public class ResourceItemService
                                               })
                                               .map(persisted -> {
                                                   // Create default security
-                                                  xr.createDefaultSecurity(system, identityToken);
+                                                  xr.createDefaultSecurity(session, system, identityToken);
                                                   return (IResourceItemType<?, ?>) xr;
                                               });
                            }
@@ -284,7 +284,7 @@ public class ResourceItemService
                                               return session.persist(rid).replaceWith(Uni.createFrom().item(rid))
                                                              .map(persistedData -> {
                                                                  // Create default security
-                                                                 persistedData.createDefaultSecurity(system, identityToken);
+                                                                 persistedData.createDefaultSecurity(session, system, identityToken);
                                                                  return persistedData;
                                                              })
                                                              .chain(resourceItem -> {
@@ -394,7 +394,7 @@ public class ResourceItemService
                                           })
                                           .map(persisted -> {
                                               // Create default security
-                                              relationship.createDefaultSecurity(system, identityToken);
+                                              relationship.createDefaultSecurity(session, system, identityToken);
                                               return null; // Return Void
                                           });
                        });
@@ -639,3 +639,4 @@ public class ResourceItemService
                        });
     }
 }
+

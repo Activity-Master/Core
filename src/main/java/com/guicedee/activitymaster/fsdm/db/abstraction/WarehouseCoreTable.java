@@ -56,51 +56,28 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
   public abstract void configureSecurityEntity(S securityEntity);
 
   @Override
-  public Uni<Void> createDefaultSecurity(ISystems<?, ?> system, UUID... identity)
+  public Uni<Void> createDefaultSecurity(Mutiny.Session session, ISystems<?, ?> system, UUID... identity)
   {
-    if (false)
-    {
-      log.debug("🛡️ Creating default security for system: {}", system.getName());
-      log.debug("🔄 Opening a new session and transaction for security operations");
-
-      // Always open a new session and transaction for security operations
-      Mutiny.SessionFactory factory = get(Mutiny.SessionFactory.class);
-      return factory.withSession(session -> {
-        return session.withTransaction(tx -> {
-          List<Uni<S>> securityOperations = new ArrayList<>();
-
-          // Add all security operations to the list
-          securityOperations.add(createDefaultAdministratorSecurityAccess(session, system, identity));
-          securityOperations.add(createDefaultEveryoneSecurityAccess(session, system, identity));
-          securityOperations.add(createDefaultEverywhereSecurityAccess(session, system, identity));
-          securityOperations.add(createDefaultSystemsSecurityAccess(session, system, identity));
-          securityOperations.add(createDefaultApplicationsSecurityAccess(session, system, identity));
-          securityOperations.add(createDefaultPluginsSecurityAccess(session, system, identity));
-          securityOperations.add(createDefaultGuestReadSecurityAccess(session, system, identity));
-
-          log.debug("🚀 Executing {} security operations in parallel within new transaction", securityOperations.size());
-
-          return Uni.combine()
-                     .all()
-                     .unis(securityOperations)
-                     .discardItems()
-                     .onItem()
-                     .invoke(() -> {
-                       log.debug("✅ All security operations completed successfully in new transaction");
-                     })
-                     .onFailure()
-                     .invoke(error -> {
-                       log.error("❌ Failed to complete security operations in new transaction: {}", error.getMessage(), error);
-                     })
-                     .map(r -> null);
-        });
-      });
-    }
-    else
-    {
-      return Uni.createFrom()
-                 .voidItem();
-    }
+    log.debug("🛡️ Creating default security for system: {} with session: {}", system.getName(), session.hashCode());
+    
+    // Use the provided session and execute operations sequentially
+    return session.withTransaction(tx -> {
+      log.debug("📋 Starting sequential security operations with session: {}", session.hashCode());
+      
+      // Chain all security operations sequentially
+      return createDefaultAdministratorSecurityAccess(session, system, identity)
+        .chain(() -> createDefaultEveryoneSecurityAccess(session, system, identity))
+        .chain(() -> createDefaultEverywhereSecurityAccess(session, system, identity))
+        .chain(() -> createDefaultSystemsSecurityAccess(session, system, identity))
+        .chain(() -> createDefaultApplicationsSecurityAccess(session, system, identity))
+        .chain(() -> createDefaultPluginsSecurityAccess(session, system, identity))
+        .chain(() -> createDefaultGuestReadSecurityAccess(session, system, identity))
+        .onItem()
+        .invoke(() -> log.debug("✅ All security operations completed successfully"))
+        .onFailure()
+        .invoke(error -> log.error("❌ Failed to complete security operations: {}", error.getMessage(), error))
+        .replaceWithVoid();
+    });
   }
 
   public Uni<Void> updateSecurity(Mutiny.Session session, J newCoreTable, Systems system)
@@ -115,31 +92,36 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                .inDateRange()
                .getAll()
                .chain(result -> {
-                 List<Uni<Void>> updateOperations = new ArrayList<>();
-
+                 log.debug("📋 Found {} security tokens to update sequentially", result.size());
+                 
+                 // Start with a completed Uni to begin the chain
+                 Uni<Void> sequentialChain = Uni.createFrom().voidItem();
+                 
+                 // Process each token sequentially by chaining operations
                  for (Object exist : result)
                  {
-                   S existingToken = (S) exist;
+                   final S existingToken = (S) exist;
                    existingToken.setId(null);
                    configureDefaultsForNewToken(existingToken, system);
-
-                   updateOperations.add(
-                       session.persist(existingToken)
-                           .map(persisted -> null)
-                   );
+                   
+                   // Add this operation to the chain
+                   sequentialChain = sequentialChain.chain(() -> {
+                     log.debug("🔄 Updating security token sequentially");
+                     return session.persist(existingToken)
+                                .onItem()
+                                .invoke(() -> log.debug("✅ Security token updated successfully"))
+                                .onFailure()
+                                .invoke(error -> log.error("❌ Failed to update security token: {}", error.getMessage(), error))
+                                .replaceWithVoid();
+                   });
                  }
-
-                 log.debug("🔄 Updating {} security tokens in parallel", updateOperations.size());
-
-                 return Uni.combine()
-                            .all()
-                            .unis(updateOperations)
-                            .discardItems()
-                            .onItem()
-                            .invoke(() -> {
-                              log.debug("✅ Security update completed successfully");
-                            })
-                            .map(r -> null);
+                 
+                 // Return the complete chain
+                 return sequentialChain
+                          .onItem()
+                          .invoke(() -> log.debug("✅ All security tokens updated successfully"))
+                          .onFailure()
+                          .invoke(error -> log.error("❌ Error updating security tokens: {}", error.getMessage(), error));
                });
   }
 

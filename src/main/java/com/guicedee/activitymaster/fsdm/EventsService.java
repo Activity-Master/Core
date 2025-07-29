@@ -1,5 +1,34 @@
 package com.guicedee.activitymaster.fsdm;
 
+/**
+ * Reactivity Migration Checklist:
+ * 
+ * [✓] One action per Mutiny.Session at a time
+ *     - All operations on a session are sequential
+ *     - No parallel operations on the same session
+ * 
+ * [✓] Pass Mutiny.Session through the chain
+ *     - All methods accept session as parameter
+ *     - Session is passed to all dependent operations
+ * 
+ * [✓] No await() usage
+ *     - Using reactive chains instead of blocking operations
+ * 
+ * [!] Synchronous execution of reactive chains
+ *     - Most reactive chains execute synchronously
+ *     - The createEvent and createEventType methods call createDefaultSecurity
+ *       without properly chaining its result, explicitly not waiting for it to complete
+ * 
+ * [✓] No parallel operations on a session
+ *     - Not using Uni.combine().all().unis() with operations that share the same session
+ * 
+ * [✓] No session/transaction creation in libraries
+ *     - Sessions are passed in from the caller
+ *     - No sessionFactory.withTransaction() in methods
+ * 
+ * See ReactivityMigrationGuide.md for more details on these rules.
+ */
+
 import com.google.inject.Inject;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
 import com.guicedee.activitymaster.fsdm.client.services.IEventService;
@@ -75,10 +104,13 @@ public class EventsService
                                                                .item(event));
                        })
                        .chain(persistedEvent -> {
-                           // Start the createDefaultSecurity operation but don't wait for it to complete
-                           persistedEvent.createDefaultSecurity(system, identityToken);
-                           return persistedEvent.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken)
-                                          .map(result -> persistedEvent);
+                           // Chain the createDefaultSecurity operation properly
+                           return persistedEvent.createDefaultSecurity(session, system, identityToken)
+                               .onItem().invoke(() -> log.info("Security setup completed successfully for event"))
+                               .onFailure().invoke(error -> log.warning("Error in createDefaultSecurity for event: " + error.getMessage()))
+                               .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                               .chain(() -> persistedEvent.addEventTypes(session, eventType, "", NoClassification.toString(), system, identityToken)
+                                          .map(result -> persistedEvent));
                        });
 
     }
@@ -118,10 +150,12 @@ public class EventsService
                                                   return session.persist(etBuilt).replaceWith(Uni.createFrom().item(etBuilt));
                                               })
                                               .chain(persistedEt -> {
-                                                  // Start the createDefaultSecurity operation but don't wait for it to complete
-                                                  persistedEt.createDefaultSecurity(system, identityToken);
-                                                  return Uni.createFrom()
-                                                                 .item(persistedEt);
+                                                  // Chain the createDefaultSecurity operation properly
+                                                  return persistedEt.createDefaultSecurity(session, system, identityToken)
+                                                      .onItem().invoke(() -> log.info("Security setup completed successfully for event type"))
+                                                      .onFailure().invoke(error -> log.warning("Error in createDefaultSecurity for event type: " + error.getMessage()))
+                                                      .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                                                      .map(result -> persistedEt);
                                               });
                            }
                            else
@@ -149,3 +183,4 @@ public class EventsService
                        .map(result -> result);
     }
 }
+

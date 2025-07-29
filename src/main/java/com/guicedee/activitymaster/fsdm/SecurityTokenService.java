@@ -161,7 +161,7 @@ public class SecurityTokenService
                                                                                     .item(st))
                                                                    .map(persisted -> {
                                                                      // Start createDefaultSecurity in parallel without waiting for it
-                                                                     persisted.createDefaultSecurity(system, identityToken)
+                                                                     persisted.createDefaultSecurity(session, system, identityToken)
                                                                          .subscribe()
                                                                          .with(
                                                                              result -> {
@@ -454,3 +454,4 @@ public class SecurityTokenService
                .transform(token -> (ISecurityToken<?, ?>) token);
   }
 }
+

@@ -91,7 +91,7 @@ public class ProductService
 		                                                              .item(newProduct))
 		                                             .chain(persisted -> {
 		                                                 // Start createDefaultSecurity in parallel without waiting for it
-		                                                 persisted.createDefaultSecurity(system, identityToken)
+		                                                 persisted.createDefaultSecurity(session, system, identityToken)
 		                                                     .subscribe()
 		                                                     .with(
 		                                                         result -> {
@@ -190,7 +190,7 @@ public class ProductService
 		                                                              .item(newProductType))
 		                                             .map(persisted -> {
 		                                                 // Start createDefaultSecurity in parallel without waiting for it
-		                                                 persisted.createDefaultSecurity(system, identityToken)
+		                                                 persisted.createDefaultSecurity(session, system, identityToken)
 		                                                     .subscribe()
 		                                                     .with(
 		                                                         result -> {
@@ -300,3 +300,4 @@ public class ProductService
 		                                .getAll();
 	}
 }
+

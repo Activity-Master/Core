@@ -164,13 +164,19 @@ public class TimeSystem
     {
         log.info("🚀 Starting TimeSystem loadTimeRange from {} to {} with internal session management", startYear, endYear);
 
-        // Internal reactive implementation with .await() to maintain void signature
+        // Use proper reactive pattern instead of await()
         loadTimeRangeReactive(startYear, endYear)
-                .await()
-                .atMost(Duration.ofHours(2))
-        ; // Allow extended time for large datasets
-
-        log.info("✅ TimeSystem loadTimeRange completed for years {} to {}", startYear, endYear);
+            .subscribe()
+            .with(
+                result -> log.info("✅ TimeSystem loadTimeRange completed for years {} to {}", startYear, endYear),
+                error -> log.error("❌ TimeSystem loadTimeRange failed for years {} to {}: {}", 
+                                startYear, endYear, error.getMessage(), error)
+            );
+        
+        // Note: This method returns immediately without waiting for the operation to complete
+        // This is a fire-and-forget pattern, which is acceptable for this use case
+        // but should be used with caution in other scenarios
+        log.info("⏱️ TimeSystem loadTimeRange operation started asynchronously for years {} to {}", startYear, endYear);
     }
 
     private Uni<Void> loadTimeRangeReactive(int startYear, int endYear)

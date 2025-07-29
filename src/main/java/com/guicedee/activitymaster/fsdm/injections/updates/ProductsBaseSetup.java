@@ -30,26 +30,18 @@ public class ProductsBaseSetup implements ISystemUpdate
 	@Override
 	public Uni<Boolean> update(Mutiny.Session session, IEnterprise<?,?> enterprise)
 	{
-		log.info("Starting parallel creation of product classifications");
+		log.info("Starting sequential creation of product classifications");
 
 		// Create the base product classification first
 		return service.create(session, ProductClassifications.Products, activityMasterSystem)
 			.chain(baseClassification -> {
-				// Create a list of operations to run in parallel
-				List<Uni<?>> operations = new ArrayList<>();
-
-				// Add all product-related classification creation operations to the list
-				// These all have the same parent (ProductClassifications.Products or ProductClassifications.ProductGroup)
-				operations.add(service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products));
-				operations.add(service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup));
-				operations.add(service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup));
-				operations.add(service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup));
-
-				log.info("Running {} product classification creation operations in parallel", operations.size());
-
-				// Run all operations in parallel
-				return Uni.combine().all().unis(operations)
-					.discardItems()
+				log.info("Creating product classifications sequentially");
+				
+				// Chain product-related classification creation operations sequentially
+				return service.create(session, ProductClassifications.ProductGroup, activityMasterSystem, ProductClassifications.Products)
+					.chain(() -> service.create(session, ProductClassifications.ProductTypeName, activityMasterSystem, ProductClassifications.ProductGroup))
+					.chain(() -> service.create(session, ProductClassifications.ProductPremiumType, activityMasterSystem, ProductClassifications.ProductGroup))
+					.chain(() -> service.create(session, ProductClassifications.ProductBaseCost, activityMasterSystem, ProductClassifications.ProductGroup))
 					.onFailure().invoke(error -> log.error("Error creating product classifications: {}", error.getMessage(), error))
 					.invoke(() -> logProgress("Products System", "Loaded Product Classifications...", 5))
 					.map(result -> true); // Return Boolean

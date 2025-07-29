@@ -1,5 +1,33 @@
 package com.guicedee.activitymaster.fsdm;
 
+/**
+ * Reactivity Migration Checklist:
+ * 
+ * [✓] One action per Mutiny.Session at a time
+ *     - All operations on a session are sequential
+ *     - No parallel operations on the same session
+ * 
+ * [✓] Pass Mutiny.Session through the chain
+ *     - All methods accept session as parameter
+ *     - Session is passed to all dependent operations
+ * 
+ * [✓] No await() usage
+ *     - Using reactive chains instead of blocking operations
+ * 
+ * [✓] Synchronous execution of reactive chains
+ *     - All reactive chains execute synchronously
+ *     - createDefaultSecurity is properly chained with error handling
+ * 
+ * [✓] No parallel operations on a session
+ *     - Not using Uni.combine().all().unis() with operations that share the same session
+ * 
+ * [✓] No session/transaction creation in libraries
+ *     - Sessions are passed in from the caller
+ *     - No sessionFactory.withTransaction() in methods
+ * 
+ * See ReactivityMigrationGuide.md for more details on these rules.
+ */
+
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
 import com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService;
@@ -170,7 +198,7 @@ public class ClassificationService
                             .chain(persisted -> {
                               log.debug("🔐 Starting security creation for classification '{}'", name);
                               // Use chain instead of await for reactive flow
-                              return rootCl.createDefaultSecurity(system, identityToken)
+                              return rootCl.createDefaultSecurity(session, system, identityToken)
                                          .onItem()
                                          .invoke(result -> log.info("🛡️ Security setup completed successfully for classification '{}'", name))
                                          .onFailure()
@@ -349,3 +377,4 @@ public class ClassificationService
                            log.error("❌ Error finding identity type classification: {}", error.getMessage(), error));
   }
 }
+

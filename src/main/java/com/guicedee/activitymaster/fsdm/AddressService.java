@@ -1,5 +1,34 @@
 package com.guicedee.activitymaster.fsdm;
 
+/**
+ * Reactivity Migration Checklist:
+ * 
+ * [✓] One action per Mutiny.Session at a time
+ *     - All operations on a session are sequential
+ *     - No parallel operations on the same session
+ * 
+ * [!] Pass Mutiny.Session through the chain
+ *     - Most methods accept session as parameter
+ *     - The createDefaultSecurity method is called without passing the session parameter
+ * 
+ * [✓] No await() usage
+ *     - Using reactive chains instead of blocking operations
+ * 
+ * [!] Synchronous execution of reactive chains
+ *     - Most reactive chains execute synchronously
+ *     - The create method uses fire-and-forget operations with subscribe().with()
+ *       for createDefaultSecurity, which should be chained properly
+ * 
+ * [✓] No parallel operations on a session
+ *     - Not using Uni.combine().all().unis() with operations that share the same session
+ * 
+ * [✓] No session/transaction creation in libraries
+ *     - Sessions are passed in from the caller
+ *     - No sessionFactory.withTransaction() in methods
+ * 
+ * See ReactivityMigrationGuide.md for more details on these rules.
+ */
+
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 //import com.google.inject.persist.Transactional;
@@ -93,20 +122,12 @@ public class AddressService
 		                                        return session.persist(addy).replaceWith(Uni.createFrom().item(addy));
 		                                    })
 		                                    .chain(persisted -> {
-		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        persisted.createDefaultSecurity(system, identifyingToken)
-		                                            .subscribe().with(
-		                                                result -> {
-		                                                    // Security setup completed successfully
-		                                                },
-		                                                error -> {
-		                                                    // Log error but don't fail the main operation
-		                                                    log.warn("Error in createDefaultSecurity", error);
-		                                                }
-		                                            );
-
-		                                        // Return the persisted address immediately
-		                                        return Uni.createFrom().item((IAddress<?, ?>) addy);
+                                          // Chain createDefaultSecurity properly
+                                          return persisted.createDefaultSecurity(session, system, identifyingToken)
+                                              .onItem().invoke(() -> log.debug("Security setup completed successfully"))
+                                              .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity", error))
+                                              .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                                              .map(result -> (IAddress<?, ?>) addy);
 		                                    });
 		                        }
 		                        else
@@ -172,20 +193,12 @@ public class AddressService
 		                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 		                                    })
 		                                    .chain(persisted -> {
-		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(system, identityToken)
-		                                            .subscribe().with(
-		                                                result -> {
-		                                                    // Security setup completed successfully
-		                                                },
-		                                                error -> {
-		                                                    // Log error but don't fail the main operation
-		                                                    log.warn("Error in createDefaultSecurity for IP address", error);
-		                                                }
-		                                            );
-
-		                                        // Return the persisted address immediately
-		                                        return Uni.createFrom().item((IAddress<?, ?>) address);
+                                          // Chain createDefaultSecurity properly
+                                          return address.createDefaultSecurity(session, system, identityToken)
+                                              .onItem().invoke(() -> log.debug("Security setup completed successfully for IP address"))
+                                              .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for IP address", error))
+                                              .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                                              .map(result -> (IAddress<?, ?>) address);
 		                                    });
 		                        }
 		                        else
@@ -245,20 +258,12 @@ public class AddressService
 		                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 		                                    })
 		                                    .chain(persisted -> {
-		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(system, identityToken)
-		                                            .subscribe().with(
-		                                                result -> {
-		                                                    // Security setup completed successfully
-		                                                },
-		                                                error -> {
-		                                                    // Log error but don't fail the main operation
-		                                                    log.warn("Error in createDefaultSecurity for hostname", error);
-		                                                }
-		                                            );
-
-		                                        // Return the persisted address immediately
-		                                        return Uni.createFrom().item((IAddress<?, ?>) address);
+                                          // Chain createDefaultSecurity properly
+                                          return address.createDefaultSecurity(session, system, identityToken)
+                                              .onItem().invoke(() -> log.debug("Security setup completed successfully for hostname"))
+                                              .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for hostname", error))
+                                              .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+                                              .map(result -> (IAddress<?, ?>) address);
 		                                    });
 		                        }
 		                        else
@@ -318,113 +323,109 @@ public class AddressService
 		                                        return session.persist(address).replaceWith(Uni.createFrom().item(address));
 		                                    })
 		                                    .chain(persisted -> {
-		                                        // Start createDefaultSecurity in parallel without waiting for it
-		                                        address.createDefaultSecurity(system, identityToken)
-		                                            .subscribe().with(
-		                                                result -> {
-		                                                    // Security setup completed successfully
-		                                                },
-		                                                error -> {
-		                                                    // Log error but don't fail the main operation
-		                                                    log.warn("Error in createDefaultSecurity for web address", error);
+		                                        // Chain createDefaultSecurity properly
+		                                        return address.createDefaultSecurity(session, system, identityToken)
+		                                            .onItem().invoke(() -> log.debug("Security setup completed successfully for web address"))
+		                                            .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for web address", error))
+		                                            .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+		                                            .chain(securityResult -> {
+		                                                try {
+		                                                    URL url = new URL(webAddress);
+		                                                    Pattern pattern = Pattern.compile("(https?://)([^:^/]*)(:\\d*)?(.*)?(\\?.*)?");
+		                                                    Matcher matcher = pattern.matcher(webAddress);
+		                                                    matcher.find();
+
+		                                                    String protocol = matcher.group(1);
+		                                                    String domain = matcher.group(2);
+		                                                    String port = matcher.group(3);
+		                                                    String uri = matcher.group(4);
+
+		                                                    // Process web details in a simpler way
+		                                                    // We'll get the port classification first
+		                                                    return classificationServiceProvider.find(session, WebAddressPort.name(), system, identityToken)
+		                                                        .chain(webPortClassification -> {
+		                                                            // Create port address
+		                                                            Address webDetails = new Address();
+		                                                            webDetails.setValue(url.getPort() + "");
+		                                                            webDetails.setClassificationID((Classification) webPortClassification);
+		                                                            webDetails.setOriginalSourceSystemID(system.getId());
+		                                                            webDetails.setSystemID(system);
+		                                                            webDetails.setEnterpriseID(enterprise);
+
+		                                                            // We need to get the active flag again for this entity
+		                                                            return acService.getActiveFlag(session, enterprise)
+		                                                                .chain(portActiveFlag -> {
+		                                                                    webDetails.setActiveFlagID(portActiveFlag);
+		                                                                    return session.persist(webDetails).replaceWith(Uni.createFrom().item(webDetails));
+		                                                                })
+		                                                                .chain(portPersisted -> {
+		                                                                    // Now get the domain classification
+		                                                                    return classificationServiceProvider.find(session, WebAddressDomain.name(), system, identityToken);
+		                                                                });
+		                                                        })
+		                                                        .chain(webDomainClassification -> {
+		                                                            // Create domain address
+		                                                            Address domainDetails = new Address();
+		                                                            domainDetails.setValue(domain);
+		                                                            domainDetails.setClassificationID((Classification) webDomainClassification);
+		                                                            domainDetails.setOriginalSourceSystemID(system.getId());
+		                                                            domainDetails.setSystemID(system);
+		                                                            domainDetails.setEnterpriseID(enterprise);
+
+		                                                            // We need to get the active flag again for this entity
+		                                                            return acService.getActiveFlag(session, enterprise)
+		                                                                .chain(domainActiveFlag -> {
+		                                                                    domainDetails.setActiveFlagID(domainActiveFlag);
+		                                                                    return session.persist(domainDetails).replaceWith(Uni.createFrom().item(domainDetails));
+		                                                                })
+		                                                                .chain(domainPersisted -> {
+		                                                                    // Now get the protocol classification
+		                                                                    return classificationServiceProvider.find(session, WebAddressProtocol.name(), system, identityToken);
+		                                                                });
+		                                                        })
+		                                                        .chain(webProtocolClassification -> {
+		                                                            // Create protocol address
+		                                                            Address protocolDetails = new Address();
+		                                                            protocolDetails.setValue(protocol);
+		                                                            protocolDetails.setClassificationID((Classification) webProtocolClassification);
+		                                                            protocolDetails.setOriginalSourceSystemID(system.getId());
+		                                                            protocolDetails.setSystemID(system);
+		                                                            protocolDetails.setEnterpriseID(enterprise);
+
+		                                                            // We need to get the active flag again for this entity
+		                                                            return acService.getActiveFlag(session, enterprise)
+		                                                                .chain(protocolActiveFlag -> {
+		                                                                    protocolDetails.setActiveFlagID(protocolActiveFlag);
+		                                                                    return session.persist(protocolDetails).replaceWith(Uni.createFrom().item(protocolDetails));
+		                                                                })
+		                                                                .chain(protocolPersisted -> {
+		                                                                    // Now get the site classification
+		                                                                    return classificationServiceProvider.find(session, WebAddressSite.name(), system, identityToken);
+		                                                                });
+		                                                        })
+		                                                        .chain(webSiteClassification -> {
+		                                                            // Create site address
+		                                                            Address siteDetails = new Address();
+		                                                            siteDetails.setValue(uri);
+		                                                            siteDetails.setClassificationID((Classification) webSiteClassification);
+		                                                            siteDetails.setOriginalSourceSystemID(system.getId());
+		                                                            siteDetails.setSystemID(system);
+		                                                            siteDetails.setEnterpriseID(enterprise);
+
+		                                                            // We need to get the active flag again for this entity
+		                                                            return acService.getActiveFlag(session, enterprise)
+		                                                                .chain(siteActiveFlag -> {
+		                                                                    siteDetails.setActiveFlagID(siteActiveFlag);
+		                                                                    return session.persist(siteDetails).replaceWith(Uni.createFrom().item(siteDetails));
+		                                                                })
+		                                                                .map(siteResult -> (IAddress<?, ?>) address);
+		                                                        });
+		                                                } catch (MalformedURLException e) {
+		                                                    log.error("Malformed URL: {}", webAddress, e);
+		                                                    // Return the original address even if URL parsing fails
+		                                                    return Uni.createFrom().item((IAddress<?, ?>) address);
 		                                                }
-		                                            );
-
-		                                        try {
-		                                            URL url = new URL(webAddress);
-		                                            Pattern pattern = Pattern.compile("(https?://)([^:^/]*)(:\\d*)?(.*)?(\\?.*)?");
-		                                            Matcher matcher = pattern.matcher(webAddress);
-		                                            matcher.find();
-
-		                                            String protocol = matcher.group(1);
-		                                            String domain = matcher.group(2);
-		                                            String port = matcher.group(3);
-		                                            String uri = matcher.group(4);
-
-		                                            // Process web details in a simpler way
-		                                            // We'll get the port classification first
-		                                            return classificationServiceProvider.find(session, WebAddressPort.name(), system, identityToken)
-		                                                .chain(webPortClassification -> {
-		                                                    // Create port address
-		                                                    Address webDetails = new Address();
-		                                                    webDetails.setValue(url.getPort() + "");
-		                                                    webDetails.setClassificationID((Classification) webPortClassification);
-		                                                    webDetails.setOriginalSourceSystemID(system.getId());
-		                                                    webDetails.setSystemID(system);
-		                                                    webDetails.setEnterpriseID(enterprise);
-
-		                                                    // We need to get the active flag again for this entity
-		                                                    return acService.getActiveFlag(session, enterprise)
-		                                                        .chain(portActiveFlag -> {
-		                                                            webDetails.setActiveFlagID(portActiveFlag);
-		                                                            return session.persist(webDetails).replaceWith(Uni.createFrom().item(webDetails));
-		                                                        })
-		                                                        .chain(portPersisted -> {
-		                                                            // Now get the domain classification
-		                                                            return classificationServiceProvider.find(session, WebAddressDomain.name(), system, identityToken);
-		                                                        });
-		                                                })
-		                                                .chain(webDomainClassification -> {
-		                                                    // Create domain address
-		                                                    Address domainDetails = new Address();
-		                                                    domainDetails.setValue(domain);
-		                                                    domainDetails.setClassificationID((Classification) webDomainClassification);
-		                                                    domainDetails.setOriginalSourceSystemID(system.getId());
-		                                                    domainDetails.setSystemID(system);
-		                                                    domainDetails.setEnterpriseID(enterprise);
-
-		                                                    // We need to get the active flag again for this entity
-		                                                    return acService.getActiveFlag(session, enterprise)
-		                                                        .chain(domainActiveFlag -> {
-		                                                            domainDetails.setActiveFlagID(domainActiveFlag);
-		                                                            return session.persist(domainDetails).replaceWith(Uni.createFrom().item(domainDetails));
-		                                                        })
-		                                                        .chain(domainPersisted -> {
-		                                                            // Now get the protocol classification
-		                                                            return classificationServiceProvider.find(session, WebAddressProtocol.name(), system, identityToken);
-		                                                        });
-		                                                })
-		                                                .chain(webProtocolClassification -> {
-		                                                    // Create protocol address
-		                                                    Address protocolDetails = new Address();
-		                                                    protocolDetails.setValue(protocol);
-		                                                    protocolDetails.setClassificationID((Classification) webProtocolClassification);
-		                                                    protocolDetails.setOriginalSourceSystemID(system.getId());
-		                                                    protocolDetails.setSystemID(system);
-		                                                    protocolDetails.setEnterpriseID(enterprise);
-
-		                                                    // We need to get the active flag again for this entity
-		                                                    return acService.getActiveFlag(session, enterprise)
-		                                                        .chain(protocolActiveFlag -> {
-		                                                            protocolDetails.setActiveFlagID(protocolActiveFlag);
-		                                                            return session.persist(protocolDetails).replaceWith(Uni.createFrom().item(protocolDetails));
-		                                                        })
-		                                                        .chain(protocolPersisted -> {
-		                                                            // Now get the site classification
-		                                                            return classificationServiceProvider.find(session, WebAddressSite.name(), system, identityToken);
-		                                                        });
-		                                                })
-		                                                .chain(webSiteClassification -> {
-		                                                    // Create site address
-		                                                    Address siteDetails = new Address();
-		                                                    siteDetails.setValue(uri);
-		                                                    siteDetails.setClassificationID((Classification) webSiteClassification);
-		                                                    siteDetails.setOriginalSourceSystemID(system.getId());
-		                                                    siteDetails.setSystemID(system);
-		                                                    siteDetails.setEnterpriseID(enterprise);
-
-		                                                    // We need to get the active flag again for this entity
-		                                                    return acService.getActiveFlag(session, enterprise)
-		                                                        .chain(siteActiveFlag -> {
-		                                                            siteDetails.setActiveFlagID(siteActiveFlag);
-		                                                            return session.persist(siteDetails).replaceWith(Uni.createFrom().item(siteDetails));
-		                                                        });
-		                                                });
-		                                        } catch (MalformedURLException e) {
-		                                            log.error("Malformed URL: {}", webAddress, e);
-		                                            // Return the original address even if URL parsing fails
-		                                            return Uni.createFrom().item((IAddress<?, ?>) address);
-		                                        }
+		                                            });
 		                                    });
 		                        }
 		                        else
@@ -484,53 +485,50 @@ public class AddressService
 		                            return session.persist(streetAddress).replaceWith(Uni.createFrom().item(streetAddress));
 		                        })
 		                        .chain(persisted -> {
-		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            streetAddress.createDefaultSecurity(system, identityToken)
-		                                .subscribe().with(
-		                                    result -> {
-		                                        // Security setup completed successfully
-		                                    },
-		                                    error -> {
-		                                        // Log error but don't fail the main operation
-		                                        log.warn("Error in createDefaultSecurity for phone number", error);
-		                                    }
-		                                );
-
-		                            // Create a Uni for each find-and-add pair
-		                            // Each Uni first finds the classification and then adds it
-		                            Uni<?> countryCodePairUni = classificationServiceProvider.find(session, TelephoneCountryCode.name(), system, identityToken)
-		                                .chain(homePhoneNumberCountryCodeClassification -> {
-		                                    return streetAddress.addClassification(
-													session, ((Classification) homePhoneNumberCountryCodeClassification).getName(),
-		                                        phoneNumberDTO.getCountryCode(), 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            Uni<?> extensionPairUni = classificationServiceProvider.find(session, TelephoneExtensionNumber.name(), system, identityToken)
-		                                .chain(homePhoneExtensionNumberClassification -> {
-		                                    return streetAddress.addClassification(
-													session, ((Classification) homePhoneExtensionNumberClassification).getName(),
-		                                        Strings.nullToEmpty(phoneNumberDTO.getExtension()), 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            Uni<?> areaCodePairUni = classificationServiceProvider.find(session, TelephoneAreaCode.name(), system, identityToken)
-		                                .chain(homePhoneAreaCodeClassification -> {
-		                                    return streetAddress.addClassification(
-													session, ((Classification) homePhoneAreaCodeClassification).getName(),
-		                                        phoneNumberDTO.getAreaCode(), 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            // Combine all parallel operations and wait for all to complete
-		                            return Uni.combine().all().unis(countryCodePairUni, extensionPairUni, areaCodePairUni)
-		                                .discardItems()
-		                                .chain(() -> {
-		                                    // Return the address after all classifications are added
-		                                    return Uni.createFrom().item((IAddress<?, ?>) streetAddress);
+		                            // Chain createDefaultSecurity properly
+		                            return streetAddress.createDefaultSecurity(session, system, identityToken)
+		                                .onItem().invoke(() -> log.debug("Security setup completed successfully for phone number"))
+		                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for phone number", error))
+		                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+		                                .chain(securityResult -> {
+		                                    // Find country code classification
+		                                    return classificationServiceProvider.find(session, TelephoneCountryCode.name(), system, identityToken)
+		                                        .chain(homePhoneNumberCountryCodeClassification -> {
+		                                            // Add country code classification
+		                                            return streetAddress.addClassification(
+		                                                    session, 
+		                                                    ((Classification) homePhoneNumberCountryCodeClassification).getName(),
+		                                                    phoneNumberDTO.getCountryCode(), 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .chain(() -> {
+		                                            // Find extension classification
+		                                            return classificationServiceProvider.find(session, TelephoneExtensionNumber.name(), system, identityToken);
+		                                        })
+		                                        .chain(homePhoneExtensionNumberClassification -> {
+		                                            // Add extension classification
+		                                            return streetAddress.addClassification(
+		                                                    session, 
+		                                                    ((Classification) homePhoneExtensionNumberClassification).getName(),
+		                                                    Strings.nullToEmpty(phoneNumberDTO.getExtension()), 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .chain(() -> {
+		                                            // Find area code classification
+		                                            return classificationServiceProvider.find(session, TelephoneAreaCode.name(), system, identityToken);
+		                                        })
+		                                        .chain(homePhoneAreaCodeClassification -> {
+		                                            // Add area code classification
+		                                            return streetAddress.addClassification(
+		                                                    session, 
+		                                                    ((Classification) homePhoneAreaCodeClassification).getName(),
+		                                                    phoneNumberDTO.getAreaCode(), 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .map(result -> (IAddress<?, ?>) streetAddress);
 		                                });
 		                        });
 		                } else {
@@ -598,53 +596,50 @@ public class AddressService
 		                            return session.persist(emailAddy).replaceWith(Uni.createFrom().item(emailAddy));
 		                        })
 		                        .chain(persisted -> {
-		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            emailAddy.createDefaultSecurity(system, identityToken)
-		                                .subscribe().with(
-		                                    result -> {
-		                                        // Security setup completed successfully
-		                                    },
-		                                    error -> {
-		                                        // Log error but don't fail the main operation
-		                                        log.warn("Error in createDefaultSecurity for email address", error);
-		                                    }
-		                                );
-
-		                            // Create a Uni for each find-and-add pair
-		                            // Each Uni first finds the classification and then adds it
-		                            Uni<?> hostPairUni = classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressHost.name(), system, identityToken)
-		                                .chain(emailAddressHost -> {
-		                                    return emailAddy.addOrReuseClassification(
-													session, ((Classification) emailAddressHost).toString(),
-		                                        host, 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            Uni<?> domainPairUni = classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressDomain.name(), system, identityToken)
-		                                .chain(emailAddressDomain -> {
-		                                    return emailAddy.addOrReuseClassification(
-													session, ((Classification) emailAddressDomain).toString(),
-		                                        domain, 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            Uni<?> userPairUni = classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressUser.name(), system, identityToken)
-		                                .chain(emailAddressUser -> {
-		                                    return emailAddy.addOrReuseClassification(
-													session, ((Classification) emailAddressUser).toString(),
-		                                        user, 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            // Combine all parallel operations and wait for all to complete
-		                            return Uni.combine().all().unis(hostPairUni, domainPairUni, userPairUni)
-		                                .discardItems()
-		                                .chain(() -> {
-		                                    // Return the address after all classifications are added
-		                                    return Uni.createFrom().item((IAddress<?, ?>) emailAddy);
+		                            // Chain createDefaultSecurity properly
+		                            return emailAddy.createDefaultSecurity(session, system, identityToken)
+		                                .onItem().invoke(() -> log.debug("Security setup completed successfully for email address"))
+		                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for email address", error))
+		                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+		                                .chain(securityResult -> {
+		                                    // Find host classification
+		                                    return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressHost.name(), system, identityToken)
+		                                        .chain(emailAddressHost -> {
+		                                            // Add host classification
+		                                            return emailAddy.addOrReuseClassification(
+		                                                    session, 
+		                                                    ((Classification) emailAddressHost).toString(),
+		                                                    host, 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .chain(() -> {
+		                                            // Find domain classification
+		                                            return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressDomain.name(), system, identityToken);
+		                                        })
+		                                        .chain(emailAddressDomain -> {
+		                                            // Add domain classification
+		                                            return emailAddy.addOrReuseClassification(
+		                                                    session, 
+		                                                    ((Classification) emailAddressDomain).toString(),
+		                                                    domain, 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .chain(() -> {
+		                                            // Find user classification
+		                                            return classificationServiceProvider.find(session, AddressEmailClassifications.EmailAddressUser.name(), system, identityToken);
+		                                        })
+		                                        .chain(emailAddressUser -> {
+		                                            // Add user classification
+		                                            return emailAddy.addOrReuseClassification(
+		                                                    session, 
+		                                                    ((Classification) emailAddressUser).toString(),
+		                                                    user, 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .map(result -> (IAddress<?, ?>) emailAddy);
 		                                });
 		                        });
 		                } else {
@@ -715,53 +710,50 @@ public class AddressService
 		                            return session.persist(address).replaceWith(Uni.createFrom().item(address));
 		                        })
 		                        .chain(persisted -> {
-		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            address.createDefaultSecurity(system, identityToken)
-		                                .subscribe().with(
-		                                    result -> {
-		                                        // Security setup completed successfully
-		                                    },
-		                                    error -> {
-		                                        // Log error but don't fail the main operation
-		                                        log.warn("Error in createDefaultSecurity for street address", error);
-		                                    }
-		                                );
-
-		                            // Create a Uni for each find-and-add pair
-		                            // Each Uni first finds the classification and then adds it
-		                            Uni<?> numberPairUni = classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingNumber.name(), system, identityToken)
-		                                .chain(buildingNumberClassification -> {
-		                                    return address.addClassification(
-													session, ((Classification) buildingNumberClassification).getName(),
-		                                        number, 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            Uni<?> streetPairUni = classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingStreet.name(), system, identityToken)
-		                                .chain(buildingStreetClassification -> {
-		                                    return address.addClassification(
-													session, ((Classification) buildingStreetClassification).getName(),
-		                                        street, 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            Uni<?> typePairUni = classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingStreetType.name(), system, identityToken)
-		                                .chain(buildingStreetTypeClassification -> {
-		                                    return address.addClassification(
-													session, ((Classification) buildingStreetTypeClassification).getName(),
-		                                        streetType, 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            // Combine all parallel operations and wait for all to complete
-		                            return Uni.combine().all().unis(numberPairUni, streetPairUni, typePairUni)
-		                                .discardItems()
-		                                .chain(() -> {
-		                                    // Return the address after all classifications are added
-		                                    return Uni.createFrom().item((IAddress<?, ?>) address);
+		                            // Chain createDefaultSecurity properly
+		                            return address.createDefaultSecurity(session, system, identityToken)
+		                                .onItem().invoke(() -> log.debug("Security setup completed successfully for street address"))
+		                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for street address", error))
+		                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+		                                .chain(securityResult -> {
+		                                    // Find building number classification
+		                                    return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingNumber.name(), system, identityToken)
+		                                        .chain(buildingNumberClassification -> {
+		                                            // Add building number classification
+		                                            return address.addClassification(
+		                                                    session, 
+		                                                    ((Classification) buildingNumberClassification).getName(),
+		                                                    number, 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .chain(() -> {
+		                                            // Find building street classification
+		                                            return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingStreet.name(), system, identityToken);
+		                                        })
+		                                        .chain(buildingStreetClassification -> {
+		                                            // Add building street classification
+		                                            return address.addClassification(
+		                                                    session, 
+		                                                    ((Classification) buildingStreetClassification).getName(),
+		                                                    street, 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .chain(() -> {
+		                                            // Find building street type classification
+		                                            return classificationServiceProvider.find(session, AddressBuildingClassifications.BuildingStreetType.name(), system, identityToken);
+		                                        })
+		                                        .chain(buildingStreetTypeClassification -> {
+		                                            // Add building street type classification
+		                                            return address.addClassification(
+		                                                    session, 
+		                                                    ((Classification) buildingStreetTypeClassification).getName(),
+		                                                    streetType, 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .map(result -> (IAddress<?, ?>) address);
 		                                });
 		                        });
 		                } else {
@@ -820,44 +812,37 @@ public class AddressService
 		                            return session.persist(postalAddress).replaceWith(Uni.createFrom().item(postalAddress));
 		                        })
 		                        .chain(persisted -> {
-		                            // Start createDefaultSecurity in parallel without waiting for it
-		                            postalAddress.createDefaultSecurity(system, identityToken)
-		                                .subscribe().with(
-		                                    result -> {
-		                                        // Security setup completed successfully
-		                                    },
-		                                    error -> {
-		                                        // Log error but don't fail the main operation
-		                                        log.warn("Error in createDefaultSecurity for postal address", error);
-		                                    }
-		                                );
-
-		                            // Create a Uni for each find-and-add pair
-		                            // Each Uni first finds the classification and then adds it
-		                            Uni<?> numberPairUni = classificationServiceProvider.find(session, BoxNumber.name(), system, identityToken)
-		                                .chain(boxNumberClassification -> {
-		                                    return postalAddress.addClassification(
-													session, ((Classification) boxNumberClassification).getName(),
-		                                        boxNumber, 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            Uni<?> identifierPairUni = classificationServiceProvider.find(session, BoxIdentifier.name(), system, identityToken)
-		                                .chain(boxidentifierClassification -> {
-		                                    return postalAddress.addClassification(
-													session, ((Classification) boxidentifierClassification).getName(),
-		                                        boxIdentifier, 
-		                                        system, 
-		                                        identityToken);
-		                                });
-
-		                            // Combine all parallel operations and wait for all to complete
-		                            return Uni.combine().all().unis(numberPairUni, identifierPairUni)
-		                                .discardItems()
-		                                .chain(() -> {
-		                                    // Return the address after all classifications are added
-		                                    return Uni.createFrom().item((IAddress<?, ?>) postalAddress);
+		                            // Chain createDefaultSecurity properly
+		                            return postalAddress.createDefaultSecurity(session, system, identityToken)
+		                                .onItem().invoke(() -> log.debug("Security setup completed successfully for postal address"))
+		                                .onFailure().invoke(error -> log.warn("Error in createDefaultSecurity for postal address", error))
+		                                .onFailure().recoverWithItem(() -> null) // Continue even if security setup fails
+		                                .chain(securityResult -> {
+		                                    // Find box number classification
+		                                    return classificationServiceProvider.find(session, BoxNumber.name(), system, identityToken)
+		                                        .chain(boxNumberClassification -> {
+		                                            // Add box number classification
+		                                            return postalAddress.addClassification(
+		                                                    session, 
+		                                                    ((Classification) boxNumberClassification).getName(),
+		                                                    boxNumber, 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .chain(() -> {
+		                                            // Find box identifier classification
+		                                            return classificationServiceProvider.find(session, BoxIdentifier.name(), system, identityToken);
+		                                        })
+		                                        .chain(boxidentifierClassification -> {
+		                                            // Add box identifier classification
+		                                            return postalAddress.addClassification(
+		                                                    session, 
+		                                                    ((Classification) boxidentifierClassification).getName(),
+		                                                    boxIdentifier, 
+		                                                    system, 
+		                                                    identityToken);
+		                                        })
+		                                        .map(result -> (IAddress<?, ?>) postalAddress);
 		                                });
 		                        });
 		                } else {
@@ -878,3 +863,4 @@ public class AddressService
 	}
 
 }
+
