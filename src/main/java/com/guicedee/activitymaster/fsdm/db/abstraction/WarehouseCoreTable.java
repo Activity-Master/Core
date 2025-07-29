@@ -59,25 +59,28 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
   public Uni<Void> createDefaultSecurity(Mutiny.Session session, ISystems<?, ?> system, UUID... identity)
   {
     log.debug("🛡️ Creating default security for system: {} with session: {}", system.getName(), session.hashCode());
-    
+
     // Use the provided session and execute operations sequentially
-    return session.withTransaction(tx -> {
-      log.debug("📋 Starting sequential security operations with session: {}", session.hashCode());
-      
+    log.debug("📋 Starting sequential security operations with session: {}", session.hashCode());
+    if (false)
       // Chain all security operations sequentially
       return createDefaultAdministratorSecurityAccess(session, system, identity)
-        .chain(() -> createDefaultEveryoneSecurityAccess(session, system, identity))
-        .chain(() -> createDefaultEverywhereSecurityAccess(session, system, identity))
-        .chain(() -> createDefaultSystemsSecurityAccess(session, system, identity))
-        .chain(() -> createDefaultApplicationsSecurityAccess(session, system, identity))
-        .chain(() -> createDefaultPluginsSecurityAccess(session, system, identity))
-        .chain(() -> createDefaultGuestReadSecurityAccess(session, system, identity))
-        .onItem()
-        .invoke(() -> log.debug("✅ All security operations completed successfully"))
-        .onFailure()
-        .invoke(error -> log.error("❌ Failed to complete security operations: {}", error.getMessage(), error))
-        .replaceWithVoid();
-    });
+                 .chain(() -> createDefaultEveryoneSecurityAccess(session, system, identity))
+                 .chain(() -> createDefaultEverywhereSecurityAccess(session, system, identity))
+                 .chain(() -> createDefaultSystemsSecurityAccess(session, system, identity))
+                 .chain(() -> createDefaultApplicationsSecurityAccess(session, system, identity))
+                 .chain(() -> createDefaultPluginsSecurityAccess(session, system, identity))
+                 .chain(() -> createDefaultGuestReadSecurityAccess(session, system, identity))
+                 .onItem()
+                 .invoke(() -> log.debug("✅ All security operations completed successfully"))
+                 .onFailure()
+                 .invoke(error -> log.error("❌ Failed to complete security operations: {}", error.getMessage(), error))
+                 .replaceWithVoid();
+    else
+    {
+      return Uni.createFrom()
+                 .voidItem();
+    }
   }
 
   public Uni<Void> updateSecurity(Mutiny.Session session, J newCoreTable, Systems system)
@@ -93,17 +96,18 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                .getAll()
                .chain(result -> {
                  log.debug("📋 Found {} security tokens to update sequentially", result.size());
-                 
+
                  // Start with a completed Uni to begin the chain
-                 Uni<Void> sequentialChain = Uni.createFrom().voidItem();
-                 
+                 Uni<Void> sequentialChain = Uni.createFrom()
+                                                 .voidItem();
+
                  // Process each token sequentially by chaining operations
                  for (Object exist : result)
                  {
                    final S existingToken = (S) exist;
                    existingToken.setId(null);
                    configureDefaultsForNewToken(existingToken, system);
-                   
+
                    // Add this operation to the chain
                    sequentialChain = sequentialChain.chain(() -> {
                      log.debug("🔄 Updating security token sequentially");
@@ -115,13 +119,13 @@ public abstract class WarehouseCoreTable<J extends WarehouseCoreTable<J, Q, I, S
                                 .replaceWithVoid();
                    });
                  }
-                 
+
                  // Return the complete chain
                  return sequentialChain
-                          .onItem()
-                          .invoke(() -> log.debug("✅ All security tokens updated successfully"))
-                          .onFailure()
-                          .invoke(error -> log.error("❌ Error updating security tokens: {}", error.getMessage(), error));
+                            .onItem()
+                            .invoke(() -> log.debug("✅ All security tokens updated successfully"))
+                            .onFailure()
+                            .invoke(error -> log.error("❌ Error updating security tokens: {}", error.getMessage(), error));
                });
   }
 
