@@ -75,10 +75,13 @@ public class EventsSystem
     logProgress("Loading Events", "Events creating default types");
     logProgress("Loading Time", "Loading in Today");
     log.debug("📋 Starting event defaults creation for enterprise: '{}'", enterprise.getName());
-    // Get the day synchronously since ITimeSystem is not reactive yet
-    // todo
-    //com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
-    //           .getDay(new Date());
+    // Get the day using reactive ITimeSystem
+//    log.debug("📅 Getting today's date using reactive ITimeSystem");
+/*    com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
+        .getDay(session, new Date())
+        .onItem().invoke(day -> log.debug("✅ Successfully retrieved day: {}", day.getId()))
+        .onFailure().invoke(error -> log.error("❌ Failed to retrieve day: {}", error))
+        .await().indefinitely();*/
 
     // Start reactive chain with getting the ActivityMaster system
     return systemsService.findSystem(session, enterprise, ActivityMasterSystemName)
@@ -166,10 +169,12 @@ public class EventsSystem
                                                                                   log.debug("✅ Created LogItem resource type");
                                                                                   logProgress("Loading Time", "Creating Hours and Minutes");
 
-                                                                                  log.debug("⏰ Creating time synchronously since ITimeSystem is not reactive yet");
-                                                                                  //todo Create time synchronously since ITimeSystem is not reactive yet
+                                                                                  log.debug("⏰ Creating time using reactive ITimeSystem");
                                                                                   com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
-                                                                                      .createTime();
+                                                                                      .createTime()
+                                                                                      .onItem().invoke(() -> log.debug("✅ Successfully created time entities"))
+                                                                                      .onFailure().invoke(error -> log.error("❌ Failed to create time entities: {}", error))
+                                                                                      .await().atMost(Duration.ofMinutes(1));
                                                                                 })
                                                                                 .onFailure()
                                                                                 .invoke(error ->

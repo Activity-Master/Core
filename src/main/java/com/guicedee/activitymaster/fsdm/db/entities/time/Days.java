@@ -9,6 +9,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -36,10 +37,10 @@ public class Days
 	        nullable = false,
 	        length = 10)
 	private LocalDate dayDate;
-	@Basic(optional = false)
-	@Column(name = "DayDateTime",
-	        nullable = false)
-	private LocalDateTime dayDateTime;
+ @Basic(optional = false)
+ @Column(name = "DayDateTime",
+         nullable = false)
+ private OffsetDateTime dayDateTime;
 	@Basic(optional = false)
 	@Column(name = "DayInMonth",
 	        nullable = false)
@@ -177,12 +178,12 @@ public class Days
 		return this;
 	}
 	
-	public LocalDateTime getDayDateTime()
+	public OffsetDateTime getDayDateTime()
 	{
 		return dayDateTime;
 	}
 	
-	public Days setDayDateTime(LocalDateTime dayDateTime)
+	public Days setDayDateTime(OffsetDateTime dayDateTime)
 	{
 		this.dayDateTime = dayDateTime;
 		return this;

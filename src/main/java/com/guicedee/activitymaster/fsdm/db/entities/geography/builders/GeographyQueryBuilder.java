@@ -29,6 +29,13 @@ public class GeographyQueryBuilder
 		}
 		JoinExpression joinExpression = new JoinExpression();
 		GeographyXGeographyQueryBuilder builder =
+				isStateless() ?
+				new GeographyXGeography()
+						.builder(getEntityManagerStateless())
+						.inActiveRange()
+						.inDateRange()
+						.where(GeographyXGeography_.parentGeographyID, Equals, ((Geography) parent))
+						:
 				new GeographyXGeography()
 						.builder(getEntityManager())
 						.inActiveRange()

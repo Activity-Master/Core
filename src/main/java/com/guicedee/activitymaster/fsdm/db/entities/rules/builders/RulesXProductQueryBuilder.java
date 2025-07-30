@@ -8,6 +8,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.product.Product;
 import com.guicedee.activitymaster.fsdm.db.entities.rules.*;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.metamodel.SingularAttribute;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.UUID;
 
@@ -35,6 +36,15 @@ public class RulesXProductQueryBuilder
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		RulesXProductQueryBuilder builder =
+				isStateless() ?
+				new RulesXProduct()
+						.builder(getEntityManagerStateless())
+						.withClassification(classification, system)
+						.withValue(value)
+						.inActiveRange()
+						.inDateRange()
+						.withEnterprise(system.getEnterpriseID())
+						:
 				new RulesXProduct()
 						.builder(getEntityManager())
 						.withClassification(classification, system)

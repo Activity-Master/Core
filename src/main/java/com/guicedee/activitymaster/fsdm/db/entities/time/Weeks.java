@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,7 +62,7 @@ public class Weeks
 	private int yearID;
 	@OneToMany(mappedBy = "weekID",
 	           fetch = FetchType.LAZY)
-	private List<Days> DaysList;
+	private List<Days> DaysList = new ArrayList<>();
 	
 	public Weeks()
 	{

@@ -10,3 +10,4 @@ com.guicedee.activitymaster.fsdm.systems.ArrangementsSystem
 com.guicedee.activitymaster.fsdm.systems.EventsSystem
 com.guicedee.activitymaster.fsdm.systems.ResourceItemSystem
 com.guicedee.activitymaster.fsdm.systems.ProductsSystem
+com.guicedee.activitymaster.fsdm.systems.TimeSystem

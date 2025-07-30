@@ -1,22 +1,23 @@
 package com.guicedee.activitymaster.fsdm.services.system;
 
-import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterProgressMonitor;
+import com.guicedee.activitymaster.fsdm.db.entities.time.Days;
 import io.smallrye.mutiny.Uni;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.Date;
 
 public interface ITimeSystem
 {
-	void loadTimeRange(int startYear, int endYear);
+	Uni<Void> loadTimeRange(int startYear, int endYear);
 
 	/**
-	 * True if available
+	 * Gets or creates a day for the given date
 	 *
-	 * @param date
-	 *
-	 * @return
+	 * @param session
+	 * @param date    The date to get or create a day for
+	 * @return The day entity
 	 */
-	boolean getDay(Date date);
+	Uni<Days> getDay(Mutiny.StatelessSession session, Date date);
 
-	void createTime();
+	Uni<Void> createTime();
 }

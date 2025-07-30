@@ -165,12 +165,12 @@ public abstract class QueryBuilderSCDEntity<J extends QueryBuilderSCDEntity<J, E
 	}
 
 	@Override
-	public @NotNull Uni<E> update(E entity)
+	public @NotNull Uni<E> update()
 	{
-		entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
+		getEntity().setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
 		try
 		{
-			return super.update(entity);
+			return super.update();
 		}
 		catch (Throwable e)
 		{
@@ -188,7 +188,7 @@ public abstract class QueryBuilderSCDEntity<J extends QueryBuilderSCDEntity<J, E
 		entity.setWarehouseLastUpdatedTimestamp(IQueryBuilderSCD.convertToUTCDateTime(getNow()));
 		try
 		{
-			return super.update(entity);
+			return super.update();
 		}
 		catch (Throwable e)
 		{

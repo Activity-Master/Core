@@ -85,7 +85,7 @@ public class Months
 					           CascadeType.MERGE, CascadeType.PERSIST
 			           },
 	           mappedBy = "monthID",
-	           fetch = FetchType.LAZY)
+	           fetch = FetchType.EAGER)
 	private List<Days> DaysList;
 	@JoinColumn(name = "QuarterID",
 	            referencedColumnName = "QuarterID",

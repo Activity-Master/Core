@@ -29,7 +29,10 @@ public class ResourceItemQueryBuilder
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		
-		ResourceItemXResourceItemTypeQueryBuilder table = new ResourceItemXResourceItemType().builder(getEntityManager());
+		ResourceItemXResourceItemTypeQueryBuilder table = 
+				isStateless() ?
+				new ResourceItemXResourceItemType().builder(getEntityManagerStateless()) :
+				new ResourceItemXResourceItemType().builder(getEntityManager());
 		table.inActiveRange();
 		table.inDateRange();
 		table.withEnterprise(system.getEnterprise());

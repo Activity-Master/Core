@@ -23,6 +23,13 @@ public class RulesTypeQueryBuilder
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		RulesTypeXClassificationQueryBuilder builder =
+				isStateless() ?
+				new RulesTypeXClassification()
+						.builder(getEntityManagerStateless())
+						.inActiveRange()
+						.inDateRange()
+						.where(RulesTypeXClassification_.classificationID, Equals, classification)
+						:
 				new RulesTypeXClassification()
 						.builder(getEntityManager())
 						.inActiveRange()

@@ -20,6 +20,10 @@ public class ActivityMasterBinder
 		bind(ActivityMasterConfiguration.class).toInstance(ActivityMasterConfiguration.get());
 		expose(ActivityMasterConfiguration.class);
 		
+		// Bind TimeSystem for use by TimeSystemAdapter
+		bind(TimeSystem.class);
+		
+		// Bind ITimeSystem to TimeSystemAdapter for reactive interface
 		bind(ITimeSystem.class)
 				.to(TimeSystem.class);
 		expose(ITimeSystem.class);
@@ -31,7 +35,5 @@ public class ActivityMasterBinder
 		bind(ITimeService.class)
 				.to(TimeService.class);
 		expose(ITimeService.class);
-		
-		
 	}
 }

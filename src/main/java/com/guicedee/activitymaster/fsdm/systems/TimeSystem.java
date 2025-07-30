@@ -22,7 +22,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.entityassist.enumerations.Operand.Equals;
@@ -191,7 +190,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                    chain = chain.chain(() -> {
                      log.debug("📋 Processing day: {}", currentDate);
-                     return sessionFactory.withTransaction(session -> {
+                     return sessionFactory.withStatelessTransaction(session -> {
                        return getDay(session, currentDate)
                                   .onItem()
                                   .invoke(day -> {
@@ -285,7 +284,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the year for
    * @return A Uni containing the Year entity
    */
-  public Uni<Years> getYear(Mutiny.Session session, Date date)
+  public Uni<Years> getYear(Mutiny.StatelessSession session, Date date)
   {
     log.info("🔍 Getting year for date: {}", date);
 
@@ -308,7 +307,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the year for
    * @return A Uni containing the Year entity
    */
-  private Uni<Years> getYearFromDatabase(Mutiny.Session session, Date date)
+  private Uni<Years> getYearFromDatabase(Mutiny.StatelessSession session, Date date)
   {
     Short yearId = Short.parseShort(YearIDFormat.getSimpleDateFormat()
                                         .format(date));
@@ -394,7 +393,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the quarter for
    * @return A Uni containing the Quarter entity
    */
-  public Uni<Quarters> getQuarter(Mutiny.Session session, Date date)
+  public Uni<Quarters> getQuarter(Mutiny.StatelessSession session, Date date)
   {
     log.info("🔍 Getting quarter for date: {}", date);
 
@@ -417,7 +416,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the quarter for
    * @return A Uni containing the Quarter entity
    */
-  private Uni<Quarters> getQuarterFromDatabase(Mutiny.Session session, Date date)
+  private Uni<Quarters> getQuarterFromDatabase(Mutiny.StatelessSession session, Date date)
   {
     int quarterId = getQuarterID(date);
     return new Quarters().builder(session)
@@ -445,7 +444,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to create the quarter for
    * @return A Uni containing the created Quarter entity
    */
-  private Uni<Quarters> createQuarter(Mutiny.Session session, Date date)
+  private Uni<Quarters> createQuarter(Mutiny.StatelessSession session, Date date)
   {
     int quarterId = getQuarterID(date);
     log.info("🚀 Creating quarter with ID: {}", quarterId);
@@ -505,16 +504,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                                         // Persist the quarter
                                                         log.debug("💾 Persisting quarter: {}", quarterId);
-                                                        return session.persist(quarter)
-                                                                   .chain(() -> {
-                                                                     // Flush to ensure the quarter is persisted
-                                                                     return session.flush()
-                                                                                .chain(() -> {
-                                                                                  log.info("✅ Quarter created and flushed successfully: {}", quarterId);
-                                                                                  return Uni.createFrom()
-                                                                                             .item(quarter);
-                                                                                });
-                                                                   });
+                                                        return session.insert(quarter).replaceWith(quarter);
                                                       });
                                          });
                             });
@@ -620,7 +610,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the month for
    * @return A Uni containing the Month entity
    */
-  public Uni<Months> getMonth(Mutiny.Session session, Date date)
+  public Uni<Months> getMonth(Mutiny.StatelessSession session, Date date)
   {
     log.info("🔍 Getting month for date: {}", date);
 
@@ -643,7 +633,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the month for
    * @return A Uni containing the Month entity
    */
-  private Uni<Months> getMonthFromDatabase(Mutiny.Session session, Date date)
+  private Uni<Months> getMonthFromDatabase(Mutiny.StatelessSession session, Date date)
   {
     int monthId = Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
                                        .format(date));
@@ -672,7 +662,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to create the month for
    * @return A Uni containing the created Month entity
    */
-  private Uni<Months> createMonth(Mutiny.Session session, Date date)
+  private Uni<Months> createMonth(Mutiny.StatelessSession session, Date date)
   {
     int monthId = Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
                                        .format(date));
@@ -739,16 +729,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                                                      // Persist the month
                                                                      log.debug("💾 Persisting month: {}", monthId);
-                                                                     return session.persist(month)
-                                                                                .chain(() -> {
-                                                                                  // Flush to ensure the month is persisted
-                                                                                  return session.flush()
-                                                                                             .chain(() -> {
-                                                                                               log.info("✅ Month created and flushed successfully: {}", monthId);
-                                                                                               return Uni.createFrom()
-                                                                                                          .item(month);
-                                                                                             });
-                                                                                });
+                                                                     return session.insert(month).replaceWith(month);
                                                                    });
                                                       });
                                          });
@@ -763,7 +744,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the month of year for
    * @return A Uni containing the MonthOfYear entity
    */
-  private Uni<MonthOfYear> getMonthOfYear(Mutiny.Session session, Date date)
+  private Uni<MonthOfYear> getMonthOfYear(Mutiny.StatelessSession session, Date date)
   {
     GregorianCalendar gc = new GregorianCalendar();
     gc.setTime(date);
@@ -779,7 +760,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param monthNumber The month number (1-12)
    * @return A Uni containing the MonthOfYear entity
    */
-  private Uni<MonthOfYear> getMonthOfYear(Mutiny.Session session, Integer monthNumber)
+  private Uni<MonthOfYear> getMonthOfYear(Mutiny.StatelessSession session, Integer monthNumber)
   {
     return new MonthOfYear().builder(session)
                .find(monthNumber)
@@ -824,7 +805,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the week for
    * @return A Uni containing the Week entity
    */
-  public Uni<Weeks> getWeek(Mutiny.Session session, Date date)
+  public Uni<Weeks> getWeek(Mutiny.StatelessSession session, Date date)
   {
     log.info("🔍 Getting week for date: {}", date);
 
@@ -847,7 +828,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to get the week for
    * @return A Uni containing the Week entity
    */
-  private Uni<Weeks> getWeekFromDatabase(Mutiny.Session session, Date date)
+  private Uni<Weeks> getWeekFromDatabase(Mutiny.StatelessSession session, Date date)
   {
     int weekId = getWeekID(date);
     return new Weeks().builder(session)
@@ -904,7 +885,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param date    The date to create the week for
    * @return A Uni containing the created Week entity
    */
-  private Uni<Weeks> createWeek(Mutiny.Session session, Date date)
+  private Uni<Weeks> createWeek(Mutiny.StatelessSession session, Date date)
   {
     int weekId = getWeekID(date);
     log.info("🚀 Creating week with ID: {}", weekId);
@@ -951,23 +932,14 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                            // Persist the week
                                            log.debug("💾 Persisting week: {}", weekId);
-                                           return session.persist(week)
-                                                      .chain(() -> {
-                                                        // Flush to ensure the week is persisted
-                                                        return session.flush()
-                                                                   .chain(() -> {
-                                                                     log.info("✅ Week created and flushed successfully: {}", weekId);
-                                                                     return Uni.createFrom()
-                                                                                .item(week);
-                                                                   });
-                                                      });
+                                           return session.insert(week).replaceWith(week);
                                          });
                             });
                });
   }
 
   @Override
-  public Uni<Days> getDay(Mutiny.Session session, Date date)
+  public Uni<Days> getDay(Mutiny.StatelessSession session, Date date)
   {
     log.info("🔍 Getting day for date: {}", date);
 
@@ -988,7 +960,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                });
   }
 
-  private Uni<Days> getDayFromDatabase(Mutiny.Session session, Date date)
+  private Uni<Days> getDayFromDatabase(Mutiny.StatelessSession session, Date date)
   {
     int dayId = Integer.parseInt(DayIDFormat.getSimpleDateFormat()
                                      .format(date));
@@ -1010,7 +982,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                });
   }
 
-  private Uni<Days> createDay(Mutiny.Session session, Date date)
+  private Uni<Days> createDay(Mutiny.StatelessSession session, Date date)
   {
     int dayId = Integer.parseInt(DayIDFormat.getSimpleDateFormat()
                                      .format(date));
@@ -1060,7 +1032,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                         day.setYearID(year.getId());
 
                                                         log.debug("📋 Getting day name for date: {}", date);
-                                                        return getDayNameEntity(date)
+                                                        return getDayNameEntity(session, date)
                                                                    .chain(dayName -> {
                                                                      log.debug("✅ Got day name: {}", dayName.getDayName());
                                                                      day.setDayNameID(dayName);
@@ -1114,16 +1086,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                                                      // Persist the day
                                                                      log.debug("💾 Persisting day: {}", dayId);
-                                                                     return session.persist(day)
-                                                                                .chain(() -> {
-                                                                                  // Flush to ensure the day is persisted
-                                                                                  return session.flush()
-                                                                                             .chain(() -> {
-                                                                                               log.info("✅ Day created and flushed successfully: {}", dayId);
-                                                                                               return Uni.createFrom()
-                                                                                                          .item(day);
-                                                                                             });
-                                                                                });
+                                                                     return session.insert(day).replaceWith(day);
                                                                    });
                                                       });
                                          });
@@ -1134,24 +1097,25 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   /**
    * Gets the DayNames entity for the given date
    *
-   * @param date The date to get the day name for
+   * @param session
+   * @param date    The date to get the day name for
    * @return A Uni containing the DayNames entity
    */
-  private Uni<DayNames> getDayNameEntity(Date date)
+  private Uni<DayNames> getDayNameEntity(Mutiny.StatelessSession session, Date date)
   {
     String dayName = new java.text.SimpleDateFormat("EEEE").format(date);
-    return getDayNameEntity(dayName);
+    return getDayNameEntity(session, dayName);
   }
 
   /**
    * Gets the DayNames entity for the given day name
    *
+   * @param session
    * @param dayName The day name (e.g., "Monday")
    * @return A Uni containing the DayNames entity
    */
-  private Uni<DayNames> getDayNameEntity(String dayName)
+  private Uni<DayNames> getDayNameEntity(Mutiny.StatelessSession session, String dayName)
   {
-    return sessionFactory.withSession(session -> {
       return new DayNames().builder(session)
                  .where(DayNames_.dayName, Equals, dayName)
                  .get()
@@ -1170,7 +1134,6 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                  })
                  .onFailure()
                  .recoverWithUni(() -> createDayNameEntity(session, dayName));
-    });
   }
 
   /**
@@ -1180,14 +1143,14 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param dayName The day name to create
    * @return A Uni containing the created DayNames entity
    */
-  private Uni<DayNames> createDayNameEntity(Mutiny.Session session, String dayName)
+  private Uni<DayNames> createDayNameEntity(Mutiny.StatelessSession session, String dayName)
   {
     log.info("Creating new day name entity: " + dayName);
 
     DayNames newDayName = new DayNames();
     newDayName.setDayName(dayName);
 
-    return session.persist(newDayName)
+    return session.insert(newDayName)
                .chain(() -> Uni.createFrom()
                                 .item(newDayName));
   }

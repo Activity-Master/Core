@@ -24,7 +24,10 @@ public class InvolvedPartyQueryBuilder
 	@Override
 	public InvolvedPartyQueryBuilder findByIdentificationType(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
-		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyIdentificationType().builder(getEntityManager());
+		InvolvedPartyXInvolvedPartyIdentificationTypeQueryBuilder joinTableQueryBuilder = 
+				isStateless() ?
+				new InvolvedPartyXInvolvedPartyIdentificationType().builder(getEntityManagerStateless()) :
+				new InvolvedPartyXInvolvedPartyIdentificationType().builder(getEntityManager());
 		
 		InvolvedPartyIdentificationType type = (InvolvedPartyIdentificationType)
 				involvedPartyService.findInvolvedPartyIdentificationType(getEntityManager(), idType, system, identityTokens);
@@ -48,7 +51,10 @@ public class InvolvedPartyQueryBuilder
 	@Override
 	public InvolvedPartyQueryBuilder findByType(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
-		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder(getEntityManager());
+		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = 
+				isStateless() ?
+				new InvolvedPartyXInvolvedPartyType().builder(getEntityManagerStateless()) :
+				new InvolvedPartyXInvolvedPartyType().builder(getEntityManager());
 		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(getEntityManager(), idType, system, identityTokens);
 		
 		joinTableQueryBuilder.where(InvolvedPartyXInvolvedPartyType_.involvedPartyTypeID, Equals, type);
@@ -69,7 +75,10 @@ public class InvolvedPartyQueryBuilder
 	@Override
 	public InvolvedPartyQueryBuilder findByTypeAll(String idType, String value, ISystems<?, ?> system, java.util.UUID... identityTokens)
 	{
-		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = new InvolvedPartyXInvolvedPartyType().builder(getEntityManager());
+		InvolvedPartyXInvolvedPartyTypeQueryBuilder joinTableQueryBuilder = 
+				isStateless() ?
+				new InvolvedPartyXInvolvedPartyType().builder(getEntityManagerStateless()) :
+				new InvolvedPartyXInvolvedPartyType().builder(getEntityManager());
 		InvolvedPartyType type = (InvolvedPartyType) involvedPartyService.findType(getEntityManager(), idType, system, identityTokens);
 		
 		joinTableQueryBuilder.where(InvolvedPartyXInvolvedPartyType_.involvedPartyTypeID, Equals, type);
@@ -87,6 +96,14 @@ public class InvolvedPartyQueryBuilder
 	{
 		JoinExpression joinExpression = new JoinExpression();
 		InvolvedPartyXClassificationQueryBuilder builder =
+				isStateless() ?
+				new InvolvedPartyXClassification()
+						.builder(getEntityManagerStateless())
+						.inActiveRange()
+						.inDateRange()
+						.withValue(value)
+						.withClassification(classification.getName(), system)
+						:
 				new InvolvedPartyXClassification()
 						.builder(getEntityManager())
 						.inActiveRange()

@@ -8,6 +8,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -81,7 +82,7 @@ public class Quarters
 	        length = 50)
 	private String quarterQQMMDescription;
 	@OneToMany(fetch = FetchType.LAZY)
-	private List<Months> lUMonthsList;
+	private List<Months> lUMonthsList = new ArrayList<>();
 	@JoinColumn(name = "YearID",
 	            referencedColumnName = "YearID",
 	            nullable = false)

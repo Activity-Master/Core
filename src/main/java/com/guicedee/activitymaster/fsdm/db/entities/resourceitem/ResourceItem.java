@@ -153,12 +153,9 @@ public class ResourceItem
     public Uni<IResourceItem<?, ?>> updateDataTypeValue(Mutiny.Session session, String newValue)
     {
             setResourceItemDataType(newValue);
-            //todo update this using the builder(session).getEntityManager
-            builder(session).find(getId())
-                    .update(this)
-            ;
-            return Uni.createFrom()
-                           .item((IResourceItem<?, ?>) this);
+            return builder(session).find(getId())
+                    .update()
+                       .replaceWith(Uni.createFrom().item(this));
     }
 
     @Override

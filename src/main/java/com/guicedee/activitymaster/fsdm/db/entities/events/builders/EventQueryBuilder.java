@@ -8,6 +8,7 @@ import com.guicedee.activitymaster.fsdm.db.entities.events.Event;
 import com.guicedee.activitymaster.fsdm.services.system.ITimeSystem;
 
 import java.sql.Date;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,12 +21,7 @@ public class EventQueryBuilder
 	public boolean onCreate(Event entity)
 	{
 		ITimeService time = com.guicedee.client.IGuiceContext.get(ITimeService.class);
-
 		LocalDateTime localDateTime = IQueryBuilderSCD.convertToLocalDateTime(entity.getEffectiveFromDate());
-		
-		com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
-		            .getDay(Date.from(entity.getEffectiveFromDate().toInstant()));
-		
 		entity.setDayID(time.getDayID(localDateTime));
 		entity.setHourID(time.getHourID(localDateTime));
 		entity.setMinuteID(time.getMinuteID(localDateTime));

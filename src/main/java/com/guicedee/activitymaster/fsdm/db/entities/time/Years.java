@@ -8,6 +8,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,9 +61,8 @@ public class Years
 	@Column(name = "LastYearID",
 	        nullable = false)
 	private short lastYearID;
-	@OneToMany(mappedBy = "yearID",
-	           fetch = FetchType.LAZY)
-	private List<Quarters> QuartersList;
+	@OneToMany(mappedBy = "yearID")
+	private List<Quarters> QuartersList = new ArrayList<>();
 	@Basic(optional = false)
 	@Column(name = "Century",
 	        nullable = false)

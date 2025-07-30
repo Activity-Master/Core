@@ -28,8 +28,21 @@ public class RulesXRulesTypeQueryBuilder
     
     public RulesXRulesTypeQueryBuilder withClassification(String classification, String value, ISystems<?, ?> system, java.util.UUID... identityToken)
     {
-        withClassification(classification, system);
-        withValue(value);
+        if (isStateless()) {
+            // Use stateless entity manager
+            withClassification(classification, system);
+            withValue(value);
+            inActiveRange();
+            inDateRange();
+            withEnterprise(system.getEnterpriseID());
+        } else {
+            // Use regular entity manager
+            withClassification(classification, system);
+            withValue(value);
+            inActiveRange();
+            inDateRange();
+            withEnterprise(system.getEnterpriseID());
+        }
         return this;
     }
 }
