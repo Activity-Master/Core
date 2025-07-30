@@ -34,12 +34,11 @@ public class AddressSystem
 
     return systemsService
         .create(session, enterprise, AddressSystemName, "The system for the address management")
-        .onItem()
-        .invoke(system -> {
+        .chain(system -> {
             log.debug("✅ Created Address System: '{}' with session: {}", system.getName(), session.hashCode());
             
             // Chain the registerNewSystem call properly
-            getSystem(session, enterprise)
+            return getSystem(session, enterprise)
                 .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
                 .onItem()
                 .invoke(() -> {
@@ -52,7 +51,8 @@ public class AddressSystem
         })
         .onFailure()
         .invoke(error -> log.error("❌ Failed to create Address System: '{}' with session {}: {}",
-            getSystemName(), session.hashCode(), error.getMessage(), error));
+            getSystemName(), session.hashCode(), error.getMessage(), error))
+               .map(result->result);
   }
 
   @Override

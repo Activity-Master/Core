@@ -41,26 +41,27 @@ public class InvolvedPartySystem
     log.debug("📋 Creating Involved Party System with session: {}", session.hashCode());
 
     return systemsService
-        .create(session, enterprise, getSystemName(), getSystemDescription())
-        .onItem()
-        .invoke(system -> {
-            log.debug("✅ Created Involved Party System: '{}' with session: {}", system.getName(), session.hashCode());
-            
-            // Chain the registerNewSystem call properly
-            getSystem(session, enterprise)
-                .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
-                .onItem()
-                .invoke(() -> {
-                    log.debug("✅ Registered system: {}", getSystemName());
-                    log.info("🎉 Successfully registered Involved Party System for enterprise: '{}'", enterprise.getName());
-                })
-                .onFailure()
-                .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
-                .chain(() -> Uni.createFrom().item(system)); // Chain back to return the original system
-        })
-        .onFailure()
-        .invoke(error -> log.error("❌ Failed to create Involved Party System: '{}' with session {}: {}",
-            getSystemName(), session.hashCode(), error.getMessage(), error));
+               .create(session, enterprise, getSystemName(), getSystemDescription())
+               .chain(system -> {
+                 log.debug("✅ Created Involved Party System: '{}' with session: {}", system.getName(), session.hashCode());
+
+                 // Chain the registerNewSystem call properly
+                 return getSystem(session, enterprise)
+                            .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
+                            .onItem()
+                            .invoke(() -> {
+                              log.debug("✅ Registered system: {}", getSystemName());
+                              log.info("🎉 Successfully registered Involved Party System for enterprise: '{}'", enterprise.getName());
+                            })
+                            .onFailure()
+                            .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
+                            .chain(() -> Uni.createFrom()
+                                             .item(system)); // Chain back to return the original system
+               })
+               .onFailure()
+               .invoke(error -> log.error("❌ Failed to create Involved Party System: '{}' with session {}: {}",
+                   getSystemName(), session.hashCode(), error.getMessage(), error))
+               .map(result -> result);
   }
 
   @Override

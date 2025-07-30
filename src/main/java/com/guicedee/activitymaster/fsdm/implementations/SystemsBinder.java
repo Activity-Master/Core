@@ -41,7 +41,7 @@ public class SystemsBinder extends PrivateModule implements IGuiceModule<Systems
 		expose(genericKey);
 		expose(ISystemsService.class);
 		
-		ClassInfoList classesImplementing = IGuiceContext.instance()
+		/*ClassInfoList classesImplementing = IGuiceContext.instance()
 		                                                 .getScanResult()
 		                                                 .getClassesImplementing(IActivityMasterSystem.class);
 		for (ClassInfo classInfo : classesImplementing)
@@ -68,8 +68,8 @@ public class SystemsBinder extends PrivateModule implements IGuiceModule<Systems
 				loadedSystems.add(system.getSystemName());
 			}else {
 				continue;
-			}
-
+			}*/
+/*
 			@SuppressWarnings("Convert2Diamond")
 			Key<ISystems<?, ?>> aSystemGenericKey = Key.get(new TypeLiteral<ISystems<?, ?>>() {}, Names.named(system.getSystemName()));
 			@SuppressWarnings("Convert2Diamond")
@@ -83,7 +83,7 @@ public class SystemsBinder extends PrivateModule implements IGuiceModule<Systems
 			
 			Key<UUID> aSystemTokenGenericKey = Key.get(UUID.class, Names.named(system.getSystemName()));
 			bind(aSystemTokenGenericKey).toProvider(new SystemsTokenProvider(system.getSystemName()));
-			expose(aSystemTokenGenericKey);
-		}
+			expose(aSystemTokenGenericKey);*/
+		//}
 	}
 }

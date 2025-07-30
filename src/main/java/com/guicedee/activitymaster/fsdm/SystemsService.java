@@ -52,6 +52,8 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.ActivateFlagSystemName;
+import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.getISystem;
+import static com.guicedee.activitymaster.fsdm.client.services.IActivityMasterService.getISystemToken;
 import static com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.EnterpriseSystemName;
 import static com.guicedee.activitymaster.fsdm.client.services.classifications.SystemsClassifications.SystemIdentity;
 
@@ -148,7 +150,7 @@ public class SystemsService
     log.debug("📋 Starting registration with session: {}", session.hashCode());
     
     // Get the activity master system first, then get the token sequentially
-    return getISystemReactive(enterprise, ActivityMasterSystemName)
+    return getISystem(session, ActivityMasterSystemName, enterprise)
                .onItem()
                .invoke(activityMasterSystem -> log.debug("✅ Retrieved ActivityMaster system with session: {}", session.hashCode()))
                .onFailure()
@@ -156,7 +158,7 @@ public class SystemsService
                                         session.hashCode(), error.getMessage(), error))
                // Chain to get the token after getting the system
                .chain(activityMasterSystem -> 
-                   getISystemTokenReactive(enterprise, ActivityMasterSystemName)
+                   getISystemToken(session, ActivityMasterSystemName, enterprise)
                        .onItem()
                        .invoke(activityMasterSystemUUID -> log.debug("✅ Retrieved ActivityMaster system UUID with session: {}", session.hashCode()))
                        .onFailure()
@@ -299,24 +301,6 @@ public class SystemsService
                             });
                });
   }
-
-  // Helper methods for reactive operations
-  private Uni<ISystems<?, ?>> getISystemReactive(IEnterprise<?, ?> enterprise, String systemName)
-  {
-    return IActivityMasterService.getISystem(systemName, enterprise)
-               .onItem()
-               .ifNull()
-               .failWith(() -> new NoSuchElementException("System not found: " + systemName));
-  }
-
-  private Uni<UUID> getISystemTokenReactive(IEnterprise<?, ?> enterprise, String systemName)
-  {
-    return IActivityMasterService.getISystemToken(systemName, enterprise)
-               .onItem()
-               .ifNull()
-               .failWith(() -> new NoSuchElementException("System token not found: " + systemName));
-  }
-
   @Override
   public Uni<ISystems<?, ?>> create(Mutiny.Session session, IEnterprise<?, ?> enterprise, String systemName, String systemDesc, UUID... identityToken)
   {

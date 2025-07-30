@@ -1,5 +1,7 @@
 package com.guicedee.activitymaster.fsdm;
 
+import com.guicedee.activitymaster.fsdm.systems.EventsSystem;
+
 /**
  * Reactivity Migration Checklist:
  * 
@@ -465,18 +467,6 @@ public class EnterpriseService
                .map(enterprise -> enterprise);
   }
 
-  //@Transactional()
-  @Override
-  public Uni<Boolean> doesEnterpriseExist(Mutiny.Session session, String name)
-  {
-    return new Enterprise().builder(session)
-               .withName(name)
-               .inDateRange()
-               .getCount()
-               .onFailure()
-               .invoke(error -> log.error("Error checking if enterprise exists: {}", error.getMessage(), error))
-               .map(count -> count > 0);
-  }
 
   //@Transactional()
   @Override
@@ -613,10 +603,15 @@ public class EnterpriseService
 
   private Uni<Void> installSystems(Mutiny.Session session, Set<IActivityMasterSystem<?>> allSystems, IEnterprise<?, ?> enterprise)
   {
-    boolean found = false;
-    List<IActivityMasterSystem<?>> filtered = new ArrayList<>();
+    boolean found = true;
+    List<IActivityMasterSystem<?>> filteredBeforeEvents = new ArrayList<>();
+    List<IActivityMasterSystem<?>> filteredUpToEvents = new ArrayList<>();
+    List<IActivityMasterSystem<?>> allFilteredSystems = new ArrayList<>();
+    
+    // First pass: categorize systems
     for (IActivityMasterSystem<?> system : allSystems)
     {
+      // Start collecting from SystemsSystem
       if (!found && SystemsSystem.class.isAssignableFrom(system.getClass()))
       {
         found = true;
@@ -624,39 +619,94 @@ public class EnterpriseService
 
       if (found)
       {
-        filtered.add(system);
+        // Add to the complete list of systems
+        allFilteredSystems.add(system);
+        
+        // Check if this is EventsSystem
+        boolean isEventsSystem = EventsSystem.class.isAssignableFrom(system.getClass());
+        
+        // Add to the list of systems up to EventsSystem (inclusive)
+        filteredUpToEvents.add(system);
+        
+        // Add to the list of systems before EventsSystem (exclusive)
+        if (!isEventsSystem)
+        {
+          filteredBeforeEvents.add(system);
+        }
+        else
+        {
+          // Stop adding to filteredBeforeEvents once we reach EventsSystem
+          break;
+        }
       }
     }
 
-    if (filtered.isEmpty())
+    if (allFilteredSystems.isEmpty())
     {
       log.warn("⚠️ No systems found from SystemsSystem onward to install.");
       return Uni.createFrom()
                  .voidItem();
     }
 
-    logProgress("Installing Systems", "Starting All Base Systems - " + filtered.toString());
+    logProgress("Installing Systems", "Starting installation process with " + allFilteredSystems.size() + " systems");
 
-    // Process systems sequentially in order
-    if (filtered.isEmpty())
+    // Step 1: Install systems up to but not including EventsSystem
+    log.info("🔄 Step 1: Installing systems up to but not including EventsSystem");
+    Uni<Void> step1 = installSystemsSequentially(session, filteredBeforeEvents, enterprise, false);
+    
+    // Step 2: Register all systems up to EventsSystem
+    return step1.chain(() -> {
+      log.info("🔄 Step 2: Registering all systems up to EventsSystem");
+      return registerSystemsSequentially(session, filteredUpToEvents, enterprise);
+    })
+    // Step 3: Rerun installSystems for all available systems
+    .chain(() -> {
+      log.info("🔄 Step 3: Installing all available systems");
+      return installSystemsSequentially(session, allFilteredSystems, enterprise, false);
+    })
+    .invoke(v -> log.info("✅ Completed all installation steps for systems"));
+  }
+  
+  private Uni<Void> installSystemsSequentially(Mutiny.Session session, List<IActivityMasterSystem<?>> systems, IEnterprise<?, ?> enterprise, boolean registerSystem)
+  {
+    if (systems.isEmpty())
     {
-      return Uni.createFrom()
-                 .voidItem();
+      return Uni.createFrom().voidItem();
     }
-
+    
     // Start with the first system
-    Uni<Void> result = installSystem(session, filtered.get(0), enterprise,false);
-
+    Uni<Void> result = installSystem(session, systems.get(0), enterprise, registerSystem);
+    
     // Chain the rest of the systems sequentially
-    for (int i = 1; i < filtered.size(); i++)
+    for (int i = 1; i < systems.size(); i++)
     {
       final int index = i;
-      result = result.chain(() -> installSystem(session, filtered.get(index), enterprise,false));
+      result = result.chain(() -> installSystem(session, systems.get(index), enterprise, registerSystem));
     }
-
-    // Add final logging
-    return result
-               .invoke(v -> log.info("✅ Installed " + filtered.size() + " systems sequentially starting from SystemsSystem."));
+    
+    return result.invoke(v -> log.info("✅ Processed " + systems.size() + " systems"));
+  }
+  
+  private Uni<Void> registerSystemsSequentially(Mutiny.Session session, List<IActivityMasterSystem<?>> systems, IEnterprise<?, ?> enterprise)
+  {
+    if (systems.isEmpty())
+    {
+      return Uni.createFrom().voidItem();
+    }
+    
+    // Start with the first system
+    Uni<Void> result =  systems.get(0).registerSystem(session, enterprise).replaceWithVoid();// installSystem(session, systems.get(0), enterprise, true);
+    
+    // Chain the rest of the systems sequentially
+    for (int i = 1; i < systems.size(); i++)
+    {
+      final int index = i;
+      var sys = systems.get(index);
+      result = result.chain(() -> sys.registerSystem(session, enterprise)
+                                      .replaceWithVoid());// installSystem(session, systems.get(index), enterprise, true));
+    }
+    
+    return result.invoke(v -> log.info("✅ Registered " + systems.size() + " systems"));
   }
 
   private Uni<Void> installSystem(Mutiny.Session session, IActivityMasterSystem<?> system, IEnterprise<?, ?> enterprise,boolean registerSystem)
@@ -705,21 +755,29 @@ public class EnterpriseService
         });
     }
     
-    return startListenersChain
-               .chain(() -> {
-                 return registeredSystem.createDefaults(session, enterprise)
-                            .onItem()
-                            .invoke(() -> log.info("✅ Defaults created for: " + systemName))
-                            .onFailure()
-                            .recoverWithItem(e -> {
-                              log.error("❌ Failed to create defaults for: " + systemName, e);
-                              throw new RuntimeException(e);
-                            });
-               })
-               .chain(startResults -> {
-                 // Chain the createDefaults call which now returns a Uni<Void>
-                 return registeredSystem.registerSystem(session, enterprise);
-               })
+    Uni<Void> installChain = startListenersChain;
+    
+    // If registerSystem is true, skip createDefaults and only call registerSystem
+    if (false) {
+      log.info("🔄 Only registering system (skipping createDefaults): " + systemName);
+      installChain = installChain.chain(() -> {
+        return registeredSystem.registerSystem(session, enterprise).replaceWithVoid();
+      });
+    } else {
+      // Normal installation process - call createDefaults then registerSystem
+      installChain = installChain.chain(() -> {
+        return registeredSystem.createDefaults(session, enterprise)
+                   .onItem()
+                   .invoke(() -> log.info("✅ Defaults created for: " + systemName))
+                   .onFailure()
+                   .recoverWithItem(e -> {
+                     log.error("❌ Failed to create defaults for: " + systemName, e);
+                     throw new RuntimeException(e);
+                   });
+      }).replaceWithVoid();
+    }
+    
+    return installChain
                .chain(createResult -> {
                  // Process end listeners sequentially
                  Uni<Void> endListenersChain = Uni.createFrom().voidItem();
@@ -816,7 +874,7 @@ public class EnterpriseService
     // Properly chain the registerSystem call for the first system
     return systemsChain
                .invoke(() -> log.info("✅ All core systems installed successfully: {} systems", filtered.size()))
-               .chain(() -> {
+               /*.chain(() -> {
                    if (!filtered.isEmpty()) {
                        log.debug("🔄 Registering first core system: {}", filtered.getFirst().getSystemName());
                        return filtered.getFirst().registerSystem(session, enterprise)
@@ -829,8 +887,9 @@ public class EnterpriseService
                        return Uni.createFrom().voidItem();
                    }
                })
-               .onFailure()
-               .invoke(err -> log.error("❌ Failed during system installation", err));
+               .onFailure()*/
+               //.invoke(err -> log.error("❌ Failed during system installation", err)
+               ;
   }
 
 }

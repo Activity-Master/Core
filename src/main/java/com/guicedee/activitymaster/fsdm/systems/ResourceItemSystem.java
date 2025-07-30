@@ -36,12 +36,11 @@ public class ResourceItemSystem
 
     return systemsService
         .create(session, enterprise, getSystemName(), getSystemDescription())
-        .onItem()
-        .invoke(system -> {
+        .chain(system -> {
             log.debug("✅ Created Resource Item System: '{}' with session: {}", system.getName(), session.hashCode());
             
             // Chain the registerNewSystem call properly
-            getSystem(session, enterprise)
+            return getSystem(session, enterprise)
                 .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
                 .onItem()
                 .invoke(() -> {
@@ -54,7 +53,8 @@ public class ResourceItemSystem
         })
         .onFailure()
         .invoke(error -> log.error("❌ Failed to create Resource Item System: '{}' with session {}: {}",
-            getSystemName(), session.hashCode(), error.getMessage(), error));
+            getSystemName(), session.hashCode(), error.getMessage(), error))
+               .map(result->result);
   }
 
   @Override

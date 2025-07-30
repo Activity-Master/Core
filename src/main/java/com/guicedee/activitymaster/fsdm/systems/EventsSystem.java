@@ -48,12 +48,11 @@ public class EventsSystem
 
     return systemsService
         .create(session, enterprise, getSystemName(), getSystemDescription())
-        .onItem()
-        .invoke(system -> {
+        .chain(system -> {
             log.debug("✅ Created Events System: '{}' with session: {}", system.getName(), session.hashCode());
             
             // Chain the registerNewSystem call properly
-            getSystem(session, enterprise)
+            return getSystem(session, enterprise)
                 .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
                 .onItem()
                 .invoke(() -> {
@@ -66,7 +65,8 @@ public class EventsSystem
         })
         .onFailure()
         .invoke(error -> log.error("❌ Failed to create Events System: '{}' with session {}: {}",
-            getSystemName(), session.hashCode(), error.getMessage(), error));
+            getSystemName(), session.hashCode(), error.getMessage(), error))
+               .map(result->result);
   }
 
   @Override
@@ -197,11 +197,6 @@ public class EventsSystem
     // Create a reactive chain for the postStartup operations
     // Get the system
     return systemsService.findSystem(session, enterprise, getSystemName())
-               .onItem()
-               .invoke(system -> log.debug("✅ Found system: '{}'", system.getName()))
-               .onItem()
-               .ifNull()
-               .failWith(() -> new RuntimeException("System not found: " + getSystemName()))
                .onFailure()
                .invoke(error -> log.error("❌ Failed to find system: {}", error.getMessage(), error))
                .chain(system -> {
@@ -217,9 +212,10 @@ public class EventsSystem
                             .invoke(error -> log.error("❌ Failed to retrieve security token: {}", error.getMessage(), error))
                             .map(token -> {
                               log.debug("✅ Successfully completed postStartup for Events System");
-                              return null; // Return Void
+                              return system; // Return Void
                             });
                })
+               .invoke(system -> log.debug("✅ Found system: '{}'", system.getName()))
                .replaceWith(Uni.createFrom()
                                 .voidItem());
   }

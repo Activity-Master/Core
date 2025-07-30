@@ -39,6 +39,7 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.*;
+import static com.guicedee.activitymaster.fsdm.client.services.ISystemsService.ActivityMasterSystemName;
 
 @Log4j2
 public class EnterpriseSystem
@@ -54,7 +55,17 @@ public class EnterpriseSystem
   @Override
   public Uni<ISystems<?, ?>> registerSystem(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
-    return Uni.createFrom().nullItem();
+        return systemsService
+               .create(session, enterprise, EnterpriseSystemName, "The Enterprise Management System", "Enterprise")
+               .invoke(system -> log.debug("✅ Created Enterprise System: '{}' with session: {}", system.getName(), session.hashCode()))
+               .chain(system -> {
+                 return systemsService.registerNewSystem(session, enterprise, system)
+                            .replaceWith(system);
+               })
+               .onFailure()
+               .invoke(error -> log.error("❌ Failed to register Enterprise System: '{}' with session {}: {}",
+                   EnterpriseSystemName, session.hashCode(), error.getMessage(), error))
+               .map(result->result);
   }
 
 

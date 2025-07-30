@@ -16,6 +16,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import java.time.Duration;
 
 import static com.guicedee.activitymaster.fsdm.client.services.IActiveFlagService.ActivateFlagSystemName;
+import static com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService.EnterpriseSystemName;
 
 
 @Log4j2
@@ -40,25 +41,15 @@ public class ActiveFlagSystem
 
     return systemsService
                .create(session, enterprise, ActivateFlagSystemName, "The system for the active flag management")
-               .onItem()
-               .invoke(system -> {
-                 log.debug("✅ Created Active Flag System: '{}' with session: {}", system.getName(), session.hashCode());
-
-                 // Chain the registerNewSystem call properly
-                 getSystem(session, enterprise)
-                            .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
-                            .onItem()
-                            .invoke(() -> {
-                                log.debug("✅ Registered system: {}", getSystemName());
-                                log.info("🎉 Successfully registered Active Flag System for enterprise: '{}'", enterprise.getName());
-                            })
-                            .onFailure()
-                            .invoke(error -> log.error("❌ Error registering system: {}", error.getMessage(), error))
-                            .chain(() -> Uni.createFrom().item(system)); // Chain back to return the original system
+               .invoke(system -> log.debug("✅ Created Active Flag System: '{}' with session: {}", system.getName(), session.hashCode()))
+               .chain(system -> {
+                 return systemsService.registerNewSystem(session, enterprise, system)
+                            .replaceWith(system);
                })
                .onFailure()
                .invoke(error -> log.error("❌ Failed to create Active Flag System: '{}' with session {}: {}",
-                   getSystemName(), session.hashCode(), error.getMessage(), error));
+                   getSystemName(), session.hashCode(), error.getMessage(), error))
+               .map(result -> result);
   }
 
   @Override

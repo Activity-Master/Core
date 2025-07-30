@@ -44,12 +44,11 @@ public class ClassificationsDataConceptSystem
 
     return systemsService
         .create(session, enterprise, getSystemName(), getSystemDescription())
-        .onItem()
-        .invoke(system -> {
+        .chain(system -> {
             log.debug("✅ Created Classifications Data Concept System: '{}' with session: {}", system.getName(), session.hashCode());
             
             // Chain the registerNewSystem call properly
-            getSystem(session, enterprise)
+            return getSystem(session, enterprise)
                 .chain(sys -> systemsService.registerNewSystem(session, enterprise, sys))
                 .onItem()
                 .invoke(() -> {
@@ -62,7 +61,8 @@ public class ClassificationsDataConceptSystem
         })
         .onFailure()
         .invoke(error -> log.error("❌ Failed to create Classifications Data Concept System: '{}' with session {}: {}",
-            getSystemName(), session.hashCode(), error.getMessage(), error));
+            getSystemName(), session.hashCode(), error.getMessage(), error))
+               .map(result->result);
   }
 
   @SuppressWarnings("Duplicates")
