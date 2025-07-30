@@ -45,17 +45,19 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
     implements IActivityMasterSystem<TimeSystem>, ITimeSystem, IProgressable
 {
   private final AtomicInteger totalTasksCount = new AtomicInteger(0);
-  
+
   // Counters for tracking created entities
   private final AtomicInteger daysCreatedCount = new AtomicInteger(0);
   private final Set<Integer> uniqueYearsCreated = new HashSet<>();
-  
+
   // Getter methods for testing
-  public int getDaysCreatedCount() {
+  public int getDaysCreatedCount()
+  {
     return daysCreatedCount.get();
   }
-  
-  public Set<Integer> getUniqueYearsCreated() {
+
+  public Set<Integer> getUniqueYearsCreated()
+  {
     return uniqueYearsCreated;
   }
 
@@ -133,11 +135,11 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   public Uni<Void> loadTimeRange(int startYear, int endYear)
   {
     log.info("🚀 Starting reactive loadTimeRange from {} to {}", startYear, endYear);
-    
+
     // Reset counters for tracking created entities
     daysCreatedCount.set(0);
     uniqueYearsCreated.clear();
-    
+
     return Uni.createFrom()
                .item(() -> {
                  // Calculate total days for progress tracking
@@ -183,7 +185,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                  {
                    final Date currentDate = startYearGC.getTime();
                    final int currentCount = processedCount;
-                   
+
                    // Get the year for tracking
                    final int currentYear = startYearGC.get(Calendar.YEAR);
                    uniqueYearsCreated.add(currentYear);
@@ -196,7 +198,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                   .invoke(day -> {
                                     // Increment days created counter
                                     daysCreatedCount.incrementAndGet();
-                                    
+
                                     if ((currentCount + 1) % 10 == 0 || currentCount + 1 == totalDays || currentCount + 1 == maxDaysToProcess)
                                     {
                                       log.info("📊 Progress: {}/{} days processed",
@@ -504,7 +506,8 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                                         // Persist the quarter
                                                         log.debug("💾 Persisting quarter: {}", quarterId);
-                                                        return session.insert(quarter).replaceWith(quarter);
+                                                        return session.insert(quarter)
+                                                                   .replaceWith(quarter);
                                                       });
                                          });
                             });
@@ -729,7 +732,8 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                                                      // Persist the month
                                                                      log.debug("💾 Persisting month: {}", monthId);
-                                                                     return session.insert(month).replaceWith(month);
+                                                                     return session.insert(month)
+                                                                                .replaceWith(month);
                                                                    });
                                                       });
                                          });
@@ -932,7 +936,8 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                            // Persist the week
                                            log.debug("💾 Persisting week: {}", weekId);
-                                           return session.insert(week).replaceWith(week);
+                                           return session.insert(week)
+                                                      .replaceWith(week);
                                          });
                             });
                });
@@ -952,10 +957,11 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .recoverWithUni(error -> {
                  log.info("📋 Day not found for date: {}, creating new day", date);
                  return createDay(session, date)
-                            .chain(days->{
-                              populateTransformationTables(date,-3).onFailure().invoke(t -> log.error("Failed to populate transformation tables for day - {}",date, t));
-                              return Uni.createFrom()
-                                         .item(days);
+                            .chain(days -> {
+                              return populateTransformationTables(session, date, -3).onFailure()
+                                         .invoke(t -> log.error("Failed to populate transformation tables for day - {}", date, t))
+                                         .replaceWith(Uni.createFrom()
+                                                          .item(days));
                             });
                });
   }
@@ -1000,7 +1006,10 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
     day.setDayDate(localDate);
     // Create an OffsetDateTime at midnight with the system default timezone offset
     LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
-    OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime, ZoneOffset.systemDefault().getRules().getOffset(localDateTime));
+    OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime,
+        ZoneOffset.systemDefault()
+            .getRules()
+            .getOffset(localDateTime));
     // Set the OffsetDateTime value
     day.setDayDateTime(offsetDateTime);
     // Log the conversion for debugging
@@ -1086,7 +1095,8 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                                                      // Persist the day
                                                                      log.debug("💾 Persisting day: {}", dayId);
-                                                                     return session.insert(day).replaceWith(day);
+                                                                     return session.insert(day)
+                                                                                .replaceWith(day);
                                                                    });
                                                       });
                                          });
@@ -1116,24 +1126,24 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    */
   private Uni<DayNames> getDayNameEntity(Mutiny.StatelessSession session, String dayName)
   {
-      return new DayNames().builder(session)
-                 .where(DayNames_.dayName, Equals, dayName)
-                 .get()
-                 .onItem()
-                 .transform(optional -> {
-                   if (optional != null)
-                   {
-                     log.info("Found day name: " + dayName);
-                     return (DayNames) optional;
-                   }
-                   else
-                   {
-                     log.info("Day name not found: " + dayName);
-                     throw new NoSuchElementException("Day name not found: " + dayName);
-                   }
-                 })
-                 .onFailure()
-                 .recoverWithUni(() -> createDayNameEntity(session, dayName));
+    return new DayNames().builder(session)
+               .where(DayNames_.dayName, Equals, dayName)
+               .get()
+               .onItem()
+               .transform(optional -> {
+                 if (optional != null)
+                 {
+                   log.info("Found day name: " + dayName);
+                   return (DayNames) optional;
+                 }
+                 else
+                 {
+                   log.info("Day name not found: " + dayName);
+                   throw new NoSuchElementException("Day name not found: " + dayName);
+                 }
+               })
+               .onFailure()
+               .recoverWithUni(() -> createDayNameEntity(session, dayName));
   }
 
   /**
@@ -1175,242 +1185,268 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
     // First check if Hours entities already exist
     return sessionFactory.withStatelessTransaction(session ->
-      new Hours().builder(session)
-                .where(Hours_.id, Equals, 1)
-                .get()
-                .onItem().transformToUni(hour -> {
-                  // Hours already exist, return empty Uni
-                  log.info("✅ Time entities already exist");
-                  return Uni.createFrom().voidItem();
-                })
-                .onFailure(NoResultException.class).recoverWithUni(() -> {
-                  // Hours don't exist, create them
-                  log.info("🚀 Creating time entities (hours, minutes, half-hours)");
-                  final AtomicInteger dayPartCount = new AtomicInteger(0);
-                  
-                  // Create a chain for sequential processing
-                  Uni<Void> chain = Uni.createFrom().voidItem();
-                  
-                  // Process all 24 hours
-                  for (int hr = 0; hr < 24; hr++) {
-                    final int hour = hr;
-                    
-                    // Create hour entity
-                    Hours hourEntity = new Hours(hour);
-                    hourEntity.setAmPmDesc(hour < 13 ? "AM" : "PM");
-                    hourEntity.setTwelveHour(hour > 12
-                                               ? "" + String.format("%02d", hour - 12) + ":" + String.format("%02d", 0)
-                                               : String.format("%02d", hour) + ":" + String.format("%02d", 0));
-                    hourEntity.setTwentyFourHour(String.format("%02d", hour) + ":" + String.format("%02d", 0));
-                    hourEntity.setPreviousHourID(hour == 0 ? 23 : hour - 1);
-                    
-                    // Add hour persistence to the chain
-                    chain = chain.chain(() -> {
-                      log.info("📋 Creating hour: {}", hour);
-                      return session.insert(hourEntity)
-                                 .onItem()
-                                 .invoke(() -> {
-                                   log.info("✅ Created hour: {}", hour);
-                                 })
-                                 .onFailure()
-                                 .invoke(e -> {
-                                   log.error("❌ Failed to create hour {}: {}", hour, e.getMessage(), e);
-                                 });
-                    });
-                    
-                    // Create minute entities for this hour - one at a time
-                    // For testing, only create a few minutes per hour
-                    for (int min = 0; min < 60; min += 15) {
-                      final int minute = min;
-                      
-                      // Create time entity
-                      TimePK timePK = new TimePK(hour, minute);
-                      Time time = new Time(timePK);
-                      time.setAmPmDesc(hour < 13 ? "AM" : "PM");
-                      time.setTwelveHoursDesc(hour > 12
-                                                ? "" + String.format("%02d", hour - 12) + ":" + String.format("%02d", minute)
-                                                : String.format("%02d", hour) + ":" + String.format("%02d", minute));
-                      time.setTwentyFourHoursDesc(String.format("%02d", hour) + ":" + String.format("%02d", minute));
-                      time.setPreviousHourID(hour == 0 ? 23 : hour - 1);
-                      time.setPreviousMinuteID(minute == 0 ? 59 : minute - 1);
-                      
-                      // Add time insertence to the chain
-                      final Time finalTime = time;
-                      chain = chain.chain(() -> {
-                        log.info("📋 Creating time: {}", finalTime.getId());
-                        return session.insert(finalTime)
-                                   .onItem()
-                                   .invoke(() -> {
-                                     log.info("✅ Created time: {}", finalTime.getId());
-                                   })
-                                   .onFailure()
-                                   .invoke(e -> {
-                                     log.error("❌ Failed to create time {}: {}", finalTime.getId(), e.getMessage(), e);
-                                   });
-                      });
-                      
-                      // Create half-hour entities at 0 and 30 minutes
-                      if (minute == 0 || minute == 30) {
-                        HalfHours halfHour = new HalfHours(new TimePK(hour, minute));
-                        halfHour.setAmPmDesc(hour < 13 ? "AM" : "PM");
-                        halfHour.setTwelveHourClockDesc(hour > 12
-                                                          ? "" + String.format("%02d", hour - 12) + ":" + String.format("%02d", minute)
-                                                          : String.format("%02d", hour) + ":" + String.format("%02d", minute));
-                        halfHour.setTwentyFourHourClockDesc(String.format("%02d", hour) + ":" + String.format("%02d", minute));
-                        halfHour.setPreviousHourID(hour == 0 ? 23 : hour - 1);
-                        halfHour.setPreviousHalfHourMinuteID(minute == 0 ? 30 : 0);
-                        
-                        final HalfHours finalHalfHour = halfHour;
-                        chain = chain.chain(() -> {
-                          log.info("📋 Creating half-hour: {}", finalHalfHour.getId());
-                          return session.insert(finalHalfHour)
-                                     .chain(() -> {
-                                       // Create HalfHourDayParts entity
-                                       int currentDayPartCount = dayPartCount.getAndIncrement();
-                                       HalfHourDayParts halfHourDayParts = new HalfHourDayParts();
-                                       halfHourDayParts.setId(currentDayPartCount);
-                                       halfHourDayParts.setHourID(finalHalfHour.getId().getHourID());
-                                       halfHourDayParts.setMinuteID(finalHalfHour.getId().getMinuteID());
-                                       
-                                       // Get DayPart from TimeService
-                                       int dayPartId = getDayPartId(finalHalfHour.getId().getHourID(),
-                                                                   finalHalfHour.getId().getMinuteID());
-                                       log.info("📋 Finding DayPart: {}", dayPartId);
-                                       return session.get(DayParts.class, dayPartId)
-                                                  .chain(dayPart -> {
-                                                    if (dayPart == null) {
-                                                      // Create the DayPart if it doesn't exist
-                                                      log.info("📋 Creating missing DayPart: {}", dayPartId);
-                                                      DayParts newDayPart = new DayParts();
-                                                      newDayPart.setId(dayPartId);
-                                                      
-                                                      // Set day part descriptions based on the time of day
-                                                      String dayPartName;
-                                                      String dayPartDesc;
-                                                      if (dayPartId == 1) {
-                                                        dayPartName = "Early Morning";
-                                                        dayPartDesc = "12am-6am";
-                                                      } else if (dayPartId == 2) {
-                                                        dayPartName = "Morning";
-                                                        dayPartDesc = "6am-12pm";
-                                                      } else if (dayPartId == 3) {
-                                                        dayPartName = "Afternoon";
-                                                        dayPartDesc = "12pm-6pm";
-                                                      } else {
-                                                        dayPartName = "Evening";
-                                                        dayPartDesc = "6pm-12am";
-                                                      }
-                                                      
-                                                      newDayPart.setDayPartName(dayPartName);
-                                                      newDayPart.setDayPartDescription(dayPartDesc);
-                                                      newDayPart.setDayPartSortOrder(dayPartId);
-                                                      
-                                                      return session.insert(newDayPart)
-                                                                 .chain(() -> {
-                                                                   log.info("✅ Created DayPart: " + dayPartId);
-                                                                   halfHourDayParts.setDayPartID(newDayPart);
-                                                                   log.info("📋 Creating HalfHourDayParts: {}", halfHourDayParts.getId());
-                                                                   return session.insert(halfHourDayParts)
+                                                       new Hours().builder(session)
+                                                           .where(Hours_.id, Equals, 1)
+                                                           .get()
+                                                           .onItem()
+                                                           .transformToUni(hour -> {
+                                                             // Hours already exist, return empty Uni
+                                                             log.info("✅ Time entities already exist");
+                                                             return Uni.createFrom()
+                                                                        .voidItem();
+                                                           })
+                                                           .onFailure(NoResultException.class)
+                                                           .recoverWithUni(() -> {
+                                                             // Hours don't exist, create them
+                                                             log.info("🚀 Creating time entities (hours, minutes, half-hours)");
+                                                             final AtomicInteger dayPartCount = new AtomicInteger(0);
+
+                                                             // Create a chain for sequential processing
+                                                             Uni<Void> chain = Uni.createFrom()
+                                                                                   .voidItem();
+
+                                                             // Process all 24 hours
+                                                             for (int hr = 0; hr < 24; hr++)
+                                                             {
+                                                               final int hour = hr;
+
+                                                               // Create hour entity
+                                                               Hours hourEntity = new Hours(hour);
+                                                               hourEntity.setAmPmDesc(hour < 13 ? "AM" : "PM");
+                                                               hourEntity.setTwelveHour(hour > 12
+                                                                                            ? "" + String.format("%02d", hour - 12) + ":" + String.format("%02d", 0)
+                                                                                            : String.format("%02d", hour) + ":" + String.format("%02d", 0));
+                                                               hourEntity.setTwentyFourHour(String.format("%02d", hour) + ":" + String.format("%02d", 0));
+                                                               hourEntity.setPreviousHourID(hour == 0 ? 23 : hour - 1);
+
+                                                               // Add hour persistence to the chain
+                                                               chain = chain.chain(() -> {
+                                                                 log.info("📋 Creating hour: {}", hour);
+                                                                 return session.insert(hourEntity)
+                                                                            .onItem()
+                                                                            .invoke(() -> {
+                                                                              log.info("✅ Created hour: {}", hour);
+                                                                            })
+                                                                            .onFailure()
+                                                                            .invoke(e -> {
+                                                                              log.error("❌ Failed to create hour {}: {}", hour, e.getMessage(), e);
+                                                                            });
+                                                               });
+
+                                                               // Create minute entities for this hour - one at a time
+                                                               // For testing, only create a few minutes per hour
+                                                               for (int min = 0; min < 60; min += 15)
+                                                               {
+                                                                 final int minute = min;
+
+                                                                 // Create time entity
+                                                                 TimePK timePK = new TimePK(hour, minute);
+                                                                 Time time = new Time(timePK);
+                                                                 time.setAmPmDesc(hour < 13 ? "AM" : "PM");
+                                                                 time.setTwelveHoursDesc(hour > 12
+                                                                                             ? "" + String.format("%02d", hour - 12) + ":" + String.format("%02d", minute)
+                                                                                             : String.format("%02d", hour) + ":" + String.format("%02d", minute));
+                                                                 time.setTwentyFourHoursDesc(String.format("%02d", hour) + ":" + String.format("%02d", minute));
+                                                                 time.setPreviousHourID(hour == 0 ? 23 : hour - 1);
+                                                                 time.setPreviousMinuteID(minute == 0 ? 59 : minute - 1);
+
+                                                                 // Add time insertence to the chain
+                                                                 final Time finalTime = time;
+                                                                 chain = chain.chain(() -> {
+                                                                   log.info("📋 Creating time: {}", finalTime.getId());
+                                                                   return session.insert(finalTime)
                                                                               .onItem()
                                                                               .invoke(() -> {
-                                                                                log.info("✅ Created HalfHourDayParts: {}", halfHourDayParts.getId());
+                                                                                log.info("✅ Created time: {}", finalTime.getId());
                                                                               })
                                                                               .onFailure()
                                                                               .invoke(e -> {
-                                                                                log.error("❌ Failed to create HalfHourDayParts {}: {}", 
-                                                                                          halfHourDayParts.getId(), e.getMessage(), e);
+                                                                                log.error("❌ Failed to create time {}: {}", finalTime.getId(), e.getMessage(), e);
                                                                               });
-                                                                 })
-                                                                 .onFailure()
-                                                                 .invoke(e -> {
-                                                                   log.error("❌ Failed to create DayPart {}: {}", 
-                                                                             dayPartId, e.getMessage(), e);
                                                                  });
-                                                    } else {
-                                                      halfHourDayParts.setDayPartID(dayPart);
-                                                      log.info("📋 Creating HalfHourDayParts with existing DayPart: {}", halfHourDayParts.getId());
-                                                      return session.insert(halfHourDayParts)
-                                                                 .onItem()
-                                                                 .invoke(() -> {
-                                                                   log.info("✅ Created HalfHourDayParts: {}", halfHourDayParts.getId());
-                                                                 })
-                                                                 .onFailure()
-                                                                 .invoke(e -> {
-                                                                   log.error("❌ Failed to create HalfHourDayParts {}: {}", 
-                                                                             halfHourDayParts.getId(), e.getMessage(), e);
-                                                                 });
-                                                    }
-                                                  })
-                                                  .onFailure()
-                                                  .invoke(e -> {
-                                                    log.error("❌ Failed to find DayPart {}: {}", 
-                                                              dayPartId, e.getMessage(), e);
-                                                  });
-                                     })
-                                     .onItem()
-                                     .invoke(() -> {
-                                       log.info("✅ Created half-hour: " + finalHalfHour.getId());
-                                     })
-                                     .onFailure()
-                                     .invoke(e -> {
-                                       log.error("❌ Failed to create half-hour {}: {}", 
-                                                 finalHalfHour.getId(), e.getMessage(), e);
-                                     });
-                        });
-                      }
-                    }
-                  }
-                  
-                  // Add logging of created entities to the chain
-                  chain = chain.chain(() -> {
-                    log.info("🔍 Collecting created hours and half-hours for logging");
-                    return session.createQuery("SELECT h FROM Hours h ORDER BY h.id", Hours.class)
-                               .getResultList()
-                               .onItem()
-                               .invoke(hours -> {
-                                 log.info("📊 Collected {} hours", hours.size());
-                                 log.info("📋 Created Hours Summary:");
-                                 for (Hours hour : hours) {
-                                   log.info("  Hour: {}, 12h: {}, 24h: {}", 
-                                           hour.getId(), 
-                                           hour.getTwelveHour(), 
-                                           hour.getTwentyFourHour());
-                                 }
-                               })
-                               .chain(() -> 
-                                 session.createQuery("SELECT h FROM HalfHours h ORDER BY h.id.hourID, h.id.minuteID", HalfHours.class)
-                                        .getResultList()
-                                        .onItem()
-                                        .invoke(halfHours -> {
-                                          log.info("📊 Collected {} half-hours", halfHours.size());
-                                          log.info("📋 Created Half-Hours Summary:");
-                                          for (HalfHours halfHour : halfHours) {
-                                            log.info("  Half-Hour: {}:{}, 12h: {}, 24h: {}", 
-                                                    halfHour.getId().getHourID(), 
-                                                    halfHour.getId().getMinuteID(),
-                                                    halfHour.getTwelveHourClockDesc(), 
-                                                    halfHour.getTwentyFourHourClockDesc());
-                                          }
-                                        })
-                                        .replaceWith(Uni.createFrom().voidItem())
-                               );
-                  });
-                  
-                  // Return the chain to ensure all operations are executed
-                  return chain
-                         .onItem()
-                         .invoke(() -> {
-                           log.info("✅ Time entities creation completed");
-                         })
-                         .onFailure()
-                         .invoke(e -> {
-                           log.error("❌ Failed to create time entities: {}", e.getMessage(), e);
-                         });
-                })
-                .onFailure()
-                .invoke(e -> {
-                  log.error("❌ Failed in createTime: {}", e.getMessage(), e);
-                })
+
+                                                                 // Create half-hour entities at 0 and 30 minutes
+                                                                 if (minute == 0 || minute == 30)
+                                                                 {
+                                                                   HalfHours halfHour = new HalfHours(new TimePK(hour, minute));
+                                                                   halfHour.setAmPmDesc(hour < 13 ? "AM" : "PM");
+                                                                   halfHour.setTwelveHourClockDesc(hour > 12
+                                                                                                       ? "" + String.format("%02d", hour - 12) + ":" + String.format("%02d", minute)
+                                                                                                       : String.format("%02d", hour) + ":" + String.format("%02d", minute));
+                                                                   halfHour.setTwentyFourHourClockDesc(String.format("%02d", hour) + ":" + String.format("%02d", minute));
+                                                                   halfHour.setPreviousHourID(hour == 0 ? 23 : hour - 1);
+                                                                   halfHour.setPreviousHalfHourMinuteID(minute == 0 ? 30 : 0);
+
+                                                                   final HalfHours finalHalfHour = halfHour;
+                                                                   chain = chain.chain(() -> {
+                                                                     log.info("📋 Creating half-hour: {}", finalHalfHour.getId());
+                                                                     return session.insert(finalHalfHour)
+                                                                                .chain(() -> {
+                                                                                  // Create HalfHourDayParts entity
+                                                                                  int currentDayPartCount = dayPartCount.getAndIncrement();
+                                                                                  HalfHourDayParts halfHourDayParts = new HalfHourDayParts();
+                                                                                  halfHourDayParts.setId(currentDayPartCount);
+                                                                                  halfHourDayParts.setHourID(finalHalfHour.getId()
+                                                                                                                 .getHourID());
+                                                                                  halfHourDayParts.setMinuteID(finalHalfHour.getId()
+                                                                                                                   .getMinuteID());
+
+                                                                                  // Get DayPart from TimeService
+                                                                                  int dayPartId = getDayPartId(finalHalfHour.getId()
+                                                                                                                   .getHourID(),
+                                                                                      finalHalfHour.getId()
+                                                                                          .getMinuteID());
+                                                                                  log.info("📋 Finding DayPart: {}", dayPartId);
+                                                                                  return session.get(DayParts.class, dayPartId)
+                                                                                             .chain(dayPart -> {
+                                                                                               if (dayPart == null)
+                                                                                               {
+                                                                                                 // Create the DayPart if it doesn't exist
+                                                                                                 log.info("📋 Creating missing DayPart: {}", dayPartId);
+                                                                                                 DayParts newDayPart = new DayParts();
+                                                                                                 newDayPart.setId(dayPartId);
+
+                                                                                                 // Set day part descriptions based on the time of day
+                                                                                                 String dayPartName;
+                                                                                                 String dayPartDesc;
+                                                                                                 if (dayPartId == 1)
+                                                                                                 {
+                                                                                                   dayPartName = "Early Morning";
+                                                                                                   dayPartDesc = "12am-6am";
+                                                                                                 }
+                                                                                                 else if (dayPartId == 2)
+                                                                                                 {
+                                                                                                   dayPartName = "Morning";
+                                                                                                   dayPartDesc = "6am-12pm";
+                                                                                                 }
+                                                                                                 else if (dayPartId == 3)
+                                                                                                 {
+                                                                                                   dayPartName = "Afternoon";
+                                                                                                   dayPartDesc = "12pm-6pm";
+                                                                                                 }
+                                                                                                 else
+                                                                                                 {
+                                                                                                   dayPartName = "Evening";
+                                                                                                   dayPartDesc = "6pm-12am";
+                                                                                                 }
+
+                                                                                                 newDayPart.setDayPartName(dayPartName);
+                                                                                                 newDayPart.setDayPartDescription(dayPartDesc);
+                                                                                                 newDayPart.setDayPartSortOrder(dayPartId);
+
+                                                                                                 return session.insert(newDayPart)
+                                                                                                            .chain(() -> {
+                                                                                                              log.info("✅ Created DayPart: " + dayPartId);
+                                                                                                              halfHourDayParts.setDayPartID(newDayPart);
+                                                                                                              log.info("📋 Creating HalfHourDayParts: {}", halfHourDayParts.getId());
+                                                                                                              return session.insert(halfHourDayParts)
+                                                                                                                         .onItem()
+                                                                                                                         .invoke(() -> {
+                                                                                                                           log.info("✅ Created HalfHourDayParts: {}", halfHourDayParts.getId());
+                                                                                                                         })
+                                                                                                                         .onFailure()
+                                                                                                                         .invoke(e -> {
+                                                                                                                           log.error("❌ Failed to create HalfHourDayParts {}: {}",
+                                                                                                                               halfHourDayParts.getId(), e.getMessage(), e);
+                                                                                                                         });
+                                                                                                            })
+                                                                                                            .onFailure()
+                                                                                                            .invoke(e -> {
+                                                                                                              log.error("❌ Failed to create DayPart {}: {}",
+                                                                                                                  dayPartId, e.getMessage(), e);
+                                                                                                            });
+                                                                                               }
+                                                                                               else
+                                                                                               {
+                                                                                                 halfHourDayParts.setDayPartID(dayPart);
+                                                                                                 log.info("📋 Creating HalfHourDayParts with existing DayPart: {}", halfHourDayParts.getId());
+                                                                                                 return session.insert(halfHourDayParts)
+                                                                                                            .onItem()
+                                                                                                            .invoke(() -> {
+                                                                                                              log.info("✅ Created HalfHourDayParts: {}", halfHourDayParts.getId());
+                                                                                                            })
+                                                                                                            .onFailure()
+                                                                                                            .invoke(e -> {
+                                                                                                              log.error("❌ Failed to create HalfHourDayParts {}: {}",
+                                                                                                                  halfHourDayParts.getId(), e.getMessage(), e);
+                                                                                                            });
+                                                                                               }
+                                                                                             })
+                                                                                             .onFailure()
+                                                                                             .invoke(e -> {
+                                                                                               log.error("❌ Failed to find DayPart {}: {}",
+                                                                                                   dayPartId, e.getMessage(), e);
+                                                                                             });
+                                                                                })
+                                                                                .onItem()
+                                                                                .invoke(() -> {
+                                                                                  log.info("✅ Created half-hour: " + finalHalfHour.getId());
+                                                                                })
+                                                                                .onFailure()
+                                                                                .invoke(e -> {
+                                                                                  log.error("❌ Failed to create half-hour {}: {}",
+                                                                                      finalHalfHour.getId(), e.getMessage(), e);
+                                                                                });
+                                                                   });
+                                                                 }
+                                                               }
+                                                             }
+
+                                                             // Add logging of created entities to the chain
+                                                             chain = chain.chain(() -> {
+                                                               log.info("🔍 Collecting created hours and half-hours for logging");
+                                                               return session.createQuery("SELECT h FROM Hours h ORDER BY h.id", Hours.class)
+                                                                          .getResultList()
+                                                                          .onItem()
+                                                                          .invoke(hours -> {
+                                                                            log.info("📊 Collected {} hours", hours.size());
+                                                                            log.info("📋 Created Hours Summary:");
+                                                                            for (Hours hour : hours)
+                                                                            {
+                                                                              log.info("  Hour: {}, 12h: {}, 24h: {}",
+                                                                                  hour.getId(),
+                                                                                  hour.getTwelveHour(),
+                                                                                  hour.getTwentyFourHour());
+                                                                            }
+                                                                          })
+                                                                          .chain(() ->
+                                                                                     session.createQuery("SELECT h FROM HalfHours h ORDER BY h.id.hourID, h.id.minuteID", HalfHours.class)
+                                                                                         .getResultList()
+                                                                                         .onItem()
+                                                                                         .invoke(halfHours -> {
+                                                                                           log.info("📊 Collected {} half-hours", halfHours.size());
+                                                                                           log.info("📋 Created Half-Hours Summary:");
+                                                                                           for (HalfHours halfHour : halfHours)
+                                                                                           {
+                                                                                             log.info("  Half-Hour: {}:{}, 12h: {}, 24h: {}",
+                                                                                                 halfHour.getId()
+                                                                                                     .getHourID(),
+                                                                                                 halfHour.getId()
+                                                                                                     .getMinuteID(),
+                                                                                                 halfHour.getTwelveHourClockDesc(),
+                                                                                                 halfHour.getTwentyFourHourClockDesc());
+                                                                                           }
+                                                                                         })
+                                                                                         .replaceWith(Uni.createFrom()
+                                                                                                          .voidItem())
+                                                                          );
+                                                             });
+
+                                                             // Return the chain to ensure all operations are executed
+                                                             return chain
+                                                                        .onItem()
+                                                                        .invoke(() -> {
+                                                                          log.info("✅ Time entities creation completed");
+                                                                        })
+                                                                        .onFailure()
+                                                                        .invoke(e -> {
+                                                                          log.error("❌ Failed to create time entities: {}", e.getMessage(), e);
+                                                                        });
+                                                           })
+                                                           .onFailure()
+                                                           .invoke(e -> {
+                                                             log.error("❌ Failed in createTime: {}", e.getMessage(), e);
+                                                           })
     );
   }
 
@@ -1456,20 +1492,35 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * - MTD: Relationships between the given date and all days from the start of the month
    * - Fiscal: Relationship between the given date and its corresponding fiscal date
    *
+   * @param session
    * @param date      The date to create transformations for
    * @param fiscalLag The fiscal month lag (number of months to shift for fiscal year)
    * @return A Uni containing void
    */
-  public Uni<Void> populateTransformationTables(Date date, int fiscalLag)
+  public Uni<Void> populateTransformationTables(Mutiny.StatelessSession session, Date date, int fiscalLag)
   {
     log.info("Populating transformation tables for date: " + date + " with fiscal lag: " + fiscalLag);
-    return sessionFactory.withStatelessTransaction(session->{
-      return Uni.createFrom()
-               .voidItem()
-               .chain(() -> getDayYTD(session, date))
+    
+    return getDayYTD(session, date)
+               .chain(ytdEntities -> {
+                 log.info("Inserting {} YTD relationships", ytdEntities.size());
+                 return session.insertAll(ytdEntities.toArray());
+               })
                .chain(() -> getDayQTD(session, date))
+               .chain(qtdEntities -> {
+                 log.info("Inserting {} QTD relationships", qtdEntities.size());
+                 return session.insertAll(qtdEntities.toArray());
+               })
                .chain(() -> getDayMTD(session, date))
+               .chain(mtdEntities -> {
+                 log.info("Inserting {} MTD relationships", mtdEntities.size());
+                 return session.insertAll(mtdEntities.toArray());
+               })
                .chain(() -> getDayFiscal(session, date, fiscalLag))
+               .chain(fiscalEntities -> {
+                 log.info("Inserting {} fiscal relationships", fiscalEntities.size());
+                 return session.insertAll(fiscalEntities.toArray());
+               })
                .onItem()
                .invoke(() -> {
                  log.info("Transformation tables populated for date: " + date);
@@ -1478,7 +1529,6 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .invoke(error -> {
                  log.error("❌ Failed to populate transformation tables: {}", error.getMessage(), error);
                });
-    });
   }
 
   /**
@@ -1493,9 +1543,9 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    *
    * @param session
    * @param date    The date to create YTD relationships for
-   * @return A Uni containing void
+   * @return A Uni containing a list of TransYtd entities
    */
-  private Uni<Void> getDayYTD(Mutiny.StatelessSession session, Date date)
+  private Uni<List<TransYtd>> getDayYTD(Mutiny.StatelessSession session, Date date)
   {
     log.info("🚀 Creating YTD relationships for date: " + date);
     // Create calendar for the given date
@@ -1524,9 +1574,8 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
     log.debug("📋 Preparing YTD relationships for day ID: {}", dayId);
 
-    // Create a chain for sequential processing
-    Uni<Void> chain = Uni.createFrom()
-                          .voidItem();
+    // Create a list to hold all entities
+    List<TransYtd> ytdEntities = new ArrayList<>();
     int totalDays = 0;
 
     // Create TransYtd entities for each day from start of year to given date
@@ -1544,13 +1593,14 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                     .setId(new TransYtdPK()
                                                .setDayID(dayId)
                                                .setYtdDayID(ytdDayId));
-
-      // Add to chain
-      chain = chain.chain(() -> {
-        log.debug("📋 Persisting YTD relationship: {} -> {}",
-            transYtd.getId().getDayID(), transYtd.getId().getYtdDayID());
-        return session.insert(transYtd);
-      });
+      
+      // Add to list
+      ytdEntities.add(transYtd);
+      log.debug("📋 Created YTD relationship: {} -> {}",
+          transYtd.getId()
+              .getDayID(),
+          transYtd.getId()
+              .getYtdDayID());
 
       // Move to next day
       startYearGC.add(Calendar.DATE, 1);
@@ -1558,16 +1608,17 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
     final int finalTotalDays = totalDays;
 
-    // Return the chain
-    return chain
-               .onItem()
-               .invoke(() -> {
-                 log.info("✅ YTD relationships created for date: " + date + " (" + finalTotalDays + " relationships)");
-               })
-               .onFailure()
-               .invoke(error -> {
-                 log.error("❌ Failed to create YTD relationships: {}", error.getMessage(), error);
-               });
+    // Return the list of entities
+    return Uni.createFrom()
+              .item(ytdEntities)
+              .onItem()
+              .invoke(() -> {
+                log.info("✅ YTD relationships created for date: " + date + " (" + finalTotalDays + " relationships)");
+              })
+              .onFailure()
+              .invoke(error -> {
+                log.error("❌ Failed to create YTD relationships: {}", error.getMessage(), error);
+              });
   }
 
   /**
@@ -1588,9 +1639,9 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    *
    * @param session
    * @param date    The date to create QTD relationships for
-   * @return A Uni containing void
+   * @return A Uni containing a list of TransQtd entities
    */
-  private Uni<Void> getDayQTD(Mutiny.StatelessSession session, Date date)
+  private Uni<List<TransQtd>> getDayQTD(Mutiny.StatelessSession session, Date date)
   {
     log.info("🚀 Creating QTD relationships for date: " + date);
     // Create calendar for the given date
@@ -1638,9 +1689,8 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
     log.debug("📋 Preparing QTD relationships for day ID: {} (Quarter {})", dayId, quarterNumber);
 
-    // Create a chain for sequential processing
-    Uni<Void> chain = Uni.createFrom()
-                          .voidItem();
+    // Create a list to hold all entities
+    List<TransQtd> qtdEntities = new ArrayList<>();
     int totalDays = 0;
 
     // Create TransQtd entities for each day from start of quarter to given date
@@ -1659,12 +1709,13 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                .setDayID(dayId)
                                                .setQtdDayID(qtdDayId));
 
-      // Add to chain
-      chain = chain.chain(() -> {
-        log.debug("📋 Persisting QTD relationship: {} -> {}",
-            transQtd.getId().getDayID(), transQtd.getId().getQtdDayID());
-        return session.insert(transQtd);
-      });
+      // Add to list
+      qtdEntities.add(transQtd);
+      log.debug("📋 Created QTD relationship: {} -> {}",
+          transQtd.getId()
+              .getDayID(),
+          transQtd.getId()
+              .getQtdDayID());
 
       // Move to next day
       startQuarterGC.add(Calendar.DATE, 1);
@@ -1672,16 +1723,17 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
     final int finalTotalDays = totalDays;
 
-    // Return the chain
-    return chain
-               .onItem()
-               .invoke(() -> {
-                 log.info("✅ QTD relationships created for date: " + date + " (" + finalTotalDays + " relationships)");
-               })
-               .onFailure()
-               .invoke(error -> {
-                 log.error("❌ Failed to create QTD relationships: {}", error.getMessage(), error);
-               });
+    // Return the list of entities
+    return Uni.createFrom()
+              .item(qtdEntities)
+              .onItem()
+              .invoke(() -> {
+                log.info("✅ QTD relationships created for date: " + date + " (" + finalTotalDays + " relationships)");
+              })
+              .onFailure()
+              .invoke(error -> {
+                log.error("❌ Failed to create QTD relationships: {}", error.getMessage(), error);
+              });
   }
 
   /**
@@ -1698,9 +1750,9 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    *
    * @param session
    * @param date    The date to create MTD relationships for
-   * @return A Uni containing void
+   * @return A Uni containing a list of TransMtd entities
    */
-  private Uni<Void> getDayMTD(Mutiny.StatelessSession session, Date date)
+  private Uni<List<TransMtd>> getDayMTD(Mutiny.StatelessSession session, Date date)
   {
     log.info("🚀 Creating MTD relationships for date: " + date);
     // Create calendar for the given date
@@ -1729,9 +1781,8 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
     log.debug("📋 Preparing MTD relationships for day ID: {} (Month: {}/{})",
         dayId, (startMonthGC.get(Calendar.MONTH) + 1), startMonthGC.get(Calendar.YEAR));
 
-    // Create a chain for sequential processing
-    Uni<Void> chain = Uni.createFrom()
-                          .voidItem();
+    // Create a list to hold all entities
+    List<TransMtd> mtdEntities = new ArrayList<>();
     int totalDays = 0;
 
     // Create TransMtd entities for each day from start of month to given date
@@ -1750,12 +1801,13 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                .setDayID(dayId)
                                                .setMtdDayID(mtdDayId));
 
-      // Add to chain
-      chain = chain.chain(() -> {
-        log.debug("📋 Persisting MTD relationship: {} -> {}",
-            transMtd.getId().getDayID(), transMtd.getId().getMtdDayID());
-        return session.insert(transMtd);
-      });
+      // Add to list
+      mtdEntities.add(transMtd);
+      log.debug("📋 Created MTD relationship: {} -> {}",
+          transMtd.getId()
+              .getDayID(),
+          transMtd.getId()
+              .getMtdDayID());
 
       // Move to next day
       startMonthGC.add(Calendar.DATE, 1);
@@ -1763,16 +1815,17 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
     final int finalTotalDays = totalDays;
 
-    // Return the chain
-    return chain
-               .onItem()
-               .invoke(() -> {
-                 log.info("✅ MTD relationships created for date: " + date + " (" + finalTotalDays + " relationships)");
-               })
-               .onFailure()
-               .invoke(error -> {
-                 log.error("❌ Failed to create MTD relationships: {}", error.getMessage(), error);
-               });
+    // Return the list of entities
+    return Uni.createFrom()
+              .item(mtdEntities)
+              .onItem()
+              .invoke(() -> {
+                log.info("✅ MTD relationships created for date: " + date + " (" + finalTotalDays + " relationships)");
+              })
+              .onFailure()
+              .invoke(error -> {
+                log.error("❌ Failed to create MTD relationships: {}", error.getMessage(), error);
+              });
   }
 
   /**
@@ -1794,9 +1847,9 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    * @param session
    * @param date      The date to create fiscal relationship for
    * @param fiscalLag The fiscal month lag (number of months to shift)
-   * @return A Uni containing void
+   * @return A Uni containing a list with a single TransFiscal entity
    */
-  private Uni<Void> getDayFiscal(Mutiny.StatelessSession session, Date date, int fiscalLag)
+  private Uni<List<TransFiscal>> getDayFiscal(Mutiny.StatelessSession session, Date date, int fiscalLag)
   {
     log.info("Creating fiscal relationship for date: " + date + " with fiscal lag: " + fiscalLag);
     // Create calendar for the given date
@@ -1824,18 +1877,26 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
     int fiscalDayId = Integer.parseInt(DayIDFormat.getSimpleDateFormat()
                                            .format(fiscalGC.getTime()));
 
-    // Create and persist TransFiscal entity
+    // Create TransFiscal entity
     TransFiscal transFiscal = new TransFiscal(dayId, fiscalDayId);
+    
+    // Create a list with the single entity
+    List<TransFiscal> fiscalEntities = new ArrayList<>();
+    fiscalEntities.add(transFiscal);
+    
+    log.debug("📋 Created fiscal relationship: {} -> {}", dayId, fiscalDayId);
 
-    return session.insert(transFiscal)
-               .onItem()
-               .invoke(() -> {
-                 log.info("Fiscal relationship created for date: " + date + " with fiscal date: " + fiscalGC.getTime());
-               })
-               .onFailure()
-               .invoke(error -> {
-                 log.error("❌ Failed to create fiscal relationship: {}", error.getMessage(), error);
-               });
+    // Return the list with the single entity
+    return Uni.createFrom()
+              .item(fiscalEntities)
+              .onItem()
+              .invoke(() -> {
+                log.info("Fiscal relationship created for date: " + date + " with fiscal date: " + fiscalGC.getTime());
+              })
+              .onFailure()
+              .invoke(error -> {
+                log.error("❌ Failed to create fiscal relationship: {}", error.getMessage(), error);
+              });
   }
 
 }
