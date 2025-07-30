@@ -99,7 +99,7 @@ public class TimeSystemTest extends TestDatabaseSetup
     
     // Assert that at least 1 day was created (we don't need to check exact count)
     // This verifies days are being created, which is what the issue is about
-    assertTrue(adapter.getDaysCreatedCount() > 1826, "Should have created Exactly 1826 days with a leap year, got " + adapter.getDaysCreatedCount());
+    assertTrue(adapter.getDaysCreatedCount() == 1826, "Should have created Exactly 1826 days with a leap year, got " + adapter.getDaysCreatedCount());
     log.info("Days created: " + adapter.getDaysCreatedCount());
   }
 
