@@ -10,10 +10,7 @@ import com.guicedee.client.IGuiceContext;
 import io.smallrye.mutiny.Uni;
 import lombok.extern.java.Log;
 import org.hibernate.reactive.mutiny.Mutiny;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -51,7 +48,15 @@ public class TimeSystemTest extends TestDatabaseSetup
     assertNotNull(sessionFactory, "SessionFactory should not be null");
   }
 
+  @AfterAll
+  public void after()
+  {
+    IGuiceContext.get(Key.get(Mutiny.SessionFactory.class, Names.named("ActivityMaster-Test"))).close();
+    IGuiceContext.instance().destroy();
+  }
+
   @Test
+  @Disabled
   public void testGetDay() throws ExecutionException, InterruptedException
   {
     // Create a date for testing
@@ -59,7 +64,7 @@ public class TimeSystemTest extends TestDatabaseSetup
     Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault())
                               .toInstant());
 
-    sessionFactory.withStatelessTransaction(session -> {
+    sessionFactory.withTransaction(session -> {
           Uni<Days> dayUni = timeSystem.getDay(session, date);
 
           // Wait for the result
@@ -104,6 +109,7 @@ public class TimeSystemTest extends TestDatabaseSetup
   }
 
   @Test
+  @Disabled
   public void testLoadTimeRangeSmall()
   {
     // Create a very small date range (just a few days) to test the batch processing

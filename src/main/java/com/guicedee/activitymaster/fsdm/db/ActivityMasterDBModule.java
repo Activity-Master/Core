@@ -57,4 +57,9 @@ public class ActivityMasterDBModule
 		return 20;
 	}
 
+	@Override
+	public boolean enabled()
+	{
+		return !forTests;
+	}
 }

@@ -288,16 +288,16 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    */
   public Uni<Years> getYear(Mutiny.StatelessSession session, Date date)
   {
-    log.info("🔍 Getting year for date: {}", date);
+    log.debug("🔍 Getting year for date: {}", date);
 
     return getYearFromDatabase(session, date)
                .onItem()
                .invoke(year -> {
-                 log.info("✅ Retrieved year for date: {}", date);
+                 log.debug("✅ Retrieved year for date: {}", date);
                })
                .onFailure()
                .recoverWithUni(error -> {
-                 log.info("📋 Year not found for date: {}, creating new year", date);
+                 log.debug("📋 Year not found for date: {}, creating new year", date);
                  return createYear(date);
                });
   }
@@ -331,7 +331,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
     return sessionFactory.withTransaction(session -> {
       Short yearId = Short.parseShort(YearIDFormat.getSimpleDateFormat()
                                           .format(date));
-      log.info("🚀 Creating year with ID: {}", yearId);
+      log.debug("🚀 Creating year with ID: {}", yearId);
 
       // Create a new year entity
       Years year = new Years();
@@ -397,16 +397,16 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    */
   public Uni<Quarters> getQuarter(Mutiny.StatelessSession session, Date date)
   {
-    log.info("🔍 Getting quarter for date: {}", date);
+    log.debug("🔍 Getting quarter for date: {}", date);
 
     return getQuarterFromDatabase(session, date)
                .onItem()
                .invoke(quarter -> {
-                 log.info("✅ Retrieved quarter for date: {}", date);
+                 log.debug("✅ Retrieved quarter for date: {}", date);
                })
                .onFailure()
                .recoverWithUni(error -> {
-                 log.info("📋 Quarter not found for date: {}, creating new quarter", date);
+                 log.debug("📋 Quarter not found for date: {}, creating new quarter", date);
                  return createQuarter(session, date);
                });
   }
@@ -428,12 +428,12 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .transform(optional -> {
                  if (optional != null)
                  {
-                   log.info("✅ Found quarter with ID: {}", quarterId);
+                   log.debug("✅ Found quarter with ID: {}", quarterId);
                    return (Quarters) optional;
                  }
                  else
                  {
-                   log.info("📋 Quarter not found with ID: {}", quarterId);
+                   log.debug("📋 Quarter not found with ID: {}", quarterId);
                    throw new NoSuchElementException("Quarter not found for date: " + date);
                  }
                });
@@ -811,16 +811,16 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    */
   public Uni<Weeks> getWeek(Mutiny.StatelessSession session, Date date)
   {
-    log.info("🔍 Getting week for date: {}", date);
+    log.debug("🔍 Getting week for date: {}", date);
 
     return getWeekFromDatabase(session, date)
                .onItem()
                .invoke(week -> {
-                 log.info("✅ Retrieved week for date: {}", date);
+                 log.debug("✅ Retrieved week for date: {}", date);
                })
                .onFailure()
                .recoverWithUni(error -> {
-                 log.info("📋 Week not found for date: {}, creating new week", date);
+                 log.debug("📋 Week not found for date: {}, creating new week", date);
                  return createWeek(session, date);
                });
   }
@@ -943,19 +943,35 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                });
   }
 
+  /**
+   * Gets a date without checking for any existance, load years in for that
+   * @param session
+   * @param date
+   * @return
+   */
+   @Override
+   public Uni<Days> getDay(Mutiny.Session session, Date date)
+  {
+    log.info("🔍 Getting day for date: {}", date);
+    return new Days().builder(session)
+        .find(Integer.valueOf(DayIDFormat.getSimpleDateFormat().format(date)))
+        .get();
+  }
+
+
   @Override
   public Uni<Days> getDay(Mutiny.StatelessSession session, Date date)
   {
-    log.info("🔍 Getting day for date: {}", date);
+    log.debug("🔍 Getting day for date: {}", date);
 
     return getDayFromDatabase(session, date)
                .onItem()
                .invoke(day -> {
-                 log.info("✅ Retrieved day for date: {}", date);
+                 log.debug("✅ Retrieved day for date: {}", date);
                })
                .onFailure()
                .recoverWithUni(error -> {
-                 log.info("📋 Day not found for date: {}, creating new day", date);
+                 log.debug("📋 Day not found for date: {}, creating new day", date);
                  return createDay(session, date)
                             .chain(days -> {
                               return populateTransformationTables(session, date, -3).onFailure()
@@ -977,12 +993,12 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .transform(optional -> {
                  if (optional != null)
                  {
-                   log.info("Found day with ID: " + dayId);
+                   log.debug("Found day with ID: " + dayId);
                    return (Days) optional;
                  }
                  else
                  {
-                   log.info("Day not found with ID: " + dayId);
+                   log.debug("Day not found with ID: " + dayId);
                    throw new NoSuchElementException("Day not found for date: " + date);
                  }
                });
@@ -992,7 +1008,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   {
     int dayId = Integer.parseInt(DayIDFormat.getSimpleDateFormat()
                                      .format(date));
-    log.info("🚀 Creating day with ID: {}", dayId);
+    log.debug("🚀 Creating day with ID: {}", dayId);
 
     // Create a new day entity
     Days day = new Days();
@@ -1501,34 +1517,48 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   {
     log.info("Populating transformation tables for date: " + date + " with fiscal lag: " + fiscalLag);
     
-    return getDayYTD(session, date)
-               .chain(ytdEntities -> {
-                 log.info("Inserting {} YTD relationships", ytdEntities.size());
-                 return session.insertAll(ytdEntities.toArray());
-               })
-               .chain(() -> getDayQTD(session, date))
-               .chain(qtdEntities -> {
-                 log.info("Inserting {} QTD relationships", qtdEntities.size());
-                 return session.insertAll(qtdEntities.toArray());
-               })
-               .chain(() -> getDayMTD(session, date))
-               .chain(mtdEntities -> {
-                 log.info("Inserting {} MTD relationships", mtdEntities.size());
-                 return session.insertAll(mtdEntities.toArray());
-               })
-               .chain(() -> getDayFiscal(session, date, fiscalLag))
-               .chain(fiscalEntities -> {
-                 log.info("Inserting {} fiscal relationships", fiscalEntities.size());
-                 return session.insertAll(fiscalEntities.toArray());
-               })
-               .onItem()
-               .invoke(() -> {
-                 log.info("Transformation tables populated for date: " + date);
-               })
-               .onFailure()
-               .invoke(error -> {
-                 log.error("❌ Failed to populate transformation tables: {}", error.getMessage(), error);
-               });
+    // Get all entities from the four methods
+    Uni<List<TransYtd>> ytdUni = getDayYTD(session, date);
+    Uni<List<TransQtd>> qtdUni = getDayQTD(session, date);
+    Uni<List<TransMtd>> mtdUni = getDayMTD(session, date);
+    Uni<List<TransFiscal>> fiscalUni = getDayFiscal(session, date, fiscalLag);
+    
+    // Combine all four Unis to get all entities at once
+    return Uni.combine().all().unis(ytdUni, qtdUni, mtdUni, fiscalUni)
+              .asTuple()
+              .chain(tuple -> {
+                List<TransYtd> ytdEntities = tuple.getItem1();
+                List<TransQtd> qtdEntities = tuple.getItem2();
+                List<TransMtd> mtdEntities = tuple.getItem3();
+                List<TransFiscal> fiscalEntities = tuple.getItem4();
+                
+                // Log the number of entities for each type
+                log.info("Created {} YTD relationships", ytdEntities.size());
+                log.info("Created {} QTD relationships", qtdEntities.size());
+                log.info("Created {} MTD relationships", mtdEntities.size());
+                log.info("Created {} fiscal relationships", fiscalEntities.size());
+                
+                // Combine all entities into a single array
+                List<Object> allEntities = new ArrayList<>();
+                allEntities.addAll(ytdEntities);
+                allEntities.addAll(qtdEntities);
+                allEntities.addAll(mtdEntities);
+                allEntities.addAll(fiscalEntities);
+                
+                // Log the total number of entities being inserted
+                log.info("Inserting {} total relationships in a single batch", allEntities.size());
+                
+                // Insert all entities in a single batch
+                return session.insertAll(allEntities.toArray());
+              })
+              .onItem()
+              .invoke(() -> {
+                log.info("Transformation tables populated for date: " + date);
+              })
+              .onFailure()
+              .invoke(error -> {
+                log.error("❌ Failed to populate transformation tables: {}", error.getMessage(), error);
+              });
   }
 
   /**

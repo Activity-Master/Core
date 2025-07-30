@@ -52,6 +52,8 @@ module com.guicedee.activitymaster.fsdm {
 
   requires com.ehcache;
 
+  requires transitive org.hibernate.orm.jcache;
+
   provides IGuiceModule with
                             EventInterceptorsBinder,
                             //	ActivityMasterDBModule,

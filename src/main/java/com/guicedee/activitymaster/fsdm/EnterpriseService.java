@@ -432,6 +432,7 @@ public class EnterpriseService
     return (Uni) new Enterprise().builder(session)
                      .withName(name)
                      .inDateRange()
+                     .setCacheName("getEnterpriseByName","default")
                      .get()
                      .onFailure()
                      .invoke(error ->

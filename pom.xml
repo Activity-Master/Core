@@ -33,6 +33,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>hibernate-jcache</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
         </dependency>
