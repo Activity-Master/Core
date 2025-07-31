@@ -167,14 +167,6 @@ public class EventsSystem
                                                                                 .onItem()
                                                                                 .invoke(result -> {
                                                                                   log.debug("✅ Created LogItem resource type");
-                                                                                  logProgress("Loading Time", "Creating Hours and Minutes");
-
-                                                                                  log.debug("⏰ Creating time using reactive ITimeSystem");
-                                                                                  com.guicedee.client.IGuiceContext.get(ITimeSystem.class)
-                                                                                      .createTime()
-                                                                                      .onItem().invoke(() -> log.debug("✅ Successfully created time entities"))
-                                                                                      .onFailure().invoke(error -> log.error("❌ Failed to create time entities: {}", error))
-                                                                                      .await().atMost(Duration.ofMinutes(1));
                                                                                 })
                                                                                 .onFailure()
                                                                                 .invoke(error ->

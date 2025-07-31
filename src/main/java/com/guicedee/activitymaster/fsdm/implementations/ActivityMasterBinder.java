@@ -21,7 +21,7 @@ public class ActivityMasterBinder
 		expose(ActivityMasterConfiguration.class);
 		
 		// Bind TimeSystem for use by TimeSystemAdapter
-		bind(TimeSystem.class);
+		//bind(TimeSystem.class);
 		
 		// Bind ITimeSystem to TimeSystemAdapter for reactive interface
 		bind(ITimeSystem.class)

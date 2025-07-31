@@ -30,36 +30,62 @@ public class PostgreSQLTestDBModule
         ActivityMasterDBModule.forTests = true;
         postgresContainer.start();
          try {
-        // Copy init.sql from classpath to container
-        Path sqlPath = Paths.get("src/test/resources/postgres_fsdm.sql");
+        // Copy and execute postgres_fsdm.sql
+        Path fsdmSqlPath = Paths.get("src/test/resources/postgres_fsdm.sql");
 
         postgresContainer.copyFileToContainer(
-            MountableFile.forHostPath(sqlPath),
-            "/docker-entrypoint-initdb.d/init.sql"
+            MountableFile.forHostPath(fsdmSqlPath),
+            "/docker-entrypoint-initdb.d/init_fsdm.sql"
         );
 
-        // Or execute it explicitly with psql:
         postgresContainer.copyFileToContainer(
-            MountableFile.forHostPath(sqlPath),
-            "/tmp/init.sql"
+            MountableFile.forHostPath(fsdmSqlPath),
+            "/tmp/init_fsdm.sql"
         );
 
-        Container.ExecResult result = postgresContainer.execInContainer(
+        Container.ExecResult fsdmResult = postgresContainer.execInContainer(
             "psql",
             "-U", postgresContainer.getUsername(),
             "-d", postgresContainer.getDatabaseName(),
-            "-f", "/tmp/init.sql"
+            "-f", "/tmp/init_fsdm.sql"
         );
 
-        if (result.getExitCode() != 0) {
-            System.err.println("STDERR: " + result.getStderr());
-            throw new RuntimeException("psql script execution failed: " + result.getStderr());
+        if (fsdmResult.getExitCode() != 0) {
+            System.err.println("STDERR: " + fsdmResult.getStderr());
+            throw new RuntimeException("psql fsdm script execution failed: " + fsdmResult.getStderr());
         }
 
-        System.out.println("✅ DB Script Executed Successfully:\n" + result.getStdout());
+        System.out.println("✅ DB FSDM Script Executed Successfully:\n" + fsdmResult.getStdout());
+        
+        // Copy and execute postgres_structure.sql
+        Path structureSqlPath = Paths.get("src/test/resources/postgres_structure.sql");
+
+        postgresContainer.copyFileToContainer(
+            MountableFile.forHostPath(structureSqlPath),
+            "/docker-entrypoint-initdb.d/init_structure.sql"
+        );
+
+        postgresContainer.copyFileToContainer(
+            MountableFile.forHostPath(structureSqlPath),
+            "/tmp/init_structure.sql"
+        );
+
+        Container.ExecResult structureResult = postgresContainer.execInContainer(
+            "psql",
+            "-U", postgresContainer.getUsername(),
+            "-d", postgresContainer.getDatabaseName(),
+            "-f", "/tmp/init_structure.sql"
+        );
+
+        if (structureResult.getExitCode() != 0) {
+            System.err.println("STDERR: " + structureResult.getStderr());
+            throw new RuntimeException("psql structure script execution failed: " + structureResult.getStderr());
+        }
+
+        System.out.println("✅ DB Structure Script Executed Successfully:\n" + structureResult.getStdout());
 
     } catch (Exception e) {
-        throw new RuntimeException("Failed to execute init.sql", e);
+        throw new RuntimeException("Failed to execute SQL initialization scripts", e);
     }
     }
 

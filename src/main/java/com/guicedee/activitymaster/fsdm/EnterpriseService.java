@@ -1,76 +1,46 @@
 package com.guicedee.activitymaster.fsdm;
 
-import com.guicedee.activitymaster.fsdm.systems.EventsSystem;
-
-/**
- * Reactivity Migration Checklist:
- * 
- * [✓] One action per Mutiny.Session at a time
- *     - All operations on a session are sequential
- *     - No parallel operations on the same session
- * 
- * [✓] Pass Mutiny.Session through the chain
- *     - All methods accept session as parameter
- *     - Session is passed to all dependent operations
- * 
- * [✓] No await() usage
- *     - Using reactive chains instead of blocking operations
- * 
- * [✓] Synchronous execution of reactive chains
- *     - All reactive chains execute synchronously
- *     - System installations and listener notifications are properly chained
- * 
- * [✓] No parallel operations on a session
- *     - Not using Uni.combine().all().unis() with operations that share the same session
- *     - Systems are installed sequentially using chain()
- * 
- * [✓] No session/transaction creation in libraries
- *     - Sessions are passed in from the caller
- *     - No sessionFactory.withTransaction() in methods
- * 
- * See ReactivityMigrationGuide.md for more details on these rules.
- */
-
 import com.google.inject.Inject;
-import com.guicedee.activitymaster.fsdm.client.services.*;
+import com.guicedee.activitymaster.fsdm.client.services.IEnterpriseService;
+import com.guicedee.activitymaster.fsdm.client.services.IPasswordsService;
+import com.guicedee.activitymaster.fsdm.client.services.IRelationshipValue;
+import com.guicedee.activitymaster.fsdm.client.services.ISystemsService;
 import com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.IWarehouseRelationshipClassificationTable;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.classifications.IClassification;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.enterprise.IEnterprise;
 import com.guicedee.activitymaster.fsdm.client.services.builders.warehouse.systems.ISystems;
-
-import java.util.ArrayList;
-
 import com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemInstall;
 import com.guicedee.activitymaster.fsdm.client.services.events.IOnSystemUpdate;
-import com.guicedee.activitymaster.fsdm.client.services.systems.*;
-import com.guicedee.activitymaster.fsdm.db.entities.enterprise.*;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IActivityMasterSystem;
+import com.guicedee.activitymaster.fsdm.client.services.systems.IProgressable;
+import com.guicedee.activitymaster.fsdm.client.services.systems.ISystemUpdate;
+import com.guicedee.activitymaster.fsdm.client.services.systems.SortedUpdate;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.EnterpriseXClassification;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.EnterpriseXClassification_;
+import com.guicedee.activitymaster.fsdm.db.entities.enterprise.Enterprise_;
 import com.guicedee.activitymaster.fsdm.db.entities.enterprise.builders.EnterpriseQueryBuilder;
-import com.guicedee.activitymaster.fsdm.systems.ActiveFlagSystem;
-import com.guicedee.activitymaster.fsdm.systems.ClassificationsDataConceptSystem;
-import com.guicedee.activitymaster.fsdm.systems.EnterpriseSystem;
+import com.guicedee.activitymaster.fsdm.systems.EventsSystem;
 import com.guicedee.activitymaster.fsdm.systems.SystemsSystem;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.GuiceContext;
 import io.github.classgraph.ClassInfo;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.entityassist.enumerations.Operand.*;
-import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.*;
-import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications.*;
-import static com.guicedee.activitymaster.fsdm.services.ActivityMasterSystemsManager.*;
+import static com.entityassist.enumerations.Operand.InList;
+import static com.guicedee.activitymaster.fsdm.client.services.administration.ActivityMasterConfiguration.applicationEnterpriseName;
+import static com.guicedee.activitymaster.fsdm.client.services.classifications.EnterpriseClassifications.UpdateClass;
 
 @SuppressWarnings("DuplicatedCode")
 @Log4j2
@@ -291,67 +261,55 @@ public class EnterpriseService
   //@jakarta.transaction.Transactional
   public Uni<Map<Integer, Class<? extends ISystemUpdate>>> getUpdates(Mutiny.Session session, IEnterprise<?, ?> enterprise)
   {
+    // First, synchronously collect all available updates
     return Uni.createFrom()
-               .emitter(emitter -> {
-                 try
+               .item(() -> {
+                 Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
+                 for (ClassInfo classInfo : GuiceContext.instance()
+                                                .getScanResult()
+                                                .getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
                  {
-                   Map<Integer, Class<? extends ISystemUpdate>> availableUpdates = new TreeMap<>();
-                   for (ClassInfo classInfo : GuiceContext.instance()
-                                                  .getScanResult()
-                                                  .getClassesWithAnnotation(SortedUpdate.class.getCanonicalName()))
+                   if (classInfo.isAbstract() || classInfo.isInterface())
                    {
-                     if (classInfo.isAbstract() || classInfo.isInterface())
-                     {
-                       continue;
-                     }
-
-                     @SuppressWarnings("unchecked")
-                     Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) classInfo.loadClass();
-                     SortedUpdate du = clazz.getAnnotation(SortedUpdate.class);
-                     availableUpdates.put(du.sortOrder(), clazz);
+                     continue;
                    }
 
-                   getEnterpriseAppliedUpdates(session, enterprise)
-                       .subscribe()
-                       .with(
-                           enterpriseAppliedUpdates -> {
-                             try
-                             {
-                               for (String enterpriseAppliedUpdate : enterpriseAppliedUpdates)
-                               {
-                                 log.info("System Installed Update [{}]", enterpriseAppliedUpdate);
-                               }
-                               Map<Integer, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
-                               for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
-                               {
-                                 Integer key = entry.getKey();
-                                 Class<? extends ISystemUpdate> value = entry.getValue();
-                                 String classValue = value.getCanonicalName();
-                                 if (classValue.contains("$$EnhancerByGuice$$"))
-                                 {
-                                   classValue = classValue.substring(0, classValue.indexOf("$$EnhancerByGuice$$"));
-                                 }
-                                 SortedUpdate du = value.getAnnotation(SortedUpdate.class);
-                                 if (!enterpriseAppliedUpdates.contains(classValue) || du.force())
-                                 {
-                                   applicableUpdates.put(key, value);
-                                 }
-                               }
-                               emitter.complete(applicableUpdates);
-                             }
-                             catch (Exception e)
-                             {
-                               emitter.fail(e);
-                             }
-                           },
-                           emitter::fail
-                       )
-                   ;
+                   @SuppressWarnings("unchecked")
+                   Class<? extends ISystemUpdate> clazz = (Class<? extends ISystemUpdate>) classInfo.loadClass();
+                   SortedUpdate du = clazz.getAnnotation(SortedUpdate.class);
+                   availableUpdates.put(du.sortOrder(), clazz);
                  }
-                 catch (Exception e)
-                 {
-                   emitter.fail(e);
-                 }
+                 return availableUpdates;
+               })
+               // Then chain with getting enterprise applied updates
+               .chain(availableUpdates -> {
+                 return getEnterpriseAppliedUpdates(session, enterprise)
+                            .map(enterpriseAppliedUpdates -> {
+                              // Log the applied updates
+                              for (String enterpriseAppliedUpdate : enterpriseAppliedUpdates)
+                              {
+                                log.info("System Installed Update [{}]", enterpriseAppliedUpdate);
+                              }
+                              
+                              // Filter available updates to get applicable ones
+                              Map<Integer, Class<? extends ISystemUpdate>> applicableUpdates = new TreeMap<>();
+                              for (Map.Entry<Integer, Class<? extends ISystemUpdate>> entry : availableUpdates.entrySet())
+                              {
+                                Integer key = entry.getKey();
+                                Class<? extends ISystemUpdate> value = entry.getValue();
+                                String classValue = value.getCanonicalName();
+                                if (classValue.contains("$$EnhancerByGuice$$"))
+                                {
+                                  classValue = classValue.substring(0, classValue.indexOf("$$EnhancerByGuice$$"));
+                                }
+                                SortedUpdate du = value.getAnnotation(SortedUpdate.class);
+                                if (!enterpriseAppliedUpdates.contains(classValue) || du.force())
+                                {
+                                  applicableUpdates.put(key, value);
+                                }
+                              }
+                              return applicableUpdates;
+                            });
                });
   }
 
@@ -425,14 +383,14 @@ public class EnterpriseService
   //@CacheResult(cacheName = "GetEnterpriseByEnterpriseNameString")
   public Uni<IEnterprise<?, ?>> getEnterprise(Mutiny.Session session, String name)
   {
-    log.info("🔍 Starting fetch for enterprise: {}", name);
+    log.debug("🔍 Starting fetch for enterprise: {}", name);
 
     log.debug("📦 Session & transaction started for enterprise lookup: {}", name);
 
     return (Uni) new Enterprise().builder(session)
                      .withName(name)
                      .inDateRange()
-                     .setCacheName("getEnterpriseByName","default")
+                     //.setCacheName("getEnterpriseByName","default")
                      .get()
                      .onFailure()
                      .invoke(error ->
@@ -441,7 +399,7 @@ public class EnterpriseService
                      .invoke(ent -> {
                        if (ent != null)
                        {
-                         log.info("✅ Enterprise found: {} (ID: {})", ent.getName(), ent.getId());
+                         log.debug("✅ Enterprise found: {} (ID: {})", ent.getName(), ent.getId());
                        }
                        else
                        {
@@ -581,7 +539,7 @@ public class EnterpriseService
                               setCurrentTask(0);
                               logProgress("System Configuration", "Starting system updates", 1);
                             })
-                            .chain(() -> loadUpdates(session, entUni))
+                            //.chain(() -> loadUpdates(session, entUni))
                             .invoke(() -> {
                               logProgress("System Configuration", "Done", 1);
                               // 🔒 Re-enable security here if needed
@@ -652,17 +610,17 @@ public class EnterpriseService
     logProgress("Installing Systems", "Starting installation process with " + allFilteredSystems.size() + " systems");
 
     // Step 1: Install systems up to but not including EventsSystem
-    log.info("🔄 Step 1: Installing systems up to but not including EventsSystem");
+    log.debug("🔄 Step 1: Installing systems up to but not including EventsSystem");
     Uni<Void> step1 = installSystemsSequentially(session, filteredBeforeEvents, enterprise, false);
     
     // Step 2: Register all systems up to EventsSystem
     return step1.chain(() -> {
-      log.info("🔄 Step 2: Registering all systems up to EventsSystem");
+      log.debug("🔄 Step 2: Registering all systems up to EventsSystem");
       return registerSystemsSequentially(session, filteredUpToEvents, enterprise);
     })
     // Step 3: Rerun installSystems for all available systems
     .chain(() -> {
-      log.info("🔄 Step 3: Installing all available systems");
+      log.debug("🔄 Step 3: Installing all available systems");
       return installSystemsSequentially(session, allFilteredSystems, enterprise, false);
     })
     .invoke(v -> log.info("✅ Completed all installation steps for systems"));
@@ -715,10 +673,10 @@ public class EnterpriseService
     String className = system.getClass()
                            .getSimpleName();
     logProgress("Running System", className);
-    log.info("🚀 Starting single system install: " + className);
+    log.debug("🚀 Starting single system install: " + className);
 
     return performSystemInstall(session, enterprise, system,registerSystem)
-               .invoke(() -> log.info("✅ System install completed: " + className))
+               .invoke(() -> log.debug("✅ System install completed: " + className))
                .onFailure()
                .invoke(err -> log.error("❌ System install failed: " + className, err));
   }
@@ -731,7 +689,7 @@ public class EnterpriseService
     String cleanedName = cleanName(className);
     IActivityMasterSystem<?> registeredSystem = system;
 
-    log.info("➡️ Starting install for: " + systemName + " [" + cleanedName + "]");
+    log.debug("➡️ Starting install for: " + systemName + " [" + cleanedName + "]");
 
     // Get all system installation listeners
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -760,7 +718,7 @@ public class EnterpriseService
     
     // If registerSystem is true, skip createDefaults and only call registerSystem
     if (false) {
-      log.info("🔄 Only registering system (skipping createDefaults): " + systemName);
+      log.debug("🔄 Only registering system (skipping createDefaults): " + systemName);
       installChain = installChain.chain(() -> {
         return registeredSystem.registerSystem(session, enterprise).replaceWithVoid();
       });

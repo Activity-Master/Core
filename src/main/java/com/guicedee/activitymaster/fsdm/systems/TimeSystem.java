@@ -298,7 +298,10 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .onFailure()
                .recoverWithUni(error -> {
                  log.debug("📋 Year not found for date: {}, creating new year", date);
-                 return createYear(date);
+                 return loadTimeRange(date.getYear(),date.getYear())
+                            .chain(a->{
+                              return getYearFromDatabase(session, date);
+                            });
                });
   }
 
@@ -449,7 +452,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   private Uni<Quarters> createQuarter(Mutiny.StatelessSession session, Date date)
   {
     int quarterId = getQuarterID(date);
-    log.info("🚀 Creating quarter with ID: {}", quarterId);
+    log.debug("🚀 Creating quarter with ID: {}", quarterId);
 
     // Create a new quarter entity
     Quarters quarter = new Quarters();
@@ -615,16 +618,16 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    */
   public Uni<Months> getMonth(Mutiny.StatelessSession session, Date date)
   {
-    log.info("🔍 Getting month for date: {}", date);
+    log.debug("🔍 Getting month for date: {}", date);
 
     return getMonthFromDatabase(session, date)
                .onItem()
                .invoke(month -> {
-                 log.info("✅ Retrieved month for date: {}", date);
+                 log.debug("✅ Retrieved month for date: {}", date);
                })
                .onFailure()
                .recoverWithUni(error -> {
-                 log.info("📋 Month not found for date: {}, creating new month", date);
+                 log.debug("📋 Month not found for date: {}, creating new month", date);
                  return createMonth(session, date);
                });
   }
@@ -647,12 +650,12 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .transform(optional -> {
                  if (optional != null)
                  {
-                   log.info("✅ Found month with ID: {}", monthId);
+                   log.debug("✅ Found month with ID: {}", monthId);
                    return (Months) optional;
                  }
                  else
                  {
-                   log.info("📋 Month not found with ID: {}", monthId);
+                   log.debug("📋 Month not found with ID: {}", monthId);
                    throw new jakarta.persistence.NoResultException("Month not found for date: " + date);
                  }
                });
@@ -669,7 +672,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   {
     int monthId = Integer.parseInt(MonthIDFormat.getSimpleDateFormat()
                                        .format(date));
-    log.info("🚀 Creating month with ID: {}", monthId);
+    log.debug("🚀 Creating month with ID: {}", monthId);
 
     // Create a new month entity
     Months month = new Months();
@@ -773,7 +776,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .transform(optional -> {
                  if (optional != null)
                  {
-                   log.info("✅ Found month of year with ID: {}", monthNumber);
+                   log.debug("✅ Found month of year with ID: {}", monthNumber);
                    return (MonthOfYear) optional;
                  }
                  else
@@ -842,12 +845,12 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .transform(optional -> {
                  if (optional != null)
                  {
-                   log.info("✅ Found week with ID: {}", weekId);
+                   log.debug("✅ Found week with ID: {}", weekId);
                    return (Weeks) optional;
                  }
                  else
                  {
-                   log.info("📋 Week not found with ID: {}", weekId);
+                   log.debug("📋 Week not found with ID: {}", weekId);
                    throw new jakarta.persistence.NoResultException("Week not found for date: " + date);
                  }
                });
@@ -892,7 +895,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
   private Uni<Weeks> createWeek(Mutiny.StatelessSession session, Date date)
   {
     int weekId = getWeekID(date);
-    log.info("🚀 Creating week with ID: {}", weekId);
+    log.debug("🚀 Creating week with ID: {}", weekId);
 
     // Create a new week entity
     Weeks week = new Weeks();
@@ -952,7 +955,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    @Override
    public Uni<Days> getDay(Mutiny.Session session, Date date)
   {
-    log.info("🔍 Getting day for date: {}", date);
+    log.debug("🔍 Getting day for date: {}", date);
     return new Days().builder(session)
         .find(Integer.valueOf(DayIDFormat.getSimpleDateFormat().format(date)))
         .get();
@@ -1149,12 +1152,12 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                .transform(optional -> {
                  if (optional != null)
                  {
-                   log.info("Found day name: " + dayName);
+                   log.debug("Found day name: " + dayName);
                    return (DayNames) optional;
                  }
                  else
                  {
-                   log.info("Day name not found: " + dayName);
+                   log.debug("Day name not found: " + dayName);
                    throw new NoSuchElementException("Day name not found: " + dayName);
                  }
                })
@@ -1171,7 +1174,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
    */
   private Uni<DayNames> createDayNameEntity(Mutiny.StatelessSession session, String dayName)
   {
-    log.info("Creating new day name entity: " + dayName);
+    log.debug("Creating new day name entity: " + dayName);
 
     DayNames newDayName = new DayNames();
     newDayName.setDayName(dayName);
@@ -1237,11 +1240,11 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                                                // Add hour persistence to the chain
                                                                chain = chain.chain(() -> {
-                                                                 log.info("📋 Creating hour: {}", hour);
+                                                                 log.debug("📋 Creating hour: {}", hour);
                                                                  return session.insert(hourEntity)
                                                                             .onItem()
                                                                             .invoke(() -> {
-                                                                              log.info("✅ Created hour: {}", hour);
+                                                                              log.debug("✅ Created hour: {}", hour);
                                                                             })
                                                                             .onFailure()
                                                                             .invoke(e -> {
@@ -1269,11 +1272,11 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                                  // Add time insertence to the chain
                                                                  final Time finalTime = time;
                                                                  chain = chain.chain(() -> {
-                                                                   log.info("📋 Creating time: {}", finalTime.getId());
+                                                                   log.debug("📋 Creating time: {}", finalTime.getId());
                                                                    return session.insert(finalTime)
                                                                               .onItem()
                                                                               .invoke(() -> {
-                                                                                log.info("✅ Created time: {}", finalTime.getId());
+                                                                                log.debug("✅ Created time: {}", finalTime.getId());
                                                                               })
                                                                               .onFailure()
                                                                               .invoke(e -> {
@@ -1295,7 +1298,7 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
 
                                                                    final HalfHours finalHalfHour = halfHour;
                                                                    chain = chain.chain(() -> {
-                                                                     log.info("📋 Creating half-hour: {}", finalHalfHour.getId());
+                                                                     log.debug("📋 Creating half-hour: {}", finalHalfHour.getId());
                                                                      return session.insert(finalHalfHour)
                                                                                 .chain(() -> {
                                                                                   // Create HalfHourDayParts entity
@@ -1312,13 +1315,13 @@ public class TimeSystem extends ActivityMasterDefaultSystem<TimeSystem>
                                                                                                                    .getHourID(),
                                                                                       finalHalfHour.getId()
                                                                                           .getMinuteID());
-                                                                                  log.info("📋 Finding DayPart: {}", dayPartId);
+                                                                                  log.debug("📋 Finding DayPart: {}", dayPartId);
                                                                                   return session.get(DayParts.class, dayPartId)
                                                                                              .chain(dayPart -> {
                                                                                                if (dayPart == null)
                                                                                                {
                                                                                                  // Create the DayPart if it doesn't exist
-                                                                                                 log.info("📋 Creating missing DayPart: {}", dayPartId);
+                                                                                                 log.debug("📋 Creating missing DayPart: {}", dayPartId);
                                                                                                  DayParts newDayPart = new DayParts();
                                                                                                  newDayPart.setId(dayPartId);
 
